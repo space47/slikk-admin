@@ -12,6 +12,8 @@ import type {
 } from '@/@types/auth'
 
 export async function apiSignInTwoFactor(data: SignInTwoFactor) {
+    let dataObj = {data:data.mobileNumber,type:"MOBILE"};
+    data = dataObj;
     return ApiService.fetchData<SignInTwoFactorResponse>({
         url: '/login',
         method: 'post',
