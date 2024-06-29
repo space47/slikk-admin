@@ -163,9 +163,12 @@ function useAuth() {
     }
 
     const signOut = async () => {
-        await apiSignOut()
+        //await apiSignOut()
+        localStorage.clear();
+        sessionStorage.clear();
         handleSignOut()
         navigate("/");
+        
     }
 
     return {
