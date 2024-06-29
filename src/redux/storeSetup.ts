@@ -35,7 +35,7 @@ interface CustomStore extends Store<RootState, AnyAction> {
 }
 
 const store: CustomStore = configureStore({
-    reducer: persistReducer(persistConfig, rootReducer() as Reducer),
+    reducer: rootReducer() as Reducer,
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             immutableCheck: false,
