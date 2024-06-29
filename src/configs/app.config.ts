@@ -8,7 +8,7 @@ export type AppConfig = {
 }
 
 const appConfig: AppConfig = {
-    apiPrefix: 'https://dev-api.slikk.club',
+    apiPrefix: '/api',
     authenticatedEntryPath: '/app/sales/dashboard',
     unAuthenticatedEntryPath: '/auth-two-factor',
     tourPath: '/app/account/kyc-form',

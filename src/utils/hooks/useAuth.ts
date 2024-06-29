@@ -11,6 +11,7 @@ import { REDIRECT_URL_KEY } from '@/constants/app.constant'
 import { useNavigate } from 'react-router-dom'
 import useQuery from './useQuery'
 import type { SignInCredential, SignInTwoFactor, SignUpCredential } from '@/@types/auth'
+import mockServer from '@/mock'
 
 type Status = 'success' | 'failed'
 
@@ -38,7 +39,6 @@ function useAuth() {
             if (resp.data) {
                 if (resp.status === 200) {
                    if(resp.data?.message === "OTP Sent Successfully"){
-                    navigate("/sign-in");
                     dispatch(
                         setUser(
                              {
@@ -49,8 +49,6 @@ function useAuth() {
                             }
                         )
                     )
-                   }else{
-                    navigate("/");
                    }
                 }
                 return {
@@ -82,10 +80,13 @@ function useAuth() {
             if (resp.data) {
                 const { access } = resp.data
                 dispatch(signInSuccess(access))
-                if (resp.data.user) {
+                const environment = process.env.NODE_ENV
+                mockServer({ environment })
+                
+                if (resp.data) {
                     dispatch(
                         setUser(
-                            resp.data.user || {
+                            resp.data || {
                                 avatar: '',
                                 userName: 'Anonymous',
                                 authority: ['USER'],
@@ -162,8 +163,9 @@ function useAuth() {
     }
 
     const signOut = async () => {
-        //await apiSignOut()
+        await apiSignOut()
         handleSignOut()
+        navigate("/");
     }
 
     return {

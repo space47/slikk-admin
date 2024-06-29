@@ -8,6 +8,8 @@ import { Field, Form, Formik } from 'formik'
 import * as Yup from 'yup'
 import type { CommonProps } from '@/@types/common'
 import { SignInTwoFactor } from '@/@types/auth'
+import { useState } from 'react'
+import SignIn from '../SignIn/SignIn'
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -30,6 +32,7 @@ const SignInForm = (props: SignInFormProps) => {
         className,
     } = props
     const [message, setMessage] = useTimeOutMessage()
+    const [isAuth, setAuth] = useState(false)
 
     const { signInTwoFactor } = useAuth()
 
@@ -43,13 +46,15 @@ const SignInForm = (props: SignInFormProps) => {
         const result = await signInTwoFactor({ mobileNumber })
 
         if (result?.status === 'success') {
+            setAuth(true)
         }
 
         setSubmitting(false)
     }
 
     return (
-        <div className={className}>
+        <>
+        {isAuth ? <SignIn />:<div className={className}>
             {message && (
                 <Alert showIcon className="mb-4" type="danger">
                     <>{message}</>
@@ -61,11 +66,7 @@ const SignInForm = (props: SignInFormProps) => {
                 }}
                 validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
-                    //if (!disableSubmit) {
                         onSignIn(values, setSubmitting)
-                   // } else {
-                   //     setSubmitting(false)
-                   // }
                 }}
             >
                 {({ touched, errors, isSubmitting ,isValid}) => (
@@ -92,6 +93,7 @@ const SignInForm = (props: SignInFormProps) => {
                                 loading={isSubmitting}
                                 variant="solid"
                                 type="submit"
+                                //disabled={!isValid}
                                 disabled={Array.isArray(errors) || Object.values(errors).toString() != ""}
                             >
                                 {isSubmitting ? 'Signing in...' : 'Send OTP'}
@@ -100,7 +102,9 @@ const SignInForm = (props: SignInFormProps) => {
                     </Form>
                 )}
             </Formik>
-        </div>
+        </div> }
+        </>
+        
     )
 }
 

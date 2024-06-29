@@ -14,20 +14,21 @@ import type {
 export async function apiSignInTwoFactor(data: SignInTwoFactor) {
     let dataObj = {data:data.mobileNumber,type:"MOBILE"};
     data = dataObj;
-    return ApiService.fetchData<SignInTwoFactorResponse>({
-        url: '/login',
-        method: 'post',
-        data,
-    })
-    //return axioisInstance.post("/login",data);
+    // return ApiService.fetchData<SignInTwoFactorResponse>({
+    //     url: '/login',
+    //     method: 'post',
+    //     data,
+    // })
+    return axioisInstance.post("/login",data);
 }
 
 export async function apiSignIn(data: SignInCredential) {
-    return ApiService.fetchData<SignInResponse>({
-        url: '/verify',
-        method: 'post',
-        data,
-    })
+    // return ApiService.fetchData<SignInResponse>({
+    //     url: '/verify',
+    //     method: 'post',
+    //     data,
+    // })
+    return axioisInstance.post("/verify",data);
 }
 
 export async function apiSignUp(data: SignUpCredential) {
