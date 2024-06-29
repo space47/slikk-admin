@@ -10,6 +10,7 @@ import type { CommonProps } from '@/@types/common'
 import { SignInTwoFactor } from '@/@types/auth'
 import { useState } from 'react'
 import SignIn from '../SignIn/SignIn'
+import { useAppSelector } from '@/store'
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -33,7 +34,8 @@ const SignInForm = (props: SignInFormProps) => {
     } = props
     const [message, setMessage] = useTimeOutMessage()
     const [isAuth, setAuth] = useState(false)
-
+    const selector = useAppSelector((state)=>state.authorization)
+    console.log("selector",selector);
     const { signInTwoFactor } = useAuth()
 
     const onSignIn = async (
