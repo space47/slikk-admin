@@ -8,7 +8,7 @@ import { AuthState as Authorization} from '@/@types/types'
 import { authReducer } from '@/store/reducers/authReducers'
 
 export type RootState = CombinedState<{
-    authorization:Authorization
+    authorization:CombinedState<Authorization>
     auth: CombinedState<AuthState>
     base: CombinedState<BaseState>
     locale: LocaleState

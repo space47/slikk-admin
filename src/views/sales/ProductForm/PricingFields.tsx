@@ -76,6 +76,7 @@ const PricingFields = (props: PricingFieldsProps) => {
                                         form={form}
                                         field={field}
                                         placeholder="Stock"
+                                        maxLength={10}
                                         customInput={
                                             NumberInput as ComponentType
                                         }

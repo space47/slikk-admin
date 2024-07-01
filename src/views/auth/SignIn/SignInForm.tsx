@@ -12,6 +12,7 @@ import * as Yup from 'yup'
 import type { CommonProps } from '@/@types/common'
 import Timer from './Timer'
 import { useAppSelector } from '@/store'
+import mockServer from '@/mock'
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 interface SignInFormProps extends CommonProps {
@@ -43,25 +44,24 @@ const SignInForm = (props: SignInFormProps) => {
     } = props
 
     const [message, setMessage] = useTimeOutMessage()
-    const { userName } = useAppSelector(
-        (state) => state.auth.user
+    const selector = useAppSelector(
+        (state) => state.authorization
     )
     const { signIn } = useAuth()
 
     const onSignIn = async (
-        values: SignInFormSchema,
-        setSubmitting: (isSubmitting: boolean) => void
+        values: SignInFormSchema
     ) => {
         const { otp } = values
-        setSubmitting(true)
-
-        const result = await signIn( { otp,type:"MOBILE" ,data:userName} )
-
-        if (result?.status === 'failed') {
-            setMessage(result.message)
+        signIn( { otp,type:"MOBILE" ,data:selector.mobile} )
+        if(selector?.signup_done){
+            setTimeout(():void=> {
+                const environment = process.env.NODE_ENV
+                mockServer({ environment })
+            },5000);
+        
         }
-
-        setSubmitting(false)
+            
     }
 
     return (
@@ -78,12 +78,8 @@ const SignInForm = (props: SignInFormProps) => {
                     type:''
                 }}
                 validationSchema={validationSchema}
-                onSubmit={(values, { setSubmitting }) => {
-                    //if (!disableSubmit) {
-                        onSignIn(values, setSubmitting)
-                    //} else {
-                     //   setSubmitting(false)
-                    // }
+                onSubmit={(values) => {
+                        onSignIn(values)
                 }}
             >
                 {({ touched, errors, isSubmitting }) => (

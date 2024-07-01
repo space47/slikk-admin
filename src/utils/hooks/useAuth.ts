@@ -12,12 +12,13 @@ import { useNavigate } from 'react-router-dom'
 import useQuery from './useQuery'
 import type { SignInCredential, SignInTwoFactor, SignUpCredential } from '@/@types/auth'
 import mockServer from '@/mock'
+import { validateOTP, validatePhoneNumber } from '@/store/action/authAction'
 
 type Status = 'success' | 'failed'
 
 function useAuth() {
     const dispatch = useAppDispatch()
-
+    const selector = useAppSelector(state => state.authorization)
     const navigate = useNavigate()
 
     const query = useQuery()
@@ -27,90 +28,21 @@ function useAuth() {
 
     const signInTwoFactor = async (
         values: SignInTwoFactor
-    ): Promise<
-        | {
-              status: Status
-              message: string
-          }
-        | undefined
-    > => {
-        try {
-            const resp = await apiSignInTwoFactor(values)
-            if (resp.data) {
-                if (resp.status === 200) {
-                   if(resp.data?.message === "OTP Sent Successfully"){
-                    dispatch(
-                        setUser(
-                             {
-                                avatar: '',
-                                userName: values.mobileNumber,
-                                authority: ['USER'],
-                                email: values.mobileNumber,
-                            }
-                        )
-                    )
-                   }
-                }
-                return {
-                    status: 'success',
-                    message: resp.data?.message,
-                }
-                
-            }
-            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-        } catch (errors: any) {
-            return {
-                status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
-            }
-        }
+    ) => {
+        dispatch(validatePhoneNumber(values.mobileNumber))
+    }
+
+    const navigateTo = () => {
+        const redirectUrl = query.get(REDIRECT_URL_KEY)
+        navigate(redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath)
     }
 
     const signIn = async (
         values: SignInCredential
-    ): Promise<
-        | {
-              status: Status
-              message: string
-          }
-        | undefined
-    > => {
-        try {
-            const resp = await apiSignIn(values)
-            if (resp.data) {
-                const { access } = resp.data
-                dispatch(signInSuccess(access))
-                const environment = process.env.NODE_ENV
-                mockServer({ environment })
-                
-                if (resp.data) {
-                    dispatch(
-                        setUser(
-                            resp.data || {
-                                avatar: '',
-                                userName: 'Anonymous',
-                                authority: ['USER'],
-                                email: '',
-                            }
-                        )
-                    )
-                }
-                const redirectUrl = query.get(REDIRECT_URL_KEY)
-                navigate(
-                    redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
-                )
-                return {
-                    status: 'success',
-                    message: '',
-                }
-            }
-            // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-        } catch (errors: any) {
-            return {
-                status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
-            }
-        }
+    ) => {
+        dispatch(validateOTP(selector.mobile, values.otp,navigateTo))
+        //dispatch(signInSuccess(selector.))
+        
     }
 
     const signUp = async (values: SignUpCredential) => {
@@ -168,7 +100,7 @@ function useAuth() {
         sessionStorage.clear();
         handleSignOut()
         navigate("/");
-        
+
     }
 
     return {

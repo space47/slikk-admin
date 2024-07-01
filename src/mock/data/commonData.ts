@@ -74,6 +74,41 @@ export const notificationListData = [
 ]
 
 export const searchQueryPoolData = [
+   //slikk nav menu(category)
+    {
+        title: 'Division',
+        url: '/app/category/division-new',
+        icon: 'category',
+        category: 'Category',
+        categoryTitle: 'Apps',
+    },
+    {
+        title: 'Category',
+        url: '/app/project/dashboard',
+        icon: 'category',
+        category: 'Category',
+        categoryTitle: 'Apps',
+    },
+    {
+        title: 'Sub-Category',
+        url: '/app/project/dashboard',
+        icon: 'category',
+        category: 'Category',
+        categoryTitle: 'Apps',
+    },
+    {
+        title: 'Product Type',
+        url: '/app/project/dashboard',
+        icon: 'category',
+        category: 'Category',
+        categoryTitle: 'Apps',
+    },
+//slikk nav menu(category)
+
+
+
+
+    
     {
         title: 'Project Dashboard',
         url: '/app/project/dashboard',

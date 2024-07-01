@@ -12,7 +12,6 @@ const initialState: AuthState = {
 
 export const authReducer = createReducer(initialState, (builder) => {
     builder.addCase(loginRequest, (state) => {
-        state = initialState;
         state.loading = true;
     });
     builder.addCase(loginSuccess, (state, action: PayloadAction<AuthState>) => {

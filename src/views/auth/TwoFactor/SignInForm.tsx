@@ -35,28 +35,18 @@ const SignInForm = (props: SignInFormProps) => {
     const [message, setMessage] = useTimeOutMessage()
     const [isAuth, setAuth] = useState(false)
     const selector = useAppSelector((state)=>state.authorization)
-    console.log("selector",selector);
     const { signInTwoFactor } = useAuth()
 
     const onSignIn = async (
-        values: SignInTwoFactor,
-        setSubmitting: (isSubmitting: boolean) => void
+        values: SignInTwoFactor
     ) => {
         const { mobileNumber } = values
-        setSubmitting(true)
-
-        const result = await signInTwoFactor({ mobileNumber })
-
-        if (result?.status === 'success') {
-            setAuth(true)
-        }
-
-        setSubmitting(false)
+        signInTwoFactor({ mobileNumber })
     }
 
     return (
         <>
-        {isAuth ? <SignIn />:<div className={className}>
+        {selector.phoneNumberValidated ? <SignIn />:<div className={className}>
             {message && (
                 <Alert showIcon className="mb-4" type="danger">
                     <>{message}</>
@@ -67,8 +57,8 @@ const SignInForm = (props: SignInFormProps) => {
                     mobileNumber:''
                 }}
                 validationSchema={validationSchema}
-                onSubmit={(values, { setSubmitting }) => {
-                        onSignIn(values, setSubmitting)
+                onSubmit={(values) => {
+                        onSignIn(values)
                 }}
             >
                 {({ touched, errors, isSubmitting ,isValid}) => (
@@ -92,13 +82,11 @@ const SignInForm = (props: SignInFormProps) => {
                             </FormItem>
                             <Button
                                 block
-                                loading={isSubmitting}
+                                loading={selector.loading}
                                 variant="solid"
                                 type="submit"
-                                //disabled={!isValid}
-                                disabled={Array.isArray(errors) || Object.values(errors).toString() != ""}
-                            >
-                                {isSubmitting ? 'Signing in...' : 'Send OTP'}
+                                disabled={selector.loading}>
+                                {selector.loading ? 'Signing in...' : 'Send OTP'}
                             </Button>
                         </FormContainer>
                     </Form>

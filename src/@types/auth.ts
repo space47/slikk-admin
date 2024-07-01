@@ -1,5 +1,5 @@
 export type SignInTwoFactor = {
-    mobileNumber?:string,
+    mobileNumber:string,
     type?:string
 }
 

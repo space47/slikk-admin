@@ -1,6 +1,8 @@
 import {  getProfileRequest, getProfileSuccess, loginRequest, logoutFailure, logoutRequest, logoutSuccess, otpRequest, saveProfileRequest, } from "../../@types/types";
 import { clearCookies } from "@/common/cookies";
 import axioisInstance from "@/utils/intercepter/globalInterceptorSetup";
+import { setUser, signInSuccess } from "../slices/auth";
+import { access } from "fs";
 
 export const validatePhoneNumber = (mobileNumber : string) => async (dispatch : any) => {
     try {
@@ -36,21 +38,19 @@ export const validatePhoneNumber = (mobileNumber : string) => async (dispatch : 
     }
 }
 
-export const validateOTP = (mobileNumber : string, referalCode:string | null, otpCode : string, callBackfn:(e : boolean)=>void) => async (dispatch : any) => {
+export const validateOTP = (mobileNumber : string, otpCode : string, callBackfn:()=>void) => async (dispatch : any) => {
     try {
         dispatch({
             type: otpRequest
         });
-        const { data } : any = await axioisInstance.post(`verify`, {
+        console.log("otpRequest")
+        const { data } : any  = await axioisInstance.post(`verify`, {
             type: 'MOBILE',
             data: mobileNumber,
             otp: otpCode
-        }).then((res) => {
-            console.log(res);
-            return res;
-        });
+        })
 
-        console.log(data.access, data.refresh);
+        console.log("access",data.access, data.refresh);
         const daysToExpire = new Date(2147483647 * 1000).toUTCString()
         document.cookie = `accessToken=${data.access}; expires=${daysToExpire}`;
 
@@ -58,10 +58,22 @@ export const validateOTP = (mobileNumber : string, referalCode:string | null, ot
             type: "otpSuccess",
             payload: {
                 mobileNumber,
-                message: data.message
+                message: data.message,
+                access:data.access
             }
         });
-        callBackfn(true);
+        dispatch(signInSuccess(data.access))
+        dispatch(
+            setUser(
+                data || {
+                    avatar: '',
+                    userName: 'Anonymous',
+                    authority: ['USER'],
+                    email: '',
+                }
+            )
+        )
+        callBackfn();
     }
     catch (error : any) {
         console.log("Validate OTP Error", error?.response?.data);
@@ -69,7 +81,6 @@ export const validateOTP = (mobileNumber : string, referalCode:string | null, ot
             type: "otpFailure",
             payload: { message: error?.response?.data?.message }
         });
-        callBackfn(false);
     }
 }
 

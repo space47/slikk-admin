@@ -18,6 +18,42 @@ const appsNavigationConfig: NavigationTree[] = [
         authority: [ADMIN, USER],
         subMenu: [
             {
+                key: 'apps.category',
+                path: '',
+                title: 'Category Management',
+                translateKey: 'nav.appsCategory.category',
+                icon: 'category',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    {
+                        key: 'appsCategory.category',
+                        path: `${APP_PREFIX_PATH}/category/division`,
+                        title: 'Division',
+                        translateKey: 'nav.appsCategory.division',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsCategory.category',
+                        path: `${APP_PREFIX_PATH}/category/category`,
+                        title: 'Category',
+                        translateKey: 'nav.appsCategory.category',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                ],
+            },
+//slikk category
+
+
+
+
+            {
                 key: 'apps.project',
                 path: '',
                 title: 'Project',
