@@ -61,7 +61,7 @@ const SignInForm = (props: SignInFormProps) => {
                         onSignIn(values)
                 }}
             >
-                {({ touched, errors, isSubmitting ,isValid}) => (
+                {({ touched, errors, isSubmitting ,isValid,isValidating}) => (
                     <Form>
                         <FormContainer>
                             <FormItem
@@ -85,7 +85,9 @@ const SignInForm = (props: SignInFormProps) => {
                                 loading={selector.loading}
                                 variant="solid"
                                 type="submit"
-                                disabled={selector.loading}>
+                                //disabled={isValidating}
+                                disabled={Array.isArray(errors) || Object.values(errors).toString() != ""}
+                                >
                                 {selector.loading ? 'Signing in...' : 'Send OTP'}
                             </Button>
                         </FormContainer>
