@@ -4,11 +4,13 @@ import { ADMIN, USER } from '@/constants/roles.constant'
 import type { Routes } from '@/@types/routes'
 
 const appsRoute: Routes = [
-    //slikk nav category 
+    //slikk nav category
     {
         key: 'appsCategory.productNew',
         path: `${APP_PREFIX_PATH}/category/division-new`,
-        component: lazy(() => import('@/views/category-management/division/DivisionNew')),
+        component: lazy(
+            () => import('@/views/category-management/division/DivisionNew'),
+        ),
         authority: [ADMIN, USER],
         meta: {
             header: 'Add New Division',
@@ -17,17 +19,29 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.division',
         path: `${APP_PREFIX_PATH}/category/division`,
-        component: lazy(() => import('@/views/category-management/division/DivisionList')),
+        component: lazy(
+            () => import('@/views/category-management/division/DivisionList'),
+        ),
         authority: [ADMIN, USER],
         meta: {
             header: 'Add New Division',
         },
     },
+    {
+        key: 'appsSales.orderList',
+        path: `${APP_PREFIX_PATH}/merchant/orders`,
+        component: lazy(
+            () => import('@/views/category-management/orderlist/Orderlist'),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     {
         key: 'appsCategory.categoryNew',
         path: `${APP_PREFIX_PATH}/category/category-new`,
-        component: lazy(() => import('@/views/category-management/category/CategoryNew')),
+        component: lazy(
+            () => import('@/views/category-management/category/CategoryNew'),
+        ),
         authority: [ADMIN, USER],
         meta: {
             header: 'Add New Category',
@@ -36,14 +50,15 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.category',
         path: `${APP_PREFIX_PATH}/category/category`,
-        component: lazy(() => import('@/views/category-management/category/CategoryList')),
+        component: lazy(
+            () => import('@/views/category-management/category/CategoryList'),
+        ),
         authority: [ADMIN, USER],
         meta: {
             header: 'Add New Category',
         },
     },
-//slikk nav category
-
+    //slikk nav category
 
     {
         key: 'appsProject.dashboard',
@@ -224,7 +239,7 @@ const appsRoute: Routes = [
                 () =>
                     import(
                         '@/views/knowledge-base/ManageArticles/components/PanelHeader'
-                    )
+                    ),
             ),
             headerContainer: true,
         },
