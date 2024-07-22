@@ -48,11 +48,9 @@ export const validateOTP = (mobileNumber : string, otpCode : string, callBackfn:
             type: 'MOBILE',
             data: mobileNumber,
             otp: otpCode
-        })
-
-        console.log("access",data.access, data.refresh);
-        const daysToExpire = new Date(2147483647 * 1000).toUTCString()
-        document.cookie = `accessToken=${data.access}; expires=${daysToExpire}`;
+        });
+        
+        localStorage.setItem("accessToken", data.access);
 
         dispatch({
             type: "otpSuccess",
@@ -100,8 +98,7 @@ export const logoutAction = () => async (dispatch : any) => {
             type : "logoutRequest"
         });
 
-        clearCookies("accessToken");
-        clearCookies("sessionToken");
+        localStorage.clear();
 
         dispatch({
             type : "logoutSuccess"

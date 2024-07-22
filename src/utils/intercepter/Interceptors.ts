@@ -2,7 +2,7 @@ import { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } 
 
 const onRequest = async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig<any>> => {
     
-    const token = localStorage.getItem('secure_token');
+    const token = localStorage.getItem('accessToken');
     
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
