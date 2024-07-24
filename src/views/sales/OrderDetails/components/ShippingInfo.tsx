@@ -1,15 +1,19 @@
-import Avatar from '@/components/ui/Avatar'
 import Card from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
+
 import { NumericFormat } from 'react-number-format'
+import moment from 'moment'
 
 type ShippingInfoProps = {
     data?: {
-        deliveryFees: number
-        estimatedMin: number
-        estimatedMax: number
+        price: number
+        create_date: number
+        drop_time: number
         shippingLogo: string
-        shippingVendor: string
+        partner: number
+        runner_name: string
+        runner_phone_number: string
+        runner_profile_pic_url: string
+        state: string
     }
 }
 
@@ -18,13 +22,25 @@ const ShippingInfo = ({ data }: ShippingInfoProps) => {
         <Card className="mb-4">
             <h5 className="mb-4">Shipping</h5>
             <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                    <Avatar size={60} src={data?.shippingLogo} />
-                    <div className="ltr:ml-2 rtl:mr-2">
-                        <h6>{data?.shippingVendor}</h6>
+                <div className="flex items-start flex-col gap-4">
+                    <h3 className="text-md font-semibold">{data?.partner}</h3>
+
+                    <div className=" flex flex-col">
                         <span>
-                            Delivery in {data?.estimatedMin} ~{' '}
-                            {data?.estimatedMax} days
+                            Created :{' '}
+                            {moment(data?.create_date).format(
+                                'MM/DD/YYYY hh:mm:ss a',
+                            )}
+                        </span>
+                        <span>
+                            Drop Date :{' '}
+                            {data?.state == 'COMPLETED' && (
+                                <>
+                                    {moment(data?.drop_time).format(
+                                        'MM/DD/YYYY hh:mm:ss a',
+                                    )}
+                                </>
+                            )}
                         </span>
                     </div>
                 </div>
@@ -32,14 +48,18 @@ const ShippingInfo = ({ data }: ShippingInfoProps) => {
                     <NumericFormat
                         displayType="text"
                         value={(
-                            Math.round((data?.deliveryFees || 0) * 100) / 100
+                            Math.round((data?.price || 0) * 100) / 100
                         ).toFixed(2)}
-                        prefix={'$'}
+                        prefix={'Rs.'}
                         thousandSeparator={true}
                     />
                 </span>
             </div>
-            <Button block>View Carrier Details</Button>
+            <div className="flex flex-col">
+                {data?.runner_name}
+                {data?.runner_phone_number}
+                {data?.runner_profile_pic_url}
+            </div>
         </Card>
     )
 }

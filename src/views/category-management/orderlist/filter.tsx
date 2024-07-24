@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent } from 'react'
+import { IoSearchOutline } from 'react-icons/io5'
 
 interface filtProps {
     onSearch: (invoiceId: string) => void
@@ -34,9 +35,9 @@ const Filter: React.FC<filtProps> = ({ onSearch, onSelectDateRange }) => {
                 <button
                     type="button"
                     onClick={handleSearch}
-                    className="bg-yellow-50 opacity-60 text-black px-3 py-2 "
+                    className="bg-blue-50 opacity-60 text-black px-3 py-3 "
                 >
-                    Q
+                    <IoSearchOutline className="text-xl" />
                 </button>
             </div>
 

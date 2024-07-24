@@ -176,7 +176,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsSales.orderDetails',
-        path: `${APP_PREFIX_PATH}/sales/order-details/:orderId`,
+        path: `${APP_PREFIX_PATH}/sales/order-details/:invoice_id`,
         component: lazy(() => import('@/views/sales/OrderDetails')),
         authority: [ADMIN, USER],
     },

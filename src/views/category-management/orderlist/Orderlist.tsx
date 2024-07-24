@@ -1,14 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 import Filter from './filter'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { OrderItem } from './commontypes'
 
-interface Order {
+export interface Order {
     invoice_id: string
     create_date: string
     user: string
-    store: string
+    store: {
+        address: string
+        latitude: string
+        longitude: string
+    }
     rating: number
     amount: number
+    payment: {
+        mode: string
+        amount: number
+    }
+    order_items: OrderItem[]
     status: string
     update_date: string
 }
@@ -18,7 +29,7 @@ const headers = [
     'Order Date',
     'Mobile Number',
     'Customer Name',
-    'Store Code',
+    'Store Address',
     'Rating',
     'Payment Mode',
     'Total Items',
@@ -31,12 +42,13 @@ const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
     const [filteredOrders, setFilteredOrders] = useState<Order[]>([])
     const [sort, setSort] = useState<boolean>(true)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get(`/merchant/orders`)
-                const ordersData = response.data?.results || []
+                const response = await axioisInstance.get(`/merchant/orders`)
+                const ordersData = response.data?.data.results || []
                 setOrders(ordersData)
                 setFilteredOrders(ordersData)
                 console.log(response.data)
@@ -91,7 +103,7 @@ const OrderList = () => {
             case 'Rating':
                 return 'rating'
             // case 'Payment Mode':
-            //     return 'paymentMode'
+            //     return 'mode'
             // case 'Total Items':
             //     return 'totalItems'
             case 'Order Total':
@@ -105,13 +117,17 @@ const OrderList = () => {
         }
     }
 
+    const handleInvoiceClick = (invoiceId: string) => {
+        navigate(`/app/sales/order-details/${invoiceId}`)
+    }
+
     return (
         <div className="overflow-x-auto">
             <Filter
                 onSearch={handleSearch}
                 onSelectDateRange={handleSelectDateRange}
             />
-            <table className="min-w-full bg-white border border-gray-300">
+            <table className="min-w-full bg-white border-gray-300 border-0">
                 <thead>
                     <tr>
                         {headers.map((heads, key) => (
@@ -132,22 +148,34 @@ const OrderList = () => {
                     {filteredOrders.map((order, key) => (
                         <tr key={key}>
                             <td className="py-2 px-4 border-b">
-                                {order.invoice_id}
+                                <div
+                                    className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                                    onClick={() =>
+                                        handleInvoiceClick(order.invoice_id)
+                                    }
+                                >
+                                    {order.invoice_id}
+                                </div>
                             </td>
                             <td className="py-2 px-4 border-b">
                                 {order.create_date}
                             </td>
                             <td className="py-2 px-4 border-b">{order.user}</td>
+                            <td className="py-2 px-4 border-b">{order.user}</td>
                             <td className="py-2 px-4 border-b">
-                                {order.store}
+                                {order.store?.address}
                             </td>
                             <td className="py-2 px-4 border-b">
                                 {order.rating}
                             </td>
-                            {/* <td className="py-2 px-4 border-b">{order.paymentMode}</td> */}
-                            {/* <td className="py-2 px-4 border-b">{order.totalItems}</td> */}
                             <td className="py-2 px-4 border-b">
-                                {order.amount}
+                                {order.payment?.mode}
+                            </td>
+                            <td className="py-2 px-4 border-b">
+                                {order.order_items.length}
+                            </td>
+                            <td className="py-2 px-4 border-b">
+                                {order.payment.amount}
                             </td>
                             <td className="py-2 px-4 border-b">
                                 {order.status}

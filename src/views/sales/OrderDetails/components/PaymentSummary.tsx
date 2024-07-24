@@ -1,18 +1,20 @@
 import Card from '@/components/ui/Card'
 import { NumericFormat } from 'react-number-format'
+import moment from 'moment'
 
 type PaymentInfoProps = {
     label?: string
-    value?: number
+    value?: string | number
     isLast?: boolean
 }
 
 type PaymentSummaryProps = {
+    tax: string | number
+
     data?: {
-        subTotal: number
-        tax: number
-        deliveryFees: number
-        total: number
+        amount: number
+        mode: string
+        transaction_time: string
     }
 }
 
@@ -28,26 +30,46 @@ const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
                 <NumericFormat
                     displayType="text"
                     value={(Math.round((value as number) * 100) / 100).toFixed(
-                        2
+                        2,
                     )}
-                    prefix={'$'}
+                    prefix={'Rs.'}
                     thousandSeparator={true}
                 />
             </span>
         </li>
     )
 }
+const PaymentType = ({ label, value, isLast }: PaymentInfoProps) => {
+    return (
+        <li
+            className={`flex items-center justify-between${
+                !isLast ? ' mb-3' : ''
+            }`}
+        >
+            <span>{label}</span>
+            <span className="font-semibold">
+                <div>{value}</div>
+            </span>
+        </li>
+    )
+}
 
-const PaymentSummary = ({ data }: PaymentSummaryProps) => {
+const PaymentSummary = ({ data, tax }: PaymentSummaryProps) => {
     return (
         <Card className="mb-4">
             <h5 className="mb-4">Payment Summary</h5>
             <ul>
-                <PaymentInfo label="Subtotal" value={data?.subTotal} />
-                <PaymentInfo label="Delivery fee" value={data?.deliveryFees} />
-                <PaymentInfo label="Tax(6%)" value={data?.tax} />
+                <PaymentInfo label="Amount" value={data?.amount} />
+                <PaymentType label="Mode" value={data?.mode} />
+                <PaymentType
+                    label="Time"
+                    value={moment(data?.transaction_time).format(
+                        'MM/DD/YYYY hh:mm:ss a',
+                    )}
+                />
+                <PaymentInfo label="Tax" value={tax} />
                 <hr className="mb-3" />
-                <PaymentInfo isLast label="Total" value={data?.total} />
+                <PaymentInfo isLast label="Total" value={data?.amount} />
             </ul>
         </Card>
     )
