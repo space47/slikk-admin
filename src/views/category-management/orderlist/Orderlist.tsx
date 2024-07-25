@@ -7,7 +7,10 @@ import { OrderItem } from './commontypes'
 export interface Order {
     invoice_id: string
     create_date: string
-    user: string
+    user: {
+        name: string
+        mobile: string
+    }
     store: {
         address: string
         latitude: string
@@ -47,7 +50,9 @@ const OrderList = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axioisInstance.get(`/merchant/orders`)
+                const response = await axioisInstance.get(
+                    `/merchant/orders?page_size=100`,
+                )
                 const ordersData = response.data?.data.results || []
                 setOrders(ordersData)
                 setFilteredOrders(ordersData)
@@ -160,8 +165,12 @@ const OrderList = () => {
                             <td className="py-2 px-4 border-b">
                                 {order.create_date}
                             </td>
-                            <td className="py-2 px-4 border-b">{order.user}</td>
-                            <td className="py-2 px-4 border-b">{order.user}</td>
+                            <td className="py-2 px-4 border-b">
+                                {order.user.mobile}
+                            </td>
+                            <td className="py-2 px-4 border-b">
+                                {order.user.name}
+                            </td>
                             <td className="py-2 px-4 border-b">
                                 {order.store?.address}
                             </td>

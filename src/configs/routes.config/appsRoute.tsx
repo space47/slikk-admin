@@ -28,8 +28,8 @@ const appsRoute: Routes = [
         },
     },
     {
-        key: 'appsSales.orderList',
-        path: `${APP_PREFIX_PATH}/merchant/orders`,
+        key: 'appsOrderManagement.orderList',
+        path: `${APP_PREFIX_PATH}/orders`,
         component: lazy(
             () => import('@/views/category-management/orderlist/Orderlist'),
         ),

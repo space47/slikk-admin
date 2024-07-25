@@ -38,7 +38,7 @@ const columnHelper = createColumnHelper<Product>()
 const ProductColumn = ({ row }: { row: Product }) => {
     return (
         <div className="flex gap-8 justify-center">
-            <Avatar size={90} src={row.image} className=" xl:mt-6" />
+            <Avatar size={120} src={row.image} className=" xl:mt-6" />
             <div className="ltr:ml-2 rtl:mr-2">
                 <div className="mb-2 text-[18px] font-bold ">
                     Brand Name:

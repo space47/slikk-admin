@@ -24,6 +24,8 @@ import {
     HiOutlineVariable,
     HiOutlineCode,
 } from 'react-icons/hi'
+import { BiCategory } from 'react-icons/bi'
+import { LiaUserTagSolid } from 'react-icons/lia'
 
 export type NavigationIcons = Record<string, JSX.Element>
 
@@ -32,6 +34,8 @@ const navigationIcon: NavigationIcons = {
     project: <HiOutlineChartSquareBar />,
     crm: <HiOutlineUserGroup />,
     sales: <HiOutlineTrendingUp />,
+    category: <BiCategory />,
+    brand: <LiaUserTagSolid />,
     crypto: <HiOutlineCurrencyDollar />,
     knowledgeBase: <HiOutlineBookOpen />,
     account: <HiOutlineUserCircle />,

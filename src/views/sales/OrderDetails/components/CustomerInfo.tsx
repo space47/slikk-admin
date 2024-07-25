@@ -5,7 +5,10 @@ import { HiPhone, HiExternalLink } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 
 type CustomerInfoProps = {
-    user: string
+    user: {
+        name: string
+        mobile: string
+    }
     store: {
         address: string
         latitude: number
@@ -28,7 +31,7 @@ const CustomerInfo = ({ user, billing_address, store }: CustomerInfoProps) => {
                         {/* <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
                             {data?.name}
                         </div> */}
-                        <span># customer Name</span>
+                        <span className="text-xl font-bold">{user.name}</span>
                     </div>
                 </div>
                 <HiExternalLink className="text-xl hidden group-hover:block" />
@@ -36,7 +39,7 @@ const CustomerInfo = ({ user, billing_address, store }: CustomerInfoProps) => {
             <hr className="my-5" />
 
             <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                <span className="font-semibold">{user}</span>
+                <span className="font-semibold">{user.mobile}</span>
             </IconText>
             <hr className="my-5" />
             <h6 className="mb-4">Shipping Address</h6>

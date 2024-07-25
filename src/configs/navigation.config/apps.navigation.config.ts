@@ -18,6 +18,183 @@ const appsNavigationConfig: NavigationTree[] = [
         authority: [ADMIN, USER],
         subMenu: [
             {
+                key: 'apps.orderManagement',
+                path: '',
+                title: 'Order Management',
+                translateKey: 'nav.appsOrderManagement.orderManagement',
+                icon: 'Order Management',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    {
+                        key: 'appsOrderManagement.orderList',
+                        path: `${APP_PREFIX_PATH}/orders`,
+                        title: 'New Orders',
+                        translateKey: 'nav.appsOrderManagement.orderList',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsOrderManagement.returnOrderList',
+                        path: `${APP_PREFIX_PATH}/merchant/returnOrders`,
+                        title: 'Return Orders',
+                        translateKey: 'nav.appsOrderManagement.returnOrderList',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                ],
+            },
+
+            // Inventory Management.................................................
+            {
+                key: 'apps.inventoryManagement',
+                path: '',
+                title: 'Inventory Management',
+                translateKey: 'nav.appsInventoryManagement.inventoryManagement',
+                icon: 'Inventory Management',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    {
+                        key: 'appsInventoryManagement.inwards',
+                        path: `${APP_PREFIX_PATH}/goods/received`,
+                        title: 'Inwards',
+                        translateKey: 'nav.appsInventoryManagement.inwards',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsInventoryManagement.quality_check',
+                        path: `${APP_PREFIX_PATH}/goods/qualitycheck`,
+                        title: 'Quality Check',
+                        translateKey:
+                            'nav.appsInventoryManagement.quality_check',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsInventoryManagement.stock_overview',
+                        path: `${APP_PREFIX_PATH}/inventory`,
+                        title: 'Stock Overview',
+                        translateKey:
+                            'nav.appsInventoryManagement.stock_overview',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                ],
+            },
+
+            //......................................................................
+
+            // Vendor management.....................................................................
+
+            {
+                key: 'apps.vendorManagement',
+                path: '',
+                title: 'Brand Dashboard',
+                translateKey: 'nav.appsVendorManagement.vendorManagement',
+                icon: 'brand',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    {
+                        key: 'appsVendorManagement.businessDetails',
+                        path: `${APP_PREFIX_PATH}/vendor/Details`,
+                        title: 'Business Details',
+                        translateKey:
+                            'nav.appsVendorManagement.businessDetails',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsVendorManagement.salesOverview',
+                        path: `${APP_PREFIX_PATH}/vendor/sales`,
+                        title: 'Sales Overview',
+                        translateKey: 'nav.appsVendorManagement.salesOverview',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsVendorManagement.staffList',
+                        path: `${APP_PREFIX_PATH}/vendor/users`,
+                        title: 'Users',
+                        translateKey: 'nav.appsInventoryManagement.staffList',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsVendorManagement.catalog',
+                        path: `${APP_PREFIX_PATH}/vendor/catalog`,
+                        title: 'Catalog Overview',
+                        translateKey: 'nav.appsInventoryManagement.catalog',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsVendorManagement.inventory',
+                        path: `${APP_PREFIX_PATH}/vendor/inventory`,
+                        title: 'Stock Overview',
+                        translateKey: 'nav.appsVendorManagement.inventory',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsVendorManagement.orders',
+                        path: `${APP_PREFIX_PATH}/vendor/orders`,
+                        title: 'Orders',
+                        translateKey: 'nav.appsVendorManagement.orders',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+
+                    {
+                        key: 'appsVendorManagement.returns',
+                        path: `${APP_PREFIX_PATH}/vendor/returns`,
+                        title: 'Returns',
+                        translateKey: 'nav.appsVendorManagement.returns',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsVendorManagement.accounts',
+                        path: `${APP_PREFIX_PATH}/vendor/accounts`,
+                        title: 'Accounting Details',
+                        translateKey: 'nav.appsVendorManagement.accounts',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                ],
+            },
+
+            //.......................................................................................
+
+            {
                 key: 'apps.category',
                 path: '',
                 title: 'Category Management',
@@ -48,10 +225,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     },
                 ],
             },
-//slikk category
-
-
-
+            //slikk category
 
             {
                 key: 'apps.project',

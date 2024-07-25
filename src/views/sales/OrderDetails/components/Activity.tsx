@@ -5,9 +5,10 @@ import Card from '@/components/ui/Card'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
 import React, { useState, useEffect } from 'react'
-import { Modal, notification } from 'antd'
+import { notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
+import { CustomModal, CustomModal2, CustomModal3, CustomModal4 } from './Modal'
 
 type Event = {
     timestamp: string
@@ -20,7 +21,7 @@ type Payment = {
     transaction_time: string
 }
 
-type Product = {
+export type Product = {
     image: string
     quantity: string
     fulfilled_quantity: string
@@ -54,6 +55,9 @@ const Activity = ({
     const [action, setAction] = useState('')
     const [triggerApiCall, setTriggerApiCall] = useState<boolean>(false)
     const [triggerpackCall, setTriggerpackCall] = useState<boolean>(false)
+    const [triggerShipCall, setTriggerShipCall] = useState<boolean>(false)
+    const [triggerDeliveryCall, setTriggerDeliveryCall] =
+        useState<boolean>(false)
     const [cancelCall, setCancelCall] = useState<boolean>(false)
     const navigate = useNavigate()
 
@@ -69,19 +73,10 @@ const Activity = ({
         }))
     }
 
-    // useEffect(() => {
-
-    //     };
-    // }, [handleOk]);
-
     const handleOk = () => {
         setAction('ACCEPTED')
         setTriggerApiCall(true)
     }
-
-    // const handleCancel = () => {
-    //     setIsModalOpen(false);
-    // };
 
     useEffect(() => {
         if (triggerApiCall) {
@@ -106,10 +101,11 @@ const Activity = ({
                         `merchant/order/${invoice_id}`,
                         body,
                     )
-                    navigate(0)
+
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerApiCall(false)
+                    navigate(0)
                 } catch (error) {
                     console.error(error)
                     setTriggerApiCall(false)
@@ -119,9 +115,19 @@ const Activity = ({
         }
     }, [triggerApiCall, navigate])
 
+    // CANCEL.........................................................................................................
+
     const handleCancel = () => {
-        setAction('ACCEPTED')
-        setCancelCall(true)
+        const hasFullfilledQty = Object.values(fulfilledQuantities).some(
+            (item) => item > 0,
+        )
+
+        if (hasFullfilledQty) {
+            setErrorMessage('QUANTITY OF ITEMS SHOULD BE 0')
+        } else {
+            setAction('ACCEPTED')
+            setCancelCall(true)
+        }
     }
 
     useEffect(() => {
@@ -129,9 +135,7 @@ const Activity = ({
             const sendApiRequest = async () => {
                 try {
                     const data = Object.entries(fulfilledQuantities).reduce(
-                        (acc, [id, quantity]) => {
-                            return acc
-                        },
+                        (acc) => acc,
                         {} as { [key: number]: number },
                     )
 
@@ -144,10 +148,11 @@ const Activity = ({
                         `merchant/order/${invoice_id}`,
                         body,
                     )
-                    navigate(0)
+
                     console.log(response.data)
                     setIsModalOpen(false)
                     setCancelCall(false)
+                    navigate(0)
                 } catch (error) {
                     console.error(error)
                     setCancelCall(false)
@@ -157,7 +162,7 @@ const Activity = ({
         }
     }, [cancelCall, navigate])
 
-    // ..........................................................................................................
+    // PACKED..............................................................................................................
 
     const handlePack = () => {
         setAction('PACKED')
@@ -192,7 +197,6 @@ const Activity = ({
                         error.response?.data?.message ||
                         'There was an error updating the order status. Please try again.'
 
-                    // Display error notification
                     notification.error({
                         message: 'Error',
                         description: errorMessage,
@@ -204,6 +208,104 @@ const Activity = ({
             sendApiRequest()
         }
     }, [triggerpackCall, navigate])
+
+    // SHIPPED...........................................................................................................
+
+    const handleShip = () => {
+        setAction('SHIPPED')
+        setTriggerShipCall(true)
+    }
+
+    useEffect(() => {
+        if (triggerShipCall) {
+            const sendApiRequest = async () => {
+                try {
+                    const body = {
+                        action,
+                    }
+
+                    const response = await axiosInstance.patch(
+                        `merchant/order/${invoice_id}`,
+                        body,
+                    )
+                    navigate(0)
+                    console.log(response.data)
+                    setIsModalOpen(false)
+                    setTriggerShipCall(false)
+                    notification.success({
+                        message: 'Success',
+                        description:
+                            response?.data?.message ||
+                            'Order status updated successfully.',
+                    })
+                } catch (error: any) {
+                    console.error(error)
+                    const errorMessage =
+                        error.response?.data?.message ||
+                        'There was an error updating the order status. Please try again.'
+
+                    notification.error({
+                        message: 'Error',
+                        description: errorMessage,
+                    })
+                } finally {
+                    setTriggerShipCall(false)
+                }
+            }
+            sendApiRequest()
+        }
+    }, [triggerShipCall, navigate])
+
+    //............................................................................................................................
+
+    // DELIVERY.............................................................................................................
+
+    const handleDelivery = () => {
+        setAction('DELIVERED')
+        setTriggerDeliveryCall(true)
+    }
+
+    useEffect(() => {
+        if (triggerDeliveryCall) {
+            const sendApiRequest = async () => {
+                try {
+                    const body = {
+                        action,
+                    }
+
+                    const response = await axiosInstance.patch(
+                        `merchant/order/${invoice_id}`,
+                        body,
+                    )
+                    navigate(0)
+                    console.log(response.data)
+                    setIsModalOpen(false)
+                    setTriggerDeliveryCall(false)
+                    notification.success({
+                        message: 'Success',
+                        description:
+                            response?.data?.message ||
+                            'Order status updated successfully.',
+                    })
+                } catch (error: any) {
+                    console.error(error)
+                    const errorMessage =
+                        error.response?.data?.message ||
+                        'There was an error updating the order status. Please try again.'
+
+                    notification.error({
+                        message: 'Error',
+                        description: errorMessage,
+                    })
+                } finally {
+                    setTriggerDeliveryCall(false)
+                }
+            }
+            sendApiRequest()
+        }
+    }, [triggerDeliveryCall, navigate])
+
+    // CLOSE...........................................................................
 
     const handleClose = () => {
         setIsModalOpen(false)
@@ -221,9 +323,13 @@ const Activity = ({
                 }
             case 'PACKED':
                 return {
-                    buttonText: '',
+                    buttonText: 'MARK AS SHIPPED',
                 }
             case 'OUT FOR DELIVERY':
+                return {
+                    buttonText: 'MARK AS DELIVERED',
+                }
+            case 'SHIPPED':
                 return {
                     buttonText: 'MARK AS DELIVERED',
                 }
@@ -278,158 +384,64 @@ const Activity = ({
                 )}
             </Timeline>
 
+            {/* buttons........................................................................................................ */}
+
             {buttonText && (
                 <Button variant="solid" onClick={() => showModal(content)}>
                     {buttonText}
                 </Button>
             )}
 
-            {status === 'PENDING' ? (
-                <Modal
-                    title=""
-                    okText="ACCEPT & PACK"
-                    cancelText="REJECT ORDERS"
-                    width={800}
-                    height={800}
-                    okButtonProps={{
-                        className: 'font-bold',
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                            borderRadius: '15px',
-                        },
-                    }}
-                    cancelButtonProps={{
-                        className: 'font-bold',
-                        style: {
-                            backgroundColor: 'gray',
-                            color: 'white',
-                            borderRadius: '15px',
-                        },
-                    }}
-                    open={isModalOpen}
-                    onOk={handleOk}
-                    onCancel={handleCancel}
-                >
-                    <p>{modalContent}</p>
-                    <div className="flex flex-col">
-                        <h1 className="text-[20px]">
-                            Invoice Id:{' '}
-                            <span className="font-normal">{invoice_id}</span>
-                        </h1>
-                        <h1 className="text-[16px]">
-                            Total Amount:{' '}
-                            <span className="font-normal">
-                                Rs.{payment?.amount}
-                            </span>
-                        </h1>
-                    </div>
-                    {product && product.length > 0 && (
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr>
-                                    <th className="px-4 py-2">SKU</th>
-                                    <th className="px-4 py-2">PRODUCT IMAGE</th>
-                                    <th className="px-4 py-2">PRODUCT NAME</th>
-                                    <th className="px-4 py-2">ORDERED QTY</th>
-                                    <th className="px-4 py-2">
-                                        FULFILLED QTY
-                                    </th>{' '}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {product.map((pdts) => (
-                                    <tr key={pdts.id} className="border-t">
-                                        {' '}
-                                        <td className="px-4 py-2">
-                                            {pdts.sku}
-                                        </td>
-                                        <td className="px-4 py-2">
-                                            <img
-                                                src={pdts.image}
-                                                alt=""
-                                                className="w-20 h-30 object-cover"
-                                            />
-                                        </td>
-                                        <td className="px-4 py-2">
-                                            {pdts.name}
-                                        </td>
-                                        <td className="px-4 py-2">
-                                            {pdts.quantity}
-                                        </td>
-                                        <td className="px-4 py-2">
-                                            <select
-                                                value={
-                                                    fulfilledQuantities[
-                                                        pdts.id
-                                                    ] || pdts.quantity
-                                                }
-                                                className="w-full px-2 py-1 border"
-                                                onChange={(e) =>
-                                                    handleSelectChange(
-                                                        pdts.id,
-                                                        e.target.value,
-                                                    )
-                                                }
-                                            >
-                                                {Array.from(
-                                                    {
-                                                        length:
-                                                            parseInt(
-                                                                pdts.quantity,
-                                                                10,
-                                                            ) + 1,
-                                                    },
-                                                    (_, i) => i,
-                                                ).map((val) => (
-                                                    <option
-                                                        key={val}
-                                                        className="py-3 px-2"
-                                                        value={val.toString()}
-                                                    >
-                                                        {val}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    )}
-                    {errorMessage && (
-                        <div className="text-red-500 mb-4">{errorMessage}</div>
-                    )}
-                </Modal>
-            ) : (
-                <Modal
-                    title=""
-                    okText="PACKED"
-                    cancelText="CANCEL"
-                    width={800}
-                    height={800}
-                    okButtonProps={{
-                        className: 'font-bold',
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                            borderRadius: '15px',
-                        },
-                    }}
-                    cancelButtonProps={{
-                        className: 'font-bold',
-                        style: {
-                            backgroundColor: 'gray',
-                            color: 'white',
-                            borderRadius: '15px',
-                        },
-                    }}
-                    open={isModalOpen}
-                    onOk={handlePack}
-                    onCancel={handleClose}
-                >
-                    <h1>MARK AS PACKED</h1>
-                </Modal>
+            {status === 'PENDING' && (
+                <CustomModal
+                    isModalOpen={isModalOpen}
+                    handleOk={handleOk}
+                    handleCancel={handleCancel}
+                    modalContent={modalContent}
+                    status={status}
+                    invoice_id={invoice_id}
+                    payment={payment}
+                    product={product}
+                    fulfilledQuantities={fulfilledQuantities}
+                    handleSelectChange={handleSelectChange}
+                    errorMessage={errorMessage || undefined}
+                />
+            )}
+            {status === 'ACCEPTED' && (
+                <CustomModal2
+                    isModalOpen={isModalOpen}
+                    handlePack={handlePack}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                />
+            )}
+            {status === 'PACKED' && (
+                <CustomModal3
+                    isModalOpen={isModalOpen}
+                    handlePack={handleShip}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                />
+            )}
+            {status === 'OUT FOR DELIVERY' && (
+                <CustomModal4
+                    isModalOpen={isModalOpen}
+                    handlePack={handleDelivery}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                />
+            )}
+            {status === 'SHIPPED' && (
+                <CustomModal4
+                    isModalOpen={isModalOpen}
+                    handlePack={handleDelivery}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                />
             )}
         </Card>
     )
