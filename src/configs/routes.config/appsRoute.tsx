@@ -35,6 +35,33 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsCategory.uploadCatalog',
+        path: `${APP_PREFIX_PATH}/catalog/upload`,
+        component: lazy(
+            () => import('@/views/category-management/catalog/BulkUpload'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.inwards',
+        path: `${APP_PREFIX_PATH}/goods/received`,
+        component: lazy(
+            () => import('@/views/inventory-management/inward/inward'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.quality_check',
+        path: `${APP_PREFIX_PATH}/goods/qualitycheck`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/inventory-management/quality-check/QCbulkupload'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     {
         key: 'appsCategory.categoryNew',

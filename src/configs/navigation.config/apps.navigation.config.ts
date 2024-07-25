@@ -22,7 +22,7 @@ const appsNavigationConfig: NavigationTree[] = [
                 path: '',
                 title: 'Order Management',
                 translateKey: 'nav.appsOrderManagement.orderManagement',
-                icon: 'Order Management',
+                icon: 'sales',
                 type: NAV_ITEM_TYPE_COLLAPSE,
                 authority: [ADMIN, USER],
                 subMenu: [
@@ -55,7 +55,7 @@ const appsNavigationConfig: NavigationTree[] = [
                 path: '',
                 title: 'Inventory Management',
                 translateKey: 'nav.appsInventoryManagement.inventoryManagement',
-                icon: 'Inventory Management',
+                icon: 'inventory',
                 type: NAV_ITEM_TYPE_COLLAPSE,
                 authority: [ADMIN, USER],
                 subMenu: [
@@ -197,12 +197,32 @@ const appsNavigationConfig: NavigationTree[] = [
             {
                 key: 'apps.category',
                 path: '',
-                title: 'Category Management',
+                title: 'Catalog Management',
                 translateKey: 'nav.appsCategory.category',
                 icon: 'category',
                 type: NAV_ITEM_TYPE_COLLAPSE,
                 authority: [ADMIN, USER],
                 subMenu: [
+                    {
+                        key: 'appsCategory.uploadCatalog',
+                        path: `${APP_PREFIX_PATH}/catalog/upload`,
+                        title: 'Catalog Upload',
+                        translateKey: 'nav.appsCategory.uploadCatalog',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsCategory.products',
+                        path: `${APP_PREFIX_PATH}/catalog/products`,
+                        title: 'Products',
+                        translateKey: 'nav.appsCategory.products',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                     {
                         key: 'appsCategory.category',
                         path: `${APP_PREFIX_PATH}/category/division`,
@@ -388,16 +408,7 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
-                    {
-                        key: 'appsSales.orderList',
-                        path: `${APP_PREFIX_PATH}/sales/order-list`,
-                        title: 'Order List',
-                        translateKey: 'nav.appsSales.orderList',
-                        icon: '',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [ADMIN, USER],
-                        subMenu: [],
-                    },
+
                     {
                         key: 'appsSales.orderDetails',
                         path: `${APP_PREFIX_PATH}/sales/order-details/95954`,

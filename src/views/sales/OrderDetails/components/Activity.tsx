@@ -118,12 +118,14 @@ const Activity = ({
     // CANCEL.........................................................................................................
 
     const handleCancel = () => {
-        const hasFullfilledQty = Object.values(fulfilledQuantities).some(
+        const hasFulfilledQty = Object.values(fulfilledQuantities).some(
             (item) => item > 0,
         )
 
-        if (hasFullfilledQty) {
-            setErrorMessage('QUANTITY OF ITEMS SHOULD BE 0')
+        if (hasFulfilledQty) {
+            setTimeout(() => {
+                setErrorMessage('QUANTITY OF ITEMS SHOULD BE 0')
+            }, 2000)
         } else {
             setAction('ACCEPTED')
             setCancelCall(true)
