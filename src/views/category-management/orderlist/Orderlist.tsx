@@ -123,7 +123,7 @@ const OrderList = () => {
     }
 
     const handleInvoiceClick = (invoiceId: string) => {
-        navigate(`/app/sales/order-details/${invoiceId}`)
+        navigate(`/app/orders/${invoiceId}`)
     }
 
     return (

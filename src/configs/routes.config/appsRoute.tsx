@@ -36,6 +36,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrderManagement.orderDetails',
+        path: `${APP_PREFIX_PATH}/orders/:invoice_id`,
+        component: lazy(() => import('@/views/sales/OrderDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCategory.uploadCatalog',
         path: `${APP_PREFIX_PATH}/catalog/upload`,
         component: lazy(
@@ -48,6 +54,22 @@ const appsRoute: Routes = [
         path: `${APP_PREFIX_PATH}/goods/received`,
         component: lazy(
             () => import('@/views/inventory-management/inward/inward'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.inwards',
+        path: `${APP_PREFIX_PATH}/goods/received/form`,
+        component: lazy(
+            () => import('@/views/inventory-management/inward/inwardNew'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.inwardsDetails',
+        path: `${APP_PREFIX_PATH}/goods/received/:company/:document_number`,
+        component: lazy(
+            () => import('@/views/inventory-management/inward/inwardDetails'),
         ),
         authority: [ADMIN, USER],
     },
@@ -201,12 +223,7 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/sales/OrderList')),
         authority: [ADMIN, USER],
     },
-    {
-        key: 'appsSales.orderDetails',
-        path: `${APP_PREFIX_PATH}/sales/order-details/:invoice_id`,
-        component: lazy(() => import('@/views/sales/OrderDetails')),
-        authority: [ADMIN, USER],
-    },
+
     {
         key: 'appsCrypto.dashboard',
         path: `${APP_PREFIX_PATH}/crypto/dashboard`,

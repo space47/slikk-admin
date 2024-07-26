@@ -12,17 +12,25 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
 
 type TableData = {
     id: number
+    company: number
     create_date: string
     document: string
     document_date: string
     document_number: string
     images: string[]
-    last_updated_by: string
+    last_updated_by: {
+        name: string
+        mobile: string
+    }
     received_address: string
-    received_by: string
+    received_by: {
+        name: string
+        mobile: string
+    }
     slikk_owned: boolean
     store: number
     total_quantity: number
@@ -84,13 +92,30 @@ const PaginationTable = () => {
     //     const parts = uploadedFile.split('/')
     //     return parts[parts.length - 1]
     // }
+    const handleGRNClick = (document_number: any, company: any) => {
+        console.log('done', document_number)
+
+        navigate(`/app/goods/received/${company}/${document_number}`)
+    }
 
     const columns = useMemo<ColumnDef<TableData>[]>(
         () => [
             {
                 header: 'GRN Number',
                 accessorKey: 'document_number', // Ensure this key matches your data structure
-                cell: (info) => info.getValue(),
+                cell: ({ row }) => (
+                    <div
+                        onClick={() =>
+                            handleGRNClick(
+                                row.original.document_number,
+                                row.original.company,
+                            )
+                        }
+                        className="cursor-pointer bg-gray-200 px-2 py-3 rounded-md text-black font-semibold"
+                    >
+                        {row.original.document_number}
+                    </div>
+                ),
             },
             {
                 header: 'Create Date',
@@ -115,7 +140,7 @@ const PaginationTable = () => {
             },
             {
                 header: 'Updated By',
-                accessorKey: 'last_updated_by',
+                accessorKey: 'last_updated_by.name',
                 cell: (info) => info.getValue(),
             },
             {
@@ -125,7 +150,7 @@ const PaginationTable = () => {
             },
             {
                 header: 'Received By',
-                accessorKey: 'received_by',
+                accessorKey: 'received_by.name',
                 cell: (info) => info.getValue(),
             },
             {
@@ -153,7 +178,7 @@ const PaginationTable = () => {
                 accessorKey: 'action',
                 cell: ({ row }) => (
                     <Button onClick={() => handleActionClick(row.original.id)}>
-                        Action
+                        DOWNLOAD
                     </Button>
                 ),
             },
@@ -172,6 +197,18 @@ const PaginationTable = () => {
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        pageCount: Math.ceil(totalData / pageSize), // Ensure page count is updated
+        manualPagination: true, // Enable manual pagination
+        state: {
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: pageSize,
+            },
+        },
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+            setPage(pageIndex + 1) // React Table uses zero-based index
+            setPageSize(pageSize)
+        },
     })
 
     const onPaginationChange = (page: number) => {
@@ -182,10 +219,19 @@ const PaginationTable = () => {
         setPageSize(Number(value))
     }
 
+    const navigate = useNavigate()
+
+    const handleGRN = () => {
+        navigate('/app/goods/received/form')
+    }
+
     return (
         <div>
             <div className="flex items-end justify-end mb-5">
-                <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700">
+                <button
+                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                    onClick={handleGRN}
+                >
                     ADD NEW GRN
                 </button>{' '}
                 <br />

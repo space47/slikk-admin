@@ -125,7 +125,7 @@ const PaginationTable = () => {
                     <Button
                         onClick={() => handleActionClick(row.original.batchId)}
                     >
-                        Action
+                        DOWNLOAD
                     </Button>
                 ),
             },
@@ -144,6 +144,18 @@ const PaginationTable = () => {
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        pageCount: Math.ceil(totalData / pageSize), // Ensure page count is updated
+        manualPagination: true, // Enable manual pagination
+        state: {
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: pageSize,
+            },
+        },
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+            setPage(pageIndex + 1) // React Table uses zero-based index
+            setPageSize(pageSize)
+        },
     })
 
     const onPaginationChange = (page: number) => {

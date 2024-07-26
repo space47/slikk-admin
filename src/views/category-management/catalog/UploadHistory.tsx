@@ -49,8 +49,8 @@ const PaginationTable = () => {
             const response = await axiosInstance.get(
                 `bulkupload/history?type=catalogue&p=${page}&page_size=${pageSize}`,
             )
-            const data = response.data.data.results // Adjusted for your API response
-            const total = response.data.data.count // Adjusted for your API response
+            const data = response.data.data.results
+            const total = response.data.data.count
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -125,7 +125,7 @@ const PaginationTable = () => {
                     <Button
                         onClick={() => handleActionClick(row.original.batchId)}
                     >
-                        Action
+                        DOWNLOAD
                     </Button>
                 ),
             },
@@ -144,6 +144,18 @@ const PaginationTable = () => {
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        pageCount: Math.ceil(totalData / pageSize), // Ensure page count is updated
+        manualPagination: true, // Enable manual pagination
+        state: {
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: pageSize,
+            },
+        },
+        onPaginationChange: ({ pageIndex, pageSize }) => {
+            setPage(pageIndex + 1) // React Table uses zero-based index
+            setPageSize(pageSize)
+        },
     })
 
     const onPaginationChange = (page: number) => {
@@ -152,6 +164,7 @@ const PaginationTable = () => {
 
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
+        setPage(1)
     }
 
     return (

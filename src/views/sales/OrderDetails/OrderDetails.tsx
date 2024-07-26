@@ -66,7 +66,10 @@ type SalesOrderDetailsResponse = {
         timestamp: string
         status: string
     }[]
-    user: string
+    user: {
+        name: string
+        mobile: string
+    }
     store: {
         address: string
         latitude: number
