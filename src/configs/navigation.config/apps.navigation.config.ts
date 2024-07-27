@@ -82,7 +82,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     },
                     {
                         key: 'appsInventoryManagement.stock_overview',
-                        path: `${APP_PREFIX_PATH}/inventory`,
+                        path: `${APP_PREFIX_PATH}/stockOverview`,
                         title: 'Stock Overview',
                         translateKey:
                             'nav.appsInventoryManagement.stock_overview',
@@ -245,7 +245,48 @@ const appsNavigationConfig: NavigationTree[] = [
                     },
                 ],
             },
-            //slikk category
+            //..........................................................................................................
+            {
+                key: 'apps.OrgManagement',
+                path: '',
+                title: 'Organization Management',
+                translateKey: 'nav.appsOrgManagement.OrgManagement',
+                icon: 'org',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    {
+                        key: 'appsOrgManagement.sellers',
+                        path: `${APP_PREFIX_PATH}/sellers`,
+                        title: 'Sellers',
+                        translateKey: 'nav.appsOrgManagement.sellers',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsOrgManagement.stores',
+                        path: `${APP_PREFIX_PATH}/stores`,
+                        title: 'Stores',
+                        translateKey: 'nav.appsOrgManagement.stores',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsOrgManagement.users',
+                        path: `${APP_PREFIX_PATH}/users`,
+                        title: 'Users',
+                        translateKey: 'nav.appsOrgManagement.users',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                ],
+            },
 
             {
                 key: 'apps.project',

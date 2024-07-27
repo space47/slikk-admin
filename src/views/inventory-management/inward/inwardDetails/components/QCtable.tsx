@@ -54,7 +54,7 @@ type grn_quality_check = {
     quantity_sent: number
     sent_to_inventory: boolean
     sku: string
-    update_date: string
+    update_date: Date
 }
 
 type qctable = {
@@ -121,18 +121,72 @@ const QCtable = ({ data = [] }: qctable) => {
 
     const columns = useMemo<ColumnDef<qctable>[]>(
         () => [
-            { header: 'GRN Number', accessorKey: 'grn' },
-            { header: 'Create Date', accessorKey: 'create_date' },
-            { header: 'QC done by', accessorKey: 'qc_done_by.name' },
-            { header: 'SKU code', accessorKey: 'sku' },
-            { header: 'Batch Number', accessorKey: 'batch_number' },
-            { header: 'QTY Sent', accessorKey: 'quantity_sent' },
-            { header: 'QTY Received', accessorKey: 'quantity_received' },
-            { header: 'QC Passed', accessorKey: 'qc_pass' },
-            { header: 'QC Failed', accessorKey: 'qc_fail' },
-            { header: 'Images', accessorKey: 'images' },
-            { header: 'Update Date', accessorKey: 'update_date' },
-            { header: 'Updated By', accessorKey: 'last_updated_by.name' },
+            {
+                header: 'GRN Number',
+                accessorKey: 'grn',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Create Date',
+                accessorKey: 'create_date',
+                cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+            },
+            {
+                header: 'QC done by',
+                accessorKey: 'qc_done_by.name',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'SKU code',
+                accessorKey: 'sku',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Batch Number',
+                accessorKey: 'batch_number',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QTY Sent',
+                accessorKey: 'quantity_sent',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QTY Received',
+                accessorKey: 'quantity_received',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QC Passed',
+                accessorKey: 'qc_passed',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QC Failed',
+                accessorKey: 'qc_failed',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Images',
+                accessorKey: 'images',
+                cell: (info) => (
+                    <img
+                        src={info.getValue()}
+                        alt="Image"
+                        style={{ width: '50px', height: '50px' }}
+                    />
+                ),
+            },
+            {
+                header: 'Update Date',
+                accessorKey: 'update_date',
+                cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+            },
+            {
+                header: 'Updated By',
+                accessorKey: 'last_updated_by.name',
+                cell: (info) => info.getValue(),
+            },
         ],
         [],
     )

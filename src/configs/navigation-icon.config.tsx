@@ -27,6 +27,7 @@ import {
 import { BiCategory } from 'react-icons/bi'
 import { LiaUserTagSolid } from 'react-icons/lia'
 import { MdOutlineInventory } from 'react-icons/md'
+import { CgOrganisation } from 'react-icons/cg'
 
 export type NavigationIcons = Record<string, JSX.Element>
 
@@ -35,6 +36,7 @@ const navigationIcon: NavigationIcons = {
     project: <HiOutlineChartSquareBar />,
     crm: <HiOutlineUserGroup />,
     sales: <HiOutlineTrendingUp />,
+    org: <CgOrganisation />,
     category: <BiCategory />,
     inventory: <MdOutlineInventory />,
     brand: <LiaUserTagSolid />,

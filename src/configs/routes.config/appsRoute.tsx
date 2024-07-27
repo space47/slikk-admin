@@ -27,6 +27,8 @@ const appsRoute: Routes = [
             header: 'Add New Division',
         },
     },
+
+    // ..........Order Management............................................................................................................
     {
         key: 'appsOrderManagement.orderList',
         path: `${APP_PREFIX_PATH}/orders`,
@@ -41,11 +43,44 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/sales/OrderDetails')),
         authority: [ADMIN, USER],
     },
+
+    // SELLERS................................................................................................................
+
+    {
+        key: 'appsOrgManagement.sellers',
+        path: `${APP_PREFIX_PATH}/sellers`,
+        component: lazy(
+            () => import('@/views/org-management/sellers/Seller'), //p1
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.stores',
+        path: `${APP_PREFIX_PATH}/stores`,
+        component: lazy(() => import('@/views/org-management/stores/Stores')), //p2
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.users',
+        path: `${APP_PREFIX_PATH}/users`,
+        component: lazy(() => import('@/views/org-management/users/Users')), //p3
+        authority: [ADMIN, USER],
+    },
+
+    // .......................................................................................................................
     {
         key: 'appsCategory.uploadCatalog',
         path: `${APP_PREFIX_PATH}/catalog/upload`,
         component: lazy(
             () => import('@/views/category-management/catalog/BulkUpload'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.products',
+        path: `${APP_PREFIX_PATH}/catalog/products`,
+        component: lazy(
+            () => import('@/views/category-management/catalog/Products'),
         ),
         authority: [ADMIN, USER],
     },
@@ -80,6 +115,17 @@ const appsRoute: Routes = [
             () =>
                 import(
                     '@/views/inventory-management/quality-check/QCbulkupload'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.stock_overview',
+        path: `${APP_PREFIX_PATH}/stockOverview`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/inventory-management/stock-overview/StockOverview'
                 ),
         ),
         authority: [ADMIN, USER],

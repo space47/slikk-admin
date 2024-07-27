@@ -19,6 +19,7 @@ import Textarea from '@/views/ui-components/forms/Input/Textarea'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useState } from 'react'
 import axios from 'axios'
+import { notification } from 'antd'
 
 type FormModel = {
     select: string
@@ -30,14 +31,15 @@ type FormModel = {
     document_number: string
     company: number
     received_by: string
-    document_date: string
+    document_date: Date | null
     origin_address: string
     received_address: string
     slikk_owned: boolean
-    total_sku: number
-    total_quantity: number
-    document: string
+    total_sku: number | null
+    total_quantity: number | null
+    document: File[]
     images: string
+    image: File[]
 }
 
 const MIN_UPLOAD = 1
@@ -48,43 +50,52 @@ const initialValue: FormModel = {
     date: null,
     time: null,
     singleCheckbox: false,
-    files: [],
     file_type: '',
     document_number: '',
     company: 1,
+    files: [],
     received_by: '',
-    document_date: '',
+    document_date: null,
     origin_address: '',
     received_address: '',
     slikk_owned: false,
-    total_sku: 0,
-    total_quantity: 0,
-    document: '',
+    total_sku: null,
+    total_quantity: null,
+    document: [],
     images: '',
+    image: [],
 }
 
+// Validation
+
 const validationSchema = Yup.object().shape({
-    input: Yup.string()
+    document_number: Yup.string()
         .min(3, 'Too Short!')
-        .max(20, 'Too Long!')
-        .required('Please input user name!'),
-    select: Yup.string().required('Please select one!'),
-    multipleSelect: Yup.array().min(1, 'At least one is selected!'),
-    date: Yup.date().required('Date Required!').nullable(),
-    time: Yup.date().required('Time Required!').nullable(),
-    singleCheckbox: Yup.boolean().oneOf([true], 'You must tick this!'),
-    multipleCheckbox: Yup.array().min(1, 'Select at least one option!'),
-    radio: Yup.string().required('Please select one!'),
-    switcher: Yup.boolean().oneOf([true], 'You must turn this on!'),
+        .required('Please Enter the details!'),
+    // select: Yup.string().required('Please select one!'),
+    // multipleSelect: Yup.array().min(1, 'At least one is selected!'),
+
+    document_date: Yup.date().required('Date Required!'),
+    origin_address: Yup.string().required('Supplier Address Required'),
+    received_address: Yup.string().required('Receiver Address Required'),
+    // time: Yup.date().required('Time Required!').nullable(),
+    slikk_owned: Yup.boolean().oneOf([true], 'You must tick this!'),
+    total_sku: Yup.string().required('SKU Required'),
+    total_quantity: Yup.string().required('Quantity Required'),
+    received_by: Yup.string().required('Phone Number Required'),
+
+    // radio: Yup.string().required('Please select one!'),
+    // switcher: Yup.boolean().oneOf([true], 'You must turn this on!'),
     upload: Yup.array().min(MIN_UPLOAD, 'At least one file uploaded!'),
-    segment: Yup.array().min(1, 'Select at least one option!'),
+    // segment: Yup.array().min(1, 'Select at least one option!'),
     fileType: Yup.string().required('Please input file type!'),
 })
 
 const MixedFormControl = () => {
     const [datas, setDatas] = useState()
-    const [imagview, setImageView] = useState()
-    // const [showImage, setShowImage] =
+    const [imagview, setImageView] = useState<string>('')
+    const [showData, setShowData] = useState(false)
+    const [showImage, setShowImage] = useState(false)
 
     console.log(datas)
     console.log(imagview)
@@ -123,13 +134,13 @@ const MixedFormControl = () => {
 
     const handleUpload = async (files: File[]) => {
         const formData = new FormData()
-
+        console.log('fiiiles', files)
         files.forEach((file) => {
-            formData.append('files', file)
+            formData.append('file', file)
         })
         formData.append('file_type', 'grn')
         try {
-            console.log(formData.get('files'))
+            console.log(formData.get('file'))
             const response = await axios.post(
                 'fileupload/dashboard',
                 formData,
@@ -142,10 +153,21 @@ const MixedFormControl = () => {
             console.log(response)
             const newData = response.data.url
             setDatas(newData)
-            alert('Files uploaded successfully')
-        } catch (error) {
+            setShowData(true)
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message || 'File uploaded successfully',
+            })
+            return newData
+        } catch (error: any) {
             console.error('Error uploading files:', error)
-            alert('Failed to upload files')
+            notification.error({
+                message: 'Failure',
+                description:
+                    error?.response?.data?.message || 'File Not uploaded',
+            })
+            return 'Error'
         }
     }
 
@@ -171,22 +193,66 @@ const MixedFormControl = () => {
             console.log(response)
             const newData = response.data.url
             setImageView(newData)
-            alert('Image uploaded successfully')
-        } catch (error) {
+            console.log(newData)
+            setShowImage(true)
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message || 'Image uploaded successfully',
+            })
+            return newData
+        } catch (error: any) {
             console.error('Error uploading files:', error)
-            alert('Failed to upload Image')
+            notification.error({
+                message: 'Failure',
+                description:
+                    error?.response?.data?.message || 'File Not uploaded',
+            })
+            return 'Error'
         }
     }
 
     const handleSubmit = async (values: FormModel) => {
+        console.log('handleSubmit')
+        const docsUpload = await handleUpload(values.files)
+
+        if (docsUpload === 'Error') {
+            return
+        }
+        const imageUpload = await handleimage(values.image)
+        if (imageUpload === 'Error') {
+            return
+        }
+
+        console.log('Dataas', docsUpload)
+        console.log('Immage', imageUpload)
+        const formData = {
+            ...values,
+            document: docsUpload,
+            images: imageUpload,
+        }
+
+        console.log('formDaata', formData)
+
         try {
-            const response = await axioisInstance.post('goods/received', values)
+            const response = await axioisInstance.post(
+                'goods/received',
+                formData,
+            )
 
             console.log(response)
-            alert('Form submitted successfully')
-        } catch (error) {
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message || 'GRN created Successfully',
+            })
+        } catch (error: any) {
             console.error('Error submitting form:', error)
-            alert('Failed to submit form')
+            notification.error({
+                message: 'Failure',
+                description:
+                    error?.response?.data?.message || 'GRN not created ',
+            })
         }
     }
 
@@ -223,11 +289,17 @@ const MixedFormControl = () => {
                                 <FormItem
                                     asterisk
                                     label="Date"
-                                    invalid={errors.date && touched.date}
-                                    errorMessage={errors.date}
+                                    invalid={
+                                        errors.document_date &&
+                                        touched.document_date
+                                    }
+                                    errorMessage={errors.document_date}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="date" placeholder="Date">
+                                    <Field
+                                        name="document_date"
+                                        placeholder="Date"
+                                    >
                                         {({
                                             field,
                                             form,
@@ -235,8 +307,9 @@ const MixedFormControl = () => {
                                             <DatePicker
                                                 field={field}
                                                 form={form}
-                                                value={values.date}
+                                                value={values.document_date}
                                                 onChange={(date) => {
+                                                    console.log(field.name)
                                                     form.setFieldValue(
                                                         field.name,
                                                         date,
@@ -349,9 +422,9 @@ const MixedFormControl = () => {
                                     <FormItem
                                         label=""
                                         invalid={Boolean(
-                                            errors.files && touched.files,
+                                            errors.document && touched.document,
                                         )}
-                                        errorMessage={errors.files as string}
+                                        errorMessage={errors.document as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="document">
@@ -364,22 +437,30 @@ const MixedFormControl = () => {
                                                         beforeUpload={
                                                             beforeUpload
                                                         }
-                                                        fileList={values.files} // uploadedd the file
-                                                        onChange={(files) =>
-                                                            form.setFileValue(
+                                                        fileList={
+                                                            values.document
+                                                        } // uploadedd the file
+                                                        onChange={(files) => {
+                                                            console.log(
+                                                                'OnchangeFiles',
+                                                                files,
                                                                 field.name,
+                                                                values.document,
+                                                            )
+                                                            form.setFieldValue(
+                                                                'files',
                                                                 files,
                                                             )
-                                                        }
+                                                        }}
                                                         onFileRemove={(files) =>
-                                                            form.setFileValue(
-                                                                field.name,
+                                                            form.setFieldValue(
+                                                                'files',
                                                                 files,
                                                             )
                                                         }
                                                         // uploadButtonText="Add Files"
                                                     />
-                                                    <Button
+                                                    {/* <Button
                                                         type="button"
                                                         className="mt-2"
                                                         onClick={() =>
@@ -393,11 +474,17 @@ const MixedFormControl = () => {
                                                         // }
                                                     >
                                                         Upload Docs
-                                                    </Button>
+                                                    </Button> */}
                                                 </>
                                             )}
                                         </Field>
                                     </FormItem>
+                                    {showData && (
+                                        <>
+                                            <p>{datas}</p>
+                                        </>
+                                    )}
+                                    <br />
                                 </FormContainer>
 
                                 <FormItem
@@ -437,35 +524,35 @@ const MixedFormControl = () => {
                                     >
                                         <Field name="images">
                                             {({
-                                                field,
                                                 form,
                                             }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
+                                                        multiple
                                                         beforeUpload={
                                                             beforeUpload
                                                         }
-                                                        fileList={values.files}
+                                                        fileList={values.image}
                                                         onChange={(files) =>
-                                                            form.setImageValue(
-                                                                field.name,
+                                                            form.setFieldValue(
+                                                                'image',
                                                                 files,
                                                             )
                                                         }
                                                         onFileRemove={(files) =>
-                                                            form.setImageValue(
-                                                                field.name,
+                                                            form.setFieldValue(
+                                                                'image',
                                                                 files,
                                                             )
                                                         }
                                                         // uploadButtonText="Add Files"
                                                     />
-                                                    <Button
+                                                    {/* <Button
                                                         className="mt-2"
                                                         type="button"
                                                         onClick={() =>
                                                             handleimage(
-                                                                values.files,
+                                                                values.image,
                                                             )
                                                         }
 
@@ -474,11 +561,18 @@ const MixedFormControl = () => {
                                                         // }
                                                     >
                                                         Upload Image
-                                                    </Button>
+                                                    </Button> */}
                                                 </>
                                             )}
                                         </Field>
                                     </FormItem>
+                                    {showImage && (
+                                        <>
+                                            <p>{imagview}</p>
+                                        </>
+                                    )}
+                                    <br />
+                                    <br />
                                 </FormContainer>
 
                                 <FormItem
