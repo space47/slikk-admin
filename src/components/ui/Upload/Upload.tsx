@@ -69,7 +69,7 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
             </Notification>,
             {
                 placement: 'top-center',
-            }
+            },
         )
     }
 
@@ -141,7 +141,7 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
         if (!draggable && !children) {
             return (
                 <Button disabled={disabled} onClick={(e) => e.preventDefault()}>
-                    Upload
+                    + Add Files
                 </Button>
             )
         }
@@ -185,12 +185,12 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
         draggable && !disabled && `hover:${draggableEventFeedbackClass}`,
         draggable && disabled && 'disabled',
         dragOver && draggableEventFeedbackClass,
-        className
+        className,
     )
 
     const uploadInputClass = classNames(
         'upload-input',
-        draggable && `draggable`
+        draggable && `draggable`,
     )
 
     return (
