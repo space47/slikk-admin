@@ -53,7 +53,7 @@ const QCUploader = () => {
             setFile(null)
         } catch (error) {
             console.error('File upload error:', error)
-            notification.success({
+            notification.error({
                 message: 'failure',
                 description: 'File upload failed',
             })

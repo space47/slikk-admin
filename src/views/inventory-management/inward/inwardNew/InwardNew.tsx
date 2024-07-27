@@ -20,6 +20,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useState } from 'react'
 import axios from 'axios'
 import { notification } from 'antd'
+import { useNavigate } from 'react-router-dom'
 
 type FormModel = {
     select: string
@@ -68,34 +69,36 @@ const initialValue: FormModel = {
 
 // Validation
 
-const validationSchema = Yup.object().shape({
-    document_number: Yup.string()
-        .min(3, 'Too Short!')
-        .required('Please Enter the details!'),
-    // select: Yup.string().required('Please select one!'),
-    // multipleSelect: Yup.array().min(1, 'At least one is selected!'),
+// const validationSchema = Yup.object().shape({
+//     document_number: Yup.string()
+//         .min(3, 'Too Short!')
+//         .required('Please Enter the details!'),
+//     // select: Yup.string().required('Please select one!'),
+//     // multipleSelect: Yup.array().min(1, 'At least one is selected!'),
 
-    document_date: Yup.date().required('Date Required!'),
-    origin_address: Yup.string().required('Supplier Address Required'),
-    received_address: Yup.string().required('Receiver Address Required'),
-    // time: Yup.date().required('Time Required!').nullable(),
-    slikk_owned: Yup.boolean().oneOf([true], 'You must tick this!'),
-    total_sku: Yup.string().required('SKU Required'),
-    total_quantity: Yup.string().required('Quantity Required'),
-    received_by: Yup.string().required('Phone Number Required'),
+//     document_date: Yup.date().required('Date Required!'),
+//     // origin_address: Yup.string().required('Supplier Address Required'),
+//     // received_address: Yup.string().required('Receiver Address Required'),
+//     // time: Yup.date().required('Time Required!').nullable(),
+//     slikk_owned: Yup.boolean().oneOf([true], 'You must tick this!'),
+//     total_sku: Yup.string().required('SKU Required'),
+//     total_quantity: Yup.string().required('Quantity Required'),
+//     received_by: Yup.string().required('Phone Number Required'),
 
-    // radio: Yup.string().required('Please select one!'),
-    // switcher: Yup.boolean().oneOf([true], 'You must turn this on!'),
-    upload: Yup.array().min(MIN_UPLOAD, 'At least one file uploaded!'),
-    // segment: Yup.array().min(1, 'Select at least one option!'),
-    fileType: Yup.string().required('Please input file type!'),
-})
+//     // radio: Yup.string().required('Please select one!'),
+//     // switcher: Yup.boolean().oneOf([true], 'You must turn this on!'),
+//     upload: Yup.array().min(MIN_UPLOAD, 'At least one file uploaded!'),
+//     // segment: Yup.array().min(1, 'Select at least one option!'),
+//     fileType: Yup.string().required('Please input file type!'),
+// })
 
 const MixedFormControl = () => {
     const [datas, setDatas] = useState()
     const [imagview, setImageView] = useState<string>('')
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
+
+    const navigate = useNavigate()
 
     console.log(datas)
     console.log(imagview)
@@ -246,6 +249,7 @@ const MixedFormControl = () => {
                 description:
                     response?.data?.message || 'GRN created Successfully',
             })
+            navigate('/app/goods/received')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -261,7 +265,7 @@ const MixedFormControl = () => {
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
-                validationSchema={validationSchema}
+                // validationSchema={validationSchema}
                 // ONSUBMIT LOGICCCCCCC....................................................................................................
                 onSubmit={handleSubmit}
             >

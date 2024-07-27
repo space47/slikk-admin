@@ -21,7 +21,7 @@ type TableData = {
     document: string
     document_date: string
     document_number: string
-    images: string[]
+    images: string
     last_updated_by: {
         name: string
         mobile: string
@@ -96,6 +96,11 @@ const PaginationTable = () => {
         console.log('done', document_number)
 
         navigate(`/app/goods/received/${company}/${document_number}`)
+    }
+    const getFirstImageUrl = (images: string): string => {
+        if (images.length === 0) return ''
+        const img = images.split(',')
+        return img[0] || ''
     }
 
     const columns = useMemo<ColumnDef<TableData>[]>(

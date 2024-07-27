@@ -86,7 +86,7 @@ const Products = () => {
     }, [page, pageSize])
 
     const getFirstImageUrl = (images: string) => {
-        const img = images.split(',')
+        const img = images.length > 0 ? images.split(',') : ''
         return img[0]
     }
 

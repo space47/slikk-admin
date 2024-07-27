@@ -13,6 +13,7 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
 
 // type ProductVariant = {
 //     name: string
@@ -201,9 +202,10 @@ const Seller = () => {
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
     }
+    const navigate = useNavigate()
 
-    const handleGRN = () => {
-        console.log('done')
+    const handleSeller = () => {
+        navigate('/app/sellers/addnew')
     }
 
     return (
@@ -211,7 +213,7 @@ const Seller = () => {
             <div className="flex items-end justify-end mb-2">
                 <button
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleGRN}
+                    onClick={handleSeller}
                 >
                     ADD NEW
                 </button>{' '}
