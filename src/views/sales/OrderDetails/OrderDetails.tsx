@@ -134,7 +134,7 @@ const OrderDetails = () => {
     }, [invoice_id])
 
     return (
-        <Container className="h-full">
+        <Container className="h-auto w-auto">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>

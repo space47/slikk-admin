@@ -65,7 +65,7 @@ const Products = () => {
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('') //1
+    const [globalFilter, setGlobalFilter] = useState('')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {

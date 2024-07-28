@@ -93,6 +93,39 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCategory.subCategory',
+        path: `${APP_PREFIX_PATH}/category/subCategory`,
+        component: lazy(
+            () => import('@/views/category-management/subCategory/Subcategory'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.subCategory',
+        path: `${APP_PREFIX_PATH}/category/subCategory/addNew`,
+        component: lazy(
+            () =>
+                import('@/views/category-management/subCategory/subNew/SubNew'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.productType',
+        path: `${APP_PREFIX_PATH}/category/productType`,
+        component: lazy(
+            () => import('@/views/category-management/productType/ProductType'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.brand',
+        path: `${APP_PREFIX_PATH}/category/brand`,
+        component: lazy(
+            () => import('@/views/category-management/brand/Brand'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsInventoryManagement.inwards',
         path: `${APP_PREFIX_PATH}/goods/received`,
         component: lazy(

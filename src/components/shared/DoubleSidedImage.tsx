@@ -21,12 +21,7 @@ const DoubleSidedImage = ({
     const mode = useAppSelector((state) => state.theme.mode)
 
     return (
-        <img
-            src={mode === MODE_DARK ? darkModeSrc : src}
-            alt={alt}
-            {...rest}
-            className="w-[10px] h-[10px]"
-        />
+        <img src={mode === MODE_DARK ? darkModeSrc : src} alt={alt} {...rest} />
     )
 }
 

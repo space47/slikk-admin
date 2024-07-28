@@ -21,7 +21,7 @@ export interface ButtonProps
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void
     shape?: TypeAttributes.Shape
     size?: TypeAttributes.Size
-    variant?: 'solid' | 'twoTone' | 'plain' | 'default'
+    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new'
 }
 
 type ButtonColor = {
@@ -59,7 +59,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
     const buttonColorLevel = splitedColor[1] || primaryColorLevel
 
     const [increaseLevel, decreaseLevel] = useColorLevel(
-        buttonColorLevel as ColorLevel
+        buttonColorLevel as ColorLevel,
     )
 
     const getButtonSize = () => {
@@ -70,7 +70,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                     `h-${CONTROL_SIZES.lg}`,
                     icon && !children
                         ? `w-${CONTROL_SIZES.lg} ${sizeIconClass} text-2xl`
-                        : 'px-8 py-2 text-base'
+                        : 'px-8 py-2 text-base',
                 )
                 break
             case SIZES.SM:
@@ -78,7 +78,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                     `h-${CONTROL_SIZES.sm}`,
                     icon && !children
                         ? `w-${CONTROL_SIZES.sm} ${sizeIconClass} text-lg`
-                        : 'px-3 py-2 text-sm'
+                        : 'px-3 py-2 text-sm',
                 )
                 break
             case SIZES.XS:
@@ -86,7 +86,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                     `h-${CONTROL_SIZES.xs}`,
                     icon && !children
                         ? `w-${CONTROL_SIZES.xs} ${sizeIconClass} text-base`
-                        : 'px-3 py-1 text-xs'
+                        : 'px-3 py-1 text-xs',
                 )
                 break
             default:
@@ -94,7 +94,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                     `h-${CONTROL_SIZES.md}`,
                     icon && !children
                         ? `w-${CONTROL_SIZES.md} ${sizeIconClass} text-xl`
-                        : 'px-8 py-2'
+                        : 'px-8 py-2',
                 )
                 break
         }
@@ -127,6 +127,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 ? ''
                 : `hover:bg-${buttonColor}-100 dark:hover:bg-${buttonColor}-500 dark:hover:bg-opacity-30`,
             activeColor: `active:bg-${buttonColor}-200 dark:active:bg-${buttonColor}-500 dark:active:bg-opacity-40`,
+        }
+        return getBtnColor(btn)
+    }
+    const newColor = () => {
+        const btn = {
+            bgColor: active
+                ? `bg-gray-100 border border-gray-300 dark:bg-gray-500 dark:border-gray-500`
+                : `bg-black border border-gray-800 dark:bg-black dark:border-gray-700`,
+            textColor: `text-white dark:text-white`,
+            hoverColor: active
+                ? `hover:bg-gray-200 dark:hover:bg-gray-600`
+                : `hover:bg-gray-900 dark:hover:bg-gray-800`,
+            activeColor: `active:bg-gray-300 dark:active:bg-gray-700 dark:active:border-gray-600`,
         }
         return getBtnColor(btn)
     }
@@ -176,6 +189,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 return plainColor()
             case 'default':
                 return defaultColor()
+            case 'new':
+                return newColor()
             default:
                 return defaultColor()
         }
@@ -187,7 +202,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         `radius-${shape}`,
         getButtonSize(),
         className,
-        block ? 'w-full' : ''
+        block ? 'w-full' : '',
     )
 
     const handleClick = (e: MouseEvent<HTMLButtonElement>) => {

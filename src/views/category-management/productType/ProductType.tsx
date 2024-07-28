@@ -9,35 +9,29 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
+    useGlobalFilter,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 
-type TableData = {
+type Product = {
     id: number
-    company: number
+    name: string
+    sub_category_name: string
+    title: string
+    description: string
+    image: string
+    footer: string | null
+    quick_filter_tags: string
+    position: number
+    gender: string
+    is_active: boolean
     create_date: string
-    document_url: string
-    document_date: string
-    document_number: string
-    images: string
-    last_updated_by: {
-        name: string
-        mobile: string
-    }
-    received_address: string
-    received_by: {
-        name: string
-        mobile: string
-    }
-    slikk_owned: boolean
-    store: number
-    total_quantity: number
-    total_sku: number
     update_date: string
-    grn_number: string
-    action: React.ReactNode
+    is_try_and_buy: boolean
+    sub_category: number
+    last_updated_by: string | null
 }
 
 type Option = {
@@ -54,19 +48,20 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const PaginationTable = () => {
-    const [data, setData] = useState<TableData[]>([])
+const ProductType = () => {
+    const [data, setData] = useState<Product[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [globalFilter, setGlobalFilter] = useState('') //1
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `goods/received?p=${page}&page_size=${pageSize}`,
+                `product-type?p=${page}&page_size=${pageSize}`,
             )
-            const data = response.data.data.results // Adjusted for your API response
-            const total = response.data.data.count // Adjusted for your API response
+            const data = response.data.data
+            const total = response.data.total
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -78,55 +73,15 @@ const PaginationTable = () => {
         fetchData(page, pageSize)
     }, [page, pageSize])
 
-    const getowner = (own: any) => {
-        if (own === true) {
-            return 'Yes'
-        } else {
-            return 'No'
-        }
-    }
-    // const extractFileName = (uploadedFile: any) => {
-    //     const parts = uploadedFile.split('/')
-    //     return parts[parts.length - 1]
-    // }
-    // const extractErrorName = (uploadedFile: any) => {
-    //     const parts = uploadedFile.split('/')
-    //     return parts[parts.length - 1]
-    // }
-    const handleGRNClick = (document_number: any, company: any) => {
-        console.log('done', document_number)
-
-        navigate(`/app/goods/received/${company}/${document_number}`) // Note : here the document_number is actually grn number
-        //
-    }
-    const getFirstImageUrl = (images: string): string => {
-        if (images.length === 0) return ''
-        const img = images.split(',')
-        return img[0] || ''
+    const handleActionClick = (id: any) => {
+        console.log('OK', id)
     }
 
-    const columns = useMemo<ColumnDef<TableData>[]>(
+    const columns = useMemo<ColumnDef<Product>[]>(
         () => [
             {
-                header: 'GRN Number',
-                accessorKey: 'grn_number', // Ensure this key matches your data structure
-                cell: ({ row }) => (
-                    <div
-                        onClick={() =>
-                            handleGRNClick(
-                                row.original.grn_number,
-                                row.original.company,
-                            )
-                        }
-                        className="cursor-pointer bg-gray-200 px-4 py-3 rounded-md text-black font-semibold"
-                    >
-                        {row.original.grn_number}
-                    </div>
-                ),
-            },
-            {
-                header: 'Document Number',
-                accessorKey: 'document_number',
+                header: 'Name',
+                accessorKey: 'name',
                 cell: (info) => info.getValue(),
             },
             {
@@ -135,62 +90,72 @@ const PaginationTable = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Document url',
-                accessorKey: 'document_url',
+                header: 'Title',
+                accessorKey: 'title',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Document Date',
-                accessorKey: 'document_date',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'Images',
-                accessorKey: 'images',
+                header: 'Description',
+                accessorKey: 'description',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Updated By',
-                accessorKey: 'last_updated_by.name',
+                header: 'Image',
+                accessorKey: 'image',
+                cell: (info) => (
+                    <img
+                        src={info.getValue() as string}
+                        alt="product"
+                        width="50"
+                    />
+                ),
+            },
+            {
+                header: 'Footer',
+                accessorKey: 'footer',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Received At',
-                accessorKey: 'received_address',
+                header: 'Quick Filter Tags',
+                accessorKey: 'quick_filter_tags',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Received By',
-                accessorKey: 'received_by.name',
+                header: 'Position',
+                accessorKey: 'position',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Slikk Owned',
-                accessorKey: 'slikk_owned',
-                cell: (info) => getowner(info.getValue()),
-            },
-            {
-                header: 'Total QTY',
-                accessorKey: 'total_quantity',
+                header: 'Gender',
+                accessorKey: 'gender',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Total SKU',
-                accessorKey: ' total_sku',
-                cell: (info) => info.getValue(),
+                header: 'Active',
+                accessorKey: 'is_active',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
             {
-                header: 'Updated On',
+                header: 'Update Date',
                 accessorKey: 'update_date',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Try and Buy',
+                accessorKey: 'is_try_and_buy',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+            {
+                header: 'Last Updated By',
+                accessorKey: 'last_updated_by',
                 cell: (info) => info.getValue(),
             },
             {
                 header: 'Action',
                 accessorKey: 'action',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        DOWNLOAD
+                    <Button onClick={() => handleActionClick(row.original)}>
+                        EDIT
                     </Button>
                 ),
             },
@@ -198,29 +163,26 @@ const PaginationTable = () => {
         [],
     )
 
-    const handleActionClick = (batchId: number) => {
-        // Implement action click handler
-        console.log(`Action clicked for batchId: ${batchId}`)
-    }
-
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize), // Ensure page count is updated
-        manualPagination: true, // Enable manual pagination
+        pageCount: Math.ceil(totalData / pageSize),
+        manualPagination: true,
         state: {
             pagination: {
                 pageIndex: page - 1,
                 pageSize: pageSize,
             },
+            globalFilter,
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1) // React Table uses zero-based index
+            setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
+        onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -230,24 +192,32 @@ const PaginationTable = () => {
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
     }
-
     const navigate = useNavigate()
 
-    const handleGRN = () => {
-        navigate('/app/goods/received/form')
+    const handleSeller = () => {
+        navigate('/app/sellers/addnew')
     }
 
     return (
         <div>
-            <div className="flex items-end justify-end mb-5">
+            <div className="flex items-end justify-end mb-2">
                 <button
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleGRN}
+                    onClick={handleSeller}
                 >
-                    ADD NEW GRN
+                    ADD NEW
                 </button>{' '}
                 <br />
                 <br />
+            </div>
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Search here"
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    className="p-2 border rounded"
+                />
             </div>
             <Table>
                 <THead>
@@ -302,4 +272,4 @@ const PaginationTable = () => {
     )
 }
 
-export default PaginationTable
+export default ProductType

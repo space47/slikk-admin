@@ -49,6 +49,7 @@ type grn_quality_check = {
 type inwardDetailsResponse = {
     company: number
     document_number: string
+    grn_number: string
     last_updated_by: {
         name: string
         email: string
@@ -64,7 +65,7 @@ type inwardDetailsResponse = {
         name: string
     }
     document_date: string
-    document: string
+    document_url: string
     total_quantity: number
     grn_quality_check: grn_quality_check[]
 }
@@ -74,14 +75,14 @@ const InwardDetails = () => {
 
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<inwardDetailsResponse>()
-
-    const { document_number, company } = useParams()
+    const [docval, setDocval] = useState()
+    const { document_number, grn_number } = useParams()
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
                 const response = await axioisInstance.get(
-                    `goods/received/${company}/${document_number}`,
+                    `goods/received?grn_number=${document_number}`,
                 )
 
                 const ordersData = response.data?.data || []
@@ -94,7 +95,20 @@ const InwardDetails = () => {
         }
 
         fetchOrders()
-    }, [document_number])
+    }, [grn_number])
+
+    const handleUrl = async (document_url: any) => {
+        try {
+            const response = await axioisInstance.get(
+                `file/presign?file_url=${document_url}`,
+            )
+            console.log('dooooocs', document_url)
+            const val = response.data?.data
+            window.open(val)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     return (
         <Container className="h-full">
@@ -105,13 +119,23 @@ const InwardDetails = () => {
                             <div className="flex flex-col  mb-2">
                                 <div>
                                     <h3>
-                                        <span>Order</span>
+                                        <span>GRN:</span>
                                         <span className="ltr:ml-2 rtl:mr-2">
-                                            #{data.document_number}
+                                            #{data.grn_number}
                                         </span>
                                     </h3>
                                     <div className="docs flex flex-col">
-                                        {data.document}
+                                        {data.document_number}
+                                        <div
+                                            className="cursor-pointer"
+                                            onClick={() =>
+                                                handleUrl(data.document_url)
+                                            }
+                                        >
+                                            <p className=" underline">
+                                                Document Url
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

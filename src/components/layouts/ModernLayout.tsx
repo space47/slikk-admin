@@ -8,6 +8,7 @@ import MobileNav from '@/components/template/MobileNav'
 import Search from '@/components/template/Search'
 import SideNav from '@/components/template/SideNav'
 import View from '@/views'
+import Infor from '../template/VerticalMenuContent/Infor'
 
 const HeaderActionsStart = () => {
     return (
@@ -15,6 +16,7 @@ const HeaderActionsStart = () => {
             <MobileNav />
             <SideNavToggle />
             <Search />
+            <Infor />
         </>
     )
 }

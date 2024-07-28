@@ -67,30 +67,28 @@ const initialValue: FormModel = {
     image: [],
 }
 
-// Validation
-
-// const validationSchema = Yup.object().shape({
-//     document_number: Yup.string()
-//         .min(3, 'Too Short!')
-//         .required('Please Enter the details!'),
-//     // select: Yup.string().required('Please select one!'),
-//     // multipleSelect: Yup.array().min(1, 'At least one is selected!'),
-
-//     document_date: Yup.date().required('Date Required!'),
-//     // origin_address: Yup.string().required('Supplier Address Required'),
-//     // received_address: Yup.string().required('Receiver Address Required'),
-//     // time: Yup.date().required('Time Required!').nullable(),
-//     slikk_owned: Yup.boolean().oneOf([true], 'You must tick this!'),
-//     total_sku: Yup.string().required('SKU Required'),
-//     total_quantity: Yup.string().required('Quantity Required'),
-//     received_by: Yup.string().required('Phone Number Required'),
-
-//     // radio: Yup.string().required('Please select one!'),
-//     // switcher: Yup.boolean().oneOf([true], 'You must turn this on!'),
-//     upload: Yup.array().min(MIN_UPLOAD, 'At least one file uploaded!'),
-//     // segment: Yup.array().min(1, 'Select at least one option!'),
-//     fileType: Yup.string().required('Please input file type!'),
-// })
+const validationSchema = Yup.object().shape({
+    document_number: Yup.string().required('Document Number is required'),
+    document_date: Yup.date().required('Document Date is required').nullable(),
+    origin_address: Yup.string()
+        .required('Supplier Address is required')
+        .transform((value) => value.trim()),
+    received_address: Yup.string()
+        .required('Receiver Address is required')
+        .transform((value) => value.trim()),
+    received_by: Yup.string()
+        .required('Received By is required')
+        .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
+    total_sku: Yup.number()
+        .required('Total SKUs is required')
+        .integer('Must be an integer'),
+    total_quantity: Yup.number()
+        .required('Total Quantity is required')
+        .integer('Must be an integer'),
+    singleCheckbox: Yup.boolean(),
+    // images: Yup.string().nullable(),
+    // document: Yup.string().nullable(),
+})
 
 const MixedFormControl = () => {
     const [datas, setDatas] = useState()
@@ -265,7 +263,7 @@ const MixedFormControl = () => {
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
-                // validationSchema={validationSchema}
+                validationSchema={validationSchema}
                 // ONSUBMIT LOGICCCCCCC....................................................................................................
                 onSubmit={handleSubmit}
             >
@@ -464,21 +462,6 @@ const MixedFormControl = () => {
                                                         }
                                                         // uploadButtonText="Add Files"
                                                     />
-                                                    {/* <Button
-                                                        type="button"
-                                                        className="mt-2"
-                                                        onClick={() =>
-                                                            handleUpload(
-                                                                values.files,
-                                                            )
-                                                        }
-
-                                                        // disabled={
-                                                        //     values.upload.length === 0
-                                                        // }
-                                                    >
-                                                        Upload Docs
-                                                    </Button> */}
                                                 </>
                                             )}
                                         </Field>
@@ -551,21 +534,6 @@ const MixedFormControl = () => {
                                                         }
                                                         // uploadButtonText="Add Files"
                                                     />
-                                                    {/* <Button
-                                                        className="mt-2"
-                                                        type="button"
-                                                        onClick={() =>
-                                                            handleimage(
-                                                                values.image,
-                                                            )
-                                                        }
-
-                                                        // disabled={
-                                                        //     values.upload.length === 0
-                                                        // }
-                                                    >
-                                                        Upload Image
-                                                    </Button> */}
                                                 </>
                                             )}
                                         </Field>

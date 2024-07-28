@@ -1,10 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Filter from './filter'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { OrderItem } from './commontypes'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import {
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    flexRender,
+    useGlobalFilter,
+} from '@tanstack/react-table'
+import { rankItem } from '@tanstack/match-sorter-utils'
+import Table from '@/components/ui/Table'
+import Pagination from '@/components/ui/Pagination'
+import Select from '@/components/ui/Select'
 
-export interface Order {
+import type { FilterFn } from '@tanstack/react-table'
+import type { OrderItem } from './commontypes'
+
+interface Order {
     invoice_id: string
     create_date: string
     user: {
@@ -27,177 +41,181 @@ export interface Order {
     update_date: string
 }
 
-const headers = [
-    'Invoice Id',
-    'Order Date',
-    'Mobile Number',
-    'Customer Name',
-    'Store Address',
-    'Rating',
-    'Payment Mode',
-    'Total Items',
-    'Order Total',
-    'Status',
-    'Last Update',
+const { Tr, Th, Td, THead, TBody, Sorter } = Table
+
+const pageSizeOptions = [
+    { value: 10, label: '10 / page' },
+    { value: 25, label: '25 / page' },
+    { value: 50, label: '50 / page' },
+    { value: 100, label: '100 / page' },
 ]
 
 const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
-    const [filteredOrders, setFilteredOrders] = useState<Order[]>([])
-    const [sort, setSort] = useState<boolean>(true)
+    const [globalFilter, setGlobalFilter] = useState('')
+    const [pageSize, setPageSize] = useState(10)
+    const [page, setPage] = useState(1)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axioisInstance.get(
-                    `/merchant/orders?page_size=100`,
-                )
-                const ordersData = response.data?.data.results || []
-                setOrders(ordersData)
-                setFilteredOrders(ordersData)
-                console.log(response.data)
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        fetchOrders()
-    }, [])
-
-    const handleSearch = (invoiceId: string) => {
-        let filtered = orders
-
-        if (invoiceId) {
-            filtered = filtered.filter((order) =>
-                order.invoice_id.includes(invoiceId),
+    const fetchOrders = async (page: number, pageSize: number) => {
+        try {
+            const response = await axiosInstance.get(
+                `/merchant/orders?page=${page}&page_size=${pageSize}`,
             )
-        }
-
-        setFilteredOrders(filtered)
-    }
-
-    const handleSelectDateRange = () => {
-        console.log('Date range selection clicked')
-    }
-
-    const handleSort = (key: keyof Order) => {
-        const sortedOrders = [...filteredOrders].sort((a, b) => {
-            if (a[key] < b[key]) {
-                return sort ? -1 : 1
-            }
-            if (a[key] > b[key]) {
-                return sort ? 1 : -1
-            }
-            return 0
-        })
-        setSort(!sort)
-        setFilteredOrders(sortedOrders)
-    }
-
-    const getColumnKey = (heads: string): keyof Order => {
-        switch (heads) {
-            case 'Invoice Id':
-                return 'invoice_id'
-            case 'Order Date':
-                return 'create_date'
-            case 'Mobile Number':
-                return 'user'
-            case 'Store Code':
-                return 'store'
-            case 'Rating':
-                return 'rating'
-            // case 'Payment Mode':
-            //     return 'mode'
-            // case 'Total Items':
-            //     return 'totalItems'
-            case 'Order Total':
-                return 'amount'
-            case 'Status':
-                return 'status'
-            case 'Last Update':
-                return 'update_date'
-            default:
-                throw new Error('Unknown column')
+            const ordersData = response.data?.data.results || []
+            setOrders(ordersData)
+        } catch (error) {
+            console.error(error)
         }
     }
+
+    useEffect(() => {
+        fetchOrders(page, pageSize)
+    }, [page, pageSize])
+
+    const columns = useMemo(
+        () => [
+            {
+                header: 'Invoice Id',
+                accessorKey: 'invoice_id',
+                cell: ({ getValue }) => (
+                    <div
+                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                        onClick={() => handleInvoiceClick(getValue() as string)}
+                    >
+                        {getValue()}
+                    </div>
+                ),
+            },
+            { header: 'Order Date', accessorKey: 'create_date' },
+            { header: 'Mobile Number', accessorKey: 'user.mobile' },
+            { header: 'Customer Name', accessorKey: 'user.name' },
+            { header: 'Store Address', accessorKey: 'store.address' },
+            { header: 'Rating', accessorKey: 'rating' },
+            { header: 'Payment Mode', accessorKey: 'payment.mode' },
+            { header: 'Total Items', accessorKey: 'order_items.length' },
+            { header: 'Order Total', accessorKey: 'payment.amount' },
+            { header: 'Status', accessorKey: 'status' },
+            { header: 'Last Update', accessorKey: 'update_date' },
+        ],
+        [],
+    )
+
+    const table = useReactTable({
+        data: orders,
+        columns,
+        filterFns: {
+            fuzzy: fuzzyFilter,
+        },
+        state: {
+            globalFilter,
+            pagination: { pageIndex: page - 1, pageSize },
+        },
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: fuzzyFilter,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        manualPagination: true,
+        pageCount: Math.ceil(orders.length / pageSize),
+    })
 
     const handleInvoiceClick = (invoiceId: string) => {
         navigate(`/app/orders/${invoiceId}`)
     }
 
+    const onPaginationChange = (page: number) => {
+        setPage(page)
+    }
+
+    const onSelectChange = (value = 0) => {
+        setPageSize(Number(value))
+    }
+
     return (
         <div className="overflow-x-auto">
-            <Filter
-                onSearch={handleSearch}
-                onSelectDateRange={handleSelectDateRange}
-            />
-            <table className="min-w-full bg-white border-gray-300 border-0">
-                <thead>
-                    <tr>
-                        {headers.map((heads, key) => (
-                            <th key={key} className="py-2 px-2">
-                                <div
-                                    className="cursor-pointer"
-                                    onClick={() =>
-                                        handleSort(getColumnKey(heads))
-                                    }
-                                >
-                                    {heads.toUpperCase()}
-                                </div>
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredOrders.map((order, key) => (
-                        <tr key={key}>
-                            <td className="py-2 px-4 border-b">
-                                <div
-                                    className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                                    onClick={() =>
-                                        handleInvoiceClick(order.invoice_id)
-                                    }
-                                >
-                                    {order.invoice_id}
-                                </div>
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.create_date}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.user.mobile}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.user.name}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.store?.address}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.rating}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.payment?.mode}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.order_items.length}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.payment.amount}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.status}
-                            </td>
-                            <td className="py-2 px-4 border-b">
-                                {order.update_date}
-                            </td>
-                        </tr>
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Search here"
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    className="p-2 border rounded"
+                />
+            </div>
+            <Table>
+                <THead>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <Tr key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <Th key={header.id} colSpan={header.colSpan}>
+                                    {header.isPlaceholder ? null : (
+                                        <div
+                                            className={
+                                                header.column.getCanSort()
+                                                    ? 'cursor-pointer select-none'
+                                                    : ''
+                                            }
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext(),
+                                            )}
+                                            <Sorter
+                                                sort={header.column.getIsSorted()}
+                                            />
+                                        </div>
+                                    )}
+                                </Th>
+                            ))}
+                        </Tr>
                     ))}
-                </tbody>
-            </table>
+                </THead>
+                <TBody>
+                    {table.getRowModel().rows.map((row) => (
+                        <Tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <Td key={cell.id}>
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext(),
+                                    )}
+                                </Td>
+                            ))}
+                        </Tr>
+                    ))}
+                </TBody>
+            </Table>
+            <div className="flex items-center justify-between mt-4">
+                {/* <Pagination
+                    pageSize={pageSize}
+                    currentPage={page}
+                    total={orders.length}
+                    onChange={onPaginationChange}
+                /> */}
+                <div style={{ minWidth: 130 }}>
+                    <Select<Option>
+                        size="sm"
+                        isSearchable={false}
+                        value={pageSizeOptions.find(
+                            (option) => option.value === pageSize,
+                        )}
+                        options={pageSizeOptions}
+                        onChange={(option) => onSelectChange(option?.value)}
+                        className="flex justify-end"
+                    />
+                </div>
+            </div>
         </div>
     )
 }
 
 export default OrderList
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    const itemRank = rankItem(row.getValue(columnId), value)
+    addMeta({ itemRank })
+    return itemRank.passed
+}

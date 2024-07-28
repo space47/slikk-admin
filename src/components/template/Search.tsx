@@ -71,7 +71,7 @@ const ListItem = (props: {
                 className={classNames(
                     'flex items-center justify-between rounded-lg p-3.5 cursor-pointer user-select',
                     'bg-gray-50 dark:bg-gray-700/60 hover:bg-gray-100 dark:hover:bg-gray-700/90',
-                    !isLast && 'mb-3'
+                    !isLast && 'mb-3',
                 )}
             >
                 <div className="flex items-center">
@@ -79,7 +79,7 @@ const ListItem = (props: {
                         className={classNames(
                             'mr-4 rounded-md ring-1 ring-slate-900/5 shadow-sm text-xl group-hover:shadow h-6 w-6 flex items-center justify-center bg-white dark:bg-gray-700',
                             textTheme,
-                            'dark:text-gray-100'
+                            'dark:text-gray-100',
                         )}
                     >
                         {icon && navigationIcon[icon]}
@@ -89,7 +89,7 @@ const ListItem = (props: {
                             autoEscape
                             highlightClassName={classNames(
                                 textTheme,
-                                'underline bg-transparent font-semibold dark:text-white'
+                                'underline bg-transparent font-semibold dark:text-white',
                             )}
                             searchWords={[keyWord]}
                             textToHighlight={label}
@@ -131,6 +131,7 @@ const _Search = ({ className }: { className?: string }) => {
     const debounceFn = debounce(handleDebounceFn, 200)
 
     async function handleDebounceFn(query: string) {
+        console.log('Debounced search query:', query)
         if (!query) {
             setSearchResult(recommendedSearch)
             return
@@ -139,16 +140,25 @@ const _Search = ({ className }: { className?: string }) => {
         if (noResult) {
             setNoResult(false)
         }
-        const respond = await apiGetSearchResult<SearchResult[]>({ query })
-        if (respond.data) {
-            if (respond.data.length === 0) {
-                setNoResult(true)
+
+        try {
+            const respond = await apiGetSearchResult<SearchResult[]>({ query })
+            console.log('API response:', respond)
+
+            if (respond.data) {
+                if (respond.data.length === 0) {
+                    setNoResult(true)
+                }
+                setSearchResult(respond.data)
             }
-            setSearchResult(respond.data)
+        } catch (error) {
+            console.error('Error fetching search results:', error)
+            setNoResult(true)
         }
     }
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log('Search input:', e.target.value)
         debounceFn(e.target.value)
     }
 
@@ -214,9 +224,7 @@ const _Search = ({ className }: { className?: string }) => {
                             <div className="my-10 text-center text-lg">
                                 <span>No results for </span>
                                 <span className="heading-text">
-                                    {`'`}
-                                    {inputRef.current?.value}
-                                    {`'`}
+                                    a{inputRef.current?.value}b
                                 </span>
                             </div>
                         )}

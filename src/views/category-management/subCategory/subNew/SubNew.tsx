@@ -81,7 +81,7 @@ const SegmentOptions = () => {
     )
 }
 
-const AddSeller = () => {
+const SubNew = () => {
     const navigate = useNavigate()
 
     const handleSubmit = async (values: FormModel) => {
@@ -425,4 +425,4 @@ const AddSeller = () => {
     )
 }
 
-export default AddSeller
+export default SubNew
