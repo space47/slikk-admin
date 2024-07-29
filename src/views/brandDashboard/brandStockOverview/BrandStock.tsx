@@ -9,36 +9,32 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
+    useGlobalFilter,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 
-type TableData = {
-    id: number
-    company: number
-    create_date: string
-    document_url: string
-    document_date: string
-    document_number: string
-    images: string
-    last_updated_by: {
-        name: string
-        mobile: string
-    }
-    received_address: string
-    received_by: {
-        name: string
-        mobile: string
-    }
-    slikk_owned: boolean
+interface LastUpdatedBy {
+    name: string
+    mobile: string
+    email: string
+}
+
+interface Product {
+    product: number
     store: number
-    total_quantity: number
-    total_sku: number
+    quantity: number
+    last_updated_by: LastUpdatedBy
+    show_out_of_stock: boolean
+    is_active: boolean
+    offer_is_active: boolean
+    expiry_date: string
+    batch_number: string
+    create_date: string
     update_date: string
-    grn_number: string
-    action: React.ReactNode
+    grn: any
+    id: number
 }
 
 type Option = {
@@ -55,16 +51,18 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const PaginationTable = () => {
-    const [data, setData] = useState<TableData[]>([])
+const BrandStock = () => {
+    const [data, setData] = useState<Product[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [globalFilter, setGlobalFilter] = useState('')
+    // const [cid,setCId] = useState<Product>()
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `goods/received?p=${page}&page_size=${pageSize}`, // &company_id
+                `inventory?p=${page}&page_size=${pageSize}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -79,56 +77,73 @@ const PaginationTable = () => {
         fetchData(page, pageSize)
     }, [page, pageSize])
 
-    const getowner = (own: any) => {
-        if (own === true) {
+    const getUploadStatus = (is_active: any) => {
+        if (is_active == true) {
             return 'Yes'
         } else {
             return 'No'
         }
     }
 
-    const handleGRNClick = (document_number: any, company: any) => {
-        console.log('done', document_number)
-
-        navigate(`/app/goods/received/${company}/${document_number}`) // Note : here the document_number is actually grn number
-        //
-    }
-    // const getFirstImageUrl = (images: string): string => {
-    //     if (images.length === 0) return ''
-    //     const img = images.split(',')
-    //     return img[0] || ''
-    // }
-
-    const handleDocumentClick = (id: any) => {
-        console.log('ok', id)
-    }
-
-    const columns = useMemo<ColumnDef<TableData>[]>(
+    const columns = useMemo<ColumnDef<Product>[]>(
         () => [
             {
-                header: 'GRN Number',
-                accessorKey: 'grn_number', // Ensure this key matches your data structure
-                cell: ({ row }) => (
-                    <div
-                        onClick={() =>
-                            handleGRNClick(
-                                row.original.grn_number,
-                                row.original.company,
-                            )
-                        }
-                        className="cursor-pointer bg-gray-200 px-3 py-3 rounded-md text-black font-semibold"
-                    >
-                        {row.original.grn_number}
-                    </div>
-                ),
-            },
-            {
-                header: 'Document Number',
-                accessorKey: 'document_number',
+                header: 'Product ID',
+                accessorKey: 'product',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Create Date',
+                header: 'Store Number',
+                accessorKey: 'store',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QTY',
+                accessorKey: 'quantity',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Name',
+                accessorKey: 'last_updated_by.name',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Email',
+                accessorKey: 'last_updated_by.email',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Ph. No',
+                accessorKey: 'last_updated_by.mobile',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: ' In Stock',
+                accessorKey: 'show_out_of_stock',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+            {
+                header: 'Active',
+                accessorKey: 'is_active',
+                cell: (info) => getUploadStatus(info.getValue()),
+            },
+            {
+                header: 'Offer Active',
+                accessorKey: ' offer_is_active',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+            {
+                header: 'Expiry',
+                accessorKey: 'expiry_date',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Batch Num',
+                accessorKey: 'batch_number',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Created',
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => (
                     <span>
@@ -137,60 +152,7 @@ const PaginationTable = () => {
                 ),
             },
             {
-                header: 'Document url',
-                accessorKey: 'document_url',
-                cell: (info) => (
-                    <div
-                        onClick={() => handleDocumentClick(info.getValue())}
-                        style={{ cursor: 'pointer' }} // Optional: to indicate that the div is clickable
-                    >
-                        {info.getValue()}
-                    </div>
-                ),
-            },
-            {
-                header: 'Document Date',
-                accessorKey: 'document_date',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'Images',
-                accessorKey: 'images',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Updated By',
-                accessorKey: 'last_updated_by.name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Received At',
-                accessorKey: 'received_address',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Received By',
-                accessorKey: 'received_by.name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Slikk Owned',
-                accessorKey: 'slikk_owned',
-                cell: (info) => getowner(info.getValue()),
-            },
-            {
-                header: 'Total QTY',
-                accessorKey: 'total_quantity',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Total SKU',
-                accessorKey: 'total_sku',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Updated On',
+                header: 'Updated',
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => (
                     <span>
@@ -199,22 +161,13 @@ const PaginationTable = () => {
                 ),
             },
             {
-                header: 'Action',
-                accessorKey: 'action',
-                cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        DOWNLOAD
-                    </Button>
-                ),
+                header: 'GRN number',
+                accessorKey: 'grn',
+                cell: (info) => info.getValue(),
             },
         ],
         [],
     )
-
-    const handleActionClick = (batchId: number) => {
-        // Implement action click handler
-        console.log(`Action clicked for batchId: ${batchId}`)
-    }
 
     const table = useReactTable({
         data,
@@ -222,18 +175,20 @@ const PaginationTable = () => {
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize), // Ensure page count is updated
-        manualPagination: true, // Enable manual pagination
+        pageCount: Math.ceil(totalData / pageSize),
+        manualPagination: true,
         state: {
             pagination: {
                 pageIndex: page - 1,
                 pageSize: pageSize,
             },
+            globalFilter,
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1) // React Table uses zero-based index
+            setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
+        onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -244,23 +199,16 @@ const PaginationTable = () => {
         setPageSize(Number(value))
     }
 
-    const navigate = useNavigate()
-
-    const handleGRN = () => {
-        navigate('/app/goods/received/form')
-    }
-
     return (
         <div>
-            <div className="flex items-end justify-end mb-5">
-                <button
-                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleGRN}
-                >
-                    ADD NEW GRN
-                </button>{' '}
-                <br />
-                <br />
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Search here"
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    className="p-2 border rounded"
+                />
             </div>
             <Table>
                 <THead>
@@ -315,4 +263,4 @@ const PaginationTable = () => {
     )
 }
 
-export default PaginationTable
+export default BrandStock

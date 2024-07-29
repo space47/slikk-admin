@@ -13,27 +13,37 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import moment from 'moment'
 
-interface LastUpdatedBy {
+type ProductVariant = {
     name: string
-    mobile: string
-    email: string
+    variant_type: string
+    color_code_link: string
+    size: string[]
+    barcode: string
+    sku: string
+    mrp: string
+    sp: string
+    inventory_count: number
 }
 
-interface Product {
-    product: number
-    store: number
-    quantity: number
-    last_updated_by: LastUpdatedBy
-    show_out_of_stock: boolean
-    is_active: boolean
-    offer_is_active: boolean
-    expiry_date: string
-    batch_number: string
-    create_date: string
-    update_date: string
-    grn: any
+type Product = {
+    barcode: string
+    mrp: string
+    sp: string
+    name: string
+    brand: string
+    product_feedback: string | null
+    is_wish_listed: boolean
+    is_try_and_buy: boolean
+    trends: boolean
+    styles: any
+    inventory_count: number
+    image: string
+    division: string
+    category: string
+    sub_category: string
+    product_type: string
+    variants: ProductVariant[]
 }
 
 type Option = {
@@ -50,7 +60,7 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const StockOverview = () => {
+const brandCatalog = () => {
     const [data, setData] = useState<Product[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
@@ -60,10 +70,10 @@ const StockOverview = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}`,
+                `search/product?p=${page}&page_size=${pageSize}`,
             )
-            const data = response.data.data.results
-            const total = response.data.data.count
+            const data = response.data.results
+            const total = response.data.count
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -75,93 +85,97 @@ const StockOverview = () => {
         fetchData(page, pageSize)
     }, [page, pageSize])
 
-    const getUploadStatus = (is_active: any) => {
-        if (is_active == true) {
-            return 'Yes'
-        } else {
-            return 'No'
-        }
+    const getFirstImageUrl = (images: string) => {
+        const img = images.length > 0 ? images.split(',') : ''
+        return img[0]
+    }
+
+    const handleActionClick = (id: any) => {
+        console.log('OK', id)
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
             {
-                header: 'Product ID',
-                accessorKey: 'product',
+                header: 'Barcode',
+                accessorKey: 'barcode',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Store Number',
-                accessorKey: 'store',
+                header: 'Product Name',
+                accessorKey: 'name',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'QTY',
-                accessorKey: 'quantity',
+                header: 'Brand',
+                accessorKey: 'brand',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Name',
-                accessorKey: 'last_updated_by.name',
+                header: 'Image',
+                accessorKey: 'image',
+                cell: (info) => (
+                    <img
+                        src={getFirstImageUrl(info.getValue())}
+                        alt="Image"
+                        className="w-24 h-20 object-cover"
+                    />
+                ),
+            },
+            {
+                header: 'Price',
+                accessorKey: 'mrp',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Email',
-                accessorKey: 'last_updated_by.email',
+                header: 'Selling Price',
+                accessorKey: 'sp',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Ph. No',
-                accessorKey: 'last_updated_by.mobile',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: ' In Stock',
-                accessorKey: 'show_out_of_stock',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
+
             {
                 header: 'Active',
                 accessorKey: 'is_active',
-                cell: (info) => getUploadStatus(info.getValue()),
-            },
-            {
-                header: 'Offer Active',
-                accessorKey: ' offer_is_active',
                 cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
             {
-                header: 'Expiry',
-                accessorKey: 'expiry_date',
+                header: 'Division',
+                accessorKey: 'division',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Batch Num',
-                accessorKey: 'batch_number',
+                header: 'Category',
+                accessorKey: 'category',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Created',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
+                header: 'Sub Category',
+                accessorKey: 'sub_category',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Product Type',
+                accessorKey: 'product_type',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Try_&_Buy',
+                accessorKey: 'is_try_and_buy',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+            {
+                header: 'Trends',
+                accessorKey: 'trends',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+            {
+                header: 'Action',
+                accessorKey: 'action',
+                cell: ({ row }) => (
+                    <Button onClick={() => handleActionClick(row.original)}>
+                        EDIT
+                    </Button>
                 ),
-            },
-            {
-                header: 'Updated',
-                accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
-            },
-            {
-                header: 'GRN number',
-                accessorKey: 'grn',
-                cell: (info) => info.getValue(),
             },
         ],
         [],
@@ -261,4 +275,4 @@ const StockOverview = () => {
     )
 }
 
-export default StockOverview
+export default brandCatalog

@@ -75,6 +75,36 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
 
+    //   Brand dashBoared.........................................................................................
+
+    {
+        key: 'appsVendorManagement.users',
+        path: `${APP_PREFIX_PATH}/vendor/users`,
+        component: lazy(() => import('@/views/brandDashboard/brandUser/User')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.catalog',
+        path: `${APP_PREFIX_PATH}/vendor/catalog`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/brandDashboard/brandCatalogOverview/brandcatalog'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appsVendorManagement.stockOverview',
+        path: `${APP_PREFIX_PATH}/vendor/stock`,
+        component: lazy(
+            () =>
+                import('@/views/brandDashboard/brandStockOverview/BrandStock'),
+        ),
+        authority: [ADMIN, USER],
+    },
+
     // .......................................................................................................................
     {
         key: 'appsCategory.uploadCatalog',

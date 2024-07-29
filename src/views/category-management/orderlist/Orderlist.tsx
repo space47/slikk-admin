@@ -14,7 +14,7 @@ import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-
+import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
 import type { OrderItem } from './commontypes'
 
@@ -87,7 +87,13 @@ const OrderList = () => {
                     </div>
                 ),
             },
-            { header: 'Order Date', accessorKey: 'create_date' },
+            {
+                header: 'Order Date',
+                accessorKey: 'create_date',
+                cell: ({ getValue }) => (
+                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                ),
+            },
             { header: 'Mobile Number', accessorKey: 'user.mobile' },
             { header: 'Customer Name', accessorKey: 'user.name' },
             { header: 'Store Address', accessorKey: 'store.address' },
@@ -96,7 +102,13 @@ const OrderList = () => {
             { header: 'Total Items', accessorKey: 'order_items.length' },
             { header: 'Order Total', accessorKey: 'payment.amount' },
             { header: 'Status', accessorKey: 'status' },
-            { header: 'Last Update', accessorKey: 'update_date' },
+            {
+                header: 'Last Update',
+                accessorKey: 'update_date',
+                cell: ({ getValue }) => (
+                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                ),
+            },
         ],
         [],
     )

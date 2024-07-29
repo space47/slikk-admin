@@ -13,10 +13,14 @@ import Infor from '../template/VerticalMenuContent/Infor'
 const HeaderActionsStart = () => {
     return (
         <>
-            <MobileNav />
-            <SideNavToggle />
-            <Search />
-            <Infor />
+            <div className="flex ">
+                <MobileNav />
+                <SideNavToggle />
+                <Search />
+                <div className="text-xl ">
+                    <Infor />
+                </div>
+            </div>
         </>
     )
 }

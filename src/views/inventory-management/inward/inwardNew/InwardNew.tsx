@@ -21,6 +21,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import Infor from '@/components/template/VerticalMenuContent/Infor'
 
 type FormModel = {
     select: string

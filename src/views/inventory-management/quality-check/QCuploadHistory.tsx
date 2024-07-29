@@ -12,6 +12,7 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import moment from 'moment'
 
 type TableData = {
     uploadDate: string
@@ -83,7 +84,9 @@ const PaginationTable = () => {
             {
                 header: 'Upload Date',
                 accessorKey: 'create_date',
-                cell: (info) => info.getValue(),
+                cell: ({ getValue }) => (
+                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                ),
             },
             {
                 header: 'File name',

@@ -14,6 +14,7 @@ import {
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
+import moment from 'moment'
 
 // type ProductVariant = {
 //     name: string
@@ -106,7 +107,11 @@ const Seller = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: (info) => info.getValue(),
+                cell: ({ getValue }) => (
+                    <span>
+                        {moment(getValue() as string).format('YYYY-MM-DD')}
+                    </span>
+                ),
             },
             {
                 header: 'Registered_Name',
@@ -157,7 +162,11 @@ const Seller = () => {
             {
                 header: 'UPDATE DATE',
                 accessorKey: 'update_date',
-                cell: (info) => info.getValue(),
+                cell: ({ getValue }) => (
+                    <span>
+                        {moment(getValue() as string).format('YYYY-MM-DD')}
+                    </span>
+                ),
             },
 
             {
