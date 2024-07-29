@@ -14,9 +14,13 @@ interface Users {
 }
 
 const Infor = () => {
-    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>(state => state.company.company);
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(state => state.company.currCompany);
-    const dispatch = useAppDispatch();
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>(
+        (state) => state.company.company,
+    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+        (state) => state.company.currCompany,
+    )
+    const dispatch = useAppDispatch()
 
     const onDropdownItemClick = (index: string) => {
         dispatch(setDefaultCompanyId(companyList[parseInt(index)]))
@@ -32,14 +36,14 @@ const Infor = () => {
         console.log('object')
     }
 
-    if(!selectedCompany){
-        return;
+    if (!selectedCompany) {
+        return
     }
 
     return (
         <div>
             <Dropdown
-                title={`${selectedCompany.registered_name} ${selectedCompany.id}`}
+                title={`${selectedCompany.registered_name}`}
                 onClick={onDropdownClick}
                 key={selectedCompany.id}
             >

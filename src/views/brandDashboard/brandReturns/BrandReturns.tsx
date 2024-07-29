@@ -17,26 +17,27 @@ import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
-interface LastUpdatedBy {
-    name: string
-    mobile: string
-    email: string
-}
-
 interface Product {
-    product: number
-    store: number
-    quantity: number
-    last_updated_by: LastUpdatedBy
-    show_out_of_stock: boolean
-    is_active: boolean
-    offer_is_active: boolean
-    expiry_date: string
-    batch_number: string
-    create_date: string
-    update_date: string
-    grn: any
     id: number
+    name: string
+    image: string
+    final_price: string
+    quantity: string
+    sp: string
+    mrp: string
+    fulfilled_quantity: string
+    brand: string
+    barcode: string
+    sku: string
+    is_returnable: boolean
+    division: string
+    category: string
+    sub_category: string
+    product_type: string
+    size: string
+    color: string | null
+    order_item_rating: number | null
+    returnable_quantity: number
 }
 
 type Option = {
@@ -53,7 +54,7 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const BrandStock = () => {
+const BrandReturns = () => {
     const [data, setData] = useState<Product[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
@@ -66,9 +67,9 @@ const BrandStock = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`,
+                `merchant/return_order_items?company_id=${selectedCompany.id}`,
             )
-            const data = response.data.data.results
+            const data = response.data.data
             const total = response.data.data.count
             setData(data)
             setTotalData(total)
@@ -81,92 +82,81 @@ const BrandStock = () => {
         fetchData(page, pageSize)
     }, [page, pageSize, selectedCompany])
 
-    const getUploadStatus = (is_active: any) => {
-        if (is_active == true) {
-            return 'Yes'
-        } else {
-            return 'No'
-        }
-    }
-
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
             {
-                header: 'Product ID',
-                accessorKey: 'product',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Store Number',
-                accessorKey: 'store',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'QTY',
-                accessorKey: 'quantity',
+                header: 'SKU',
+                accessorKey: 'sku',
                 cell: (info) => info.getValue(),
             },
             {
                 header: 'Name',
-                accessorKey: 'last_updated_by.name',
+                accessorKey: 'name',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Email',
-                accessorKey: 'last_updated_by.email',
+                header: 'Brand',
+                accessorKey: 'brand',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Ph. No',
-                accessorKey: 'last_updated_by.mobile',
+                header: 'Image',
+                accessorKey: 'image',
+                cell: (info) => {
+                    const imageUrl = (info.getValue() as string).split(',')[0]
+                    return (
+                        <img
+                            src={imageUrl}
+                            alt="Product Image"
+                            width={50}
+                            height={50}
+                        />
+                    )
+                },
+            },
+            {
+                header: 'MRP',
+                accessorKey: 'mrp',
                 cell: (info) => info.getValue(),
             },
             {
-                header: ' In Stock',
-                accessorKey: 'show_out_of_stock',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Active',
-                accessorKey: 'is_active',
-                cell: (info) => getUploadStatus(info.getValue()),
-            },
-            {
-                header: 'Offer Active',
-                accessorKey: ' offer_is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Expiry',
-                accessorKey: 'expiry_date',
+                header: 'SP',
+                accessorKey: 'sp',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Batch Num',
-                accessorKey: 'batch_number',
+                header: 'Fulfilled Quantity',
+                accessorKey: 'fulfilled_quantity',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Created',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                header: 'Size',
+                accessorKey: 'size',
+                cell: (info) => info.getValue(),
             },
             {
-                header: 'Updated',
-                accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                header: 'Color',
+                accessorKey: 'color',
+                cell: (info) => info.getValue(),
             },
             {
-                header: 'GRN number',
-                accessorKey: 'grn',
+                header: 'Division',
+                accessorKey: 'division',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Category',
+                accessorKey: 'category',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Sub Category',
+                accessorKey: 'sub_category',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Product Type',
+                accessorKey: 'product_type',
                 cell: (info) => info.getValue(),
             },
         ],
@@ -267,4 +257,4 @@ const BrandStock = () => {
     )
 }
 
-export default BrandStock
+export default BrandReturns

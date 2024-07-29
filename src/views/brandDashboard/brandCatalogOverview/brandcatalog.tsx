@@ -9,10 +9,11 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 type ProductVariant = {
     name: string
@@ -60,17 +61,21 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const brandCatalog = () => {
+const BrandCatalog = () => {
     const [data, setData] = useState<Product[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+        (store) => store.company.currCompany,
+    )
+    console.log('ssssssssssssss', selectedCompany)
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `search/product?p=${page}&page_size=${pageSize}`,
+                `search/product?p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`,
             )
             const data = response.data.results
             const total = response.data.count
@@ -83,7 +88,7 @@ const brandCatalog = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize])
+    }, [page, pageSize, selectedCompany])
 
     const getFirstImageUrl = (images: string) => {
         const img = images.length > 0 ? images.split(',') : ''
@@ -116,7 +121,7 @@ const brandCatalog = () => {
                 accessorKey: 'image',
                 cell: (info) => (
                     <img
-                        src={getFirstImageUrl(info.getValue())}
+                        src={getFirstImageUrl(info.getValue() as string)}
                         alt="Image"
                         className="w-24 h-20 object-cover"
                     />
@@ -132,7 +137,6 @@ const brandCatalog = () => {
                 accessorKey: 'sp',
                 cell: (info) => info.getValue(),
             },
-
             {
                 header: 'Active',
                 accessorKey: 'is_active',
@@ -159,7 +163,7 @@ const brandCatalog = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Try_&_Buy',
+                header: 'Try & Buy',
                 accessorKey: 'is_try_and_buy',
                 cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
@@ -207,7 +211,7 @@ const brandCatalog = () => {
         setPage(page)
     }
 
-    const onSelectChange = (value = 0) => {
+    const onSelectChange = (value: number) => {
         setPageSize(Number(value))
     }
 
@@ -267,7 +271,9 @@ const brandCatalog = () => {
                             (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) =>
+                            onSelectChange(option?.value || 0)
+                        }
                     />
                 </div>
             </div>
@@ -275,4 +281,4 @@ const brandCatalog = () => {
     )
 }
 
-export default brandCatalog
+export default BrandCatalog

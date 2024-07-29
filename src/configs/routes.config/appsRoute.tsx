@@ -104,6 +104,22 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsVendorManagement.returns',
+        path: `${APP_PREFIX_PATH}/vendor/returns`,
+        component: lazy(
+            () => import('@/views/brandDashboard/brandReturns/BrandReturns'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.orders',
+        path: `${APP_PREFIX_PATH}/vendor/orders`, //orders
+        component: lazy(
+            () => import('@/views/brandDashboard/brandOrder/BrandOrder'),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     // .......................................................................................................................
     {
