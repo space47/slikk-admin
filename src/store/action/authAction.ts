@@ -49,48 +49,48 @@ export const validatePhoneNumber =
 
 export const validateOTP =
     (mobileNumber: string, otpCode: string, callBackfn: () => void) =>
-    async (dispatch: any) => {
-        try {
-            dispatch({
-                type: otpRequest,
-            })
-            console.log('otpRequest')
-            const { data }: any = await axioisInstance.post(`dashboard/login`, {
-                type: 'verify',
-                mobile: mobileNumber,
-                otp: otpCode,
-            })
+        async (dispatch: any) => {
+            try {
+                dispatch({
+                    type: otpRequest,
+                })
+                console.log('otpRequest')
+                const { data }: any = await axioisInstance.post(`dashboard/login`, {
+                    type: 'verify',
+                    mobile: mobileNumber,
+                    otp: otpCode,
+                })
 
-            localStorage.setItem('accessToken', data.access)
+                localStorage.setItem('accessToken', data.access)
 
-            dispatch({
-                type: 'otpSuccess',
-                payload: {
-                    mobileNumber,
-                    message: data.message,
-                    access: data.access,
-                },
-            })
-            dispatch(signInSuccess(data.access))
-            dispatch(
-                setUser(
-                    data || {
-                        avatar: '',
-                        userName: 'Anonymous',
-                        authority: ['USER'],
-                        email: '',
+                dispatch({
+                    type: 'otpSuccess',
+                    payload: {
+                        mobileNumber,
+                        message: data.message,
+                        access: data.access,
                     },
-                ),
-            )
-            callBackfn()
-        } catch (error: any) {
-            console.log('Validate OTP Error', error?.response?.data)
-            dispatch({
-                type: 'otpFailure',
-                payload: { message: error?.response?.data?.message },
-            })
+                })
+                dispatch(signInSuccess(data.access))
+                dispatch(
+                    setUser(
+                        data || {
+                            avatar: '',
+                            userName: 'Anonymous',
+                            authority: ['USER'],
+                            email: '',
+                        },
+                    ),
+                )
+                callBackfn()
+            } catch (error: any) {
+                console.log('Validate OTP Error', error?.response?.data)
+                dispatch({
+                    type: 'otpFailure',
+                    payload: { message: error?.response?.data?.message },
+                })
+            }
         }
-    }
 
 export const clearAuthState = async (dispatch: any) => {
     try {
@@ -128,11 +128,7 @@ export const getProfileData = () => async (dispatch: any) => {
             type: getProfileRequest,
         })
         const { data }: any = await axioisInstance
-            .get('user/profile')
-            .then((res) => {
-                return res
-            })
-            .catch((err) => console.log(err))
+            .get('dashboard/user/profile');
         console.log('GET PROFILE', data.data)
         dispatch({
             type: 'getProfileSuccess',

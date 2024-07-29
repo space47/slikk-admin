@@ -14,6 +14,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 interface User {
     first_name: string
@@ -48,9 +50,11 @@ const Seller = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
 
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(store => store.company.currCompany);
+
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(`company/1/users`)
+            const response = await axiosInstance.get(`company/${selectedCompany.id}/users`)
             const data = response.data.data
             const total = response.data.total
             setData(data)
@@ -62,7 +66,7 @@ const Seller = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize])
+    }, [page, pageSize, selectedCompany])
 
     const navigate = useNavigate()
 

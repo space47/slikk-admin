@@ -6,6 +6,7 @@ import theme, { ThemeState } from './slices/theme/themeSlice'
 import RtkQueryService from '@/services/RtkQueryService'
 import { AuthState as Authorization} from '@/@types/types'
 import { authReducer } from '@/store/reducers/authReducers'
+import { companyReducer } from './reducers/company.reducer'
 
 export type RootState = CombinedState<{
     authorization:CombinedState<Authorization>
@@ -27,6 +28,7 @@ const staticReducers = {
     locale,
     theme,
     authorization:authReducer,
+    company : companyReducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
 

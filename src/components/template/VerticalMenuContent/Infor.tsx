@@ -1,4 +1,7 @@
 import Dropdown from '@/components/ui/Dropdown'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { setDefaultCompanyId } from '@/store/action/company.action'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import type { SyntheticEvent } from 'react'
 import { useEffect, useState } from 'react'
@@ -11,45 +14,12 @@ interface Users {
 }
 
 const Infor = () => {
-    const [compNames, setCompNames] = useState<Users[]>([])
-    const [selectedComp, setSelectedComp] = useState<string>('')
-    const [compId, setCompId] = useState<number>()
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>(state => state.company.company);
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(state => state.company.currCompany);
+    const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        const fetchCompNames = async () => {
-            try {
-                const response = await axiosInstance.get(
-                    'dashboard/user/profile',
-                )
-                const companies = response.data?.data?.company
-                const compNameArray = companies.map((company: any) => ({
-                    id: company.id,
-                    registered_name: company.name,
-                }))
-
-                setCompNames(compNameArray)
-                if (compNameArray.length > 0) {
-                    setSelectedComp(compNameArray[0].registered_name)
-                    setCompId(compNameArray[0].id)
-                }
-            } catch (error) {
-                console.error('Error fetching comp names:', error)
-            }
-        }
-
-        fetchCompNames()
-    }, [])
-
-    const onDropdownItemClick = (eventKey: string) => {
-        const selectedCompany = compNames.find(
-            (company) => company.id.toString() === eventKey,
-        )
-        console.log('evvvvvvvvvvvvvvvvvvvent', eventKey)
-        if (selectedCompany) {
-            setSelectedComp(selectedCompany.registered_name)
-            setCompId(selectedCompany.id)
-        }
-        console.log('cooooooomp', compId)
+    const onDropdownItemClick = (index: string) => {
+        dispatch(setDefaultCompanyId(companyList[parseInt(index)]))
     }
 
     const onDropdownClick = (e: SyntheticEvent) => {
@@ -59,20 +29,24 @@ const Infor = () => {
     const navigate = useNavigate()
 
     const handleOption = () => {
-        //  navigate('')
         console.log('object')
+    }
+
+    if(!selectedCompany){
+        return;
     }
 
     return (
         <div>
             <Dropdown
-                title={`${selectedComp} ${compId}`}
+                title={`${selectedCompany.registered_name} ${selectedCompany.id}`}
                 onClick={onDropdownClick}
+                key={selectedCompany.id}
             >
-                {compNames.map((item) => (
+                {companyList.map((item, i) => (
                     <Dropdown.Item
-                        key={item.id}
-                        eventKey={item.id.toString()}
+                        key={i}
+                        eventKey={i.toString()}
                         onSelect={onDropdownItemClick}
                     >
                         <div onClick={handleOption}>{item.registered_name}</div>

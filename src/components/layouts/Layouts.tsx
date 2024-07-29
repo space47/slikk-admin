@@ -1,6 +1,6 @@
 import { useMemo, lazy, Suspense } from 'react'
 import Loading from '@/components/shared/Loading'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import {
     LAYOUT_TYPE_CLASSIC,
     LAYOUT_TYPE_MODERN,
@@ -12,6 +12,9 @@ import {
 import useAuth from '@/utils/hooks/useAuth'
 import useDirection from '@/utils/hooks/useDirection'
 import useLocale from '@/utils/hooks/useLocale'
+import { getUserProfileAPI } from '@/store/action/company.action'
+import { Button } from '../ui'
+import { logoutAction } from '@/store/action/authAction'
 
 const layouts = {
     [LAYOUT_TYPE_CLASSIC]: lazy(() => import('./ClassicLayout')),
@@ -30,10 +33,18 @@ const Layout = () => {
     useDirection()
 
     useLocale()
+    const dispatch = useAppDispatch();
+    const company = useAppSelector(state => state.company.currCompany);
 
     const AppLayout = useMemo(() => {
         if (authenticated) {
+            console.log("company", company);
+            if(!company?.id){
+                dispatch(getUserProfileAPI());
+            }
+            
             return layouts[layoutType]
+
         }
         return lazy(() => import('./AuthLayout'))
     }, [layoutType, authenticated])
@@ -46,7 +57,7 @@ const Layout = () => {
                 </div>
             }
         >
-            <AppLayout />
+            {company && <AppLayout />}
         </Suspense>
     )
 }
