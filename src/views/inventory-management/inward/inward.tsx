@@ -14,6 +14,9 @@ import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
+import DatePicker from '@/components/ui/DatePicker'
+import { HiOutlineCalendar } from 'react-icons/hi'
+import { TbCalendarStats } from 'react-icons/tb'
 
 type TableData = {
     id: number
@@ -60,11 +63,18 @@ const PaginationTable = () => {
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
 
-    const fetchData = async (page: number, pageSize: number) => {
+    const fetchData = async (
+        page: number,
+        pageSize: number,
+        from: string,
+        to: string,
+    ) => {
         try {
             const response = await axiosInstance.get(
-                `goods/received?p=${page}&page_size=${pageSize}`, // &company_id
+                `goods/received?p=${page}&page_size=${pageSize}&from=${from}&to=${to}`, // &company_id
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -76,8 +86,8 @@ const PaginationTable = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize])
+        fetchData(page, pageSize, from, to)
+    }, [page, pageSize, from, to])
 
     const getowner = (own: any) => {
         if (own === true) {
@@ -141,8 +151,8 @@ const PaginationTable = () => {
                 accessorKey: 'document_url',
                 cell: (info) => (
                     <div
+                        style={{ cursor: 'pointer' }}
                         onClick={() => handleDocumentClick(info.getValue())}
-                        style={{ cursor: 'pointer' }} // Optional: to indicate that the div is clickable
                     >
                         {info.getValue()}
                     </div>
@@ -249,16 +259,68 @@ const PaginationTable = () => {
     const handleGRN = () => {
         navigate('/app/goods/received/form')
     }
+    const handleFromChange = (date: Date | null) => {
+        if (date) {
+            setFrom(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setFrom(moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    const handleToChange = (date: Date | null) => {
+        if (date) {
+            setTo(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setTo(moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    const addOneDay = (date: string) => {
+        return moment(date).add(1, 'days').format('YYYY-MM-DD')
+    }
 
     return (
         <div>
-            <div className="flex items-end justify-end mb-5">
-                <button
-                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleGRN}
-                >
-                    ADD NEW GRN
-                </button>{' '}
+            <div className=" flex gap-6 justify-end mb-5">
+                <div className="flex gap-5">
+                    <div>
+                        <div className="mb-1 font-semibold text-sm">
+                            FROM DATE:
+                        </div>
+                        <DatePicker
+                            inputPrefix={
+                                <HiOutlineCalendar className="text-lg" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(from)}
+                            selected={moment(from).toDate()}
+                            onChange={handleFromChange}
+                        />
+                    </div>
+                    <div>
+                        <div className="mb-1 font-semibold text-sm">
+                            TO DATE:
+                        </div>
+                        <DatePicker
+                            inputSuffix={
+                                <TbCalendarStats className="text-xl" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(to)}
+                            selected={moment(to).toDate()}
+                            onChange={handleToChange}
+                            minDate={moment(from).toDate()}
+                        />
+                    </div>
+                </div>
+                <div className="flex items-end justify-end">
+                    <button
+                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                        onClick={handleGRN}
+                    >
+                        ADD NEW GRN
+                    </button>{' '}
+                </div>
                 <br />
                 <br />
             </div>

@@ -13,30 +13,26 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
 
-interface Product {
+interface categoryItem {
+    id: number
     name: string
-    sku: string
-    brand: string
-    mrp: number
-    sp: number
-}
-
-interface OrderItem {
+    division: number
+    division_name: string
+    title: string
+    description: string
+    image: string
+    footer: string
+    quick_filter_tags: string
+    position: number
+    gender: string
+    is_active: boolean
     create_date: string
-    order_item: number
-    product: Product
-    quantity: string
-    return_amount: string
-    return_reason: string
-    from: string
-    to: string
+    update_date: string
+    is_try_and_buy: boolean
+    last_updated_by: string
 }
 
 type Option = {
@@ -53,100 +49,146 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const BrandReturns = () => {
-    const [data, setData] = useState<OrderItem[]>([])
-    const [totalData, setTotalData] = useState(0)
+const CategoryTable = () => {
+    const [data, setData] = useState<categoryItem[]>([])
+    const [filteredData, setFilteredData] = useState<categoryItem[]>([])
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const navigate = useNavigate()
 
-    const fetchData = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchData = async (filter: string = '') => {
         try {
-            const response = await axiosInstance.get(
-                `merchant/return_order_items?company_id=${selectedCompany.id}&from=${from}&to=${to}`,
-            )
-            const data = response.data.data.results
-            const total = response.data.data.count
+            const response = await axiosInstance.get(`category?name=${filter}`)
+            const data = response.data.data
             setData(data)
-            setTotalData(total)
+            setFilteredData(data) // Set filtered data
         } catch (error) {
             console.error(error)
         }
     }
 
     useEffect(() => {
-        fetchData(page, pageSize, from, to)
-    }, [page, pageSize, selectedCompany])
+        fetchData(globalFilter)
+    }, [globalFilter])
+    const paginatedData = useMemo(() => {
+        const start = (page - 1) * pageSize
+        const end = start + pageSize
+        return data.slice(start, end)
+    }, [data, page, pageSize])
 
-    const columns = useMemo<ColumnDef<OrderItem>[]>(
+    const totalData = data.length
+
+    const handleActionClick = (id: number) => {
+        navigate(`/app/category/category/${id}`)
+    }
+
+    const columns = useMemo<ColumnDef<categoryItem>[]>(
         () => [
             {
-                header: 'SKU',
-                accessorKey: 'product.sku',
-                cell: (info) => info.getValue(),
-            },
-            {
                 header: 'Name',
-                accessorKey: 'product.name',
+                accessorKey: 'name',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Brand',
-                accessorKey: 'product.brand',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'MRP',
-                accessorKey: 'product.mrp',
+                header: 'Description',
+                accessorKey: 'description',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'SP',
-                accessorKey: 'product.sp',
+                header: 'Image',
+                accessorKey: 'image',
+                cell: (info) => (
+                    <img
+                        src={info.getValue() as string}
+                        alt="product"
+                        width="50"
+                    />
+                ),
+            },
+            {
+                header: 'Division',
+                accessorKey: 'division',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Quantity',
-                accessorKey: 'quantity',
+                header: 'Division Name',
+                accessorKey: 'division_name',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Order Item',
-                accessorKey: 'order_item',
+                header: 'Title',
+                accessorKey: 'title',
                 cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Footer',
+                accessorKey: 'footer',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Quick Filter Tags',
+                accessorKey: 'quick_filter_tags',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Position',
+                accessorKey: 'position',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Gender',
+                accessorKey: 'gender',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Active',
+                accessorKey: 'is_active',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
+                cell: ({ getValue }) => (
+                    <span>
+                        {moment(getValue() as string).format('YYYY-MM-DD')}
+                    </span>
+                ),
+            },
+            {
+                header: 'Update Date',
+                accessorKey: 'update_date',
+                cell: ({ getValue }) => (
+                    <span>
+                        {moment(getValue() as string).format('YYYY-MM-DD')}
+                    </span>
+                ),
+            },
+            {
+                header: 'Try_&_Buy',
+                accessorKey: 'is_try_and_buy',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+            {
+                header: 'Last Updated By',
+                accessorKey: 'last_updated_by',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Return Amount',
-                accessorKey: 'return_amount',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Return Reason',
-                accessorKey: 'return_reason',
-                cell: (info) => info.getValue(),
+                header: 'Action',
+                accessorKey: 'id',
+                cell: ({ row }) => (
+                    <Button onClick={() => handleActionClick(row.original.id)}>
+                        EDIT
+                    </Button>
+                ),
             },
         ],
         [],
     )
 
     const table = useReactTable({
-        data,
+        data: paginatedData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -173,72 +215,33 @@ const BrandReturns = () => {
 
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
+        setPage(1)
     }
 
-    const handleFromChange = (date: Date | null) => {
-        if (date) {
-            setFrom(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setFrom(moment().format('YYYY-MM-DD'))
-        }
-    }
-
-    const handleToChange = (date: Date | null) => {
-        if (date) {
-            setTo(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setTo(moment().format('YYYY-MM-DD'))
-        }
-    }
-
-    const addOneDay = (date: string) => {
-        return moment(date).add(1, 'days').format('YYYY-MM-DD')
+    const handleSeller = () => {
+        navigate('/app/sellers/addnew')
     }
 
     return (
-        <div className="overflow-x-auto">
-            <div className="upper flex justify-between mb-5 items-center ">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
-                    />
-                </div>
-
-                <div className="flex gap-5">
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            FROM DATE:
-                        </div>
-                        <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(from)}
-                            selected={moment(from).toDate()}
-                            onChange={handleFromChange}
-                        />
-                    </div>
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            TO DATE:
-                        </div>
-                        <DatePicker
-                            inputSuffix={
-                                <TbCalendarStats className="text-xl" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(to)}
-                            selected={moment(to).toDate()}
-                            onChange={handleToChange}
-                            minDate={moment(from).toDate()}
-                        />
-                    </div>
-                </div>
+        <div>
+            <div className="flex items-end justify-end mb-2">
+                <button
+                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                    onClick={handleSeller}
+                >
+                    ADD NEW DIVISION
+                </button>{' '}
+                <br />
+                <br />
+            </div>
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Search here"
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    className="p-2 border rounded"
+                />
             </div>
             <Table>
                 <THead>
@@ -293,4 +296,4 @@ const BrandReturns = () => {
     )
 }
 
-export default BrandReturns
+export default CategoryTable

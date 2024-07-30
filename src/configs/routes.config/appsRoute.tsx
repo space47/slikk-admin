@@ -20,12 +20,34 @@ const appsRoute: Routes = [
         key: 'appsCategory.division',
         path: `${APP_PREFIX_PATH}/category/division`,
         component: lazy(
-            () => import('@/views/category-management/division/DivisionList'),
+            () =>
+                import(
+                    '@/views/category-management/division/divisiontable/DivisionTable'
+                ),
         ),
         authority: [ADMIN, USER],
-        meta: {
-            header: 'Add New Division',
-        },
+    },
+    {
+        key: 'appsCategory.category',
+        path: `${APP_PREFIX_PATH}/category/category`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/category/categoryTable/CategoryTable'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.category',
+        path: `${APP_PREFIX_PATH}/category/category/:id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/category/categoryTable/CategoryEdit'
+                ),
+        ),
+        authority: [ADMIN, USER],
     },
 
     // ..........Order Management............................................................................................................

@@ -28,7 +28,7 @@ export interface DatePickerProps
     closePickerOnChange?: boolean
     defaultOpen?: boolean
     defaultValue?: Date | null
-    value?: Date | null
+    value?: Date | null | string
     inputFormat?: string
     inputtableBlurClose?: boolean
     openPickerOnClear?: boolean
@@ -98,7 +98,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         const inputRef = useRef<HTMLInputElement>(null)
 
         const [lastValidValue, setLastValidValue] = useState(
-            defaultValue ?? null
+            defaultValue ?? null,
         )
 
         const [_value, setValue] = useControllableState({
@@ -108,7 +108,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         })
 
         const [calendarMonth, setCalendarMonth] = useState(
-            _value || defaultMonth || new Date()
+            _value || defaultMonth || new Date(),
         )
 
         const [focused, setFocused] = useState(false)
@@ -116,9 +116,9 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         const [inputState, setInputState] = useState(
             _value instanceof Date
                 ? capitalize(
-                      dayjs(_value).locale(finalLocale).format(dateFormat)
+                      dayjs(_value).locale(finalLocale).format(dateFormat),
                   )
-                : ''
+                : '',
         )
 
         const closeDropdown = () => {
@@ -138,7 +138,6 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
                 }
 
                 if (minDate && dayjs(calendarMonth).isBefore(minDate)) {
-                    
                     setCalendarMonth(minDate)
                 }
             }
@@ -152,8 +151,8 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             if (value instanceof Date && !focused) {
                 setInputState(
                     capitalize(
-                        dayjs(value).locale(finalLocale).format(dateFormat)
-                    )
+                        dayjs(value).locale(finalLocale).format(dateFormat),
+                    ),
                 )
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,8 +162,8 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             if (defaultValue instanceof Date && inputState && !focused) {
                 setInputState(
                     capitalize(
-                        dayjs(_value).locale(finalLocale).format(dateFormat)
-                    )
+                        dayjs(_value).locale(finalLocale).format(dateFormat),
+                    ),
                 )
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -173,7 +172,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         const handleValueChange = (date: Date | null) => {
             setValue(date)
             setInputState(
-                capitalize(dayjs(date).locale(finalLocale).format(dateFormat))
+                capitalize(dayjs(date).locale(finalLocale).format(dateFormat)),
             )
             closePickerOnChange && closeDropdown()
             window.setTimeout(() => inputRef.current?.focus(), 0)
@@ -206,8 +205,8 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
                 setLastValidValue(date as Date)
                 setInputState(
                     capitalize(
-                        dayjs(date).locale(finalLocale).format(dateFormat)
-                    )
+                        dayjs(date).locale(finalLocale).format(dateFormat),
+                    ),
                 )
                 setCalendarMonth(date as Date)
             } else {
@@ -216,7 +215,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         }
 
         const handleInputBlur = (
-            event: FocusEvent<HTMLInputElement, Element>
+            event: FocusEvent<HTMLInputElement, Element>,
         ) => {
             typeof onBlur === 'function' && onBlur(event)
             setFocused(false)
@@ -234,7 +233,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         }
 
         const handleInputFocus = (
-            event: FocusEvent<HTMLInputElement, Element>
+            event: FocusEvent<HTMLInputElement, Element>,
         ) => {
             typeof onFocus === 'function' && onFocus(event)
             setFocused(true)
@@ -316,7 +315,7 @@ const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
                 />
             </BasePicker>
         )
-    }
+    },
 )
 
 DatePicker.displayName = 'DatePicker'

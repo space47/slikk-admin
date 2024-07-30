@@ -14,6 +14,9 @@ import {
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
+import DatePicker from '@/components/ui/DatePicker'
+import { HiOutlineCalendar } from 'react-icons/hi'
+import { TbCalendarStats } from 'react-icons/tb'
 
 interface LastUpdatedBy {
     name: string
@@ -34,6 +37,8 @@ interface Product {
     create_date: string
     update_date: string
     grn: any
+    from: string
+    to: string
 }
 
 type Option = {
@@ -56,11 +61,18 @@ const StockOverview = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
 
-    const fetchData = async (page: number, pageSize: number) => {
+    const fetchData = async (
+        page: number,
+        pageSize: number,
+        from: string,
+        to: string,
+    ) => {
         try {
             const response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}`,
+                `inventory?p=${page}&page_size=${pageSize}&from=${from}&to=${to}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -72,8 +84,8 @@ const StockOverview = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize])
+        fetchData(page, pageSize, from, to)
+    }, [page, pageSize, from, to])
 
     const getUploadStatus = (is_active: any) => {
         if (is_active == true) {
@@ -197,16 +209,70 @@ const StockOverview = () => {
         setPageSize(Number(value))
     }
 
+    const handleFromChange = (date: Date | null) => {
+        if (date) {
+            setFrom(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setFrom(moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    const handleToChange = (date: Date | null) => {
+        if (date) {
+            setTo(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setTo(moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    const addOneDay = (date: string) => {
+        return moment(date).add(1, 'days').format('YYYY-MM-DD')
+    }
+
     return (
-        <div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="p-2 border rounded"
-                />
+        <div className="overflow-x-auto">
+            <div className="upper flex justify-between mb-5 items-center ">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border rounded"
+                    />
+                </div>
+
+                <div className="flex gap-5">
+                    <div>
+                        <div className="mb-1 font-semibold text-sm">
+                            FROM DATE:
+                        </div>
+                        <DatePicker
+                            inputPrefix={
+                                <HiOutlineCalendar className="text-lg" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(from)}
+                            selected={moment(from).toDate()}
+                            onChange={handleFromChange}
+                        />
+                    </div>
+                    <div>
+                        <div className="mb-1 font-semibold text-sm">
+                            TO DATE:
+                        </div>
+                        <DatePicker
+                            inputSuffix={
+                                <TbCalendarStats className="text-xl" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(to)}
+                            selected={moment(to).toDate()}
+                            onChange={handleToChange}
+                            minDate={moment(from).toDate()}
+                        />
+                    </div>
+                </div>
             </div>
             <Table>
                 <THead>
