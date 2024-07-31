@@ -83,7 +83,7 @@ const Products = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize])
+    }, [page, pageSize, globalFilter])
 
     const getFirstImageUrl = (images: string) => {
         const img = images.length > 0 ? images.split(',') : ''

@@ -16,18 +16,6 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 
-// type ProductVariant = {
-//     name: string
-//     variant_type: string
-//     color_code_link: string
-//     size: string[]
-//     barcode: string
-//     sku: string
-//     mrp: string
-//     sp: string
-//     inventory_count: number
-// }
-
 type Product = {
     id: number
     name: string
@@ -86,13 +74,8 @@ const Subcategory = () => {
         fetchData(page, pageSize)
     }, [page, pageSize])
 
-    // const getFirstImageUrl = (images: string) => {
-    //     const img = images.split(',')
-    //     return img[0]
-    // }
-
     const handleActionClick = (id: any) => {
-        console.log('OK', id)
+        navigate(`/app/category/subCategory/${id}`)
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
@@ -185,9 +168,9 @@ const Subcategory = () => {
 
             {
                 header: 'Action',
-                accessorKey: 'action',
+                accessorKey: 'id',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
+                    <Button onClick={() => handleActionClick(row.original.id)}>
                         EDIT
                     </Button>
                 ),

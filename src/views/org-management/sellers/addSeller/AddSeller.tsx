@@ -208,15 +208,13 @@ const AddSeller = () => {
                                                         option.value ===
                                                         field.value,
                                                 )}
-                                                onChange={(option: {
-                                                    value: string
-                                                }) =>
+                                                options={SegmentOptions()}
+                                                onChange={(option) =>
                                                     setFieldValue(
                                                         'segment',
-                                                        option.value,
+                                                        option?.value,
                                                     )
                                                 }
-                                                options={SegmentOptions()}
                                             />
                                         )}
                                     </Field>

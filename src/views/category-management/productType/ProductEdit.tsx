@@ -14,38 +14,41 @@ import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 
 type FormModel = {
-    id: number | undefined
-    name: string | undefined
-    division: number | undefined
-
-    title: string | undefined
-    description: string | undefined
-    image: string | undefined
-    footer: string | undefined
-    quick_filter_tags: string | undefined
-    position: number | undefined
-    gender: string | undefined
-    is_active: boolean | undefined
-    create_date: string | undefined
-    update_date: string | undefined
-    is_try_and_buy: boolean | undefined
-    last_updated_by: string | undefined
+    id: number
+    name: string
+    sub_category_name: string
+    title: string
+    description: string
+    image: string
+    footer: string | null
+    quick_filter_tags: string
+    position: number
+    gender: string
+    is_active: boolean
+    create_date: string
+    update_date: string
+    is_try_and_buy: boolean
+    sub_category: number
+    last_updated_by: string | null
     images: File[]
 }
 
-type Division = {
+type category = {
     id: number
     name: string
+    category_name: string
+    title: string
     description: string
     image: string
-    footer: string
+    footer: string | null
     quick_filter_tags: string
-    seo_tags: string
     position: number
-    is_active: true
+    gender: string
+    is_active: boolean
     create_date: string
     update_date: string
-    last_updated_by: string
+    is_try_and_buy: boolean
+    last_updated_by: string | null
 }
 interface Option {
     value: number
@@ -78,9 +81,9 @@ const MAX_UPLOAD = 8
 //     // document: Yup.string().nullable(),
 // })
 
-const CategoryEdit = () => {
+const ProductEdit = () => {
     const [catedate, setCateData] = useState<FormModel | null>(null)
-    const [divdata, setDivData] = useState<Division[]>()
+    const [divdata, setDivData] = useState<category[]>()
     const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
 
@@ -89,7 +92,7 @@ const CategoryEdit = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`category?id=${id}`)
+            const response = await axioisInstance.get(`product-type?id=${id}`)
             const categoryData = response.data?.data[0] || {}
             setCateData(categoryData)
             setImageView(categoryData.image ? [categoryData.image] : [])
@@ -100,10 +103,10 @@ const CategoryEdit = () => {
 
     const fetchDivision = async () => {
         try {
-            const response = await axioisInstance.get(`division`)
+            const response = await axioisInstance.get(`sub-category`)
             const divisionData = response.data?.data || []
             setDivData(divisionData)
-            const transformedOptions = divisionData.map((item: Division) => ({
+            const transformedOptions = divisionData.map((item: category) => ({
                 value: item.id,
                 label: item.name,
             }))
@@ -196,14 +199,18 @@ const CategoryEdit = () => {
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.patch('category', formData)
+            const response = await axioisInstance.patch(
+                'product-type',
+                formData,
+            )
 
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Category Changed Successfully',
+                    response?.data?.message ||
+                    'Product Type Changed Successfully',
             })
-            navigate('/app/category/category')
+            navigate('/app/category/productType')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -220,7 +227,7 @@ const CategoryEdit = () => {
     const initialValue: FormModel = {
         id: catedate.id,
         name: catedate.name,
-        division: catedate.division,
+        sub_category_name: catedate.sub_category_name,
         title: catedate.title,
         description: catedate.description,
         image: catedate.image,
@@ -233,6 +240,7 @@ const CategoryEdit = () => {
         update_date: catedate.update_date,
         is_try_and_buy: catedate.is_try_and_buy,
         last_updated_by: catedate.last_updated_by,
+        sub_category: catedate.sub_category,
         images: [],
     }
 
@@ -250,7 +258,7 @@ const CategoryEdit = () => {
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     asterisk
-                                    label="Category Name"
+                                    label="Product Type"
                                     invalid={errors.name && touched.name}
                                     errorMessage={errors.name}
                                     className="col-span-1 w-1/2"
@@ -264,14 +272,15 @@ const CategoryEdit = () => {
 
                                 <FormItem
                                     asterisk
-                                    label="Division Name"
+                                    label="Sub-Category Name"
                                     invalid={
-                                        errors.division && touched.division
+                                        errors.sub_category_name &&
+                                        touched.sub_category_name
                                     }
-                                    errorMessage={errors.division}
+                                    errorMessage={errors.sub_category_name}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="division">
+                                    <Field name="sub_category">
                                         {({ field, form }: FieldProps<any>) => (
                                             <Select
                                                 field={field}
@@ -291,6 +300,41 @@ const CategoryEdit = () => {
                                             />
                                         )}
                                     </Field>
+                                </FormItem>
+                            </FormContainer>
+
+                            {/* Title and desc............................................................................ */}
+
+                            <FormContainer className="flex flex-row gap-7 ">
+                                <FormItem
+                                    asterisk
+                                    label="Title"
+                                    invalid={errors.title && touched.title}
+                                    errorMessage={errors.title}
+                                    className="col-span-1 w-1/2"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="title"
+                                        component={Input}
+                                    />
+                                </FormItem>
+
+                                <FormItem
+                                    asterisk
+                                    label="Description"
+                                    invalid={
+                                        errors.description &&
+                                        touched.description
+                                    }
+                                    errorMessage={errors.description}
+                                    className="col-span-1 w-1/2"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="description"
+                                        component={Input}
+                                    />
                                 </FormItem>
                             </FormContainer>
 
@@ -519,4 +563,4 @@ const CategoryEdit = () => {
     )
 }
 
-export default CategoryEdit
+export default ProductEdit

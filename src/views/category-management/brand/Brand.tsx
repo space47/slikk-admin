@@ -77,7 +77,7 @@ const Brand = () => {
     }, [page, pageSize])
 
     const handleActionClick = (id: any) => {
-        console.log('OK', id)
+        navigate(`/app/category/brand/${id}`)
     }
 
     const columns = useMemo<ColumnDef<Brand & Action>[]>(
@@ -168,9 +168,9 @@ const Brand = () => {
             },
             {
                 header: 'Action',
-                accessorKey: 'action',
+                accessorKey: 'id',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
+                    <Button onClick={() => handleActionClick(row.original.id)}>
                         EDIT
                     </Button>
                 ),

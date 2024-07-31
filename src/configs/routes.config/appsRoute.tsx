@@ -49,6 +49,17 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsCategory.subCategory',
+        path: `${APP_PREFIX_PATH}/category/subCategory/:id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/subCategory/subEdit/SubEdit'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     // ..........Order Management............................................................................................................
     {
@@ -169,6 +180,14 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCategory.productType',
+        path: `${APP_PREFIX_PATH}/category/productType/:id`,
+        component: lazy(
+            () => import('@/views/category-management/productType/ProductEdit'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory/addNew`,
         component: lazy(
@@ -190,6 +209,14 @@ const appsRoute: Routes = [
         path: `${APP_PREFIX_PATH}/category/brand`,
         component: lazy(
             () => import('@/views/category-management/brand/Brand'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.brand',
+        path: `${APP_PREFIX_PATH}/category/brand/:id`,
+        component: lazy(
+            () => import('@/views/category-management/brand/BrandEdit'),
         ),
         authority: [ADMIN, USER],
     },

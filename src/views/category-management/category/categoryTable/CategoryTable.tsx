@@ -51,7 +51,6 @@ const pageSizeOptions = [
 
 const CategoryTable = () => {
     const [data, setData] = useState<categoryItem[]>([])
-    const [filteredData, setFilteredData] = useState<categoryItem[]>([])
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -62,7 +61,6 @@ const CategoryTable = () => {
             const response = await axiosInstance.get(`category?name=${filter}`)
             const data = response.data.data
             setData(data)
-            setFilteredData(data) // Set filtered data
         } catch (error) {
             console.error(error)
         }

@@ -56,7 +56,11 @@ const ProductType = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('') //1
 
-    const fetchData = async (page: number, pageSize: number) => {
+    const fetchData = async (
+        page: number,
+        pageSize: number,
+        filter: string = '',
+    ) => {
         try {
             const response = await axiosInstance.get(
                 `product-type?p=${page}&page_size=${pageSize}`,
@@ -72,10 +76,10 @@ const ProductType = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize])
+    }, [page, pageSize, globalFilter])
 
     const handleActionClick = (id: any) => {
-        console.log('OK', id)
+        navigate(`/app/category/productType/${id}`)
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
@@ -161,9 +165,9 @@ const ProductType = () => {
             },
             {
                 header: 'Action',
-                accessorKey: 'action',
+                accessorKey: 'id',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
+                    <Button onClick={() => handleActionClick(row.original.id)}>
                         EDIT
                     </Button>
                 ),

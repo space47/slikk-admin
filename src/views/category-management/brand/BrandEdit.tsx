@@ -14,39 +14,41 @@ import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 
 type FormModel = {
-    id: number | undefined
-    name: string | undefined
-    division: number | undefined
-
-    title: string | undefined
-    description: string | undefined
-    image: string | undefined
-    footer: string | undefined
-    quick_filter_tags: string | undefined
-    position: number | undefined
-    gender: string | undefined
-    is_active: boolean | undefined
-    create_date: string | undefined
-    update_date: string | undefined
-    is_try_and_buy: boolean | undefined
-    last_updated_by: string | undefined
+    id: number
+    name: string
+    title: string
+    description: string
+    image: string
+    is_top: boolean
+    is_exclusive: boolean
+    is_private: boolean
+    footer: string | null
+    quick_filter_tags: string[]
+    is_active: boolean
+    create_date: string
+    update_date: string
+    is_try_and_buy: boolean
+    last_updated_by: string | null
     images: File[]
 }
 
-type Division = {
-    id: number
-    name: string
-    description: string
-    image: string
-    footer: string
-    quick_filter_tags: string
-    seo_tags: string
-    position: number
-    is_active: true
-    create_date: string
-    update_date: string
-    last_updated_by: string
-}
+// type Division = {
+//     id: number
+//     name: string
+//     category_name: string
+//     title: string
+//     description: string
+//     image: string
+//     footer: string | null
+//     quick_filter_tags: string
+//     position: number
+//     gender: string
+//     is_active: boolean
+//     create_date: string
+//     update_date: string
+//     is_try_and_buy: boolean
+//     last_updated_by: string | null
+// }
 interface Option {
     value: number
     label: string
@@ -78,10 +80,10 @@ const MAX_UPLOAD = 8
 //     // document: Yup.string().nullable(),
 // })
 
-const CategoryEdit = () => {
+const BrandEdit = () => {
     const [catedate, setCateData] = useState<FormModel | null>(null)
-    const [divdata, setDivData] = useState<Division[]>()
-    const [options, setOptions] = useState<Option[]>([])
+    // const [divdata, setDivData] = useState<Division[]>()
+    // const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
 
     const { id } = useParams()
@@ -89,8 +91,8 @@ const CategoryEdit = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`category?id=${id}`)
-            const categoryData = response.data?.data[0] || {}
+            const response = await axioisInstance.get(`brands?id=${id}`)
+            const categoryData = response.data?.data.results[0] || {}
             setCateData(categoryData)
             setImageView(categoryData.image ? [categoryData.image] : [])
         } catch (error) {
@@ -98,28 +100,28 @@ const CategoryEdit = () => {
         }
     }
 
-    const fetchDivision = async () => {
-        try {
-            const response = await axioisInstance.get(`division`)
-            const divisionData = response.data?.data || []
-            setDivData(divisionData)
-            const transformedOptions = divisionData.map((item: Division) => ({
-                value: item.id,
-                label: item.name,
-            }))
-            setOptions(transformedOptions)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const fetchDivision = async () => {
+    //     try {
+    //         const response = await axioisInstance.get(`division`)
+    //         const divisionData = response.data?.data || []
+    //         setDivData(divisionData)
+    //         const transformedOptions = divisionData.map((item: Division) => ({
+    //             value: item.id,
+    //             label: item.name,
+    //         }))
+    //         setOptions(transformedOptions)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     useEffect(() => {
         fetchData()
     }, [])
 
-    useEffect(() => {
-        fetchDivision()
-    }, [])
+    // useEffect(() => {
+    //     fetchDivision()
+    // }, [])
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -196,14 +198,17 @@ const CategoryEdit = () => {
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.patch('category', formData)
+            const response = await axioisInstance.patch(
+                `brands/${id}`,
+                formData,
+            )
 
             notification.success({
                 message: 'Success',
                 description:
                     response?.data?.message || 'Category Changed Successfully',
             })
-            navigate('/app/category/category')
+            navigate('/app/category/brand')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -220,14 +225,14 @@ const CategoryEdit = () => {
     const initialValue: FormModel = {
         id: catedate.id,
         name: catedate.name,
-        division: catedate.division,
         title: catedate.title,
         description: catedate.description,
         image: catedate.image,
         footer: catedate.footer,
         quick_filter_tags: catedate.quick_filter_tags,
-        position: catedate.position,
-        gender: catedate.gender,
+        is_top: catedate.is_top,
+        is_exclusive: catedate.is_exclusive,
+        is_private: catedate.is_private,
         is_active: catedate.is_active,
         create_date: catedate.create_date,
         update_date: catedate.update_date,
@@ -250,7 +255,7 @@ const CategoryEdit = () => {
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     asterisk
-                                    label="Category Name"
+                                    label="Brand Name"
                                     invalid={errors.name && touched.name}
                                     errorMessage={errors.name}
                                     className="col-span-1 w-1/2"
@@ -261,8 +266,21 @@ const CategoryEdit = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-
                                 <FormItem
+                                    asterisk
+                                    label="Title"
+                                    invalid={errors.title && touched.title}
+                                    errorMessage={errors.title}
+                                    className="col-span-1 w-1/2"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="title"
+                                        component={Input}
+                                    />
+                                </FormItem>
+
+                                {/* <FormItem
                                     asterisk
                                     label="Division Name"
                                     invalid={
@@ -291,7 +309,7 @@ const CategoryEdit = () => {
                                             />
                                         )}
                                     </Field>
-                                </FormItem>
+                                </FormItem> */}
                             </FormContainer>
 
                             {/* Image upload.................................................................. */}
@@ -365,6 +383,22 @@ const CategoryEdit = () => {
 
                             {/* Text area.................................................................. */}
 
+                            <FormItem
+                                asterisk
+                                label="Description"
+                                invalid={
+                                    errors.description && touched.description
+                                }
+                                errorMessage={errors.description}
+                                className="col-span-1 w-1/2"
+                            >
+                                <Field
+                                    type="text"
+                                    name="description"
+                                    component={Input}
+                                />
+                            </FormItem>
+
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     label="Footer"
@@ -377,11 +411,11 @@ const CategoryEdit = () => {
                                         name="footer"
                                         placeholder="Footer"
                                         component={Input}
-                                        style={{
-                                            width: '100%',
-                                            height: '150px',
-                                            resize: 'vertical',
-                                        }}
+                                        // style={{
+                                        //     width: '100%',
+                                        //     height: '150px',
+                                        //     resize: 'vertical',
+                                        // }}
                                     />
                                 </FormItem>
                             </FormContainer>
@@ -406,7 +440,7 @@ const CategoryEdit = () => {
                                     />
                                 </FormItem>
 
-                                <FormItem
+                                {/* <FormItem
                                     asterisk
                                     label="position"
                                     invalid={
@@ -420,10 +454,10 @@ const CategoryEdit = () => {
                                         name="position"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 {/* gender */}
 
-                                <FormItem
+                                {/* <FormItem
                                     asterisk
                                     label="Gender"
                                     invalid={errors.gender && touched.gender}
@@ -463,10 +497,41 @@ const CategoryEdit = () => {
                                             )
                                         }}
                                     </Field>
-                                </FormItem>
+                                </FormItem> */}
                             </FormContainer>
 
                             {/* Select boxes......................................................................... */}
+                            <FormItem
+                                label="Is TOP"
+                                invalid={errors.is_top && touched.is_top}
+                                // errorMessage={errors.singleCheckbox}
+                            >
+                                <Field name="is_top" component={Checkbox}>
+                                    TOP
+                                </Field>
+                            </FormItem>
+                            <FormItem
+                                label="EXCLUSIVE"
+                                invalid={
+                                    errors.is_exclusive && touched.is_exclusive
+                                }
+                                // errorMessage={errors.singleCheckbox}
+                            >
+                                <Field name="is_exclusive" component={Checkbox}>
+                                    Is Exclusive
+                                </Field>
+                            </FormItem>
+                            <FormItem
+                                label="IS PRIVATE"
+                                invalid={
+                                    errors.is_private && touched.is_private
+                                }
+                                // errorMessage={errors.singleCheckbox}
+                            >
+                                <Field name="is_private" component={Checkbox}>
+                                    Is Private
+                                </Field>
+                            </FormItem>
                             <FormItem
                                 label="ACTIVE"
                                 invalid={errors.is_active && touched.is_active}
@@ -519,4 +584,4 @@ const CategoryEdit = () => {
     )
 }
 
-export default CategoryEdit
+export default BrandEdit

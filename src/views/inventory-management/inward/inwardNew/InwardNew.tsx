@@ -71,12 +71,12 @@ const initialValue: FormModel = {
 const validationSchema = Yup.object().shape({
     document_number: Yup.string().required('Document Number is required'),
     document_date: Yup.date().required('Document Date is required').nullable(),
-    origin_address: Yup.string()
-        .required('Supplier Address is required')
-        .transform((value) => value.trim()),
-    received_address: Yup.string()
-        .required('Receiver Address is required')
-        .transform((value) => value.trim()),
+    // origin_address: Yup.string()
+    //     .required('Supplier Address is required')
+    //     .transform((value) => value.trim()),
+    // received_address: Yup.string()
+    //     .required('Receiver Address is required')
+    //     .transform((value) => value.trim()),
     received_by: Yup.string()
         .required('Received By is required')
         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
@@ -339,7 +339,8 @@ const MixedFormControl = () => {
                                     type="text"
                                     name="origin_address"
                                     placeholder="Supplier Address"
-                                    component={Textarea}
+                                    component={Input}
+                                    style={{ height: '100px' }}
                                 />
                             </FormItem>
                             <FormItem
@@ -356,7 +357,8 @@ const MixedFormControl = () => {
                                     type="text"
                                     name="received_address"
                                     placeholder="Receiver Address"
-                                    component={Textarea}
+                                    component={Input}
+                                    style={{ height: '100px' }}
                                 />
                             </FormItem>
 
