@@ -64,7 +64,7 @@ const Brand = () => {
                 `brands?p=${page}&page_size=${pageSize}`,
             )
             const data = response.data.data.results
-            const total = response.data.total
+            const total = response.data.count
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -74,7 +74,7 @@ const Brand = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize])
+    }, [page, pageSize, globalFilter])
 
     const handleActionClick = (id: any) => {
         navigate(`/app/category/brand/${id}`)
