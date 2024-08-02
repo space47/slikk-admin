@@ -74,7 +74,7 @@ const Brand = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize])
+    }, [page, pageSize, globalFilter])
 
     const handleActionClick = (id: any) => {
         navigate(`/app/category/brand/${id}`)
