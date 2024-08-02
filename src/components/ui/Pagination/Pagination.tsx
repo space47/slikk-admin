@@ -22,7 +22,7 @@ const Pagination = (props: PaginationProps) => {
         displayTotal = false,
         onChange,
         pageSize = 1,
-        total = 5,
+        total,
     } = props
 
     const [paginationTotal, setPaginationTotal] = useState(total)
@@ -64,11 +64,11 @@ const Pagination = (props: PaginationProps) => {
 
             return resetValue === undefined ? value : resetValue
         },
-        [getInternalPageCount]
+        [getInternalPageCount],
     )
 
     const [internalCurrentPage, setInternalCurrentPage] = useState(
-        currentPage ? getValidCurrentPage(currentPage) : 1
+        currentPage ? getValidCurrentPage(currentPage) : 1,
     )
 
     useEffect(() => {

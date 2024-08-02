@@ -224,7 +224,7 @@ const Seller = () => {
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
                     onClick={handleSeller}
                 >
-                    ADD NEW
+                    ADD NEW SELLER
                 </button>{' '}
                 <br />
                 <br />

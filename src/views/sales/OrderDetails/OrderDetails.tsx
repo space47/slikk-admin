@@ -79,33 +79,6 @@ type SalesOrderDetailsResponse = {
     status: string
 }
 
-// type PayementStatus = {
-//     label: string
-//     class: string
-// }
-
-// const paymentStatus: Record<number, PayementStatus> = {
-//     0: {
-//         label: 'Paid',
-//         class: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100',
-//     },
-//     1: {
-//         label: 'Unpaid',
-//         class: 'text-red-500 bg-red-100 dark:text-red-100 dark:bg-red-500/20',
-//     },
-// }
-
-// const progressStatus: Record<number, PayementStatus> = {
-//     0: {
-//         label: 'Fulfilled',
-//         class: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-100',
-//     },
-//     1: {
-//         label: 'Unfulfilled',
-//         class: 'text-amber-600 bg-amber-100 dark:text-amber-100 dark:bg-amber-500/20',
-//     },
-// }
-
 const OrderDetails = () => {
     // const location = useLocation()
 
@@ -146,30 +119,6 @@ const OrderDetails = () => {
                                         #{data.invoice_id}
                                     </span>
                                 </h3>
-                                {/* <Tag
-                                    className={classNames(
-                                        'border-0 rounded-md ltr:ml-2 rtl:mr-2',
-                                        paymentStatus[data.payementStatus || 0]
-                                            .class,
-                                    )}
-                                >
-                                    {
-                                        paymentStatus[data.payementStatus || 0]
-                                            .label
-                                    }
-                                </Tag>
-                                <Tag
-                                    className={classNames(
-                                        'border-0 rounded-md ltr:ml-2 rtl:mr-2',
-                                        progressStatus[data.progressStatus || 0]
-                                            .class,
-                                    )}
-                                >
-                                    {
-                                        progressStatus[data.progressStatus || 0]
-                                            .label
-                                    }
-                                </Tag> */}
                             </div>
                             <span className="flex items-center">
                                 <HiOutlineCalendar className="text-lg" />

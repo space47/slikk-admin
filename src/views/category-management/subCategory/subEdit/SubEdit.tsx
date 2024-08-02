@@ -245,6 +245,7 @@ const SubEdit = () => {
 
     return (
         <div>
+            <div className="text-xl mb-10">Edit Subcategory</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}

@@ -246,6 +246,7 @@ const ProductEdit = () => {
 
     return (
         <div>
+            <div className="text-xl mb-10"> EDIT PRODUCT TYPE</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}

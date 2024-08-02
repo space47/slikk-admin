@@ -15,40 +15,37 @@ import { useNavigate, useParams } from 'react-router-dom'
 import moment from 'moment'
 
 type FormModel = {
-    id: number
-    name: string
-    category_name: string
-    title: string
-    description: string
-    image: string
-    footer: string | null
-    quick_filter_tags: string
-    position: number
-    gender: string
-    is_active: boolean
-    create_date: string
-    update_date: string
-    is_try_and_buy: boolean
-    last_updated_by: string | null
+    id: number | undefined
+    name: string | undefined
+    division: number | undefined
+
+    title: string | undefined
+    description: string | undefined
+    image: string | undefined
+    footer: string | undefined
+    quick_filter_tags: string | undefined
+    position: number | undefined
+    gender: string | undefined
+    is_active: boolean | undefined
+    create_date: string | undefined
+    update_date: string | undefined
+    is_try_and_buy: boolean | undefined
+    last_updated_by: string | undefined
     images: File[]
 }
 
-type category = {
+type Division = {
     id: number
     name: string
-    division: number
-    division_name: string
-    title: string
     description: string
     image: string
     footer: string
     quick_filter_tags: string
+    seo_tags: string
     position: number
-    gender: string
-    is_active: boolean
+    is_active: true
     create_date: string
     update_date: string
-    is_try_and_buy: boolean
     last_updated_by: string
 }
 interface Option {
@@ -82,19 +79,19 @@ const MAX_UPLOAD = 8
 //     // document: Yup.string().nullable(),
 // })
 
-const SubEdit = () => {
+const CategoryAdd = () => {
     const [catedate, setCateData] = useState<FormModel | null>(null)
-    const [divdata, setDivData] = useState<category[]>()
+    const [divdata, setDivData] = useState<Division[]>()
     const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
+
     const date = new Date()
 
-    const { id } = useParams()
     const navigate = useNavigate()
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`sub-category`)
+            const response = await axioisInstance.get(`category`)
             const categoryData = response.data?.data[0] || {}
             setCateData(categoryData)
             // setImageView(categoryData.image ? [categoryData.image] : [])
@@ -105,10 +102,10 @@ const SubEdit = () => {
 
     const fetchDivision = async () => {
         try {
-            const response = await axioisInstance.get(`category`)
+            const response = await axioisInstance.get(`division`)
             const divisionData = response.data?.data || []
             setDivData(divisionData)
-            const transformedOptions = divisionData.map((item: category) => ({
+            const transformedOptions = divisionData.map((item: Division) => ({
                 value: item.id,
                 label: item.name,
             }))
@@ -201,15 +198,14 @@ const SubEdit = () => {
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.post('sub-category', formData)
+            const response = await axioisInstance.post('category', formData)
 
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message ||
-                    'Sub-Category Changed Successfully',
+                    response?.data?.message || 'Category Changed Successfully',
             })
-            navigate('/app/category/subCategory')
+            navigate('/app/category/category')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -226,7 +222,7 @@ const SubEdit = () => {
     const initialValue: FormModel = {
         id: 0,
         name: '',
-        category_name: '',
+        division: 0,
         title: '',
         description: '',
         image: '',
@@ -238,13 +234,13 @@ const SubEdit = () => {
         create_date: moment(date).format('YYYY-MM-DD'),
         update_date: '',
         is_try_and_buy: false,
-        last_updated_by: '',
+        last_updated_by: catedate.last_updated_by,
         images: [],
     }
 
     return (
         <div>
-            <div className="text-xl mb-10"> Add SubCategory</div>
+            <div className="text-xl mb-10">ADD NEW CATEGORY</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
@@ -271,15 +267,14 @@ const SubEdit = () => {
 
                                 <FormItem
                                     asterisk
-                                    label="Category Name"
+                                    label="Division Name"
                                     invalid={
-                                        errors.category_name &&
-                                        touched.category_name
+                                        errors.division && touched.division
                                     }
-                                    errorMessage={errors.category_name}
+                                    errorMessage={errors.division}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="category_name">
+                                    <Field name="division">
                                         {({ field, form }: FieldProps<any>) => (
                                             <Select
                                                 field={field}
@@ -527,4 +522,4 @@ const SubEdit = () => {
     )
 }
 
-export default SubEdit
+export default CategoryAdd

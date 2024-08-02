@@ -13,6 +13,7 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
 
 type ProductVariant = {
     name: string
@@ -66,6 +67,7 @@ const Products = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const navigate = useNavigate()
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -211,16 +213,32 @@ const Products = () => {
         setPageSize(Number(value))
     }
 
+    const handleProduct = () => {
+        navigate('/app/catalog/products/addNew')
+    }
+
     return (
         <div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="p-2 border rounded"
-                />
+            <div className="flex justify-between mb-2">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border rounded"
+                    />
+                </div>
+                <div className="flex items-end justify-end mb-2">
+                    <button
+                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                        onClick={handleProduct}
+                    >
+                        ADD NEW PRODUCT
+                    </button>{' '}
+                    <br />
+                    <br />
+                </div>
             </div>
             <Table>
                 <THead>

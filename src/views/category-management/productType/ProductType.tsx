@@ -1,20 +1,11 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
+import moment from 'moment'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-    useGlobalFilter,
-} from '@tanstack/react-table'
-import type { ColumnDef } from '@tanstack/react-table'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
 
 type Product = {
     id: number
@@ -54,19 +45,13 @@ const ProductType = () => {
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('') //1
+    const [globalFilter, setGlobalFilter] = useState('')
 
-    const fetchData = async (
-        page: number,
-        pageSize: number,
-        filter: string = '',
-    ) => {
+    const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(
-                `product-type?p=${page}&page_size=${pageSize}`,
-            )
+            const response = await axiosInstance.get('product-type')
             const data = response.data.data
-            const total = response.data.total
+            const total = data.length
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -75,140 +60,79 @@ const ProductType = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize, globalFilter])
+        fetchData()
+    }, [])
+
+    // Apply global filter
+    const filteredData = data.filter((item) =>
+        Object.values(item).some((val) =>
+            val
+                ? val
+                      .toString()
+                      .toLowerCase()
+                      .includes(globalFilter.toLowerCase())
+                : false,
+        ),
+    )
+
+    // Paginate filtered data
+    const paginatedData = filteredData.slice(
+        (page - 1) * pageSize,
+        page * pageSize,
+    )
+    const totalPages = Math.ceil(filteredData.length / pageSize)
+
+    const columns = [
+        { header: 'Name', accessor: 'name' },
+        {
+            header: 'Create Date',
+            accessor: 'create_date',
+            format: (value) => moment(value).format('YYYY-MM-DD'),
+        },
+        { header: 'Title', accessor: 'title' },
+        { header: 'Description', accessor: 'description' },
+        {
+            header: 'Image',
+            accessor: 'image',
+            format: (value) => <img src={value} alt="product" width="50" />,
+        },
+        { header: 'Footer', accessor: 'footer' },
+        { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
+        { header: 'Position', accessor: 'position' },
+        { header: 'Gender', accessor: 'gender' },
+        {
+            header: 'Active',
+            accessor: 'is_active',
+            format: (value) => (value ? 'Yes' : 'No'),
+        },
+        {
+            header: 'Update Date',
+            accessor: 'update_date',
+            format: (value) => moment(value).format('YYYY-MM-DD'),
+        },
+        {
+            header: 'Try and Buy',
+            accessor: 'is_try_and_buy',
+            format: (value) => (value ? 'Yes' : 'No'),
+        },
+        { header: 'Last Updated By', accessor: 'last_updated_by' },
+        {
+            header: 'Action',
+            accessor: 'id',
+            format: (value) => (
+                <Button onClick={() => handleActionClick(value)}>EDIT</Button>
+            ),
+        },
+    ]
+
+    const navigate = useNavigate()
 
     const handleActionClick = (id: any) => {
         navigate(`/app/category/productType/${id}`)
     }
 
-    const columns = useMemo<ColumnDef<Product>[]>(
-        () => [
-            {
-                header: 'Name',
-                accessorKey: 'name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Create Date',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
-            },
-            {
-                header: 'Title',
-                accessorKey: 'title',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Description',
-                accessorKey: 'description',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Image',
-                accessorKey: 'image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue() as string}
-                        alt="product"
-                        width="50"
-                    />
-                ),
-            },
-            {
-                header: 'Footer',
-                accessorKey: 'footer',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Quick Filter Tags',
-                accessorKey: 'quick_filter_tags',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Position',
-                accessorKey: 'position',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Gender',
-                accessorKey: 'gender',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Active',
-                accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Update Date',
-                accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
-            },
-            {
-                header: 'Try and Buy',
-                accessorKey: 'is_try_and_buy',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Last Updated By',
-                accessorKey: 'last_updated_by',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Action',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        EDIT
-                    </Button>
-                ),
-            },
-        ],
-        [],
-    )
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
-        },
-        onGlobalFilterChange: setGlobalFilter,
-    })
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
-    const navigate = useNavigate()
-
     const handleSeller = () => {
-        navigate('/app/sellers/addnew')
+        navigate('/app/category/productType/addNew')
     }
 
     return (
@@ -218,7 +142,7 @@ const ProductType = () => {
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
                     onClick={handleSeller}
                 >
-                    ADD NEW
+                    ADD NEW PRODUCT_TYPE
                 </button>{' '}
                 <br />
                 <br />
@@ -234,28 +158,20 @@ const ProductType = () => {
             </div>
             <Table>
                 <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
+                    <Tr>
+                        {columns.map((col) => (
+                            <Th key={col.header}>{col.header}</Th>
+                        ))}
+                    </Tr>
                 </THead>
                 <TBody>
-                    {table.getRowModel().rows.map((row) => (
+                    {paginatedData.map((row) => (
                         <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
+                            {columns.map((col) => (
+                                <Td key={col.accessor}>
+                                    {col.format
+                                        ? col.format(row[col.accessor])
+                                        : row[col.accessor]}
                                 </Td>
                             ))}
                         </Tr>
@@ -264,10 +180,10 @@ const ProductType = () => {
             </Table>
             <div className="flex items-center justify-between mt-4">
                 <Pagination
-                    pageSize={pageSize}
                     currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
+                    // totalPages={totalPages}
+                    onChange={(page) => setPage(page)}
+                    total={totalPages}
                 />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
@@ -277,7 +193,9 @@ const ProductType = () => {
                             (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) =>
+                            setPageSize(Number(option?.value))
+                        }
                     />
                 </div>
             </div>

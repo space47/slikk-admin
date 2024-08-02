@@ -86,7 +86,7 @@ const BrandReturns = () => {
 
     useEffect(() => {
         fetchData(page, pageSize, from, to)
-    }, [page, pageSize, selectedCompany])
+    }, [page, pageSize, selectedCompany, from, to])
 
     const columns = useMemo<ColumnDef<OrderItem>[]>(
         () => [

@@ -217,7 +217,7 @@ const CategoryTable = () => {
     }
 
     const handleSeller = () => {
-        navigate('/app/sellers/addnew')
+        navigate('/app/category/category/add')
     }
 
     return (
@@ -227,7 +227,7 @@ const CategoryTable = () => {
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
                     onClick={handleSeller}
                 >
-                    ADD NEW DIVISION
+                    ADD NEW CATEGORY
                 </button>{' '}
                 <br />
                 <br />

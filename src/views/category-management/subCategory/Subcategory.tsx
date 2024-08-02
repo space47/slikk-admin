@@ -1,25 +1,16 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
+import moment from 'moment'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-    useGlobalFilter,
-} from '@tanstack/react-table'
-import type { ColumnDef } from '@tanstack/react-table'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
 
 type Product = {
     id: number
     name: string
-    category_name: string
+    sub_category_name: string
     title: string
     description: string
     image: string
@@ -31,6 +22,7 @@ type Product = {
     create_date: string
     update_date: string
     is_try_and_buy: boolean
+    sub_category: number
     last_updated_by: string | null
 }
 
@@ -53,16 +45,13 @@ const Subcategory = () => {
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('') //1
+    const [globalFilter, setGlobalFilter] = useState('')
 
-    const fetchData = async (page: number, pageSize: number) => {
+    const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(
-                `sub-category?p=${page}&page_size=${pageSize}`,
-            )
-
+            const response = await axiosInstance.get('sub-category')
             const data = response.data.data
-            const total = response.data
+            const total = data.length
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -71,144 +60,76 @@ const Subcategory = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize])
+        fetchData()
+    }, [])
+
+    // Apply global filter
+    const filteredData = data.filter((item) =>
+        Object.values(item).some((val) =>
+            val
+                ? val
+                      .toString()
+                      .toLowerCase()
+                      .includes(globalFilter.toLowerCase())
+                : false,
+        ),
+    )
+
+    // Paginate filtered data
+    const paginatedData = filteredData.slice(
+        (page - 1) * pageSize,
+        page * pageSize,
+    )
+    const totalPages = Math.ceil(filteredData.length / pageSize)
+
+    const columns = [
+        { header: 'Name', accessor: 'name' },
+        {
+            header: 'Create Date',
+            accessor: 'create_date',
+            format: (value) => moment(value).format('YYYY-MM-DD'),
+        },
+        { header: 'Title', accessor: 'title' },
+        { header: 'Description', accessor: 'description' },
+        {
+            header: 'Image',
+            accessor: 'image',
+            format: (value) => <img src={value} alt="product" width="50" />,
+        },
+        { header: 'Footer', accessor: 'footer' },
+        { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
+        { header: 'Position', accessor: 'position' },
+        { header: 'Gender', accessor: 'gender' },
+        {
+            header: 'Active',
+            accessor: 'is_active',
+            format: (value) => (value ? 'Yes' : 'No'),
+        },
+        {
+            header: 'Update Date',
+            accessor: 'update_date',
+            format: (value) => moment(value).format('YYYY-MM-DD'),
+        },
+        {
+            header: 'Try and Buy',
+            accessor: 'is_try_and_buy',
+            format: (value) => (value ? 'Yes' : 'No'),
+        },
+        { header: 'Last Updated By', accessor: 'last_updated_by' },
+        {
+            header: 'Action',
+            accessor: 'id',
+            format: (value) => (
+                <Button onClick={() => handleActionClick(value)}>EDIT</Button>
+            ),
+        },
+    ]
+
+    const navigate = useNavigate()
 
     const handleActionClick = (id: any) => {
         navigate(`/app/category/subCategory/${id}`)
     }
-
-    const columns = useMemo<ColumnDef<Product>[]>(
-        () => [
-            {
-                header: 'Name',
-                accessorKey: 'name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Category Name',
-                accessorKey: 'category_name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Title',
-                accessorKey: 'title',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Description',
-                accessorKey: 'description',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Image',
-                accessorKey: 'image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue()}
-                        alt="Image"
-                        className="w-24 h-20 object-cover"
-                    />
-                ),
-            },
-            {
-                header: 'Footer',
-                accessorKey: 'footer',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Quick_Filter',
-                accessorKey: 'quick_filter_tags',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Position',
-                accessorKey: 'position',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Gender',
-                accessorKey: 'gender',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'ACTIVE',
-                accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Create DATE',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
-            },
-            {
-                header: 'Update DATE',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
-            },
-            {
-                header: 'Try_&_Buys',
-                accessorKey: 'is_try_and_buy',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Last Updated By',
-                accessorKey: 'last_updated_by',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-
-            {
-                header: 'Action',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        EDIT
-                    </Button>
-                ),
-            },
-        ],
-        [],
-    )
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
-        },
-        onGlobalFilterChange: setGlobalFilter,
-    })
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
-    const navigate = useNavigate()
 
     const handleSeller = () => {
         navigate('/app/category/subCategory/addNew')
@@ -221,7 +142,7 @@ const Subcategory = () => {
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
                     onClick={handleSeller}
                 >
-                    ADD Category
+                    ADD NEW SUB_CATEGORY
                 </button>{' '}
                 <br />
                 <br />
@@ -236,29 +157,21 @@ const Subcategory = () => {
                 />
             </div>
             <Table>
-                <THead className="items-center">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
+                <THead>
+                    <Tr>
+                        {columns.map((col) => (
+                            <Th key={col.header}>{col.header}</Th>
+                        ))}
+                    </Tr>
                 </THead>
                 <TBody>
-                    {table.getRowModel().rows.map((row) => (
+                    {paginatedData.map((row) => (
                         <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
+                            {columns.map((col) => (
+                                <Td key={col.accessor}>
+                                    {col.format
+                                        ? col.format(row[col.accessor])
+                                        : row[col.accessor]}
                                 </Td>
                             ))}
                         </Tr>
@@ -267,10 +180,9 @@ const Subcategory = () => {
             </Table>
             <div className="flex items-center justify-between mt-4">
                 <Pagination
-                    pageSize={pageSize}
                     currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
+                    total={totalPages}
+                    onChange={(page) => setPage(page)}
                 />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
@@ -280,7 +192,9 @@ const Subcategory = () => {
                             (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) =>
+                            setPageSize(Number(option?.value))
+                        }
                     />
                 </div>
             </div>

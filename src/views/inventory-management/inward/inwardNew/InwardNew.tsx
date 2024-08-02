@@ -184,7 +184,7 @@ const MixedFormControl = () => {
         try {
             console.log(formData.get('file'))
             const response = await axioisInstance.post(
-                'fileupload/dashboard',
+                'fileupload/dashboard', //only fileupload // image
                 formData,
                 {
                     headers: {
@@ -479,10 +479,6 @@ const MixedFormControl = () => {
 
                                 <FormItem
                                     label=""
-                                    invalid={
-                                        errors.document && touched.document
-                                    }
-                                    errorMessage={errors.document}
                                     className="col-span-1 w-[80%]"
                                 >
                                     <Field
@@ -576,15 +572,11 @@ const MixedFormControl = () => {
                             <FormItem
                                 label="SLIKK OWNED"
                                 invalid={
-                                    errors.singleCheckbox &&
-                                    touched.singleCheckbox
+                                    errors.slikk_owned && touched.slikk_owned
                                 }
                                 // errorMessage={errors.singleCheckbox}
                             >
-                                <Field
-                                    name="singleCheckbox"
-                                    component={Checkbox}
-                                >
+                                <Field name="slikk_owned" component={Checkbox}>
                                     Items purchased by SLIKK
                                 </Field>
                             </FormItem>

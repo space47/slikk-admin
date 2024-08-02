@@ -28,6 +28,30 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCategory.division',
+        path: `${APP_PREFIX_PATH}/category/division/:id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/division/divisiontable/DivisionEdit'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.division',
+        path: `${APP_PREFIX_PATH}/category/division/addNew`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/division/divisiontable/DivisionNew'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+
+    // Category.................................................
+    {
         key: 'appsCategory.category',
         path: `${APP_PREFIX_PATH}/category/category`,
         component: lazy(
@@ -49,6 +73,20 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsCategory.category',
+        path: `${APP_PREFIX_PATH}/category/category/add`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/category/categoryTable/CategoryAdd'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+
+    // ...................................................................................................
+
     {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory/:id`,
@@ -172,6 +210,14 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCategory.products',
+        path: `${APP_PREFIX_PATH}/catalog/products/addNew`,
+        component: lazy(
+            () => import('@/views/category-management/catalog/Addnew'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory`,
         component: lazy(
@@ -184,6 +230,17 @@ const appsRoute: Routes = [
         path: `${APP_PREFIX_PATH}/category/productType/:id`,
         component: lazy(
             () => import('@/views/category-management/productType/ProductEdit'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.productType',
+        path: `${APP_PREFIX_PATH}/category/productType/addNew`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/productType/ProductTypeNew'
+                ),
         ),
         authority: [ADMIN, USER],
     },
@@ -289,10 +346,52 @@ const appsRoute: Routes = [
             header: 'Add New Category',
         },
     },
+
+    {
+        key: 'apps.creatorPost',
+        path: `${APP_PREFIX_PATH}/userposts/approval`,
+        component: lazy(() => import('@/views/creatorPost/CreatorPost')),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'apps.creatorPost',
+        path: `${APP_PREFIX_PATH}/userposts/approval/pending/:id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/creatorPost/pending/pendingDetails/PendingDetails'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'apps.creatorPost',
+        path: `${APP_PREFIX_PATH}/userposts/approval/approved/:id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/creatorPost/accepted/acceptedDetails/AcceptedDetails'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'apps.creatorPost',
+        path: `${APP_PREFIX_PATH}/userposts/approval/reject/:id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/creatorPost/rejected/rejectDetails/RejectDetails'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+
     //slikk nav category
 
     {
-        key: 'appsProject.dashboard',
+        key: 'sProject.dashboard',
         path: `${APP_PREFIX_PATH}/project/dashboard`,
         component: lazy(() => import('@/views/project/ProjectDashboard')),
         authority: [ADMIN, USER],

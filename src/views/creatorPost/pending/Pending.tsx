@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
 import {
     useReactTable,
     getCoreRowModel,
@@ -12,34 +11,62 @@ import {
     useGlobalFilter,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
 
-interface Brand {
-    id: number
+interface Product {
+    barcode: string
+    mrp: string
+    sp: string
     name: string
-    title: string
-    description: string
+    brand: string
+    product_feedback: string | null
+    is_wish_listed: boolean
+    is_try_and_buy: boolean
+    trends: any | null
+    styles: any | null
+    inventory_count: number
     image: string
-    is_top: boolean
-    is_exclusive: boolean
-    is_private: boolean
-    footer: string | null
-    quick_filter_tags: string[]
+    division: string
+    category: string
+    sub_category: string
+    product_type: string
+    variants: any[]
+}
+
+interface Post {
+    id: number
+    url: string
+    products: Product[]
+    post_id: string
+    caption: string
+    type: string
+    latitude: string
+    longitude: string
+    likes_count: number
+    comments_count: number
+    clicks_count: number
+    unique_clicks_count: number
+    views_count: number
+    thumbnail_url: string
+    low_res_url: string
+    video_url: string
+    video_low_bandwidth_url: string
+    video_low_res_url: string
     is_active: boolean
     create_date: string
     update_date: string
-    is_try_and_buy: boolean
-    last_updated_by: string | null
-}
-interface Action {
-    onClick: (id: number) => void
+    approval_status: string
+    owner: string
 }
 
 type Option = {
     value: number
     label: string
+}
+
+interface PendingProps {
+    data: Post[]
+    totalData: number | undefined
 }
 
 const { Tr, Th, Td, THead, TBody } = Table
@@ -51,129 +78,84 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const Brand = () => {
-    const [data, setData] = useState<Brand[]>([])
-    const [totalData, setTotalData] = useState(0)
+const Pending: React.FC<PendingProps> = ({ data, totalData }) => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const navigate = useNavigate()
 
-    const fetchData = async (page: number, pageSize: number) => {
-        try {
-            const response = await axiosInstance.get(
-                `brands?p=${page}&page_size=${pageSize}`,
-            )
-            const data = response.data.data.results
-            const total = response.data.data.count
-            setData(data)
-            setTotalData(total)
-        } catch (error) {
-            console.error(error)
-        }
+    const handlePostClick = (id: number, post_id: string) => {
+        navigate(`/app/userposts/approval/pending/${id}?post_id=${post_id}`)
     }
 
-    useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize])
-
-    const handleActionClick = (id: any) => {
-        navigate(`/app/category/brand/${id}`)
-    }
-
-    const columns = useMemo<ColumnDef<Brand & Action>[]>(
+    const columns = useMemo<ColumnDef<Post>[]>(
         () => [
             {
-                header: 'Name',
-                accessorKey: 'name',
+                header: 'ID',
+                accessorKey: 'id',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Title',
-                accessorKey: 'title',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Description',
-                accessorKey: 'description',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Image',
-                accessorKey: 'image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue() as string}
-                        alt="product"
-                        width="50"
-                    />
+                header: 'Post ID',
+                accessorKey: 'post_id',
+                cell: ({ row, getValue }) => (
+                    <div
+                        className="cursor-pointer bg-gray-300 px-4 py-1 rounded-xl text-gray-500 font-semibold"
+                        onClick={() =>
+                            handlePostClick(
+                                row.original.id,
+                                getValue() as string,
+                            )
+                        }
+                    >
+                        {getValue()}
+                    </div>
                 ),
             },
             {
-                header: 'Top',
-                accessorKey: 'is_top',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+                header: 'URL',
+                accessorKey: 'url',
+                cell: (info) => info.getValue(),
             },
+
             {
-                header: 'Exclusive',
-                accessorKey: 'is_exclusive',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Private',
-                accessorKey: 'is_private',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Footer',
-                accessorKey: 'footer',
+                header: 'Caption',
+                accessorKey: 'caption',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Quick Filter Tags',
-                accessorKey: 'quick_filter_tags',
-                cell: (info) => (info.getValue() as string[]).join(', '),
+                header: 'Type',
+                accessorKey: 'type',
+                cell: (info) => info.getValue(),
             },
             {
-                header: 'Active',
-                accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+                header: 'Thumbnail',
+                accessorKey: 'thumbnail_url',
+                cell: (info) => (
+                    <img src={info.getValue() as string} alt="Thumbnail" />
+                ),
             },
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: (info) =>
+                    new Date(info.getValue() as string).toLocaleDateString(),
             },
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: (info) =>
+                    new Date(info.getValue() as string).toLocaleDateString(),
             },
             {
-                header: 'Try and Buy',
-                accessorKey: 'is_try_and_buy',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Last Updated By',
-                accessorKey: 'last_updated_by',
+                header: 'Approval Status',
+                accessorKey: 'approval_status',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Action',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        EDIT
-                    </Button>
-                ),
+                header: 'Owner',
+                accessorKey: 'owner',
+                cell: (info) => info.getValue(),
             },
         ],
         [],
@@ -209,24 +191,8 @@ const Brand = () => {
         setPageSize(Number(value))
     }
 
-    const navigate = useNavigate()
-
-    const handleSeller = () => {
-        navigate('/app/sellers/addnew')
-    }
-
     return (
         <div>
-            <div className="flex items-end justify-end mb-2">
-                <button
-                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleSeller}
-                >
-                    ADD NEW
-                </button>
-                <br />
-                <br />
-            </div>
             <div className="mb-4">
                 <input
                     type="text"
@@ -289,4 +255,4 @@ const Brand = () => {
     )
 }
 
-export default Brand
+export default Pending

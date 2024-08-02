@@ -17,6 +17,26 @@ import moment from 'moment'
 type FormModel = {
     id: number
     name: string
+    sub_category_name: string
+    title: string
+    description: string
+    image: string
+    footer: string | null
+    quick_filter_tags: string
+    position: number
+    gender: string
+    is_active: boolean
+    create_date: string
+    update_date: string
+    is_try_and_buy: boolean
+    sub_category: number
+    last_updated_by: string | null
+    images: File[]
+}
+
+type category = {
+    id: number
+    name: string
     category_name: string
     title: string
     description: string
@@ -30,26 +50,6 @@ type FormModel = {
     update_date: string
     is_try_and_buy: boolean
     last_updated_by: string | null
-    images: File[]
-}
-
-type category = {
-    id: number
-    name: string
-    division: number
-    division_name: string
-    title: string
-    description: string
-    image: string
-    footer: string
-    quick_filter_tags: string
-    position: number
-    gender: string
-    is_active: boolean
-    create_date: string
-    update_date: string
-    is_try_and_buy: boolean
-    last_updated_by: string
 }
 interface Option {
     value: number
@@ -82,19 +82,18 @@ const MAX_UPLOAD = 8
 //     // document: Yup.string().nullable(),
 // })
 
-const SubEdit = () => {
+const ProducTypeNew = () => {
     const [catedate, setCateData] = useState<FormModel | null>(null)
     const [divdata, setDivData] = useState<category[]>()
     const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
     const date = new Date()
 
-    const { id } = useParams()
     const navigate = useNavigate()
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`sub-category`)
+            const response = await axioisInstance.get(`product-type`)
             const categoryData = response.data?.data[0] || {}
             setCateData(categoryData)
             // setImageView(categoryData.image ? [categoryData.image] : [])
@@ -105,7 +104,7 @@ const SubEdit = () => {
 
     const fetchDivision = async () => {
         try {
-            const response = await axioisInstance.get(`category`)
+            const response = await axioisInstance.get(`sub-category`)
             const divisionData = response.data?.data || []
             setDivData(divisionData)
             const transformedOptions = divisionData.map((item: category) => ({
@@ -201,15 +200,15 @@ const SubEdit = () => {
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.post('sub-category', formData)
+            const response = await axioisInstance.post('product-type', formData)
 
             notification.success({
                 message: 'Success',
                 description:
                     response?.data?.message ||
-                    'Sub-Category Changed Successfully',
+                    'Product Type Changed Successfully',
             })
-            navigate('/app/category/subCategory')
+            navigate('/app/category/productType')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -226,7 +225,7 @@ const SubEdit = () => {
     const initialValue: FormModel = {
         id: 0,
         name: '',
-        category_name: '',
+        sub_category_name: '',
         title: '',
         description: '',
         image: '',
@@ -239,12 +238,13 @@ const SubEdit = () => {
         update_date: '',
         is_try_and_buy: false,
         last_updated_by: '',
+        sub_category: 0,
         images: [],
     }
 
     return (
         <div>
-            <div className="text-xl mb-10"> Add SubCategory</div>
+            <div className="text-xl mb-10"> ADD PRODUCT TYPE</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
@@ -257,7 +257,7 @@ const SubEdit = () => {
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     asterisk
-                                    label="Category Name"
+                                    label="Product Type"
                                     invalid={errors.name && touched.name}
                                     errorMessage={errors.name}
                                     className="col-span-1 w-1/2"
@@ -271,15 +271,15 @@ const SubEdit = () => {
 
                                 <FormItem
                                     asterisk
-                                    label="Category Name"
+                                    label="Sub-Category Name"
                                     invalid={
-                                        errors.category_name &&
-                                        touched.category_name
+                                        errors.sub_category_name &&
+                                        touched.sub_category_name
                                     }
-                                    errorMessage={errors.category_name}
+                                    errorMessage={errors.sub_category_name}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="category_name">
+                                    <Field name="sub_category">
                                         {({ field, form }: FieldProps<any>) => (
                                             <Select
                                                 field={field}
@@ -299,6 +299,41 @@ const SubEdit = () => {
                                             />
                                         )}
                                     </Field>
+                                </FormItem>
+                            </FormContainer>
+
+                            {/* Title and desc............................................................................ */}
+
+                            <FormContainer className="flex flex-row gap-7 ">
+                                <FormItem
+                                    asterisk
+                                    label="Title"
+                                    invalid={errors.title && touched.title}
+                                    errorMessage={errors.title}
+                                    className="col-span-1 w-1/2"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="title"
+                                        component={Input}
+                                    />
+                                </FormItem>
+
+                                <FormItem
+                                    asterisk
+                                    label="Description"
+                                    invalid={
+                                        errors.description &&
+                                        touched.description
+                                    }
+                                    errorMessage={errors.description}
+                                    className="col-span-1 w-1/2"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="description"
+                                        component={Input}
+                                    />
                                 </FormItem>
                             </FormContainer>
 
@@ -527,4 +562,4 @@ const SubEdit = () => {
     )
 }
 
-export default SubEdit
+export default ProducTypeNew

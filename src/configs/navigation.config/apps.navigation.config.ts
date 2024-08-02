@@ -318,6 +318,21 @@ const appsNavigationConfig: NavigationTree[] = [
                 ],
             },
 
+            // Creator Post.......................................................................................................
+
+            {
+                key: 'apps.creatorPost',
+                path: `${APP_PREFIX_PATH}/userposts/approval`,
+                title: 'Creator Posts',
+                translateKey: 'nav.apps.creatorPost.creatorPost',
+                icon: 'reels',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [],
+            },
+
+            // .............................................................................................................
+
             {
                 key: 'apps.project',
                 path: '',

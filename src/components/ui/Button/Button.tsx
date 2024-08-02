@@ -21,7 +21,15 @@ export interface ButtonProps
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void
     shape?: TypeAttributes.Shape
     size?: TypeAttributes.Size
-    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new'
+    variant?:
+        | 'solid'
+        | 'twoTone'
+        | 'plain'
+        | 'default'
+        | 'new'
+        | 'accept'
+        | 'reject'
+        | 'pending'
 }
 
 type ButtonColor = {
@@ -143,6 +151,35 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         }
         return getBtnColor(btn)
     }
+    const acceptColor = () => {
+        const btn = {
+            bgColor: `bg-green-500 border border-green-700 dark:bg-green-600 dark:border-green-800`,
+            textColor: `text-white dark:text-white`,
+            hoverColor: `hover:bg-green-600 dark:hover:bg-green-700`,
+            activeColor: `active:bg-green-400 dark:active:bg-green-500 dark:active:border-green-700`,
+        }
+        return getBtnColor(btn)
+    }
+
+    const rejectColor = () => {
+        const btn = {
+            bgColor: `bg-red-500 border border-red-700 dark:bg-red-600 dark:border-red-800`,
+            textColor: `text-white dark:text-white`,
+            hoverColor: `hover:bg-red-600 dark:hover:bg-red-700`,
+            activeColor: `active:bg-red-400 dark:active:bg-red-500 dark:active:border-red-700`,
+        }
+        return getBtnColor(btn)
+    }
+
+    const pendingColor = () => {
+        const btn = {
+            bgColor: `bg-orange-500 border border-orange-700 dark:bg-orange-600 dark:border-orange-800`,
+            textColor: `text-white dark:text-white`,
+            hoverColor: `hover:bg-orange-600 dark:hover:bg-orange-700`,
+            activeColor: `active:bg-orange-400 dark:active:bg-orange-500 dark:active:border-orange-700`,
+        }
+        return getBtnColor(btn)
+    }
 
     const defaultColor = () => {
         const btn = {
@@ -191,6 +228,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 return defaultColor()
             case 'new':
                 return newColor()
+            case 'accept':
+                return acceptColor()
+            case 'reject':
+                return rejectColor()
+            case 'pending':
+                return pendingColor()
             default:
                 return defaultColor()
         }

@@ -1,20 +1,12 @@
-import React, { useEffect, useState, useMemo } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from 'react'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
+import moment from 'moment'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-    useGlobalFilter,
-} from '@tanstack/react-table'
-import type { ColumnDef } from '@tanstack/react-table'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
 
 interface DataItem {
     id: number
@@ -52,13 +44,11 @@ const DivisionTable = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
 
-    const fetchData = async (page: number, pageSize: number) => {
+    const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(
-                `division?p=${page}&page_size=${pageSize}`,
-            )
+            const response = await axiosInstance.get('division')
             const data = response.data.data
-            const total = response.data.total
+            const total = data.length
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -67,131 +57,80 @@ const DivisionTable = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize])
+        fetchData()
+    }, [])
 
-    const handleActionClick = (id: number) => {
-        console.log('OK', id)
-    }
-
-    const columns = useMemo<ColumnDef<DataItem>[]>(
-        () => [
-            {
-                header: 'Name',
-                accessorKey: 'name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Description',
-                accessorKey: 'description',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Image',
-                accessorKey: 'image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue() as string}
-                        alt="product"
-                        width="50"
-                    />
-                ),
-            },
-            {
-                header: 'Footer',
-                accessorKey: 'footer',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Quick Filter Tags',
-                accessorKey: 'quick_filter_tags',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'SEO Tags',
-                accessorKey: 'seo_tags',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Position',
-                accessorKey: 'position',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Active',
-                accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Create Date',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
-            },
-            {
-                header: 'Update Date',
-                accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
-            },
-            {
-                header: 'Last Updated By',
-                accessorKey: 'last_updated_by',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Action',
-                accessorKey: 'action',
-                cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        EDIT
-                    </Button>
-                ),
-            },
-        ],
-        [],
+    // Apply global filter
+    const filteredData = data.filter((item) =>
+        Object.values(item).some((val) =>
+            val
+                ? val
+                      .toString()
+                      .toLowerCase()
+                      .includes(globalFilter.toLowerCase())
+                : false,
+        ),
     )
 
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
-        },
-        onGlobalFilterChange: setGlobalFilter,
-    })
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
     const navigate = useNavigate()
 
-    const handleSeller = () => {
-        navigate('/app/sellers/addnew')
+    const handleActionClick = (id: any) => {
+        navigate(`/app/category/division/${id}`)
     }
+
+    const handleSeller = () => {
+        navigate('/app/category/division/addNew')
+    }
+
+    // Paginate filtered data
+    const paginatedData = filteredData.slice(
+        (page - 1) * pageSize,
+        page * pageSize,
+    )
+    const totalPages = Math.ceil(filteredData.length / pageSize)
+
+    const columns = [
+        { header: 'Name', accessor: 'name' },
+        {
+            header: 'Create Date',
+            accessor: 'create_date',
+            format: (value) => moment(value).format('YYYY-MM-DD'),
+        },
+        { header: 'Title', accessor: 'title' },
+        { header: 'Description', accessor: 'description' },
+        {
+            header: 'Image',
+            accessor: 'image',
+            format: (value) => <img src={value} alt="product" width="50" />,
+        },
+        { header: 'Footer', accessor: 'footer' },
+        { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
+        { header: 'Position', accessor: 'position' },
+        { header: 'Gender', accessor: 'gender' },
+        {
+            header: 'Active',
+            accessor: 'is_active',
+            format: (value) => (value ? 'Yes' : 'No'),
+        },
+        {
+            header: 'Update Date',
+            accessor: 'update_date',
+            format: (value) => moment(value).format('YYYY-MM-DD'),
+        },
+        {
+            header: 'Try and Buy',
+            accessor: 'is_try_and_buy',
+            format: (value) => (value ? 'Yes' : 'No'),
+        },
+        { header: 'Last Updated By', accessor: 'last_updated_by' },
+        {
+            header: 'Action',
+            accessor: 'id',
+            format: (value) => (
+                <Button onClick={() => handleActionClick(value)}>EDIT</Button>
+            ),
+        },
+    ]
 
     return (
         <div>
@@ -200,7 +139,7 @@ const DivisionTable = () => {
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
                     onClick={handleSeller}
                 >
-                    ADD NEW DIVISION
+                    ADD NEW DISISION
                 </button>{' '}
                 <br />
                 <br />
@@ -216,28 +155,20 @@ const DivisionTable = () => {
             </div>
             <Table>
                 <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
+                    <Tr>
+                        {columns.map((col) => (
+                            <Th key={col.header}>{col.header}</Th>
+                        ))}
+                    </Tr>
                 </THead>
                 <TBody>
-                    {table.getRowModel().rows.map((row) => (
+                    {paginatedData.map((row) => (
                         <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
+                            {columns.map((col) => (
+                                <Td key={col.accessor}>
+                                    {col.format
+                                        ? col.format(row[col.accessor])
+                                        : row[col.accessor]}
                                 </Td>
                             ))}
                         </Tr>
@@ -246,10 +177,9 @@ const DivisionTable = () => {
             </Table>
             <div className="flex items-center justify-between mt-4">
                 <Pagination
-                    pageSize={pageSize}
                     currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
+                    total={totalPages}
+                    onChange={(page) => setPage(page)}
                 />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
@@ -259,7 +189,9 @@ const DivisionTable = () => {
                             (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) =>
+                            setPageSize(Number(option?.value))
+                        }
                     />
                 </div>
             </div>
