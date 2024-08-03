@@ -99,7 +99,6 @@ const AddProduct = () => {
     }
 
     const MAX_UPLOAD = 100
-    
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -279,6 +278,11 @@ const AddProduct = () => {
             })
         }
     }
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault()
+        }
+    }
 
     return (
         <div>
@@ -290,7 +294,7 @@ const AddProduct = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-2/3" onKeyDown={handleKeyDown}>
                         <FormContainer>
                             <div className="grid grid-cols-2 gap-4">
                                 <FormItem label="Barcode">

@@ -15,6 +15,10 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdCloseCircle } from 'react-icons/io'
 
 const EditProduct = () => {
+    const [datas, setDatas] = useState()
+    const [imagview, setImageView] = useState<string>('')
+    const [showData, setShowData] = useState(false)
+    const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
 
     const [initialValue, setInitialValue] = useState<Product>({
@@ -202,7 +206,7 @@ const EditProduct = () => {
                 reserve_quantity: userData.reserve_quantity || 1,
                 Status: userData.status || 'Available', //
                 image: userData.image,
-                images: userData.images,
+                images: [],
                 color_code: userData.color_code,
                 category_name: userData.filter_to_display_map.category,
                 is_premium: userData.is_premium || false,
@@ -257,7 +261,7 @@ const EditProduct = () => {
             const colorList = userData.color_code_link
                 ? userData.color_code_link.split(',')
                 : []
-            const imageList = userData.image ? userData.image.split(',') : []
+            const imageList = userData.image.split(',')
             const videoList = userData.video_link
                 ? userData.video_link.split(',')
                 : []
@@ -276,11 +280,29 @@ const EditProduct = () => {
         fetchUser()
     }, [])
 
+    // useEffect(() => {
+    //     console.log('ccccc', initialValue.images, initialValue.image)
+    //     setInitialValue({
+    //         ...initialValue,
+    //         image: allImage?.join(','),
+    //     })
+    // }, [allImage])
+
+    useEffect(() => {
+        console.log(
+            'cccccsss',
+            allImage,
+            initialValue.images,
+            initialValue.image,
+        )
+    }, [initialValue])
+
     const handleRemoveImage = (
         e: React.MouseEvent<HTMLButtonElement>,
         index: number,
     ) => {
         e.preventDefault()
+
         const updatedImages = allImage.filter((_, i) => i !== index)
         setAllImage(updatedImages)
     }
@@ -293,7 +315,7 @@ const EditProduct = () => {
         setAllVideo(updatedVideo)
     }
 
-    const handleColor = (
+    const handleRemoveColor = (
         e: React.MouseEvent<HTMLButtonElement>,
         index: number,
     ) => {
@@ -303,12 +325,19 @@ const EditProduct = () => {
     }
 
     const handleimage = async (files: File[]) => {
+        console.log('filessss', files)
+        if (!files) {
+            return
+        }
+        if (!files.length) {
+            return
+        }
         const formData = new FormData()
 
         files.forEach((file) => {
             formData.append('file', file)
         })
-        formData.append('file_type', 'grn')
+        formData.append('file_type', 'product')
 
         try {
             console.log(formData.get('file'))
@@ -319,6 +348,9 @@ const EditProduct = () => {
             })
             console.log(response)
             const newData = response.data.url
+            setImageView(newData)
+            console.log(newData)
+            setShowImage(true)
 
             notification.success({
                 message: 'Success',
@@ -338,12 +370,18 @@ const EditProduct = () => {
     }
 
     const handleVideo = async (files: File[]) => {
+        if (!files) {
+            return
+        }
+        if (!files.length) {
+            return
+        }
         const formData = new FormData()
 
         files.forEach((file) => {
             formData.append('file', file)
         })
-        formData.append('file_type', 'grn')
+        formData.append('file_type', 'product')
 
         try {
             console.log(formData.get('file'))
@@ -354,6 +392,8 @@ const EditProduct = () => {
             })
             console.log(response)
             const newData = response.data.url
+            setDatas(newData)
+            setShowData(true)
 
             notification.success({
                 message: 'Success',
@@ -373,27 +413,60 @@ const EditProduct = () => {
     }
 
     const handleSubmit = async (values: Product) => {
+        let img_url = allImage.join(','),
+            video_url = allVideo.join(','),
+            color_code_url = allColor.join(',')
+        console.log('image upload start')
         const imageUpload = await handleimage(values.images)
 
+        console.log('image uploaded')
+        if (values.images && values.images.length && !imageUpload) {
+            console.log('image Upload return', values.images)
+            return
+        } else if (values.images && imageUpload) {
+            const temp = [img_url, imageUpload]
+            img_url = temp.filter((t) => t).join(',')
+        }
+
+        console.log('color code start')
         const colorlink = await handleimage(values.color_code)
 
+        console.log('color uploaded')
+        if (values.color_code && values.color_code.length && !colorlink) {
+            return
+        } else if (values.color_code && colorlink) {
+            const temp = [color_code_url, colorlink]
+            color_code_url = temp.filter((t) => t).join(',')
+        }
+
+        console.log('video start')
         const videoUpload = await handleVideo(values.video)
+        console.log('video upload')
+        if (values.video && values.video.length && !videoUpload) {
+            return
+        } else if (values.video && videoUpload) {
+            const temp = [video_url, videoUpload]
+            video_url = temp.filter((t) => t).join(',')
+        }
 
         const formData = {
             ...values,
-            color_code: colorlink,
-            images: imageUpload,
-            video: videoUpload,
+            color_code: color_code_url,
+            image: img_url,
+            video_link: video_url,
         }
 
         try {
-            const response = await axioisInstance.patch('product/add', formData)
+            const response = await axioisInstance.patch(
+                `product/${barcode}`,
+                formData,
+            )
 
             console.log(response)
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Product created Successfully',
+                    response?.data?.message || 'Product Edited Successfully',
             })
             navigate('/app/catalog/products')
         } catch (error: any) {
@@ -401,7 +474,7 @@ const EditProduct = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Product not created ',
+                    error?.response?.data?.message || 'Product not Updated ',
             })
         }
     }
@@ -421,7 +494,11 @@ const EditProduct = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
-                    <Form className="w-full" onKeyDown={handleKeyDown}>
+                    <Form
+                        className="w-full"
+                        onKeyDown={handleKeyDown}
+                        onChange={() => console.log(values)}
+                    >
                         <FormContainer>
                             <div className="grid grid-cols-2 gap-4">
                                 <FormItem label="Barcode">
@@ -583,11 +660,11 @@ const EditProduct = () => {
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl">
                                     Image
                                     <FormContainer className=" mt-5  flex flex-col justify-normal items-center gap-4">
-                                        <div className="flex flex-row overflow-scroll w-[96%] gap-2">
+                                        <div className="flex flex-row overflow-x-scroll w-[96%] gap-2">
                                             {allImage.map((item, key) => (
                                                 <div
                                                     key={key}
-                                                    className="flex flex-col items-center"
+                                                    className="flex flex-col items-center min-w-fit"
                                                 >
                                                     <img
                                                         src={item}
@@ -618,7 +695,7 @@ const EditProduct = () => {
                                             }
                                             className="grid grid-rows-2"
                                         >
-                                            <Field name="image">
+                                            <Field name="images">
                                                 {({
                                                     form,
                                                 }: FieldProps<Product>) => (
@@ -654,7 +731,7 @@ const EditProduct = () => {
                                         <br />
                                         <br />
                                     </FormContainer>
-                                    <FormItem
+                                    {/* <FormItem
                                         label=""
                                         invalid={errors.image && touched.image}
                                         errorMessage={errors.image}
@@ -665,8 +742,9 @@ const EditProduct = () => {
                                             name="image"
                                             placeholder="Enter ImageUrl or Upload Image file"
                                             component={Input}
+                                            
                                         />
-                                    </FormItem>
+                                    </FormItem> */}
                                 </FormContainer>
 
                                 {/* .............................................................. */}
@@ -688,7 +766,10 @@ const EditProduct = () => {
                                                     <button
                                                         className="text-red-500 text-xl "
                                                         onClick={(e) =>
-                                                            handleColor(e, key)
+                                                            handleRemoveColor(
+                                                                e,
+                                                                key,
+                                                            )
                                                         }
                                                     >
                                                         <IoMdCloseCircle className="text-red-500" />
@@ -752,7 +833,7 @@ const EditProduct = () => {
                                     >
                                         <Field
                                             type="text"
-                                            name="images"
+                                            name="image"
                                             placeholder="Enter ImageUrl or Upload Image file"
                                             component={Input}
                                         />
@@ -799,7 +880,7 @@ const EditProduct = () => {
                                             }
                                             className="grid grid-rows-2"
                                         >
-                                            <Field name="video_link">
+                                            <Field name="video">
                                                 {({
                                                     form,
                                                 }: FieldProps<Product>) => (
@@ -814,7 +895,7 @@ const EditProduct = () => {
                                                             }
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
-                                                                    'Video',
+                                                                    'video',
                                                                     files,
                                                                 )
                                                             }
@@ -822,7 +903,7 @@ const EditProduct = () => {
                                                                 files,
                                                             ) =>
                                                                 form.setFieldValue(
-                                                                    'images',
+                                                                    'video',
                                                                     files,
                                                                 )
                                                             }
