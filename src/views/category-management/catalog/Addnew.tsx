@@ -16,6 +16,10 @@ import { Checkbox } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const AddProduct = () => {
+    const [datas, setDatas] = useState()
+    const [imagview, setImageView] = useState<string>('')
+    const [showData, setShowData] = useState(false)
+    const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
 
     const initialValues: Product = {
@@ -43,8 +47,8 @@ const AddProduct = () => {
         depth: 0,
         video_link: '',
         video: [],
-        minimum_quantity: 1,
-        reserve_quantity: 1,
+        minimum_quantity: 0,
+        reserve_quantity: 0,
         Status: 'Available',
         image: '',
         images: [],
@@ -66,7 +70,6 @@ const AddProduct = () => {
         skintone: '',
         coverage: '',
         sunprotection: '',
-
         concious: '',
         productHexCode: '',
         packsize: '',
@@ -96,6 +99,7 @@ const AddProduct = () => {
     }
 
     const MAX_UPLOAD = 100
+    
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -106,6 +110,10 @@ const AddProduct = () => {
             'image/jpg',
             'image/webp',
             'image/png',
+            'image/JPEG',
+            'image/JPG',
+            'image/WEBP',
+            'image/PNG',
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -169,7 +177,7 @@ const AddProduct = () => {
         files.forEach((file) => {
             formData.append('file', file)
         })
-        formData.append('file_type', 'grn')
+        formData.append('file_type', 'product')
 
         try {
             console.log(formData.get('file'))
@@ -180,6 +188,9 @@ const AddProduct = () => {
             })
             console.log(response)
             const newData = response.data.url
+            setImageView(newData)
+            console.log(newData)
+            setShowImage(true)
 
             notification.success({
                 message: 'Success',
@@ -204,7 +215,7 @@ const AddProduct = () => {
         files.forEach((file) => {
             formData.append('file', file)
         })
-        formData.append('file_type', 'grn')
+        formData.append('file_type', 'product')
 
         try {
             console.log(formData.get('file'))
@@ -215,6 +226,8 @@ const AddProduct = () => {
             })
             console.log(response)
             const newData = response.data.url
+            setDatas(newData)
+            setShowData(true)
 
             notification.success({
                 message: 'Success',
@@ -243,7 +256,7 @@ const AddProduct = () => {
         const formData = {
             ...values,
             color_code: colorlink,
-            images: imageUpload,
+            image: imageUpload,
             video: videoUpload,
         }
 
