@@ -16,6 +16,10 @@ import { Checkbox } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const AddProduct = () => {
+    const [datas, setDatas] = useState()
+    const [imagview, setImageView] = useState<string>('')
+    const [showData, setShowData] = useState(false)
+    const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
 
     const initialValues: Product = {
@@ -95,12 +99,7 @@ const AddProduct = () => {
     }
 
     const MAX_UPLOAD = 100
-
-    const AddProduct = () => {
-    const [datas, setDatas] = useState()
-    const [imagview, setImageView] = useState<string>('')
-    const [showData, setShowData] = useState(false)
-    const [showImage, setShowImage] = useState(false)
+    
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
