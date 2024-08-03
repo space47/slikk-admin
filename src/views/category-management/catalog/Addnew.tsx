@@ -46,8 +46,8 @@ const AddProduct = () => {
         minimum_quantity: 1,
         reserve_quantity: 1,
         Status: 'Available',
-        images: '',
-        image: [],
+        image: '',
+        images: [],
         color_code: [],
         category_name: '',
         is_premium: false,
@@ -56,21 +56,21 @@ const AddProduct = () => {
         sub_category_name: '',
         product_type_name: '',
         division_name: '',
-        Color: '', //
-        ColourShadeName: '',
-        SkinType: '',
-        Formulation: '',
-        HairType: '',
+        color: '', //
+        colorshade: '',
+        skinType: '',
+        formulation: '',
+        hairType: '',
         gender: 'Women',
-        Finish: '',
+        finish: '',
         skintone: '',
-        Coverage: '',
+        coverage: '',
         sunprotection: '',
-        WeightVolumeUnitOfMeasure: '',
-        Concious: '',
+
+        concious: '',
         productHexCode: '',
-        packSize: '',
-        productSize: '',
+        packsize: '',
+        size: '',
         ingrediants: '',
         vegnonveg: '',
         ingrediantsPreferences: '',
@@ -81,6 +81,18 @@ const AddProduct = () => {
         scentbasenotes: '',
         color_code_link: '',
         origincountry: 'India',
+        careinstruction: '',
+        antiodour: '',
+        pattern: '',
+        closuretype: '',
+        length: '',
+        necktype: '',
+        risetype: '',
+        sleevtype: '',
+        trend: '',
+        trendtype: '',
+        fit: '',
+        fabric: '',
     }
 
     const MAX_UPLOAD = 100
@@ -222,25 +234,16 @@ const AddProduct = () => {
     }
 
     const handleSubmit = async (values: Product) => {
-        const imageUpload = await handleimage(values.image)
-        if (imageUpload === 'Error') {
-            return
-        }
+        const imageUpload = await handleimage(values.images)
 
         const colorlink = await handleimage(values.color_code)
-        if (colorlink === 'Error') {
-            return
-        }
 
         const videoUpload = await handleVideo(values.video)
-        if (videoUpload === 'Error') {
-            return
-        }
 
         const formData = {
             ...values,
             color_code: colorlink,
-            image: imageUpload,
+            images: imageUpload,
             video: videoUpload,
         }
 
@@ -478,14 +481,14 @@ const AddProduct = () => {
                                         <FormItem
                                             label=""
                                             invalid={Boolean(
-                                                errors.image && touched.image,
+                                                errors.images && touched.images,
                                             )}
                                             errorMessage={
-                                                errors.image as string
+                                                errors.images as string
                                             }
                                             className="grid grid-rows-2"
                                         >
-                                            <Field name="images">
+                                            <Field name="image">
                                                 {({
                                                     form,
                                                 }: FieldProps<Product>) => (
@@ -496,11 +499,11 @@ const AddProduct = () => {
                                                                 beforeUpload
                                                             }
                                                             fileList={
-                                                                values.image
+                                                                values.images
                                                             }
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
-                                                                    'image',
+                                                                    'images',
                                                                     files,
                                                                 )
                                                             }
@@ -508,7 +511,7 @@ const AddProduct = () => {
                                                                 files,
                                                             ) =>
                                                                 form.setFieldValue(
-                                                                    'image',
+                                                                    'images',
                                                                     files,
                                                                 )
                                                             }
@@ -524,15 +527,13 @@ const AddProduct = () => {
                                     </FormContainer>
                                     <FormItem
                                         label=""
-                                        invalid={
-                                            errors.images && touched.images
-                                        }
-                                        errorMessage={errors.images}
+                                        invalid={errors.image && touched.image}
+                                        errorMessage={errors.image}
                                         className="col-span-1 w-[80%]"
                                     >
                                         <Field
                                             type="text"
-                                            name="images"
+                                            name="image"
                                             placeholder="Enter ImageUrl or Upload Image file"
                                             component={Input}
                                         />
@@ -594,10 +595,8 @@ const AddProduct = () => {
                                     </FormContainer>
                                     <FormItem
                                         label=""
-                                        invalid={
-                                            errors.images && touched.images
-                                        }
-                                        errorMessage={errors.images}
+                                        invalid={errors.image && touched.image}
+                                        errorMessage={errors.image}
                                         className="col-span-1 w-[80%]"
                                     >
                                         <Field
@@ -647,7 +646,7 @@ const AddProduct = () => {
                                                                 files,
                                                             ) =>
                                                                 form.setFieldValue(
-                                                                    'image',
+                                                                    'images',
                                                                     files,
                                                                 )
                                                             }
@@ -720,7 +719,7 @@ const AddProduct = () => {
                                 <FormItem label="Colour Shade Name">
                                     <Field
                                         type="text"
-                                        name="ColourShadeName"
+                                        name="colorshade"
                                         placeholder="Enter Colour Shade Name"
                                         component={Input}
                                     />
@@ -728,7 +727,7 @@ const AddProduct = () => {
                                 <FormItem label="Skin Type">
                                     <Field
                                         type="text"
-                                        name="SkinType"
+                                        name="skinType"
                                         placeholder="Enter Skin Type"
                                         component={Input}
                                     />
@@ -736,7 +735,7 @@ const AddProduct = () => {
                                 <FormItem label="Formulation">
                                     <Field
                                         type="text"
-                                        name="Formulation"
+                                        name="formulation"
                                         placeholder="Enter Formulation"
                                         component={Input}
                                     />
@@ -744,7 +743,7 @@ const AddProduct = () => {
                                 <FormItem label="Hair Type">
                                     <Field
                                         type="text"
-                                        name="HairType"
+                                        name="hairType"
                                         placeholder="Enter Hair Type"
                                         component={Input}
                                     />
@@ -760,7 +759,7 @@ const AddProduct = () => {
                                 <FormItem label="Finish">
                                     <Field
                                         type="text"
-                                        name="Finish"
+                                        name="finish"
                                         placeholder="Enter Finish"
                                         component={Input}
                                     />
@@ -776,7 +775,7 @@ const AddProduct = () => {
                                 <FormItem label="Coverage">
                                     <Field
                                         type="text"
-                                        name="Coverage"
+                                        name="coverage"
                                         placeholder="Enter Coverage"
                                         component={Input}
                                     />
@@ -789,18 +788,11 @@ const AddProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label=" Weight/Volume Unit of Measure">
-                                    <Field
-                                        type="text"
-                                        name="WeightVolumeUnitOfMeasure"
-                                        placeholder="Enter Weight/Volume Unit of Measure"
-                                        component={Input}
-                                    />
-                                </FormItem>
+
                                 <FormItem label="Conscious">
                                     <Field
                                         type="text"
-                                        name="Concious"
+                                        name="concious"
                                         placeholder="Enter Conscious"
                                         component={Input}
                                     />
@@ -816,7 +808,7 @@ const AddProduct = () => {
                                 <FormItem label="Pack Size">
                                     <Field
                                         type="text"
-                                        name="packSize"
+                                        name="packsize"
                                         placeholder="Enter Pack Size"
                                         component={Input}
                                     />
@@ -824,7 +816,7 @@ const AddProduct = () => {
                                 <FormItem label="Product Size">
                                     <Field
                                         type="text"
-                                        name="productSize"
+                                        name="size"
                                         placeholder="Enter Product Size"
                                         component={Input}
                                     />
@@ -898,6 +890,103 @@ const AddProduct = () => {
                                         type="text"
                                         name="origincountry"
                                         placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                {/* ........................... */}
+                                <FormItem label="Care Instruction">
+                                    <Field
+                                        type="text"
+                                        name="careinstruction"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Antiodour ">
+                                    <Field
+                                        type="text"
+                                        name="antiodour"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Pattern">
+                                    <Field
+                                        type="text"
+                                        name="pattern"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Closure Type">
+                                    <Field
+                                        type="text"
+                                        name="closuretype"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Length">
+                                    <Field
+                                        type="text"
+                                        name="length"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Neck Type">
+                                    <Field
+                                        type="text"
+                                        name="necktype"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Risk Type">
+                                    <Field
+                                        type="text"
+                                        name="risetype"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Sleeve Type">
+                                    <Field
+                                        type="text"
+                                        name="sleevtype"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Trend">
+                                    <Field
+                                        type="text"
+                                        name="trend"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Trend Type">
+                                    <Field
+                                        type="text"
+                                        name="trendtype"
+                                        placeholder="Enter Origin Country"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Fit">
+                                    <Field
+                                        type="text"
+                                        name="fit"
+                                        placeholder="Enter Fit"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Fabric">
+                                    <Field
+                                        type="text"
+                                        name="fabric"
+                                        placeholder="Enter Fabric"
                                         component={Input}
                                     />
                                 </FormItem>

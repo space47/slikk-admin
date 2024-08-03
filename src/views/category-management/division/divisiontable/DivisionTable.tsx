@@ -134,7 +134,7 @@ const DivisionTable = () => {
 
     return (
         <div>
-            <div className="flex items-end justify-end mb-2">
+            {/* <div className="flex items-end justify-end mb-2">
                 <button
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
                     onClick={handleSeller}
@@ -143,7 +143,7 @@ const DivisionTable = () => {
                 </button>{' '}
                 <br />
                 <br />
-            </div>
+            </div> */}
             <div className="mb-4">
                 <input
                     type="text"

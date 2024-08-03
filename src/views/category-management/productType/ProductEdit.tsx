@@ -132,6 +132,7 @@ const ProductEdit = () => {
             'image/jpeg',
             'image/jpg',
             'image/webp',
+            'image/png',
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -246,7 +247,7 @@ const ProductEdit = () => {
 
     return (
         <div>
-            <div className="text-xl mb-10"> EDIT PRODUCT TYPE</div>
+            <div className="text-xl mb-10">EDIT PRODUCT TYPE</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
@@ -268,6 +269,10 @@ const ProductEdit = () => {
                                         type="text"
                                         name="name"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
@@ -298,13 +303,17 @@ const ProductEdit = () => {
                                                         option?.value,
                                                     )
                                                 }
+                                                onKeyDown={(e) => {
+                                                    e.key === 'Enter' &&
+                                                        e.preventDefault()
+                                                }}
                                             />
                                         )}
                                     </Field>
                                 </FormItem>
                             </FormContainer>
 
-                            {/* Title and desc............................................................................ */}
+                            {/* Title and Description */}
 
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
@@ -318,6 +327,10 @@ const ProductEdit = () => {
                                         type="text"
                                         name="title"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
@@ -335,11 +348,15 @@ const ProductEdit = () => {
                                         type="text"
                                         name="description"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
                             </FormContainer>
 
-                            {/* Image upload.................................................................. */}
+                            {/* Image upload */}
 
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <div className=" image w-[10%] h-[20%] mt-5  ">
@@ -408,7 +425,7 @@ const ProductEdit = () => {
                                 </FormContainer>
                             </FormContainer>
 
-                            {/* Text area.................................................................. */}
+                            {/* Text area */}
 
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
@@ -427,11 +444,15 @@ const ProductEdit = () => {
                                             height: '150px',
                                             resize: 'vertical',
                                         }}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
                             </FormContainer>
 
-                            {/* QUick Filter Tag and Position and Gender............................................................ */}
+                            {/* Quick Filter Tag, Position, and Gender */}
 
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
@@ -448,6 +469,10 @@ const ProductEdit = () => {
                                         type="text"
                                         name="quick_filter_tags"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
@@ -464,6 +489,10 @@ const ProductEdit = () => {
                                         type="text"
                                         name="position"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
                                 {/* gender */}
@@ -504,6 +533,10 @@ const ProductEdit = () => {
                                                             option?.value,
                                                         )
                                                     }
+                                                    onKeyDown={(e) => {
+                                                        e.key === 'Enter' &&
+                                                            e.preventDefault()
+                                                    }}
                                                 />
                                             )
                                         }}
@@ -511,13 +544,18 @@ const ProductEdit = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            {/* Select boxes......................................................................... */}
+                            {/* Select boxes */}
                             <FormItem
                                 label="ACTIVE"
                                 invalid={errors.is_active && touched.is_active}
-                                // errorMessage={errors.singleCheckbox}
                             >
-                                <Field name="is_active" component={Checkbox}>
+                                <Field
+                                    name="is_active"
+                                    component={Checkbox}
+                                    onKeyDown={(e) => {
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }}
+                                >
                                     Active
                                 </Field>
                             </FormItem>
@@ -528,17 +566,19 @@ const ProductEdit = () => {
                                     errors.is_try_and_buy &&
                                     touched.is_try_and_buy
                                 }
-                                // errorMessage={errors.singleCheckbox}
                             >
                                 <Field
                                     name="is_try_and_buy"
                                     component={Checkbox}
+                                    onKeyDown={(e) => {
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }}
                                 >
                                     Try and Buy
                                 </Field>
                             </FormItem>
 
-                            {/* Handle Submit........................... */}
+                            {/* Handle Submit */}
 
                             <FormItem>
                                 <Button
@@ -548,11 +588,7 @@ const ProductEdit = () => {
                                 >
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    // onClick={() => handleSubmit()}
-                                >
+                                <Button variant="solid" type="submit">
                                     Submit
                                 </Button>
                             </FormItem>

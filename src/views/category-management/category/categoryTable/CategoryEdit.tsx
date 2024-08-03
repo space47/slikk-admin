@@ -129,6 +129,7 @@ const CategoryEdit = () => {
             'image/jpeg',
             'image/jpg',
             'image/webp',
+            'image/png',
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -238,6 +239,7 @@ const CategoryEdit = () => {
 
     return (
         <div>
+            <div className="text-xl mb-10">Category Edit</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
@@ -247,7 +249,7 @@ const CategoryEdit = () => {
                 {({ values, touched, errors, resetForm }) => (
                     <Form className="w-2/3">
                         <FormContainer>
-                            <FormContainer className="flex flex-row gap-7 ">
+                            <FormContainer className="flex flex-row gap-7">
                                 <FormItem
                                     asterisk
                                     label="Category Name"
@@ -259,6 +261,10 @@ const CategoryEdit = () => {
                                         type="text"
                                         name="name"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
@@ -271,7 +277,13 @@ const CategoryEdit = () => {
                                     errorMessage={errors.division}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="division">
+                                    <Field
+                                        name="division"
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    >
                                         {({ field, form }: FieldProps<any>) => (
                                             <Select
                                                 field={field}
@@ -294,10 +306,10 @@ const CategoryEdit = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            {/* Image upload.................................................................. */}
+                            {/* Image upload section */}
 
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
-                                <div className=" image w-[10%] h-[20%] mt-5  ">
+                                <div className="image w-[10%] h-[20%] mt-5">
                                     {imagview && imagview.length > 0 ? (
                                         imagview.map((img, index) => (
                                             <img
@@ -320,7 +332,13 @@ const CategoryEdit = () => {
                                         errorMessage={errors.image as string}
                                         className="grid grid-rows-2"
                                     >
-                                        <Field name="image">
+                                        <Field
+                                            name="image"
+                                            onKeyDown={(e) => {
+                                                e.key === 'Enter' &&
+                                                    e.preventDefault()
+                                            }}
+                                        >
                                             {({
                                                 form,
                                             }: FieldProps<FormModel>) => (
@@ -337,15 +355,13 @@ const CategoryEdit = () => {
                                                                 await handleFileupload(
                                                                     files,
                                                                 )
-                                                            {
-                                                                form.setFieldValue(
-                                                                    'image',
-                                                                    uploadedImage,
-                                                                )
-                                                                setImageView([
-                                                                    uploadedImage,
-                                                                ])
-                                                            }
+                                                            form.setFieldValue(
+                                                                'image',
+                                                                uploadedImage,
+                                                            )
+                                                            setImageView([
+                                                                uploadedImage,
+                                                            ])
                                                         }}
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
@@ -363,9 +379,9 @@ const CategoryEdit = () => {
                                 </FormContainer>
                             </FormContainer>
 
-                            {/* Text area.................................................................. */}
+                            {/* Text area section */}
 
-                            <FormContainer className="flex flex-row gap-7 ">
+                            <FormContainer className="flex flex-row gap-7">
                                 <FormItem
                                     label="Footer"
                                     invalid={errors.footer && touched.footer}
@@ -382,13 +398,17 @@ const CategoryEdit = () => {
                                             height: '150px',
                                             resize: 'vertical',
                                         }}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
                             </FormContainer>
 
-                            {/* QUick Filter Tag and Position and Gender............................................................ */}
+                            {/* Quick Filter Tag, Position, and Gender */}
 
-                            <FormContainer className="flex flex-row gap-7 ">
+                            <FormContainer className="flex flex-row gap-7">
                                 <FormItem
                                     asterisk
                                     label="Quick Filter Tag"
@@ -403,12 +423,16 @@ const CategoryEdit = () => {
                                         type="text"
                                         name="quick_filter_tags"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
                                 <FormItem
                                     asterisk
-                                    label="position"
+                                    label="Position"
                                     invalid={
                                         errors.position && touched.position
                                     }
@@ -419,9 +443,12 @@ const CategoryEdit = () => {
                                         type="text"
                                         name="position"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
-                                {/* gender */}
 
                                 <FormItem
                                     asterisk
@@ -430,13 +457,16 @@ const CategoryEdit = () => {
                                     errorMessage={errors.gender}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="gender">
+                                    <Field
+                                        name="gender"
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    >
                                         {({ field, form }: FieldProps<any>) => {
                                             const genderOptions = [
-                                                {
-                                                    value: 'Men',
-                                                    label: 'Men',
-                                                },
+                                                { value: 'Men', label: 'Men' },
                                                 {
                                                     value: 'Women',
                                                     label: 'Women',
@@ -466,34 +496,42 @@ const CategoryEdit = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            {/* Select boxes......................................................................... */}
+                            {/* Select boxes */}
+
                             <FormItem
                                 label="ACTIVE"
                                 invalid={errors.is_active && touched.is_active}
-                                // errorMessage={errors.singleCheckbox}
                             >
-                                <Field name="is_active" component={Checkbox}>
+                                <Field
+                                    name="is_active"
+                                    component={Checkbox}
+                                    onKeyDown={(e) => {
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }}
+                                >
                                     Active
                                 </Field>
                             </FormItem>
 
                             <FormItem
-                                label="TRY_&_BUY"
+                                label="TRY & BUY"
                                 invalid={
                                     errors.is_try_and_buy &&
                                     touched.is_try_and_buy
                                 }
-                                // errorMessage={errors.singleCheckbox}
                             >
                                 <Field
                                     name="is_try_and_buy"
                                     component={Checkbox}
+                                    onKeyDown={(e) => {
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }}
                                 >
                                     Try and Buy
                                 </Field>
                             </FormItem>
 
-                            {/* Handle Submit........................... */}
+                            {/* Handle Submit */}
 
                             <FormItem>
                                 <Button
@@ -503,11 +541,7 @@ const CategoryEdit = () => {
                                 >
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    // onClick={() => handleSubmit()}
-                                >
+                                <Button variant="solid" type="submit">
                                     Submit
                                 </Button>
                             </FormItem>

@@ -27,7 +27,18 @@ interface LastUpdatedBy {
 }
 
 interface Product {
-    product: number
+    barcode: string
+    brand_name: string
+    color: string
+    id: number
+    name: string
+    size: string
+    sku: string
+    variant_id: string
+}
+
+interface Stock {
+    product: Product
     store: number
     quantity: number
     last_updated_by: LastUpdatedBy
@@ -57,7 +68,7 @@ const pageSizeOptions = [
 ]
 
 const BrandStock = () => {
-    const [data, setData] = useState<Product[]>([])
+    const [data, setData] = useState<Stock[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -99,11 +110,16 @@ const BrandStock = () => {
         }
     }
 
-    const columns = useMemo<ColumnDef<Product>[]>(
+    const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
             {
-                header: 'Product ID',
-                accessorKey: 'product',
+                header: 'SKU',
+                accessorKey: 'product.sku',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Product Name',
+                accessorKey: 'product.name',
                 cell: (info) => info.getValue(),
             },
             {
@@ -117,35 +133,36 @@ const BrandStock = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Name',
-                accessorKey: 'last_updated_by.name',
+                header: 'Brand',
+                accessorKey: 'product.brand_name',
+                cell: (info) => info.getValue(),
+            },
+
+            {
+                header: 'Color',
+                accessorKey: 'product.color',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Email',
-                accessorKey: 'last_updated_by.email',
+                header: 'Size',
+                accessorKey: 'product.size',
+                cell: (info) => info.getValue().toUpperCase(),
+            },
+            {
+                header: ' Stock',
+                accessorKey: 'quantity',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Ph. No',
-                accessorKey: 'last_updated_by.mobile',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: ' In Stock',
-                accessorKey: 'show_out_of_stock',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Active',
-                accessorKey: 'is_active',
-                cell: (info) => getUploadStatus(info.getValue()),
-            },
-            {
-                header: 'Offer Active',
-                accessorKey: ' offer_is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
+            // {
+            //     header: 'Active',
+            //     accessorKey: 'is_active',
+            //     cell: (info) => getUploadStatus(info.getValue()),
+            // },
+            // {
+            //     header: 'Offer Active',
+            //     accessorKey: ' offer_is_active',
+            //     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            // },
             {
                 header: 'Expiry',
                 accessorKey: 'expiry_date',
@@ -177,6 +194,11 @@ const BrandStock = () => {
             {
                 header: 'GRN number',
                 accessorKey: 'grn',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Updated By',
+                accessorKey: 'last_updated_by.name',
                 cell: (info) => info.getValue(),
             },
         ],

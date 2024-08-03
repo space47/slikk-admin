@@ -50,11 +50,15 @@ const Seller = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
 
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(store => store.company.currCompany);
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+        (store) => store.company.currCompany,
+    )
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(`company/${selectedCompany.id}/users`)
+            const response = await axiosInstance.get(
+                `company/${selectedCompany.id}/users`,
+            )
             const data = response.data.data
             const total = response.data.total
             setData(data)
@@ -70,8 +74,8 @@ const Seller = () => {
 
     const navigate = useNavigate()
 
-    const handleActionClick = (user: User) => {
-        console.log('clicked')
+    const handleActionClick = (mobile: string) => {
+        navigate(`/app/vendor/users/${mobile}`)
     }
 
     const columns = useMemo<ColumnDef<User>[]>(
@@ -108,9 +112,11 @@ const Seller = () => {
             },
             {
                 header: 'Action',
-                accessorKey: 'action',
+                accessorKey: 'mobile',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
+                    <Button
+                        onClick={() => handleActionClick(row.original.mobile)}
+                    >
                         EDIT
                     </Button>
                 ),
@@ -149,8 +155,8 @@ const Seller = () => {
         setPageSize(Number(value))
     }
 
-    const handleSeller = () => {
-        navigate('/app/sellers/addnew')
+    const handleUser = () => {
+        navigate('/app/vendor/users/addNew')
     }
 
     return (
@@ -158,9 +164,9 @@ const Seller = () => {
             <div className="flex items-end justify-end mb-2">
                 <button
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleSeller}
+                    onClick={handleUser}
                 >
-                    ADD NEW
+                    ADD NEW USER
                 </button>{' '}
                 <br />
                 <br />

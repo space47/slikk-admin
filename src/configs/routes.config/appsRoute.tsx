@@ -155,6 +155,27 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsVendorManagement.users',
+        path: `${APP_PREFIX_PATH}/vendor/users/addNew`,
+        component: lazy(
+            () => import('@/views/brandDashboard/brandUser/userAdd/UserAdd'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.users',
+        path: `${APP_PREFIX_PATH}/vendor/users/:mobile`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/brandDashboard/brandUser/branUserEdit/BrandUserEdit'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+
+    // ......................................
+    {
         key: 'appsVendorManagement.catalog',
         path: `${APP_PREFIX_PATH}/vendor/catalog`,
         component: lazy(

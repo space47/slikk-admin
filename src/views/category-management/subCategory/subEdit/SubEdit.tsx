@@ -86,6 +86,7 @@ const SubEdit = () => {
     const [divdata, setDivData] = useState<category[]>()
     const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
+    const [footer, setFooter] = useState()
 
     const { id } = useParams()
     const navigate = useNavigate()
@@ -132,6 +133,7 @@ const SubEdit = () => {
             'image/jpeg',
             'image/jpg',
             'image/webp',
+            'image/png',
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -188,6 +190,10 @@ const SubEdit = () => {
             })
             return 'Error'
         }
+    }
+
+    const handleFooterChange = (e: any) => {
+        setFooter(e.target.value)
     }
 
     const handleSubmit = async (values: FormModel) => {
@@ -267,6 +273,10 @@ const SubEdit = () => {
                                         type="text"
                                         name="name"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
@@ -280,7 +290,13 @@ const SubEdit = () => {
                                     errorMessage={errors.category_name}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="category_name">
+                                    <Field
+                                        name="category_name"
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    >
                                         {({ field, form }: FieldProps<any>) => (
                                             <Select
                                                 field={field}
@@ -381,21 +397,17 @@ const SubEdit = () => {
                                     errorMessage={errors.footer}
                                     className="col-span-1 w-full"
                                 >
-                                    <Field
-                                        as="textarea"
+                                    <textarea
                                         name="footer"
-                                        placeholder="Footer"
-                                        component={Input}
-                                        style={{
-                                            width: '100%',
-                                            height: '150px',
-                                            resize: 'vertical',
-                                        }}
-                                    />
+                                        value={footer}
+                                        onChange={handleFooterChange}
+                                        id=""
+                                        className="w-full border border-gray-200 rounded-lg items-center h-[200px] p-2"
+                                    ></textarea>
                                 </FormItem>
                             </FormContainer>
 
-                            {/* QUick Filter Tag and Position and Gender............................................................ */}
+                            {/* Quick Filter Tag and Position and Gender............................................................ */}
 
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
@@ -412,12 +424,16 @@ const SubEdit = () => {
                                         type="text"
                                         name="quick_filter_tags"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
                                 <FormItem
                                     asterisk
-                                    label="position"
+                                    label="Position"
                                     invalid={
                                         errors.position && touched.position
                                     }
@@ -428,9 +444,12 @@ const SubEdit = () => {
                                         type="text"
                                         name="position"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
-                                {/* gender */}
 
                                 <FormItem
                                     asterisk
@@ -439,7 +458,13 @@ const SubEdit = () => {
                                     errorMessage={errors.gender}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="gender">
+                                    <Field
+                                        name="gender"
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    >
                                         {({ field, form }: FieldProps<any>) => {
                                             const genderOptions = [
                                                 {
@@ -479,24 +504,31 @@ const SubEdit = () => {
                             <FormItem
                                 label="ACTIVE"
                                 invalid={errors.is_active && touched.is_active}
-                                // errorMessage={errors.singleCheckbox}
                             >
-                                <Field name="is_active" component={Checkbox}>
+                                <Field
+                                    name="is_active"
+                                    component={Checkbox}
+                                    onKeyDown={(e) => {
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }}
+                                >
                                     Active
                                 </Field>
                             </FormItem>
 
                             <FormItem
-                                label="TRY_&_BUY"
+                                label="TRY & BUY"
                                 invalid={
                                     errors.is_try_and_buy &&
                                     touched.is_try_and_buy
                                 }
-                                // errorMessage={errors.singleCheckbox}
                             >
                                 <Field
                                     name="is_try_and_buy"
                                     component={Checkbox}
+                                    onKeyDown={(e) => {
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }}
                                 >
                                     Try and Buy
                                 </Field>
@@ -512,11 +544,7 @@ const SubEdit = () => {
                                 >
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    // onClick={() => handleSubmit()}
-                                >
+                                <Button variant="solid" type="submit">
                                     Submit
                                 </Button>
                             </FormItem>

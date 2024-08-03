@@ -131,7 +131,7 @@ const Brand = () => {
             {
                 header: 'Quick Filter Tags',
                 accessorKey: 'quick_filter_tags',
-                cell: (info) => (info.getValue() as string[]).join(', '),
+                cell: (info) => info.getValue() as string[],
             },
             {
                 header: 'Active',
@@ -217,7 +217,7 @@ const Brand = () => {
 
     return (
         <div>
-            <div className="flex items-end justify-end mb-2">
+            {/* <div className="flex items-end justify-end mb-2">
                 <button
                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
                     onClick={handleSeller}
@@ -226,7 +226,7 @@ const Brand = () => {
                 </button>
                 <br />
                 <br />
-            </div>
+            </div> */}
             <div className="mb-4">
                 <input
                     type="text"

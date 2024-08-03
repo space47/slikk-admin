@@ -26,8 +26,8 @@ type Product = {
     minimum_quantity: number
     reserve_quantity: number
     Status: string
-    images: string
-    image: File[]
+    image: string
+    images: File[]
     color_code: File[]
     category_name: string
     is_premium: boolean
@@ -36,21 +36,20 @@ type Product = {
     sub_category_name: string
     product_type_name: string
     division_name: string
-    Color: string
-    ColourShadeName: string
-    SkinType: string
-    Formulation: string
-    HairType: string
+    color: string
+    colorshade: string
+    skinType: string
+    formulation: string
+    hairType: string
     gender: string
-    Finish: string
+    finish: string
     skintone: string
-    Coverage: string
+    coverage: string
     sunprotection: string
-    WeightVolumeUnitOfMeasure: string
-    Concious: string
+    concious: string
     productHexCode: string
-    packSize: string
-    productSize: string
+    packsize: string
+    size: string
     ingrediants: string
     vegnonveg: string
     ingrediantsPreferences: string
@@ -61,6 +60,18 @@ type Product = {
     scentbasenotes: string
     origincountry: string
     color_code_link: string
+    careinstruction: string
+    antiodour: string
+    pattern: string
+    closuretype: string
+    length: string
+    necktype: string
+    risetype: string
+    sleevtype: string
+    trend: string
+    trendtype: string
+    fit: string
+    fabric: string
 }
 
 export default Product

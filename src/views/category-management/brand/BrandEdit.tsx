@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -265,6 +266,10 @@ const BrandEdit = () => {
                                         type="text"
                                         name="name"
                                         component={Input}
+                                        onKeyDown={(e: any) =>
+                                            e.key === 'Enter' &&
+                                            e.preventDefault()
+                                        }
                                     />
                                 </FormItem>
                                 <FormItem
@@ -278,6 +283,10 @@ const BrandEdit = () => {
                                         type="text"
                                         name="title"
                                         component={Input}
+                                        onKeyDown={(e: any) =>
+                                            e.key === 'Enter' &&
+                                            e.preventDefault()
+                                        }
                                     />
                                 </FormItem>
 
@@ -397,6 +406,9 @@ const BrandEdit = () => {
                                     type="text"
                                     name="description"
                                     component={Input}
+                                    onKeyDown={(e: any) =>
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }
                                 />
                             </FormItem>
 
@@ -412,6 +424,10 @@ const BrandEdit = () => {
                                         name="footer"
                                         placeholder="Footer"
                                         component={Input}
+                                        onKeyDown={(e: any) =>
+                                            e.key === 'Enter' &&
+                                            e.preventDefault()
+                                        }
                                         // style={{
                                         //     width: '100%',
                                         //     height: '150px',
@@ -421,7 +437,7 @@ const BrandEdit = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            {/* QUick Filter Tag and Position and Gender............................................................ */}
+                            {/* Quick Filter Tag and Position and Gender............................................................ */}
 
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
@@ -438,6 +454,10 @@ const BrandEdit = () => {
                                         type="text"
                                         name="quick_filter_tags"
                                         component={Input}
+                                        onKeyDown={(e: any) =>
+                                            e.key === 'Enter' &&
+                                            e.preventDefault()
+                                        }
                                     />
                                 </FormItem>
 
@@ -454,6 +474,7 @@ const BrandEdit = () => {
                                         type="text"
                                         name="position"
                                         component={Input}
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem> */}
                                 {/* gender */}
@@ -477,7 +498,7 @@ const BrandEdit = () => {
                                                     label: 'Women',
                                                 },
                                             ]
-
+    
                                             return (
                                                 <Select
                                                     field={field}
@@ -494,6 +515,7 @@ const BrandEdit = () => {
                                                             option?.value,
                                                         )
                                                     }
+                                                    onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                                 />
                                             )
                                         }}
@@ -507,7 +529,13 @@ const BrandEdit = () => {
                                 invalid={errors.is_top && touched.is_top}
                                 // errorMessage={errors.singleCheckbox}
                             >
-                                <Field name="is_top" component={Checkbox}>
+                                <Field
+                                    name="is_top"
+                                    component={Checkbox}
+                                    onKeyDown={(e: any) =>
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }
+                                >
                                     TOP
                                 </Field>
                             </FormItem>
@@ -518,7 +546,13 @@ const BrandEdit = () => {
                                 }
                                 // errorMessage={errors.singleCheckbox}
                             >
-                                <Field name="is_exclusive" component={Checkbox}>
+                                <Field
+                                    name="is_exclusive"
+                                    component={Checkbox}
+                                    onKeyDown={(e: any) =>
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }
+                                >
                                     Is Exclusive
                                 </Field>
                             </FormItem>
@@ -529,7 +563,13 @@ const BrandEdit = () => {
                                 }
                                 // errorMessage={errors.singleCheckbox}
                             >
-                                <Field name="is_private" component={Checkbox}>
+                                <Field
+                                    name="is_private"
+                                    component={Checkbox}
+                                    onKeyDown={(e: any) =>
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }
+                                >
                                     Is Private
                                 </Field>
                             </FormItem>
@@ -538,7 +578,13 @@ const BrandEdit = () => {
                                 invalid={errors.is_active && touched.is_active}
                                 // errorMessage={errors.singleCheckbox}
                             >
-                                <Field name="is_active" component={Checkbox}>
+                                <Field
+                                    name="is_active"
+                                    component={Checkbox}
+                                    onKeyDown={(e: any) =>
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }
+                                >
                                     Active
                                 </Field>
                             </FormItem>
@@ -554,6 +600,9 @@ const BrandEdit = () => {
                                 <Field
                                     name="is_try_and_buy"
                                     component={Checkbox}
+                                    onKeyDown={(e: any) =>
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }
                                 >
                                     Try and Buy
                                 </Field>

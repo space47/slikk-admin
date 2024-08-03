@@ -78,7 +78,7 @@ const BrandOrder = () => {
     ) => {
         try {
             const response = await axiosInstance.get(
-                `merchant/order_items?company_id=${selectedCompany.id}&from=${from}&to=${to}`,
+                `merchant/order_items?company_id=${selectedCompany.id}&from=${from}&to=${to}&p=${page}&page_size=${pageSize}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count

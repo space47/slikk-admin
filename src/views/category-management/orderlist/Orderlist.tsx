@@ -63,6 +63,7 @@ const OrderList = () => {
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [orderCount, setOrderCount] = useState()
 
     const fetchOrders = async (
         page: number,
@@ -72,10 +73,12 @@ const OrderList = () => {
     ) => {
         try {
             const response = await axiosInstance.get(
-                `/merchant/orders?page=${page}&page_size=${pageSize}&from=${from}&to=${to}`,
+                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${to}`,
             )
-            const ordersData = response.data?.data.results || []
+            const ordersData = response.data?.data.results
+            const ordercount = response.data?.data.count
             setOrders(ordersData)
+            setOrderCount(ordercount)
         } catch (error) {
             console.error(error)
         }
@@ -132,8 +135,11 @@ const OrderList = () => {
             fuzzy: fuzzyFilter,
         },
         state: {
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: pageSize,
+            },
             globalFilter,
-            pagination: { pageIndex: page - 1, pageSize },
         },
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
@@ -142,7 +148,7 @@ const OrderList = () => {
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
-        pageCount: Math.ceil(orders.length / pageSize),
+        pageCount: Math.ceil(orderCount / pageSize),
     })
 
     const handleInvoiceClick = (invoiceId: string) => {
@@ -151,6 +157,9 @@ const OrderList = () => {
 
     const onPaginationChange = (page: number) => {
         setPage(page)
+
+        console.log('sssssssssssssssssssss', page)
+        // setPageSize(pageSize)
     }
 
     const onSelectChange = (value = 0) => {
@@ -271,7 +280,7 @@ const OrderList = () => {
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
-                    total={orders.length}
+                    total={orderCount}
                     onChange={onPaginationChange}
                 />
                 <div style={{ minWidth: 130 }}>

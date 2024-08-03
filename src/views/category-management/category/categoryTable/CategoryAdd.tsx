@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -131,6 +132,7 @@ const CategoryAdd = () => {
             'image/jpeg',
             'image/jpg',
             'image/webp',
+            'image/png',
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -262,6 +264,10 @@ const CategoryAdd = () => {
                                         type="text"
                                         name="name"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
@@ -274,7 +280,13 @@ const CategoryAdd = () => {
                                     errorMessage={errors.division}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="division">
+                                    <Field
+                                        name="division"
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    >
                                         {({ field, form }: FieldProps<any>) => (
                                             <Select
                                                 field={field}
@@ -300,7 +312,7 @@ const CategoryAdd = () => {
                             {/* Image upload.................................................................. */}
 
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
-                                <div className=" image w-[10%] h-[20%] mt-5  ">
+                                <div className="image w-[10%] h-[20%] mt-5">
                                     {imagview && imagview.length > 0 ? (
                                         imagview.map((img, index) => (
                                             <img
@@ -323,7 +335,13 @@ const CategoryAdd = () => {
                                         errorMessage={errors.image as string}
                                         className="grid grid-rows-2"
                                     >
-                                        <Field name="image">
+                                        <Field
+                                            name="image"
+                                            onKeyDown={(e) => {
+                                                e.key === 'Enter' &&
+                                                    e.preventDefault()
+                                            }}
+                                        >
                                             {({
                                                 form,
                                             }: FieldProps<FormModel>) => (
@@ -340,15 +358,13 @@ const CategoryAdd = () => {
                                                                 await handleFileupload(
                                                                     files,
                                                                 )
-                                                            {
-                                                                form.setFieldValue(
-                                                                    'image',
-                                                                    uploadedImage,
-                                                                )
-                                                                setImageView([
-                                                                    uploadedImage,
-                                                                ])
-                                                            }
+                                                            form.setFieldValue(
+                                                                'image',
+                                                                uploadedImage,
+                                                            )
+                                                            setImageView([
+                                                                uploadedImage,
+                                                            ])
                                                         }}
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
@@ -368,7 +384,7 @@ const CategoryAdd = () => {
 
                             {/* Text area.................................................................. */}
 
-                            <FormContainer className="flex flex-row gap-7 ">
+                            <FormContainer className="flex flex-row gap-7">
                                 <FormItem
                                     label="Footer"
                                     invalid={errors.footer && touched.footer}
@@ -380,6 +396,10 @@ const CategoryAdd = () => {
                                         name="footer"
                                         placeholder="Footer"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                         style={{
                                             width: '100%',
                                             height: '150px',
@@ -389,9 +409,9 @@ const CategoryAdd = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            {/* QUick Filter Tag and Position and Gender............................................................ */}
+                            {/* Quick Filter Tag and Position and Gender............................................................ */}
 
-                            <FormContainer className="flex flex-row gap-7 ">
+                            <FormContainer className="flex flex-row gap-7">
                                 <FormItem
                                     asterisk
                                     label="Quick Filter Tag"
@@ -406,12 +426,16 @@ const CategoryAdd = () => {
                                         type="text"
                                         name="quick_filter_tags"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
 
                                 <FormItem
                                     asterisk
-                                    label="position"
+                                    label="Position"
                                     invalid={
                                         errors.position && touched.position
                                     }
@@ -422,9 +446,14 @@ const CategoryAdd = () => {
                                         type="text"
                                         name="position"
                                         component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
                                     />
                                 </FormItem>
-                                {/* gender */}
+
+                                {/* Gender */}
 
                                 <FormItem
                                     asterisk
@@ -433,7 +462,13 @@ const CategoryAdd = () => {
                                     errorMessage={errors.gender}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field name="gender">
+                                    <Field
+                                        name="gender"
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    >
                                         {({ field, form }: FieldProps<any>) => {
                                             const genderOptions = [
                                                 {
@@ -473,24 +508,31 @@ const CategoryAdd = () => {
                             <FormItem
                                 label="ACTIVE"
                                 invalid={errors.is_active && touched.is_active}
-                                // errorMessage={errors.singleCheckbox}
                             >
-                                <Field name="is_active" component={Checkbox}>
+                                <Field
+                                    name="is_active"
+                                    component={Checkbox}
+                                    onKeyDown={(e) => {
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }}
+                                >
                                     Active
                                 </Field>
                             </FormItem>
 
                             <FormItem
-                                label="TRY_&_BUY"
+                                label="TRY & BUY"
                                 invalid={
                                     errors.is_try_and_buy &&
                                     touched.is_try_and_buy
                                 }
-                                // errorMessage={errors.singleCheckbox}
                             >
                                 <Field
                                     name="is_try_and_buy"
                                     component={Checkbox}
+                                    onKeyDown={(e) => {
+                                        e.key === 'Enter' && e.preventDefault()
+                                    }}
                                 >
                                     Try and Buy
                                 </Field>
@@ -506,11 +548,7 @@ const CategoryAdd = () => {
                                 >
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    // onClick={() => handleSubmit()}
-                                >
+                                <Button variant="solid" type="submit">
                                     Submit
                                 </Button>
                             </FormItem>
