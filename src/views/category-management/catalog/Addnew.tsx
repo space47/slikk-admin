@@ -96,7 +96,7 @@ const AddProduct = () => {
 
     const MAX_UPLOAD = 100
 
-    const MixedFormControl = () => {
+    const AddProduct = () => {
     const [datas, setDatas] = useState()
     const [imagview, setImageView] = useState<string>('')
     const [showData, setShowData] = useState(false)
