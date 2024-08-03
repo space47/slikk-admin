@@ -239,6 +239,14 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCategory.products',
+        path: `${APP_PREFIX_PATH}/catalog/products/:barcode`,
+        component: lazy(
+            () => import('@/views/category-management/catalog/EditProduct'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory`,
         component: lazy(

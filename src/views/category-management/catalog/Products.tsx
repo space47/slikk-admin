@@ -92,8 +92,8 @@ const Products = () => {
         return img[0]
     }
 
-    const handleActionClick = (id: any) => {
-        console.log('OK', id)
+    const handleActionClick = (barcode: any) => {
+        navigate(`/app/catalog/products/${barcode}`)
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
@@ -172,9 +172,11 @@ const Products = () => {
             },
             {
                 header: 'Action',
-                accessorKey: 'action',
+                accessorKey: 'barcode',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
+                    <Button
+                        onClick={() => handleActionClick(row.original.barcode)}
+                    >
                         EDIT
                     </Button>
                 ),
