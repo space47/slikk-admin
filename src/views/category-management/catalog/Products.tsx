@@ -87,6 +87,25 @@ const Products = () => {
         fetchData(page, pageSize)
     }, [page, pageSize, globalFilter])
 
+     // Apply global filter
+    const filteredData = data.filter((item) =>
+        Object.values(item).some((val) =>
+            val
+                ? val
+                      .toString()
+                      .toLowerCase()
+                      .includes(globalFilter.toLowerCase())
+                : false,
+        ),
+    )
+
+    // Paginate filtered data
+    const paginatedData = filteredData.slice(
+        (page - 1) * pageSize,
+        page * pageSize,
+    )
+    const totalPages = Math.ceil(filteredData.length / pageSize)
+
     const getFirstImageUrl = (images: string) => {
         const img = images.length > 0 ? images.split(',') : ''
         return img[0]
