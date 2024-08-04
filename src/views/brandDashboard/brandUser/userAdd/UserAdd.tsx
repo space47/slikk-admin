@@ -215,8 +215,10 @@ const UserAdd = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3">
-                        <div className="text-xl mb-10">User details</div>
+                    <Form className="w-full">
+                        <div className="text-xl mb-10 font-semibold">
+                            USER DETAILS
+                        </div>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
@@ -317,13 +319,15 @@ const UserAdd = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            <div className="text-xl">User Permision</div>
+                            <div className="text-xl font-semibold">
+                                USER PERMISSIONS
+                            </div>
                             <br />
 
                             <FormContainer className="">
                                 <FormContainer className="flex justify-between">
                                     {/* All Permissions */}
-                                    <Card className="overflow-scroll h-[460px] w-[400px] flex flex-col">
+                                    <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                                         <div className="sticky top-0 z-10 bg-white">
                                             <div className="mb-3 bg-white">
                                                 <input
@@ -385,7 +389,7 @@ const UserAdd = () => {
                                     </div>
 
                                     {/* Added Permissions */}
-                                    <Card className="overflow-scroll h-[460px] w-[400px] flex flex-col">
+                                    <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                                         <div className="sticky top-0 z-10 bg-white">
                                             <div className="mb-3 bg-white">
                                                 <input

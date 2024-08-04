@@ -632,6 +632,58 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/account/KycForm')),
         authority: [ADMIN, USER],
     },
+
+    // ...............................APP SETTINGS...................................................
+
+    {
+        key: 'appsAppSettings.coupons',
+        path: `${APP_PREFIX_PATH}/appSettings/coupons`,
+        component: lazy(
+            () => import('@/views/appsSettings/coupons/AppCoupons'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.banners',
+        path: `${APP_PREFIX_PATH}/appSettings/banners`,
+        component: lazy(
+            () => import('@/views/appsSettings/banners/AppBanners'),
+        ),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appsAppSettings.pageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/pageSettings`,
+        component: lazy(
+            () => import('@/views/appsSettings/pageSettings/PageSettings'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.pageSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/pageSettings/edit/`,
+        component: lazy(
+            () => import('@/views/appsSettings/pageSettings/PageEdit'),
+        ),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appsAppSettings.policies',
+        path: `${APP_PREFIX_PATH}/appSettings/policies`,
+        component: lazy(() => import('@/views/appsSettings/policies/Policies')),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appsAppSettings.seoSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/seoSettings`,
+        component: lazy(
+            () => import('@/views/appsSettings/seoSettings/SeoSettings'),
+        ),
+        authority: [ADMIN, USER],
+    },
 ]
 
 export default appsRoute

@@ -1,5 +1,5 @@
 .dropdown {
-  @apply relative inline-block;
+  @apply relative flex flex-row items-center justify-between px-2;
 }
 
 .dropdown-menu {

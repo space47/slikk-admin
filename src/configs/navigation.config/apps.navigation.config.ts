@@ -334,6 +334,70 @@ const appsNavigationConfig: NavigationTree[] = [
             // .............................................................................................................
 
             {
+                key: 'apps.appSettings',
+                path: '',
+                title: 'App Settings',
+                translateKey: 'nav.appsAppSettings.appSettings',
+                icon: 'org',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    {
+                        key: 'appsAppSettings.coupons',
+                        path: `${APP_PREFIX_PATH}/appSettings/coupons`,
+                        title: 'Coupons',
+                        translateKey: 'nav.appsAppSettings.coupons',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsAppSettings.banners',
+                        path: `${APP_PREFIX_PATH}/appSettings/banners`,
+                        title: 'Banners',
+                        translateKey: 'nav.appsAppSettings.banners',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsAppSettings.pageSettings',
+                        path: `${APP_PREFIX_PATH}/appSettings/pageSettings`,
+                        title: 'Page Settings',
+                        translateKey: 'nav.appsAppSettings.pageSettings',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsAppSettings.policies',
+                        path: `${APP_PREFIX_PATH}/appSettings/policies`,
+                        title: 'Policies',
+                        translateKey: 'nav.appsAppSettings.policies',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsAppSettings.seoSettings',
+                        path: `${APP_PREFIX_PATH}/appSettings/seoSettings`,
+                        title: 'Seo Settings',
+                        translateKey: 'nav.appsAppSettings.seoSettings',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                ],
+            },
+
+            // ..............................................................................................................
+
+            {
                 key: 'apps.project',
                 path: '',
                 title: 'Project',

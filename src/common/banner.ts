@@ -1,0 +1,16 @@
+export const BANNER_PAGE_NAME = [
+    { name: 'Home', value: 'Home' },
+    { name: 'Trend', value: 'Trend' },
+    { name: 'Offers', value: 'Offers' },
+    { name: 'Login', value: 'Login' },
+    { name: 'Profile', value: 'Profile' },
+    { name: 'Collection', value: 'Collection' },
+    { name: 'Loyalty', value: 'Loyalty' },
+    { name: 'My Addresses', value: 'My Addresses' },
+    { name: 'Wishlist', value: 'Wishlist' },
+    { name: 'My Order', value: 'My Order' },
+    { name: 'Product', value: 'Product' },
+    { name: 'Search', value: 'Search' },
+    // { name: 'Brand', value: 'Brand' },
+    // { name: 'Cart', value: 'Cart' },
+]

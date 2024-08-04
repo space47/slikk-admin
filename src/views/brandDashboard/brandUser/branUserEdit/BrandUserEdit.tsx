@@ -56,7 +56,9 @@ interface permission {
 const BrandUserEdit = () => {
     const [getPermission, setGetPermission] = useState<permission[]>()
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
-    const [addedPermissions, setAddedPermissions] = useState([])
+    const [addedPermissions, setAddedPermissions] = useState<permission[]>([])
+
+    const { mobile } = useParams()
 
     const [initialValue, setInitialValue] = useState<FormModel>({
         first_name: '',
@@ -67,8 +69,6 @@ const BrandUserEdit = () => {
         permissions: [],
     })
 
-    const { mob } = useParams()
-    console.log('object', mob)
     const navigate = useNavigate()
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
@@ -85,7 +85,7 @@ const BrandUserEdit = () => {
 
     const handleAddPermissions = () => {
         const alreadyAdded = selectedPermissions.filter((permId) =>
-            addedPermissions.some((added) => added === permId),
+            addedPermissions.some((added) => added.id === permId),
         )
 
         if (alreadyAdded.length > 0) {
@@ -98,16 +98,16 @@ const BrandUserEdit = () => {
         const selected = getPermission?.filter(
             (perm) =>
                 selectedPermissions.includes(perm.id) &&
-                !addedPermissions.some((added) => added === perm.id),
+                !addedPermissions.some((added) => added.id === perm.id),
         )
 
-        // setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
+        setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
         setSelectedPermissions([])
     }
 
     const handleRemovePermissions = (id: number) => {
         setAddedPermissions((prevAdded) =>
-            prevAdded.filter((perm) => perm !== id),
+            prevAdded.filter((perm) => perm.id !== id),
         )
     }
 
@@ -128,11 +128,11 @@ const BrandUserEdit = () => {
     const fetchUser = async () => {
         try {
             const response = await axioisInstance.get(
-                `company/${selectedCompany.id}/users?mobile=9818454888`,
+                `company/user/permission/${mobile}`,
             )
 
-            const userData = response.data.data
-            const userPermissions = response.data.data.permissions
+            const userData = response.data
+            const userPermissions = response.data.user_permissions
 
             setInitialValue({
                 first_name: userData.first_name || '',
@@ -140,11 +140,10 @@ const BrandUserEdit = () => {
                 mobile: userData.mobile || '',
                 email: userData.email || '',
                 business_email: userData.business_email || '',
-                permissions:
-                    userData.permissions.map((p: permission) => p.id) || [],
+                permissions: [],
             })
 
-            console.log('sssssssss', userPermissions)
+            // console.log('sssssssss', userPermissions)
 
             setAddedPermissions(userPermissions)
         } catch (error) {
@@ -155,6 +154,8 @@ const BrandUserEdit = () => {
     useEffect(() => {
         fetchUser()
     }, [])
+
+    console.log('oooooooooooo', addedPermissions)
 
     const handleSubmit = async (values: FormModel) => {} //................................................................
 
@@ -169,8 +170,10 @@ const BrandUserEdit = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3">
-                        <div className="text-xl mb-10">User details</div>
+                    <Form className="w-full">
+                        <div className="text-xl mb-10 font-bold">
+                            EDIT USER DETAILS
+                        </div>
                         <FormContainer>
                             {/* Form Fields */}
                             <FormContainer className="flex flex-row gap-7 ">
@@ -272,14 +275,16 @@ const BrandUserEdit = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            <div className="text-xl">User Permission</div>
+                            <div className="text-xl font-bold">
+                                USER PERMISSIONS
+                            </div>
                             <br />
 
                             {/* Permissions Section */}
                             <FormContainer className="">
-                                <FormContainer className="flex justify-between">
+                                <FormContainer className="flex justify-around">
                                     {/* All Permissions */}
-                                    <Card className="overflow-scroll h-[460px] w-[400px] flex flex-col">
+                                    <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                                         <div className="sticky top-0 z-10 bg-white">
                                             <div className="mb-3 bg-white">
                                                 <input
@@ -335,7 +340,7 @@ const BrandUserEdit = () => {
                                     </div>
 
                                     {/* Added Permissions */}
-                                    <Card className="overflow-scroll h-[460px] w-[400px] flex flex-col">
+                                    <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                                         <div className="sticky top-0 z-10 bg-white">
                                             <div className="mb-3 bg-white">
                                                 <input
@@ -360,13 +365,13 @@ const BrandUserEdit = () => {
                                                     >
                                                         <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
                                                             <span className="text-black">
-                                                                {item}
+                                                                {item.name}
                                                             </span>
                                                             <button
                                                                 className="text-red-500 ml-2"
                                                                 onClick={() =>
                                                                     handleRemovePermissions(
-                                                                        item,
+                                                                        item.id,
                                                                     )
                                                                 }
                                                             >
@@ -382,7 +387,7 @@ const BrandUserEdit = () => {
                             </FormContainer>
 
                             {/* Submit & Reset Buttons */}
-                            <FormItem className="mt-10">
+                            <FormItem className="mt-10 flex justify-center gap-4">
                                 <Button
                                     type="reset"
                                     className="ltr:mr-2 rtl:ml-2"

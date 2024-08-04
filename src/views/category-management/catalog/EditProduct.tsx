@@ -280,14 +280,6 @@ const EditProduct = () => {
         fetchUser()
     }, [])
 
-    // useEffect(() => {
-    //     console.log('ccccc', initialValue.images, initialValue.image)
-    //     setInitialValue({
-    //         ...initialValue,
-    //         image: allImage?.join(','),
-    //     })
-    // }, [allImage])
-
     useEffect(() => {
         console.log(
             'cccccsss',
@@ -480,7 +472,7 @@ const EditProduct = () => {
     }
     const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.key === 'Enter') {
-            e.preventDefault() // Prevent form submission on Enter key
+            e.preventDefault()
         }
     }
 
@@ -803,7 +795,7 @@ const EditProduct = () => {
                                                             }
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
-                                                                    'image',
+                                                                    'color_code_link',
                                                                     files,
                                                                 )
                                                             }
@@ -811,7 +803,7 @@ const EditProduct = () => {
                                                                 files,
                                                             ) =>
                                                                 form.setFieldValue(
-                                                                    'image',
+                                                                    'color_code_link',
                                                                     files,
                                                                 )
                                                             }
@@ -825,19 +817,6 @@ const EditProduct = () => {
                                         <br />
                                         <br />
                                     </FormContainer>
-                                    <FormItem
-                                        label=""
-                                        invalid={errors.image && touched.image}
-                                        errorMessage={errors.image}
-                                        className="col-span-1 w-[80%]"
-                                    >
-                                        <Field
-                                            type="text"
-                                            name="image"
-                                            placeholder="Enter ImageUrl or Upload Image file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
                                 </FormContainer>
 
                                 {/* .......................video........................................ */}
@@ -916,7 +895,7 @@ const EditProduct = () => {
                                         <br />
                                         <br />
                                     </FormContainer>
-                                    <FormItem
+                                    {/* <FormItem
                                         label=""
                                         invalid={
                                             errors.video_link &&
@@ -931,7 +910,7 @@ const EditProduct = () => {
                                             placeholder="Enter VideoUrl or Upload Video file"
                                             component={Input}
                                         />
-                                    </FormItem>
+                                    </FormItem> */}
                                 </FormContainer>
                                 <FormItem label="Category Name">
                                     <Field
