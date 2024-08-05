@@ -15,7 +15,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 type FormModel = {
     id: number
-    name: string
+    name: string;
+    category: any;
     category_name: string
     title: string
     description: string
@@ -82,7 +83,7 @@ const MAX_UPLOAD = 8
 // })
 
 const SubEdit = () => {
-    const [catedate, setCateData] = useState<FormModel | null>(null)
+    const [sub_category_data, setSubCategoryData] = useState<FormModel | null>(null)
     const [divdata, setDivData] = useState<category[]>()
     const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
@@ -94,9 +95,9 @@ const SubEdit = () => {
     const fetchData = async () => {
         try {
             const response = await axioisInstance.get(`sub-category?id=${id}`)
-            const categoryData = response.data?.data[0] || {}
-            setCateData(categoryData)
-            setImageView(categoryData.image ? [categoryData.image] : [])
+            const subCategoryData = response.data?.data[0] || {}
+            setSubCategoryData(subCategoryData)
+            setImageView(subCategoryData.image ? [subCategoryData.image] : [])
         } catch (error) {
             console.log(error)
         }
@@ -199,6 +200,9 @@ const SubEdit = () => {
     const handleSubmit = async (values: FormModel) => {
         const formData = {
             ...values,
+            id : sub_category_data?.id,
+            category : values.category.value,
+            category_name : values.category.label,
             images: values.image,
         }
 
@@ -226,26 +230,27 @@ const SubEdit = () => {
         }
     }
 
-    if (!catedate) {
+    if (!sub_category_data) {
         return <div>Loading...</div>
     }
 
-    const initialValue: FormModel = {
-        id: catedate.id,
-        name: catedate.name,
-        category_name: catedate.category_name,
-        title: catedate.title,
-        description: catedate.description,
-        image: catedate.image,
-        footer: catedate.footer,
-        quick_filter_tags: catedate.quick_filter_tags,
-        position: catedate.position,
-        gender: catedate.gender,
-        is_active: catedate.is_active,
-        create_date: catedate.create_date,
-        update_date: catedate.update_date,
-        is_try_and_buy: catedate.is_try_and_buy,
-        last_updated_by: catedate.last_updated_by,
+    const initialValue = {
+        id: sub_category_data.id,
+        name: sub_category_data.name,
+        category : {label : sub_category_data.category_name, value : sub_category_data.category},
+        category_name: sub_category_data.category_name,
+        title: sub_category_data.title,
+        description: sub_category_data.description,
+        image: sub_category_data.image,
+        footer: sub_category_data.footer,
+        quick_filter_tags: sub_category_data.quick_filter_tags,
+        position: sub_category_data.position,
+        gender: sub_category_data.gender,
+        is_active: sub_category_data.is_active,
+        create_date: sub_category_data.create_date,
+        update_date: sub_category_data.update_date,
+        is_try_and_buy: sub_category_data.is_try_and_buy,
+        last_updated_by: sub_category_data.last_updated_by,
         images: [],
     }
 
@@ -291,7 +296,7 @@ const SubEdit = () => {
                                     className="col-span-1 w-1/2"
                                 >
                                     <Field
-                                        name="category_name"
+                                        name="category"
                                         onKeyDown={(e) => {
                                             e.key === 'Enter' &&
                                                 e.preventDefault()
@@ -301,16 +306,21 @@ const SubEdit = () => {
                                             <Select
                                                 field={field}
                                                 form={form}
+                                                placeholder="Select Category"
                                                 options={options}
-                                                value={options.find(
+                                                getOptionLabel={(option) => {
+                                                    console.log(option);
+                                                    return option.label
+                                                }}
+                                                value={options.filter(
                                                     (option) =>
                                                         option.value ===
-                                                        field.value,
+                                                        values.category.value
                                                 )}
                                                 onChange={(option) =>
                                                     form.setFieldValue(
                                                         field.name,
-                                                        option?.value,
+                                                        option
                                                     )
                                                 }
                                             />
