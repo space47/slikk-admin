@@ -7,6 +7,8 @@ import { useState } from 'react'
 import FormData from 'form-data'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 const ProductUploader = () => {
     const [file, setFile] = useState(null)
@@ -15,6 +17,9 @@ const ProductUploader = () => {
         console.log('File uploaded:', fileList[0])
         setFile(fileList[0])
     }
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+        (store) => store.company.currCompany,
+    )
 
     const handleSave = async () => {
         if (!file) {
@@ -26,7 +31,7 @@ const ProductUploader = () => {
 
         const data = new FormData()
         data.append('catalogue_file', file)
-        data.append('company', '1')
+        data.append('company', selectedCompany.id)
 
         const config = {
             method: 'post',

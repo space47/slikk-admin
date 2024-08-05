@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useMemo, useState, useRef } from 'react'
 import Table from '@/components/ui/Table'
 import {
     flexRender,
     getCoreRowModel,
     useReactTable,
 } from '@tanstack/react-table'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { DragDropContext, Draggable } from 'react-beautiful-dnd'
 import { MdDragIndicator } from 'react-icons/md'
 
 import { StrictModeDroppable } from '@/components/shared'
@@ -19,6 +20,8 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { notification } from 'antd'
 // import { AnyCnameRecord } from 'dns'
 import PageModal from './PageModal'
+import { FormikProps } from 'formik'
+import PageAddModal from './PageAddModal'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -56,6 +59,8 @@ const PageSettings = () => {
     >(BANNER_PAGE_NAME[0])
     const [yesModal, setYesModal] = useState(false)
     const [particularRow, setParticularRow] = useState()
+    const formikRef = useRef<FormikProps<any>>(null)
+    const [addModal, setAddModal] = useState(false)
 
     const fetchData = async () => {
         console.log('starting api')
@@ -74,8 +79,6 @@ const PageSettings = () => {
     useEffect(() => {
         fetchData()
     }, [currentSelectedPage])
-
-    console.log('dataaaa', data)
 
     const reorderData = (startIndex: number, endIndex: number) => {
         const newData = [...data]
@@ -109,7 +112,19 @@ const PageSettings = () => {
         setYesModal(false)
     }
     const handleOk = () => {
+        formikRef.current?.submitForm()
         setYesModal(false)
+        console.log('pppppppppppppppppp', particularRow)
+    }
+
+    const handleADDCancel = () => {
+        setAddModal(false)
+    }
+
+    const handleADDOk = () => {
+        formikRef.current?.submitForm()
+        setAddModal(false)
+        console.log('pppppppppppppppppp', particularRow)
     }
 
     const handleActionClick = (row: any) => {
@@ -117,6 +132,22 @@ const PageSettings = () => {
         setParticularRow(row)
         console.log('ssssss', particularRow)
     }
+
+    const handleAddPageClick = () => {
+        setAddModal(true)
+        // setParticularRow(row)
+    }
+
+    const newRowData = (data: any) => {
+        setData((prev) =>
+            prev.map((item) => (item === particularRow ? data : item)),
+        )
+        console.log('object------------', data)
+    }
+
+    useEffect(() => {
+        console.log('Updated particularRow:', particularRow)
+    }, [particularRow])
 
     const columns: ColumnDef<WebType>[] = useMemo(
         () => [
@@ -301,21 +332,21 @@ const PageSettings = () => {
         getCoreRowModel: getCoreRowModel(),
     })
 
-    const handleSelect = (a, b) => {
-        console.log('data', a, b)
+    const handleSelect = (a: any, b: any) => {
+        console.log('data.....................', a, b)
         setCurrentSelectedPage({
             value: a,
             name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || '',
         })
     }
 
-    console.log('boooooooooody', data)
-
     const handleButton = async () => {
         const webData = data.reduce((acc, item, index) => {
             acc[index + 1] = item
             return acc
         }, {})
+
+        console.log('webbbbbbbbbbbbb', webData)
 
         const body = {
             page_name: `${currentSelectedPage.value}`,
@@ -324,9 +355,10 @@ const PageSettings = () => {
             },
         }
 
+        console.log('boooooooooooooooo', body)
+
         try {
             const response = await axioisInstance.post(`page/config`, body)
-            console.log(response)
             notification.success({
                 message: 'Success',
                 description:
@@ -343,36 +375,68 @@ const PageSettings = () => {
 
     return (
         <div>
-            <div className="buttons flex gap-3 mb-7 ">
-                <div className="drop border  bg-gray-200 text-black text-lg font-semibold ">
-                    <Dropdown
-                        className=" text-xl text-black "
-                        title={currentSelectedPage.name}
-                        onSelect={handleSelect}
-                    >
-                        {BANNER_PAGE_NAME?.map((item, key) => {
-                            return (
-                                <DropdownItem key={key} eventKey={item.value}>
-                                    <span>{item.name}</span>
-                                </DropdownItem>
-                            )
-                        })}
-                    </Dropdown>
+            <div className=" flex justify-between">
+                <div className="buttons flex gap-3 mb-7 ">
+                    <div className="drop border  bg-gray-200 text-black text-lg font-semibold ">
+                        <Dropdown
+                            className=" text-xl text-black "
+                            title={currentSelectedPage.name}
+                            onSelect={handleSelect}
+                        >
+                            {BANNER_PAGE_NAME?.map((item, key) => {
+                                return (
+                                    <DropdownItem
+                                        key={key}
+                                        eventKey={item.value}
+                                    >
+                                        <span>{item.name}</span>
+                                    </DropdownItem>
+                                )
+                            })}
+                        </Dropdown>
+                    </div>
+                    <Button variant="new" size="md" onClick={handleButton}>
+                        UPDATE PAGE SETTINGS
+                    </Button>
                 </div>
-                <Button variant="new" size="md" onClick={handleButton}>
-                    UPDATE PAGE SETTINGS
-                </Button>
+
+                <div className="add">
+                    <Button
+                        variant="new"
+                        size="md"
+                        onClick={handleAddPageClick}
+                    >
+                        ADD PAGE SETTINGS
+                    </Button>
+                </div>
             </div>
             {yesModal && (
                 <PageModal
+                    formikRef={formikRef}
                     isModalOpen={yesModal}
                     setIsModalOpen={setYesModal}
                     handleCancel={handleCancel}
                     handleOk={handleOk}
                     particularRow={particularRow}
-                    setParticularRow={setParticularRow}
+                    setParticularRow={(row) => {
+                        setParticularRow(row)
+                        newRowData(row)
+                    }}
                 />
             )}
+
+            {addModal && (
+                <PageAddModal
+                    formikRef={formikRef}
+                    isModalOpen={addModal}
+                    setIsModalOpen={setAddModal}
+                    handleCancel={handleADDCancel}
+                    handleOk={handleADDOk}
+                    data={data}
+                    setData={setData}
+                />
+            )}
+
             <Table className="w-full">
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => {

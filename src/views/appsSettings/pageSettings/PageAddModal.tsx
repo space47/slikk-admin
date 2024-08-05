@@ -8,7 +8,8 @@ import type { FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import Button from '@/components/ui/Button'
+import { Dropdown, Button } from '@/components/ui'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 interface DataType {
     type: string
@@ -50,18 +51,25 @@ type modalProps = {
     handleOk: () => void
     handleCancel: () => void
     formikRef: React.RefObject<any>
-    particularRow: any
-    setParticularRow: (data: any) => void
+    data: any
+    setData: (data: any) => void
 }
 
-const PageModal: React.FC<modalProps> = ({
+const dataType = [
+    { name: 'Barcodes', value: 'barcodes' },
+    { name: 'Brands', value: 'brands' },
+    { name: 'Handles', value: 'handles' },
+    { name: 'Posts', value: 'posts' },
+]
+
+const PageAddModal: React.FC<modalProps> = ({
     isModalOpen,
     setIsModalOpen,
     handleOk,
     handleCancel,
     formikRef,
-    particularRow,
-    setParticularRow,
+    data,
+    setData,
 }) => {
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
@@ -98,14 +106,58 @@ const PageModal: React.FC<modalProps> = ({
     }
 
     const [initialValue, setInitalValue] = useState<any>({
-        data_type: particularRow.data_type,
-        footer_config: particularRow.footer_config,
-        header_config: particularRow.header_config,
-        component_type: particularRow.component_type,
-        section_heading: particularRow.section_heading,
-        background_image: particularRow.background_image,
-        sub_header_config: particularRow.sub_header_config,
+        data_type: {
+            type: '',
+            filters: [],
+            barcodes: '',
+            posts: '',
+            brands: '',
+            handles: '',
+        },
+        footer_config: {
+            icon: '',
+            text: '',
+            image: '',
+            style: '',
+            position: '',
+        },
+        header_config: {
+            icon: '',
+            text: '',
+            image: '',
+            style: '',
+            position: '',
+        },
+        component_type: '',
+        section_heading: '',
+        background_image: '',
+        sub_header_config: {
+            icon: '',
+            text: '',
+            image: '',
+            style: '',
+            position: '',
+        },
+        background_image_array: [],
+        footer_config_icon_Array: [],
+        footer_config_image_Array: [],
+        header_config_icon_Array: [],
+        header_config_image_Array: [],
+        sub_header_config_icon_Array: [],
+        sub_header_config_image_Array: [],
     })
+    const [selectedType, setSelectedType] = useState('')
+
+    const [inputValue, setInputValue] = useState('')
+
+    const handleSelectdrop = (key: string) => {
+        console.log('ddddddddddd', key)
+        setSelectedType(key)
+    }
+
+    const handleInputDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value)
+    }
 
     const handleimage = async (files: File[]) => {
         const formData = new FormData()
@@ -140,78 +192,72 @@ const PageModal: React.FC<modalProps> = ({
             return 'Error'
         }
     }
+    const handleSelect = (a: any, b: any) => {
+        console.log('data.....................', a, b)
+        // setCurrentSelectedPage({
+        //     value: a,
+        //     name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || '',
+        // })
+    }
 
     const handleSubmit = async (row: WebType) => {
-        // const imageUpload = await handleimage(row.background_image_array)
+        const imageUpload = await handleimage(row.background_image_array)
 
-        // const footerImageUpload = await handleimage(
-        //     row.footer_config_image_Array,
-        // )
+        const footerImageUpload = await handleimage(
+            row.footer_config_image_Array,
+        )
 
-        // const headerImageUpload = await handleimage(
-        //     row.header_config_image_Array,
-        // )
+        const headerImageUpload = await handleimage(
+            row.header_config_image_Array,
+        )
 
-        // const subHeaderImageUpload = await handleimage(
-        //     row.sub_header_config_image_Array,
-        // )
-
-        const newRow = {
+        const subHeaderImageUpload = await handleimage(
+            row.sub_header_config_image_Array,
+        )
+        const newRowAdd = {
             ...row,
-            background_image: row.background_image_array ? 'imageUpload' : '',
+            background_image:
+                row.background_image_array.length > 0 ? imageUpload : '',
             footer_config: {
                 ...row.footer_config,
-                image: row.footer_config_image_Array ? 'footerImageUpload' : '',
+                image:
+                    row.footer_config_image_Array.length > 0
+                        ? footerImageUpload
+                        : '',
             },
             header_config: {
                 ...row.header_config,
-                image: row.header_config_image_Array ? 'headerImageUpload' : '',
+                image:
+                    row.header_config_image_Array.length > 0
+                        ? headerImageUpload
+                        : '',
             },
             sub_header_config: {
                 ...row.sub_header_config,
-                image: row.sub_header_config_image_Array
-                    ? 'subHeaderImageUpload'
-                    : '',
+                image:
+                    row.sub_header_config_image_Array.length > 0
+                        ? subHeaderImageUpload
+                        : '',
             },
             data_type: {
                 ...row.data_type,
+                selectedType: initialValue,
             },
         }
-        console.log('row', newRow)
 
-        setParticularRow(newRow)
+        setData((prevData: WebType[]) => [...prevData, newRowAdd])
+        setSelectedType('')
+        setInitalValue('')
+
+        setIsModalOpen(false)
     }
 
-    console.log('---------------', particularRow)
-    const handleRemoveImage = (a: any) => {
-        console.log('object', a)
-    }
-
-    const getDataType = (data: DataType): { key: string; value: string } => {
-        if (data.barcodes) {
-            return { key: 'Barcode', value: data.barcodes }
-        } else if (data.posts) {
-            return { key: 'Posts', value: data.posts }
-        } else if (data.brands) {
-            return { key: 'Brands', value: data.brands }
-        } else if (data.handles) {
-            return { key: 'Handles', value: data.handles }
-        }
-        return { key: '', value: '' }
-    }
-
-    const [initialDataType, setInitialDataType] = useState(
-        getDataType(particularRow.data_type).value,
-    )
-
-    const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInitialDataType(e.target.value)
-    }
+    console.log('---------------')
 
     return (
         <>
             <Modal
-                title="EDIT SECTION"
+                title="ADD PAGE SECTION"
                 open={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}
@@ -223,12 +269,12 @@ const PageModal: React.FC<modalProps> = ({
                     initialValues={initialValue}
                     innerRef={formikRef}
                     // validationSchema={validationSchema}
-
+                    // ONSUBMIT LOGICCCCCCC....................................................................................................
                     onSubmit={handleSubmit}
                 >
                     {({ values, touched, errors, resetForm }) => (
-                        <Form className="w-2/3">
-                            <FormContainer className="grid grid-cols-4 gap-5">
+                        <Form className="w-full">
+                            <FormContainer className="grid grid-cols-2 gap-3">
                                 <FormItem
                                     asterisk
                                     label="Section Header"
@@ -267,27 +313,9 @@ const PageModal: React.FC<modalProps> = ({
                                 {/* image */}
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
                                     <div className="font-semibold mb-1">
-                                        Image
+                                        Background Image
                                     </div>
-                                    {particularRow.background_image && (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={
-                                                    particularRow.background_image
-                                                }
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button
-                                                className="text-red-500 text-md "
-                                                onClick={(e) =>
-                                                    handleRemoveImage(e)
-                                                }
-                                            >
-                                                x
-                                            </button>
-                                        </div>
-                                    )}
+
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
@@ -340,20 +368,6 @@ const PageModal: React.FC<modalProps> = ({
                                                     </>
                                                 )}
                                             </Field>
-                                            {/* <div className="btns">
-                                                <Button
-                                                    variant="default"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        handleimage(
-                                                            values.background_image_array,
-                                                        )
-                                                    }
-                                                >
-                                                    {' '}
-                                                    Upload{' '}
-                                                </Button>
-                                            </div> */}
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
@@ -412,26 +426,7 @@ const PageModal: React.FC<modalProps> = ({
                                     <div className="font-semibold mb-1">
                                         Header Image
                                     </div>
-                                    {particularRow.header_config.image && (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={
-                                                    particularRow.header_config
-                                                        .image
-                                                }
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button
-                                                className="text-red-500 text-md "
-                                                onClick={(e) =>
-                                                    handleRemoveImage(e)
-                                                }
-                                            >
-                                                x
-                                            </button>
-                                        </div>
-                                    )}
+
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
@@ -484,20 +479,6 @@ const PageModal: React.FC<modalProps> = ({
                                                     </>
                                                 )}
                                             </Field>
-                                            {/* <div className="btns">
-                                                <Button
-                                                    variant="default"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        handleimage(
-                                                            values.header_config_image_Array,
-                                                        )
-                                                    }
-                                                >
-                                                    {' '}
-                                                    Upload{' '}
-                                                </Button>
-                                            </div> */}
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
@@ -559,26 +540,7 @@ const PageModal: React.FC<modalProps> = ({
                                     <div className="font-semibold mb-1">
                                         Sub Header Image
                                     </div>
-                                    {particularRow.sub_header_config.image && (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={
-                                                    particularRow
-                                                        .sub_header_config.image
-                                                }
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button
-                                                className="text-red-500 text-md "
-                                                onClick={(e) =>
-                                                    handleRemoveImage(e)
-                                                }
-                                            >
-                                                x
-                                            </button>
-                                        </div>
-                                    )}
+
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
@@ -694,26 +656,7 @@ const PageModal: React.FC<modalProps> = ({
                                     <div className="font-semibold mb-1">
                                         Footer Image
                                     </div>
-                                    {particularRow.footer_config.image && (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={
-                                                    particularRow.footer_config
-                                                        .image
-                                                }
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button
-                                                className="text-red-500 text-md "
-                                                onClick={(e) =>
-                                                    handleRemoveImage(e)
-                                                }
-                                            >
-                                                x
-                                            </button>
-                                        </div>
-                                    )}
+
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
@@ -766,20 +709,6 @@ const PageModal: React.FC<modalProps> = ({
                                                     </>
                                                 )}
                                             </Field>
-                                            {/* <div className="btns">
-                                                <Button
-                                                    variant="default"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        handleimage(
-                                                            values.footer_config_image_Array,
-                                                        )
-                                                    }
-                                                >
-                                                    {' '}
-                                                    Upload{' '}
-                                                </Button>
-                                            </div> */}
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
@@ -843,28 +772,33 @@ const PageModal: React.FC<modalProps> = ({
                                     label="Data Type Key"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="data_type.type"
-                                        placeholder="Place your dataType"
-                                        value={
-                                            getDataType(particularRow.data_type)
-                                                .key
-                                        }
-                                        component={Input}
-                                    />
+                                    <Dropdown
+                                        className="text-xl text-black"
+                                        title={selectedType}
+                                        onSelect={handleSelectdrop}
+                                    >
+                                        {dataType?.map((item, key) => (
+                                            <DropdownItem
+                                                key={key}
+                                                eventKey={item.value}
+                                            >
+                                                <span>{item.name}</span>
+                                            </DropdownItem>
+                                        ))}
+                                    </Dropdown>
                                 </FormItem>
+
                                 <FormItem
-                                    label="Data Type Value"
+                                    label="Data Type Values"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
                                         type="text"
                                         name="data_type.type"
-                                        placeholder="Place your dataType"
-                                        value={initialDataType}
-                                        onChange={handleChangeDtata}
+                                        placeholder="Enter comma separated values"
                                         component={Input}
+                                        value={inputValue}
+                                        onChange={handleInputDrop}
                                     />
                                 </FormItem>
 
@@ -878,4 +812,4 @@ const PageModal: React.FC<modalProps> = ({
     )
 }
 
-export default PageModal
+export default PageAddModal
