@@ -7,6 +7,10 @@ import RtkQueryService from '@/services/RtkQueryService'
 import { AuthState as Authorization} from '@/@types/types'
 import { authReducer } from '@/store/reducers/authReducers'
 import { companyReducer } from './reducers/company.reducer'
+import { divisionReducer } from './reducers/divison.reducer'
+import { categoryReducer } from './reducers/category.reducer'
+import { subCategoryReducer } from './reducers/subcategory.reducer'
+import { productTypeReducer } from './reducers/productType.reducer'
 
 export type RootState = CombinedState<{
     authorization:CombinedState<Authorization>
@@ -29,6 +33,10 @@ const staticReducers = {
     theme,
     authorization:authReducer,
     company : companyReducer,
+    division : divisionReducer,
+    category : categoryReducer,
+    subCategory : subCategoryReducer,
+    product_type : productTypeReducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
 

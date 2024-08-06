@@ -64,14 +64,14 @@ const columns = [
         header: 'Background Image',
         cell: (info) => {
             return (
-                <div className="w-[200px] h-[100px] flex items-center justify-center">
-                    {info.getValue() && (
+                <div className="flex items-center justify-center">
+                    {info.getValue() ? (
                         <img
                             src={info.getValue()}
                             alt="Image"
                             className="w-full h-full object-cover"
                         />
-                    )}
+                    ) : "NA"}
                 </div>
             )
         },
@@ -80,7 +80,7 @@ const columns = [
         header: 'Header Image',
         cell: (info) => {
             return (
-                <div className="w-[200px] h-[100px] flex items-center justify-center">
+                <div className="flex items-center justify-center">
                     {info.getValue() && (
                         <img
                             src={info.getValue()}
@@ -102,8 +102,8 @@ const BannerDetails = ({ data }: OrderProductsProps) => {
     })
 
     return (
-        <AdaptableCard className="mb-4 border border-gray-800">
-            <Table>
+        <AdaptableCard className="mb-4 border border-gray-800 w-full">
+            <Table className='table-auto'>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>

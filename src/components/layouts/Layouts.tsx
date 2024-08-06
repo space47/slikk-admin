@@ -15,6 +15,10 @@ import useLocale from '@/utils/hooks/useLocale'
 import { getUserProfileAPI } from '@/store/action/company.action'
 import { Button } from '../ui'
 import { logoutAction } from '@/store/action/authAction'
+import { getAllDivisionAPI } from '@/store/action/division.action'
+import { getAllCategoryAPI } from '@/store/action/category.action'
+import { getAllSubCategoryAPI } from '@/store/action/subcategory.action'
+import { getAllProductTypeAPI } from '@/store/action/productType.action'
 
 const layouts = {
     [LAYOUT_TYPE_CLASSIC]: lazy(() => import('./ClassicLayout')),
@@ -37,6 +41,12 @@ const Layout = () => {
     const company = useAppSelector(state => state.company.currCompany);
 
     const AppLayout = useMemo(() => {
+
+        dispatch(getAllDivisionAPI());
+        dispatch(getAllCategoryAPI());
+        dispatch(getAllSubCategoryAPI());
+        dispatch(getAllProductTypeAPI());
+
         if (authenticated) {
             console.log("company", company);
             if(!company?.id){
