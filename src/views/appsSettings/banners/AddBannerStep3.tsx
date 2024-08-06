@@ -1,5 +1,10 @@
 import { BANNER_UPLOAD_DATA } from '@/common/banner';
 import { Button, Upload } from '@/components/ui';
+import { useAppSelector } from '@/store';
+import { CATEGORY_STATE } from '@/store/types/category.types';
+import { DIVISION_STATE } from '@/store/types/division.types';
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types';
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types';
 import FontAwesome from '@/views/ui-components/common/Icons/FontAwesome';
 import React, { useEffect, useState } from 'react'
 import { FaCross, FaWindowClose, FaXRay } from 'react-icons/fa';
@@ -42,6 +47,11 @@ export default AddBannerStep3;
 
 const SingleBannerFormComp = ({ bannerForm, setBannerForm, index }: any) => {
 
+    const divisions = useAppSelector<DIVISION_STATE>(state => state.division);
+    const category = useAppSelector<CATEGORY_STATE>(state => state.category);
+    const subCategory = useAppSelector<SUBCATEGORY_STATE>(state => state.subCategory);
+    const product_type = useAppSelector<PRODUCTTYPE_STATE>(state => state.product_type);
+
     const handleSetDataInForm = (key : string, value : any) => {
         const tempBannerForm = bannerForm;
 
@@ -66,5 +76,10 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index }: any) => {
             <span>Select Banner Mobile Image</span>
             <Upload uploadLimit={1} onChange={(file, _) => handleSetDataInForm('image_mobile_file', file[0])} />
         </div>
+
+        <span>Total Divisions : {divisions.divisions?.length}</span>
+        <span>Total Divisions : {category.categories?.length}</span>
+        <span>Total Divisions : {subCategory.subcategories?.length}</span>
+        <span>Total Divisions : {product_type.product_types?.length}</span>
     </div>
-} 
+}
