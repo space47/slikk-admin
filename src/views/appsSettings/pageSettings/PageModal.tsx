@@ -113,48 +113,53 @@ const PageModal: React.FC<modalProps> = ({
         files.forEach((file) => {
             formData.append('file', file)
         })
-        formData.append('file_type', 'banners') //............................................................................
-
+        formData.append('file_type', 'banners')
         try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            console.log(response)
-            const newData = response.data.url
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
+            await axioisInstance
+                .post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                .then((response) => {
+                    const newData = response.data.url
+                    notification.success({
+                        message: 'Success',
+                        description:
+                            response?.data?.message ||
+                            'Image uploaded successfully',
+                    })
+                    return newData
+                })
+                .catch((error) => {
+                    console.error(error)
+                    notification.error({
+                        message: 'Upload Failed',
+                        description:
+                            error?.response?.data?.message ||
+                            'Image upload failed',
+                    })
+                    return 'Error'
+                })
         } catch (error: any) {
             console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
         }
     }
 
     const handleSubmit = async (row: WebType) => {
-        // const imageUpload = await handleimage(row.background_image_array)
+        const imageUpload = await handleimage(row.background_image_array)
 
-        // const footerImageUpload = await handleimage(
-        //     row.footer_config_image_Array,
-        // )
+        const footerImageUpload = await handleimage(
+            row.footer_config_image_Array,
+        )
 
-        // const headerImageUpload = await handleimage(
-        //     row.header_config_image_Array,
-        // )
+        const headerImageUpload = await handleimage(
+            row.header_config_image_Array,
+        )
 
-        // const subHeaderImageUpload = await handleimage(
-        //     row.sub_header_config_image_Array,
-        // )
+        const subHeaderImageUpload = await handleimage(
+            row.sub_header_config_image_Array,
+        )
 
         const newRow = {
             ...row,
@@ -227,8 +232,8 @@ const PageModal: React.FC<modalProps> = ({
                     onSubmit={handleSubmit}
                 >
                     {({ values, touched, errors, resetForm }) => (
-                        <Form className="w-2/3">
-                            <FormContainer className="grid grid-cols-4 gap-5">
+                        <Form className="w-full">
+                            <FormContainer className="grid grid-cols-2 gap-3">
                                 <FormItem
                                     asterisk
                                     label="Section Header"
@@ -340,20 +345,6 @@ const PageModal: React.FC<modalProps> = ({
                                                     </>
                                                 )}
                                             </Field>
-                                            {/* <div className="btns">
-                                                <Button
-                                                    variant="default"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        handleimage(
-                                                            values.background_image_array,
-                                                        )
-                                                    }
-                                                >
-                                                    {' '}
-                                                    Upload{' '}
-                                                </Button>
-                                            </div> */}
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
@@ -484,20 +475,6 @@ const PageModal: React.FC<modalProps> = ({
                                                     </>
                                                 )}
                                             </Field>
-                                            {/* <div className="btns">
-                                                <Button
-                                                    variant="default"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        handleimage(
-                                                            values.header_config_image_Array,
-                                                        )
-                                                    }
-                                                >
-                                                    {' '}
-                                                    Upload{' '}
-                                                </Button>
-                                            </div> */}
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
@@ -766,20 +743,6 @@ const PageModal: React.FC<modalProps> = ({
                                                     </>
                                                 )}
                                             </Field>
-                                            {/* <div className="btns">
-                                                <Button
-                                                    variant="default"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        handleimage(
-                                                            values.footer_config_image_Array,
-                                                        )
-                                                    }
-                                                >
-                                                    {' '}
-                                                    Upload{' '}
-                                                </Button>
-                                            </div> */}
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
@@ -847,23 +810,50 @@ const PageModal: React.FC<modalProps> = ({
                                         type="text"
                                         name="data_type.type"
                                         placeholder="Place your dataType"
-                                        value={
-                                            getDataType(particularRow.data_type)
-                                                .key
-                                        }
                                         component={Input}
                                     />
                                 </FormItem>
                                 <FormItem
-                                    label="Data Type Value"
+                                    label="Data Type Barcode"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
                                         type="text"
-                                        name="data_type.type"
+                                        name="data_type.barcodes"
                                         placeholder="Place your dataType"
-                                        value={initialDataType}
-                                        onChange={handleChangeDtata}
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="Data Type Posts"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="data_type.posts"
+                                        placeholder="Place your dataType"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="Data Type Brands"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="data_type.brands"
+                                        placeholder="Place your dataType"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="Data Type Handles"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="data_type.handles"
+                                        placeholder="Place your dataType"
                                         component={Input}
                                     />
                                 </FormItem>

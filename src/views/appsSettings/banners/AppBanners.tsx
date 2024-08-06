@@ -5,6 +5,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
+import { useNavigate } from 'react-router-dom'
 
 interface BannerType {
     id: number
@@ -57,6 +58,7 @@ const AppBanners = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const navigate = useNavigate()
 
     const fetchData = async () => {
         try {
@@ -92,6 +94,10 @@ const AppBanners = () => {
         page * pageSize,
     )
     const totalPages = Math.ceil(filteredData.length / pageSize)
+
+    const handleBanner = () => {
+        navigate('/app/appSettings/banners/addNew')
+    }
 
     const columns = [
         { header: 'ID', accessor: 'id' },
@@ -224,14 +230,22 @@ const AppBanners = () => {
 
     return (
         <div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    className="p-2 border rounded"
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                />
+            <div className="flex justify-between mb-5">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        className="p-2 border rounded"
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <Button variant="new" onClick={handleBanner}>
+                        Add New Banner
+                    </Button>
+                </div>
             </div>
             <Table>
                 <THead>

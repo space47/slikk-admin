@@ -65,12 +65,17 @@ const PageSettings = () => {
     const fetchData = async () => {
         console.log('starting api')
         try {
-            const response = await axioisInstance.get(
-                `/page/config?page_name=${currentSelectedPage.value}`,
-            )
-            const responsedata = response.data.data.value.Web
-            setData(Object.values(responsedata))
-            console.log(`ending api call`, responsedata)
+            axioisInstance
+                .get(`/page/config?page_name=${currentSelectedPage.value}`)
+                .then((response) => {
+                    const responsedata = response.data.data.value.Web
+                    setData(Object.values(responsedata))
+                    console.log('ending api call', responsedata)
+                })
+                .catch((error) => {
+                    console.log(error)
+                    setData([])
+                })
         } catch (error) {
             console.log(error)
         }
@@ -143,6 +148,9 @@ const PageSettings = () => {
             prev.map((item) => (item === particularRow ? data : item)),
         )
         console.log('object------------', data)
+    }
+    const handleRemoveButton = (row: WebType) => {
+        setData((prev) => prev.filter((item) => item !== row))
     }
 
     useEffect(() => {
@@ -240,7 +248,7 @@ const PageSettings = () => {
                 accessorKey: 'footer_config.image',
                 cell: (info) => (
                     <img
-                        src={info.getValue()}
+                        src={info.getValue() as string}
                         alt=""
                         className=" object-contain bg-black"
                     />
@@ -319,6 +327,18 @@ const PageSettings = () => {
                 cell: ({ row }) => (
                     <Button onClick={() => handleActionClick(row.original)}>
                         Edit
+                    </Button>
+                ),
+            },
+            {
+                header: 'Delete',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <Button
+                        onClick={() => handleRemoveButton(row.original)}
+                        variant="reject"
+                    >
+                        Delete
                     </Button>
                 ),
             },

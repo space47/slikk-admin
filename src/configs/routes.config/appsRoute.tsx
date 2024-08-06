@@ -651,20 +651,31 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsAppSettings.banners',
+        path: `${APP_PREFIX_PATH}/appSettings/banners/addNew`,
+        component: lazy(
+            () => import('@/views/appsSettings/banners/addBanners/AddBanners'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.banners',
+        path: `${APP_PREFIX_PATH}/appSettings/banners/newBanner`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/appsSettings/banners/addBanners/addComponents/NewBanner'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     {
         key: 'appsAppSettings.pageSettings',
         path: `${APP_PREFIX_PATH}/appSettings/pageSettings`,
         component: lazy(
             () => import('@/views/appsSettings/pageSettings/PageSettings'),
-        ),
-        authority: [ADMIN, USER],
-    },
-    {
-        key: 'appsAppSettings.pageSettings',
-        path: `${APP_PREFIX_PATH}/appSettings/pageSettings/edit/`,
-        component: lazy(
-            () => import('@/views/appsSettings/pageSettings/PageEdit'),
         ),
         authority: [ADMIN, USER],
     },

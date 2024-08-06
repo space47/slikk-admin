@@ -150,14 +150,14 @@ const PageAddModal: React.FC<modalProps> = ({
 
     const [inputValue, setInputValue] = useState('')
 
-    const handleSelectdrop = (key: string) => {
-        console.log('ddddddddddd', key)
-        setSelectedType(key)
-    }
+    // const handleSelectdrop = (key: string) => {
+    //     console.log('ddddddddddd', key)
+    //     setSelectedType(key)
+    // }
 
-    const handleInputDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value)
-    }
+    // const handleInputDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     setInputValue(e.target.value)
+    // }
 
     const handleimage = async (files: File[]) => {
         const formData = new FormData()
@@ -165,31 +165,37 @@ const PageAddModal: React.FC<modalProps> = ({
         files.forEach((file) => {
             formData.append('file', file)
         })
-        formData.append('file_type', 'banners') //............................................................................
-
+        formData.append('file_type', 'banners')
         try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            console.log(response)
-            const newData = response.data.url
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
+            await axioisInstance
+                .post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                .then((response) => {
+                    console.log(response)
+                    const newData = response.data.url
+                    notification.success({
+                        message: 'Success',
+                        description:
+                            response?.data?.message ||
+                            'Image uploaded successfully',
+                    })
+                    return newData
+                })
+                .catch((error) => {
+                    console.error(error)
+                    notification.error({
+                        message: 'Upload Failed',
+                        description:
+                            error?.response?.data?.message ||
+                            'Image upload failed',
+                    })
+                    return 'Error'
+                })
         } catch (error: any) {
             console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
         }
     }
     const handleSelect = (a: any, b: any) => {
@@ -772,33 +778,55 @@ const PageAddModal: React.FC<modalProps> = ({
                                     label="Data Type Key"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
-                                    <Dropdown
-                                        className="text-xl text-black"
-                                        title={selectedType}
-                                        onSelect={handleSelectdrop}
-                                    >
-                                        {dataType?.map((item, key) => (
-                                            <DropdownItem
-                                                key={key}
-                                                eventKey={item.value}
-                                            >
-                                                <span>{item.name}</span>
-                                            </DropdownItem>
-                                        ))}
-                                    </Dropdown>
+                                    <Field
+                                        type="text"
+                                        name="data_type.type"
+                                        placeholder="Place your dataType"
+                                        component={Input}
+                                    />
                                 </FormItem>
-
                                 <FormItem
-                                    label="Data Type Values"
+                                    label="Data Type Barcode"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
                                         type="text"
-                                        name="data_type.type"
-                                        placeholder="Enter comma separated values"
+                                        name="data_type.barcodes"
+                                        placeholder="Place your dataType"
                                         component={Input}
-                                        value={inputValue}
-                                        onChange={handleInputDrop}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="Data Type Posts"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="data_type.posts"
+                                        placeholder="Place your dataType"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="Data Type Brands"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="data_type.brands"
+                                        placeholder="Place your dataType"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="Data Type Handles"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="data_type.handles"
+                                        placeholder="Place your dataType"
+                                        component={Input}
                                     />
                                 </FormItem>
 
