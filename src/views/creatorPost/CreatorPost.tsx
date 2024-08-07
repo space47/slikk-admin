@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import Tabs from '@/components/ui/Tabs'
 import { MdOutlinePendingActions } from 'react-icons/md'
@@ -63,11 +64,17 @@ const CreatorPost = () => {
     const [tableData, setTableData] = useState<Post[]>([])
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [globalFilter, setGlobalFilter] = useState('')
 
-    const fetchData = async (status: string, page = 1, pageSize = 10) => {
+    const fetchData = async (
+        status: string,
+        page = 1,
+        pageSize = 10,
+        filter: string = '',
+    ) => {
         try {
             const response = await axiosInstance.get(
-                `userposts/approval?status=${status}&page=${page}&pageSize=${pageSize}`,
+                `userposts/approval?status=${status}&p=${page}&page_size=${pageSize}&name=${filter}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -80,7 +87,7 @@ const CreatorPost = () => {
 
     const handleChange = (tab: string) => {
         setActiveTab(tab)
-        setPage(1) // Reset to first page when switching tabs
+        setPage(1)
     }
 
     useEffect(() => {
@@ -88,8 +95,13 @@ const CreatorPost = () => {
         if (activeTab === 'tab2') status = 'APPROVED'
         if (activeTab === 'tab3') status = 'REJECTED'
 
-        fetchData(status, page, pageSize)
-    }, [activeTab, page, pageSize])
+        console.log('Active Tab........', activeTab)
+        console.log('Page...........', page)
+        console.log('Page Size........', pageSize)
+        console.log('Status.........', status)
+
+        fetchData(status, page, pageSize, globalFilter)
+    }, [activeTab, page, pageSize, globalFilter])
 
     return (
         <div>
@@ -107,7 +119,16 @@ const CreatorPost = () => {
                 </TabList>
                 <div className="p-4 mt-5">
                     <TabContent value="tab1">
-                        <Pending data={tableData} totalData={totalData} />
+                        <Pending
+                            data={tableData}
+                            totalData={totalData}
+                            page={page}
+                            pageSize={pageSize}
+                            setPage={setPage}
+                            setPageSize={setPageSize}
+                            globalFilter={globalFilter}
+                            setGlobalFilter={setGlobalFilter}
+                        />
                     </TabContent>
                     <TabContent value="tab2">
                         <Accepted
@@ -117,10 +138,21 @@ const CreatorPost = () => {
                             pageSize={pageSize}
                             setPage={setPage}
                             setPageSize={setPageSize}
+                            globalFilter={globalFilter}
+                            setGlobalFilter={setGlobalFilter}
                         />
                     </TabContent>
                     <TabContent value="tab3">
-                        <Rejected data={tableData} totalData={totalData} />
+                        <Rejected
+                            data={tableData}
+                            totalData={totalData}
+                            page={page}
+                            pageSize={pageSize}
+                            setPage={setPage}
+                            setPageSize={setPageSize}
+                            globalFilter={globalFilter}
+                            setGlobalFilter={setGlobalFilter}
+                        />
                     </TabContent>
                 </div>
             </Tabs>

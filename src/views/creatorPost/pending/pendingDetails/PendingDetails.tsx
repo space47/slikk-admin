@@ -19,7 +19,6 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 // import { ordercommon } from '@/views/category-management/orderlist/commontypes'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import PendingProduct from './PendingProduct'
-import moment from 'moment'
 import PendCreatorDetails from './PendCreatorDetails'
 import VideoFrame from './PendingVideo'
 import { Button } from '@/components/ui'
@@ -104,7 +103,7 @@ const PendingDetails = () => {
 
     const handleAccept = async () => {
         const body = {
-            pk: `${id}`,
+            pk: `${post_id}`,
             status: 'APPROVED',
         }
         try {
@@ -130,7 +129,7 @@ const PendingDetails = () => {
     }
     const handleReject = async () => {
         const body = {
-            pk: `${id}`,
+            pk: `${post_id}`,
             status: 'REJECTED',
         }
         try {
@@ -185,7 +184,7 @@ const PendingDetails = () => {
 
                             {/* Contents.................................................................................................. */}
 
-                            <div className="flex gap-5  items-center justify-around ">
+                            <div className="flex  items-center justify-around ">
                                 <div className="info">
                                     <PendCreatorDetails
                                         name={penddata.creator.name}
@@ -201,9 +200,18 @@ const PendingDetails = () => {
 
                                 {/*  */}
                                 <div className="flex justify-center items-center gap-6 mt-10">
-                                    <div>
+                                    {penddata.type === 'video' ? (
                                         <VideoFrame url={penddata.url} />
-                                    </div>
+                                    ) : (
+                                        <>
+                                            {' '}
+                                            <img
+                                                src={penddata.url}
+                                                alt=""
+                                                className=" w-[400px] h-[500px]"
+                                            />
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="product mt-10">

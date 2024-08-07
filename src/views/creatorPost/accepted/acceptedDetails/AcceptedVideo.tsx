@@ -7,15 +7,15 @@ interface VideoPlayerProps {
 const VideoFrame: React.FC<VideoPlayerProps> = ({ url }) => {
     return (
         <div>
-            <iframe
-                allowFullScreen
-                width="600"
-                height="460"
+            <video
+                controls
+                width="400"
                 src={url}
                 title="Video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                className="overflow-clip"
-            ></iframe>
+                className="overflow-clip h-[400px]"
+            >
+                <h4>NO VIDEO AVAILABLE</h4>
+            </video>
         </div>
     )
 }

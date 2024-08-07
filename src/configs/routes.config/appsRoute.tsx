@@ -114,6 +114,14 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/sales/OrderDetails')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsOrderManagement.returnOrderList',
+        path: `${APP_PREFIX_PATH}/returnOrders`,
+        component: lazy(
+            () => import('@/views/sales/returnOrders/ReturnOrders'),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     // SELLERS................................................................................................................
 
@@ -169,6 +177,17 @@ const appsRoute: Routes = [
             () =>
                 import(
                     '@/views/brandDashboard/brandUser/branUserEdit/BrandUserEdit'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCategory.productFeedback',
+        path: `${APP_PREFIX_PATH}/category/productFeedback`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/productFeedback/ProductFeedback'
                 ),
         ),
         authority: [ADMIN, USER],
@@ -319,6 +338,17 @@ const appsRoute: Routes = [
         path: `${APP_PREFIX_PATH}/goods/received/form`,
         component: lazy(
             () => import('@/views/inventory-management/inward/inwardNew'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.inwards',
+        path: `${APP_PREFIX_PATH}/goods/received/edit/:id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/inventory-management/inward/inwardEdit/InwardEdit'
+                ),
         ),
         authority: [ADMIN, USER],
     },

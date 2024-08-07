@@ -1,101 +1,73 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-// import Select from '@/components/ui/Select'
 import DatePicker from '@/components/ui/DatePicker'
-// import TimeInput from '@/components/ui/TimeInput'
 import Checkbox from '@/components/ui/Checkbox'
-// import Radio from '@/components/ui/Radio'
-// import Switcher from '@/components/ui/Switcher'
-// import Segment from '@/components/ui/Segment'
 import Upload from '@/components/ui/Upload'
-// import SegmentItemOption from '@/components/shared/SegmentItemOption'
-// import { HiCheckCircle } from 'react-icons/hi'
 import { Field, Form, Formik } from 'formik'
-// import CreatableSelect from 'react-select/creatable'
 import * as Yup from 'yup'
 import type { FieldProps } from 'formik'
 import Textarea from '@/views/ui-components/forms/Input/Textarea'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { notification } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import Infor from '@/components/template/VerticalMenuContent/Infor'
+import { useNavigate, useParams } from 'react-router-dom'
+
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 type FormModel = {
-    select: string
-    date: Date | null
-    time: Date | null
-    singleCheckbox: boolean
-    files: File[]
-    file_type: string
-    document_number: string
-    company: number
-    received_by: string
+    select: string | undefined
+    date: Date | undefined
+    time: Date | undefined
+    singleCheckbox: boolean | false
+    files: File[] | []
+    file_type: string | undefined
+    document_number: string | undefined
+    company: number | undefined
+    received_by: string | undefined
     document_date: Date | null
-    origin_address: string
-    received_address: string
-    slikk_owned: boolean
+    origin_address: string | undefined
+    received_address: string | undefined
+    slikk_owned: boolean | false
     total_sku: number | null
     total_quantity: number | null
-    document: File[]
-    images: string
-    image: File[]
+    document: File[] | []
+    images: string | undefined
+    image: File[] | []
 }
 
-const MIN_UPLOAD = 1
 const MAX_UPLOAD = 8
 
-const initialValue: FormModel = {
-    select: '',
-    date: null,
-    time: null,
-    singleCheckbox: false,
-    file_type: '',
-    document_number: '',
-    company: 1,
-    files: [],
-    received_by: '',
-    document_date: null,
-    origin_address: '',
-    received_address: '',
-    slikk_owned: false,
-    total_sku: null,
-    total_quantity: null,
-    document: [],
-    images: '',
-    image: [],
-}
+// const validationSchema = Yup.object().shape({
+//     document_number: Yup.string().required('Document Number is required'),
+//     document_date: Yup.date().required('Document Date is required').nullable(),
+//     // origin_address: Yup.string()
+//     //     .required('Supplier Address is required')
+//     //     .transform((value) => value.trim()),
+//     // received_address: Yup.string()
+//     //     .required('Receiver Address is required')
+//     //     .transform((value) => value.trim()),
+//     received_by: Yup.string()
+//         .required('Received By is required')
+//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
+//     total_sku: Yup.number()
+//         .required('Total SKUs is required')
+//         .integer('Must be an integer'),
+//     total_quantity: Yup.number()
+//         .required('Total Quantity is required')
+//         .integer('Must be an integer'),
+//     singleCheckbox: Yup.boolean(),
+//     // images: Yup.string().nullable(),
+//     // document: Yup.string().nullable(),
+// })
 
-const validationSchema = Yup.object().shape({
-    document_number: Yup.string().required('Document Number is required'),
-    document_date: Yup.date().required('Document Date is required').nullable(),
-    // origin_address: Yup.string()
-    //     .required('Supplier Address is required')
-    //     .transform((value) => value.trim()),
-    // received_address: Yup.string()
-    //     .required('Receiver Address is required')
-    //     .transform((value) => value.trim()),
-    received_by: Yup.string()
-        .required('Received By is required')
-        .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-    total_sku: Yup.number()
-        .required('Total SKUs is required')
-        .integer('Must be an integer'),
-    total_quantity: Yup.number()
-        .required('Total Quantity is required')
-        .integer('Must be an integer'),
-    singleCheckbox: Yup.boolean(),
-    // images: Yup.string().nullable(),
-    // document: Yup.string().nullable(),
-})
-
-const MixedFormControl = () => {
-    const [datas, setDatas] = useState()
-    const [imagview, setImageView] = useState<string>('')
+const InwardEdit = () => {
+    const [datas, setDatas] = useState<FormModel | null>()
+    const [imagview, setImageView] = useState<string[]>([])
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
@@ -104,7 +76,9 @@ const MixedFormControl = () => {
 
     const navigate = useNavigate()
 
-    console.log(datas)
+    const { id } = useParams()
+
+    // console.log(datas)
     console.log(imagview)
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -113,6 +87,7 @@ const MixedFormControl = () => {
             'application/pdf',
             'image/jpeg',
             'image/jpg',
+            'image/png',
             'image/webp',
             'text/csv',
             'application/vnd.ms-excel',
@@ -138,6 +113,21 @@ const MixedFormControl = () => {
 
         return valid
     }
+
+    const fetchData = async () => {
+        try {
+            const response = await axioisInstance.get(`goods/received?id=${id}`)
+            const InwardData = response.data?.data.results
+            setDatas(InwardData)
+            setImageView(InwardData.image ? [InwardData.image] : [])
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [id])
 
     const handleUpload = async (files: File[]) => {
         const formData = new FormData()
@@ -189,7 +179,7 @@ const MixedFormControl = () => {
         try {
             console.log(formData.get('file'))
             const response = await axioisInstance.post(
-                'fileupload/dashboard', //only fileupload // image
+                'fileupload/dashboard',
                 formData,
                 {
                     headers: {
@@ -243,7 +233,7 @@ const MixedFormControl = () => {
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.post(
+            const response = await axioisInstance.patch(
                 'goods/received',
                 formData,
             )
@@ -251,8 +241,7 @@ const MixedFormControl = () => {
             console.log(response)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'GRN created Successfully',
+                description: response?.data?.message || 'GRN created Edited',
             })
             navigate('/app/goods/received')
         } catch (error: any) {
@@ -260,17 +249,42 @@ const MixedFormControl = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'GRN not created ',
+                    error?.response?.data?.message || 'Unable to edit GRN ',
             })
         }
     }
+
+    console.log('sssssssssssss', datas)
+
+    const initialValue: FormModel = {
+        select: datas?.select,
+        date: datas?.date,
+        time: datas?.time,
+        singleCheckbox: datas?.singleCheckbox || false,
+        file_type: datas?.file_type || '',
+        document_number: datas?.document_number || '',
+        company: datas?.company || 1,
+        files: datas?.files || [],
+        received_by: datas?.received_by || '',
+        document_date: datas?.document_date || null,
+        origin_address: datas?.origin_address || '',
+        received_address: datas?.received_address || '',
+        slikk_owned: datas?.slikk_owned || false,
+        total_sku: datas?.total_sku || null,
+        total_quantity: datas?.total_quantity || null,
+        document: datas?.document || [],
+        images: datas?.images || '',
+        image: datas?.image || [],
+    }
+
+    console.log('iiiiiiiiiiiiii', initialValue)
 
     return (
         <div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
-                validationSchema={validationSchema}
+                // validationSchema={validationSchema}
                 // ONSUBMIT LOGICCCCCCC....................................................................................................
                 onSubmit={handleSubmit}
             >
@@ -450,7 +464,7 @@ const MixedFormControl = () => {
                                                         }
                                                         fileList={
                                                             values.document
-                                                        } // uploadedd the file
+                                                        }
                                                         onChange={(files) => {
                                                             console.log(
                                                                 'OnchangeFiles',
@@ -469,17 +483,12 @@ const MixedFormControl = () => {
                                                                 files,
                                                             )
                                                         }
-                                                        // uploadButtonText="Add Files"
                                                     />
                                                 </>
                                             )}
                                         </Field>
                                     </FormItem>
-                                    {showData && (
-                                        <>
-                                            <p>{datas}</p>
-                                        </>
-                                    )}
+
                                     <br />
                                 </FormContainer>
 
@@ -505,6 +514,20 @@ const MixedFormControl = () => {
                                 Upload Supporting Image
                             </div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
+                                <div className=" image w-[10%] h-[20%] mt-5  ">
+                                    {imagview && imagview.length > 0 ? (
+                                        imagview.map((img, index) => (
+                                            <img
+                                                key={index}
+                                                src={img}
+                                                alt="img"
+                                                className="rounded-xl"
+                                            />
+                                        ))
+                                    ) : (
+                                        <p>No image</p>
+                                    )}
+                                </div>
                                 <FormContainer className=" mt-5 ">
                                     <FormItem
                                         label=""
@@ -543,11 +566,6 @@ const MixedFormControl = () => {
                                             )}
                                         </Field>
                                     </FormItem>
-                                    {showImage && (
-                                        <>
-                                            <p>{imagview}</p>
-                                        </>
-                                    )}
                                     <br />
                                     <br />
                                 </FormContainer>
@@ -611,4 +629,4 @@ const MixedFormControl = () => {
     )
 }
 
-export default MixedFormControl
+export default InwardEdit

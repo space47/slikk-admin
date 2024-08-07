@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 // import classNames from 'classnames'
 // import Tag from '@/components/ui/Tag'
@@ -71,7 +72,7 @@ const useQuery = () => {
 
 const AcceptedDetails = () => {
     const [loading, setLoading] = useState(true)
-    const [data1, setData1] = useState<PostData>()
+    const [acceptedData, setAcceptedData] = useState<PostData>()
     const navigate = useNavigate()
 
     // const { post_id } = useParams()
@@ -86,13 +87,13 @@ const AcceptedDetails = () => {
         const fetchOrders = async () => {
             try {
                 const response = await axioisInstance.get(
-                    `userposts/approval?post_id=${post_id}`,
+                    `userposts/approval?post_id=${id}`,
                 )
 
                 const PendingData = response.data?.data || []
                 setLoading(false)
 
-                setData1(PendingData)
+                setAcceptedData(PendingData)
             } catch (error) {
                 console.log(error)
             }
@@ -103,7 +104,7 @@ const AcceptedDetails = () => {
 
     const handleReject = async () => {
         const body = {
-            pk: `${id}`,
+            pk: `${post_id}`,
             status: 'REJECTED',
         }
         try {
@@ -129,7 +130,7 @@ const AcceptedDetails = () => {
     }
     const handlePending = async () => {
         const body = {
-            pk: `${id}`,
+            pk: `${post_id}`,
             status: 'PENDING',
         }
         try {
@@ -157,12 +158,12 @@ const AcceptedDetails = () => {
     return (
         <Container className="">
             <Loading loading={loading} className="">
-                {!isEmpty(data1) && (
+                {!isEmpty(acceptedData) && (
                     <>
                         <div className="mb-3 ">
                             <div className="flex justify-between ">
                                 <span className="text-xl font-bold">
-                                    POST ID :#{data1.post_id}
+                                    POST ID :#{acceptedData.post_id}
                                 </span>
                                 <span className="text-xl"></span>
 
@@ -187,32 +188,43 @@ const AcceptedDetails = () => {
                             <div className="flex gap-5  items-center justify-around ">
                                 <div className="info">
                                     <AcceptCreatorDetails
-                                        name={data1.creator.name}
-                                        dp={data1.creator.dp}
+                                        name={acceptedData.creator.name}
+                                        dp={acceptedData.creator.dp}
                                         followers_count={
-                                            data1.creator.followers_count
+                                            acceptedData.creator.followers_count
                                         }
-                                        likes_count={data1.likes_count}
-                                        views_count={data1.views_count}
-                                        comments_count={data1.comments_count}
+                                        likes_count={acceptedData.likes_count}
+                                        views_count={acceptedData.views_count}
+                                        comments_count={
+                                            acceptedData.comments_count
+                                        }
                                     />
                                 </div>
 
                                 {/*  */}
                                 <div className="flex justify-center items-center gap-6 mt-10">
-                                    <div>
-                                        <VideoFrame url={data1.url} />
-                                    </div>
+                                    {acceptedData.type === 'Video' ? (
+                                        <VideoFrame url={acceptedData.url} />
+                                    ) : (
+                                        <>
+                                            {' '}
+                                            <img
+                                                src={acceptedData.url}
+                                                alt=""
+                                                className=" w-[400px] h-[500px]"
+                                            />
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="product mt-10">
-                                <AcceptedProduct data={data1.products} />
+                                <AcceptedProduct data={acceptedData.products} />
                             </div>
                         </div>
                     </>
                 )}
             </Loading>
-            {!loading && isEmpty(data1) && (
+            {!loading && isEmpty(acceptedData) && (
                 <div className="h-full flex flex-col items-center justify-center">
                     <DoubleSidedImage
                         src="/img/others/img-2.png"

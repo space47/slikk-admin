@@ -103,7 +103,7 @@ const RejectDetails = () => {
 
     const handleAccept = async () => {
         const body = {
-            pk: `${id}`,
+            pk: `${post_id}`,
             status: 'APPROVED',
         }
         try {
@@ -129,7 +129,7 @@ const RejectDetails = () => {
     }
     const handlePending = async () => {
         const body = {
-            pk: `${id}`,
+            pk: `${post_id}`,
             status: 'PENDING',
         }
         try {
@@ -202,9 +202,18 @@ const RejectDetails = () => {
 
                                 {/*  */}
                                 <div className="flex justify-center items-center gap-6 mt-10">
-                                    <div>
+                                    {rejectData.type === 'Video' ? (
                                         <VideoFrame url={rejectData.url} />
-                                    </div>
+                                    ) : (
+                                        <>
+                                            {' '}
+                                            <img
+                                                src={rejectData.url}
+                                                alt=""
+                                                className=" w-[400px] h-[500px]"
+                                            />
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="product mt-10">

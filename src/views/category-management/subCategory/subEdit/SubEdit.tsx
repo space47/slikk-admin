@@ -15,8 +15,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 type FormModel = {
     id: number
-    name: string;
-    category: any;
+    name: string
+    category: any
     category_name: string
     title: string
     description: string
@@ -83,7 +83,9 @@ const MAX_UPLOAD = 8
 // })
 
 const SubEdit = () => {
-    const [sub_category_data, setSubCategoryData] = useState<FormModel | null>(null)
+    const [sub_category_data, setSubCategoryData] = useState<FormModel | null>(
+        null,
+    )
     const [divdata, setDivData] = useState<category[]>()
     const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
@@ -200,9 +202,9 @@ const SubEdit = () => {
     const handleSubmit = async (values: FormModel) => {
         const formData = {
             ...values,
-            id : sub_category_data?.id,
-            category : values.category.value,
-            category_name : values.category.label,
+            id: sub_category_data?.id,
+            category: values.category.value,
+            category_name: values.category.label,
             images: values.image,
         }
 
@@ -234,10 +236,15 @@ const SubEdit = () => {
         return <div>Loading...</div>
     }
 
+    console.log('sssssssssssss', sub_category_data)
+
     const initialValue = {
         id: sub_category_data.id,
         name: sub_category_data.name,
-        category : {label : sub_category_data.category_name, value : sub_category_data.category},
+        category: {
+            label: sub_category_data.category_name,
+            value: sub_category_data.category,
+        },
         category_name: sub_category_data.category_name,
         title: sub_category_data.title,
         description: sub_category_data.description,
@@ -253,6 +260,7 @@ const SubEdit = () => {
         last_updated_by: sub_category_data.last_updated_by,
         images: [],
     }
+    console.log('sssssssssssss', initialValue)
 
     return (
         <div>
@@ -309,18 +317,18 @@ const SubEdit = () => {
                                                 placeholder="Select Category"
                                                 options={options}
                                                 getOptionLabel={(option) => {
-                                                    console.log(option);
+                                                    console.log(option)
                                                     return option.label
                                                 }}
                                                 value={options.filter(
                                                     (option) =>
                                                         option.value ===
-                                                        values.category.value
+                                                        values.category.value,
                                                 )}
                                                 onChange={(option) =>
                                                     form.setFieldValue(
                                                         field.name,
-                                                        option
+                                                        option,
                                                     )
                                                 }
                                             />

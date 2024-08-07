@@ -9,7 +9,9 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter,
+    // useGlobalFilter,
+    PaginationState,
+    Updater,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -19,29 +21,33 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
-import { date } from 'yup'
+import BrandOrderGraph from './brandOrderGraph/BrandOrderGraph'
+import BrandQuantityGraph from './brandOrderGraph/BrandQuantityGraph'
 
-interface OrderDetails {
-    barcode: string
-    brand: string
-    category: string
-    color: null | string
-    division: string
-    final_price: string
-    fulfilled_quantity: string
-    id: number
-    image: string
-    is_returnable: boolean
-    mrp: string
+type SKU_DETAILS = {
     name: string
-    order_item_rating: null | number
-    product_type: string
-    quantity: string
-    returnable_quantity: number
-    size: string
-    sku: string
-    sp: string
-    sub_category: string
+    mrp: number
+    sp: number
+    image: string
+    total_quantity: number
+    total_amount: number
+}
+
+type DATA_WISE_SALES = {
+    total_quantity: number
+    total_amount: number
+}
+
+type SalesData = {
+    status: string
+    total_quantity: number
+    total_amount: number
+    sku_wise_sales_data: {
+        [sku: string]: SKU_DETAILS
+    }
+    date_wise_sales_data: {
+        date: DATA_WISE_SALES
+    }
 }
 
 type Option = {
@@ -59,8 +65,8 @@ const pageSizeOptions = [
 ]
 
 const BrandOrder = () => {
-    const [data, setData] = useState<OrderDetails[]>([])
-    const [totalData, setTotalData] = useState(0)
+    const [data, setData] = useState<SalesData>()
+
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -70,49 +76,98 @@ const BrandOrder = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
 
+    const [skuWiseDetails, setSkuWiseDetails] = useState<
+        Array<{ key: string; value: SKU_DETAILS }>
+    >([])
+    const [datewisedetails, setDatewisedetails] = useState<
+        Array<{ key: string; value: DATA_WISE_SALES }>
+    >([])
+
     const fetchData = async (
         page: number,
         pageSize: number,
-        from: string,
-        to: string,
+        // from: string,
+        // to: string,
     ) => {
         try {
             const response = await axiosInstance.get(
-                `merchant/order_items?company_id=${selectedCompany.id}&from=${from}&to=${to}&p=${page}&page_size=${pageSize}`,
+                `/merchant/sales?p=${page}&page_size=${pageSize}`,
             )
-            const data = response.data.data.results
-            const total = response.data.data.count
+            const data = response.data
+
             setData(data)
-            setTotalData(total)
+            console.log('ssssssssssssssss', data)
+            const skuData = data.sku_wise_sales_data
+            const dateWiseData = data.date_wise_sales_data
+            console.log('tttttttttttttt', skuData)
+
+            const skuDetailsArray = Object.entries(skuData).map(
+                ([key, value]) => ({
+                    key,
+                    value,
+                }),
+            )
+
+            setSkuWiseDetails(skuDetailsArray)
+
+            const dateWIseDetailArray = Object.entries(dateWiseData).map(
+                ([key, value]) => ({
+                    key,
+                    value,
+                }),
+            )
+
+            console.log('dddddddddd', dateWIseDetailArray)
+            setDatewisedetails(dateWIseDetailArray)
         } catch (error) {
             console.error(error)
         }
     }
 
     useEffect(() => {
-        fetchData(page, pageSize, from, to)
+        fetchData(page, pageSize)
     }, [page, pageSize, selectedCompany, from, to])
 
-    const columns = useMemo<ColumnDef<OrderDetails>[]>(
+    console.log('SKU Details:', skuWiseDetails)
+    console.log('adteeeeeeeee', datewisedetails)
+
+    const columns = useMemo<
+        ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]
+    >(
         () => [
             {
                 header: 'SKU',
-                accessorKey: 'sku',
+                accessorKey: 'key',
                 cell: (info) => info.getValue(),
             },
             {
                 header: 'Name',
-                accessorKey: 'name',
+                accessorKey: 'value.name',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Brand',
-                accessorKey: 'brand',
+                header: 'MRP',
+                accessorKey: 'value.mrp',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'SP',
+                accessorKey: 'value.sp',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Total Quantity',
+                accessorKey: 'value.total_quantity',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Total Amount',
+                accessorKey: 'value.total_amount',
                 cell: (info) => info.getValue(),
             },
             {
                 header: 'Image',
-                accessorKey: 'image',
+                accessorKey: 'value.image',
                 cell: (info) => {
                     const imageUrl = (info.getValue() as string).split(',')[0]
                     return (
@@ -125,62 +180,17 @@ const BrandOrder = () => {
                     )
                 },
             },
-            {
-                header: 'MRP',
-                accessorKey: 'mrp',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'SP',
-                accessorKey: 'sp',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Fulfilled Quantity',
-                accessorKey: 'fulfilled_quantity',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Size',
-                accessorKey: 'size',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Color',
-                accessorKey: 'color',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Division',
-                accessorKey: 'division',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Category',
-                accessorKey: 'category',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Sub Category',
-                accessorKey: 'sub_category',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Product Type',
-                accessorKey: 'product_type',
-                cell: (info) => info.getValue(),
-            },
         ],
         [],
     )
 
     const table = useReactTable({
-        data,
+        data: skuWiseDetails,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
+        pageCount: Math.ceil(skuWiseDetails.length / pageSize),
         manualPagination: true,
         state: {
             pagination: {
@@ -189,9 +199,14 @@ const BrandOrder = () => {
             },
             globalFilter,
         },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
+        onPaginationChange: (updater: Updater<PaginationState>) => {
+            const newPagination =
+                typeof updater === 'function'
+                    ? updater({ pageIndex: page - 1, pageSize })
+                    : updater
+
+            setPage(newPagination.pageIndex + 1)
+            setPageSize(newPagination.pageSize)
         },
         onGlobalFilterChange: setGlobalFilter,
     })
@@ -217,10 +232,6 @@ const BrandOrder = () => {
         } else {
             setTo(moment().format('YYYY-MM-DD'))
         }
-    }
-
-    const addOneDay = (date: string) => {
-        return moment(date).add(1, 'days').format('YYYY-MM-DD')
     }
 
     return (
@@ -268,6 +279,33 @@ const BrandOrder = () => {
                     </div>
                 </div>
             </div>
+            <div className="flex flex-col gap-2 justify-center mb-6">
+                <div className="total">
+                    <span className="font-bold">TOTAL AMOUNT:</span>:
+                    <span className=" italic">{data?.total_amount}</span>
+                </div>
+                <div className="total">
+                    <span className="font-bold">TOTAL QUANTITY :</span>
+                    <span className=" italic">{data?.total_quantity}</span>
+                </div>
+            </div>
+
+            <div className="mb-10 flex gap-10 justify-center ">
+                <BrandOrderGraph
+                    data={datewisedetails.map((item) => ({
+                        dateKey: item.key,
+                        total_amount: item.value.total_amount,
+                    }))}
+                />
+
+                <BrandQuantityGraph
+                    data={datewisedetails.map((item) => ({
+                        dateKey: item.key,
+                        total_quantity: item.value.total_quantity,
+                    }))}
+                />
+            </div>
+
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -302,7 +340,7 @@ const BrandOrder = () => {
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
-                    total={totalData}
+                    total={skuWiseDetails && skuWiseDetails.length}
                     onChange={onPaginationChange}
                 />
                 <div style={{ minWidth: 130 }}>

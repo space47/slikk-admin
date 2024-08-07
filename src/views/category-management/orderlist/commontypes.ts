@@ -68,3 +68,24 @@ export type ordercommon = {
     uuid: string
     waybill_no: string
 }
+
+export const ORDER_STATUS = [
+    { name: 'ALL', value: 'ALL' },
+    { name: 'PENDING', value: 'PENDING' },
+    { name: 'ACCEPTED', value: 'ACCEPTED' },
+    { name: 'PACKED', value: 'PACKED' },
+    { name: 'READY TO SHIP', value: 'READY_TO_SHIP' },
+    { name: 'MANIFESTED', value: 'MANIFESTED' },
+    { name: 'SHIPPED', value: 'SHIPPED' },
+    { name: 'DELIVERED', value: 'DELIVERED' },
+    { name: 'CANCELLED', value: 'CANCELLED' },
+    { name: 'CANCELLATION ON HOLD', value: 'CANCELLATION_ON_HOLD' },
+    { name: 'DECLINED', value: 'DECLINED' },
+]
+
+export const RETURN_ORDERS = [
+    { name: 'ALL', value: 'ALL' },
+    { name: 'CANCELLED', value: 'CANCELLED' },
+    { name: 'APPROVED', value: 'APPROVED' },
+    { name: 'ACCEPTED', value: 'ACCEPTED' },
+]
