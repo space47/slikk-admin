@@ -7,6 +7,7 @@ import Steps from '@/components/ui/Steps'
 import BannerDetails from './addComponents/BannerDetails'
 import { useNavigate } from 'react-router-dom'
 import AddBannerStep3 from '../AddBannerStep3'
+import PreviewBanner from '../PreviewBanner'
 
 interface DataType {
     type: string
@@ -94,9 +95,12 @@ const AddBanners = () => {
         setCurrentStep(3);
     }
 
+
+    const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now() }]);
+
     return (
         <div>
-            <div className="w-1/2 mb-10">
+            <div className="w-full my-10 px-[10%]">
                 <Steps current={currentStep}>
                     <Steps.Item title={currentSelectedPage?.value || "Select Page"} />
                     <Steps.Item title={selectedSectionHeading?.section_heading || "Select Section Heading"} />
@@ -143,8 +147,12 @@ const AddBanners = () => {
                                         <span>{item.section_heading}</span>
                                     </DropdownItem>
                                 ))}
-                        </Dropdown></div> : <div className='flex flex-col'>
+                        </Dropdown></div> : <div className='flex flex-col gap-5'>
                             No Section Created for this Page. Please create section first
+
+                            <Button variant="new" onClick={()=>setCurrentStep(1)}>
+                                Go Back to Select Another Page
+                            </Button>
                         </div>
                     )}
                     <div className="mt-5 w-full">
@@ -169,8 +177,11 @@ const AddBanners = () => {
 
                 {/* STEP 3 -- Add Banners and It's details */}
                 {currentStep == 3 && <div className='flex flex-col items-center justify-center h-full'>
-                    <AddBannerStep3 selectedPage={currentSelectedPage} selectedSection={selectedSectionHeading} />
+                    <AddBannerStep3 selectedPage={currentSelectedPage} selectedSection={selectedSectionHeading} setCurrentStep={setCurrentStep} completeBannerFormData={completeBannerFormData} setCompleteBannerFormData={setCompleteBannerFormData} />
                 </div>}
+
+                {/* STEP 4 -- Preview Banners */}
+                {currentStep == 4 && <PreviewBanner setCurrentStep={setCurrentStep} completeBannerFormData={completeBannerFormData} selectedPage={currentSelectedPage} selectedSection={selectedSectionHeading} />}
             </div>
 
 

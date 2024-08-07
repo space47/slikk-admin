@@ -688,6 +688,10 @@ const appsRoute: Routes = [
             () => import('@/views/appsSettings/banners/addBanners/AddBanners'),
         ),
         authority: [ADMIN, USER],
+        meta : {
+            layout : "blank",
+            pageContainerType : "gutterless"
+        }
     },
     {
         key: 'appsAppSettings.banners',

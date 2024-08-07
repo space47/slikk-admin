@@ -17,6 +17,8 @@ export const BANNER_PAGE_NAME = [
 
 
 export type BANNER_UPLOAD_DATA = {
+    id?: number;
+
     page?: string,
     section_heading?: string,
 
