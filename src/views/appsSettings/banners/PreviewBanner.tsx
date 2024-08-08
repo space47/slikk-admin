@@ -9,6 +9,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
     console.log(completeBannerFormData);
 
     const [API_BANNERS, setApiBanners] = useState<any[]>([]);
+    const [viewSize, setViewSize] = useState('lg');
     
     const getFullBannerDataFromBannerFormArray = () => {
 
@@ -71,12 +72,23 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
     return (
         <div className='gap-3 w-full'>
             <div className='mb-5 self-center w-full px-[10%]'>
-                <Button size="lg" onClick={() => { setCurrentStep(3) }} variant="new">
+                <Button size="lg" onClick={() => setCurrentStep(3)} variant="new">
                     Add/Edit More Banners
                 </Button>
             </div>
-            <div className='bg-black flex flex-col gap-y-5 md:gap-y-7 lg:gap-y-10 lg:px-[5%] absolute w-full z-40 overflow-y-scroll py-10'>
-                <AllComponentsLib data={API_BANNERS} size="lg" />
+            <div className='mb-5 self-center w-full px-[10%] gap-3 flex'>
+                <Button size="lg" onClick={() => setViewSize('sm')} variant="new">
+                    Mobile View
+                </Button>
+                <Button size="lg" onClick={() => setViewSize('md')} variant="new">
+                    Tablet View
+                </Button>
+                <Button size="lg" onClick={() => setViewSize('lg')} variant="new">
+                    Laptop View
+                </Button>
+            </div>
+            <div className={`bg-black flex flex-col gap-y-5 md:gap-y-7 lg:gap-y-10 lg:px-[5%] absolute w-full z-40 overflow-y-scroll py-10`}>
+                <AllComponentsLib data={API_BANNERS} size={viewSize} />
             </div>
         </div>
     )
