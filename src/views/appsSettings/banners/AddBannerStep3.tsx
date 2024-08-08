@@ -47,7 +47,7 @@ function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, com
             </div>
 
             <div className='w-fit self-center flex flex-row space-x-3'>
-                <Button variant="new" size="sm" onClick={() => setBannerFormData([...bannerForm, { id: Date.now() }])}>
+                <Button variant="new" size="sm" onClick={() => setBannerFormData([...bannerForm, { id: Date.now(), is_clickable: true }])}>
                     +Add Banner Tile
                 </Button>
                 <Button variant="new" size="sm" onClick={handlePreviewClicked}>
@@ -115,6 +115,11 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 </div>
             ))}
         </form>
+
+        <Select isMulti options={divisions.divisions} getOptionLabel={(option) => option.name} />
+        <Select isMulti options={category.categories} getOptionLabel={(option) => option.name} />
+        <Select isMulti options={subCategory.subcategories} getOptionLabel={(option) => option.name} />
+        <Select isMulti options={product_type.product_types} getOptionLabel={(option) => option.name} />
 
         <span>Total Divisions : {divisions.divisions?.length}</span>
         <span>Total Divisions : {category.categories?.length}</span>

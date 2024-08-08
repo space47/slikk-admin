@@ -33,7 +33,7 @@ type WebType = {
     component_type: string
     section_heading: string
     background_image: string
-    sub_header_config: Config
+    sub_header_config: Config;
 }
 
 const AddBanners = () => {
@@ -51,6 +51,8 @@ const AddBanners = () => {
 
     // Fetch Data for section Headings
     const fetchData = async () => {
+        if(!currentSelectedPage) return;
+
         console.log('Starting API call')
         try {
             const response = await axioisInstance.get(
@@ -88,7 +90,14 @@ const AddBanners = () => {
                 item.section_heading === value &&
                 item.data_type.type === 'banner',
         )
-        setSelectedSectionHeading(selectHeading || null)
+
+        const selectHeadingIndex = sectionHeadingData.findIndex(
+            (item) =>
+                item.section_heading === value &&
+                item.data_type.type === 'banner',
+        )
+
+        setSelectedSectionHeading({...selectHeading, position : selectHeadingIndex} || null)
     }
 
     const handleProceedToAddBanner = () => {
@@ -96,7 +105,7 @@ const AddBanners = () => {
     }
 
 
-    const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now() }]);
+    const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now(), is_clickable : true }]);
 
     return (
         <div>

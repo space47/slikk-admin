@@ -1,6 +1,50 @@
 export const API_RESPONSE = [
     {
         "position": 1,
+        "component_type": "SYF",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Shop+Your+Fit.png",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Shop Your Fit",
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 0,
+                "id": 1723092568789,
+                "image_web_file": {},
+                "image_web": "blob:http://localhost:3000/d9998fea-bd1c-4f61-be93-d56e0923c13c",
+                "image_mobile_file": {},
+                "image_mobile": "blob:http://localhost:3000/865fca48-87dc-43a6-b72d-6b03b3dcb874",
+                "quick_filter_tags": [],
+                "tags": []
+            }
+        ]
+    },
+    {
+        "position": 1,
         "component_type": "Upcoming Trends",
         "header_config": {
             "icon": "icon_url",
