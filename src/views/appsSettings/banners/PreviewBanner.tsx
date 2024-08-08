@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { AllComponentsLib } from "slikk-react-comps";
 import { Button } from '@/components/ui';
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup';
+import { notification } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, selectedSection }: any) {
 
@@ -10,6 +12,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
     const [API_BANNERS, setApiBanners] = useState<any[]>([]);
     const [viewSize, setViewSize] = useState('lg');
+
+    const navigate = useNavigate();
     
     const getFullBannerDataFromBannerFormArray = () => {
 
@@ -36,8 +40,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             data.push({
                 pk: index,
                 ...banner,
-                quick_filter_tags: [],
-                tags: []
+                quick_filter_tags: banner.quick_filter_tags || [],
+                tags: banner.tags || []
             })
         });
 
@@ -67,13 +71,93 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
     useEffect(() => {
         console.log("ALL BANNERS", API_BANNERS);
-    }, [API_BANNERS])
+    }, [API_BANNERS]);
+
+
+    const HandleImage = async (file : File) => {
+        if(!file) return null;
+        const formData = new FormData()
+
+        formData.append('file', file);
+
+        formData.append('file_type', 'banners')
+        try {
+            return await axioisInstance
+                .post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                .then((response) => {
+                    console.log(response)
+                    const newData = response.data.url
+                    notification.success({
+                        message: 'Success',
+                        description:
+                            response?.data?.message ||
+                            'Image uploaded successfully',
+                    })
+                    return newData
+                })
+        } catch (error: any) {
+            notification.error({
+                message: 'Upload Failed',
+                description:
+                    error?.response?.data?.message ||
+                    'Image upload failed',
+            });
+            return null;
+        }
+    }
+
+    const handleSubmit = async () => {
+        await completeBannerFormData?.forEach(async (banner: any, index: number) => {
+            // console.log(banner);
+            const webImageUpload = await HandleImage(banner.image_web_file);
+            const mobileImageUpload = await HandleImage(banner.image_mobile_file);
+
+            console.log(webImageUpload, mobileImageUpload);
+
+            if(!webImageUpload && !mobileImageUpload){
+                notification.error({
+                    message: 'Upload Failed',
+                    description:
+                        "Error Uploading Banner " + (index + 1)
+                });
+                return;
+            }
+
+            const data = {
+                ...banner,
+                section_heading : selectedSection?.section_heading,
+                image_web : webImageUpload,
+                image_mobile : mobileImageUpload,
+                image_web_file : null,
+                image_mobile_file : null,
+            }
+
+            const createBannerAPI = await axioisInstance.post("banners", data).then((res) => {
+                notification.success({
+                    message : "Successfully uploaded banner " + (index + 1)
+                })
+            }).catch((err) => {
+                notification.error({
+                    message : "Error when creating banner " + (index + 1),
+                    description : err?.response?.data?.message || "Error in banner api"
+                })
+            })
+        });
+    }
 
     return (
         <div className='gap-3 w-full'>
-            <div className='mb-5 self-center w-full px-[10%]'>
+            <div className='mb-5 self-center w-full px-[10%] flex flex-row gap-3'>
                 <Button size="lg" onClick={() => setCurrentStep(3)} variant="new">
                     Add/Edit More Banners
+                </Button>
+                {/* TODO : NAVIGATE FIX */}
+                <Button size="lg" onClick={() => {handleSubmit(); navigate("/app/appSettings/banners")}} variant="new">
+                    Save Banner
                 </Button>
             </div>
             <div className='mb-5 self-center w-full px-[10%] gap-3 flex'>

@@ -8,6 +8,9 @@ import BannerDetails from './addComponents/BannerDetails'
 import { useNavigate } from 'react-router-dom'
 import AddBannerStep3 from '../AddBannerStep3'
 import PreviewBanner from '../PreviewBanner'
+import { useAppDispatch } from '@/store'
+import { getAllBrandsAPI } from '@/store/action/brand.action'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
 
 interface DataType {
     type: string
@@ -69,6 +72,12 @@ const AddBanners = () => {
     useEffect(() => {
         fetchData()
     }, [currentSelectedPage])
+
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        dispatch(getAllBrandsAPI());
+        dispatch(getAllFiltersAPI());
+    }, [])
 
     const handlePageSelect = (values: string, e: any) => {
         console.log('Page selected:', values)
