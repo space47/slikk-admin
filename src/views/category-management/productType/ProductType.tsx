@@ -87,14 +87,17 @@ const ProductType = () => {
         {
             header: 'Create Date',
             accessor: 'create_date',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value: moment.MomentInput) =>
+                moment(value).format('YYYY-MM-DD'),
         },
         { header: 'Title', accessor: 'title' },
         { header: 'Description', accessor: 'description' },
         {
             header: 'Image',
             accessor: 'image',
-            format: (value) => <img src={value} alt="product" width="50" />,
+            format: (value: string | undefined) => (
+                <img src={value} alt="product" width="50" />
+            ),
         },
         { header: 'Footer', accessor: 'footer' },
         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
@@ -103,23 +106,24 @@ const ProductType = () => {
         {
             header: 'Active',
             accessor: 'is_active',
-            format: (value) => (value ? 'Yes' : 'No'),
+            format: (value: any) => (value ? 'Yes' : 'No'),
         },
         {
             header: 'Update Date',
             accessor: 'update_date',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value: moment.MomentInput) =>
+                moment(value).format('YYYY-MM-DD'),
         },
         {
             header: 'Try and Buy',
             accessor: 'is_try_and_buy',
-            format: (value) => (value ? 'Yes' : 'No'),
+            format: (value: any) => (value ? 'Yes' : 'No'),
         },
         { header: 'Last Updated By', accessor: 'last_updated_by' },
         {
             header: 'Action',
             accessor: 'id',
-            format: (value) => (
+            format: (value: any) => (
                 <Button onClick={() => handleActionClick(value)}>EDIT</Button>
             ),
         },

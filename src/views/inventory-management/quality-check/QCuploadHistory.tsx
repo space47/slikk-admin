@@ -11,18 +11,28 @@ import {
     flexRender,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+// import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { SaveAs } from '@mui/icons-material'
+
+type User = {
+    name: string
+    email: string
+    mobile: string
+}
 
 type TableData = {
-    uploadDate: string
-    filename: string
-    batchId: number
-    uploadStatus: string
-    uploadFilename: string
-    success: string
-    failure: string
-    action: React.ReactNode
+    comments: string
+    company: number
+    create_date: string
+    error_file: string
+    failure: number
+    id: number
+    success: number
+    upload_type: string
+    uploaded_file: string
+    user: User
 }
 
 type Option = {
@@ -47,11 +57,11 @@ const PaginationTable = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(
+            const response = await axioisInstance.get(
                 `bulkupload/history?type=quality_check&p=${page}&page_size=${pageSize}`,
             )
-            const data = response.data.data.results // Adjusted for your API response
-            const total = response.data.data.count // Adjusted for your API response
+            const data = response.data.data.results
+            const total = response.data.data.count
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -79,13 +89,43 @@ const PaginationTable = () => {
         return parts[parts.length - 1]
     }
 
+    const handleDownload = async (
+        error_file: string,
+        uploaded_file: string,
+    ) => {
+        console.log(`Action clicked `, error_file, uploaded_file)
+
+        try {
+            const requiredUrl = error_file ? error_file : uploaded_file
+
+            const response = await axioisInstance.get(
+                `file/presign?file_url=${requiredUrl}`,
+                { responseType: 'blob' },
+            )
+
+            const blob = new Blob([response.data.data], { type: 'text/plain' })
+            const url = URL.createObjectURL(blob)
+
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', requiredUrl)
+            window.open(url)
+            link.click()
+        } catch (error) {
+            console.log(error)
+            return 'Error'
+        }
+    }
+
     const columns = useMemo<ColumnDef<TableData>[]>(
         () => [
             {
                 header: 'Upload Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => (
-                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                    <span>
+                        {moment(getValue() as string).format('YYYY-MM-DD')}
+                    </span>
                 ),
             },
             {
@@ -100,7 +140,7 @@ const PaginationTable = () => {
             },
             {
                 header: 'Upload Status',
-                accessorKey: 'failure', // Ensure this key matches your data structure
+                accessorKey: 'failure',
                 cell: (info) => {
                     const failure = info.getValue() as number
                     return getUploadStatus(failure)
@@ -123,10 +163,15 @@ const PaginationTable = () => {
             },
             {
                 header: 'Action',
-                accessorKey: 'action',
+                accessorKey: '',
                 cell: ({ row }) => (
                     <Button
-                        onClick={() => handleActionClick(row.original.batchId)}
+                        onClick={() =>
+                            handleDownload(
+                                row.original.error_file,
+                                row.original.uploaded_file,
+                            )
+                        }
                     >
                         DOWNLOAD
                     </Button>
@@ -135,11 +180,6 @@ const PaginationTable = () => {
         ],
         [],
     )
-
-    const handleActionClick = (batchId: number) => {
-        // Implement action click handler
-        console.log(`Action clicked for batchId: ${batchId}`)
-    }
 
     const table = useReactTable({
         data,

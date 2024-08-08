@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -16,37 +17,31 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
-import type { OrderItem } from './commontypes'
 import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown } from '@/components/ui'
-import { ORDER_STATUS } from './commontypes'
+import { RETURN_ORDERS } from '@/views/category-management/orderlist/commontypes'
 
-interface Order {
-    invoice_id: string
+interface ReturnOrderItem {
+    order_item: number
+    return_amount: string
+    quantity: string
+    return_reason: string
     create_date: string
-    user: {
-        name: string
-        mobile: string
-    }
-    store: {
-        address: string
-        latitude: string
-        longitude: string
-    }
-    rating: number
-    amount: number
-    payment: {
-        mode: string
-        amount: number
-    }
-    order_items: OrderItem[]
-    status: string
     update_date: string
-    from: string
-    to: string
+}
+
+interface ReturnOrder {
+    amount: string
+    create_date: string
+    return_order_delivery: any[]
+    return_order_id: string
+    return_order_items: ReturnOrderItem[]
+    return_type: string
+    status: string
+    uuid: string
 }
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
@@ -59,7 +54,7 @@ const pageSizeOptions = [
 ]
 
 const OrderList = () => {
-    const [orders, setOrders] = useState<Order[]>([])
+    const [orders, setOrders] = useState<ReturnOrder[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [pageSize, setPageSize] = useState(10)
     const [page, setPage] = useState(1)
@@ -69,13 +64,14 @@ const OrderList = () => {
     const [orderCount, setOrderCount] = useState()
     const [dropdownStatus, setDropdownStatus] = useState<
         Record<string, string>
-    >(ORDER_STATUS[0])
+    >(RETURN_ORDERS[0])
 
     const fetchOrders = async (
         page: number,
         pageSize: number,
         from: string,
         to: string,
+        filter: string = '',
     ) => {
         try {
             const status =
@@ -83,7 +79,8 @@ const OrderList = () => {
                     ? ''
                     : `&status=${dropdownStatus?.value}`
             const response = await axiosInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${to}${status}`,
+                `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${to}${status}&name=${filter}`,
+                //
             )
 
             const ordersData = response.data?.data.results
@@ -97,18 +94,18 @@ const OrderList = () => {
     }
 
     useEffect(() => {
-        fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus])
+        fetchOrders(page, pageSize, from, to, globalFilter)
+    }, [page, pageSize, from, to, dropdownStatus, globalFilter])
 
     const columns = useMemo(
         () => [
             {
-                header: 'Invoice Id',
-                accessorKey: 'invoice_id',
-                cell: ({ getValue }) => (
+                header: 'Return_Order Id',
+                accessorKey: 'return_order_id',
+                cell: ({ getValue }: { getValue: () => string }) => (
                     <div
                         className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                        onClick={() => handleInvoiceClick(getValue() as string)}
+                        onClick={() => handleInvoiceClick(getValue())}
                     >
                         {getValue()}
                     </div>
@@ -116,24 +113,79 @@ const OrderList = () => {
             },
             {
                 header: 'Order Date',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => (
+                accessorKey: 'return_order_items.create_date',
+                cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
                 ),
             },
-            { header: 'Mobile Number', accessorKey: 'user.mobile' },
-            { header: 'Customer Name', accessorKey: 'user.name' },
-            { header: 'Store Address', accessorKey: 'store.address' },
-            { header: 'Rating', accessorKey: 'rating' },
-            { header: 'Payment Mode', accessorKey: 'payment.mode' },
-            { header: 'Total Items', accessorKey: 'order_items.length' },
-            { header: 'Order Total', accessorKey: 'payment.amount' },
-            { header: 'Status', accessorKey: 'status' },
+            {
+                header: 'Return Type',
+                accessorKey: 'return_type',
+                cell: ({ getValue }: { getValue: () => string }) => (
+                    <span>{getValue()}</span>
+                ),
+            },
+            {
+                header: 'Total Amount',
+                accessorKey: 'amount',
+                cell: ({ getValue }: { getValue: () => string }) => (
+                    <span>{getValue()}</span>
+                ),
+            },
+            {
+                header: 'Return Reason',
+                accessorKey: 'return_order_items',
+                cell: ({ row }: { row: { original: ReturnOrder } }) => (
+                    <span>
+                        {row.original.return_order_items[0]?.order_item || ''}
+                    </span>
+                ),
+            },
+            {
+                header: 'Return Reason',
+                accessorKey: 'return_order_items',
+                cell: ({ row }: { row: { original: ReturnOrder } }) => (
+                    <span>
+                        {row.original.return_order_items[0]?.quantity || ''}
+                    </span>
+                ),
+            },
+            {
+                header: 'Return Reason',
+                accessorKey: 'return_order_items',
+                cell: ({ row }: { row: { original: ReturnOrder } }) => (
+                    <span>
+                        {row.original.return_order_items[0]?.return_reason ||
+                            ''}
+                    </span>
+                ),
+            },
+            {
+                header: 'Order Total',
+                accessorKey: 'amount',
+                cell: ({ getValue }: { getValue: () => string }) => (
+                    <span>{getValue()}</span>
+                ),
+            },
+            {
+                header: 'Status',
+                accessorKey: 'status',
+                cell: ({ getValue }: { getValue: () => string }) => (
+                    <span>{getValue()}</span>
+                ),
+            },
             {
                 header: 'Last Update',
-                accessorKey: 'update_date',
-                cell: ({ getValue }) => (
+                accessorKey: 'return_order_items.update_date',
+                cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                ),
+            },
+            {
+                header: 'UUID',
+                accessorKey: 'uuid',
+                cell: ({ getValue }: { getValue: () => string }) => (
+                    <span>{getValue()}</span>
                 ),
             },
         ],
@@ -164,7 +216,7 @@ const OrderList = () => {
     })
 
     const handleInvoiceClick = (invoiceId: string) => {
-        navigate(`/app/orders/${invoiceId}`)
+        // navigate(`/app/orders/${invoiceId}`)
     }
 
     const onPaginationChange = (page: number) => {
@@ -197,7 +249,7 @@ const OrderList = () => {
     const handleDropdownSelect = (a: any) => {
         setDropdownStatus({
             value: a,
-            name: ORDER_STATUS.find((item) => item.value == a)?.name || '',
+            name: RETURN_ORDERS.find((item) => item.value == a)?.name || '',
         })
     }
     console.log('ssssssswddwdwdw', dropdownStatus)
@@ -222,7 +274,7 @@ const OrderList = () => {
                             onSelect={handleDropdownSelect}
                         >
                             <div className="max-h-60 overflow-y-auto">
-                                {ORDER_STATUS?.map((item, key) => {
+                                {RETURN_ORDERS?.map((item: any, key: any) => {
                                     return (
                                         <DropdownItem
                                             key={key}

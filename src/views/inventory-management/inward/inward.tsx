@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -113,6 +114,11 @@ const PaginationTable = () => {
         console.log('ok', id)
     }
 
+    const handleActionClick = (id: number) => {
+        // Implement action click handler
+        navigate(`/app/goods/received/edit/${id}`)
+    }
+
     const columns = useMemo<ColumnDef<TableData>[]>(
         () => [
             {
@@ -154,7 +160,7 @@ const PaginationTable = () => {
                         style={{ cursor: 'pointer' }}
                         onClick={() => handleDocumentClick(info.getValue())}
                     >
-                        {info.getValue()}
+                        {info.getValue() as string}
                     </div>
                 ),
             },
@@ -210,21 +216,16 @@ const PaginationTable = () => {
             },
             {
                 header: 'Action',
-                accessorKey: 'action',
+                accessorKey: '',
                 cell: ({ row }) => (
                     <Button onClick={() => handleActionClick(row.original.id)}>
-                        DOWNLOAD
+                        EDIT
                     </Button>
                 ),
             },
         ],
         [],
     )
-
-    const handleActionClick = (batchId: number) => {
-        // Implement action click handler
-        console.log(`Action clicked for batchId: ${batchId}`)
-    }
 
     const table = useReactTable({
         data,
@@ -273,10 +274,6 @@ const PaginationTable = () => {
         } else {
             setTo(moment().format('YYYY-MM-DD'))
         }
-    }
-
-    const addOneDay = (date: string) => {
-        return moment(date).add(1, 'days').format('YYYY-MM-DD')
     }
 
     return (

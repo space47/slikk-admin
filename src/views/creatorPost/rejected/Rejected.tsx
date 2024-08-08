@@ -9,7 +9,9 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter,
+    // useGlobalFilter,
+    PaginationState,
+    Updater,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useNavigate } from 'react-router-dom'
@@ -68,6 +70,12 @@ type Option = {
 interface PendingProps {
     data: Post[]
     totalData: number | undefined
+    page: number
+    pageSize: number
+    setPage: (page: number) => void
+    setPageSize: (size: number) => void
+    globalFilter: string
+    setGlobalFilter: (name: string) => void
 }
 
 const { Tr, Th, Td, THead, TBody } = Table
@@ -79,11 +87,16 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const Rejected: React.FC<PendingProps> = ({ data, totalData }) => {
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('')
-
+const Rejected: React.FC<PendingProps> = ({
+    data,
+    totalData,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    globalFilter,
+    setGlobalFilter,
+}) => {
     const navigate = useNavigate()
 
     const handlePostClick = (id: number, post_id: string) => {
@@ -110,7 +123,7 @@ const Rejected: React.FC<PendingProps> = ({ data, totalData }) => {
                             )
                         }
                     >
-                        {getValue()}
+                        {getValue() as string}
                     </div>
                 ),
             },
@@ -198,7 +211,7 @@ const Rejected: React.FC<PendingProps> = ({ data, totalData }) => {
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
+        pageCount: Math.ceil((totalData ?? 0) / pageSize),
         manualPagination: true,
         state: {
             pagination: {
@@ -207,9 +220,14 @@ const Rejected: React.FC<PendingProps> = ({ data, totalData }) => {
             },
             globalFilter,
         },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
+        onPaginationChange: (updater: Updater<PaginationState>) => {
+            const newPagination =
+                typeof updater === 'function'
+                    ? updater({ pageIndex: page - 1, pageSize })
+                    : updater
+
+            setPage(newPagination.pageIndex + 1) // Adjust for zero-based index
+            setPageSize(newPagination.pageSize)
         },
         onGlobalFilterChange: setGlobalFilter,
     })
