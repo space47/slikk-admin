@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
+
 import {
     useReactTable,
     getCoreRowModel,
@@ -18,6 +18,9 @@ import moment from 'moment'
 import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
+import { FaEdit } from 'react-icons/fa'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 type TableData = {
     id: number
@@ -67,6 +70,10 @@ const PaginationTable = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
 
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+        (store) => store.company.currCompany,
+    )
+
     const fetchData = async (
         page: number,
         pageSize: number,
@@ -75,7 +82,7 @@ const PaginationTable = () => {
     ) => {
         try {
             const response = await axiosInstance.get(
-                `goods/received?p=${page}&page_size=${pageSize}&from=${from}&to=${to}`, // &company_id
+                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}&from=${from}&to=${to}`, // &company_id
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -88,7 +95,7 @@ const PaginationTable = () => {
 
     useEffect(() => {
         fetchData(page, pageSize, from, to)
-    }, [page, pageSize, from, to])
+    }, [page, pageSize, from, to, selectedCompany])
 
     const getowner = (own: any) => {
         if (own === true) {
@@ -101,8 +108,7 @@ const PaginationTable = () => {
     const handleGRNClick = (document_number: any, company: any) => {
         console.log('done', document_number)
 
-        navigate(`/app/goods/received/${company}/${document_number}`) // Note : here the document_number is actually grn number
-        //
+        navigate(`/app/goods/received/${company}/${document_number}`)
     }
     // const getFirstImageUrl = (images: string): string => {
     //     if (images.length === 0) return ''
@@ -114,16 +120,15 @@ const PaginationTable = () => {
         console.log('ok', id)
     }
 
-    const handleActionClick = (id: number) => {
-        // Implement action click handler
-        navigate(`/app/goods/received/edit/${id}`)
+    const handleActionClick = (grn: string) => {
+        navigate(`/app/goods/received/edit/${grn}`)
     }
 
     const columns = useMemo<ColumnDef<TableData>[]>(
         () => [
             {
                 header: 'GRN Number',
-                accessorKey: 'grn_number', // Ensure this key matches your data structure
+                accessorKey: 'grn_number',
                 cell: ({ row }) => (
                     <div
                         onClick={() =>
@@ -215,12 +220,17 @@ const PaginationTable = () => {
                 ),
             },
             {
-                header: 'Action',
+                header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        EDIT
-                    </Button>
+                    <button
+                        onClick={() =>
+                            handleActionClick(row.original.grn_number)
+                        }
+                        className="border-none bg-none"
+                    >
+                        <FaEdit className="text-xl" />
+                    </button>
                 ),
             },
         ],
@@ -290,7 +300,6 @@ const PaginationTable = () => {
                             }
                             defaultValue={new Date()}
                             value={new Date(from)}
-                            selected={moment(from).toDate()}
                             onChange={handleFromChange}
                         />
                     </div>
@@ -304,7 +313,6 @@ const PaginationTable = () => {
                             }
                             defaultValue={new Date()}
                             value={new Date(to)}
-                            selected={moment(to).toDate()}
                             onChange={handleToChange}
                             minDate={moment(from).toDate()}
                         />

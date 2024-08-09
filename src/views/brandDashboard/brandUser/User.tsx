@@ -16,6 +16,8 @@ import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { Modal, notification } from 'antd'
+import { IoWarningOutline } from 'react-icons/io5'
 
 interface User {
     first_name: string
@@ -49,6 +51,8 @@ const Seller = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [getMobilenumber, setGetMobileNumber] = useState('')
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
@@ -76,6 +80,11 @@ const Seller = () => {
 
     const handleActionClick = (mobile: string) => {
         navigate(`/app/vendor/users/${mobile}`)
+    }
+
+    const handleDeleteClick = async (mobile: string) => {
+        setShowDeleteModal(true)
+        setGetMobileNumber(mobile)
     }
 
     const columns = useMemo<ColumnDef<User>[]>(
@@ -111,7 +120,7 @@ const Seller = () => {
                 ),
             },
             {
-                header: 'Action',
+                header: 'Edit',
                 accessorKey: 'mobile',
                 cell: ({ row }) => (
                     <Button
@@ -121,9 +130,54 @@ const Seller = () => {
                     </Button>
                 ),
             },
+            {
+                header: 'Delete',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <Button
+                        onClick={() => handleDeleteClick(row.original.mobile)}
+                        variant="reject"
+                    >
+                        Delete
+                    </Button>
+                ),
+            },
         ],
         [],
     )
+
+    const handleCloseModal = () => {
+        setShowDeleteModal(false)
+    }
+
+    const deleteUser = async () => {
+        const body = {
+            company_id: selectedCompany.id,
+            action: 'remove',
+        }
+
+        try {
+            const response = await axiosInstance.patch(
+                `company/user/${getMobilenumber}`,
+                body,
+            )
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message ||
+                    'User has benn Successfully deleted',
+            })
+            navigate(0)
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failure',
+                description: 'Unable to delete',
+            })
+        }
+
+        setShowDeleteModal(false)
+    }
 
     const table = useReactTable({
         data,
@@ -229,6 +283,24 @@ const Seller = () => {
                     />
                 </div>
             </div>
+
+            {showDeleteModal && (
+                <Modal
+                    title=""
+                    open={showDeleteModal}
+                    onOk={deleteUser}
+                    onCancel={handleCloseModal}
+                    okText="DELETE"
+                    okButtonProps={{
+                        style: { backgroundColor: 'red', borderColor: 'red' },
+                    }}
+                >
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
+                        ARE YOU SURE YOU WANT TO DELETE !!
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

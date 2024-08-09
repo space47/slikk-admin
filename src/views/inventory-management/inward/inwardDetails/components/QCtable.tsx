@@ -5,22 +5,19 @@ import {
     useReactTable,
     getCoreRowModel,
     getFilteredRowModel,
-    getFacetedRowModel,
-    getFacetedUniqueValues,
-    getFacetedMinMaxValues,
     getPaginationRowModel,
     getSortedRowModel,
     flexRender,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
-// import { data10 } from './data'
-// import type { Person } from './data'
 import type {
     ColumnDef,
     FilterFn,
     ColumnFiltersState,
 } from '@tanstack/react-table'
 import type { InputHTMLAttributes } from 'react'
+import Pagination from '@/components/ui/Pagination'
+import Select from '@/components/ui/Select'
 
 interface DebouncedInputProps
     extends Omit<
@@ -59,6 +56,7 @@ type grn_quality_check = {
 
 type qctable = {
     data: grn_quality_check[]
+    totalData: number
 }
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
@@ -81,7 +79,6 @@ function DebouncedInput({
         }, debounce)
 
         return () => clearTimeout(timeout)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value])
 
     return (
@@ -101,25 +98,22 @@ function DebouncedInput({
     )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    // Rank the item
     const itemRank = rankItem(row.getValue(columnId), value)
-
-    // Store the itemRank info
-    addMeta({
-        itemRank,
-    })
-
-    // Return if the item should be filtered in/out
+    addMeta({ itemRank })
     return itemRank.passed
 }
 
-const QCtable = ({ data = [] }: qctable) => {
+const QCtable = ({ data = [], totalData }: qctable) => {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [globalFilter, setGlobalFilter] = useState('')
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+    const [paginatedData, setPaginatedData] = useState<grn_quality_check[]>([])
 
-    const columns = useMemo<ColumnDef<qctable>[]>(
+    console.log('sssssssssssss', data, totalData)
+
+    const columns = useMemo<ColumnDef<grn_quality_check>[]>(
         () => [
             {
                 header: 'GRN Number',
@@ -171,7 +165,7 @@ const QCtable = ({ data = [] }: qctable) => {
                 accessorKey: 'images',
                 cell: (info) => (
                     <img
-                        src={info.getValue()}
+                        src={info.getValue() as string}
                         alt="Image"
                         style={{ width: '50px', height: '50px' }}
                     />
@@ -191,10 +185,18 @@ const QCtable = ({ data = [] }: qctable) => {
         [],
     )
 
-    // const [data] = useState(() => data10)
+    useEffect(() => {
+        const startIndex = (page - 1) * pageSize
+        const endIndex = startIndex + pageSize
+        setPaginatedData(data.slice(startIndex, endIndex))
+    }, [page, pageSize, data])
+
+    const onPaginationChange = (page: number) => {
+        setPage(page)
+    }
 
     const table = useReactTable({
-        data,
+        data: paginatedData,
         columns,
         filterFns: {
             fuzzy: fuzzyFilter,
@@ -202,20 +204,24 @@ const QCtable = ({ data = [] }: qctable) => {
         state: {
             columnFilters,
             globalFilter,
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: pageSize,
+            },
         },
-        onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        getFacetedRowModel: getFacetedRowModel(),
-        getFacetedUniqueValues: getFacetedUniqueValues(),
-        getFacetedMinMaxValues: getFacetedMinMaxValues(),
-        debugHeaders: true,
-        debugColumns: false,
+        manualPagination: true,
+        pageCount: Math.ceil(totalData / pageSize),
     })
+
+    console.log('srrrrrrrrrrrr', paginatedData)
+    console.log('sssrrtrtrtrt', page)
+    console.log('rrrrrrrrr', pageSize)
 
     return (
         <>
@@ -230,60 +236,55 @@ const QCtable = ({ data = [] }: qctable) => {
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {header.isPlaceholder ? null : (
-                                            <div
-                                                {...{
-                                                    className:
-                                                        header.column.getCanSort()
-                                                            ? 'cursor-pointer select-none'
-                                                            : '',
-                                                    onClick:
-                                                        header.column.getToggleSortingHandler(),
-                                                }}
-                                            >
-                                                {flexRender(
-                                                    header.column.columnDef
-                                                        .header,
-                                                    header.getContext(),
-                                                )}
-                                                {
-                                                    <Sorter
-                                                        sort={header.column.getIsSorted()}
-                                                    />
-                                                }
-                                            </div>
-                                        )}
-                                    </Th>
-                                )
-                            })}
+                            {headerGroup.headers.map((header) => (
+                                <Th key={header.id} colSpan={header.colSpan}>
+                                    {header.isPlaceholder ? null : (
+                                        <div
+                                            {...{
+                                                className:
+                                                    header.column.getCanSort()
+                                                        ? 'cursor-pointer select-none'
+                                                        : '',
+                                                onClick:
+                                                    header.column.getToggleSortingHandler(),
+                                            }}
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext(),
+                                            )}
+                                            <Sorter
+                                                sort={header.column.getIsSorted()}
+                                            />
+                                        </div>
+                                    )}
+                                </Th>
+                            ))}
                         </Tr>
                     ))}
                 </THead>
                 <TBody>
-                    {table.getRowModel().rows.map((row) => {
-                        return (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </Td>
-                                    )
-                                })}
-                            </Tr>
-                        )
-                    })}
+                    {table.getRowModel().rows.map((row) => (
+                        <Tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <Td key={cell.id}>
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext(),
+                                    )}
+                                </Td>
+                            ))}
+                        </Tr>
+                    ))}
                 </TBody>
             </Table>
+
+            <Pagination
+                pageSize={pageSize}
+                currentPage={page}
+                total={totalData}
+                onChange={onPaginationChange}
+            />
         </>
     )
 }

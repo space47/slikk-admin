@@ -19,9 +19,13 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 // import { ordercommon } from '@/views/category-management/orderlist/commontypes'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
+import { Modal, notification } from 'antd'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { FaSync } from 'react-icons/fa'
 // import { string } from 'yup'
 
-type grn_quality_check = {
+type GRN_QUALITY_CHECK = {
     batch_number: string
     create_date: string
     grn: number
@@ -43,7 +47,7 @@ type grn_quality_check = {
     quantity_sent: number
     sent_to_inventory: boolean
     sku: string
-    update_date: string
+    update_date: Date
 }
 
 type inwardDetailsResponse = {
@@ -67,7 +71,7 @@ type inwardDetailsResponse = {
     document_date: string
     document_url: string
     total_quantity: number
-    grn_quality_check: grn_quality_check[]
+    grn_quality_check: GRN_QUALITY_CHECK[]
 }
 
 const InwardDetails = () => {
@@ -75,8 +79,13 @@ const InwardDetails = () => {
 
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<inwardDetailsResponse>()
-    const [docval, setDocval] = useState()
-    const { document_number, grn_number } = useParams()
+    const { document_number } = useParams()
+    const [showSyncModal, setShowSyncModal] = useState(false)
+    const [grnNumber, setGrnNumber] = useState('')
+
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+        (store) => store.company.currCompany,
+    )
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -95,7 +104,37 @@ const InwardDetails = () => {
         }
 
         fetchOrders()
-    }, [grn_number])
+    }, [document_number])
+
+    const handleSyncClick = (grn_number: string) => {
+        setShowSyncModal(true)
+        setGrnNumber(grn_number)
+    }
+
+    const syncGRN = async () => {
+        const body = {
+            company: selectedCompany.id,
+            grn_number: grnNumber,
+        }
+
+        try {
+            await axioisInstance.post(`goods/synctoinventory`, body)
+            notification.success({
+                message: 'Success',
+                description: 'GRN synced successfully',
+            })
+        } catch (error) {
+            console.log('sssssssss', error)
+            notification.error({
+                message: 'FAILURE',
+                description: 'GRN sync Failed',
+            })
+        }
+    }
+
+    const handleCloseModal = () => {
+        setShowSyncModal(false)
+    }
 
     const handleUrl = async (document_url: any) => {
         try {
@@ -173,8 +212,36 @@ const InwardDetails = () => {
                         <div className="mt-5 flex flex-col">
                             {/* TABLE..................................................... */}
 
-                            <QCtable data={data.grn_quality_check} />
+                            <QCtable
+                                data={data.grn_quality_check}
+                                totalData={data.grn_quality_check.length}
+                            />
+
+                            <div className="flex justify-end mt-5 text-xl mr-7">
+                                <button
+                                    onClick={() =>
+                                        handleSyncClick(data.grn_number)
+                                    }
+                                    className="border-none bg-none flex gap-5"
+                                >
+                                    {' '}
+                                    <div>SYNC GRN:</div>{' '}
+                                    <FaSync className="text-4xl" />
+                                </button>
+                            </div>
                         </div>
+                        {showSyncModal && (
+                            <Modal
+                                title=""
+                                open={showSyncModal}
+                                onOk={syncGRN}
+                                onCancel={handleCloseModal}
+                            >
+                                <div className="italic text-lg">
+                                    SYNC YOUR GRN NUMBER
+                                </div>
+                            </Modal>
+                        )}
                     </>
                 )}
             </Loading>

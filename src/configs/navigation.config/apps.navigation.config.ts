@@ -81,6 +81,17 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsInventoryManagement.quality_checkList',
+                        path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
+                        title: 'Quality Check List',
+                        translateKey:
+                            'nav.appsInventoryManagement.quality_check',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsInventoryManagement.stock_overview',
                         path: `${APP_PREFIX_PATH}/stockOverview`,
                         title: 'Stock Overview',

@@ -15,6 +15,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
+import { MdEdit } from 'react-icons/md'
 
 interface categoryItem {
     id: number
@@ -173,11 +174,14 @@ const CategoryTable = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Action',
+                header: 'Edit',
                 accessorKey: 'id',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        EDIT
+                    <Button
+                        onClick={() => handleActionClick(row.original.id)}
+                        className="bg-none border-none"
+                    >
+                        <MdEdit className="text-xl" />
                     </Button>
                 ),
             },

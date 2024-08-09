@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -8,7 +9,7 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     flexRender,
-    useGlobalFilter,
+    GlobalFiltering,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
@@ -98,7 +99,7 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus])
+    }, [page, pageSize, from, to, dropdownStatus, globalFilter])
 
     const columns = useMemo(
         () => [
@@ -147,11 +148,11 @@ const OrderList = () => {
             fuzzy: fuzzyFilter,
         },
         state: {
+            globalFilter: globalFilter,
             pagination: {
                 pageIndex: page - 1,
                 pageSize: pageSize,
             },
-            globalFilter,
         },
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
@@ -248,7 +249,6 @@ const OrderList = () => {
                                 }
                                 defaultValue={new Date()}
                                 value={new Date(from)}
-                                selected={moment(from).toDate()}
                                 onChange={handleFromChange}
                             />
                         </div>
@@ -262,7 +262,6 @@ const OrderList = () => {
                                 }
                                 defaultValue={new Date()}
                                 value={new Date(to)}
-                                selected={moment(to).toDate()}
                                 onChange={handleToChange}
                                 minDate={moment(from).toDate()}
                             />
@@ -325,7 +324,7 @@ const OrderList = () => {
                 <div style={{ minWidth: 130 }}>
                     <Select
                         size="sm"
-                        isSearchable={false}
+                        isSearchable={true}
                         value={pageSizeOptions.find(
                             (option) => option.value === pageSize,
                         )}

@@ -1,43 +1,57 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
+// import Select from '@/components/ui/Select'
 import DatePicker from '@/components/ui/DatePicker'
+// import TimeInput from '@/components/ui/TimeInput'
 import Checkbox from '@/components/ui/Checkbox'
+// import Radio from '@/components/ui/Radio'
+// import Switcher from '@/components/ui/Switcher'
+// import Segment from '@/components/ui/Segment'
 import Upload from '@/components/ui/Upload'
+// import SegmentItemOption from '@/components/shared/SegmentItemOption'
+// import { HiCheckCircle } from 'react-icons/hi'
 import { Field, Form, Formik } from 'formik'
-import * as Yup from 'yup'
+// import CreatableSelect from 'react-select/creatable'
+// import * as Yup from 'yup'
 import type { FieldProps } from 'formik'
-import Textarea from '@/views/ui-components/forms/Input/Textarea'
+
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { notification } from 'antd'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
+import moment from 'moment'
+
+type ReceivedBy = {
+    name: string
+    email: string
+    mobile: string
+}
+
 type FormModel = {
-    select: string | undefined
-    date: Date | undefined
-    time: Date | undefined
+    select: string
+    create_date: string | null
     singleCheckbox: boolean | false
-    files: File[] | []
-    file_type: string | undefined
-    document_number: string | undefined
-    company: number | undefined
-    received_by: string | undefined
+    files: File[]
+    file_type: string
+    document_number: string
+    company: number
+    received_by: ReceivedBy
     document_date: Date | null
-    origin_address: string | undefined
-    received_address: string | undefined
-    slikk_owned: boolean | false
+    origin_address: string
+    received_address: string
+    slikk_owned: boolean
     total_sku: number | null
     total_quantity: number | null
-    document: File[] | []
-    images: string | undefined
-    image: File[] | []
+    document: string
+    images: string
+    image: File[]
 }
 
 const MAX_UPLOAD = 8
@@ -66,20 +80,17 @@ const MAX_UPLOAD = 8
 // })
 
 const InwardEdit = () => {
-    const [datas, setDatas] = useState<FormModel | null>()
+    const [datas, setDatas] = useState<FormModel>()
     const [imagview, setImageView] = useState<string[]>([])
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
+    const [docsView, setDocsView] = useState<string[]>([])
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
     )
 
     const navigate = useNavigate()
 
-    const { id } = useParams()
-
-    // console.log(datas)
-    console.log(imagview)
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
@@ -87,7 +98,6 @@ const InwardEdit = () => {
             'application/pdf',
             'image/jpeg',
             'image/jpg',
-            'image/png',
             'image/webp',
             'text/csv',
             'application/vnd.ms-excel',
@@ -113,21 +123,6 @@ const InwardEdit = () => {
 
         return valid
     }
-
-    const fetchData = async () => {
-        try {
-            const response = await axioisInstance.get(`goods/received?id=${id}`)
-            const InwardData = response.data?.data.results
-            setDatas(InwardData)
-            setImageView(InwardData.image ? [InwardData.image] : [])
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchData()
-    }, [id])
 
     const handleUpload = async (files: File[]) => {
         const formData = new FormData()
@@ -179,7 +174,7 @@ const InwardEdit = () => {
         try {
             console.log(formData.get('file'))
             const response = await axioisInstance.post(
-                'fileupload/dashboard',
+                'fileupload/dashboard', //only fileupload // image
                 formData,
                 {
                     headers: {
@@ -209,6 +204,52 @@ const InwardEdit = () => {
         }
     }
 
+    const fetchData = async () => {
+        try {
+            const response = await axioisInstance.get(
+                `goods/received?grn_number=GRN-00000011`,
+            )
+            const inwardData = response.data?.data
+            setDatas(inwardData)
+            setImageView(inwardData?.images ? inwardData.images.split(',') : [])
+            console.log('ssdsdsdsd', imagview)
+            setDocsView(inwardData ? inwardData.document_url.split(',') : [])
+            console.log('doocs', docsView)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    const initialValue: FormModel = {
+        select: datas?.select || '',
+        create_date: datas?.create_date
+            ? moment(datas.create_date).format('YYYY-MM-DD')
+            : '',
+        singleCheckbox: datas?.singleCheckbox || false,
+        file_type: datas?.file_type || '',
+        document_number: datas?.document_number || '',
+        company: datas?.company || 1,
+        files: datas?.files || [],
+        received_by: {
+            name: datas?.received_by?.name || '',
+            mobile: datas?.received_by?.mobile || '',
+            email: datas?.received_by.email || '',
+        },
+        document_date: datas?.document_date || null,
+        origin_address: datas?.origin_address || '',
+        received_address: datas?.received_address || '',
+        slikk_owned: datas?.slikk_owned || false,
+        total_sku: datas?.total_sku || null,
+        total_quantity: datas?.total_quantity || null,
+        document: datas?.document || '',
+        images: datas?.images || '',
+        image: datas?.image || [],
+    }
+
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
         const docsUpload = await handleUpload(values.files)
@@ -234,14 +275,15 @@ const InwardEdit = () => {
 
         try {
             const response = await axioisInstance.patch(
-                'goods/received',
+                'goods/received', //
                 formData,
             )
 
             console.log(response)
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'GRN created Edited',
+                description:
+                    response?.data?.message || 'GRN created Successfully',
             })
             navigate('/app/goods/received')
         } catch (error: any) {
@@ -249,35 +291,11 @@ const InwardEdit = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Unable to edit GRN ',
+                    error?.response?.data?.message || 'GRN not created ',
             })
         }
     }
-
-    console.log('sssssssssssss', datas)
-
-    const initialValue: FormModel = {
-        select: datas?.select,
-        date: datas?.date,
-        time: datas?.time,
-        singleCheckbox: datas?.singleCheckbox || false,
-        file_type: datas?.file_type || '',
-        document_number: datas?.document_number || '',
-        company: datas?.company || 1,
-        files: datas?.files || [],
-        received_by: datas?.received_by || '',
-        document_date: datas?.document_date || null,
-        origin_address: datas?.origin_address || '',
-        received_address: datas?.received_address || '',
-        slikk_owned: datas?.slikk_owned || false,
-        total_sku: datas?.total_sku || null,
-        total_quantity: datas?.total_quantity || null,
-        document: datas?.document || [],
-        images: datas?.images || '',
-        image: datas?.image || [],
-    }
-
-    console.log('iiiiiiiiiiiiii', initialValue)
+    console.log('ssdsdsdsd', imagview)
 
     return (
         <div>
@@ -387,17 +405,34 @@ const InwardEdit = () => {
                             <FormContainer className="flex flex-row gap-3 ">
                                 <FormItem
                                     asterisk
-                                    label="Received By"
+                                    label="Received By Name"
                                     invalid={
-                                        errors.received_by &&
-                                        touched.received_by
+                                        errors.received_by?.name &&
+                                        touched.received_by?.name
                                     }
-                                    errorMessage={errors.received_by}
+                                    errorMessage={errors.received_by?.name}
                                     className="col-span-1 w-1/3"
                                 >
                                     <Field
                                         type="text"
-                                        name="received_by"
+                                        name="received_by.name"
+                                        placeholder="Enter your Name"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    asterisk
+                                    label="Received By Mobile"
+                                    invalid={
+                                        errors.received_by?.mobile &&
+                                        touched.received_by?.mobile
+                                    }
+                                    errorMessage={errors.received_by?.mobile}
+                                    className="col-span-1 w-1/3"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="received_by.mobile"
                                         placeholder="Enter your Mobile Number"
                                         component={Input}
                                     />
@@ -452,7 +487,7 @@ const InwardEdit = () => {
                                         errorMessage={errors.document as string}
                                         className="grid grid-rows-2"
                                     >
-                                        <Field name="document">
+                                        <Field name="files">
                                             {({
                                                 field,
                                                 form,
@@ -462,9 +497,7 @@ const InwardEdit = () => {
                                                         beforeUpload={
                                                             beforeUpload
                                                         }
-                                                        fileList={
-                                                            values.document
-                                                        }
+                                                        fileList={values.files} // uploadedd the file
                                                         onChange={(files) => {
                                                             console.log(
                                                                 'OnchangeFiles',
@@ -483,12 +516,17 @@ const InwardEdit = () => {
                                                                 files,
                                                             )
                                                         }
+                                                        // uploadButtonText="Add Files"
                                                     />
                                                 </>
                                             )}
                                         </Field>
                                     </FormItem>
-
+                                    {showData && (
+                                        <>
+                                            <p>{datas?.document}</p>
+                                        </>
+                                    )}
                                     <br />
                                 </FormContainer>
 
@@ -514,21 +552,21 @@ const InwardEdit = () => {
                                 Upload Supporting Image
                             </div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
-                                <div className=" image w-[10%] h-[20%] mt-5  ">
-                                    {imagview && imagview.length > 0 ? (
-                                        imagview.map((img, index) => (
-                                            <img
-                                                key={index}
-                                                src={img}
-                                                alt="img"
-                                                className="rounded-xl"
-                                            />
-                                        ))
-                                    ) : (
-                                        <p>No image</p>
-                                    )}
-                                </div>
                                 <FormContainer className=" mt-5 ">
+                                    <div className=" image w-[10%] h-[20%] mt-5  ">
+                                        {imagview ? (
+                                            imagview.map((img, index) => (
+                                                <img
+                                                    key={index}
+                                                    src={img}
+                                                    alt="img"
+                                                    className="rounded-xl"
+                                                />
+                                            ))
+                                        ) : (
+                                            <p>No image</p>
+                                        )}
+                                    </div>
                                     <FormItem
                                         label=""
                                         invalid={Boolean(
@@ -537,7 +575,7 @@ const InwardEdit = () => {
                                         errorMessage={errors.files as string}
                                         className="grid grid-rows-2"
                                     >
-                                        <Field name="images">
+                                        <Field name="image">
                                             {({
                                                 form,
                                             }: FieldProps<FormModel>) => (
@@ -566,11 +604,16 @@ const InwardEdit = () => {
                                             )}
                                         </Field>
                                     </FormItem>
+                                    {showImage && (
+                                        <>
+                                            <p>{imagview}</p>
+                                        </>
+                                    )}
                                     <br />
                                     <br />
                                 </FormContainer>
 
-                                <FormItem
+                                {/* <FormItem
                                     label=""
                                     invalid={errors.images && touched.images}
                                     errorMessage={errors.images}
@@ -582,7 +625,7 @@ const InwardEdit = () => {
                                         placeholder="Enter ImageUrl or Upload Image file"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                             </FormContainer>
 
                             {/* {imagview && (

@@ -87,6 +87,8 @@ const ProductEdit = () => {
     const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
 
+    const [footer, setFooter] = useState()
+
     const { id } = useParams()
     const navigate = useNavigate()
 
@@ -156,6 +158,10 @@ const ProductEdit = () => {
         }
 
         return valid
+    }
+
+    const handleFooterChange = (e: any) => {
+        setFooter(e.target.value)
     }
 
     const handleFileupload = async (files: File[]) => {
@@ -434,21 +440,13 @@ const ProductEdit = () => {
                                     errorMessage={errors.footer}
                                     className="col-span-1 w-full"
                                 >
-                                    <Field
-                                        as="textarea"
+                                    <textarea
                                         name="footer"
-                                        placeholder="Footer"
-                                        component={Input}
-                                        style={{
-                                            width: '100%',
-                                            height: '150px',
-                                            resize: 'vertical',
-                                        }}
-                                        onKeyDown={(e) => {
-                                            e.key === 'Enter' &&
-                                                e.preventDefault()
-                                        }}
-                                    />
+                                        value={footer}
+                                        onChange={handleFooterChange}
+                                        id=""
+                                        className="w-full border border-gray-200 rounded-lg items-center h-[200px] p-2"
+                                    ></textarea>
                                 </FormItem>
                             </FormContainer>
 

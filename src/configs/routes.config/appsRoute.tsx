@@ -353,6 +353,17 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsInventoryManagement.inwards',
+        path: `${APP_PREFIX_PATH}/goods/received/sync/:id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/inventory-management/inward/inwardSync/InwardSync'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsInventoryManagement.inwardsDetails',
         path: `${APP_PREFIX_PATH}/goods/received/:company/:document_number`,
         component: lazy(
@@ -367,6 +378,17 @@ const appsRoute: Routes = [
             () =>
                 import(
                     '@/views/inventory-management/quality-check/QCbulkupload'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.quality_checkList',
+        path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/inventory-management/qualityCheckList/QCListTable'
                 ),
         ),
         authority: [ADMIN, USER],
@@ -688,10 +710,10 @@ const appsRoute: Routes = [
             () => import('@/views/appsSettings/banners/addBanners/AddBanners'),
         ),
         authority: [ADMIN, USER],
-        meta : {
-            layout : "blank",
-            pageContainerType : "gutterless"
-        }
+        meta: {
+            layout: 'blank',
+            pageContainerType: 'gutterless',
+        },
     },
     {
         key: 'appsAppSettings.banners',
