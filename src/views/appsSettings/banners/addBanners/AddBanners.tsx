@@ -8,6 +8,9 @@ import BannerDetails from './addComponents/BannerDetails'
 import { useNavigate } from 'react-router-dom'
 import AddBannerStep3 from '../AddBannerStep3'
 import PreviewBanner from '../PreviewBanner'
+import { useAppDispatch } from '@/store'
+import { getAllBrandsAPI } from '@/store/action/brand.action'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
 
 interface DataType {
     type: string
@@ -33,7 +36,7 @@ type WebType = {
     component_type: string
     section_heading: string
     background_image: string
-    sub_header_config: Config
+    sub_header_config: Config;
 }
 
 const AddBanners = () => {
@@ -51,6 +54,8 @@ const AddBanners = () => {
 
     // Fetch Data for section Headings
     const fetchData = async () => {
+        if(!currentSelectedPage) return;
+
         console.log('Starting API call')
         try {
             const response = await axioisInstance.get(
@@ -67,6 +72,12 @@ const AddBanners = () => {
     useEffect(() => {
         fetchData()
     }, [currentSelectedPage])
+
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        dispatch(getAllBrandsAPI());
+        dispatch(getAllFiltersAPI());
+    }, [])
 
     const handlePageSelect = (values: string, e: any) => {
         console.log('Page selected:', values)
@@ -88,7 +99,14 @@ const AddBanners = () => {
                 item.section_heading === value &&
                 item.data_type.type === 'banner',
         )
-        setSelectedSectionHeading(selectHeading || null)
+
+        const selectHeadingIndex = sectionHeadingData.findIndex(
+            (item) =>
+                item.section_heading === value &&
+                item.data_type.type === 'banner',
+        )
+
+        setSelectedSectionHeading({...selectHeading, position : selectHeadingIndex} || null)
     }
 
     const handleProceedToAddBanner = () => {
@@ -96,7 +114,7 @@ const AddBanners = () => {
     }
 
 
-    const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now() }]);
+    const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now(), is_clickable : true }]);
 
     return (
         <div>

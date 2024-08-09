@@ -11,6 +11,8 @@ import { divisionReducer } from './reducers/divison.reducer'
 import { categoryReducer } from './reducers/category.reducer'
 import { subCategoryReducer } from './reducers/subcategory.reducer'
 import { productTypeReducer } from './reducers/productType.reducer'
+import { brandsReducer } from './reducers/brands.reducer'
+import { filtersReducer } from './reducers/filters.reducer'
 
 export type RootState = CombinedState<{
     authorization:CombinedState<Authorization>
@@ -37,6 +39,8 @@ const staticReducers = {
     category : categoryReducer,
     subCategory : subCategoryReducer,
     product_type : productTypeReducer,
+    brands : brandsReducer,
+    filters : filtersReducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
 

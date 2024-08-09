@@ -9,6 +9,9 @@ import FontAwesome from '@/views/ui-components/common/Icons/FontAwesome';
 import React, { useEffect, useState } from 'react'
 import { FaCross, FaWindowClose, FaXRay } from 'react-icons/fa';
 import { ADD_BANNER_BASIC_FIELDS } from './generalFields';
+import { BRAND_STATE } from '@/store/types/brand.types';
+import { FILTER_STATE } from '@/store/types/filters.types';
+import { notification } from 'antd';
 
 function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
 
@@ -25,8 +28,23 @@ function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, com
     };
 
     const handlePreviewClicked = () => {
-        setCompleteBannerFormData(bannerForm);
-        setCurrentStep(4)
+
+        const formValid = bannerForm?.map((formData) => {
+            if(formData?.from_date && formData.to_date && formData.name){
+                return true;
+            }
+            return false;
+        });
+
+
+        if(formValid.every((v) => v)){
+            setCompleteBannerFormData(bannerForm);
+            setCurrentStep(4)
+        } else{
+            notification.error({
+                message : "Please check Banner form data to_date, from_date or name"
+            })
+        }
     }
 
 
@@ -47,7 +65,7 @@ function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, com
             </div>
 
             <div className='w-fit self-center flex flex-row space-x-3'>
-                <Button variant="new" size="sm" onClick={() => setBannerFormData([...bannerForm, { id: Date.now() }])}>
+                <Button variant="new" size="sm" onClick={() => setBannerFormData([...bannerForm, { id: Date.now(), is_clickable: true }])}>
                     +Add Banner Tile
                 </Button>
                 <Button variant="new" size="sm" onClick={handlePreviewClicked}>
@@ -67,6 +85,10 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const category = useAppSelector<CATEGORY_STATE>(state => state.category);
     const subCategory = useAppSelector<SUBCATEGORY_STATE>(state => state.subCategory);
     const product_type = useAppSelector<PRODUCTTYPE_STATE>(state => state.product_type);
+    const brands = useAppSelector<BRAND_STATE>(state => state.brands);
+    const filters = useAppSelector<FILTER_STATE>(state => state.filters);
+
+    console.log(filters);
 
     const handleChange = (e: any) => {
         const { name, value, type, checked } = e.target;
@@ -86,6 +108,12 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         }
         console.log(tempBannerForm);
         setBannerForm(tempBannerForm);
+    }
+
+    const handleMultiSelect = (field, val) => {
+        console.log(val);
+        const tempBannerForm = bannerForm;
+        handleInputChange(field, val);
     }
 
     return <div className='flex flex-row flex-wrap gap-x-5 gap-y-2 p-4'>
@@ -116,9 +144,35 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
             ))}
         </form>
 
-        <span>Total Divisions : {divisions.divisions?.length}</span>
-        <span>Total Divisions : {category.categories?.length}</span>
-        <span>Total Divisions : {subCategory.subcategories?.length}</span>
-        <span>Total Divisions : {product_type.product_types?.length}</span>
+        <Select isMulti defaultValue={bannerForm[index]["division"] || []} options={divisions.divisions} getOptionLabel={(option) => option.name} getOptionValue={(option) => (option.id).toString()} onChange={(newVal, actionMeta) => {
+            console.log(newVal, actionMeta);
+            handleMultiSelect("division", newVal?.map((val) => val.name)?.join(","))
+        }} />
+        <Select isMulti defaultValue={bannerForm[index]["category"] || []} options={category.categories} getOptionLabel={(option) => option.name} getOptionValue={(option) => (option.id).toString()} onChange={(newVal, actionMeta) => {
+            console.log(newVal, actionMeta);
+            handleMultiSelect("category", newVal?.map((val) => val.name)?.join(","))
+        }} />
+        <Select isMulti defaultValue={bannerForm[index]["sub_category"] || []} options={subCategory.subcategories} getOptionLabel={(option) => option.name} getOptionValue={(option) => (option.id).toString()} onChange={(newVal, actionMeta) => {
+            console.log(newVal, actionMeta);
+            handleMultiSelect("sub_category", newVal?.map((val) => val.name)?.join(","))
+        }} />
+        <Select isMulti defaultValue={bannerForm[index]["product_type"] || []} options={product_type.product_types} getOptionLabel={(option) => option.name} getOptionValue={(option) => (option.id).toString()} onChange={(newVal, actionMeta) => {
+            console.log(newVal, actionMeta);
+            handleMultiSelect("product_type", newVal?.map((val) => val.name)?.join(","))
+        }} />
+        <Select isMulti defaultValue={bannerForm[index]["brand"] || []} options={brands.brands} getOptionLabel={(option) => option.name} getOptionValue={(option) => (option.id).toString()} onChange={(newVal, actionMeta) => {
+            console.log(newVal, actionMeta);
+            handleMultiSelect("brand", newVal?.map((val) => val.name)?.join(","))
+        }} />
+        
+        <Select isMulti options={filters.filters} getOptionLabel={(option) => option.label} getOptionValue={(option) => option.value} onChange={(newVal, actionMeta) => {
+            console.log(newVal, actionMeta);
+            handleMultiSelect("quickFilters", newVal?.map((val) => val.value))
+        }} />
+
+        <Select isMulti options={filters.filters} getOptionLabel={(option) => option.label} getOptionValue={(option) => option.value} onChange={(newVal, actionMeta) => {
+            console.log(newVal, actionMeta);
+            handleMultiSelect("tags", newVal?.map((val) => val.value))
+        }} />
     </div>
 }

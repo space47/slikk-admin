@@ -67,9 +67,13 @@
     "react-tooltip": "^5.28.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
+<<<<<<< HEAD
     "slate": "^0.103.0",
     "slate-react": "^0.107.1",
     "slikk-react-comps": "1.8.3",
+=======
+    "slikk-react-comps": "1.8.4",
+>>>>>>> 1f1989ea3403cbde0117d43a1d63c54b1a5c3e1c
     "tailwind-scrollbar-hide": "^1.1.7",
     "twin.macro": "^3.4.1",
     "universal-cookie": "^7.2.0",
