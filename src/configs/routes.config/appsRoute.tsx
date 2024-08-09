@@ -382,17 +382,17 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
-    {
-        key: 'appsInventoryManagement.quality_checkList',
-        path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/inventory-management/qualityCheckList/QCListTable'
-                ),
-        ),
-        authority: [ADMIN, USER],
-    },
+    // {
+    //     key: 'appsInventoryManagement.quality_checkList',
+    //     path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
+    //     component: lazy(
+    //         () =>
+    //             import(
+    //                 '@/views/inventory-management/qualityCheckList/QCListTable'
+    //             ),
+    //     ),
+    //     authority: [ADMIN, USER],
+    // },
     {
         key: 'appsInventoryManagement.stock_overview',
         path: `${APP_PREFIX_PATH}/stockOverview`,
