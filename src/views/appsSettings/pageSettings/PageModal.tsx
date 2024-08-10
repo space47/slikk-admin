@@ -74,6 +74,7 @@ const PageModal: React.FC<modalProps> = ({
             'image/jpeg',
             'image/jpg',
             'image/webp',
+            'image/png',
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
