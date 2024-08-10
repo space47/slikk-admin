@@ -9,6 +9,8 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Button from '@/components/ui/Button'
+import Select from '@/components/ui/Select'
+import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 
 interface DataType {
     type: string
@@ -72,6 +74,7 @@ const PageModal: React.FC<modalProps> = ({
             'image/jpeg',
             'image/jpg',
             'image/webp',
+            'image/png',
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -188,8 +191,11 @@ const PageModal: React.FC<modalProps> = ({
     }
 
     console.log('---------------', particularRow)
-    const handleRemoveImage = (a: any) => {
-        console.log('object', a)
+    const handleRemoveImage = () => {
+        setInitalValue((prev: any) => ({
+            ...prev,
+            background_image: null,
+        }))
     }
 
     const getDataType = (data: DataType): { key: string; value: string } => {
@@ -261,12 +267,35 @@ const PageModal: React.FC<modalProps> = ({
                                     // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="component_type"
-                                        placeholder="Place your Section heading"
-                                        component={Input}
-                                    />
+                                    <Field name="component_type">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            const componentOptions =
+                                                COMPONENT_CATEGORY_TYPES
+
+                                            return (
+                                                <Select
+                                                    field={field}
+                                                    form={form}
+                                                    options={componentOptions}
+                                                    value={componentOptions.find(
+                                                        (option) =>
+                                                            option.value ===
+                                                            field.value,
+                                                    )}
+                                                    onChange={(option) =>
+                                                        form.setFieldValue(
+                                                            field.name,
+                                                            option?.value,
+                                                        )
+                                                    }
+                                                    onKeyDown={(e) =>
+                                                        e.key === 'Enter' &&
+                                                        e.preventDefault()
+                                                    }
+                                                />
+                                            )
+                                        }}
+                                    </Field>
                                 </FormItem>
 
                                 {/* image */}
@@ -274,24 +303,24 @@ const PageModal: React.FC<modalProps> = ({
                                     <div className="font-semibold mb-1">
                                         Image
                                     </div>
-                                    {particularRow.background_image && (
+                                    {initialValue.background_image ? (
                                         <div className="flex flex-col items-center justify-center min-w-[100px]">
                                             <img
                                                 src={
-                                                    particularRow.background_image
+                                                    initialValue.background_image
                                                 }
                                                 alt={`Image `}
                                                 className="w-[100px] h-[40px] flex object-contain "
                                             />
                                             <button
                                                 className="text-red-500 text-md "
-                                                onClick={(e) =>
-                                                    handleRemoveImage(e)
-                                                }
+                                                onClick={handleRemoveImage}
                                             >
                                                 x
                                             </button>
                                         </div>
+                                    ) : (
+                                        'No Image'
                                     )}
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
@@ -415,9 +444,7 @@ const PageModal: React.FC<modalProps> = ({
                                             />
                                             <button
                                                 className="text-red-500 text-md "
-                                                onClick={(e) =>
-                                                    handleRemoveImage(e)
-                                                }
+                                                onClick={handleRemoveImage}
                                             >
                                                 x
                                             </button>
