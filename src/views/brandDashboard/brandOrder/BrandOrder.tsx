@@ -1,0 +1,362 @@
+import React, { useEffect, useState, useMemo } from 'react'
+import Table from '@/components/ui/Table'
+import Pagination from '@/components/ui/Pagination'
+import Select from '@/components/ui/Select'
+
+import {
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    flexRender,
+    // useGlobalFilter,
+    PaginationState,
+    Updater,
+} from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import moment from 'moment'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import DatePicker from '@/components/ui/DatePicker'
+import { HiOutlineCalendar } from 'react-icons/hi'
+import { TbCalendarStats } from 'react-icons/tb'
+import BrandOrderGraph from './brandOrderGraph/BrandOrderGraph'
+import BrandQuantityGraph from './brandOrderGraph/BrandQuantityGraph'
+
+type SKU_DETAILS = {
+    name: string
+    mrp: number
+    sp: number
+    image: string
+    total_quantity: number
+    total_amount: number
+}
+
+type DATA_WISE_SALES = {
+    total_quantity: number
+    total_amount: number
+}
+
+type SalesData = {
+    status: string
+    total_quantity: number
+    total_amount: number
+    sku_wise_sales_data: {
+        [sku: string]: SKU_DETAILS
+    }
+    date_wise_sales_data: {
+        date: DATA_WISE_SALES
+    }
+}
+
+type Option = {
+    value: number
+    label: string
+}
+
+const { Tr, Th, Td, THead, TBody } = Table
+
+const pageSizeOptions = [
+    { value: 10, label: '10 / page' },
+    { value: 25, label: '25 / page' },
+    { value: 50, label: '50 / page' },
+    { value: 100, label: '100 / page' },
+]
+
+const BrandOrder = () => {
+    const [data, setData] = useState<SalesData>()
+
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+    const [globalFilter, setGlobalFilter] = useState('')
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+        (store) => store.company.currCompany,
+    )
+    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+
+    const [skuWiseDetails, setSkuWiseDetails] = useState<
+        Array<{ key: string; value: SKU_DETAILS }>
+    >([])
+    const [datewisedetails, setDatewisedetails] = useState<
+        Array<{ key: string; value: DATA_WISE_SALES }>
+    >([])
+
+    const fetchData = async (
+        page: number,
+        pageSize: number,
+        // from: string,
+        // to: string,
+    ) => {
+        try {
+            const response = await axiosInstance.get(
+                `/merchant/sales?p=${page}&page_size=${pageSize}`,
+            )
+            const data = response.data
+
+            setData(data)
+            console.log('ssssssssssssssss', data)
+            const skuData = data.sku_wise_sales_data
+            const dateWiseData = data.date_wise_sales_data
+            console.log('tttttttttttttt', skuData)
+
+            const skuDetailsArray = Object.entries(skuData).map(
+                ([key, value]) => ({
+                    key,
+                    value,
+                }),
+            )
+
+            setSkuWiseDetails(skuDetailsArray)
+
+            const dateWIseDetailArray = Object.entries(dateWiseData).map(
+                ([key, value]) => ({
+                    key,
+                    value,
+                }),
+            )
+
+            console.log('dddddddddd', dateWIseDetailArray)
+            setDatewisedetails(dateWIseDetailArray)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchData(page, pageSize)
+    }, [page, pageSize, selectedCompany, from, to])
+
+    console.log('SKU Details:', skuWiseDetails)
+    console.log('adteeeeeeeee', datewisedetails)
+
+    const columns = useMemo<
+        ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]
+    >(
+        () => [
+            {
+                header: 'SKU',
+                accessorKey: 'key',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Name',
+                accessorKey: 'value.name',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'MRP',
+                accessorKey: 'value.mrp',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'SP',
+                accessorKey: 'value.sp',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Total Quantity',
+                accessorKey: 'value.total_quantity',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Total Amount',
+                accessorKey: 'value.total_amount',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Image',
+                accessorKey: 'value.image',
+                cell: (info) => {
+                    const imageUrl = (info.getValue() as string).split(',')[0]
+                    return (
+                        <img
+                            src={imageUrl}
+                            alt="Product Image"
+                            width={50}
+                            height={50}
+                        />
+                    )
+                },
+            },
+        ],
+        [],
+    )
+
+    const table = useReactTable({
+        data: skuWiseDetails,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        pageCount: Math.ceil(skuWiseDetails.length / pageSize),
+        manualPagination: true,
+        state: {
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: pageSize,
+            },
+            globalFilter,
+        },
+        onPaginationChange: (updater: Updater<PaginationState>) => {
+            const newPagination =
+                typeof updater === 'function'
+                    ? updater({ pageIndex: page - 1, pageSize })
+                    : updater
+
+            setPage(newPagination.pageIndex + 1)
+            setPageSize(newPagination.pageSize)
+        },
+        onGlobalFilterChange: setGlobalFilter,
+    })
+
+    const onPaginationChange = (page: number) => {
+        setPage(page)
+    }
+
+    const onSelectChange = (value = 0) => {
+        setPageSize(Number(value))
+    }
+    const handleFromChange = (date: Date | null) => {
+        if (date) {
+            setFrom(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setFrom(moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    const handleToChange = (date: Date | null) => {
+        if (date) {
+            setTo(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setTo(moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    return (
+        <div className="overflow-x-auto">
+            <div className="upper flex justify-between mb-5 items-center ">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border rounded"
+                    />
+                </div>
+
+                <div className="flex gap-5">
+                    <div>
+                        <div className="mb-1 font-semibold text-sm">
+                            FROM DATE:
+                        </div>
+                        <DatePicker
+                            inputPrefix={
+                                <HiOutlineCalendar className="text-lg" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(from)}
+                            selected={moment(from).toDate()}
+                            onChange={handleFromChange}
+                        />
+                    </div>
+                    <div>
+                        <div className="mb-1 font-semibold text-sm">
+                            TO DATE:
+                        </div>
+                        <DatePicker
+                            inputSuffix={
+                                <TbCalendarStats className="text-xl" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(to)}
+                            selected={moment(to).toDate()}
+                            onChange={handleToChange}
+                            minDate={moment(from).toDate()}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="flex flex-col gap-2 justify-center mb-6">
+                <div className="total">
+                    <span className="font-bold">TOTAL AMOUNT:</span>:
+                    <span className=" italic">{data?.total_amount}</span>
+                </div>
+                <div className="total">
+                    <span className="font-bold">TOTAL QUANTITY :</span>
+                    <span className=" italic">{data?.total_quantity}</span>
+                </div>
+            </div>
+
+            <div className="mb-10 flex gap-10 justify-center ">
+                <BrandOrderGraph
+                    data={datewisedetails.map((item) => ({
+                        dateKey: item.key,
+                        total_amount: item.value.total_amount,
+                    }))}
+                />
+
+                <BrandQuantityGraph
+                    data={datewisedetails.map((item) => ({
+                        dateKey: item.key,
+                        total_quantity: item.value.total_quantity,
+                    }))}
+                />
+            </div>
+
+            <Table>
+                <THead>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <Tr key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <Th key={header.id} colSpan={header.colSpan}>
+                                    {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext(),
+                                    )}
+                                </Th>
+                            ))}
+                        </Tr>
+                    ))}
+                </THead>
+                <TBody>
+                    {table.getRowModel().rows.map((row) => (
+                        <Tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <Td key={cell.id}>
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext(),
+                                    )}
+                                </Td>
+                            ))}
+                        </Tr>
+                    ))}
+                </TBody>
+            </Table>
+            <div className="flex items-center justify-between mt-4">
+                <Pagination
+                    pageSize={pageSize}
+                    currentPage={page}
+                    total={skuWiseDetails && skuWiseDetails.length}
+                    onChange={onPaginationChange}
+                />
+                <div style={{ minWidth: 130 }}>
+                    <Select<Option>
+                        size="sm"
+                        isSearchable={false}
+                        value={pageSizeOptions.find(
+                            (option) => option.value === pageSize,
+                        )}
+                        options={pageSizeOptions}
+                        onChange={(option) => onSelectChange(option?.value)}
+                    />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default BrandOrder

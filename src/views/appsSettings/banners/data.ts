@@ -1,0 +1,3417 @@
+export const API_RESPONSE = [
+    {
+        "position": 1,
+        "component_type": "SYF",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Shop+Your+Fit.png",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Shop Your Fit",
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 0,
+                "id": 1723092568789,
+                "image_web_file": {},
+                "image_web": "blob:http://localhost:3000/d9998fea-bd1c-4f61-be93-d56e0923c13c",
+                "image_mobile_file": {},
+                "image_mobile": "blob:http://localhost:3000/865fca48-87dc-43a6-b72d-6b03b3dcb874",
+                "quick_filter_tags": [],
+                "tags": []
+            }
+        ]
+    },
+    {
+        "position": 1,
+        "component_type": "Upcoming Trends",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Upcoming+Trends.png",
+        "section_heading": "Upcoming Trends",
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        
+        "data": [
+            {
+                "pk": 0,
+                "id": 1723060484887,
+                "image_web_file": {},
+                "image_web": "blob:http://localhost:3000/f0216502-61c5-4354-bcf6-6b5612c0aed0",
+                "name": "Parth Sundarka ",
+                "footer": "Footer",
+                "redirection_url": "slikk.club",
+                "from_date": "2024-08-08",
+                "to_date": "2024-08-01",
+                "is_clickable": true,
+                "image_mobile_file": {},
+                "image_mobile": "blob:http://localhost:3000/517320eb-f246-4d39-9471-7e4d951ae1a7",
+                "tags": [
+                    "trend_Night life attire"
+                ],
+                "quick_filter_tags": [],
+            },
+            {
+                "pk": 1,
+                "id": 1723060523618,
+                "image_web_file": {},
+                "image_web": "blob:http://localhost:3000/eb0a6da8-66f7-4cd9-8b09-489932033f76",
+                "image_mobile_file": {},
+                "image_mobile": "blob:http://localhost:3000/19d78bd7-9b4d-4ea3-a1a9-c30417c24dea",
+                "name": "Parth Sundarka",
+                "footer": "F",
+                "is_clickable": true,
+                "tags": [
+                    "trend_Night life attire"
+                ],
+                "quick_filter_tags": [],
+            }
+        ]
+    },
+    {
+        "position": 1,
+        "component_type": "Bell C",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Shop By Category",
+        "extra_info": null,
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 9,
+                "name": "Jacket",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Jackets.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Jackets.png",
+                "product_type": "",
+                "sub_category": "Jackets",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 10,
+                "name": "Hoodie",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Hoodie.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Hoodie.png",
+                "product_type": "Hoodie",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 11,
+                "name": "Shirts",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Shirts.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Shirts.png",
+                "product_type": "",
+                "sub_category": "Shirts",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 12,
+                "name": "T-Shirts",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/T-Shirt.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/T-Shirt.png",
+                "product_type": "",
+                "sub_category": "T-Shirt",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            }
+        ]
+    },
+    {
+        "position": 2,
+        "component_type": "Square",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Trends",
+        "extra_info": null,
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 13,
+                "name": "Modern Academia",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Modern+Academia.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Modern+Academia.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "trend_Modern Academia"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            }
+        ]
+    },
+    {
+        "position": 3,
+        "component_type": "New Drop",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/New+Drop.png",
+        "section_heading": "Trends",
+        "extra_info": null,
+        "data_type": {
+            "type": "products",
+            "filters": [],
+            "barcodes": "8517813211,8515583524,8285930032,8257944939,8126794938,8189747137,8331665336,8786623560,8496589630,8475952083"
+        },
+        "data": [
+            {
+                "barcode": "8475952083",
+                "mrp": "1999.00",
+                "sp": "1999.00",
+                "name": "Men's Trackpant",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 396,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SMR22_CSMSSTP5099_1_b6a75567-8423-4b5f-a2ee-522d17f6dac9.jpg?v=1648300268",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Trackpant",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SMR22_CSMSSTP5099_1_b6a75567-8423-4b5f-a2ee-522d17f6dac9.jpg?v=1648300268",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8794145959",
+                        "sku": "SMR22_CSMSSTP5099_XL",
+                        "mrp": "1999.00",
+                        "sp": "1999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Trackpant",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SMR22_CSMSSTP5099_1_b6a75567-8423-4b5f-a2ee-522d17f6dac9.jpg?v=1648300268",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8726477853",
+                        "sku": "SMR22_CSMSSTP5099_M",
+                        "mrp": "1999.00",
+                        "sp": "1999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Trackpant",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SMR22_CSMSSTP5099_1_b6a75567-8423-4b5f-a2ee-522d17f6dac9.jpg?v=1648300268",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8234934433",
+                        "sku": "SMR22_CSMSSTP5099_L",
+                        "mrp": "1999.00",
+                        "sp": "1999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8285930032",
+                "mrp": "2799.00",
+                "sp": "2799.00",
+                "name": "Men's Navy Blue Baggy Cargo Denim Jeans",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 399,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/SRM23_CSMSSJEAN1041_1.webp?v=1708760388",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Navy Blue Baggy Cargo Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/SRM23_CSMSSJEAN1041_1.webp?v=1708760388",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8433673452",
+                        "sku": "CSMSSJEAN1041_32",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Navy Blue Baggy Cargo Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/SRM23_CSMSSJEAN1041_1.webp?v=1708760388",
+                        "size": [
+                            "36"
+                        ],
+                        "barcode": "8905931296",
+                        "sku": "CSMSSJEAN1041_36",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Navy Blue Baggy Cargo Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/SRM23_CSMSSJEAN1041_1.webp?v=1708760388",
+                        "size": [
+                            "34"
+                        ],
+                        "barcode": "8635699188",
+                        "sku": "CSMSSJEAN1041_34",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8257944939",
+                "mrp": "2799.00",
+                "sp": "2799.00",
+                "name": "Men's Light Blue Utility Cargo Denim Jeans",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1042_1_7cc07ac1-8c7f-4e2e-b611-eb3fd5fe6d54.jpg?v=1693845960",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Light Blue Utility Cargo Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1042_1_7cc07ac1-8c7f-4e2e-b611-eb3fd5fe6d54.jpg?v=1693845960",
+                        "size": [
+                            "36"
+                        ],
+                        "barcode": "8555678050",
+                        "sku": "SRM23_CSMSSJEAN1042_36",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Light Blue Utility Cargo Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1042_1_7cc07ac1-8c7f-4e2e-b611-eb3fd5fe6d54.jpg?v=1693845960",
+                        "size": [
+                            "34"
+                        ],
+                        "barcode": "8661486321",
+                        "sku": "SRM23_CSMSSJEAN1042_34",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Light Blue Utility Cargo Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1042_1_7cc07ac1-8c7f-4e2e-b611-eb3fd5fe6d54.jpg?v=1693845960",
+                        "size": [
+                            "30"
+                        ],
+                        "barcode": "8466253414",
+                        "sku": "SRM23_CSMSSJEAN1042_30",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Light Blue Utility Cargo Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1042_1_7cc07ac1-8c7f-4e2e-b611-eb3fd5fe6d54.jpg?v=1693845960",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8092514345",
+                        "sku": "SRM23_CSMSSJEAN1042_32",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8517813211",
+                "mrp": "2399.00",
+                "sp": "2399.00",
+                "name": "Men's Blue Cuffed Hem Cargo Trousers",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 0,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5566_1_8660aeb1-2237-4193-9811-dfcf480839f6.jpg?v=1689087576",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Blue Cuffed Hem Cargo Trousers",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5566_1_8660aeb1-2237-4193-9811-dfcf480839f6.jpg?v=1689087576",
+                        "size": [
+                            "30"
+                        ],
+                        "barcode": "8853226739",
+                        "sku": "SSS23_CSMSSCR5566_30",
+                        "mrp": "2399.00",
+                        "sp": "2399.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Blue Cuffed Hem Cargo Trousers",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5566_1_8660aeb1-2237-4193-9811-dfcf480839f6.jpg?v=1689087576",
+                        "size": [
+                            "34"
+                        ],
+                        "barcode": "8894469797",
+                        "sku": "SSS23_CSMSSCR5566_34",
+                        "mrp": "2399.00",
+                        "sp": "2399.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Blue Cuffed Hem Cargo Trousers",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5566_1_8660aeb1-2237-4193-9811-dfcf480839f6.jpg?v=1689087576",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8293618258",
+                        "sku": "SSS23_CSMSSCR5566_32",
+                        "mrp": "2399.00",
+                        "sp": "2399.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Blue Cuffed Hem Cargo Trousers",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5566_1_8660aeb1-2237-4193-9811-dfcf480839f6.jpg?v=1689087576",
+                        "size": [
+                            "36"
+                        ],
+                        "barcode": "8846115618",
+                        "sku": "SSS23_CSMSSCR5566_36",
+                        "mrp": "2399.00",
+                        "sp": "2399.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8496589630",
+                "mrp": "1799.00",
+                "sp": "1799.00",
+                "name": "Men's Solid Grey Regular Fit Trackpants",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_CSMSSTP5058_1_ebb856f8-ecb2-44f9-93e8-9c59959fc45c.jpg?v=1678198972",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Solid Grey Regular Fit Trackpants",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_CSMSSTP5058_1_ebb856f8-ecb2-44f9-93e8-9c59959fc45c.jpg?v=1678198972",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8538201315",
+                        "sku": "SSUM23_CSMSSTP5058_L",
+                        "mrp": "1799.00",
+                        "sp": "1799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Solid Grey Regular Fit Trackpants",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_CSMSSTP5058_1_ebb856f8-ecb2-44f9-93e8-9c59959fc45c.jpg?v=1678198972",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8306704167",
+                        "sku": "SSUM23_CSMSSTP5058_XL",
+                        "mrp": "1799.00",
+                        "sp": "1799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Solid Grey Regular Fit Trackpants",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_CSMSSTP5058_1_ebb856f8-ecb2-44f9-93e8-9c59959fc45c.jpg?v=1678198972",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8422744491",
+                        "sku": "SSUM23_CSMSSTP5058_M",
+                        "mrp": "1799.00",
+                        "sp": "1799.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8189747137",
+                "mrp": "1699.00",
+                "sp": "1699.00",
+                "name": "Men's Jeans",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_KNEES_M_PLN_LBU_1_ab2a8861-7c48-4761-a9e8-b055b94ba501.jpg?v=1678197964",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_KNEES_M_PLN_LBU_1_ab2a8861-7c48-4761-a9e8-b055b94ba501.jpg?v=1678197964",
+                        "size": [
+                            "30"
+                        ],
+                        "barcode": "8523329364",
+                        "sku": "SSUM23_JN_KNEES_M_PLN_LBU_30",
+                        "mrp": "1699.00",
+                        "sp": "1699.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_KNEES_M_PLN_LBU_1_ab2a8861-7c48-4761-a9e8-b055b94ba501.jpg?v=1678197964",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8075968954",
+                        "sku": "SSUM23_JN_KNEES_M_PLN_LBU_32",
+                        "mrp": "1699.00",
+                        "sp": "1699.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_KNEES_M_PLN_LBU_1_ab2a8861-7c48-4761-a9e8-b055b94ba501.jpg?v=1678197964",
+                        "size": [
+                            "36"
+                        ],
+                        "barcode": "8879850005",
+                        "sku": "SSUM23_JN_KNEES_M_PLN_LBU_36",
+                        "mrp": "1699.00",
+                        "sp": "1699.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_KNEES_M_PLN_LBU_1_ab2a8861-7c48-4761-a9e8-b055b94ba501.jpg?v=1678197964",
+                        "size": [
+                            "34"
+                        ],
+                        "barcode": "8939909545",
+                        "sku": "SSUM23_JN_KNEES_M_PLN_LBU_34",
+                        "mrp": "1699.00",
+                        "sp": "1699.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8515583524",
+                "mrp": "2399.00",
+                "sp": "2399.00",
+                "name": "Men's Pale Yellow Cuffed Hem Cargo Trousers",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 399,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5565_1_418b858f-1e60-4c91-9bca-1ea9689a09db.jpg?v=1689087560",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Pale Yellow Cuffed Hem Cargo Trousers",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5565_1_418b858f-1e60-4c91-9bca-1ea9689a09db.jpg?v=1689087560",
+                        "size": [
+                            "36"
+                        ],
+                        "barcode": "8136147817",
+                        "sku": "SSS23_CSMSSCR5565_36",
+                        "mrp": "2399.00",
+                        "sp": "2399.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Pale Yellow Cuffed Hem Cargo Trousers",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5565_1_418b858f-1e60-4c91-9bca-1ea9689a09db.jpg?v=1689087560",
+                        "size": [
+                            "34"
+                        ],
+                        "barcode": "8595970352",
+                        "sku": "SSS23_CSMSSCR5565_34",
+                        "mrp": "2399.00",
+                        "sp": "2399.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Pale Yellow Cuffed Hem Cargo Trousers",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5565_1_418b858f-1e60-4c91-9bca-1ea9689a09db.jpg?v=1689087560",
+                        "size": [
+                            "30"
+                        ],
+                        "barcode": "8043929210",
+                        "sku": "SSS23_CSMSSCR5565_30",
+                        "mrp": "2399.00",
+                        "sp": "2399.00",
+                        "inventory_count": 399
+                    },
+                    {
+                        "name": "Men's Pale Yellow Cuffed Hem Cargo Trousers",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSS23_CSMSSCR5565_1_418b858f-1e60-4c91-9bca-1ea9689a09db.jpg?v=1689087560",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8634400086",
+                        "sku": "SSS23_CSMSSCR5565_32",
+                        "mrp": "2399.00",
+                        "sp": "2399.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8126794938",
+                "mrp": "2799.00",
+                "sp": "2799.00",
+                "name": "Campus Sutra Men's Light Blue Asymmetrical Stitch Denim Jeans",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1035_1_d3bb1ffd-aaf9-40a2-9966-b373e74d085b.jpg?v=1693846049",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Campus Sutra Men's Light Blue Asymmetrical Stitch Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1035_1_d3bb1ffd-aaf9-40a2-9966-b373e74d085b.jpg?v=1693846049",
+                        "size": [
+                            "36"
+                        ],
+                        "barcode": "8273568604",
+                        "sku": "SRM23_CSMSSJEAN1035_36",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Campus Sutra Men's Light Blue Asymmetrical Stitch Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1035_1_d3bb1ffd-aaf9-40a2-9966-b373e74d085b.jpg?v=1693846049",
+                        "size": [
+                            "34"
+                        ],
+                        "barcode": "8087446603",
+                        "sku": "SRM23_CSMSSJEAN1035_34",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Campus Sutra Men's Light Blue Asymmetrical Stitch Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SRM23_CSMSSJEAN1035_1_d3bb1ffd-aaf9-40a2-9966-b373e74d085b.jpg?v=1693846049",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8630792243",
+                        "sku": "SRM23_CSMSSJEAN1035_32",
+                        "mrp": "2799.00",
+                        "sp": "2799.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8786623560",
+                "mrp": "1799.00",
+                "sp": "1799.00",
+                "name": "Men's Solid Charcoal Stylish & Evening Trackpant",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSM24_CSMSSTP5927_1.webp?v=1705144199",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Solid Charcoal Stylish & Evening Trackpant",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSM24_CSMSSTP5927_1.webp?v=1705144199",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8788323062",
+                        "sku": "SSM24_CSMSSTP5927_L",
+                        "mrp": "1799.00",
+                        "sp": "1799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Solid Charcoal Stylish & Evening Trackpant",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSM24_CSMSSTP5927_1.webp?v=1705144199",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8812165367",
+                        "sku": "SSM24_CSMSSTP5927_XL",
+                        "mrp": "1799.00",
+                        "sp": "1799.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Solid Charcoal Stylish & Evening Trackpant",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SSM24_CSMSSTP5927_1.webp?v=1705144199",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8761422307",
+                        "sku": "SSM24_CSMSSTP5927_M",
+                        "mrp": "1799.00",
+                        "sp": "1799.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8331665336",
+                "mrp": "2199.00",
+                "sp": "2199.00",
+                "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                "division": "men",
+                "category": "bottom wear",
+                "sub_category": "joggers",
+                "product_type": "cargo",
+                "variants": [
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "30"
+                        ],
+                        "barcode": "8249686955",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_30",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8911384628",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_32",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "34"
+                        ],
+                        "barcode": "8122121789",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_34",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "36"
+                        ],
+                        "barcode": "8272865413",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_36",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "position": 4,
+        "component_type": "loyalty",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Loyalty",
+        "extra_info": null,
+        "data_type": {
+            "type": "loyalty",
+            "filters": [],
+            "barcodes": ""
+        }
+    },
+    {
+        "position": 5,
+        "component_type": "Spotlight",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "B",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Spotlight.png",
+        "section_heading": "Step into Spotlight",
+        "extra_info": null,
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 14,
+                "name": "ibizanight",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Group+3072.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Group+3072.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "trend_Night life attire"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 15,
+                "name": "tropicalescape",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Group+3073.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Group+3073.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "trend_Resort Active"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 16,
+                "name": "Stripped Stucked",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Group+3074.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Group+3074.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "pattern_Striped"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            }
+        ]
+    },
+    {
+        "position": 6,
+        "component_type": "Style Guide",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Style+Guide.png",
+        "section_heading": "Style guide",
+        "extra_info": null,
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 17,
+                "name": "Denim On Denim",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Denim+on+Denim.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Denim+on+Denim.png",
+                "product_type": "",
+                "sub_category": "Jeans",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 18,
+                "name": "Linen Live",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Linen+Live.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Linen+Live.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "fabric_Linen Blend"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            }
+        ]
+    },
+    {
+        "position": 7,
+        "component_type": "SYF",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Shop+Your+Fit.png",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Shop Your Fit",
+        "extra_info": null,
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 19,
+                "name": "Baggy OUTFIT",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Baggy+Outfit.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Baggy+Outfit.png",
+                "product_type": "Baggy",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 20,
+                "name": "Flowy OUTFIT",
+                "brand": "",
+                "division": "",
+                "category": "Dresses",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Flowy+Outfit.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Flowy+Outfit.png",
+                "product_type": "",
+                "sub_category": "Summer",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 21,
+                "name": "Structured OUTFIT",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Structured+Outfit.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Structured+Outfit.png",
+                "product_type": "",
+                "sub_category": "Jackets",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            }
+        ]
+    },
+    {
+        "position": 8,
+        "component_type": "Pallet",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Pick+by+pallet.png",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Pick by Pallet",
+        "extra_info": null,
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 22,
+                "name": "Green Love",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Green+love.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Green+love.png",
+                "product_type": "",
+                "sub_category": "Jackets",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "colorshade_Green"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 23,
+                "name": "Blue Love",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Blue.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Blue.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "colorshade_Blue"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 24,
+                "name": "Brown Love",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Brown.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Brown.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "colorshade_Brown"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 25,
+                "name": "Green",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Green.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Green.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "colorshade_Green"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            }
+        ]
+    },
+    {
+        "position": 9,
+        "component_type": "Trendsetter",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Trend+setter.png",
+        "section_heading": "Trend Setter",
+        "extra_info": null,
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 26,
+                "name": "Desk to Dine",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": null,
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Desk+to+dine.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": false,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 27,
+                "name": "crushing",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": null,
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Crushing+boe+sics.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": false,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 28,
+                "name": "summer",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": null,
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Summer+sorbet.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": false,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            }
+        ]
+    },
+    {
+        "position": 10,
+        "component_type": "Reels",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "Get Ready With Me",
+            "image": "",
+            "style": "BIU",
+            "position": "CENTER"
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Get Ready With Me",
+        "extra_info": null,
+        "data_type": {
+            "type": "reels",
+            "filters": [],
+            "barcodes": ""
+        }
+    },
+    {
+        "position": 11,
+        "component_type": "Upcoming Trends",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Upcoming+Trends.png",
+        "section_heading": "Upcoming Trends",
+        "extra_info": null,
+        "data_type": {
+            "type": "banner",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "pk": 29,
+                "name": "PP1",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Polished+Preppy.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Polished+Preppy.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "trend_Corporate Girl"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 30,
+                "name": "PP3",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Polished+Preppy.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Polished+Preppy.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "trend_Costal Girl"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 31,
+                "name": "PP4",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Polished+Preppy.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Polished+Preppy.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "trend_Barbie Core"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            },
+            {
+                "pk": 32,
+                "name": "PP5",
+                "brand": "",
+                "division": "",
+                "category": "",
+                "image_web": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Polished+Preppy.png",
+                "image_mobile": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Polished+Preppy.png",
+                "product_type": "",
+                "sub_category": "",
+                "offers": false,
+                "offer_id": "",
+                "tags": [
+                    "trend_Quite Luxury"
+                ],
+                "quick_filter_tags": [],
+                "footer": null,
+                "coupon_code": null,
+                "child_banners": [],
+                "is_clickable": true,
+                "max_price": 100000,
+                "min_price": 0,
+                "uptooff": "",
+                "redirection_url": null
+            }
+        ]
+    },
+    {
+        "position": 12,
+        "component_type": "Full Width banner",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Oversize.png",
+        "section_heading": "Trending Oversize T-shirts",
+        "extra_info": null,
+        "data_type": {
+            "type": "products",
+            "filters": [],
+            "barcodes": "8273007269,8239347450,8883106658,8948425028"
+        },
+        "data": [
+            {
+                "barcode": "8948425028",
+                "mrp": "999.00",
+                "sp": "999.00",
+                "name": "Women's Solid Rust Orange Ruched Top",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 399,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                "division": "women",
+                "category": "topwear",
+                "sub_category": "t-shirt",
+                "product_type": "regular",
+                "variants": [
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8273007269",
+                        "sku": "SS23NEW_CSWSSKT232_S",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8239347450",
+                        "sku": "SS23NEW_CSWSSKT232_M",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8883106658",
+                        "sku": "SS23NEW_CSWSSKT232_L",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8273007269",
+                "mrp": "999.00",
+                "sp": "999.00",
+                "name": "Women's Solid Rust Orange Ruched Top",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                "division": "women",
+                "category": "topwear",
+                "sub_category": "t-shirt",
+                "product_type": "regular",
+                "variants": [
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8948425028",
+                        "sku": "SS23NEW_CSWSSKT232_XL",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 399
+                    },
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8239347450",
+                        "sku": "SS23NEW_CSWSSKT232_M",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8883106658",
+                        "sku": "SS23NEW_CSWSSKT232_L",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8239347450",
+                "mrp": "999.00",
+                "sp": "999.00",
+                "name": "Women's Solid Rust Orange Ruched Top",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                "division": "women",
+                "category": "topwear",
+                "sub_category": "t-shirt",
+                "product_type": "regular",
+                "variants": [
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8948425028",
+                        "sku": "SS23NEW_CSWSSKT232_XL",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 399
+                    },
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8273007269",
+                        "sku": "SS23NEW_CSWSSKT232_S",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8883106658",
+                        "sku": "SS23NEW_CSWSSKT232_L",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8883106658",
+                "mrp": "999.00",
+                "sp": "999.00",
+                "name": "Women's Solid Rust Orange Ruched Top",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                "division": "women",
+                "category": "topwear",
+                "sub_category": "t-shirt",
+                "product_type": "regular",
+                "variants": [
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8948425028",
+                        "sku": "SS23NEW_CSWSSKT232_XL",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 399
+                    },
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8273007269",
+                        "sku": "SS23NEW_CSWSSKT232_S",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Women's Solid Rust Orange Ruched Top",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SS23NEW_CSWSSKT232_1.jpg?v=1690887673",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8239347450",
+                        "sku": "SS23NEW_CSWSSKT232_M",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "position": 13,
+        "component_type": "Full banner with Products",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Casual.png",
+        "section_heading": "Casual Collection",
+        "extra_info": null,
+        "data_type": {
+            "type": "products",
+            "filters": [],
+            "barcodes": "8121256533,8189629550,8548447604,8178711882,8141445498,8704050894,8019426086,8848048169,8871373278,8986815794"
+        },
+        "data": [
+            {
+                "barcode": "8121256533",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Circular Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 395,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8189629550",
+                        "sku": "CSMSSRT6174_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8548447604",
+                        "sku": "CSMSSRT6174_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 398
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8178711882",
+                        "sku": "CSMSSRT6174_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8189629550",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Circular Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8121256533",
+                        "sku": "CSMSSRT6174_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 395
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8548447604",
+                        "sku": "CSMSSRT6174_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 398
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8178711882",
+                        "sku": "CSMSSRT6174_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8141445498",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Zig-Zag Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8704050894",
+                        "sku": "CSMSSRT6173_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8019426086",
+                        "sku": "CSMSSRT6173_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8848048169",
+                        "sku": "CSMSSRT6173_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 399
+                    }
+                ]
+            },
+            {
+                "barcode": "8548447604",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Circular Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 398,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8121256533",
+                        "sku": "CSMSSRT6174_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 395
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8189629550",
+                        "sku": "CSMSSRT6174_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8178711882",
+                        "sku": "CSMSSRT6174_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8178711882",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Circular Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8121256533",
+                        "sku": "CSMSSRT6174_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 395
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8189629550",
+                        "sku": "CSMSSRT6174_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8548447604",
+                        "sku": "CSMSSRT6174_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 398
+                    }
+                ]
+            },
+            {
+                "barcode": "8704050894",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Zig-Zag Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8141445498",
+                        "sku": "CSMSSRT6173_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8019426086",
+                        "sku": "CSMSSRT6173_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8848048169",
+                        "sku": "CSMSSRT6173_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 399
+                    }
+                ]
+            },
+            {
+                "barcode": "8019426086",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Zig-Zag Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8141445498",
+                        "sku": "CSMSSRT6173_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8704050894",
+                        "sku": "CSMSSRT6173_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8848048169",
+                        "sku": "CSMSSRT6173_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 399
+                    }
+                ]
+            },
+            {
+                "barcode": "8848048169",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Zig-Zag Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 399,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8141445498",
+                        "sku": "CSMSSRT6173_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8704050894",
+                        "sku": "CSMSSRT6173_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Zig-Zag Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6173_1-3005_b29b0e9d-cdf7-4f62-ba9f-aafca4bfc307.webp?v=1717141998",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8019426086",
+                        "sku": "CSMSSRT6173_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8871373278",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Creased-Check Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6144_1-3005_76a67ac3-891b-4162-86ce-28a3b727b33a.webp?v=1717141309",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Creased-Check Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6144_1-3005_76a67ac3-891b-4162-86ce-28a3b727b33a.webp?v=1717141309",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8561519415",
+                        "sku": "CSMSSRT6144_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Creased-Check Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6144_1-3005_76a67ac3-891b-4162-86ce-28a3b727b33a.webp?v=1717141309",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8986815794",
+                        "sku": "CSMSSRT6144_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Creased-Check Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6144_1-3005_76a67ac3-891b-4162-86ce-28a3b727b33a.webp?v=1717141309",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8148338646",
+                        "sku": "CSMSSRT6144_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8986815794",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Creased-Check Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6144_1-3005_76a67ac3-891b-4162-86ce-28a3b727b33a.webp?v=1717141309",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Creased-Check Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6144_1-3005_76a67ac3-891b-4162-86ce-28a3b727b33a.webp?v=1717141309",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8561519415",
+                        "sku": "CSMSSRT6144_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Creased-Check Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6144_1-3005_76a67ac3-891b-4162-86ce-28a3b727b33a.webp?v=1717141309",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8871373278",
+                        "sku": "CSMSSRT6144_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Creased-Check Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6144_1-3005_76a67ac3-891b-4162-86ce-28a3b727b33a.webp?v=1717141309",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8148338646",
+                        "sku": "CSMSSRT6144_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "position": 14,
+        "component_type": "Brands",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/Trending+brands.png",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Trending Brands",
+        "extra_info": null,
+        "data_type": {
+            "type": "brands",
+            "brands": "Campus Sutra,Chambor,Plush,HRX,Pee Safe,United Colors of Benetton,Desi Nutri",
+            "filters": [],
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "name": "Campus Sutra",
+                "image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/CampusSutra_logo.png",
+                "quick_filter_tags": [
+                    "brand_Campus Sutra"
+                ]
+            },
+            {
+                "name": "Chambor",
+                "image": "https://bnbassetsqa.s3.ap-south-1.amazonaws.com/Chambor_logo.jpg",
+                "quick_filter_tags": [
+                    "brand_Chambor"
+                ]
+            },
+            {
+                "name": "Plush",
+                "image": "https://bnbassetsqa.s3.ap-south-1.amazonaws.com/Plush.jpg",
+                "quick_filter_tags": [
+                    "brand_Plush"
+                ]
+            },
+            {
+                "name": "HRX",
+                "image": "https://bnbassetsqa.s3.ap-south-1.amazonaws.com/HRX_1.jpg",
+                "quick_filter_tags": [
+                    "brand_HRX"
+                ]
+            },
+            {
+                "name": "Pee Safe",
+                "image": "https://bnbassetsqa.s3.ap-south-1.amazonaws.com/pee+safe.jpg",
+                "quick_filter_tags": [
+                    "brand_Pee Safe"
+                ]
+            },
+            {
+                "name": "United Colors of Benetton",
+                "image": "https://bnbassetsqa.s3.ap-south-1.amazonaws.com/UCB.jpg",
+                "quick_filter_tags": [
+                    "brand_United Colors of Benetton"
+                ]
+            },
+            {
+                "name": "Desi Nutri",
+                "image": "https://bnbassetsqa.s3.ap-south-1.amazonaws.com/Website%20Images-25.jpg",
+                "quick_filter_tags": [
+                    "brand_Desi Nutri"
+                ]
+            }
+        ]
+    },
+    {
+        "position": 15,
+        "component_type": "creator",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "Top Influencers",
+            "image": "",
+            "style": "BIU",
+            "position": "Left"
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "",
+        "section_heading": "Top Influencers",
+        "extra_info": null,
+        "data_type": {
+            "type": "creator",
+            "brands": "",
+            "filters": [],
+            "handles": "omswami,Hhhggggggxsvwgeff",
+            "barcodes": ""
+        },
+        "data": [
+            {
+                "handle": "omswami",
+                "display_name": "Om Prakash",
+                "bio": "Test Profile",
+                "area_of_interest": [
+                    "art",
+                    "games",
+                    "music",
+                    "sports"
+                ],
+                "dp": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/user/profile/7506112002.jpg"
+            },
+            {
+                "handle": "Hhhggggggxsvwgeff",
+                "display_name": "GouravG ty Jhangikhel 123",
+                "bio": "Hhhggggggxsvwgeff",
+                "area_of_interest": [],
+                "dp": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/user/profile/8440072307.jpeg"
+            }
+        ]
+    },
+    {
+        "position": 16,
+        "component_type": "celebrity_banner",
+        "header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "sub_header_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "footer_config": {
+            "icon": "icon_url",
+            "text": "",
+            "image": "",
+            "style": "BIU",
+            "position": ""
+        },
+        "background_image": "https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/Homepage/celebrity.png",
+        "section_heading": "Celebrity",
+        "extra_info": null,
+        "data_type": {
+            "type": "products",
+            "brands": "",
+            "filters": [],
+            "barcodes": "8122121789,8272865413,8121256533,8189629550,8548447604,8178711882,8501668477,8201325853,8205516501,8563605616"
+        },
+        "data": [
+            {
+                "barcode": "8121256533",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Circular Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 395,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8189629550",
+                        "sku": "CSMSSRT6174_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8548447604",
+                        "sku": "CSMSSRT6174_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 398
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8178711882",
+                        "sku": "CSMSSRT6174_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8189629550",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Circular Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8121256533",
+                        "sku": "CSMSSRT6174_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 395
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8548447604",
+                        "sku": "CSMSSRT6174_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 398
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8178711882",
+                        "sku": "CSMSSRT6174_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8548447604",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Circular Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 398,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8121256533",
+                        "sku": "CSMSSRT6174_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 395
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8189629550",
+                        "sku": "CSMSSRT6174_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8178711882",
+                        "sku": "CSMSSRT6174_XL",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8178711882",
+                "mrp": "1899.00",
+                "sp": "1899.00",
+                "name": "Embroidered Circular Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8121256533",
+                        "sku": "CSMSSRT6174_S",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 395
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8189629550",
+                        "sku": "CSMSSRT6174_M",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Embroidered Circular Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/files/CSMSSRT6174_1-3005_2ed0e49d-d1a6-4bc9-9787-a2a71259a590.webp?v=1717142035",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8548447604",
+                        "sku": "CSMSSRT6174_L",
+                        "mrp": "1899.00",
+                        "sp": "1899.00",
+                        "inventory_count": 398
+                    }
+                ]
+            },
+            {
+                "barcode": "8205516501",
+                "mrp": "999.00",
+                "sp": "999.00",
+                "name": "Ombre Polo Activewear T-Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8201325853",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_M",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8501668477",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_S",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8563605616",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_XL",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8122121789",
+                "mrp": "2199.00",
+                "sp": "2199.00",
+                "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "30"
+                        ],
+                        "barcode": "8249686955",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_30",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8911384628",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_32",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "36"
+                        ],
+                        "barcode": "8272865413",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_36",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "28"
+                        ],
+                        "barcode": "8331665336",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_28",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8201325853",
+                "mrp": "999.00",
+                "sp": "999.00",
+                "name": "Ombre Polo Activewear T-Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8205516501",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_L",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8501668477",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_S",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8563605616",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_XL",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8501668477",
+                "mrp": "999.00",
+                "sp": "999.00",
+                "name": "Ombre Polo Activewear T-Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8205516501",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_L",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8201325853",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_M",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "xl"
+                        ],
+                        "barcode": "8563605616",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_XL",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8272865413",
+                "mrp": "2199.00",
+                "sp": "2199.00",
+                "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "30"
+                        ],
+                        "barcode": "8249686955",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_30",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "32"
+                        ],
+                        "barcode": "8911384628",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_32",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "34"
+                        ],
+                        "barcode": "8122121789",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_34",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Men's Dark Blue Rolled Hem Denim Jeans",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23JN_DNFAD_M_PLN_BU_1_921865f3-fc45-4bc8-b390-152d80b5f216.jpg?v=1678197951",
+                        "size": [
+                            "28"
+                        ],
+                        "barcode": "8331665336",
+                        "sku": "SSUM23_JN_DNFAD_M_PLN_BU_28",
+                        "mrp": "2199.00",
+                        "sp": "2199.00",
+                        "inventory_count": 400
+                    }
+                ]
+            },
+            {
+                "barcode": "8563605616",
+                "mrp": "999.00",
+                "sp": "999.00",
+                "name": "Ombre Polo Activewear T-Shirt",
+                "brand": "Campus Sutra",
+                "product_feedback": null,
+                "is_wish_listed": false,
+                "is_try_and_buy": true,
+                "trends": null,
+                "styles": null,
+                "inventory_count": 400,
+                "image": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                "division": "men",
+                "category": "topwear",
+                "sub_category": "shirt",
+                "product_type": "casual",
+                "variants": [
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "l"
+                        ],
+                        "barcode": "8205516501",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_L",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "m"
+                        ],
+                        "barcode": "8201325853",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_M",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    },
+                    {
+                        "name": "Ombre Polo Activewear T-Shirt",
+                        "variant_type": "Size",
+                        "color_code_link": "https://cdn.shopify.com/s/files/1/0457/8246/6720/products/SUM23_JRSPNHS_M_PLN_RDBL_1_8e2608b5-c856-4d1d-975a-6a49d04c13c4.jpg?v=1678199155",
+                        "size": [
+                            "s"
+                        ],
+                        "barcode": "8501668477",
+                        "sku": "SSUM23_JRSPNHS_M_PLN_RDBL_S",
+                        "mrp": "999.00",
+                        "sp": "999.00",
+                        "inventory_count": 400
+                    }
+                ]
+            }
+        ]
+    }
+]
