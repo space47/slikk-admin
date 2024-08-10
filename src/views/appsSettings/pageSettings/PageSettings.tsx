@@ -151,6 +151,7 @@ const PageSettings = () => {
     }
     const handleRemoveButton = (row: WebType) => {
         setData((prev) => prev.filter((item) => item !== row))
+        // DUMMY DELETE.........................API CHAHIYE MEREKO
     }
 
     useEffect(() => {

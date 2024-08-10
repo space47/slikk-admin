@@ -10,6 +10,8 @@ import Input from '@/components/ui/Input'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Dropdown, Button } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
+import Select from '@/components/ui/Select'
 
 interface DataType {
     type: string
@@ -308,12 +310,35 @@ const PageAddModal: React.FC<modalProps> = ({
                                     // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="component_type"
-                                        placeholder="Place your Section heading"
-                                        component={Input}
-                                    />
+                                    <Field name="component_type">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            const componentOptions =
+                                                COMPONENT_CATEGORY_TYPES
+
+                                            return (
+                                                <Select
+                                                    field={field}
+                                                    form={form}
+                                                    options={componentOptions}
+                                                    value={componentOptions.find(
+                                                        (option) =>
+                                                            option.value ===
+                                                            field.value,
+                                                    )}
+                                                    onChange={(option) =>
+                                                        form.setFieldValue(
+                                                            field.name,
+                                                            option?.value,
+                                                        )
+                                                    }
+                                                    onKeyDown={(e) =>
+                                                        e.key === 'Enter' &&
+                                                        e.preventDefault()
+                                                    }
+                                                />
+                                            )
+                                        }}
+                                    </Field>
                                 </FormItem>
 
                                 {/* image */}
