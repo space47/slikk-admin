@@ -54,7 +54,7 @@ interface permission {
 //     // document: Yup.string().nullable(),
 // })
 
-const UserAdd = () => {
+const AddUser = () => {
     const [getPermission, setGetPermission] = useState<permission[]>()
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
     const [addedPermissions, setAddedPermissions] = useState<
@@ -125,6 +125,7 @@ const UserAdd = () => {
     const handleAddUser = async (data: FormModel) => {
         const formdata = {
             ...data,
+            permission: data.permission,
         }
         try {
             const response = await axioisInstance.post(
@@ -161,7 +162,7 @@ const UserAdd = () => {
         }
 
         try {
-            const response = await axioisInstance.patch(
+            const response = await axioisInstance.post(
                 `company/user/permission/${values.mobile}`,
                 formData,
             )
@@ -458,4 +459,4 @@ const UserAdd = () => {
     )
 }
 
-export default UserAdd
+export default AddUser

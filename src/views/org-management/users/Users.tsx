@@ -14,6 +14,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 interface User {
     first_name: string
@@ -43,16 +45,21 @@ const pageSizeOptions = [
 
 const Seller = () => {
     const [data, setData] = useState<User[]>([])
-    const [totalData, setTotalData] = useState(0)
+    const [totalData, setTotalData] = useState()
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+        (store) => store.company.currCompany,
+    )
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(`company/1/users`)
+            const response = await axiosInstance.get(
+                `company/${selectedCompany.id}/users`,
+            )
             const data = response.data.data
-            const total = response.data.total
+            const total = response.data.data.length
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -60,14 +67,16 @@ const Seller = () => {
         }
     }
 
+    console.log('ssdsds', totalData)
+
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize])
+    }, [page, pageSize, selectedCompany.id])
 
     const navigate = useNavigate()
 
-    const handleActionClick = (user: User) => {
-        console.log('clicked')
+    const handleActionClick = (mobile: string) => {
+        navigate(`/app/users/edit/${mobile}`)
     }
 
     const columns = useMemo<ColumnDef<User>[]>(
@@ -103,10 +112,12 @@ const Seller = () => {
                 ),
             },
             {
-                header: 'Action',
-                accessorKey: 'action',
+                header: 'Edit',
+                accessorKey: '',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
+                    <Button
+                        onClick={() => handleActionClick(row.original.mobile)}
+                    >
                         EDIT
                     </Button>
                 ),
@@ -121,7 +132,7 @@ const Seller = () => {
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
+        pageCount: Math.ceil(totalData ?? 0 / pageSize),
         manualPagination: true,
         state: {
             pagination: {
@@ -146,7 +157,7 @@ const Seller = () => {
     }
 
     const handleSeller = () => {
-        navigate('/app/sellers/addnew')
+        navigate('/app/users/addNew')
     }
 
     return (

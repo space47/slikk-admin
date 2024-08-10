@@ -153,6 +153,22 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/org-management/users/Users')), //p3
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsOrgManagement.users',
+        path: `${APP_PREFIX_PATH}/users/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/users/addUsers/AddUser'),
+        ), //p3
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.users',
+        path: `${APP_PREFIX_PATH}/users/edit/:mobile`,
+        component: lazy(
+            () => import('@/views/org-management/users/editUsers/EditUser'),
+        ), //p3
+        authority: [ADMIN, USER],
+    },
 
     //   Brand dashBoared.........................................................................................
 
