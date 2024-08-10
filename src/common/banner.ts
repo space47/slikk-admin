@@ -62,4 +62,10 @@ export const COMPONENT_CATEGORY_TYPES = [
     { label: 'celebrity_banner', value: 'celebrity_banner' },
     { label: 'creator', value: 'creator' },
     { label: 'Login Banner', value: 'Login Banner' },
+    { label: 'Offer Banner', value: 'Offer Banner' },
+    { label: 'Ribbon', value: 'Ribbon' },
+    { label: 'Banner', value: 'Banner' },
+    { label: 'Big Ribbon', value: 'Big Ribbon' },
+    { label: 'Short Ribbon', value: 'Short Ribbon' },
+    
 ]
