@@ -129,6 +129,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
             const data = {
                 ...banner,
+                page : selectedPage.value,
                 section_heading : selectedSection?.section_heading,
                 image_web : webImageUpload,
                 image_mobile : mobileImageUpload,
