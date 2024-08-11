@@ -13,10 +13,10 @@ import Infor from '../template/VerticalMenuContent/Infor'
 const HeaderActionsStart = () => {
     return (
         <>
-            <div className="flex ">
+            <div className="flex items-center ">
                 <MobileNav />
                 <SideNavToggle />
-                <Search />
+                {/* <Search /> */}
                 <div className="text-xl ">
                     <Infor />
                 </div>
@@ -28,9 +28,9 @@ const HeaderActionsStart = () => {
 const HeaderActionsEnd = () => {
     return (
         <>
-            <LanguageSelector />
+            {/* <LanguageSelector />
             <Notification />
-            <SidePanel />
+            <SidePanel /> */}
             <UserDropdown hoverable={false} />
         </>
     )
