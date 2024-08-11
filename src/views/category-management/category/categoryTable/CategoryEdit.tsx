@@ -271,6 +271,23 @@ const CategoryEdit = () => {
                                         }}
                                     />
                                 </FormItem>
+                                <FormItem
+                                    asterisk
+                                    label="Category Title"
+                                    invalid={errors.title && touched.title}
+                                    errorMessage={errors.title}
+                                    className="col-span-1 w-1/2"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="title"
+                                        component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    />
+                                </FormItem>
 
                                 <FormItem
                                     asterisk
