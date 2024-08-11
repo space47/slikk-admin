@@ -12,10 +12,9 @@ import type { FieldProps } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { Card, notification } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { IoMdCloseCircle } from 'react-icons/io'
 
 type FormModel = {
     first_name: string
@@ -23,7 +22,7 @@ type FormModel = {
     mobile: string
     email: string
     business_email: string
-    permission: permission[]
+    permissions: []
 }
 
 interface permission {
@@ -54,24 +53,28 @@ interface permission {
 //     // document: Yup.string().nullable(),
 // })
 
-const UserAdd = () => {
+const UserEdit = () => {
+    const [userDatas, setUserDatas] = useState<FormModel[]>([])
     const [getPermission, setGetPermission] = useState<permission[]>()
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
-    const [addedPermissions, setAddedPermissions] = useState<
-        { id: number; name: string }[]
-    >([])
+    const [addedPermissions, setAddedPermissions] = useState<permission[]>([])
 
-    const [searchInput, setSearchInput] = useState('')
+    const { mobile } = useParams()
 
-    const [addInput, setAddInput] = useState('')
+    const [initialValue, setInitialValue] = useState<FormModel>({
+        first_name: '',
+        last_name: '',
+        mobile: '',
+        email: '',
+        business_email: '',
+        permissions: [],
+    })
+
+    const navigate = useNavigate()
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
     )
-
-    console.log('idddddddd', selectedCompany)
-
-    const navigate = useNavigate()
 
     const handlePermissionSelect = (id: number) => {
         setSelectedPermissions((prevSelected) =>
@@ -92,6 +95,7 @@ const UserAdd = () => {
                 description: 'Permission already added',
             })
         }
+
         const selected = getPermission?.filter(
             (perm) =>
                 selectedPermissions.includes(perm.id) &&
@@ -122,12 +126,35 @@ const UserAdd = () => {
         fetchData()
     }, [])
 
+    const fetchUser = async () => {
+        try {
+            const response = await axioisInstance.get(
+                `company/${selectedCompany.id}/users?mobile=${mobile}`,
+            )
+
+            const userData = response.data
+            const userPermissions = response.data.user_permissions
+
+            // console.log('sssssssss', userPermissions)
+            setUserDatas(userData)
+            setAddedPermissions(userPermissions)
+            console.log('uuuuuuuuuuuuuuuu', userData)
+            console.log('ttttttttttt', userDatas)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchUser()
+    }, [])
+
     const handleAddUser = async (data: FormModel) => {
         const formdata = {
             ...data,
         }
         try {
-            const response = await axioisInstance.post(
+            const response = await axioisInstance.patch(
                 `company/${selectedCompany.id}/users/add`,
                 formdata,
             )
@@ -150,20 +177,6 @@ const UserAdd = () => {
     }
 
     const handleSubmit = async (values: FormModel) => {
-        const bodyData = {
-            ...values,
-        }
-        console.log('body', bodyData)
-        try {
-            const response = await axioisInstance.post(
-                `company/${selectedCompany.id}/users/add`,
-                bodyData,
-            )
-            console.log('response of add users', response)
-        } catch (error) {
-            console.log(error)
-        }
-
         const userdetails = await handleAddUser(values)
         if (userdetails === 'Error') {
             return
@@ -197,30 +210,6 @@ const UserAdd = () => {
         }
     }
 
-    const initialValue: FormModel = {
-        first_name: '',
-        last_name: '',
-        mobile: '',
-        email: '',
-        business_email: '',
-        permission: [],
-    }
-
-    const filteredPermission = getPermission?.filter((item) =>
-        item.name.toLowerCase().includes(searchInput.toLowerCase()),
-    )
-
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchInput(e.target.value)
-    }
-    const filteredAddPermission = addedPermissions?.filter((item) =>
-        item.name.toLowerCase().includes(addInput.toLowerCase()),
-    )
-
-    const handleAddPerm = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAddInput(e.target.value)
-    }
-
     return (
         <div>
             <Formik
@@ -231,10 +220,11 @@ const UserAdd = () => {
             >
                 {({ values, touched, errors, resetForm }) => (
                     <Form className="w-full">
-                        <div className="text-xl mb-10 font-semibold">
-                            USER DETAILS
+                        <div className="text-xl mb-10 font-bold">
+                            EDIT USER DETAILS
                         </div>
                         <FormContainer>
+                            {/* Form Fields */}
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     asterisk
@@ -275,8 +265,8 @@ const UserAdd = () => {
                                     />
                                 </FormItem>
                             </FormContainer>
-                            {/* Mobile email work email */}
 
+                            {/* Mobile, Email, Business Email */}
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     asterisk
@@ -334,13 +324,14 @@ const UserAdd = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            <div className="text-xl font-semibold">
+                            <div className="text-xl font-bold">
                                 USER PERMISSIONS
                             </div>
                             <br />
 
+                            {/* Permissions Section */}
                             <FormContainer className="">
-                                <FormContainer className="flex justify-between">
+                                <FormContainer className="flex justify-around">
                                     {/* All Permissions */}
                                     <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                                         <div className="sticky top-0 z-10 bg-white">
@@ -349,12 +340,6 @@ const UserAdd = () => {
                                                     type="text"
                                                     className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
                                                     placeholder="Search Permissions"
-                                                    value={searchInput}
-                                                    onChange={handleSearch}
-                                                    onKeyDown={(e: any) =>
-                                                        e.key === 'Enter' &&
-                                                        e.preventDefault()
-                                                    }
                                                 />
                                             </div>
                                             <label
@@ -365,7 +350,7 @@ const UserAdd = () => {
                                             </label>
                                         </div>
                                         <div className="">
-                                            {filteredPermission?.map((item) => (
+                                            {getPermission?.map((item) => (
                                                 <div
                                                     key={item.id}
                                                     className="flex flex-col"
@@ -409,8 +394,6 @@ const UserAdd = () => {
                                             <div className="mb-3 bg-white">
                                                 <input
                                                     type="text"
-                                                    value={addInput}
-                                                    onChange={handleAddPerm}
                                                     className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
                                                     placeholder="Search Permissions"
                                                 />
@@ -423,14 +406,14 @@ const UserAdd = () => {
                                             </label>
                                         </div>
                                         <div className="">
-                                            {filteredAddPermission.map(
-                                                (item) => (
+                                            {addedPermissions?.map(
+                                                (item, key) => (
                                                     <div
-                                                        key={item.id}
+                                                        key={key}
                                                         className="flex flex-col"
                                                     >
                                                         <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                                            <span>
+                                                            <span className="text-black">
                                                                 {item.name}
                                                             </span>
                                                             <button
@@ -441,7 +424,7 @@ const UserAdd = () => {
                                                                     )
                                                                 }
                                                             >
-                                                                <IoMdCloseCircle className="text-red-400" />
+                                                                Remove
                                                             </button>
                                                         </div>
                                                     </div>
@@ -452,7 +435,8 @@ const UserAdd = () => {
                                 </FormContainer>
                             </FormContainer>
 
-                            <FormItem className="mt-10 ">
+                            {/* Submit & Reset Buttons */}
+                            <FormItem className="mt-10 flex justify-center gap-4">
                                 <Button
                                     type="reset"
                                     className="ltr:mr-2 rtl:ml-2"
@@ -472,4 +456,4 @@ const UserAdd = () => {
     )
 }
 
-export default UserAdd
+export default UserEdit

@@ -64,7 +64,7 @@ const Seller = () => {
                 `company/${selectedCompany.id}/users`,
             )
             const data = response.data.data
-            const total = response.data.total
+            const total = response.data.data.length
             setData(data)
             setTotalData(total)
         } catch (error) {

@@ -337,30 +337,30 @@ const AddProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="About">
+                                {/* <FormItem label="About">
                                     <Field
                                         type="text"
                                         name="about"
                                         placeholder="Enter About"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Benefits">
+                                </FormItem> */}
+                                {/* <FormItem label="Benefits">
                                     <Field
                                         type="text"
                                         name="benefits"
                                         placeholder="Enter Benefits"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Includes">
+                                </FormItem> */}
+                                {/* <FormItem label="Includes">
                                     <Field
                                         type="text"
                                         name="includes"
                                         placeholder="Enter Includes"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label=" Other Product Info">
                                     <Field
                                         type="text"
@@ -419,14 +419,14 @@ const AddProduct = () => {
                                     />
                                 </FormItem>
 
-                                <FormItem label="Usage">
+                                {/* <FormItem label="Usage">
                                     <Field
                                         type="text"
                                         name="usage"
                                         placeholder="Enter Usage"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label="Imported By/Manufactured By">
                                     <Field
                                         type="text"
@@ -435,14 +435,14 @@ const AddProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label=" Shelf Life">
+                                {/* <FormItem label=" Shelf Life">
                                     <Field
                                         type="number"
                                         name="shelf_life"
                                         placeholder="Enter Shelf Life"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 {/* <FormItem label="Height">
                                     <Field
                                         type="number"
@@ -749,22 +749,22 @@ const AddProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Formulation">
+                                {/* <FormItem label="Formulation">
                                     <Field
                                         type="text"
                                         name="formulation"
                                         placeholder="Enter Formulation"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Hair Type">
+                                </FormItem> */}
+                                {/* <FormItem label="Hair Type">
                                     <Field
                                         type="text"
                                         name="hairType"
                                         placeholder="Enter Hair Type"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label="Gender">
                                     <Field
                                         type="text"
@@ -773,47 +773,47 @@ const AddProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Finish">
+                                {/* <FormItem label="Finish">
                                     <Field
                                         type="text"
                                         name="finish"
                                         placeholder="Enter Finish"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Skin Tone">
+                                </FormItem> */}
+                                {/* <FormItem label="Skin Tone">
                                     <Field
                                         type="text"
                                         name="skintone"
                                         placeholder="Enter Skin Tone"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Coverage">
+                                </FormItem> */}
+                                {/* <FormItem label="Coverage">
                                     <Field
                                         type="text"
                                         name="coverage"
                                         placeholder="Enter Coverage"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Sun Protection">
+                                </FormItem> */}
+                                {/* <FormItem label="Sun Protection">
                                     <Field
                                         type="text"
                                         name="sunprotection"
                                         placeholder="Enter Sun Protection"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
 
-                                <FormItem label="Conscious">
+                                {/* <FormItem label="Conscious">
                                     <Field
                                         type="text"
                                         name="concious"
                                         placeholder="Enter Conscious"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label=" Product Hex Code">
                                     <Field
                                         type="text"
@@ -838,47 +838,47 @@ const AddProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Ingredients">
+                                {/* <FormItem label="Ingredients">
                                     <Field
                                         type="text"
                                         name="ingrediants"
                                         placeholder="Enter Ingredients"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label=" Veg/Non-Veg">
+                                </FormItem> */}
+                                {/* <FormItem label=" Veg/Non-Veg">
                                     <Field
                                         type="text"
                                         name="vegnonveg"
                                         placeholder="Enter Veg/Non-Veg"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Ingredients Preferences">
+                                </FormItem> */}
+                                {/* <FormItem label="Ingredients Preferences">
                                     <Field
                                         type="text"
                                         name="ingrediantsPreferences"
                                         placeholder="Enter Ingredients Preferences"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Concern">
+                                </FormItem> */}
+                                {/* <FormItem label="Concern">
                                     <Field
                                         type="text"
                                         name="concern"
                                         placeholder="Enter Concern"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Recommendation For">
+                                </FormItem> */}
+                                {/* <FormItem label="Recommendation For">
                                     <Field
                                         type="text"
                                         name="recommendationfor"
                                         placeholder="Enter Recommendation For"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Scent Top Notes">
+                                </FormItem> */}
+                                {/* <FormItem label="Scent Top Notes">
                                     <Field
                                         type="text"
                                         name="scenttopnotes"
@@ -901,7 +901,7 @@ const AddProduct = () => {
                                         placeholder="Enter Scent Base Notes"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label="Origin Country">
                                     <Field
                                         type="text"
@@ -959,7 +959,7 @@ const AddProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Risk Type">
+                                <FormItem label="Rise Type">
                                     <Field
                                         type="text"
                                         name="risetype"
