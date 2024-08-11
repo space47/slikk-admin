@@ -66,7 +66,7 @@ const OrderList = () => {
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
     const [dropdownStatus, setDropdownStatus] = useState<
         Record<string, string>
@@ -79,12 +79,13 @@ const OrderList = () => {
         to: string,
     ) => {
         try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
                 dropdownStatus?.value === 'ALL'
                     ? ''
                     : `&status=${dropdownStatus?.value}`
             const response = await axiosInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${to}${status}`,
+                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
             )
 
             const ordersData = response.data?.data.results
@@ -261,9 +262,9 @@ const OrderList = () => {
                                     <TbCalendarStats className="text-xl" />
                                 }
                                 defaultValue={new Date()}
-                                value={new Date(to)}
+                                value={moment(to).toDate()}
                                 onChange={handleToChange}
-                                minDate={moment(from).toDate()}
+                                minDate={moment(from).add(1, 'day').toDate()}
                             />
                         </div>
                     </div>

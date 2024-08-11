@@ -727,7 +727,7 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
         meta: {
-            layout: 'blank',
+            layout: 'simple',
             pageContainerType: 'gutterless',
         },
     },
@@ -785,6 +785,10 @@ const appsRoute: Routes = [
             () => import('@/views/slikkLogistics/riderTracking/RiderTracking'),
         ),
         authority: [ADMIN, USER],
+        // meta: {
+        //     layout: 'simple',
+        //     pageContainerType: 'gutterless',
+        // },
     },
 ]
 

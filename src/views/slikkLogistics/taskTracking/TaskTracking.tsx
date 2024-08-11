@@ -1,51 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
-
-type RunnerDetail = {
-    name: string
-    mobile: string
-    photo: string
-}
-
-type LocationDetails = {
-    name: string
-    address: string
-    landmark: string
-    latitude: number
-    longitude: number
-    contact_number: string
-}
-
-type UserDetails = {
-    credits_key: string
-    contact_number: string
-}
-
-type ClientOrderDetails = {
-    order_id: string
-    is_prepaid: boolean
-    cash_to_be_collected: number
-    delivery_charge_to_be_collected_from_customer: boolean
-}
-
-type TaskDetails = {
-    task_id: string
-    status: string
-    runner_latitude: number
-    runner_longitude: number
-    runner_detail: RunnerDetail
-    pickup_details: LocationDetails
-    drop_details: LocationDetails
-    user_details: UserDetails
-    client_order_details: ClientOrderDetails
-    client_order_id: string
-}
+// import Button from '@/components/ui/Button'
+import TrackModal from './TrackModal'
+import { MdAssignment } from 'react-icons/md'
+import { TaskDetails } from './TaskCommonType'
 
 type Option = {
     value: number
@@ -67,12 +30,15 @@ const TaskTracking = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [showAssignModal, setShowAssignModal] = useState(false)
+    const [storeTaskId, setStoreTaskId] = useState()
 
     const fetchData = async () => {
         try {
             const response = await axiosInstance.get('logistic/slikk/task')
             const data = response.data.data.results
             const total = data.count
+
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -101,6 +67,21 @@ const TaskTracking = () => {
     )
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
+    // const navigate = useNavigate()
+
+    const handleAssignClick = (task_id: any) => {
+        console.log('Task Id', task_id)
+        setShowAssignModal(true)
+        setStoreTaskId(task_id)
+    }
+
+    // const assignTask = () => {
+    //     //iha pe api call karunga
+    // }
+    const handleCloseModal = () => {
+        setShowAssignModal(false)
+    }
+
     const columns = [
         { header: 'Task ID', accessor: 'task_id' },
         { header: 'Status', accessor: 'status' },
@@ -109,14 +90,13 @@ const TaskTracking = () => {
         {
             header: 'Runner Name',
             accessor: 'runner_detail.name',
-            format: (_: any, row: TaskDetails) =>
-                row.runner_detail?.name || 'N/A',
+            format: (_: any, row: TaskDetails) => row.runner_detail?.name || '',
         },
         {
             header: 'Runner Mobile',
             accessor: 'runner_detail.mobile',
             format: (_: any, row: TaskDetails) =>
-                row.runner_detail?.mobile || 'N/A',
+                row.runner_detail?.mobile || '',
         },
         {
             header: 'Runner Photo',
@@ -129,98 +109,97 @@ const TaskTracking = () => {
                         width="50"
                     />
                 ) : (
-                    'N/A'
+                    ''
                 ),
         },
         {
             header: 'Pickup Name',
             accessor: 'pickup_details.name',
             format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.name || 'N/A',
+                row.pickup_details?.name || '',
         },
         {
             header: 'Pickup Address',
             accessor: 'pickup_details.address',
             format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.address || 'N/A',
+                row.pickup_details?.address || '',
         },
         {
             header: 'Pickup Landmark',
             accessor: 'pickup_details.landmark',
             format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.landmark || 'N/A',
+                row.pickup_details?.landmark || '',
         },
         {
             header: 'Pickup Latitude',
             accessor: 'pickup_details.latitude',
             format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.latitude || 'N/A',
+                row.pickup_details?.latitude || '',
         },
         {
             header: 'Pickup Longitude',
             accessor: 'pickup_details.longitude',
             format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.longitude || 'N/A',
+                row.pickup_details?.longitude || '',
         },
         {
             header: 'Pickup Contact Number',
             accessor: 'pickup_details.contact_number',
             format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.contact_number || 'N/A',
+                row.pickup_details?.contact_number || '',
         },
         {
             header: 'Drop Name',
             accessor: 'drop_details.name',
-            format: (_: any, row: TaskDetails) =>
-                row.drop_details?.name || 'N/A',
+            format: (_: any, row: TaskDetails) => row.drop_details?.name || '',
         },
         {
             header: 'Drop Address',
             accessor: 'drop_details.address',
             format: (_: any, row: TaskDetails) =>
-                row.drop_details?.address || 'N/A',
+                row.drop_details?.address || '',
         },
         {
             header: 'Drop Landmark',
             accessor: 'drop_details.landmark',
             format: (_: any, row: TaskDetails) =>
-                row.drop_details?.landmark || 'N/A',
+                row.drop_details?.landmark || '',
         },
         {
             header: 'Drop Latitude',
             accessor: 'drop_details.latitude',
             format: (_: any, row: TaskDetails) =>
-                row.drop_details?.latitude || 'N/A',
+                row.drop_details?.latitude || '',
         },
         {
             header: 'Drop Longitude',
             accessor: 'drop_details.longitude',
             format: (_: any, row: TaskDetails) =>
-                row.drop_details?.longitude || 'N/A',
+                row.drop_details?.longitude || '',
         },
         {
             header: 'Drop Contact Number',
             accessor: 'drop_details.contact_number',
             format: (_: any, row: TaskDetails) =>
-                row.drop_details?.contact_number || 'N/A',
+                row.drop_details?.contact_number || '',
         },
         {
             header: 'User Credits Key',
             accessor: 'user_details.credits_key',
             format: (_: any, row: TaskDetails) =>
-                row.user_details?.credits_key || 'N/A',
+                row.user_details?.credits_key || '',
         },
         {
             header: 'User Contact Number',
             accessor: 'user_details.contact_number',
             format: (_: any, row: TaskDetails) =>
-                row.user_details?.contact_number || 'N/A',
+                row.user_details?.contact_number || '',
         },
         {
             header: 'Order ID',
             accessor: 'client_order_details.order_id',
             format: (_: any, row: TaskDetails) =>
-                row.client_order_details?.order_id || 'N/A',
+                row.client_order_details?.order_id || '',
         },
         {
             header: 'Is Prepaid',
@@ -232,7 +211,7 @@ const TaskTracking = () => {
             header: 'Cash to be Collected',
             accessor: 'client_order_details.cash_to_be_collected',
             format: (_: any, row: TaskDetails) =>
-                row.client_order_details?.cash_to_be_collected || 'N/A',
+                row.client_order_details?.cash_to_be_collected || '',
         },
         {
             header: 'Delivery Charge from Customer',
@@ -247,26 +226,22 @@ const TaskTracking = () => {
         {
             header: 'Client Order ID',
             accessor: 'client_order_id',
-            format: (_: any, row: TaskDetails) => row.client_order_id || 'N/A',
+            format: (_: any, row: TaskDetails) => row.client_order_id || '',
         },
         {
             header: 'Action',
             accessor: 'task_id',
-            format: (value: any) => (
-                <Button onClick={() => handleActionClick(value)}>Assign</Button>
-            ),
+            format: (value: any, row: TaskDetails) =>
+                row.status == 'CREATED' && (
+                    <button
+                        onClick={() => handleAssignClick(row.task_id)}
+                        className="bg-none border-none"
+                    >
+                        <MdAssignment className="text-3xl" />
+                    </button>
+                ),
         },
     ]
-
-    const navigate = useNavigate()
-
-    const handleActionClick = (id: any) => {
-        navigate(`/app/category/subCategory/${id}`)
-    }
-
-    // const handleSeller = () => {
-    //     navigate('/app/category/subCategory/addNew')
-    // }
 
     return (
         <div>
@@ -307,7 +282,7 @@ const TaskTracking = () => {
                                               row[column.accessor],
                                               row,
                                           )
-                                        : row[column.accessor] || 'N/A'}
+                                        : row[column.accessor] || ''}
                                 </Td>
                             ))}
                         </Tr>
@@ -330,6 +305,14 @@ const TaskTracking = () => {
                     onChange={(option) => setPageSize(Number(option?.value))}
                 />
             </div>
+            {showAssignModal && (
+                <TrackModal
+                    showTaskModal={showAssignModal}
+                    handleCloseModal={handleCloseModal}
+                    storeTaskId={storeTaskId ?? 0}
+                    setShowAssignModal={setShowAssignModal}
+                />
+            )}
         </div>
     )
 }
