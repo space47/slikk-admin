@@ -208,52 +208,49 @@ const EditProduct = () => {
                 image: userData.image,
                 images: [],
                 color_code: userData.color_code,
-                category_name: userData.filter_to_display_map.category,
+                category_name: userData.category,
                 is_premium: userData.is_premium || false,
                 is_try_and_buy: userData.is_try_and_buy || false,
                 is_returnable: userData.is_returnable || false,
-                sub_category_name: userData.filter_to_display_map.subcategory,
-                product_type_name: userData.filter_to_display_map.producttype,
-                division_name: userData.filter_to_display_map.division,
+                sub_category_name: userData.sub_category,
+                product_type_name: userData.product_type,
+                division_name: userData.division,
                 color: userData.color,
-                colorshade: userData.filter_to_display_map.colorshade,
-                skinType: userData.filter_to_display_map.skintype,
-                formulation: userData.filter_to_display_map.formulation,
+                colorshade: userData.colorshade,
+                skinType: userData.skintype,
+                formulation: userData.formulation,
                 hairType: userData.hairtype,
-                gender: userData.filter_tags.gender || 'Women',
-                finish: userData.filter_to_display_map.finish,
+                gender: userData.gender || 'Women',
+                finish: userData.finish,
                 skintone: userData.skintone,
-                coverage: userData.filter_to_display_map.coverage,
-                sunprotection: userData.filter_to_display_map.sunprotection,
+                coverage: userData.coverage,
+                sunprotection: userData.sunprotection,
                 concious: userData.concious,
                 productHexCode: userData.productHexCode,
-                packsize: userData.filter_to_display_map.size,
+                packsize: userData.size,
                 size: userData.filter_tags.size,
-                ingrediants: userData.filter_to_display_map.ingredients,
-                vegnonveg: userData.filter_to_display_map.vegnonveg,
-                ingrediantsPreferences:
-                    userData.filter_to_display_map.ingrediantsPreferences,
-                concern: userData.filter_to_display_map.concerns,
-                recommendationfor:
-                    userData.filter_to_display_map.recommendationfor,
-                scenttopnotes: userData.filter_to_display_map.scenttopnotes,
-                scentheartnotes: userData.filter_to_display_map.scentheartnotes,
-                scentbasenotes: userData.filter_to_display_map.scentbasenotes,
+                ingrediants: userData.ingredients,
+                vegnonveg: userData.vegnonveg,
+                ingrediantsPreferences: userData.ingrediantsPreferences,
+                concern: userData.concerns,
+                recommendationfor: userData.recommendationfor,
+                scenttopnotes: userData.scenttopnotes,
+                scentheartnotes: userData.scentheartnotes,
+                scentbasenotes: userData.scentbasenotes,
                 color_code_link: userData.color_code_link,
-                origincountry: userData.filter_tags.origincountry || 'India',
-                careinstruction:
-                    userData.filter_to_display_map.careinstructions,
-                antiodour: userData.filter_to_display_map.antiodour,
-                pattern: userData.filter_to_display_map.pattern,
-                closuretype: userData.filter_to_display_map.closuretype,
-                length: userData.filter_to_display_map.length,
-                necktype: userData.filter_to_display_map.necktype,
-                risetype: userData.filter_to_display_map.risetype,
-                sleevtype: userData.filter_to_display_map.sleevtype,
-                trend: userData.filter_tags.trend,
-                trendtype: userData.filter_to_display_map.trendtype,
-                fit: userData.filter_to_display_map.fit,
-                fabric: userData.filter_to_display_map.fabric,
+                origincountry: userData.origincountry || 'India',
+                careinstruction: userData.careinstructions,
+                antiodour: userData.antiodour,
+                pattern: userData.pattern,
+                closuretype: userData.closuretype,
+                length: userData.length,
+                necktype: userData.necktype,
+                risetype: userData.risetype,
+                sleevtype: userData.sleevtype,
+                trend: userData.trend,
+                trendtype: userData.trendtype,
+                fit: userData.fit,
+                fabric: userData.fabric,
             })
 
             console.log('user Objeccct....', userData.image)
@@ -687,6 +684,28 @@ const EditProduct = () => {
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                     Image
                                     <FormContainer className=" mt-5 ">
+                                        {/* DIV */}
+
+                                        <div className=" overflow-x-scroll w-[500px] ">
+                                            <div className=" image w-[10%] h-[20%] mt-5 flex gap-3 items-center  ">
+                                                {allImage &&
+                                                allImage.length > 0 ? (
+                                                    allImage.map(
+                                                        (img, index) => (
+                                                            <img
+                                                                key={index}
+                                                                src={img}
+                                                                alt="img"
+                                                                className="rounded-xl"
+                                                            />
+                                                        ),
+                                                    )
+                                                ) : (
+                                                    <p>No image</p>
+                                                )}
+                                            </div>
+                                        </div>
+
                                         <FormItem
                                             label=""
                                             invalid={Boolean(
@@ -925,11 +944,11 @@ const EditProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Colour Shade Name">
+                                <FormItem label="Colour">
                                     <Field
                                         type="text"
-                                        name="colorshade"
-                                        placeholder="Enter Colour Shade Name"
+                                        name="color"
+                                        placeholder="Enter Color Name"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1006,14 +1025,14 @@ const EditProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem> */}
-                                <FormItem label=" Product Hex Code">
+                                {/* <FormItem label=" Product Hex Code">
                                     <Field
                                         type="text"
                                         name="productHexCode"
                                         placeholder="Enter Product Hex Code"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label="Pack Size">
                                     <Field
                                         type="text"
@@ -1107,7 +1126,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="careinstruction"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Care Instruction"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1115,7 +1134,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="antiodour"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Antidour"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1123,7 +1142,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="pattern"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Pattern"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1131,7 +1150,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="closuretype"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Closure Type"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1139,7 +1158,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="length"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Length"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1147,7 +1166,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="necktype"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Neck Type"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1155,7 +1174,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="risetype"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Rise Type"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1163,7 +1182,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="sleevtype"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Sleeve Type"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1171,7 +1190,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="trend"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Trend"
                                         component={Input}
                                     />
                                 </FormItem>
@@ -1179,7 +1198,7 @@ const EditProduct = () => {
                                     <Field
                                         type="text"
                                         name="trendtype"
-                                        placeholder="Enter Origin Country"
+                                        placeholder="Enter Trend Type"
                                         component={Input}
                                     />
                                 </FormItem>

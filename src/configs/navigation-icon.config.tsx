@@ -26,9 +26,10 @@ import {
 } from 'react-icons/hi'
 import { BiCategory } from 'react-icons/bi'
 import { LiaUserTagSolid } from 'react-icons/lia'
-import { MdOutlineInventory } from 'react-icons/md'
+import { MdOutlineInventory, MdDisplaySettings } from 'react-icons/md'
 import { CgOrganisation } from 'react-icons/cg'
 import { BsCameraReels } from 'react-icons/bs'
+import { TbTruckDelivery } from 'react-icons/tb'
 
 export type NavigationIcons = Record<string, JSX.Element>
 
@@ -39,6 +40,8 @@ const navigationIcon: NavigationIcons = {
     sales: <HiOutlineTrendingUp />,
     org: <CgOrganisation />,
     reels: <BsCameraReels />,
+    delivery: <TbTruckDelivery />,
+    appsettings: <MdDisplaySettings />,
     category: <BiCategory />,
     inventory: <MdOutlineInventory />,
     brand: <LiaUserTagSolid />,
