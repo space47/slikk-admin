@@ -486,11 +486,7 @@ const EditProduct = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
-                    <Form
-                        className="w-full"
-                        onKeyDown={handleKeyDown}
-                        onChange={() => console.log(values)}
-                    >
+                    <Form className="w-2/3" onKeyDown={handleKeyDown}>
                         <FormContainer>
                             <div className="grid grid-cols-2 gap-4">
                                 <FormItem label="Barcode">
@@ -533,30 +529,30 @@ const EditProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="About">
+                                {/* <FormItem label="About">
                                     <Field
                                         type="text"
                                         name="about"
                                         placeholder="Enter About"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Benefits">
+                                </FormItem> */}
+                                {/* <FormItem label="Benefits">
                                     <Field
                                         type="text"
                                         name="benefits"
                                         placeholder="Enter Benefits"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Includes">
+                                </FormItem> */}
+                                {/* <FormItem label="Includes">
                                     <Field
                                         type="text"
                                         name="includes"
                                         placeholder="Enter Includes"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label=" Other Product Info">
                                     <Field
                                         type="text"
@@ -615,14 +611,14 @@ const EditProduct = () => {
                                     />
                                 </FormItem>
 
-                                <FormItem label="Usage">
+                                {/* <FormItem label="Usage">
                                     <Field
                                         type="text"
                                         name="usage"
                                         placeholder="Enter Usage"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label="Imported By/Manufactured By">
                                     <Field
                                         type="text"
@@ -631,15 +627,54 @@ const EditProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label=" Shelf Life">
+                                {/* <FormItem label=" Shelf Life">
                                     <Field
                                         type="number"
                                         name="shelf_life"
                                         placeholder="Enter Shelf Life"
                                         component={Input}
                                     />
+                                </FormItem> */}
+                                {/* <FormItem label="Height">
+                                    <Field
+                                        type="number"
+                                        name="height"
+                                        placeholder="Enter Height"
+                                        component={Input}
+                                    />
                                 </FormItem>
-
+                                <FormItem label="Width">
+                                    <Field
+                                        type="number"
+                                        name="width"
+                                        placeholder="Enter Width"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Depth">
+                                    <Field
+                                        type="number"
+                                        name="depth"
+                                        placeholder="Enter Depth"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label=" Minimum Quantity">
+                                    <Field
+                                        type="number"
+                                        name="minimum_quantity"
+                                        placeholder="Enter Minimum Quantity"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem label="Reserve Quantity">
+                                    <Field
+                                        type="number"
+                                        name="reserve_quantity"
+                                        placeholder="Enter Reserve Quantity"
+                                        component={Input}
+                                    />
+                                </FormItem> */}
                                 <FormItem label="Status">
                                     <Field
                                         type="text"
@@ -649,34 +684,9 @@ const EditProduct = () => {
                                     />
                                 </FormItem>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                     Image
-                                    <FormContainer className=" mt-5  flex flex-col justify-normal items-center gap-4">
-                                        <div className="flex flex-row overflow-x-scroll w-[96%] gap-2">
-                                            {allImage.map((item, key) => (
-                                                <div
-                                                    key={key}
-                                                    className="flex flex-col items-center min-w-fit"
-                                                >
-                                                    <img
-                                                        src={item}
-                                                        alt={`Image ${key}`}
-                                                        className="w-[150px] h-[100px] flex object-contain "
-                                                    />
-                                                    <button
-                                                        className="text-red-500 text-xl "
-                                                        onClick={(e) =>
-                                                            handleRemoveImage(
-                                                                e,
-                                                                key,
-                                                            )
-                                                        }
-                                                    >
-                                                        <IoMdCloseCircle className="text-red-500" />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
+                                    <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
                                             invalid={Boolean(
@@ -687,7 +697,7 @@ const EditProduct = () => {
                                             }
                                             className="grid grid-rows-2"
                                         >
-                                            <Field name="images">
+                                            <Field name="image">
                                                 {({
                                                     form,
                                                 }: FieldProps<Product>) => (
@@ -714,6 +724,7 @@ const EditProduct = () => {
                                                                     files,
                                                                 )
                                                             }
+                                                            // uploadButtonText="Add Files"
                                                         />
                                                     </>
                                                 )}
@@ -723,7 +734,7 @@ const EditProduct = () => {
                                         <br />
                                         <br />
                                     </FormContainer>
-                                    {/* <FormItem
+                                    <FormItem
                                         label=""
                                         invalid={errors.image && touched.image}
                                         errorMessage={errors.image}
@@ -734,41 +745,15 @@ const EditProduct = () => {
                                             name="image"
                                             placeholder="Enter ImageUrl or Upload Image file"
                                             component={Input}
-                                            
                                         />
-                                    </FormItem> */}
+                                    </FormItem>
                                 </FormContainer>
 
                                 {/* .............................................................. */}
 
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                     Color Code Thumbnail
-                                    <FormContainer className=" mt-5  flex flex-col justify-normal items-center gap-4 ">
-                                        <div className="flex flex-row  w-[96%] gap-2">
-                                            {allColor.map((item, key) => (
-                                                <div
-                                                    key={key}
-                                                    className="flex flex-col items-center"
-                                                >
-                                                    <img
-                                                        src={item}
-                                                        alt={`Image ${key}`}
-                                                        className="w-[150px] h-[150px] flex object-contain "
-                                                    />
-                                                    <button
-                                                        className="text-red-500 text-xl "
-                                                        onClick={(e) =>
-                                                            handleRemoveColor(
-                                                                e,
-                                                                key,
-                                                            )
-                                                        }
-                                                    >
-                                                        <IoMdCloseCircle className="text-red-500" />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
+                                    <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
                                             invalid={Boolean(
@@ -795,7 +780,7 @@ const EditProduct = () => {
                                                             }
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
-                                                                    'color_code_link',
+                                                                    'image',
                                                                     files,
                                                                 )
                                                             }
@@ -803,7 +788,7 @@ const EditProduct = () => {
                                                                 files,
                                                             ) =>
                                                                 form.setFieldValue(
-                                                                    'color_code_link',
+                                                                    'image',
                                                                     files,
                                                                 )
                                                             }
@@ -817,38 +802,26 @@ const EditProduct = () => {
                                         <br />
                                         <br />
                                     </FormContainer>
+                                    <FormItem
+                                        label=""
+                                        invalid={errors.image && touched.image}
+                                        errorMessage={errors.image}
+                                        className="col-span-1 w-[80%]"
+                                    >
+                                        <Field
+                                            type="text"
+                                            name="images"
+                                            placeholder="Enter ImageUrl or Upload Image file"
+                                            component={Input}
+                                        />
+                                    </FormItem>
                                 </FormContainer>
 
                                 {/* .......................video........................................ */}
 
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                     Video
-                                    <FormContainer className=" mt-5  flex flex-col justify-normal items-center gap-4 ">
-                                        <div className="flex flex-row">
-                                            {allVideo.map((item, key) => (
-                                                <div
-                                                    key={key}
-                                                    className="flex flex-col items-center"
-                                                >
-                                                    <video
-                                                        src={item}
-                                                        controls
-                                                        className="w-[100px] h-[150px] object-cover"
-                                                    />
-                                                    <button
-                                                        onClick={(e) =>
-                                                            handleRemoveVideo(
-                                                                e,
-                                                                key,
-                                                            )
-                                                        }
-                                                        className="text-red-500 font-bold"
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
+                                    <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
                                             invalid={Boolean(
@@ -859,7 +832,7 @@ const EditProduct = () => {
                                             }
                                             className="grid grid-rows-2"
                                         >
-                                            <Field name="video">
+                                            <Field name="video_link">
                                                 {({
                                                     form,
                                                 }: FieldProps<Product>) => (
@@ -874,7 +847,7 @@ const EditProduct = () => {
                                                             }
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
-                                                                    'video',
+                                                                    'Video',
                                                                     files,
                                                                 )
                                                             }
@@ -882,7 +855,7 @@ const EditProduct = () => {
                                                                 files,
                                                             ) =>
                                                                 form.setFieldValue(
-                                                                    'video',
+                                                                    'images',
                                                                     files,
                                                                 )
                                                             }
@@ -895,7 +868,7 @@ const EditProduct = () => {
                                         <br />
                                         <br />
                                     </FormContainer>
-                                    {/* <FormItem
+                                    <FormItem
                                         label=""
                                         invalid={
                                             errors.video_link &&
@@ -910,7 +883,7 @@ const EditProduct = () => {
                                             placeholder="Enter VideoUrl or Upload Video file"
                                             component={Input}
                                         />
-                                    </FormItem> */}
+                                    </FormItem>
                                 </FormContainer>
                                 <FormItem label="Category Name">
                                     <Field
@@ -968,22 +941,22 @@ const EditProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Formulation">
+                                {/* <FormItem label="Formulation">
                                     <Field
                                         type="text"
                                         name="formulation"
                                         placeholder="Enter Formulation"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Hair Type">
+                                </FormItem> */}
+                                {/* <FormItem label="Hair Type">
                                     <Field
                                         type="text"
                                         name="hairType"
                                         placeholder="Enter Hair Type"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label="Gender">
                                     <Field
                                         type="text"
@@ -992,47 +965,47 @@ const EditProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Finish">
+                                {/* <FormItem label="Finish">
                                     <Field
                                         type="text"
                                         name="finish"
                                         placeholder="Enter Finish"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Skin Tone">
+                                </FormItem> */}
+                                {/* <FormItem label="Skin Tone">
                                     <Field
                                         type="text"
                                         name="skintone"
                                         placeholder="Enter Skin Tone"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Coverage">
+                                </FormItem> */}
+                                {/* <FormItem label="Coverage">
                                     <Field
                                         type="text"
                                         name="coverage"
                                         placeholder="Enter Coverage"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Sun Protection">
+                                </FormItem> */}
+                                {/* <FormItem label="Sun Protection">
                                     <Field
                                         type="text"
                                         name="sunprotection"
                                         placeholder="Enter Sun Protection"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
 
-                                <FormItem label="Conscious">
+                                {/* <FormItem label="Conscious">
                                     <Field
                                         type="text"
                                         name="concious"
                                         placeholder="Enter Conscious"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label=" Product Hex Code">
                                     <Field
                                         type="text"
@@ -1057,47 +1030,47 @@ const EditProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Ingredients">
+                                {/* <FormItem label="Ingredients">
                                     <Field
                                         type="text"
                                         name="ingrediants"
                                         placeholder="Enter Ingredients"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label=" Veg/Non-Veg">
+                                </FormItem> */}
+                                {/* <FormItem label=" Veg/Non-Veg">
                                     <Field
                                         type="text"
                                         name="vegnonveg"
                                         placeholder="Enter Veg/Non-Veg"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Ingredients Preferences">
+                                </FormItem> */}
+                                {/* <FormItem label="Ingredients Preferences">
                                     <Field
                                         type="text"
                                         name="ingrediantsPreferences"
                                         placeholder="Enter Ingredients Preferences"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Concern">
+                                </FormItem> */}
+                                {/* <FormItem label="Concern">
                                     <Field
                                         type="text"
                                         name="concern"
                                         placeholder="Enter Concern"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Recommendation For">
+                                </FormItem> */}
+                                {/* <FormItem label="Recommendation For">
                                     <Field
                                         type="text"
                                         name="recommendationfor"
                                         placeholder="Enter Recommendation For"
                                         component={Input}
                                     />
-                                </FormItem>
-                                <FormItem label="Scent Top Notes">
+                                </FormItem> */}
+                                {/* <FormItem label="Scent Top Notes">
                                     <Field
                                         type="text"
                                         name="scenttopnotes"
@@ -1120,7 +1093,7 @@ const EditProduct = () => {
                                         placeholder="Enter Scent Base Notes"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem label="Origin Country">
                                     <Field
                                         type="text"
@@ -1178,7 +1151,7 @@ const EditProduct = () => {
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem label="Risk Type">
+                                <FormItem label="Rise Type">
                                     <Field
                                         type="text"
                                         name="risetype"

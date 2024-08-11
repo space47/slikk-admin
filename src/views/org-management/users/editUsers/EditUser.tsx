@@ -129,7 +129,7 @@ const UserEdit = () => {
     const fetchUser = async () => {
         try {
             const response = await axioisInstance.get(
-                `company/user/permission/${mobile}`,
+                `company/${selectedCompany.id}/users?mobile=${mobile}`,
             )
 
             const userData = response.data
@@ -138,14 +138,8 @@ const UserEdit = () => {
             // console.log('sssssssss', userPermissions)
             setUserDatas(userData)
             setAddedPermissions(userPermissions)
-            setInitialValue({
-                first_name: userData.first_name || '',
-                last_name: userData.last_name || '',
-                mobile: userData.mobile || '',
-                email: userData.email || '',
-                business_email: userData.business_email || '',
-                permissions: [],
-            })
+            console.log('uuuuuuuuuuuuuuuu', userData)
+            console.log('ttttttttttt', userDatas)
         } catch (error) {
             console.log(error)
         }
@@ -160,7 +154,7 @@ const UserEdit = () => {
             ...data,
         }
         try {
-            const response = await axioisInstance.post(
+            const response = await axioisInstance.patch(
                 `company/${selectedCompany.id}/users/add`,
                 formdata,
             )
@@ -412,7 +406,7 @@ const UserEdit = () => {
                                             </label>
                                         </div>
                                         <div className="">
-                                            {addedPermissions.map(
+                                            {addedPermissions?.map(
                                                 (item, key) => (
                                                     <div
                                                         key={key}

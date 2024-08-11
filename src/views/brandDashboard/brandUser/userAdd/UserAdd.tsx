@@ -150,6 +150,20 @@ const UserAdd = () => {
     }
 
     const handleSubmit = async (values: FormModel) => {
+        const bodyData = {
+            ...values,
+        }
+        console.log('body', bodyData)
+        try {
+            const response = await axioisInstance.post(
+                `company/${selectedCompany.id}/users/add`,
+                bodyData,
+            )
+            console.log('response of add users', response)
+        } catch (error) {
+            console.log(error)
+        }
+
         const userdetails = await handleAddUser(values)
         if (userdetails === 'Error') {
             return

@@ -14,6 +14,12 @@ import {
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
+import { notification } from 'antd'
+import { IoMdDownload } from 'react-icons/io'
+import { DROPDOWNARRAY } from './CommonType'
+import { Dropdown } from '@/components/ui'
+import { BANNER_PAGE_NAME } from '@/common/banner'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 type ProductVariant = {
     name: string
@@ -68,48 +74,36 @@ const Products = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const navigate = useNavigate()
+    const [currentSelectedPage, setCurrentSelectedPage] =
+        useState<Record<string, string>>()
+
+    const [filterInput, setFilterInput] = useState('')
+    const [searchType, setSearchType] = useState<string>('')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
+            let type = ''
+            if (currentSelectedPage?.label && searchType) {
+                type = `&${currentSelectedPage.value}=${searchType}`
+            }
+
             const response = await axiosInstance.get(
-                `search/product?p=${page}&page_size=${pageSize}`,
+                `search/product?p=${page}&page_size=${pageSize}${type}`,
             )
+
             const data = response.data.results
             const total = response.data.count
+
             setData(data)
             setTotalData(total)
         } catch (error) {
-            console.error(error)
+            console.error('Error fetching data:', error)
         }
     }
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, globalFilter])
-
-     // Apply global filter
-    const filteredData = data.filter((item) =>
-        Object.values(item).some((val) =>
-            val
-                ? val
-                      .toString()
-                      .toLowerCase()
-                      .includes(globalFilter.toLowerCase())
-                : false,
-        ),
-    )
-
-    // Paginate filtered data
-    const paginatedData = filteredData.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
-    )
-    const totalPages = Math.ceil(filteredData.length / pageSize)
-
-    const getFirstImageUrl = (images: string) => {
-        const img = images.length > 0 ? images.split(',') : ''
-        return img[0]
-    }
+    }, [page, pageSize, globalFilter, currentSelectedPage, searchType])
 
     const handleActionClick = (barcode: any) => {
         navigate(`/app/catalog/products/${barcode}`)
@@ -137,7 +131,7 @@ const Products = () => {
                 accessorKey: 'image',
                 cell: (info) => (
                     <img
-                        src={getFirstImageUrl(info.getValue())}
+                        src={info.getValue() as string}
                         alt="Image"
                         className="w-24 h-20 object-cover"
                     />
@@ -204,6 +198,13 @@ const Products = () => {
         [],
     )
 
+    const handleSelect = (value: any) => {
+        const selected = DROPDOWNARRAY.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
+    }
+
     const table = useReactTable({
         data,
         columns,
@@ -234,8 +235,46 @@ const Products = () => {
         setPageSize(Number(value))
     }
 
+    const handleDownload = async () => {
+        try {
+            await axiosInstance
+                .get(`merchant/products?download=true`, {
+                    responseType: 'blob',
+                })
+                .then((response) => {
+                    notification.success({
+                        message: 'success',
+                        description: response.data.message || 'Downloaded',
+                    })
+
+                    const blob = new Blob([response.data.results], {
+                        type: 'application/json',
+                    })
+                    const url = URL.createObjectURL(blob)
+
+                    const link = document.createElement('a')
+                    link.href = url
+                    link.setAttribute('download', 'file')
+
+                    link.click()
+                })
+                .catch(() =>
+                    notification.error({
+                        message: 'Failure',
+                        description: 'Downloaded',
+                    }),
+                )
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const handleProduct = () => {
         navigate('/app/catalog/products/addNew')
+    }
+
+    const handleSearchType = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchType(event.target.value)
     }
 
     return (
@@ -250,15 +289,58 @@ const Products = () => {
                         className="p-2 border rounded"
                     />
                 </div>
-                <div className="flex items-end justify-end mb-2">
-                    <button
-                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                        onClick={handleProduct}
+                {/*  */}
+                <div className="drop border  bg-gray-200 text-black text-lg font-semibold flex gap-5 w-[100px] mb-6 ">
+                    <input
+                        type="text"
+                        placeholder="Search Type here"
+                        value={searchType}
+                        onChange={handleSearchType}
+                        className="p-2 border rounded"
+                    />
+                    <Dropdown
+                        className=" text-xl text-black "
+                        title={
+                            currentSelectedPage?.value
+                                ? currentSelectedPage.label
+                                : 'SELECT'
+                        }
+                        onSelect={handleSelect}
                     >
-                        ADD NEW PRODUCT
-                    </button>{' '}
-                    <br />
-                    <br />
+                        {DROPDOWNARRAY?.map((item, key) => {
+                            return (
+                                <DropdownItem key={key} eventKey={item.value}>
+                                    <span>{item.label}</span>
+                                </DropdownItem>
+                            )
+                        })}
+                    </Dropdown>
+                </div>
+
+                <div className="flex gap-3 items-center justify-center">
+                    <div>
+                        <div className="flex items-end justify-end mb-2">
+                            <button
+                                className="bg-gray-100 text-black px-5 py-3  hover:bg-gray-200 rounded-lg"
+                                onClick={handleDownload}
+                            >
+                                <IoMdDownload className="text-3xl" />
+                            </button>{' '}
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+
+                    <div className="flex items-end justify-end mb-2">
+                        <button
+                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                            onClick={handleProduct}
+                        >
+                            ADD NEW PRODUCT
+                        </button>{' '}
+                        <br />
+                        <br />
+                    </div>
                 </div>
             </div>
             <Table>

@@ -416,6 +416,30 @@ const appsNavigationConfig: NavigationTree[] = [
                 ],
             },
 
+            // ///////////////////////////
+
+            {
+                key: 'apps.tryAndBuy',
+                path: '',
+                title: 'Try And Buy',
+                translateKey: 'nav.appstryAndBuy.tryAndBuy',
+                icon: 'org',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    // {
+                    //     key: 'appsAppSettings.seoSettings',
+                    //     path: `${APP_PREFIX_PATH}/appSettings/seoSettings`,
+                    //     title: 'Seo Settings',
+                    //     translateKey: 'nav.appsAppSettings.seoSettings',
+                    //     icon: '',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     subMenu: [],
+                    // },
+                ],
+            },
+
             // ..............................................................................................................
 
             {

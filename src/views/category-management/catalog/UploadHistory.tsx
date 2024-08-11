@@ -13,6 +13,7 @@ import {
 import type { ColumnDef } from '@tanstack/react-table'
 
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import axios from 'axios'
 
 type User = {
     name: string
@@ -95,9 +96,15 @@ const PaginationTable = () => {
             const requiredFile = error_file ? error_file : uploaded_file
             const response = await axioisInstance.get(
                 `file/presign?file_url=${requiredFile}`,
-                { responseType: 'blob' },
             )
-            const blob = new Blob([response.data], { type: 'application/json' })
+            console.log('sss', response)
+            const excelFile = await axios
+                .get(response.data.data)
+                .then((responsess) => console.log(responsess))
+            // const blob = new Blob([response.data.data], {
+            //     type: 'application/json',
+            // })
+
             const url = URL.createObjectURL(blob)
 
             const link = document.createElement('a')
