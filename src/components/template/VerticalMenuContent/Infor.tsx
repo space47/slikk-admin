@@ -41,23 +41,28 @@ const Infor = () => {
     }
 
     return (
-        <div>
+        <div className="text-[14px] max-h-[200px]">
             <Dropdown
                 key={selectedCompany.id}
-                title={` ${selectedCompany.name}, ${selectedCompany.registered_name}`}
+                title={` ${selectedCompany.name}`}
                 onClick={onDropdownClick}
             >
-                {companyList.map((item, i) => (
-                    <Dropdown.Item
-                        key={i}
-                        eventKey={i.toString()}
-                        onSelect={onDropdownItemClick}
-                    >
-                        <div onClick={handleOption}>
-                            {item.name}, {item.registered_name}
-                        </div>
-                    </Dropdown.Item>
-                ))}
+                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide ">
+                    {companyList.map((item, i) => (
+                        <Dropdown.Item
+                            key={i}
+                            eventKey={i.toString()}
+                            onSelect={onDropdownItemClick}
+                        >
+                            <div
+                                onClick={handleOption}
+                                className="text-[12px] capitalize whitespace-break-spaces w-full min-w-[250px]"
+                            >
+                                {item.name}, {item.registered_name}
+                            </div>
+                        </Dropdown.Item>
+                    ))}
+                </div>
             </Dropdown>
         </div>
     )
