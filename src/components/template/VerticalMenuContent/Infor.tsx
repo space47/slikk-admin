@@ -43,9 +43,9 @@ const Infor = () => {
     return (
         <div>
             <Dropdown
-                title={`${selectedCompany.registered_name}`}
-                onClick={onDropdownClick}
                 key={selectedCompany.id}
+                title={` ${selectedCompany.name}, ${selectedCompany.registered_name}`}
+                onClick={onDropdownClick}
             >
                 {companyList.map((item, i) => (
                     <Dropdown.Item
@@ -53,7 +53,9 @@ const Infor = () => {
                         eventKey={i.toString()}
                         onSelect={onDropdownItemClick}
                     >
-                        <div onClick={handleOption}>{item.registered_name}</div>
+                        <div onClick={handleOption}>
+                            {item.name}, {item.registered_name}
+                        </div>
                     </Dropdown.Item>
                 ))}
             </Dropdown>
