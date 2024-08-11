@@ -271,6 +271,23 @@ const CategoryEdit = () => {
                                         }}
                                     />
                                 </FormItem>
+                                <FormItem
+                                    asterisk
+                                    label="Category Title"
+                                    invalid={errors.title && touched.title}
+                                    errorMessage={errors.title}
+                                    className="col-span-1 w-1/2"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="title"
+                                        component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    />
+                                </FormItem>
 
                                 <FormItem
                                     asterisk
@@ -387,10 +404,27 @@ const CategoryEdit = () => {
 
                             <FormContainer className="flex flex-row gap-7">
                                 <FormItem
+                                    asterisk
+                                    label="Description"
+                                    invalid={errors.description && touched.description}
+                                    errorMessage={errors.description}
+                                    className="col-span-1 w-1/2"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="description"
+                                        component={Input}
+                                        onKeyDown={(e) => {
+                                            e.key === 'Enter' &&
+                                                e.preventDefault()
+                                        }}
+                                    />
+                                </FormItem>
+                                 <FormItem
                                     label="Footer"
                                     invalid={errors.footer && touched.footer}
                                     errorMessage={errors.footer}
-                                    className="col-span-1 w-full"
+                                    className="col-span-1 w-1/2"
                                 >
                                     <textarea
                                         name="footer"
