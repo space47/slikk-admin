@@ -767,6 +767,25 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+
+    // Tracking
+    {
+        key: 'appstryAndBuy.taskTracking',
+        path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking`,
+        component: lazy(
+            () => import('@/views/slikkLogistics/taskTracking/TaskTracking'),
+        ),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appstryAndBuy.riderTracking',
+        path: `${APP_PREFIX_PATH}/tryAndBuy/riderTracking`,
+        component: lazy(
+            () => import('@/views/slikkLogistics/riderTracking/RiderTracking'),
+        ),
+        authority: [ADMIN, USER],
+    },
 ]
 
 export default appsRoute
