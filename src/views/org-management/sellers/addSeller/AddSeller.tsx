@@ -45,32 +45,32 @@ const initialValue: FormModel = {
     bank_name: '',
 }
 
-const validationSchema = Yup.object().shape({
-    registered_name: Yup.string().required('Registered Name is required'),
-    name: Yup.string().required('Brand Name is required'),
-    gstin: Yup.string().required('GSTIN is required'),
-    segment: Yup.string().required('Segment is required'),
-    cin: Yup.string().required('CIN is required'),
-    address: Yup.string().required('Address is required'),
-    contact_number: Yup.string()
-        .required('Mobile Number is required')
-        .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-    alternate_contact_number: Yup.string()
-        .required('Alternate Mobile Number is required')
-        .matches(/^[6-9]\d{9}$/, 'Alternate Mobile Number is not valid'),
-    poc: Yup.string().required('POC Name is required'),
-    poc_email: Yup.string()
-        .required('POC Email is required')
-        .email('Email is not valid'),
-    account_number: Yup.string().required('Account Number is required'),
-    confirm: Yup.string()
-        .required('Confirm Account Number is required')
-        .oneOf([Yup.ref('account_number')], 'Account number does not match'),
-    account_holder_name: Yup.string().required(
-        'Account Holder Name is required',
-    ),
-    bank_name: Yup.string().required('Bank Name is required'),
-})
+// const validationSchema = Yup.object().shape({
+//     registered_name: Yup.string().required('Registered Name is required'),
+//     name: Yup.string().required('Brand Name is required'),
+//     gstin: Yup.string().required('GSTIN is required'),
+//     segment: Yup.string().required('Segment is required'),
+//     cin: Yup.string().required('CIN is required'),
+//     address: Yup.string().required('Address is required'),
+//     contact_number: Yup.string()
+//         .required('Mobile Number is required')
+//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
+//     alternate_contact_number: Yup.string()
+//         .required('Alternate Mobile Number is required')
+//         .matches(/^[6-9]\d{9}$/, 'Alternate Mobile Number is not valid'),
+//     poc: Yup.string().required('POC Name is required'),
+//     poc_email: Yup.string()
+//         .required('POC Email is required')
+//         .email('Email is not valid'),
+//     account_number: Yup.string().required('Account Number is required'),
+//     confirm: Yup.string()
+//         .required('Confirm Account Number is required')
+//         .oneOf([Yup.ref('account_number')], 'Account number does not match'),
+//     account_holder_name: Yup.string().required(
+//         'Account Holder Name is required',
+//     ),
+//     bank_name: Yup.string().required('Bank Name is required'),
+// })
 
 const SegmentOptions = () => {
     return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor'].map(
@@ -137,7 +137,7 @@ const AddSeller = () => {
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
-                validationSchema={validationSchema}
+                // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm, setFieldValue }) => (

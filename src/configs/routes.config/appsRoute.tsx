@@ -153,6 +153,22 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/org-management/users/Users')), //p3
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsOrgManagement.users',
+        path: `${APP_PREFIX_PATH}/users/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/users/addUsers/AddUser'),
+        ), //p3
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.users',
+        path: `${APP_PREFIX_PATH}/users/edit/:mobile`,
+        component: lazy(
+            () => import('@/views/org-management/users/editUsers/EditUser'),
+        ), //p3
+        authority: [ADMIN, USER],
+    },
 
     //   Brand dashBoared.........................................................................................
 
@@ -382,17 +398,17 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
-    // {
-    //     key: 'appsInventoryManagement.quality_checkList',
-    //     path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
-    //     component: lazy(
-    //         () =>
-    //             import(
-    //                 '@/views/inventory-management/qualityCheckList/QCListTable'
-    //             ),
-    //     ),
-    //     authority: [ADMIN, USER],
-    // },
+    {
+        key: 'appsInventoryManagement.quality_checkList',
+        path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/inventory-management/qualityCheckList/QCListTable'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appsInventoryManagement.stock_overview',
         path: `${APP_PREFIX_PATH}/stockOverview`,

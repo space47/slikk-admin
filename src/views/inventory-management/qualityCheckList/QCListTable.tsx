@@ -1,215 +1,322 @@
-// import React, { useEffect, useState } from 'react'
-// import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-// import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState, useMemo } from 'react'
+import Table from '@/components/ui/Table'
+import Pagination from '@/components/ui/Pagination'
+import Select from '@/components/ui/Select'
+
+import {
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    flexRender,
+    // useGlobalFilter,
+    PaginationState,
+    Updater,
+} from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 // import moment from 'moment'
-// import Table from '@/components/ui/Table'
-// import Pagination from '@/components/ui/Pagination'
-// import Select from '@/components/ui/Select'
-// import Button from '@/components/ui/Button'
+// import { useAppSelector } from '@/store'
+// import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+// import DatePicker from '@/components/ui/DatePicker'
 
-// type QCTABLE = {
-//     {
-//        id: 17,
-//        last_updated_by: {
-//            name:Parths Sundarka,
-//            mobile:7978069951,
-//            email:parthusun21@gmail.com
-//         },
-//        qc_done_by: {
-//            name:Bipin Singh,
-//            mobile:9818454888,
-//            email:bipin.bloke@gmail.com
-//         },
-//        qc_number: null,
-//        sku:CSMSSJEAN1041_36,
-//        quantity_sent: 10,
-//        quantity_received: 10,
-//        images:nan,
-//        qc_passed: 10,
-//        qc_failed: 0,
-//        batch_number:Batch_15,
-//        sent_to_inventory: false,
-//        inventory_sync_error: [],
-//        create_date:2024-07-12T13:06:24.183429Z,
-//        update_date:2024-07-12T13:06:24.183442Z,
-//        grn: 4
-//     }
-// }
+type QUALITY_CHECK = {
+    quantity_sent: number
+    quantity_received: number
+    qc_passed: number
+    qc_failed: number
+    sent_to_inventory: number
+    qc_done_by: QC_DONE_BY
+    last_updated_by: LAST_UPDATED_BY
+}
 
-// type Option = {
-//     value: number
-//     label: string
-// }
+type LAST_UPDATED_BY = {
+    name: string
+    mobile: string
+}
 
-// const { Tr, Th, Td, THead, TBody } = Table
+type QC_DONE_BY = {
+    name: string
+    mobile: string
+}
 
-// const pageSizeOptions = [
-//     { value: 10, label: '10 / page' },
-//     { value: 25, label: '25 / page' },
-//     { value: 50, label: '50 / page' },
-//     { value: 100, label: '100 / page' },
-// ]
+type QualityData = {
+    [quantity_id: string]: QUALITY_CHECK
 
-// const QCListTable = () => {
-//     const [data, setData] = useState<Product[]>([])
-//     const [totalData, setTotalData] = useState(0)
-//     const [page, setPage] = useState(1)
-//     const [pageSize, setPageSize] = useState(10)
-//     const [globalFilter, setGlobalFilter] = useState('')
+    // status: string
+    // total_quantity: number
+    // total_amount: number
+    // sku_wise_sales_data: {
+    //     [sku: string]: QUALITY_CHECK
+    // }
+    // date_wise_sales_data: {
+    //     date: DATA_WISE_SALES
+    // }
+}
 
-//     const fetchData = async () => {
-//         try {
-//             const response = await axiosInstance.get('sub-category')
-//             const data = response.data.data
-//             const total = data.length
-//             setData(data)
-//             setTotalData(total)
-//         } catch (error) {
-//             console.error(error)
-//         }
-//     }
+type Option = {
+    value: number
+    label: string
+}
 
-//     useEffect(() => {
-//         fetchData()
-//     }, [])
+const { Tr, Th, Td, THead, TBody } = Table
 
-//     // Apply global filter
-//     const filteredData = data.filter((item) =>
-//         Object.values(item).some((val) =>
-//             val
-//                 ? val
-//                       .toString()
-//                       .toLowerCase()
-//                       .includes(globalFilter.toLowerCase())
-//                 : false,
-//         ),
-//     )
+const pageSizeOptions = [
+    { value: 10, label: '10 / page' },
+    { value: 25, label: '25 / page' },
+    { value: 50, label: '50 / page' },
+    { value: 100, label: '100 / page' },
+]
 
-//     // Paginate filtered data
-//     const paginatedData = filteredData.slice(
-//         (page - 1) * pageSize,
-//         page * pageSize,
-//     )
-//     const totalPages = Math.ceil(filteredData.length / pageSize)
+const QCListTable = () => {
+    const [data, setData] = useState<QualityData>()
 
-//     const columns = [
-//         { header: 'Name', accessor: 'name' },
-//         {
-//             header: 'Create Date',
-//             accessor: 'create_date',
-//             format: (value) => moment(value).format('YYYY-MM-DD'),
-//         },
-//         { header: 'Title', accessor: 'title' },
-//         { header: 'Description', accessor: 'description' },
-//         {
-//             header: 'Image',
-//             accessor: 'image',
-//             format: (value) => <img src={value} alt="product" width="50" />,
-//         },
-//         { header: 'Footer', accessor: 'footer' },
-//         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
-//         { header: 'Position', accessor: 'position' },
-//         { header: 'Gender', accessor: 'gender' },
-//         {
-//             header: 'Active',
-//             accessor: 'is_active',
-//             format: (value) => (value ? 'Yes' : 'No'),
-//         },
-//         {
-//             header: 'Update Date',
-//             accessor: 'update_date',
-//             format: (value) => moment(value).format('YYYY-MM-DD'),
-//         },
-//         {
-//             header: 'Try and Buy',
-//             accessor: 'is_try_and_buy',
-//             format: (value) => (value ? 'Yes' : 'No'),
-//         },
-//         { header: 'Last Updated By', accessor: 'last_updated_by' },
-//         {
-//             header: 'Action',
-//             accessor: 'id',
-//             format: (value) => (
-//                 <Button onClick={() => handleActionClick(value)}>EDIT</Button>
-//             ),
-//         },
-//     ]
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+    const [globalFilter, setGlobalFilter] = useState('')
+    // const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+    //     (store) => store.company.currCompany,
+    // )
+    // const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    // const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
 
-//     const navigate = useNavigate()
+    const [quantityId, setQuantityId] = useState<
+        Array<{ key: string; value: QUALITY_CHECK }>
+    >([])
 
-//     const handleActionClick = (id: any) => {
-//         navigate(`/app/category/subCategory/${id}`)
-//     }
+    const fetchData = async () =>
+        // page: number,
+        // pageSize: number,
+        // from: string,
+        // to: string,
+        {
+            try {
+                const response = await axiosInstance.get(`goods/qc/summary`)
+                const data = response.data
 
-//     const handleSeller = () => {
-//         navigate('/app/category/subCategory/addNew')
-//     }
+                setData(data)
+                console.log('ssssssssssssssss', data)
+                const QCData = data.data
 
-//     return (
-//         <div>
-//             <div className="flex items-end justify-end mb-2">
-//                 <button
-//                     className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-//                     onClick={handleSeller}
-//                 >
-//                     ADD NEW SUB_CATEGORY
-//                 </button>{' '}
-//                 <br />
-//                 <br />
-//             </div>
-//             <div className="mb-4">
-//                 <input
-//                     type="text"
-//                     placeholder="Search here"
-//                     value={globalFilter}
-//                     onChange={(e) => setGlobalFilter(e.target.value)}
-//                     className="p-2 border rounded"
-//                 />
-//             </div>
-//             <Table>
-//                 <THead>
-//                     <Tr>
-//                         {columns.map((col) => (
-//                             <Th key={col.header}>{col.header}</Th>
-//                         ))}
-//                     </Tr>
-//                 </THead>
-//                 <TBody>
-//                     {paginatedData.map((row) => (
-//                         <Tr key={row.id}>
-//                             {columns.map((col) => (
-//                                 <Td key={col.accessor}>
-//                                     {col.format
-//                                         ? col.format(row[col.accessor])
-//                                         : row[col.accessor]}
-//                                 </Td>
-//                             ))}
-//                         </Tr>
-//                     ))}
-//                 </TBody>
-//             </Table>
-//             <div className="flex items-center justify-between mt-4">
-//                 <Pagination
-//                     currentPage={page}
-//                     total={totalPages}
-//                     onChange={(page) => setPage(page)}
-//                 />
-//                 <div style={{ minWidth: 130 }}>
-//                     <Select<Option>
-//                         size="sm"
-//                         isSearchable={false}
-//                         value={pageSizeOptions.find(
-//                             (option) => option.value === pageSize,
-//                         )}
-//                         options={pageSizeOptions}
-//                         onChange={(option) =>
-//                             setPageSize(Number(option?.value))
-//                         }
-//                     />
-//                 </div>
-//             </div>
-//         </div>
-//     )
-// }
+                console.log('tttttttttttttt', QCData)
 
-// export default QCListTable
+                const skuDetailsArray = Object.entries(QCData).map(
+                    ([key, value]) => ({
+                        key,
+                        value,
+                    }),
+                )
+
+                setQuantityId(skuDetailsArray)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    console.log('SKU Details:', quantityId)
+
+    const columns = useMemo<
+        ColumnDef<{ key: QUALITY_CHECK; value: QUALITY_CHECK }>[]
+    >(
+        () => [
+            {
+                header: 'ID',
+                accessorKey: 'key',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Quantity Sent',
+                accessorKey: 'value.quantity_sent',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Quantity Received',
+                accessorKey: 'value.quantity_received',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QC Passed',
+                accessorKey: 'value.qc_passed',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QC Inventory',
+                accessorKey: 'value.sent_to_inventory',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QC Done Name',
+                accessorKey: 'value.qc_done_by.name',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QC Done Mobile ',
+                accessorKey: 'value.qc_done_by.mobile',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Last Updated By ',
+                accessorKey: 'value.last_updated_by.name',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'QC Done Mobile ',
+                accessorKey: 'value.last_updated_by.mobile',
+                cell: (info) => info.getValue(),
+            },
+        ],
+        [],
+    )
+
+    const table = useReactTable({
+        data: quantityId,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        pageCount: Math.ceil(quantityId.length / pageSize),
+        manualPagination: true,
+        state: {
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: pageSize,
+            },
+            globalFilter,
+        },
+        onPaginationChange: (updater: Updater<PaginationState>) => {
+            const newPagination =
+                typeof updater === 'function'
+                    ? updater({ pageIndex: page - 1, pageSize })
+                    : updater
+
+            setPage(newPagination.pageIndex + 1)
+            setPageSize(newPagination.pageSize)
+        },
+        onGlobalFilterChange: setGlobalFilter,
+    })
+
+    const onPaginationChange = (page: number) => {
+        setPage(page)
+    }
+
+    const onSelectChange = (value = 0) => {
+        setPageSize(Number(value))
+    }
+    // const handleFromChange = (date: Date | null) => {
+    //     if (date) {
+    //         setFrom(moment(date).format('YYYY-MM-DD'))
+    //     } else {
+    //         setFrom(moment().format('YYYY-MM-DD'))
+    //     }
+    // }
+
+    // const handleToChange = (date: Date | null) => {
+    //     if (date) {
+    //         setTo(moment(date).format('YYYY-MM-DD'))
+    //     } else {
+    //         setTo(moment().format('YYYY-MM-DD'))
+    //     }
+    // }
+
+    return (
+        <div className="overflow-x-auto">
+            <div className="upper flex justify-between mb-5 items-center ">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border rounded"
+                    />
+                </div>
+
+                {/* <div className="flex gap-5">
+                    <div>
+                        <div className="mb-1 font-semibold text-sm">
+                            FROM DATE:
+                        </div>
+                        <DatePicker
+                            inputPrefix={
+                                <HiOutlineCalendar className="text-lg" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(from)}
+                            onChange={handleFromChange}
+                        />
+                    </div>
+                    <div>
+                        <div className="mb-1 font-semibold text-sm">
+                            TO DATE:
+                        </div>
+                        <DatePicker
+                            inputSuffix={
+                                <TbCalendarStats className="text-xl" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(to)}
+                            onChange={handleToChange}
+                            minDate={moment(from).toDate()}
+                        />
+                    </div>
+                </div> */}
+            </div>
+
+            <Table>
+                <THead>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <Tr key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <Th key={header.id} colSpan={header.colSpan}>
+                                    {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext(),
+                                    )}
+                                </Th>
+                            ))}
+                        </Tr>
+                    ))}
+                </THead>
+                <TBody>
+                    {table.getRowModel().rows.map((row) => (
+                        <Tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <Td key={cell.id}>
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext(),
+                                    )}
+                                </Td>
+                            ))}
+                        </Tr>
+                    ))}
+                </TBody>
+            </Table>
+            <div className="flex items-center justify-between mt-4">
+                <Pagination
+                    pageSize={pageSize}
+                    currentPage={page}
+                    total={quantityId && quantityId.length}
+                    onChange={onPaginationChange}
+                />
+                <div style={{ minWidth: 130 }}>
+                    <Select<Option>
+                        size="sm"
+                        isSearchable={false}
+                        value={pageSizeOptions.find(
+                            (option) => option.value === pageSize,
+                        )}
+                        options={pageSizeOptions}
+                        onChange={(option) => onSelectChange(option?.value)}
+                    />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default QCListTable

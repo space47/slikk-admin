@@ -74,4 +74,12 @@ type Product = {
     fabric: string
 }
 
+export const DROPDOWNARRAY = [
+    { label: 'Brand', value: 'brand' },
+    { label: 'Division', value: 'division' },
+    { label: 'Sub Category', value: 'sub-category' },
+    { label: 'Category', value: 'category' },
+    { label: 'Product Type', value: 'Product_type' },
+]
+
 export default Product
