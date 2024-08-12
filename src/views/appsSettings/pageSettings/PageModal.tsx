@@ -65,6 +65,7 @@ const PageModal: React.FC<modalProps> = ({
     particularRow,
     setParticularRow,
 }) => {
+   
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -126,7 +127,7 @@ const PageModal: React.FC<modalProps> = ({
         });
 
         const newData = response.data.url;
-
+        
         notification.success({
             message: 'Success',
             description: response?.data?.message || 'Image uploaded successfully',
@@ -320,7 +321,7 @@ const PageModal: React.FC<modalProps> = ({
                                             // }
                                             className="grid grid-rows-2"
                                         >
-                                            <Field name="background_image_array">
+                                            <Field name="background_image">
                                                 {({
                                                     field,
                                                     form,
