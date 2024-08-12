@@ -57,7 +57,7 @@ const AppBanners = () => {
     const [data, setData] = useState<BannerType[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(25)
+    const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const navigate = useNavigate()
 
@@ -96,7 +96,7 @@ const AppBanners = () => {
         (page - 1) * pageSize,
         page * pageSize,
     )
-    const totalPages = Math.ceil(totalData / pageSize)
+    const totalPages = Math.ceil(filteredData.length / pageSize)
 
     const handleBanner = () => {
         navigate('/app/appSettings/banners/addNew')
