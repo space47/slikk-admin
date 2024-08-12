@@ -8,8 +8,8 @@ type LocationDetails = {
     name: string
     address: string
     landmark: string
-    latitude: number
-    longitude: number
+    latitude: string
+    longitude: string
     contact_number: string
 }
 
@@ -36,4 +36,6 @@ export type TaskDetails = {
     user_details: UserDetails
     client_order_details: ClientOrderDetails
     client_order_id: string
+    create_date: string
+    update_date: string
 }
