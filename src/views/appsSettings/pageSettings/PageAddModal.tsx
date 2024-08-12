@@ -257,7 +257,7 @@ const PageAddModal: React.FC<modalProps> = ({
             },
             data_type: {
                 ...row.data_type,
-                selectedType: initialValue,
+                
             },
         }
 
