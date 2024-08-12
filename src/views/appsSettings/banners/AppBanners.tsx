@@ -55,6 +55,7 @@ const pageSizeOptions = [
 
 const AppBanners = () => {
     const [data, setData] = useState<BannerType[]>([])
+    const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -64,7 +65,9 @@ const AppBanners = () => {
         try {
             const response = await axiosInstance.get('/banners')
             const data = response.data.data.results
+            const total = response.data.data.count
             setData(data)
+            setTotalData(total)
         } catch (error) {
             console.error(error)
         }
@@ -272,8 +275,9 @@ const AppBanners = () => {
             <div className="flex items-center justify-between mt-4">
                 <Pagination
                     currentPage={page}
-                    total={totalPages}
+                    
                     onChange={(page) => setPage(page)}
+                    total={totalPages}
                 />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
