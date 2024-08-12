@@ -163,6 +163,10 @@ const PageAddModal: React.FC<modalProps> = ({
     // }
 
     const handleimage = async (files: File[]) => {
+        if(!files || files?.length == 0){
+            return;
+        }
+        
         const formData = new FormData()
 
         files.forEach((file) => {
@@ -170,7 +174,7 @@ const PageAddModal: React.FC<modalProps> = ({
         })
         formData.append('file_type', 'banners')
         try {
-            await axioisInstance
+            return await axioisInstance
                 .post('fileupload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -195,10 +199,11 @@ const PageAddModal: React.FC<modalProps> = ({
                             error?.response?.data?.message ||
                             'Image upload failed',
                     })
-                    return 'Error'
+                    return ''
                 })
         } catch (error: any) {
             console.error('Error uploading files:', error)
+            return '';
         }
     }
     const handleSelect = (a: any, b: any) => {
@@ -210,8 +215,10 @@ const PageAddModal: React.FC<modalProps> = ({
     }
 
     const handleSubmit = async (row: WebType) => {
+        console.log(row);
         const imageUpload = await handleimage(row.background_image_array)
-
+        // console.log(imageUpload);
+        // return;
         const footerImageUpload = await handleimage(
             row.footer_config_image_Array,
         )
@@ -226,7 +233,7 @@ const PageAddModal: React.FC<modalProps> = ({
         const newRowAdd = {
             ...row,
             background_image:
-                row.background_image_array.length > 0 ? imageUpload : '',
+            imageUpload,
             footer_config: {
                 ...row.footer_config,
                 image:

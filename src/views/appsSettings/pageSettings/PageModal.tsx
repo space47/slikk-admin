@@ -112,67 +112,80 @@ const PageModal: React.FC<modalProps> = ({
     })
 
     const handleimage = async (files: File[]) => {
-    const formData = new FormData();
+        if(!files || files?.length == 0){
+            return;
+        }
+        
+        const formData = new FormData();
 
-    files.forEach((file) => {
-        formData.append('file', file);
-    });
-    formData.append('file_type', 'banners');
+        files.forEach((file) => {
+            formData.append('file', file);
+        });
+        formData.append('file_type', 'banners');
 
-    try {
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            const newData = response.data.url
-            setImageView(newData)
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
-     } catch (error: any) {
+        try {
+            return await axioisInstance
+                .post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                .then((response) => {
+                    console.log(response)
+                    const newData = response.data.url
+                    notification.success({
+                        message: 'Success',
+                        description:
+                            response?.data?.message ||
+                            'Image uploaded successfully',
+                    })
+                    return newData
+                })
+                .catch((error) => {
+                    console.error(error)
+                    notification.error({
+                        message: 'Upload Failed',
+                        description:
+                            error?.response?.data?.message ||
+                            'Image upload failed',
+                    })
+                    return ''
+                })
+        } catch (error: any) {
             console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
+            return '';
         }
     }
 
     const handleSubmit = async (row: WebType) => {
-    const imageUpload = await handleimage(row.background_image_array);
-    const footerImageUpload = await handleimage(row.footer_config_image_Array);
-    const headerImageUpload = await handleimage(row.header_config_image_Array);
-    const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array);
+        const imageUpload = await handleimage(row.background_image_array);
+        const footerImageUpload = await handleimage(row.footer_config_image_Array);
+        const headerImageUpload = await handleimage(row.header_config_image_Array);
+        const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array);
 
-    const newRow = {
-        ...row,
-        background_image: imageUpload,
-        footer_config: {
-            ...row.footer_config,
-            image: footerImageUpload,
-        },
-        header_config: {
-            ...row.header_config,
-            image: headerImageUpload,
-        },
-        sub_header_config: {
-            ...row.sub_header_config,
-            image: subHeaderImageUpload,
-        },
-        data_type: {
-            ...row.data_type,
-        },
+        const newRow = {
+            ...row,
+            background_image: imageUpload,
+            footer_config: {
+                ...row.footer_config,
+                image: footerImageUpload,
+            },
+            header_config: {
+                ...row.header_config,
+                image: headerImageUpload,
+            },
+            sub_header_config: {
+                ...row.sub_header_config,
+                image: subHeaderImageUpload,
+            },
+            data_type: {
+                ...row.data_type,
+            },
+        };
+
+        console.log('row', newRow);
+        setParticularRow(newRow);
     };
-
-    console.log('row', newRow);
-    setParticularRow(newRow);
-};
 
 
     console.log('---------------', particularRow)
@@ -335,9 +348,9 @@ const PageModal: React.FC<modalProps> = ({
                                                             onChange={(
                                                                 files,
                                                             ) => form.setFieldValue(
-                                                                    'background_image_array',
-                                                                    files,
-                                                                )
+                                                                'background_image_array',
+                                                                files,
+                                                            )
                                                             }
                                                             className=""
                                                             onFileRemove={(
