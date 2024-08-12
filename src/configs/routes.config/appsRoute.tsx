@@ -790,6 +790,17 @@ const appsRoute: Routes = [
         //     pageContainerType: 'gutterless',
         // },
     },
+    {
+        key: 'appstryAndBuy.riderTracking',
+        path: `${APP_PREFIX_PATH}/tryAndBuy/riderTracking/:task_id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/slikkLogistics/riderTracking/riderDetails/RiderDetails'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
 ]
 
 export default appsRoute

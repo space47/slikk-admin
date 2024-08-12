@@ -35,9 +35,11 @@ const TaskTracking = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get('logistic/slikk/task')
+            const response = await axiosInstance.get(
+                'logistic/slikk/task?page_size=25',
+            )
             const data = response.data.data.results
-            const total = data.count
+            const total = response.data.data.count
 
             setData(data)
             setTotalData(total)
@@ -65,7 +67,7 @@ const TaskTracking = () => {
         (page - 1) * pageSize,
         page * pageSize,
     )
-    const totalPages = Math.ceil(filteredData.length / pageSize)
+    const totalPages = Math.ceil(totalData / pageSize)
 
     // const navigate = useNavigate()
 
@@ -75,9 +77,6 @@ const TaskTracking = () => {
         setStoreTaskId(task_id)
     }
 
-    // const assignTask = () => {
-    //     //iha pe api call karunga
-    // }
     const handleCloseModal = () => {
         setShowAssignModal(false)
     }
@@ -292,8 +291,8 @@ const TaskTracking = () => {
             <div className="mt-4 flex justify-between items-center">
                 <Pagination
                     currentPage={page}
-                    totalPages={totalPages}
-                    onPageChange={(newPage: any) => setPage(newPage)}
+                    total={totalPages}
+                    onChange={(newPage: any) => setPage(newPage)}
                 />
                 <Select<Option>
                     size="sm"
