@@ -65,6 +65,7 @@ const PageModal: React.FC<modalProps> = ({
     particularRow,
     setParticularRow,
 }) => {
+    const [imagview, setImageView] = useState<string[]>([])
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -111,20 +112,26 @@ const PageModal: React.FC<modalProps> = ({
     })
 
     const handleimage = async (files: File[]) => {
-        const formData = new FormData()
+        if(!files || files?.length == 0){
+            return;
+        }
+        
+        const formData = new FormData();
 
         files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'banners')
+            formData.append('file', file);
+        });
+        formData.append('file_type', 'banners');
+
         try {
-            await axioisInstance
+            return await axioisInstance
                 .post('fileupload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 })
                 .then((response) => {
+                    console.log(response)
                     const newData = response.data.url
                     notification.success({
                         message: 'Success',
@@ -142,53 +149,44 @@ const PageModal: React.FC<modalProps> = ({
                             error?.response?.data?.message ||
                             'Image upload failed',
                     })
-                    return 'Error'
+                    return ''
                 })
         } catch (error: any) {
             console.error('Error uploading files:', error)
+            return '';
         }
     }
 
     const handleSubmit = async (row: WebType) => {
-        const imageUpload = await handleimage(row.background_image_array)
-
-        const footerImageUpload = await handleimage(
-            row.footer_config_image_Array,
-        )
-
-        const headerImageUpload = await handleimage(
-            row.header_config_image_Array,
-        )
-
-        const subHeaderImageUpload = await handleimage(
-            row.sub_header_config_image_Array,
-        )
+        const imageUpload = await handleimage(row.background_image_array);
+        const footerImageUpload = await handleimage(row.footer_config_image_Array);
+        const headerImageUpload = await handleimage(row.header_config_image_Array);
+        const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array);
 
         const newRow = {
             ...row,
-            background_image: row.background_image_array ? 'imageUpload' : '',
+            background_image: imageUpload,
             footer_config: {
                 ...row.footer_config,
-                image: row.footer_config_image_Array ? 'footerImageUpload' : '',
+                image: footerImageUpload,
             },
             header_config: {
                 ...row.header_config,
-                image: row.header_config_image_Array ? 'headerImageUpload' : '',
+                image: headerImageUpload,
             },
             sub_header_config: {
                 ...row.sub_header_config,
-                image: row.sub_header_config_image_Array
-                    ? 'subHeaderImageUpload'
-                    : '',
+                image: subHeaderImageUpload,
             },
             data_type: {
                 ...row.data_type,
             },
-        }
-        console.log('row', newRow)
+        };
 
-        setParticularRow(newRow)
-    }
+        console.log('row', newRow);
+        setParticularRow(newRow);
+    };
+
 
     console.log('---------------', particularRow)
     const handleRemoveImage = () => {
@@ -349,18 +347,11 @@ const PageModal: React.FC<modalProps> = ({
                                                             } // uploadedd the file
                                                             onChange={(
                                                                 files,
-                                                            ) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.background_image_array,
-                                                                )
-                                                                form.setFieldValue(
-                                                                    'background_image_array',
-                                                                    files,
-                                                                )
-                                                            }}
+                                                            ) => form.setFieldValue(
+                                                                'background_image_array',
+                                                                files,
+                                                            )
+                                                            }
                                                             className=""
                                                             onFileRemove={(
                                                                 files,
