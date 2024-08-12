@@ -65,7 +65,7 @@ const PageModal: React.FC<modalProps> = ({
     particularRow,
     setParticularRow,
 }) => {
-   
+    const [imagview, setImageView] = useState<string[]>([])
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -111,7 +111,7 @@ const PageModal: React.FC<modalProps> = ({
         sub_header_config: particularRow.sub_header_config,
     })
 
-    const handleimage = async (files: File[]): Promise<string | null> => {
+    const handleimage = async (files: File[]) => {
     const formData = new FormData();
 
     files.forEach((file) => {
@@ -120,31 +120,29 @@ const PageModal: React.FC<modalProps> = ({
     formData.append('file_type', 'banners');
 
     try {
-        const response = await axioisInstance.post('fileupload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-
-        const newData = response.data.url;
-        
-        notification.success({
-            message: 'Success',
-            description: response?.data?.message || 'Image uploaded successfully',
-        });
-
-        return newData; // Return the URL of the uploaded image
-    } catch (error: any) {
-        console.error('Error uploading files:', error);
-
-        notification.error({
-            message: 'Upload Failed',
-            description: error?.response?.data?.message || 'Image upload failed',
-        });
-
-        return null; // Return null in case of error
+            const response = await axioisInstance.post('fileupload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            const newData = response.data.url
+            setImageView(newData)
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message || 'Image uploaded successfully',
+            })
+            return newData
+     } catch (error: any) {
+            console.error('Error uploading files:', error)
+            notification.error({
+                message: 'Failure',
+                description:
+                    error?.response?.data?.message || 'File Not uploaded',
+            })
+            return 'Error'
+        }
     }
-};
 
     const handleSubmit = async (row: WebType) => {
     const imageUpload = await handleimage(row.background_image_array);
@@ -154,18 +152,18 @@ const PageModal: React.FC<modalProps> = ({
 
     const newRow = {
         ...row,
-        background_image: imageUpload || '',
+        background_image: imageUpload,
         footer_config: {
             ...row.footer_config,
-            image: footerImageUpload || '',
+            image: footerImageUpload,
         },
         header_config: {
             ...row.header_config,
-            image: headerImageUpload || '',
+            image: headerImageUpload,
         },
         sub_header_config: {
             ...row.sub_header_config,
-            image: subHeaderImageUpload || '',
+            image: subHeaderImageUpload,
         },
         data_type: {
             ...row.data_type,
@@ -321,7 +319,7 @@ const PageModal: React.FC<modalProps> = ({
                                             // }
                                             className="grid grid-rows-2"
                                         >
-                                            <Field name="background_image">
+                                            <Field name="background_image_array">
                                                 {({
                                                     field,
                                                     form,
@@ -336,18 +334,11 @@ const PageModal: React.FC<modalProps> = ({
                                                             } // uploadedd the file
                                                             onChange={(
                                                                 files,
-                                                            ) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.background_image_array,
-                                                                )
-                                                                form.setFieldValue(
+                                                            ) => form.setFieldValue(
                                                                     'background_image_array',
                                                                     files,
                                                                 )
-                                                            }}
+                                                            }
                                                             className=""
                                                             onFileRemove={(
                                                                 files,
