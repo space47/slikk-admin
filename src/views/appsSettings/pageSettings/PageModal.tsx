@@ -110,85 +110,71 @@ const PageModal: React.FC<modalProps> = ({
         sub_header_config: particularRow.sub_header_config,
     })
 
-    const handleimage = async (files: File[]) => {
-        const formData = new FormData()
+    const handleimage = async (files: File[]): Promise<string | null> => {
+    const formData = new FormData();
 
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'banners')
-        try {
-            await axioisInstance
-                .post('fileupload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
-                .then((response) => {
-                    const newData = response.data.url
-                    notification.success({
-                        message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Image uploaded successfully',
-                    })
-                    return newData
-                })
-                .catch((error) => {
-                    console.error(error)
-                    notification.error({
-                        message: 'Upload Failed',
-                        description:
-                            error?.response?.data?.message ||
-                            'Image upload failed',
-                    })
-                    return 'Error'
-                })
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-        }
+    files.forEach((file) => {
+        formData.append('file', file);
+    });
+    formData.append('file_type', 'banners');
+
+    try {
+        const response = await axioisInstance.post('fileupload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        const newData = response.data.url;
+
+        notification.success({
+            message: 'Success',
+            description: response?.data?.message || 'Image uploaded successfully',
+        });
+
+        return newData; // Return the URL of the uploaded image
+    } catch (error: any) {
+        console.error('Error uploading files:', error);
+
+        notification.error({
+            message: 'Upload Failed',
+            description: error?.response?.data?.message || 'Image upload failed',
+        });
+
+        return null; // Return null in case of error
     }
+};
 
     const handleSubmit = async (row: WebType) => {
-        const imageUpload = await handleimage(row.background_image_array)
+    const imageUpload = await handleimage(row.background_image_array);
+    const footerImageUpload = await handleimage(row.footer_config_image_Array);
+    const headerImageUpload = await handleimage(row.header_config_image_Array);
+    const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array);
 
-        const footerImageUpload = await handleimage(
-            row.footer_config_image_Array,
-        )
+    const newRow = {
+        ...row,
+        background_image: imageUpload || '',
+        footer_config: {
+            ...row.footer_config,
+            image: footerImageUpload || '',
+        },
+        header_config: {
+            ...row.header_config,
+            image: headerImageUpload || '',
+        },
+        sub_header_config: {
+            ...row.sub_header_config,
+            image: subHeaderImageUpload || '',
+        },
+        data_type: {
+            ...row.data_type,
+        },
+    };
 
-        const headerImageUpload = await handleimage(
-            row.header_config_image_Array,
-        )
+    console.log('row', newRow);
+    setParticularRow(newRow);
+};
 
-        const subHeaderImageUpload = await handleimage(
-            row.sub_header_config_image_Array,
-        )
-
-        const newRow = {
-            ...row,
-            background_image: row.background_image_array ? 'imageUpload' : '',
-            footer_config: {
-                ...row.footer_config,
-                image: row.footer_config_image_Array ? 'footerImageUpload' : '',
-            },
-            header_config: {
-                ...row.header_config,
-                image: row.header_config_image_Array ? 'headerImageUpload' : '',
-            },
-            sub_header_config: {
-                ...row.sub_header_config,
-                image: row.sub_header_config_image_Array
-                    ? 'subHeaderImageUpload'
-                    : '',
-            },
-            data_type: {
-                ...row.data_type,
-            },
-        }
-        console.log('row', newRow)
-
-        setParticularRow(newRow)
-    }
 
     console.log('---------------', particularRow)
     const handleRemoveImage = () => {
