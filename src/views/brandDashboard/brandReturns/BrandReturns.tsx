@@ -60,7 +60,7 @@ const BrandReturns = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
     )
@@ -72,8 +72,9 @@ const BrandReturns = () => {
         to: string,
     ) => {
         try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `merchant/return_order_items?company_id=${selectedCompany.id}&from=${from}&to=${to}`,
+                `merchant/return_order_items?company_id=${selectedCompany.id}&from=${from}&to=${To_Date}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -219,7 +220,6 @@ const BrandReturns = () => {
                             }
                             defaultValue={new Date()}
                             value={new Date(from)}
-                            selected={moment(from).toDate()}
                             onChange={handleFromChange}
                         />
                     </div>
@@ -233,9 +233,8 @@ const BrandReturns = () => {
                             }
                             defaultValue={new Date()}
                             value={new Date(to)}
-                            selected={moment(to).toDate()}
                             onChange={handleToChange}
-                            minDate={moment(from).toDate()}
+                            minDate={moment(from).add(1, 'day').toDate()}
                         />
                     </div>
                 </div>
