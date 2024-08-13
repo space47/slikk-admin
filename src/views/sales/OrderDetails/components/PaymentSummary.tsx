@@ -10,7 +10,8 @@ type PaymentInfoProps = {
 
 type PaymentSummaryProps = {
     tax: string | number
-
+    delivery: string
+    amount: string
     data?: {
         amount: number
         mode: string
@@ -54,13 +55,25 @@ const PaymentType = ({ label, value, isLast }: PaymentInfoProps) => {
     )
 }
 
-const PaymentSummary = ({ data, tax }: PaymentSummaryProps) => {
+const PaymentSummary = ({
+    data,
+    tax,
+    delivery,
+    amount,
+}: PaymentSummaryProps) => {
     return (
         <Card className="mb-4">
             <h5 className="mb-4">Payment Summary</h5>
             <ul>
-                <PaymentInfo label="Amount" value={data?.amount} />
+                <div className="flex justify-between mb-1">
+                    Amount <span className="font-semibold">Rs.{amount}</span>
+                </div>
                 <PaymentType label="Mode" value={data?.mode} />
+                {/* <PaymentType label="Delivery Charge" value={delivery} /> */}
+                <div className="flex justify-between mb-2">
+                    Delivery Charge{' '}
+                    <span className="font-semibold">Rs.{delivery}</span>
+                </div>
                 <PaymentType
                     label="Time"
                     value={moment(data?.transaction_time).format(

@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Card from '@/components/ui/Card'
-
-import { NumericFormat } from 'react-number-format'
-import moment from 'moment'
+import { HiPhone } from 'react-icons/hi'
+import Avatar from '@/components/ui/Avatar'
 
 type ShippingInfoProps = {
     data?: {
@@ -9,56 +9,52 @@ type ShippingInfoProps = {
         create_date: number
         drop_time: number
         shippingLogo: string
-        partner: number
+
         runner_name: string
         runner_phone_number: string
         runner_profile_pic_url: string
         state: string
     }
+    logistic_partner: any
+    delivery_type: string
 }
 
-const ShippingInfo = ({ data }: ShippingInfoProps) => {
+const ShippingInfo = ({
+    data,
+    logistic_partner,
+    delivery_type,
+}: ShippingInfoProps) => {
     return (
         <Card className="mb-4">
             <h5 className="mb-4">Shipping</h5>
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-start flex-col gap-4">
-                    <h3 className="text-md font-semibold">{data?.partner}</h3>
-
-                    <div className=" flex flex-col">
-                        <span>
-                            Created :{' '}
-                            {moment(data?.create_date).format(
-                                'MM/DD/YYYY hh:mm:ss a',
-                            )}
-                        </span>
-                        <span>
-                            Drop Date :{' '}
-                            {data?.state == 'COMPLETED' && (
-                                <>
-                                    {moment(data?.drop_time).format(
-                                        'MM/DD/YYYY hh:mm:ss a',
-                                    )}
-                                </>
-                            )}
-                        </span>
+            <div className="flex flex-col mb-6 gap-5">
+                <span className="font-bold"> RIDER DETAILS:</span>
+                <div className="flex flex-col gap-3">
+                    <div className="flex gap-3">
+                        {' '}
+                        <Avatar
+                            shape="circle"
+                            src={data?.runner_profile_pic_url}
+                        />
+                        <div className="items-start">
+                            <div className="flex gap-2">
+                                <span>{data?.runner_name}-</span>
+                            </div>
+                            <div className="flex gap-2 items-center">
+                                <HiPhone /> <span>{data?.runner_name}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <span className="font-semibold">
-                    <NumericFormat
-                        displayType="text"
-                        value={(
-                            Math.round((data?.price || 0) * 100) / 100
-                        ).toFixed(2)}
-                        prefix={'Rs.'}
-                        thousandSeparator={true}
-                    />
-                </span>
-            </div>
-            <div className="flex flex-col">
-                {data?.runner_name}
-                {data?.runner_phone_number}
-                {data?.runner_profile_pic_url}
+                <hr />
+                <div className="flex flex-col">
+                    <div className="flex gap-3">
+                        Logistic Partner : <span>{logistic_partner}</span>
+                    </div>
+                    <div className="flex gap-3">
+                        Delivery Type : <span>{delivery_type}</span>
+                    </div>
+                </div>
             </div>
         </Card>
     )

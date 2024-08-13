@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 // import classNames from 'classnames'
 // import Tag from '@/components/ui/Tag'
@@ -21,6 +22,7 @@ import moment from 'moment'
 // import { string } from 'yup'
 
 type SalesOrderDetailsResponse = {
+    amount: string
     invoice_id?: string
     progressStatus?: number
     payementStatus?: number
@@ -31,6 +33,10 @@ type SalesOrderDetailsResponse = {
         mode: string
         transaction_time: string
     }
+    coupon_discount: string
+    delivery: string
+    delivery_discount: number
+    delivery_type: string
     tax: string | number
     address_name: string
     logistic?: {
@@ -44,6 +50,8 @@ type SalesOrderDetailsResponse = {
         runner_profile_pic_url: string
         state: string
     }
+
+    logistic_partner: any
     order_items?: {
         barcode: string
         brand: string
@@ -133,10 +141,16 @@ const OrderDetails = () => {
                             <div className="w-full">
                                 <OrderProducts data={data.order_items} />
                                 <div className="xl:grid grid-cols-2 gap-4">
-                                    <ShippingInfo data={data.logistic} />
+                                    <ShippingInfo
+                                        data={data.logistic}
+                                        logistic_partner={data.logistic_partner}
+                                        delivery_type={data.delivery_type}
+                                    />
                                     <PaymentSummary
                                         data={data.payment}
                                         tax={data.tax}
+                                        delivery={data.delivery}
+                                        amount={data.amount}
                                     />
                                 </div>
                                 <Activity
@@ -147,7 +161,7 @@ const OrderDetails = () => {
                                     invoice_id={data.invoice_id}
                                 />
                             </div>
-                            <div className="xl:max-w-[360px] w-full">
+                            <div className="xl:max-w-[360px] w-[300px]">
                                 <CustomerInfo
                                     user={data.user}
                                     billing_address={data.billing_address}
