@@ -76,7 +76,7 @@ const Seller = () => {
                 `merchant/company?p=${page}&page_size=${pageSize}`,
             )
             const data = response.data.data
-            const total = response.data
+            const total = response.data.length
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -93,8 +93,9 @@ const Seller = () => {
     //     return img[0]
     // }
 
-    const handleActionClick = (id: any) => {
-        console.log('OK', id)
+    const handleActionClick = (gstin: any) => {
+        // console.log('OK', id)
+        navigate(`/app/sellers/${gstin}`)
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
@@ -170,10 +171,12 @@ const Seller = () => {
             },
 
             {
-                header: 'Action',
-                accessorKey: 'action',
+                header: 'Edit',
+                accessorKey: '',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
+                    <Button
+                        onClick={() => handleActionClick(row.original.gstin)}
+                    >
                         EDIT
                     </Button>
                 ),

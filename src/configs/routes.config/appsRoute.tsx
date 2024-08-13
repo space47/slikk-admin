@@ -142,6 +142,15 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.sellers',
+        path: `${APP_PREFIX_PATH}/sellers/:gstin`,
+        component: lazy(
+            () =>
+                import('@/views/org-management/sellers/editSeller/EditSeller'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.stores',
         path: `${APP_PREFIX_PATH}/stores`,
         component: lazy(() => import('@/views/org-management/stores/Stores')), //p2
@@ -359,7 +368,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsInventoryManagement.inwards',
-        path: `${APP_PREFIX_PATH}/goods/received/edit/:id`,
+        path: `${APP_PREFIX_PATH}/goods/received/edit/:grn`,
         component: lazy(
             () =>
                 import(
