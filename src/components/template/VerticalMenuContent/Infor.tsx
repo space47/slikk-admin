@@ -41,13 +41,13 @@ const Infor = () => {
     }
 
     return (
-        <div className="text-[14px] max-h-[200px]">
+        <div className="text-[14px] max-h-[200px] xl:text-[18px]">
             <Dropdown
                 key={selectedCompany.id}
                 title={` ${selectedCompany.name}`}
                 onClick={onDropdownClick}
             >
-                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide ">
+                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll ">
                     {companyList.map((item, i) => (
                         <Dropdown.Item
                             key={i}
@@ -56,7 +56,7 @@ const Infor = () => {
                         >
                             <div
                                 onClick={handleOption}
-                                className="text-[12px] capitalize whitespace-break-spaces w-full min-w-[250px]"
+                                className="text-[12px] capitalize whitespace-break-spaces w-full min-w-[250px] xl:w-[400px] xl:text-[18px]"
                             >
                                 {item.name}, {item.registered_name}
                             </div>
