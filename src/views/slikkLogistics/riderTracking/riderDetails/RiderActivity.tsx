@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import classNames from 'classnames'
 import Timeline from '@/components/ui/Timeline'
 import Badge from '@/components/ui/Badge'
@@ -13,15 +14,13 @@ import {
     CustomModal2,
     CustomModal3,
     CustomModal4,
-    CustomModal5,
-    CustomModal6,
 } from './RiderModal'
 import { TaskDetails } from '../../taskTracking/TaskCommonType'
 
-type Event = {
-    timestamp: string
-    status: string
-}
+// type Event = {
+//     timestamp: string
+//     status: string
+// }
 type RIDERACTIVITYPROPS = {
     data: TaskDetails[]
     status: string
@@ -42,9 +41,9 @@ const RiderActivity = ({
     const [triggerAccept, settriggerAccept] = useState<boolean>(false)
     const [triggerpickupCall, setTriggerpickupCall] = useState<boolean>(false)
     const [triggerOutDelivery, setTriggerOutDelivery] = useState<boolean>(false)
-    const [triggerLocation, setTriggerLocation] = useState<boolean>(false)
+
     const [triggerDelivery, setTriggerDelivery] = useState<boolean>(false)
-    const [cancelCall, setCancelCall] = useState<boolean>(false)
+
     const [modalContent, setModalContent] = useState<string>()
     const navigate = useNavigate()
 
@@ -200,8 +199,8 @@ const RiderActivity = ({
     // OUT FOR DELIVERY.............................
 
     const handleOUTDELIVERY = () => {
-        setAction('delivery')
-        setTriggerLocation(true)
+        setAction('delivered')
+        setTriggerDelivery(true)
     }
 
     useEffect(() => {
@@ -246,55 +245,6 @@ const RiderActivity = ({
         }
     }, [triggerDelivery, navigate])
 
-    // Location Update....................................................................................
-
-    // const handleLOCATION = () => {
-    //     setAction('delivered')
-    //     setTriggerDelivery(true)
-    // }
-
-    // useEffect(() => {
-    //     if (triggerDelivery) {
-    //         const sendApiRequest = async () => {
-    //             try {
-    //                 const body = {
-    //                     action,
-    //                     latitude: latitude,
-    //                     longitude: longitude,
-    //                 }
-
-    //                 const response = await axiosInstance.patch(
-    //                     `logistic/rider/task/${task_id}`,
-    //                     body,
-    //                 )
-    //                 navigate(0)
-    //                 console.log(response.data)
-    //                 setIsModalOpen(false)
-    //                 setTriggerDelivery(false)
-    //                 notification.success({
-    //                     message: 'Success',
-    //                     description:
-    //                         response?.data?.message ||
-    //                         'Rider status updated successfully.',
-    //                 })
-    //             } catch (error: any) {
-    //                 console.error(error)
-    //                 const errorMessage =
-    //                     error.response?.data?.message ||
-    //                     'There was an error updating the order status. Please try again.'
-
-    //                 notification.error({
-    //                     message: 'Error',
-    //                     description: errorMessage,
-    //                 })
-    //             } finally {
-    //                 setTriggerDelivery(false)
-    //             }
-    //         }
-    //         sendApiRequest()
-    //     }
-    // }, [triggerDelivery, navigate])
-
     const getButtonAndModalContent = (status: string) => {
         switch (status) {
             case 'ASSIGNED':
@@ -313,10 +263,7 @@ const RiderActivity = ({
                 return {
                     buttonText: 'Delivery',
                 }
-            // case 'LOCATION_UPDATE':
-            //     return {
-            //         buttonText: 'Delivery',
-            //     }
+
             case 'delivered':
                 return {
                     buttonText: '',
@@ -406,15 +353,6 @@ const RiderActivity = ({
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleOUTDELIVERY}
-                    handleClose={handleClose}
-                    modalContent={modalContent}
-                    status={status}
-                />
-            )}
-            {status === 'location_update' && (
-                <CustomModal5
-                    isModalOpen={isModalOpen}
-                    handlePack={handleLOCATION}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={status}

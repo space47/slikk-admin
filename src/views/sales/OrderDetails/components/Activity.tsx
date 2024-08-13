@@ -117,7 +117,7 @@ const Activity = ({
 
     // CANCEL.........................................................................................................
 
-    const handleCancel = () => {
+    const handleReject = () => {
         const hasFulfilledQty = Object.values(fulfilledQuantities).some(
             (item) => item > 0,
         )
@@ -130,6 +130,10 @@ const Activity = ({
             setAction('ACCEPTED')
             setCancelCall(true)
         }
+    }
+
+    const handleCancel = () => {
+        setIsModalOpen(false)
     }
 
     useEffect(() => {
@@ -400,6 +404,7 @@ const Activity = ({
                     handleOk={handleOk}
                     handleCancel={handleCancel}
                     modalContent={modalContent}
+                    handleReject={handleReject}
                     status={status}
                     invoice_id={invoice_id}
                     payment={payment}
