@@ -74,7 +74,7 @@ const BrandOrder = () => {
         (store) => store.company.currCompany,
     )
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
 
     const [skuWiseDetails, setSkuWiseDetails] = useState<
         Array<{ key: string; value: SKU_DETAILS }>
@@ -90,6 +90,7 @@ const BrandOrder = () => {
         // to: string,
     ) => {
         try {
+            // const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
                 `/merchant/sales?p=${page}&page_size=${pageSize}`,
             )
@@ -274,7 +275,7 @@ const BrandOrder = () => {
                             value={new Date(to)}
                             selected={moment(to).toDate()}
                             onChange={handleToChange}
-                            minDate={moment(from).toDate()}
+                            minDate={moment(from).add(1, 'day').toDate()}
                         />
                     </div>
                 </div>

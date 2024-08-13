@@ -67,8 +67,6 @@ const RiderDetails = () => {
                 {!isEmpty(data) && (
                     <>
                         <div className="xl:flex gap-10 p-6 rounded-lg">
-                            <h1>{location.latitude}</h1> &{' '}
-                            <h1>{location.longitude}</h1>
                             <div className="w-full flex flex-col xl:flex-row gap-10 justify-between">
                                 <RiderInfo
                                     title="Profile"
@@ -111,6 +109,10 @@ const RiderDetails = () => {
                                     className="flex-1 bg-white p-6 rounded-lg min-w-[300px]"
                                 />
                             </div>
+                        </div>
+                        <div className="flex justify-center gap-4 mb-6">
+                            LOCATIONS:: <p>{location.latitude}</p> &{' '}
+                            <p>{location.longitude}</p> <br />
                         </div>
                         <RiderActivity
                             data={data}

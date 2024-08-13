@@ -77,7 +77,7 @@ const BrandStock = () => {
         (store) => store.company.currCompany,
     )
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
 
     const fetchData = async (
         page: number,
@@ -86,8 +86,9 @@ const BrandStock = () => {
         to: string,
     ) => {
         try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}&from=${from}&to=${to}`,
+                `inventory?p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}&from=${from}&to=${To_Date}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -278,7 +279,6 @@ const BrandStock = () => {
                             }
                             defaultValue={new Date()}
                             value={new Date(from)}
-                            selected={moment(from).toDate()}
                             onChange={handleFromChange}
                         />
                     </div>
@@ -292,9 +292,8 @@ const BrandStock = () => {
                             }
                             defaultValue={new Date()}
                             value={new Date(to)}
-                            selected={moment(to).toDate()}
                             onChange={handleToChange}
-                            minDate={moment(from).toDate()}
+                            minDate={moment(from).add(1, 'day').toDate()}
                         />
                     </div>
                 </div>

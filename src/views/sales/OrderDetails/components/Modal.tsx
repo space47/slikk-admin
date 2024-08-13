@@ -18,6 +18,7 @@ type Props = {
     fulfilledQuantities: { [key: number]: number }
     handleSelectChange: (id: number, value: string) => void
     errorMessage?: string
+    handleReject: () => void
 }
 
 export const CustomModal: React.FC<Props> = ({
@@ -32,6 +33,7 @@ export const CustomModal: React.FC<Props> = ({
     fulfilledQuantities,
     handleSelectChange,
     errorMessage,
+    handleReject,
 }) => {
     return (
         <Modal
@@ -39,58 +41,70 @@ export const CustomModal: React.FC<Props> = ({
             okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'PACKED'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
-            height={800}
+            className="custom-modal"
             okButtonProps={{
                 className: 'font-bold',
                 style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                    borderRadius: '15px',
+                    backgroundColor: '#1D4ED8',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
                 },
             }}
             cancelButtonProps={{
                 className: 'font-bold',
                 style: {
-                    backgroundColor: 'gray',
-                    color: 'white',
-                    borderRadius: '15px',
+                    backgroundColor: '#6B7280',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
                 },
+                onClick: status === 'PENDING' ? handleReject : handleCancel,
             }}
             open={isModalOpen}
             onOk={handleOk}
             onCancel={handleCancel}
         >
-            <p>{modalContent}</p>
-            <div className="flex flex-col">
-                <h1 className="text-[20px]">
+            <p className="text-lg font-semibold mb-4">{modalContent}</p>
+            <div className="flex flex-col gap-2 mb-4">
+                <h1 className="text-[20px] font-semibold">
                     Invoice Id:{' '}
                     <span className="font-normal">{invoice_id}</span>
                 </h1>
-                <h1 className="text-[16px]">
+                <h1 className="text-[16px] font-semibold">
                     Total Amount:{' '}
                     <span className="font-normal">Rs.{payment?.amount}</span>
                 </h1>
             </div>
             {product && product.length > 0 && (
-                <table className="w-full text-left">
+                <table className="w-full text-left border-t">
                     <thead>
-                        <tr>
-                            <th className="px-4 py-2">SKU</th>
-                            <th className="px-4 py-2">PRODUCT IMAGE</th>
-                            <th className="px-4 py-2">PRODUCT NAME</th>
-                            <th className="px-4 py-2">ORDERED QTY</th>
-                            <th className="px-4 py-2">FULFILLED QTY</th>
+                        <tr className="bg-gray-100">
+                            <th className="px-4 py-2 font-semibold">SKU</th>
+                            <th className="px-4 py-2 font-semibold">
+                                PRODUCT IMAGE
+                            </th>
+                            <th className="px-4 py-2 font-semibold">
+                                PRODUCT NAME
+                            </th>
+                            <th className="px-4 py-2 font-semibold">
+                                ORDERED QTY
+                            </th>
+                            <th className="px-4 py-2 font-semibold">
+                                FULFILLED QTY
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         {product.map((pdts) => (
-                            <tr key={pdts.id} className="border-t">
+                            <tr
+                                key={pdts.id}
+                                className="border-t hover:bg-gray-50"
+                            >
                                 <td className="px-4 py-2">{pdts.sku}</td>
                                 <td className="px-4 py-2">
                                     <img
                                         src={pdts.image}
                                         alt=""
-                                        className="w-20 h-30 object-cover"
+                                        className="w-20 h-20 object-cover rounded"
                                     />
                                 </td>
                                 <td className="px-4 py-2">{pdts.name}</td>
@@ -101,7 +115,7 @@ export const CustomModal: React.FC<Props> = ({
                                             fulfilledQuantities[pdts.id] || 0
                                         }
                                         className="w-full"
-                                        onChange={(value) =>
+                                        onChange={(value: any) =>
                                             handleSelectChange(pdts.id, value)
                                         }
                                     >
@@ -130,7 +144,9 @@ export const CustomModal: React.FC<Props> = ({
                 </table>
             )}
             {errorMessage && (
-                <div className="text-red-500 mb-4">{errorMessage}</div>
+                <div className="text-red-500 mt-4 text-center">
+                    {errorMessage}
+                </div>
             )}
         </Modal>
     )
@@ -157,30 +173,31 @@ export const CustomModal2: React.FC<props2> = ({
             okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'PACKED'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
-            height={800}
+            className="custom-modal"
             okButtonProps={{
                 className: 'font-bold',
                 style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                    borderRadius: '15px',
+                    backgroundColor: '#1D4ED8',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
                 },
             }}
             cancelButtonProps={{
                 className: 'font-bold',
                 style: {
-                    backgroundColor: 'gray',
-                    color: 'white',
-                    borderRadius: '15px',
+                    backgroundColor: '#6B7280',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
                 },
             }}
             open={isModalOpen}
             onOk={handlePack}
             onCancel={handleClose}
         >
-            <p>{modalContent}</p>
-
-            <h1>MARKED AS PACKED</h1>
+            <p className="text-lg font-semibold mb-4">{modalContent}</p>
+            <h1 className="text-center text-lg font-bold text-green-600">
+                MARKED AS PACKED
+            </h1>
         </Modal>
     )
 }
@@ -206,30 +223,31 @@ export const CustomModal3: React.FC<props3> = ({
             okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'SHIPPED'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
-            height={800}
+            className="custom-modal"
             okButtonProps={{
                 className: 'font-bold',
                 style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                    borderRadius: '15px',
+                    backgroundColor: '#1D4ED8',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
                 },
             }}
             cancelButtonProps={{
                 className: 'font-bold',
                 style: {
-                    backgroundColor: 'gray',
-                    color: 'white',
-                    borderRadius: '15px',
+                    backgroundColor: '#6B7280',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
                 },
             }}
             open={isModalOpen}
             onOk={handlePack}
             onCancel={handleClose}
         >
-            <p>{modalContent}</p>
-
-            <h1>MARKED AS SHIPPED</h1>
+            <p className="text-lg font-semibold mb-4">{modalContent}</p>
+            <h1 className="text-center text-lg font-bold text-green-600">
+                MARKED AS SHIPPED
+            </h1>
         </Modal>
     )
 }
@@ -255,30 +273,31 @@ export const CustomModal4: React.FC<props4> = ({
             okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'DELIVERED'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
-            height={800}
+            className="custom-modal"
             okButtonProps={{
                 className: 'font-bold',
                 style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                    borderRadius: '15px',
+                    backgroundColor: '#1D4ED8',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
                 },
             }}
             cancelButtonProps={{
                 className: 'font-bold',
                 style: {
-                    backgroundColor: 'gray',
-                    color: 'white',
-                    borderRadius: '15px',
+                    backgroundColor: '#6B7280',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
                 },
             }}
             open={isModalOpen}
             onOk={handlePack}
             onCancel={handleClose}
         >
-            <p>{modalContent}</p>
-
-            <h1>MARK AS DELIVERED</h1>
+            <p className="text-lg font-semibold mb-4">{modalContent}</p>
+            <h1 className="text-center text-lg font-bold text-green-600">
+                MARK AS DELIVERED
+            </h1>
         </Modal>
     )
 }

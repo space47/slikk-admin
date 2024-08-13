@@ -68,7 +68,7 @@ const PaginationTable = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
@@ -81,8 +81,9 @@ const PaginationTable = () => {
         to: string,
     ) => {
         try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}&from=${from}&to=${to}`, // &company_id
+                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`, // &company_id
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -314,7 +315,7 @@ const PaginationTable = () => {
                             defaultValue={new Date()}
                             value={new Date(to)}
                             onChange={handleToChange}
-                            minDate={moment(from).toDate()}
+                            minDate={moment(from).add(1, 'day').toDate()}
                         />
                     </div>
                 </div>
