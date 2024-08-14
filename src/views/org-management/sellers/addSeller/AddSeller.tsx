@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './addCommon'
 
 type FormModel = {
     registered_name: string
@@ -143,61 +144,28 @@ const AddSeller = () => {
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
                     <Form className="w-2/3">
                         <FormContainer>
-                            <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="Registered Name"
-                                    invalid={
-                                        errors.registered_name &&
-                                        touched.registered_name
-                                    }
-                                    errorMessage={errors.registered_name}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="registered_name"
-                                        placeholder="Place your Registered Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Brand Name"
-                                    invalid={errors.name && touched.name}
-                                    errorMessage={errors.name}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="name"
-                                        placeholder="Place Brand Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                            </FormContainer>
+                            <FormContainer className="grid grid-cols-2 gap-10">
+                                {SELLING_FORM.map((item, key) => (
+                                    <FormItem
+                                        key={key}
+                                        label={item.label}
+                                        className={item.classname}
+                                    >
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                ))}
 
-                            <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="GSTIN"
-                                    invalid={errors.gstin && touched.gstin}
-                                    errorMessage={errors.gstin}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="gstin"
-                                        placeholder="Enter GST number "
-                                        component={Input}
-                                    />
-                                </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Segment"
                                     invalid={errors.segment && touched.segment}
                                     errorMessage={errors.segment}
-                                    className="col-span-1 w-1/2"
+                                    className="col-span-1 w-full"
                                 >
                                     <Field name="segment">
                                         {({ field }: FieldProps) => (
@@ -221,188 +189,53 @@ const AddSeller = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="CIN"
-                                    invalid={errors.cin && touched.cin}
-                                    errorMessage={errors.cin}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="cin"
-                                        placeholder="Enter CIN  "
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Address"
-                                    invalid={errors.address && touched.address}
-                                    errorMessage={errors.address}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="address"
-                                        placeholder="Enter Complete Address "
-                                        component={Input}
-                                    />
-                                </FormItem>
-                            </FormContainer>
-
                             <h5 className="mb-5 from-neutral-900">
                                 POC Details
                             </h5>
-                            <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="POC Name"
-                                    invalid={errors.poc && touched.poc}
-                                    errorMessage={errors.poc}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="poc"
-                                        placeholder="Enter POC Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="POC EMAIL"
-                                    invalid={
-                                        errors.poc_email && touched.poc_email
-                                    }
-                                    errorMessage={errors.poc_email}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="poc_email"
-                                        placeholder="Enter POC EMAIL"
-                                        component={Input}
-                                    />
-                                </FormItem>
+                            <FormContainer className="grid grid-cols-2 gap-10 ">
+                                {POC_FORM.map((item, key) => (
+                                    <FormItem
+                                        asterisk
+                                        key={key}
+                                        label={item.label}
+                                        className={item.classname}
+                                    >
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                ))}
                             </FormContainer>
-                            <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="Mobile Number"
-                                    invalid={
-                                        errors.contact_number &&
-                                        touched.contact_number
-                                    }
-                                    errorMessage={errors.contact_number}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="contact_number"
-                                        placeholder="Enter your Contact Number"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Alternate Contact Number"
-                                    invalid={
-                                        errors.alternate_contact_number &&
-                                        touched.alternate_contact_number
-                                    }
-                                    errorMessage={
-                                        errors.alternate_contact_number
-                                    }
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="alternate_contact_number"
-                                        placeholder="Enter alternate contact Number"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                            </FormContainer>
+
+                            {/* ------------------------------------------------------------------------------------------------ */}
 
                             <h5 className="mb-5 from-neutral-900">
                                 Account Details
                             </h5>
-                            <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="Account Number"
-                                    invalid={
-                                        errors.account_number &&
-                                        touched.account_number
-                                    }
-                                    errorMessage={errors.account_number}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="account_number"
-                                        placeholder="Place your Account Number"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Confirm Account Number"
-                                    invalid={errors.confirm && touched.confirm}
-                                    errorMessage={errors.confirm}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="confirm"
-                                        placeholder="Confirm Account Number"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                            </FormContainer>
-
-                            <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="Account Holder Name"
-                                    invalid={
-                                        errors.account_holder_name &&
-                                        touched.account_holder_name
-                                    }
-                                    errorMessage={errors.account_holder_name}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="account_holder_name"
-                                        placeholder="Enter Account Holder Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Bank Name"
-                                    invalid={
-                                        errors.bank_name && touched.bank_name
-                                    }
-                                    errorMessage={errors.bank_name}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="bank_name"
-                                        placeholder="Enter Bank Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
+                            <FormContainer className="grid grid-cols-2 gap-10 ">
+                                {ACCOUNT_FORM.map((item, key) => (
+                                    <FormItem
+                                        key={key}
+                                        label={item.label}
+                                        className={item.classname}
+                                    >
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                ))}
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
                                 <Button
                                     type="reset"
-                                    className="mr-2"
+                                    className="mr-2 bg-gray-600"
                                     onClick={() => resetForm()}
                                 >
                                     Reset
@@ -410,7 +243,7 @@ const AddSeller = () => {
                                 <Button
                                     variant="solid"
                                     type="submit"
-                                    className="bg-blue-500 text-white"
+                                    className=" text-white"
                                 >
                                     Submit
                                 </Button>

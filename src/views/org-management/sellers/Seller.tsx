@@ -75,8 +75,8 @@ const Seller = () => {
             const response = await axiosInstance.get(
                 `merchant/company?p=${page}&page_size=${pageSize}`,
             )
-            const data = response.data.data
-            const total = response.data.length
+            const data = response.data.data.results
+            const total = response.data.data.count
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -93,9 +93,9 @@ const Seller = () => {
     //     return img[0]
     // }
 
-    const handleActionClick = (gstin: any) => {
+    const handleActionClick = (id: number) => {
         // console.log('OK', id)
-        navigate(`/app/sellers/${gstin}`)
+        navigate(`/app/sellers/${id}`)
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
@@ -174,9 +174,7 @@ const Seller = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <Button
-                        onClick={() => handleActionClick(row.original.gstin)}
-                    >
+                    <Button onClick={() => handleActionClick(row.original.id)}>
                         EDIT
                     </Button>
                 ),

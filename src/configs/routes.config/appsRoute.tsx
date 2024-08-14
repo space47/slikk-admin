@@ -143,7 +143,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsOrgManagement.sellers',
-        path: `${APP_PREFIX_PATH}/sellers/:gstin`,
+        path: `${APP_PREFIX_PATH}/sellers/:id`,
         component: lazy(
             () =>
                 import('@/views/org-management/sellers/editSeller/EditSeller'),
