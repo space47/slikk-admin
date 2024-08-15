@@ -319,7 +319,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsOrgManagement.stores',
                         path: `${APP_PREFIX_PATH}/stores`,
-                        title: 'Stores',
+                        title: 'Fullfillment Center',
                         translateKey: 'nav.appsOrgManagement.stores',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,

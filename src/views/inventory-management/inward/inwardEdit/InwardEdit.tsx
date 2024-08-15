@@ -21,7 +21,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { notification } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
@@ -88,6 +88,10 @@ const InwardEdit = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
     )
+
+    const { grn } = useParams()
+
+    console.log('sss', grn)
 
     const navigate = useNavigate()
 
@@ -207,7 +211,7 @@ const InwardEdit = () => {
     const fetchData = async () => {
         try {
             const response = await axioisInstance.get(
-                `goods/received?grn_number=GRN-00000011`,
+                `goods/received?grn_number=${grn}`,
             )
             const inwardData = response.data?.data
             setDatas(inwardData)
@@ -254,13 +258,7 @@ const InwardEdit = () => {
         console.log('handleSubmit')
         const docsUpload = await handleUpload(values.files)
 
-        if (docsUpload === 'Error') {
-            return
-        }
         const imageUpload = await handleimage(values.image)
-        if (imageUpload === 'Error') {
-            return
-        }
 
         console.log('Dataas', docsUpload)
         console.log('Immage', imageUpload)
@@ -553,7 +551,7 @@ const InwardEdit = () => {
                             </div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <FormContainer className=" mt-5 ">
-                                    <div className=" image w-[10%] h-[20%] mt-5  ">
+                                    <div className=" image w-[50px] h-[50px] mt-5 flex gap-2  ">
                                         {imagview ? (
                                             imagview.map((img, index) => (
                                                 <img
