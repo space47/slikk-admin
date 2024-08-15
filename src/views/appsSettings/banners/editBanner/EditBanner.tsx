@@ -219,7 +219,7 @@ const EditBanner = () => {
 
     return (
         <div>
-            <h3 className="mb-5 from-neutral-900">Seller Details</h3>
+            <h3 className="mb-5 from-neutral-900">Edit Banner</h3>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}

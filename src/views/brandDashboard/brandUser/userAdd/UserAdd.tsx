@@ -17,6 +17,11 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { IoMdCloseCircle } from 'react-icons/io'
 
+interface GROUPS {
+    id: number
+    name: string
+}
+
 type FormModel = {
     first_name: string
     last_name: string
@@ -24,6 +29,7 @@ type FormModel = {
     email: string
     business_email: string
     permission: permission[]
+    groups: GROUPS[]
 }
 
 interface permission {
@@ -57,13 +63,22 @@ interface permission {
 const UserAdd = () => {
     const [getPermission, setGetPermission] = useState<permission[]>()
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
+    const [getGroups, setGetGroups] = useState<GROUPS[]>([])
+    const [selectedGroups, setSelectedGroups] = useState<number[]>([])
     const [addedPermissions, setAddedPermissions] = useState<
+        { id: number; name: string }[]
+    >([])
+    const [addedGroups, setAddedGroups] = useState<
         { id: number; name: string }[]
     >([])
 
     const [searchInput, setSearchInput] = useState('')
 
     const [addInput, setAddInput] = useState('')
+
+    const [groupInput, setGroupInput] = useState('')
+
+    const [addGroupInput, setAddGroupInput] = useState('')
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
@@ -73,12 +88,46 @@ const UserAdd = () => {
 
     const navigate = useNavigate()
 
+    const fetchGroups = async () => {
+        try {
+            const response = await axioisInstance.get(`/groups`)
+            const grp = response.data?.groups
+            setGetGroups(grp)
+            const group_id = getGroups?.map((item) => item.id)
+            console.log('scscscscs', group_id)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchGroups()
+    }, [])
+
+    const fetchData = async () => {
+        try {
+            const response = await axioisInstance.get(`/permissions`)
+            const perm = response.data?.permissions
+            setGetPermission(perm)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
     const handlePermissionSelect = (id: number) => {
         setSelectedPermissions((prevSelected) =>
             prevSelected.includes(id)
                 ? prevSelected.filter((permId) => permId !== id)
                 : [...prevSelected, id],
         )
+    }
+
+    const handleGroupSelect = (id: number) => {
+        setSelectedGroups([id])
     }
 
     const handleAddPermissions = () => {
@@ -102,29 +151,43 @@ const UserAdd = () => {
         setSelectedPermissions([])
     }
 
+    const handleAddGroups = () => {
+        const alreadyAdded = selectedGroups.filter((permId) =>
+            addedGroups.some((added) => added.id === permId),
+        )
+
+        if (alreadyAdded.length > 0) {
+            notification.warning({
+                message: 'Warning',
+                description: 'Permission already added',
+            })
+        }
+        const selected = getGroups?.filter(
+            (perm) =>
+                selectedGroups.includes(perm.id) &&
+                !addedGroups.some((added) => added.id === perm.id),
+        )
+
+        setAddedGroups((prevAdded) => [...prevAdded, ...selected])
+        setSelectedGroups([])
+    }
+
     const handleRemovePermissions = (id: number) => {
         setAddedPermissions((prevAdded) =>
             prevAdded.filter((perm) => perm.id !== id),
         )
     }
 
-    const fetchData = async () => {
-        try {
-            const response = await axioisInstance.get(`/permissions`)
-            const perm = response.data?.permissions
-            setGetPermission(perm)
-        } catch (error) {
-            console.log(error)
-        }
+    const handleRemoveGroups = (id: number) => {
+        setAddedGroups((prevAdded) =>
+            prevAdded.filter((perm) => perm.id !== id),
+        )
     }
-
-    useEffect(() => {
-        fetchData()
-    }, [])
 
     const handleAddUser = async (data: FormModel) => {
         const formdata = {
             ...data,
+            permission: data.permission,
         }
         try {
             const response = await axioisInstance.post(
@@ -149,7 +212,35 @@ const UserAdd = () => {
         }
     }
 
-    const handleSubmit = async (values: FormModel) => {
+    // const handleAddGroupDatas = async (data: FormModel) => {
+    //     const formdata = {
+    //         ...data,
+    //         groups: data.groups,
+    //     }
+    //     try {
+    //         const response = await axioisInstance.post(
+    //             `merchant/user/groups`,
+    //             formdata,
+    //         )
+    //         const data = response.data
+    //         notification.success({
+    //             message: 'Success',
+    //             description:
+    //                 response?.data?.message ||
+    //                 'User Successfully Added to Company',
+    //         })
+    //         return data
+    //     } catch (error) {
+    //         notification.error({
+    //             message: 'Failure',
+    //             description:
+    //                 'User Not Added to Company, All Fields are mandatory',
+    //         })
+    //         return 'Error'
+    //     }
+    // }
+
+    const handleSubmit = async (values: any) => {
         const bodyData = {
             ...values,
         }
@@ -164,7 +255,41 @@ const UserAdd = () => {
             console.log(error)
         }
 
+        const groupIds = addedGroups.map((item) => item.id)
+        console.log('ttttttttttt', groupIds, values.mobile)
+        // const groupdetails = await handleAddGroupDatas(values)
+        // console.log('aaaaaaaaaa', groupdetails)
+        // if (groupdetails === 'Error') {
+        //     return
+        // }
+
+        const addGroupData = {
+            mobile: `${values.mobile}`,
+            group_id: `${groupIds}`,
+        }
+
+        try {
+            const response = await axioisInstance.post(
+                `merchant/user/groups`,
+                addGroupData,
+            )
+
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message ||
+                    'Groups successfully assigned to the user.',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failure',
+                description: 'Failed to assign groups to the user.',
+            })
+            return
+        }
+
         const userdetails = await handleAddUser(values)
+        console.log('uuuuuuuuuuuuuuu', userdetails)
         if (userdetails === 'Error') {
             return
         }
@@ -175,7 +300,7 @@ const UserAdd = () => {
         }
 
         try {
-            const response = await axioisInstance.patch(
+            const response = await axioisInstance.post(
                 `company/user/permission/${values.mobile}`,
                 formData,
             )
@@ -204,21 +329,37 @@ const UserAdd = () => {
         email: '',
         business_email: '',
         permission: [],
+        groups: [],
     }
 
     const filteredPermission = getPermission?.filter((item) =>
         item.name.toLowerCase().includes(searchInput.toLowerCase()),
     )
 
+    const filteredGroups = getGroups?.filter((item) =>
+        item.name.toLowerCase().includes(groupInput.toLowerCase()),
+    )
+
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
     }
+
+    const handleGroupSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setGroupInput(e.target.value)
+    }
+
     const filteredAddPermission = addedPermissions?.filter((item) =>
         item.name.toLowerCase().includes(addInput.toLowerCase()),
+    )
+    const filteredAddGroup = addedGroups?.filter((item) =>
+        item.name.toLowerCase().includes(addGroupInput.toLowerCase()),
     )
 
     const handleAddPerm = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddInput(e.target.value)
+    }
+    const handleAddGroup = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAddGroupInput(e.target.value)
     }
 
     return (
@@ -333,6 +474,123 @@ const UserAdd = () => {
                                     />
                                 </FormItem>
                             </FormContainer>
+                            {/* ........................................................................................ */}
+
+                            <div className="text-xl font-semibold mt-4">
+                                USER GROUPS
+                            </div>
+                            <br />
+
+                            <FormContainer className="mb-7">
+                                <FormContainer className="flex justify-between">
+                                    {/* All Permissions */}
+                                    <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
+                                        <div className="sticky top-0 z-10 bg-white">
+                                            {/* <div className="mb-3 bg-white">
+                                                <input
+                                                    type="text"
+                                                    className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
+                                                    placeholder="Search Permissions"
+                                                    value={groupInput}
+                                                    onChange={handleGroupSearch}
+                                                    onKeyDown={(e: any) =>
+                                                        e.key === 'Enter' &&
+                                                        e.preventDefault()
+                                                    }
+                                                />
+                                            </div> */}
+                                            <label
+                                                htmlFor="All Groups"
+                                                className="font-bold bg-white"
+                                            >
+                                                All Groups
+                                            </label>
+                                        </div>
+                                        <div className="">
+                                            {filteredGroups?.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    className="flex flex-col"
+                                                >
+                                                    <label className="bg-gray-100 px-2 py-2 flex items-center">
+                                                        <input
+                                                            type="radio"
+                                                            checked={selectedGroups.includes(
+                                                                item.id,
+                                                            )}
+                                                            onChange={() =>
+                                                                handleGroupSelect(
+                                                                    item.id,
+                                                                )
+                                                            }
+                                                        />
+                                                        <span className="ml-2">
+                                                            {item.name}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Card>
+
+                                    {/* Buttons */}
+                                    <div className="flex justify-center items-center flex-col gap-4">
+                                        <Button
+                                            type="button"
+                                            variant="accept"
+                                            className="w-32 px-8"
+                                            onClick={handleAddGroups}
+                                        >
+                                            ADD {'>>'}
+                                        </Button>
+                                    </div>
+
+                                    {/* Added Permissions */}
+                                    <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
+                                        <div className="sticky top-0 z-10 bg-white">
+                                            {/* <div className="mb-3 bg-white">
+                                                <input
+                                                    type="text"
+                                                    value={addInput}
+                                                    onChange={handleAddGroup}
+                                                    className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
+                                                    placeholder="Search Permissions"
+                                                />
+                                            </div> */}
+                                            <label
+                                                htmlFor="Added Permissions"
+                                                className="font-bold bg-white"
+                                            >
+                                                Added Groups
+                                            </label>
+                                        </div>
+                                        <div className="">
+                                            {filteredAddGroup?.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    className="flex flex-col"
+                                                >
+                                                    <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
+                                                        <span>{item.name}</span>
+                                                        <button
+                                                            className="text-red-500 ml-2"
+                                                            onClick={() =>
+                                                                handleRemoveGroups(
+                                                                    item.id,
+                                                                )
+                                                            }
+                                                        >
+                                                            <IoMdCloseCircle className="text-red-400" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Card>
+                                </FormContainer>
+                            </FormContainer>
+
+                            {/* ............................................................................................ */}
 
                             <div className="text-xl font-semibold">
                                 USER PERMISSIONS
@@ -342,7 +600,7 @@ const UserAdd = () => {
                             <FormContainer className="">
                                 <FormContainer className="flex justify-between">
                                     {/* All Permissions */}
-                                    <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
+                                    <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
                                         <div className="sticky top-0 z-10 bg-white">
                                             <div className="mb-3 bg-white">
                                                 <input
@@ -404,7 +662,7 @@ const UserAdd = () => {
                                     </div>
 
                                     {/* Added Permissions */}
-                                    <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
+                                    <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
                                         <div className="sticky top-0 z-10 bg-white">
                                             <div className="mb-3 bg-white">
                                                 <input
