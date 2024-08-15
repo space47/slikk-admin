@@ -9,24 +9,11 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-
-// type ProductVariant = {
-//     name: string
-//     variant_type: string
-//     color_code_link: string
-//     size: string[]
-//     barcode: string
-//     sku: string
-//     mrp: string
-//     sp: string
-//     inventory_count: number
-// }
 
 type Product = {
     account_holder_name: string
@@ -37,7 +24,9 @@ type Product = {
     cin: string
     contact_number: string
     create_date: string
+    damages_per_sku: number
     gstin: string
+    handling_charges_per_order: number
     id: number
     ifsc: string
     is_active: boolean
@@ -45,8 +34,12 @@ type Product = {
     poc: string
     poc_email: string
     registered_name: string
+    removal_fee_per_sku: number
+    revenue_share: number
     segment: string
+    settlement_days: number
     update_date: string
+    warehouse_charge_per_sku: number
 }
 
 type Option = {
@@ -101,8 +94,38 @@ const Seller = () => {
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
             {
-                header: 'Name',
-                accessorKey: 'name',
+                header: 'Account Holder Name',
+                accessorKey: 'account_holder_name',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Account Number',
+                accessorKey: 'account_number',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Address',
+                accessorKey: 'address',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Alternate Contact Number',
+                accessorKey: 'alternate_contact_number',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Bank Name',
+                accessorKey: 'bank_name',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'CIN',
+                accessorKey: 'cin',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Contact Number',
+                accessorKey: 'contact_number',
                 cell: (info) => info.getValue(),
             },
             {
@@ -115,8 +138,8 @@ const Seller = () => {
                 ),
             },
             {
-                header: 'Registered_Name',
-                accessorKey: 'registered_name',
+                header: 'Damages Per SKU',
+                accessorKey: 'damages_per_sku',
                 cell: (info) => info.getValue(),
             },
             {
@@ -125,13 +148,28 @@ const Seller = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'CIN',
-                accessorKey: 'cin',
+                header: 'Handling Charges Per Order',
+                accessorKey: 'handling_charges_per_order',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Address',
-                accessorKey: 'address',
+                header: 'ID',
+                accessorKey: 'id',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'IFSC',
+                accessorKey: 'ifsc',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Is Active',
+                accessorKey: 'is_active',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+            {
+                header: 'Name',
+                accessorKey: 'name',
                 cell: (info) => info.getValue(),
             },
             {
@@ -140,28 +178,37 @@ const Seller = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Number',
-                accessorKey: 'contact_number',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'ALT Contact',
-                accessorKey: 'alternate_contact_number',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'POC_EMAIL',
+                header: 'POC Email',
                 accessorKey: 'poc_email',
                 cell: (info) => info.getValue(),
             },
-
             {
-                header: 'ACTIIVE',
-                accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+                header: 'Registered Name',
+                accessorKey: 'registered_name',
+                cell: (info) => info.getValue(),
             },
             {
-                header: 'UPDATE DATE',
+                header: 'Removal Fee Per SKU',
+                accessorKey: 'removal_fee_per_sku',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Revenue Share',
+                accessorKey: 'revenue_share',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Segment',
+                accessorKey: 'segment',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Settlement Days',
+                accessorKey: 'settlement_days',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Update Date',
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => (
                     <span>
@@ -169,7 +216,11 @@ const Seller = () => {
                     </span>
                 ),
             },
-
+            {
+                header: 'Warehouse Charge Per SKU',
+                accessorKey: 'warehouse_charge_per_sku',
+                cell: (info) => info.getValue(),
+            },
             {
                 header: 'Edit',
                 accessorKey: '',

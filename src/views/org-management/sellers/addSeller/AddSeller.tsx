@@ -11,39 +11,57 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './addCommon'
 
 type FormModel = {
-    registered_name: string
-    name: string
-    gstin: string
-    segment: string
-    cin: string
+    account_holder_name: string
+    account_number: string
     address: string
-    contact_number: string
     alternate_contact_number: string
+    bank_name: string
+    cin: string
+    contact_number: string
+    create_date: string
+    damages_per_sku: number
+    gstin: string
+    handling_charges_per_order: number
+    id: number
+    ifsc: string
+    is_active: boolean
+    name: string
     poc: string
     poc_email: string
-    account_number: string
-    ifsc: string
-    confirm: string
-    account_holder_name: string
-    bank_name: string
+    registered_name: string
+    removal_fee_per_sku: number
+    revenue_share: number
+    segment: string
+    settlement_days: number
+    update_date: string
+    warehouse_charge_per_sku: number
 }
 
 const initialValue: FormModel = {
-    registered_name: '',
-    name: '',
-    gstin: '',
-    segment: '',
-    cin: '',
+    account_holder_name: '',
+    account_number: '',
     address: '',
-    contact_number: '',
     alternate_contact_number: '',
+    bank_name: '',
+    cin: '',
+    contact_number: '',
+    create_date: '',
+    damages_per_sku: 0,
+    gstin: '',
+    handling_charges_per_order: 0,
+    id: 0,
+    ifsc: '',
+    is_active: false,
+    name: '',
     poc: '',
     poc_email: '',
-    account_number: '',
-    ifsc: '',
-    confirm: '',
-    account_holder_name: '',
-    bank_name: '',
+    registered_name: '',
+    removal_fee_per_sku: 0,
+    revenue_share: 0,
+    segment: '',
+    settlement_days: 0,
+    update_date: '',
+    warehouse_charge_per_sku: 0,
 }
 
 // const validationSchema = Yup.object().shape({

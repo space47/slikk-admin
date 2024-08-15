@@ -406,7 +406,10 @@ const CategoryEdit = () => {
                                 <FormItem
                                     asterisk
                                     label="Description"
-                                    invalid={errors.description && touched.description}
+                                    invalid={
+                                        errors.description &&
+                                        touched.description
+                                    }
                                     errorMessage={errors.description}
                                     className="col-span-1 w-1/2"
                                 >
@@ -420,7 +423,7 @@ const CategoryEdit = () => {
                                         }}
                                     />
                                 </FormItem>
-                                 <FormItem
+                                <FormItem
                                     label="Footer"
                                     invalid={errors.footer && touched.footer}
                                     errorMessage={errors.footer}

@@ -12,21 +12,30 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './editCommon'
 
 type FormModel = {
-    registered_name: string
-    name: string
-    gstin: string
-    segment: string
-    cin: string
+    account_holder_name: string
+    account_number: string
     address: string
-    contact_number: string
     alternate_contact_number: string
+    bank_name: string
+    cin: string
+    contact_number: string
+    create_date: string
+    damages_per_sku: number
+    gstin: string
+    handling_charges_per_order: number
+    id: number
+    ifsc: string
+    is_active: boolean
+    name: string
     poc: string
     poc_email: string
-    account_number: string
-    ifsc: string
-    confirm: string
-    account_holder_name: string
-    bank_name: string
+    registered_name: string
+    removal_fee_per_sku: number
+    revenue_share: number
+    segment: string
+    settlement_days: number
+    update_date: string
+    warehouse_charge_per_sku: number
 }
 
 // const validationSchema = Yup.object().shape({
@@ -89,33 +98,42 @@ const EditSeller = () => {
     }, [id])
 
     const initialValue: FormModel = {
-        registered_name: sellerData?.registered_name || '',
-        name: sellerData?.name || '',
-        gstin: sellerData?.gstin || '',
-        segment: sellerData?.segment || '',
-        cin: sellerData?.cin || '',
+        account_holder_name: sellerData?.account_holder_name || '',
+        account_number: sellerData?.account_number || '',
         address: sellerData?.address || '',
-        contact_number: sellerData?.contact_number || '',
         alternate_contact_number: sellerData?.alternate_contact_number || '',
+        bank_name: sellerData?.bank_name || '',
+        cin: sellerData?.cin || '',
+        contact_number: sellerData?.contact_number || '',
+        create_date: sellerData?.create_date || '',
+        damages_per_sku: sellerData?.damages_per_sku || 0,
+        gstin: sellerData?.gstin || '',
+        handling_charges_per_order: sellerData?.handling_charges_per_order || 0,
+        id: sellerData?.id || 0,
+        ifsc: sellerData?.ifsc || '',
+        is_active: sellerData?.is_active || false,
+        name: sellerData?.name || '',
         poc: sellerData?.poc || '',
         poc_email: sellerData?.poc_email || '',
-        account_number: sellerData?.account_number || '',
-        ifsc: sellerData?.ifsc || '',
-        confirm: sellerData?.account_number || '',
-        account_holder_name: sellerData?.account_holder_name || '',
-        bank_name: sellerData?.bank_name || '',
+        registered_name: sellerData?.registered_name || '',
+        removal_fee_per_sku: sellerData?.removal_fee_per_sku || 0,
+        revenue_share: sellerData?.revenue_share || 0,
+        segment: sellerData?.segment || '',
+        settlement_days: sellerData?.settlement_days || 0,
+        update_date: sellerData?.update_date || '',
+        warehouse_charge_per_sku: sellerData?.warehouse_charge_per_sku || 0,
     }
 
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
 
-        if (values.account_number !== values.confirm) {
-            notification.error({
-                message: 'Failure',
-                description: 'Account number does not match',
-            })
-            return
-        }
+        // if (values.account_number !== values.confirm) {
+        //     notification.error({
+        //         message: 'Failure',
+        //         description: 'Account number does not match',
+        //     })
+        //     return
+        // }
         if (values.contact_number === values.alternate_contact_number) {
             notification.error({
                 message: 'Failure',

@@ -153,7 +153,23 @@ const appsRoute: Routes = [
     {
         key: 'appsOrgManagement.stores',
         path: `${APP_PREFIX_PATH}/stores`,
-        component: lazy(() => import('@/views/org-management/stores/Stores')), //p2
+        component: lazy(() => import('@/views/org-management/stores/Stores')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.stores',
+        path: `${APP_PREFIX_PATH}/stores/addNew`,
+        component: lazy(
+            () => import('@/views/org-management/stores/addStore/AddStore'),
+        ), //p2
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.stores',
+        path: `${APP_PREFIX_PATH}/stores/:id`,
+        component: lazy(
+            () => import('@/views/org-management/stores/editStore/EditStore'),
+        ), //p2
         authority: [ADMIN, USER],
     },
     {
@@ -748,6 +764,14 @@ const appsRoute: Routes = [
                 import(
                     '@/views/appsSettings/banners/addBanners/addComponents/NewBanner'
                 ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.banners',
+        path: `${APP_PREFIX_PATH}/appSettings/banners/:id`,
+        component: lazy(
+            () => import('@/views/appsSettings/banners/editBanner/EditBanner'),
         ),
         authority: [ADMIN, USER],
     },
