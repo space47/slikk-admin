@@ -127,11 +127,7 @@ const AddUser = () => {
     }
 
     const handleGroupSelect = (id: number) => {
-        setSelectedGroups((prevSelected) =>
-            prevSelected.includes(id)
-                ? prevSelected.filter((permId) => permId !== id)
-                : [...prevSelected, id],
-        )
+        setSelectedGroups([id])
     }
 
     const handleAddPermissions = () => {
@@ -341,7 +337,7 @@ const AddUser = () => {
     )
 
     const filteredGroups = getGroups?.filter((item) =>
-        item.name.toLowerCase().includes(searchInput.toLowerCase()),
+        item.name.toLowerCase().includes(groupInput.toLowerCase()),
     )
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -518,7 +514,7 @@ const AddUser = () => {
                                                 >
                                                     <label className="bg-gray-100 px-2 py-2 flex items-center">
                                                         <input
-                                                            type="checkbox"
+                                                            type="radio"
                                                             checked={selectedGroups.includes(
                                                                 item.id,
                                                             )}
