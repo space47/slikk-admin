@@ -102,7 +102,7 @@ export const CustomModal: React.FC<Props> = ({
                                 <td className="px-4 py-2">{pdts.sku}</td>
                                 <td className="px-4 py-2">
                                     <img
-                                        src={pdts.image}
+                                        src={pdts.image.split(',')[0]}
                                         alt=""
                                         className="w-20 h-20 object-cover rounded"
                                     />
