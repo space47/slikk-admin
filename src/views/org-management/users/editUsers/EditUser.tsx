@@ -76,42 +76,6 @@ const UserEdit = () => {
         (store) => store.company.currCompany,
     )
 
-    const handlePermissionSelect = (id: number) => {
-        setSelectedPermissions((prevSelected) =>
-            prevSelected.includes(id)
-                ? prevSelected.filter((permId) => permId !== id)
-                : [...prevSelected, id],
-        )
-    }
-
-    const handleAddPermissions = () => {
-        const alreadyAdded = selectedPermissions.filter((permId) =>
-            addedPermissions.some((added) => added.id === permId),
-        )
-
-        if (alreadyAdded.length > 0) {
-            notification.warning({
-                message: 'Warning',
-                description: 'Permission already added',
-            })
-        }
-
-        const selected = getPermission?.filter(
-            (perm) =>
-                selectedPermissions.includes(perm.id) &&
-                !addedPermissions.some((added) => added.id === perm.id),
-        )
-
-        setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
-        setSelectedPermissions([])
-    }
-
-    const handleRemovePermissions = (id: number) => {
-        setAddedPermissions((prevAdded) =>
-            prevAdded.filter((perm) => perm.id !== id),
-        )
-    }
-
     const fetchData = async () => {
         try {
             const response = await axioisInstance.get(`/permissions`)
@@ -148,6 +112,42 @@ const UserEdit = () => {
     useEffect(() => {
         fetchUser()
     }, [])
+
+    const handlePermissionSelect = (id: number) => {
+        setSelectedPermissions((prevSelected) =>
+            prevSelected.includes(id)
+                ? prevSelected.filter((permId) => permId !== id)
+                : [...prevSelected, id],
+        )
+    }
+
+    const handleAddPermissions = () => {
+        const alreadyAdded = selectedPermissions.filter((permId) =>
+            addedPermissions.some((added) => added.id === permId),
+        )
+
+        if (alreadyAdded.length > 0) {
+            notification.warning({
+                message: 'Warning',
+                description: 'Permission already added',
+            })
+        }
+
+        const selected = getPermission?.filter(
+            (perm) =>
+                selectedPermissions.includes(perm.id) &&
+                !addedPermissions.some((added) => added.id === perm.id),
+        )
+
+        setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
+        setSelectedPermissions([])
+    }
+
+    const handleRemovePermissions = (id: number) => {
+        setAddedPermissions((prevAdded) =>
+            prevAdded.filter((perm) => perm.id !== id),
+        )
+    }
 
     const handleAddUser = async (data: FormModel) => {
         const formdata = {
