@@ -325,12 +325,17 @@ const SubEdit = () => {
                                                         option.value ===
                                                         values.category.value,
                                                 )}
-                                                onChange={(option) =>
+                                                onChange={(option) => {
+                                                    console.log(
+                                                        'dssdsdsd',
+                                                        field.name,
+                                                    )
+                                                    console.log('sdd', option)
                                                     form.setFieldValue(
                                                         field.name,
                                                         option,
                                                     )
-                                                }
+                                                }}
                                             />
                                         )}
                                     </Field>

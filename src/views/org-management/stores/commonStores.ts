@@ -3,7 +3,7 @@ type OpeningHour = {
     from_hour: string
     to_hour: string
 }
-type StoreTypes = {
+export type StoreTypes = {
     company: number | null
     code: string
     name: string
@@ -31,4 +31,35 @@ type StoreTypes = {
     images_array: []
 }
 
-export default StoreTypes
+export type STORETABLE = {
+    id: number
+    image: string
+    company: number
+    code: string
+    name: string
+    is_fulfillment_center: boolean
+    openingHours: string[]
+    description: string
+    area: string
+    city: string
+    state: string
+    pincode: string
+    rating: number
+    latitude: number
+    longitude: number
+    contactNumber: string
+    alternate_contact_number: string
+    poc: string
+    poc_designation: string
+    type: string
+    return_area: string
+    return_city: string
+    return_state: string
+    return_pincode: string
+    gstin: string
+    instruction: string
+    is_active: boolean
+    create_date: string
+    update_date: string
+    location_url: string
+}

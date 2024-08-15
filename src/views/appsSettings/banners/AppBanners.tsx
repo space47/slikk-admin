@@ -16,49 +16,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 
-type BRANDTYPES = {
-    image: string
-    name: string
-    title: string
-}
-
-type DIVTYPES = {
-    image: string
-    name: string
-    description: string
-}
-
-interface BannerType {
-    id: number
-    name: string
-    section_heading: string
-    parent_banner: string | null
-    quick_filter_tags: string[]
-    brand: BRANDTYPES[]
-    division: DIVTYPES[]
-    category: DIVTYPES[]
-    sub_category: DIVTYPES[]
-    product_type: DIVTYPES[]
-    type: string | null
-    image_web: string
-    image_mobile: string
-    offers: boolean
-    offer_id: string
-    page: string
-    from_date: string
-    to_date: string
-    uptooff: string
-    tags: string[]
-    footer: string | null
-    coupon_code: string | null
-    is_clickable: boolean
-    section_background_web: string
-    section_background_mobile: string
-    max_price: number
-    min_price: number
-    barcodes: string
-    redirection_url: string | null
-}
+import { BANNERMODEL } from './BannerCommon'
 
 type Option = {
     value: number
@@ -75,7 +33,7 @@ const pageSizeOptions = [
 ]
 
 const AppBanners = () => {
-    const [data, setData] = useState<BannerType[]>([])
+    const [data, setData] = useState<BANNERMODEL[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -129,59 +87,14 @@ const AppBanners = () => {
                     )),
             },
             {
-                header: 'Brand TITLE',
-                accessorKey: 'brand.title',
-                cell: (info: any) =>
-                    info.row.original.brand.map((item: any, key: number) => (
-                        <div key={key}>{item.title}</div>
-                    )),
-            },
-            {
-                header: 'Brand Image',
-                accessorKey: 'brand.image',
-                cell: (info) =>
-                    info.row.original.brand.map((item: any, key: number) => (
-                        <img
-                            src={item.image}
-                            alt=""
-                            key={key}
-                            className="w-[100px] h-[60px]"
-                        />
-                    )),
-            },
-            {
                 header: 'DIVISION Name',
-                accessorKey: 'division',
+                accessorKey: 'division.name',
                 cell: (info: any) =>
                     info.row.original.division.map((item: any, key: number) => (
                         <div key={key}>{item.name}</div>
                     )),
             },
-            {
-                header: 'DIVISION Description',
-                accessorKey: 'division.description',
-                cell: (info: any) =>
-                    info.row.original.division.map((item: any, key: number) => (
-                        <div key={key}>{item.description}</div>
-                    )),
-            },
-            {
-                header: 'Division Image',
-                accessorKey: 'division.image',
-                cell: (info) =>
-                    info.row.original.division.map((item: any, key: number) =>
-                        item.image ? (
-                            <img
-                                src={item.image}
-                                alt=""
-                                key={key}
-                                className="w-[100px] h-[60px]"
-                            />
-                        ) : (
-                            ''
-                        ),
-                    ),
-            },
+
             {
                 header: 'Category Name',
                 accessorKey: 'category.name',
@@ -190,31 +103,7 @@ const AppBanners = () => {
                         <div key={key}>{item.name}</div>
                     )),
             },
-            {
-                header: 'Category Description',
-                accessorKey: 'category.description',
-                cell: (info) =>
-                    info.row.original.category.map((item: any, key: number) => (
-                        <div key={key}>{item.description}</div>
-                    )),
-            },
-            {
-                header: 'Category Image',
-                accessorKey: 'category.image',
-                cell: (info: any) =>
-                    info.row.original.category.map((item: any, key: number) =>
-                        item.image ? (
-                            <img
-                                src={item.image}
-                                alt=""
-                                key={key}
-                                className="w-[100px] h-[60px]"
-                            />
-                        ) : (
-                            ''
-                        ),
-                    ),
-            },
+
             {
                 header: 'Sub Category Name',
                 accessorKey: 'sub_category',
@@ -223,34 +112,6 @@ const AppBanners = () => {
                         (item: any, key: number) => (
                             <div key={key}>{item.name}</div>
                         ),
-                    ),
-            },
-            {
-                header: 'Sub Category Description',
-                accessorKey: 'sub_category.description',
-                cell: (info: any) =>
-                    info.row.original.sub_category.map(
-                        (item: any, key: number) => (
-                            <div key={key}>{item.description}</div>
-                        ),
-                    ),
-            },
-            {
-                header: 'Sub Category Image',
-                accessorKey: 'sub_category.image',
-                cell: (info) =>
-                    info.row.original.sub_category.map(
-                        (item: any, key: number) =>
-                            item.image ? (
-                                <img
-                                    src={item.image}
-                                    alt=""
-                                    key={key}
-                                    className="w-[100px] h-[60px]"
-                                />
-                            ) : (
-                                ''
-                            ),
                     ),
             },
             {
@@ -264,42 +125,22 @@ const AppBanners = () => {
                     ),
             },
             {
-                header: 'Product Type Description',
-                accessorKey: 'product_type.description',
-                cell: (info: any) =>
-                    info.row.original.product_type.map(
-                        (item: any, key: number) => (
-                            <div key={key}>{item.description}</div>
-                        ),
-                    ),
-            },
-            {
-                header: 'Product Type Image',
-                accessorKey: 'product_type.image',
-                cell: (info) =>
-                    info.row.original.product_type.map(
-                        (item: any, key: number) =>
-                            item.image ? (
-                                <img
-                                    src={item.image}
-                                    alt=""
-                                    key={key}
-                                    className="w-[100px] h-[60px]"
-                                />
-                            ) : (
-                                ''
-                            ),
-                    ),
-            },
-            {
                 header: 'Image (WEB)',
                 accessorKey: 'image_web',
-                cell: ({ getValue }) => <img src={getValue()} alt="" />,
+                cell: ({ getValue }) => (
+                    <a href={getValue()}>
+                        <img src={getValue()} alt="" />
+                    </a>
+                ),
             },
             {
                 header: 'Image (Mobile)',
                 accessorKey: 'image_mobile',
-                cell: ({ getValue }) => <img src={getValue()} alt="" />,
+                cell: ({ getValue }) => (
+                    <a href={getValue()}>
+                        <img src={getValue()} alt="" />
+                    </a>
+                ),
             },
 
             { header: 'Offers', accessorKey: 'offers' },
@@ -339,7 +180,18 @@ const AppBanners = () => {
             { header: 'Max Price', accessorKey: 'max_price' },
             { header: 'Min Price', accessorKey: 'min_price' },
             { header: 'Barcodes', accessorKey: 'barcodes' },
-            { header: 'Redirection URL', accessorKey: 'redirection_url' },
+            {
+                header: 'Redirection URL',
+                accessorKey: 'redirection_url',
+                cell: ({ row }) => (
+                    <div className="w-[180px] text-overflow:ellipsis">
+                        <a href={row.original.redirection_url}>
+                            {' '}
+                            {row.original.redirection_url}
+                        </a>
+                    </div>
+                ),
+            },
             {
                 header: 'Action',
                 accessorKey: 'id',

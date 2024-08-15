@@ -70,28 +70,28 @@ const initialValue: FormModel = {
     image: [],
 }
 
-const validationSchema = Yup.object().shape({
-    document_number: Yup.string().required('Document Number is required'),
-    document_date: Yup.date().required('Document Date is required').nullable(),
-    // origin_address: Yup.string()
-    //     .required('Supplier Address is required')
-    //     .transform((value) => value.trim()),
-    // received_address: Yup.string()
-    //     .required('Receiver Address is required')
-    //     .transform((value) => value.trim()),
-    received_by: Yup.string()
-        .required('Received By is required')
-        .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-    total_sku: Yup.number()
-        .required('Total SKUs is required')
-        .integer('Must be an integer'),
-    total_quantity: Yup.number()
-        .required('Total Quantity is required')
-        .integer('Must be an integer'),
-    singleCheckbox: Yup.boolean(),
-    // images: Yup.string().nullable(),
-    // document: Yup.string().nullable(),
-})
+// const validationSchema = Yup.object().shape({
+//     document_number: Yup.string().required('Document Number is required'),
+//     document_date: Yup.date().required('Document Date is required').nullable(),
+//     // origin_address: Yup.string()
+//     //     .required('Supplier Address is required')
+//     //     .transform((value) => value.trim()),
+//     // received_address: Yup.string()
+//     //     .required('Receiver Address is required')
+//     //     .transform((value) => value.trim()),
+//     received_by: Yup.string()
+//         .required('Received By is required')
+//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
+//     total_sku: Yup.number()
+//         .required('Total SKUs is required')
+//         .integer('Must be an integer'),
+//     total_quantity: Yup.number()
+//         .required('Total Quantity is required')
+//         .integer('Must be an integer'),
+//     singleCheckbox: Yup.boolean(),
+//     // images: Yup.string().nullable(),
+//     // document: Yup.string().nullable(),
+// })
 
 const MixedFormControl = () => {
     const [datas, setDatas] = useState()
@@ -224,13 +224,7 @@ const MixedFormControl = () => {
         console.log('handleSubmit')
         const docsUpload = await handleUpload(values.files)
 
-        if (docsUpload === 'Error') {
-            return
-        }
         const imageUpload = await handleimage(values.image)
-        if (imageUpload === 'Error') {
-            return
-        }
 
         console.log('Dataas', docsUpload)
         console.log('Immage', imageUpload)
@@ -271,7 +265,7 @@ const MixedFormControl = () => {
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
-                validationSchema={validationSchema}
+                // validationSchema={validationSchema}
                 // ONSUBMIT LOGICCCCCCC....................................................................................................
                 onSubmit={handleSubmit}
             >

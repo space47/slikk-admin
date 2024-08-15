@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
 import * as Yup from 'yup'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { notification } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './addCommon'
+import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './editCommon'
 
 type FormModel = {
     account_holder_name: string
@@ -35,33 +36,6 @@ type FormModel = {
     settlement_days: number
     update_date: string
     warehouse_charge_per_sku: number
-}
-
-const initialValue: FormModel = {
-    account_holder_name: '',
-    account_number: '',
-    address: '',
-    alternate_contact_number: '',
-    bank_name: '',
-    cin: '',
-    contact_number: '',
-    create_date: '',
-    damages_per_sku: 0,
-    gstin: '',
-    handling_charges_per_order: 0,
-    id: 0,
-    ifsc: '',
-    is_active: false,
-    name: '',
-    poc: '',
-    poc_email: '',
-    registered_name: '',
-    removal_fee_per_sku: 0,
-    revenue_share: 0,
-    segment: '',
-    settlement_days: 0,
-    update_date: '',
-    warehouse_charge_per_sku: 0,
 }
 
 // const validationSchema = Yup.object().shape({
@@ -100,19 +74,66 @@ const SegmentOptions = () => {
     )
 }
 
-const AddSeller = () => {
+const EditSeller = () => {
+    const [sellerData, setSellerData] = useState<FormModel>()
     const navigate = useNavigate()
+
+    const { id } = useParams()
+
+    const fetchsellerData = async () => {
+        try {
+            const response = await axioisInstance.get(
+                `merchant/company?company_id=${id}`,
+            )
+            const data = response.data.data
+            console.log('ssdssdsd', data)
+            setSellerData(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchsellerData()
+    }, [id])
+
+    const initialValue: FormModel = {
+        account_holder_name: sellerData?.account_holder_name || '',
+        account_number: sellerData?.account_number || '',
+        address: sellerData?.address || '',
+        alternate_contact_number: sellerData?.alternate_contact_number || '',
+        bank_name: sellerData?.bank_name || '',
+        cin: sellerData?.cin || '',
+        contact_number: sellerData?.contact_number || '',
+        create_date: sellerData?.create_date || '',
+        damages_per_sku: sellerData?.damages_per_sku || 0,
+        gstin: sellerData?.gstin || '',
+        handling_charges_per_order: sellerData?.handling_charges_per_order || 0,
+        id: sellerData?.id || 0,
+        ifsc: sellerData?.ifsc || '',
+        is_active: sellerData?.is_active || false,
+        name: sellerData?.name || '',
+        poc: sellerData?.poc || '',
+        poc_email: sellerData?.poc_email || '',
+        registered_name: sellerData?.registered_name || '',
+        removal_fee_per_sku: sellerData?.removal_fee_per_sku || 0,
+        revenue_share: sellerData?.revenue_share || 0,
+        segment: sellerData?.segment || '',
+        settlement_days: sellerData?.settlement_days || 0,
+        update_date: sellerData?.update_date || '',
+        warehouse_charge_per_sku: sellerData?.warehouse_charge_per_sku || 0,
+    }
 
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
 
-        if (values.account_number !== values.confirm) {
-            notification.error({
-                message: 'Failure',
-                description: 'Account number does not match',
-            })
-            return
-        }
+        // if (values.account_number !== values.confirm) {
+        //     notification.error({
+        //         message: 'Failure',
+        //         description: 'Account number does not match',
+        //     })
+        //     return
+        // }
         if (values.contact_number === values.alternate_contact_number) {
             notification.error({
                 message: 'Failure',
@@ -128,8 +149,8 @@ const AddSeller = () => {
         console.log('formData', formData)
 
         try {
-            const response = await axioisInstance.post(
-                'merchant/company',
+            const response = await axioisInstance.patch(
+                `merchant/company/${id}`,
                 formData,
             )
 
@@ -253,7 +274,7 @@ const AddSeller = () => {
                             <FormContainer className="flex justify-end mt-5">
                                 <Button
                                     type="reset"
-                                    className="mr-2 bg-gray-600"
+                                    className="mr-2"
                                     onClick={() => resetForm()}
                                 >
                                     Reset
@@ -261,7 +282,7 @@ const AddSeller = () => {
                                 <Button
                                     variant="solid"
                                     type="submit"
-                                    className=" text-white"
+                                    className="bg-blue-500 text-white"
                                 >
                                     Submit
                                 </Button>
@@ -274,4 +295,4 @@ const AddSeller = () => {
     )
 }
 
-export default AddSeller
+export default EditSeller
