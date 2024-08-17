@@ -88,7 +88,7 @@ const Products = () => {
             }
 
             const response = await axiosInstance.get(
-                `search/product?p=${page}&page_size=${pageSize}${type}`,
+                `search/product?dashboard=true&p=${page}&page_size=${pageSize}${type}`,
             )
 
             const data = response.data.results
@@ -112,6 +112,11 @@ const Products = () => {
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
             {
+                header: 'SKU',
+                accessorKey: 'sku',
+                cell: (info) => info.getValue(),
+            },
+            {
                 header: 'Barcode',
                 accessorKey: 'barcode',
                 cell: (info) => info.getValue(),
@@ -130,11 +135,13 @@ const Products = () => {
                 header: 'Image',
                 accessorKey: 'image',
                 cell: (info) => (
-                    <img
-                        src={info.getValue() as string}
-                        alt="Image"
-                        className="w-24 h-20 object-cover"
-                    />
+                    <a href={info.getValue() as string}>
+                        <img
+                            src={info.getValue() as string}
+                            alt="Image"
+                            className="w-24 h-20 object-cover"
+                        />
+                    </a>
                 ),
             },
             {
@@ -148,11 +155,11 @@ const Products = () => {
                 cell: (info) => info.getValue(),
             },
 
-            {
-                header: 'Active',
-                accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
+            // {
+            //     header: 'Active',
+            //     accessorKey: 'is_active',
+            //     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            // },
             {
                 header: 'Division',
                 accessorKey: 'division',
@@ -168,24 +175,24 @@ const Products = () => {
                 accessorKey: 'sub_category',
                 cell: (info) => info.getValue(),
             },
+            // {
+            //     header: 'Product Type',
+            //     accessorKey: 'product_type',
+            //     cell: (info) => info.getValue(),
+            // },
             {
-                header: 'Product Type',
-                accessorKey: 'product_type',
+                header: 'COLOR',
+                accessorKey: 'color',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Try_&_Buy',
-                accessorKey: 'is_try_and_buy',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+                header: 'SIZE',
+                accessorKey: 'size',
+                cell: (info) => info.getValue(),
             },
             {
-                header: 'Trends',
-                accessorKey: 'trends',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Action',
-                accessorKey: 'barcode',
+                header: 'Edit',
+                accessorKey: '',
                 cell: ({ row }) => (
                     <Button
                         onClick={() => handleActionClick(row.original.barcode)}
@@ -237,35 +244,24 @@ const Products = () => {
 
     const handleDownload = async () => {
         try {
-            await axiosInstance
-                .get(`merchant/products?download=true`, {
-                    responseType: 'blob',
-                })
-                .then((response) => {
-                    notification.success({
-                        message: 'success',
-                        description: response.data.message || 'Downloaded',
-                    })
+            const response = await axiosInstance.get(
+                'merchant/products?download=true',
+                {
+                    responseType: 'blob', // This is important to correctly handle binary data
+                },
+            )
 
-                    const blob = new Blob([response.data.results], {
-                        type: 'application/json',
-                    })
-                    const url = URL.createObjectURL(blob)
-
-                    const link = document.createElement('a')
-                    link.href = url
-                    link.setAttribute('download', 'file')
-
-                    link.click()
-                })
-                .catch(() =>
-                    notification.error({
-                        message: 'Failure',
-                        description: 'Downloaded',
-                    }),
-                )
+            const urlToBeDownloaded = window.URL.createObjectURL(
+                new Blob([response.data]),
+            )
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = 'Product.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
         } catch (error) {
-            console.log(error)
+            console.error('Error downloading the file:', error)
         }
     }
 

@@ -470,15 +470,15 @@ const appsRoute: Routes = [
     },
 
     {
-        key: 'apps.creatorPost',
-        path: `${APP_PREFIX_PATH}/userposts/approval`,
+        key: 'appscreatorPost.postApproval',
+        path: `${APP_PREFIX_PATH}/postApproval`,
         component: lazy(() => import('@/views/creatorPost/CreatorPost')),
         authority: [ADMIN, USER],
     },
 
     {
-        key: 'apps.creatorPost',
-        path: `${APP_PREFIX_PATH}/userposts/approval/pending/:id`,
+        key: 'appscreatorPost.postApproval',
+        path: `${APP_PREFIX_PATH}/postApproval/pending/:id`,
         component: lazy(
             () =>
                 import(
@@ -488,8 +488,8 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'apps.creatorPost',
-        path: `${APP_PREFIX_PATH}/userposts/approval/approved/:id`,
+        key: 'appscreatorPost.postApproval',
+        path: `${APP_PREFIX_PATH}/postApproval/approved/:id`,
         component: lazy(
             () =>
                 import(
@@ -499,13 +499,31 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'apps.creatorPost',
-        path: `${APP_PREFIX_PATH}/userposts/approval/reject/:id`,
+        key: 'appscreatorPost.postApproval',
+        path: `${APP_PREFIX_PATH}/postApproval/reject/:id`,
         component: lazy(
             () =>
                 import(
                     '@/views/creatorPost/rejected/rejectDetails/RejectDetails'
                 ),
+        ),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appscreatorPost.uploadPost',
+        path: `${APP_PREFIX_PATH}/uploadPost`,
+        component: lazy(
+            () => import('@/views/creatorPost/uploadPost/UploadPost'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appscreatorPost.uploadPost',
+        path: `${APP_PREFIX_PATH}/uploadPost/createPost`,
+        component: lazy(
+            () =>
+                import('@/views/creatorPost/uploadPost/createPost/CreatePost'),
         ),
         authority: [ADMIN, USER],
     },

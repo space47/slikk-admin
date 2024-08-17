@@ -61,7 +61,7 @@ const Seller = () => {
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('') //1
+    const [globalFilter, setGlobalFilter] = useState('')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -93,83 +93,46 @@ const Seller = () => {
 
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
+            // {
+            //     header: 'Account Holder Name',
+            //     accessorKey: 'account_holder_name',
+            //     cell: (info) => info.getValue(),
+            // },
+            // {
+            //     header: 'Account Number',
+            //     accessorKey: 'account_number',
+            //     cell: (info) => info.getValue(),
+            // },
             {
-                header: 'Account Holder Name',
-                accessorKey: 'account_holder_name',
+                header: 'ID',
+                accessorKey: 'id',
+                cell: (info) => info.getValue(),
+            },
+
+            {
+                header: 'Name',
+                accessorKey: 'name',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Account Number',
-                accessorKey: 'account_number',
+                header: 'Seller Code',
+                accessorKey: 'code',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Address',
-                accessorKey: 'address',
+                header: 'Registered Name',
+                accessorKey: 'registered_name',
                 cell: (info) => info.getValue(),
             },
+
             {
                 header: 'Alternate Contact Number',
                 accessorKey: 'alternate_contact_number',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Bank Name',
-                accessorKey: 'bank_name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'CIN',
-                accessorKey: 'cin',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Contact Number',
-                accessorKey: 'contact_number',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Create Date',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
-            },
-            {
-                header: 'Damages Per SKU',
-                accessorKey: 'damages_per_sku',
-                cell: (info) => info.getValue(),
-            },
-            {
                 header: 'GSTIN',
                 accessorKey: 'gstin',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Handling Charges Per Order',
-                accessorKey: 'handling_charges_per_order',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'ID',
-                accessorKey: 'id',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'IFSC',
-                accessorKey: 'ifsc',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Is Active',
-                accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Name',
-                accessorKey: 'name',
                 cell: (info) => info.getValue(),
             },
             {
@@ -183,30 +146,82 @@ const Seller = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Registered Name',
-                accessorKey: 'registered_name',
+                header: 'Contact Number',
+                accessorKey: 'contact_number',
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Removal Fee Per SKU',
-                accessorKey: 'removal_fee_per_sku',
+                header: 'Address',
+                accessorKey: 'address',
                 cell: (info) => info.getValue(),
             },
+            // {
+            //     header: 'Bank Name',
+            //     accessorKey: 'bank_name',
+            //     cell: (info) => info.getValue(),
+            // },
+            // {
+            //     header: 'CIN',
+            //     accessorKey: 'cin',
+            //     cell: (info) => info.getValue(),
+            // },
+
             {
-                header: 'Revenue Share',
-                accessorKey: 'revenue_share',
-                cell: (info) => info.getValue(),
+                header: 'Create Date',
+                accessorKey: 'create_date',
+                cell: ({ getValue }) => (
+                    <span>
+                        {moment(getValue() as string).format('YYYY-MM-DD')}
+                    </span>
+                ),
             },
+            // {
+            //     header: 'Damages Per SKU',
+            //     accessorKey: 'damages_per_sku',
+            //     cell: (info) => info.getValue(),
+            // },
+
+            // {
+            //     header: 'Handling Charges Per Order',
+            //     accessorKey: 'handling_charges_per_order',
+            //     cell: (info) => info.getValue(),
+            // },
+            // {
+            //     header: 'ID',
+            //     accessorKey: 'id',
+            //     cell: (info) => info.getValue(),
+            // },
+            // {
+            //     header: 'IFSC',
+            //     accessorKey: 'ifsc',
+            //     cell: (info) => info.getValue(),
+            // },
+            {
+                header: 'Is Active',
+                accessorKey: 'is_active',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+
+            // {
+            //     header: 'Removal Fee Per SKU',
+            //     accessorKey: 'removal_fee_per_sku',
+            //     cell: (info) => info.getValue(),
+            // },
+            // {
+            //     header: 'Revenue Share',
+            //     accessorKey: 'revenue_share',
+            //     cell: (info) => info.getValue(),
+            // },
             {
                 header: 'Segment',
                 accessorKey: 'segment',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Settlement Days',
-                accessorKey: 'settlement_days',
-                cell: (info) => info.getValue(),
-            },
+            // {
+            //     header: 'Settlement Days',
+            //     accessorKey: 'settlement_days',
+            //     cell: (info) => info.getValue(),
+            // },
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
@@ -216,11 +231,12 @@ const Seller = () => {
                     </span>
                 ),
             },
-            {
-                header: 'Warehouse Charge Per SKU',
-                accessorKey: 'warehouse_charge_per_sku',
-                cell: (info) => info.getValue(),
-            },
+            // {
+            //     header: 'Warehouse Charge Per SKU',
+            //     accessorKey: 'warehouse_charge_per_sku',
+            //     cell: (info) => info.getValue(),
+            // },
+
             {
                 header: 'Edit',
                 accessorKey: '',

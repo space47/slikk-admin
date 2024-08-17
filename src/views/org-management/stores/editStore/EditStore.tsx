@@ -115,6 +115,12 @@ const EditCustomerProfile = () => {
             const data = response.data.data
             console.log('ssdssdsd', data)
             setStoreData(data)
+            setAddress({
+                area: data?.area || '',
+                pincode: data?.pincode || '',
+                state: data?.state || '',
+                city: data?.city || '',
+            })
         } catch (error) {
             console.log(error)
         }

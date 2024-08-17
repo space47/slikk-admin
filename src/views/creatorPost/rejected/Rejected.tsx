@@ -100,7 +100,7 @@ const Rejected: React.FC<PendingProps> = ({
     const navigate = useNavigate()
 
     const handlePostClick = (id: number, post_id: string) => {
-        navigate(`/app/userposts/approval/reject/${id}?post_id=${post_id}`)
+        navigate(`/app/postApproval/reject/${id}?post_id=${post_id}`)
     }
 
     const columns = useMemo<ColumnDef<Post>[]>(

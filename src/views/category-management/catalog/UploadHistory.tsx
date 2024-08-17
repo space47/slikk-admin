@@ -89,28 +89,43 @@ const PaginationTable = () => {
     }
 
     const handleActionClick = async (
+        failure: number,
         error_file: string,
         uploaded_file: string,
     ) => {
         try {
-            const requiredFile = error_file ? error_file : uploaded_file
+            const requiredFile = failure === 0 ? uploaded_file : error_file
             const response = await axioisInstance.get(
                 `file/presign?file_url=${requiredFile}`,
             )
             console.log('sss', response)
-            const excelFile = await axios
-                .get(response.data.data)
-                .then((responsess) => console.log(responsess))
-            // const blob = new Blob([response.data.data], {
-            //     type: 'application/json',
-            // })
+            const preSignedUrl = response.data.data
+            const data = await fetch(preSignedUrl)
+                .then((res) => res.blob())
+                .then((blob) => {
+                    // Create a URL for the blob
+                    const url = URL.createObjectURL(blob)
 
-            const url = URL.createObjectURL(blob)
+                    // Create a new anchor element
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `${requiredFile}.csv` // Specify the file name
 
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', requiredFile)
-            link.click()
+                    // Append the anchor to the body (required for Firefox)
+                    document.body.appendChild(a)
+
+                    // Trigger the download
+                    a.click()
+
+                    // Remove the anchor element
+                    document.body.removeChild(a)
+
+                    // Revoke the object URL
+                    URL.revokeObjectURL(url)
+                })
+                .catch((err) => console.log(err))
+
+            // window.open(preSignedUrl, '_blank')
         } catch (error) {
             console.log(error)
         }
@@ -163,6 +178,7 @@ const PaginationTable = () => {
                     <Button
                         onClick={() =>
                             handleActionClick(
+                                row.original.failure,
                                 row.original.error_file,
                                 row.original.uploaded_file,
                             )
