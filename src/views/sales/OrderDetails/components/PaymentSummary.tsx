@@ -17,6 +17,9 @@ type PaymentSummaryProps = {
         mode: string
         transaction_time: string
     }
+    coupon_discount: string
+    loyalty_discount: string
+    points_discount: string
 }
 
 const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
@@ -60,6 +63,9 @@ const PaymentSummary = ({
     tax,
     delivery,
     amount,
+    coupon_discount,
+    loyalty_discount,
+    points_discount,
 }: PaymentSummaryProps) => {
     return (
         <Card className="mb-4">
@@ -74,6 +80,30 @@ const PaymentSummary = ({
                     Delivery Charge{' '}
                     <span className="font-semibold">Rs.{delivery}</span>
                 </div>
+                {coupon_discount !== '0.00' && (
+                    <div className="flex justify-between mb-2">
+                        Coupon Discount{' '}
+                        <span className="font-semibold">
+                            Rs.{coupon_discount}
+                        </span>
+                    </div>
+                )}
+                {loyalty_discount !== '0.00' && (
+                    <div className="flex justify-between mb-2">
+                        Loyalty Discount{' '}
+                        <span className="font-semibold">
+                            Rs.{loyalty_discount}
+                        </span>
+                    </div>
+                )}
+                {points_discount !== '0.00' && (
+                    <div className="flex justify-between mb-2">
+                        Points Discount{' '}
+                        <span className="font-semibold">
+                            Rs.{points_discount}
+                        </span>
+                    </div>
+                )}
                 <PaymentType
                     label="Time"
                     value={moment(data?.transaction_time).format(
