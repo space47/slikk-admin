@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Modal, notification } from 'antd'
 import { Field, Form, Formik } from 'formik'
 import Upload from '@/components/ui/Upload'
@@ -12,6 +12,7 @@ import { Dropdown, Button } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import Select from '@/components/ui/Select'
+import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 
 interface DataType {
     type: string
@@ -28,6 +29,14 @@ interface Config {
     image: string
     style: string
     position: string
+}
+
+type ProductTable = {
+    sku: string
+    barcode: string
+    product: string
+    image: string[]
+    brand: string
 }
 
 type WebType = {
@@ -57,6 +66,11 @@ type modalProps = {
     setData: (data: any) => void
 }
 
+const DROPDOWNARRAY = [
+    { label: 'Name', value: 'name' },
+    { label: 'SKU', value: 'sku' },
+]
+
 const dataType = [
     { name: 'Barcodes', value: 'barcodes' },
     { name: 'Brands', value: 'brands' },
@@ -73,9 +87,22 @@ const PageAddModal: React.FC<modalProps> = ({
     data,
     setData,
 }) => {
+    const [currentSelectedPage, setCurrentSelectedPage] =
+        useState<Record<string, string>>()
+    const [searchInput, setSearchInput] = useState<string>('')
+    const [showTable, setShowTable] = useState(false)
+    const [tableData, setTableData] = useState<ProductTable[]>([])
+    const [productData, setProductData] = useState([])
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
+
+        const handleSelect = (value: any) => {
+            const selected = DROPDOWNARRAY.find((item) => item.value === value)
+            if (selected) {
+                setCurrentSelectedPage(selected)
+            }
+        }
 
         const allowedFileType = [
             'application/pdf',
@@ -162,11 +189,42 @@ const PageAddModal: React.FC<modalProps> = ({
     //     setInputValue(e.target.value)
     // }
 
-    const handleimage = async (files: File[]) => {
-        if(!files || files?.length == 0){
-            return;
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value)
+        setShowTable(true)
+    }
+
+    const fetchInput = async () => {
+        try {
+            if (searchInput) {
+                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'q'
+                const response = await axioisInstance.get(
+                    `/search/product?dashboard=true&${qname}=${searchInput}`,
+                )
+                const data = response.data.results
+                setTableData(data)
+                console.log(data)
+            }
+        } catch (error) {
+            console.log(error)
         }
-        
+    }
+
+    useEffect(() => {
+        fetchInput()
+    }, [searchInput])
+
+    const handleActionClick = (value: any) => {
+        console.log('Barcode', value)
+        setProductData((prev) => (prev ? [...prev, value] : value))
+        setShowTable(false)
+    }
+
+    const handleimage = async (files: File[]) => {
+        if (!files || files?.length == 0) {
+            return
+        }
+
         const formData = new FormData()
 
         files.forEach((file) => {
@@ -203,7 +261,7 @@ const PageAddModal: React.FC<modalProps> = ({
                 })
         } catch (error: any) {
             console.error('Error uploading files:', error)
-            return '';
+            return ''
         }
     }
     const handleSelect = (a: any, b: any) => {
@@ -215,7 +273,7 @@ const PageAddModal: React.FC<modalProps> = ({
     }
 
     const handleSubmit = async (row: WebType) => {
-        console.log(row);
+        console.log(row)
         const imageUpload = await handleimage(row.background_image_array)
         // console.log(imageUpload);
         // return;
@@ -232,8 +290,7 @@ const PageAddModal: React.FC<modalProps> = ({
         )
         const newRowAdd = {
             ...row,
-            background_image:
-            imageUpload,
+            background_image: imageUpload,
             footer_config: {
                 ...row.footer_config,
                 image:
@@ -257,7 +314,6 @@ const PageAddModal: React.FC<modalProps> = ({
             },
             data_type: {
                 ...row.data_type,
-                
             },
         }
 
@@ -288,7 +344,13 @@ const PageAddModal: React.FC<modalProps> = ({
                     // ONSUBMIT LOGICCCCCCC....................................................................................................
                     onSubmit={handleSubmit}
                 >
-                    {({ values, touched, errors, resetForm }) => (
+                    {({
+                        values,
+                        touched,
+                        errors,
+                        resetForm,
+                        setFieldValue,
+                    }) => (
                         <Form className="w-full">
                             <FormContainer className="grid grid-cols-2 gap-3">
                                 <FormItem
@@ -818,6 +880,75 @@ const PageAddModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem>
+                                <FormContainer className="flex flex-col gap-4 ">
+                                    <div className="text-xl">Barcode</div>
+                                    <div className="flex gap-10">
+                                        <div className="flex justify-start ">
+                                            <input
+                                                type="search"
+                                                name="search"
+                                                id=""
+                                                placeholder="search SKU for product"
+                                                value={searchInput}
+                                                className=" w-[250px] rounded-[10px]"
+                                                onChange={handleSearch}
+                                            />
+                                        </div>
+                                        <div className="bg-gray-200 rounded-[10px] font-bold text-lg ">
+                                            <Dropdown
+                                                className=" text-xl text-black bg-gray-200 font-bold "
+                                                title={
+                                                    currentSelectedPage?.value
+                                                        ? currentSelectedPage.label
+                                                        : 'SELECT'
+                                                }
+                                                onSelect={handleSelect}
+                                            >
+                                                {DROPDOWNARRAY?.map(
+                                                    (item, key) => {
+                                                        return (
+                                                            <DropdownItem
+                                                                key={key}
+                                                                eventKey={
+                                                                    item.value
+                                                                }
+                                                            >
+                                                                <span>
+                                                                    {item.label}
+                                                                </span>
+                                                            </DropdownItem>
+                                                        )
+                                                    },
+                                                )}
+                                            </Dropdown>
+                                        </div>
+                                    </div>
+
+                                    {showTable && searchInput && (
+                                        <CreatePostTable
+                                            data={tableData}
+                                            handleActionClick={
+                                                handleActionClick
+                                            }
+                                        />
+                                    )}
+
+                                    <FormItem label="Product" className="w-1/2">
+                                        <Field
+                                            type="text"
+                                            name="products"
+                                            value={productData}
+                                            onChange={(e: any) => {
+                                                setProductData(e.target.value)
+                                                setFieldValue(
+                                                    'products',
+                                                    e.target.value,
+                                                )
+                                            }}
+                                            placeholder="Enter product barcode"
+                                        />
+                                    </FormItem>
+                                </FormContainer>
                                 <FormItem
                                     label="Data Type Barcode"
                                     className="col-span-1 w-[60%] h-[80%]"

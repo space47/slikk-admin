@@ -159,7 +159,7 @@ const UserAdd = () => {
         if (alreadyAdded.length > 0) {
             notification.warning({
                 message: 'Warning',
-                description: 'Permission already added',
+                description: 'Group has already been added',
             })
         }
         const selected = getGroups?.filter(

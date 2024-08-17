@@ -202,7 +202,7 @@ const RejectDetails = () => {
 
                                 {/*  */}
                                 <div className="flex justify-center items-center gap-6 mt-10">
-                                    {rejectData.type === 'Video' ? (
+                                    {rejectData.type === 'video' ? (
                                         <VideoFrame url={rejectData.url} />
                                     ) : (
                                         <>

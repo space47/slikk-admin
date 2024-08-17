@@ -87,7 +87,7 @@ const AcceptedDetails = () => {
         const fetchOrders = async () => {
             try {
                 const response = await axioisInstance.get(
-                    `userposts/approval?post_id=${id}`,
+                    `userposts/approval?post_id=${post_id}`,
                 )
 
                 const PendingData = response.data?.data || []
@@ -203,7 +203,7 @@ const AcceptedDetails = () => {
 
                                 {/*  */}
                                 <div className="flex justify-center items-center gap-6 mt-10">
-                                    {acceptedData.type === 'Video' ? (
+                                    {acceptedData.type === 'video' ? (
                                         <VideoFrame url={acceptedData.url} />
                                     ) : (
                                         <>

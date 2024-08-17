@@ -172,10 +172,20 @@ const AppBanners = () => {
             {
                 header: 'Section Background Web',
                 accessorKey: 'section_background_web',
+                cell: ({ getValue }) => (
+                    <a href={getValue()}>
+                        <img src={getValue()} alt="" />
+                    </a>
+                ),
             },
             {
                 header: 'Section Background Mobile',
                 accessorKey: 'section_background_mobile',
+                cell: ({ getValue }) => (
+                    <a href={getValue()}>
+                        <img src={getValue()} alt="" />
+                    </a>
+                ),
             },
             { header: 'Max Price', accessorKey: 'max_price' },
             { header: 'Min Price', accessorKey: 'min_price' },

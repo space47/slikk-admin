@@ -90,27 +90,39 @@ const PaginationTable = () => {
     }
 
     const handleDownload = async (
+        failure: number,
         error_file: string,
         uploaded_file: string,
     ) => {
-        console.log(`Action clicked `, error_file, uploaded_file)
+        console.log(`Action clicked `, error_file, uploaded_file, failure)
 
         try {
-            const requiredUrl = error_file ? error_file : uploaded_file
+            const requiredUrl = failure === 0 ? uploaded_file : error_file
 
             const response = await axioisInstance.get(
                 `file/presign?file_url=${requiredUrl}`,
                 { responseType: 'blob' },
             )
 
-            const blob = new Blob([response.data.data], { type: 'text/plain' })
-            const url = URL.createObjectURL(blob)
+            const preSignedUrl = response.data.data
+            const data = await fetch(preSignedUrl)
+                .then((res) => res.blob())
+                .then((blob) => {
+                    const url = URL.createObjectURL(blob)
 
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', requiredUrl)
-            window.open(url)
-            link.click()
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `${requiredUrl}.csv`
+
+                    document.body.appendChild(a)
+
+                    a.click()
+
+                    document.body.removeChild(a)
+
+                    URL.revokeObjectURL(url)
+                })
+                .catch((err) => console.log(err))
         } catch (error) {
             console.log(error)
             return 'Error'
@@ -168,6 +180,7 @@ const PaginationTable = () => {
                     <Button
                         onClick={() =>
                             handleDownload(
+                                row.original.failure,
                                 row.original.error_file,
                                 row.original.uploaded_file,
                             )
