@@ -349,7 +349,28 @@ const appsNavigationConfig: NavigationTree[] = [
                 icon: 'reels',
                 type: NAV_ITEM_TYPE_COLLAPSE,
                 authority: [ADMIN, USER],
-                subMenu: [],
+                subMenu: [
+                    {
+                        key: 'appscreatorPost.postApproval',
+                        path: `${APP_PREFIX_PATH}/postApproval`,
+                        title: 'Post Approval',
+                        translateKey: 'nav.appsOrgManagement.postApproval',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appscreatorPost.uploadPost',
+                        path: `${APP_PREFIX_PATH}/uploadPost`,
+                        title: 'Upload Post',
+                        translateKey: 'nav.appsOrgManagement.uploadPost',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                ],
             },
 
             // .............................................................................................................

@@ -36,6 +36,7 @@ type FormModel = {
     settlement_days: number
     update_date: string
     warehouse_charge_per_sku: number
+    code: string
 }
 
 // const validationSchema = Yup.object().shape({
@@ -122,6 +123,7 @@ const EditSeller = () => {
         settlement_days: sellerData?.settlement_days || 0,
         update_date: sellerData?.update_date || '',
         warehouse_charge_per_sku: sellerData?.warehouse_charge_per_sku || 0,
+        code: sellerData?.code || '',
     }
 
     const handleSubmit = async (values: FormModel) => {

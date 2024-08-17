@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
@@ -10,12 +9,10 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    // useGlobalFilter,
-    PaginationState,
-    Updater,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useNavigate } from 'react-router-dom'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 interface Product {
     barcode: string
@@ -63,22 +60,6 @@ interface Post {
     owner: string
 }
 
-type Option = {
-    value: number
-    label: string
-}
-
-interface PendingProps {
-    data: Post[]
-    totalData: number | undefined
-    page: number
-    pageSize: number
-    setPage: (page: number) => void
-    setPageSize: (size: number) => void
-    globalFilter: string
-    setGlobalFilter: (name: string) => void
-}
-
 const { Tr, Th, Td, THead, TBody } = Table
 
 const pageSizeOptions = [
@@ -88,21 +69,35 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const Accepted: React.FC<PendingProps> = ({
-    data,
-    totalData,
-    page,
-    pageSize,
-    setPage,
-    setPageSize,
-    globalFilter,
-    setGlobalFilter,
-}) => {
+const UploadPost = () => {
     const navigate = useNavigate()
+    const [totalData, setTotalData] = useState(0)
+    const [tableData, setTableData] = useState<Post[]>([])
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+    const [globalFilter, setGlobalFilter] = useState('')
 
     const handlePostClick = (id: number, post_id: string) => {
         navigate(`/app/postApproval/approved/${id}?post_id=${post_id}`)
     }
+
+    const fetchData = async (page = 1, pageSize = 10, filter: string = '') => {
+        try {
+            const response = await axiosInstance.get(
+                `userposts/approval?status=APPROVED&p=${page}&page_size=${pageSize}&name=${filter}`,
+            )
+            const data = response.data.data.results
+            const total = response.data.data.count
+            setTableData(data)
+            setTotalData(total)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchData(page, pageSize, globalFilter)
+    }, [page, pageSize, globalFilter])
 
     const columns = useMemo<ColumnDef<Post>[]>(
         () => [
@@ -133,7 +128,6 @@ const Accepted: React.FC<PendingProps> = ({
                 accessorKey: 'url',
                 cell: (info) => info.getValue(),
             },
-
             {
                 header: 'Caption',
                 accessorKey: 'caption',
@@ -151,7 +145,6 @@ const Accepted: React.FC<PendingProps> = ({
                     <img src={info.getValue() as string} alt="Thumbnail" />
                 ),
             },
-            // Counts..................................................................................................
             {
                 header: 'Likes Count',
                 accessorKey: 'likes_count',
@@ -177,15 +170,12 @@ const Accepted: React.FC<PendingProps> = ({
                 accessorKey: 'views_count',
                 cell: (info) => info.getValue(),
             },
-
-            // ........................................................................................................
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
                 cell: (info) =>
                     new Date(info.getValue() as string).toLocaleDateString(),
             },
-
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
@@ -207,60 +197,79 @@ const Accepted: React.FC<PendingProps> = ({
     )
 
     const table = useReactTable({
-        data,
+        data: tableData,
         columns,
+        state: {
+            globalFilter,
+            pagination: {
+                pageIndex: page - 1,
+                pageSize,
+            },
+        },
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: 'includesString',
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil((totalData ?? 0) / pageSize),
         manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: (updater: Updater<PaginationState>) => {
-            const newPagination =
-                typeof updater === 'function'
-                    ? updater({ pageIndex: page - 1, pageSize })
-                    : updater
-
-            setPage(newPagination.pageIndex + 1) // Adjust for zero-based index
-            setPageSize(newPagination.pageSize)
-        },
-        onGlobalFilterChange: setGlobalFilter,
+        pageCount: Math.ceil(totalData / pageSize),
     })
 
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
 
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
+    const onSelectChange = (value: any) => {
+        setPageSize(value)
+    }
+
+    const handleCreatePost = () => {
+        navigate(`/app/uploadPost/createPost`)
     }
 
     return (
-        <div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    className="p-2 border rounded"
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                />
+        <div className="overflow-x-auto">
+            <div className="flex justify-between mb-10 items-center">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border rounded"
+                    />
+                </div>
+
+                <div>
+                    <button
+                        className="bg-gray-800 text-white px-4 py-2"
+                        onClick={handleCreatePost}
+                    >
+                        Create Post
+                    </button>
+                </div>
             </div>
+
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
+                                    {header.isPlaceholder ? null : (
+                                        <div
+                                            className={
+                                                header.column.getCanSort()
+                                                    ? 'cursor-pointer select-none'
+                                                    : ''
+                                            }
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext(),
+                                            )}
+                                        </div>
                                     )}
                                 </Th>
                             ))}
@@ -290,7 +299,7 @@ const Accepted: React.FC<PendingProps> = ({
                     onChange={onPaginationChange}
                 />
                 <div style={{ minWidth: 130 }}>
-                    <Select<Option>
+                    <Select
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
@@ -298,6 +307,7 @@ const Accepted: React.FC<PendingProps> = ({
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
+                        className="flex justify-end"
                     />
                 </div>
             </div>
@@ -305,4 +315,4 @@ const Accepted: React.FC<PendingProps> = ({
     )
 }
 
-export default Accepted
+export default UploadPost

@@ -20,6 +20,15 @@ export const SELLING_FORM = [
         status: 'name',
     },
     {
+        label: 'Seller Code',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'code',
+        placeholder: 'Enter Unique Seller code',
+        component: { Input },
+        status: 'code',
+    },
+    {
         label: 'GSTIN',
         classname: 'col-span-1 w-full',
         type: 'text',

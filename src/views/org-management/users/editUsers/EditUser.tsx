@@ -4,9 +4,7 @@
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-
 import { Field, Form, Formik } from 'formik'
-
 import * as Yup from 'yup'
 import type { FieldProps } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -15,6 +13,7 @@ import { Card, notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { USER_EDIT_FROM } from './UserEditForm'
 
 type FormModel = {
     first_name: string
@@ -30,45 +29,13 @@ interface permission {
     name: string
 }
 
-// const validationSchema = Yup.object().shape({
-//     document_number: Yup.string().required('Document Number is required'),
-//     document_date: Yup.date().required('Document Date is required').nullable(),
-//     origin_address: Yup.string()
-//         .required('Supplier Address is required')
-//         .transform((value) => value.trim()),
-//     received_address: Yup.string()
-//         .required('Receiver Address is required')
-//         .transform((value) => value.trim()),
-//     received_by: Yup.string()
-//         .required('Received By is required')
-//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-//     total_sku: Yup.number()
-//         .required('Total SKUs is required')
-//         .integer('Must be an integer'),
-//     total_quantity: Yup.number()
-//         .required('Total Quantity is required')
-//         .integer('Must be an integer'),
-//     singleCheckbox: Yup.boolean(),
-//     // images: Yup.string().nullable(),
-//     // document: Yup.string().nullable(),
-// })
-
-const UserEdit = () => {
-    const [userDatas, setUserDatas] = useState<FormModel[]>([])
+const BrandUserEdit = () => {
+    const [userData, setUserData] = useState<FormModel>()
     const [getPermission, setGetPermission] = useState<permission[]>()
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
     const [addedPermissions, setAddedPermissions] = useState<permission[]>([])
 
     const { mobile } = useParams()
-
-    const [initialValue, setInitialValue] = useState<FormModel>({
-        first_name: '',
-        last_name: '',
-        mobile: '',
-        email: '',
-        business_email: '',
-        permissions: [],
-    })
 
     const navigate = useNavigate()
 
@@ -78,7 +45,7 @@ const UserEdit = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`/permissions`)
+            const response = await axioisInstance.get(`/permissions`) // For left side Card
             const perm = response.data?.permissions
             setGetPermission(perm)
         } catch (error) {
@@ -93,17 +60,13 @@ const UserEdit = () => {
     const fetchUser = async () => {
         try {
             const response = await axioisInstance.get(
-                `company/${selectedCompany.id}/users?mobile=${mobile}`,
+                `company/user/permission/${mobile}`,
             )
 
-            const userData = response.data
+            const user = response.data
             const userPermissions = response.data.user_permissions
-
-            // console.log('sssssssss', userPermissions)
-            setUserDatas(userData)
-            setAddedPermissions(userPermissions)
-            console.log('uuuuuuuuuuuuuuuu', userData)
-            console.log('ttttttttttt', userDatas)
+            setUserData(user)
+            setAddedPermissions(userPermissions) // For right side card
         } catch (error) {
             console.log(error)
         }
@@ -112,6 +75,8 @@ const UserEdit = () => {
     useEffect(() => {
         fetchUser()
     }, [])
+
+    console.log('sssd', userData)
 
     const handlePermissionSelect = (id: number) => {
         setSelectedPermissions((prevSelected) =>
@@ -149,66 +114,16 @@ const UserEdit = () => {
         )
     }
 
-    const handleAddUser = async (data: FormModel) => {
-        const formdata = {
-            ...data,
-        }
-        try {
-            const response = await axioisInstance.patch(
-                `company/${selectedCompany.id}/users/add`,
-                formdata,
-            )
-            const data = response.data
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message ||
-                    'User Successfully Added to Company',
-            })
-            return data
-        } catch (error) {
-            notification.error({
-                message: 'Failure',
-                description:
-                    'User Not Added to Company, All Fields are mandatory',
-            })
-            return 'Error'
-        }
+    const initialValue: FormModel = {
+        first_name: '',
+        last_name: '',
+        mobile: '',
+        email: '',
+        business_email: '',
+        permissions: [],
     }
 
-    const handleSubmit = async (values: FormModel) => {
-        const userdetails = await handleAddUser(values)
-        if (userdetails === 'Error') {
-            return
-        }
-        const permissionIds = addedPermissions.map((item) => item.id)
-        const formData = {
-            action: 'update_permission',
-            permission_id: `${permissionIds.join(',')}`,
-        }
-
-        try {
-            const response = await axioisInstance.patch(
-                `company/user/permission/${values.mobile}`,
-                formData,
-            )
-
-            console.log(response)
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message || 'User Successfully Added',
-            })
-            navigate('/app/vendor/users')
-        } catch (error: any) {
-            console.error('Error submitting form:', error)
-            notification.error({
-                message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'User not created ',
-            })
-        }
-    }
+    const handleSubmit = async (values: FormModel) => {} //................................................................
 
     return (
         <div>
@@ -219,109 +134,32 @@ const UserEdit = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-full">
+                    <Form
+                        className="w-full"
+                        onKeyDown={(e: any) =>
+                            e.key === 'Enter' && e.preventDefault()
+                        }
+                    >
                         <div className="text-xl mb-10 font-bold">
                             EDIT USER DETAILS
                         </div>
                         <FormContainer>
                             {/* Form Fields */}
-                            <FormContainer className="flex flex-row gap-7 ">
-                                <FormItem
-                                    asterisk
-                                    label="First Name"
-                                    invalid={
-                                        errors.first_name && touched.first_name
-                                    }
-                                    errorMessage={errors.first_name}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="first_name"
-                                        component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Last Name"
-                                    invalid={
-                                        errors.last_name && touched.last_name
-                                    }
-                                    errorMessage={errors.last_name}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="last_name"
-                                        component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
-                                    />
-                                </FormItem>
-                            </FormContainer>
-
-                            {/* Mobile, Email, Business Email */}
-                            <FormContainer className="flex flex-row gap-7 ">
-                                <FormItem
-                                    asterisk
-                                    label="Mobile"
-                                    invalid={errors.mobile && touched.mobile}
-                                    errorMessage={errors.mobile}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="mobile"
-                                        component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Email"
-                                    invalid={errors.email && touched.email}
-                                    errorMessage={errors.email}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="email"
-                                        component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Work Email"
-                                    invalid={
-                                        errors.business_email &&
-                                        touched.business_email
-                                    }
-                                    errorMessage={errors.business_email}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="business_email"
-                                        component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
-                                    />
-                                </FormItem>
+                            <FormContainer className="grid grid-cols-2 gap-8">
+                                {USER_EDIT_FROM.map((item, key) => (
+                                    <FormItem
+                                        key={key}
+                                        label={item.label}
+                                        className={item.className}
+                                    >
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                ))}
                             </FormContainer>
 
                             <div className="text-xl font-bold">
@@ -406,7 +244,7 @@ const UserEdit = () => {
                                             </label>
                                         </div>
                                         <div className="">
-                                            {addedPermissions?.map(
+                                            {addedPermissions.map(
                                                 (item, key) => (
                                                     <div
                                                         key={key}
@@ -456,4 +294,4 @@ const UserEdit = () => {
     )
 }
 
-export default UserEdit
+export default BrandUserEdit

@@ -23,6 +23,8 @@ const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
     const [webImagview, setWebImageView] = useState<string[]>([])
     const [mobileImagview, setMobileImageView] = useState<string[]>([])
+    const [sectionBGweb, setSectionBGweb] = useState<string[]>([])
+    const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
     const navigate = useNavigate()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
@@ -104,6 +106,16 @@ const EditBanner = () => {
             setBannerData(data)
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
+            setSectionBGweb(
+                data.section_background_web
+                    ? [data.section_background_web]
+                    : [],
+            )
+            setSectionBGmobile(
+                data.section_background_mobile
+                    ? [data.section_background_mobile]
+                    : [],
+            )
         } catch (error) {
             console.log(error)
         }
@@ -178,27 +190,58 @@ const EditBanner = () => {
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
-            })
+            // notification.error({
+            //     message: 'Failure',
+            //     description:
+            //         error?.response?.data?.message || 'File Not uploaded',
+            // })
             return 'Error'
+        }
+    }
+
+    const handleImageRemove = (index: number, type: string) => {
+        if (type === 'mobile') {
+            setMobileImageView((item) => item.filter((_, id) => id !== index))
+        }
+        if (type === 'web') {
+            setWebImageView((item) => item.filter((_, id) => id !== index))
         }
     }
 
     const handleSubmit = async (values: BANNERMODEL) => {
         const webImageUpload = await handleimage(values.image_web_array)
         const mobileImageUpload = await handleimage(values.image_mobile_array)
+        console.log(
+            'Image Values',
+            values.division.map((item) => item.name).join(','),
+        )
+        const { image_mobile_array, image_web_array, ...formData } = values
 
-        const formData = {
-            ...values,
-            banner_id: values.id,
-            image_web: webImageUpload ? webImageUpload : values.image_web,
-            image_mobile: mobileImageUpload
-                ? mobileImageUpload
-                : values.image_mobile,
-        }
+        formData.banner_id = values.id
+        formData.image_web = webImageUpload ? webImageUpload : values.image_web
+        formData.image_mobile = mobileImageUpload
+            ? mobileImageUpload
+            : values.image_mobile
+        formData.division = values.division.map((item) => item.name).join(',')
+        formData.category = values.category.map((item) => item.name).join(',')
+        formData.sub_category = values.sub_category
+            .map((item) => item.name)
+            .join(',')
+        formData.product_type = values.product_type
+            .map((item) => item.name)
+            .join(',')
+        formData.brand = values.brand.map((item) => item.name).join(',')
+
+        // const formData = {
+        //     ...values,
+        //     banner_id: values.id,
+        //     image_web: webImageUpload ? webImageUpload : values.image_web,
+        //     image_mobile: mobileImageUpload
+        //         ? mobileImageUpload
+        //         : values.image_mobile,
+        //     image_web_array: null,
+        //     image_mobile_array: null,
+        // }
 
         try {
             const response = await axioisInstance.patch(`banners`, formData)
@@ -206,13 +249,14 @@ const EditBanner = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Seller created Successfully',
+                    response?.data?.message || 'Banner Edited Successfully',
             })
+            navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Seller not created',
+                    error?.response?.data?.message || 'Banner not Edited',
             })
         }
     }
@@ -267,6 +311,18 @@ const EditBanner = () => {
                                                         alt={`image-${index}`}
                                                         className="rounded-sm w-[50px] h-[50px]"
                                                     />
+
+                                                    <button
+                                                        onClick={() =>
+                                                            handleImageRemove(
+                                                                index,
+                                                                'mobile',
+                                                            )
+                                                        }
+                                                        className="text-red-600 font-bold"
+                                                    >
+                                                        X
+                                                    </button>
                                                 </div>
                                             ))
                                         ) : (
@@ -321,6 +377,17 @@ const EditBanner = () => {
                                                         alt={`image-${index}`}
                                                         className="rounded-sm w-[50px] h-[50px]"
                                                     />
+                                                    <button
+                                                        onClick={() =>
+                                                            handleImageRemove(
+                                                                index,
+                                                                'web',
+                                                            )
+                                                        }
+                                                        className="text-red-600 font-bold"
+                                                    >
+                                                        X
+                                                    </button>
                                                 </div>
                                             ))
                                         ) : (
@@ -383,7 +450,13 @@ const EditBanner = () => {
                                                                         value.id,
                                                                 ),
                                                         )}
-                                                        onChange={(selected) =>
+                                                        onChange={(
+                                                            selected,
+                                                        ) => {
+                                                            console.log(
+                                                                'Selected',
+                                                                selected,
+                                                            )
                                                             setFieldValue(
                                                                 field.name,
                                                                 selected.map(
@@ -395,7 +468,7 @@ const EditBanner = () => {
                                                                     }),
                                                                 ),
                                                             )
-                                                        }
+                                                        }}
                                                     />
                                                 )
                                             }}
