@@ -85,6 +85,8 @@ type SalesOrderDetailsResponse = {
     }
     billing_address: string
     status: string
+    loyalty_discount: string
+    points_discount: string
 }
 
 const OrderDetails = () => {
@@ -151,6 +153,9 @@ const OrderDetails = () => {
                                         tax={data.tax}
                                         delivery={data.delivery}
                                         amount={data.amount}
+                                        coupon_discount={data.coupon_discount}
+                                        loyalty_discount={data.loyalty_discount}
+                                        points_discount={data.points_discount}
                                     />
                                 </div>
                                 <Activity

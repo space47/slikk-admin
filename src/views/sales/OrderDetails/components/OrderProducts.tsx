@@ -100,7 +100,25 @@ const columns = [
         header: 'Price',
         cell: (props) => {
             const row = props.row.original
-            return <PriceAmount amount={row.sp} />
+            return row.mrp > row.sp ? (
+                <div>Rs.{row.sp}</div>
+            ) : (
+                <div className="w-[200px] overflow-ellipsis flex flex-col ">
+                    <span className="line-through">Rs.{row.mrp}</span>
+                    <span>Rs.{row.sp}</span>
+                    <span>
+                        {' '}
+                        {parseFloat(
+                            (
+                                ((Number(row.mrp) - Number(row.sp)) /
+                                    Number(row.mrp)) *
+                                100
+                            ).toFixed(0),
+                        )}
+                        % off
+                    </span>
+                </div>
+            )
         },
     }),
     columnHelper.accessor('quantity', {
