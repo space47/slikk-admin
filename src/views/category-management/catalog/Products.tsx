@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -9,17 +10,15 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import { notification } from 'antd'
 import { IoMdDownload } from 'react-icons/io'
 import { DROPDOWNARRAY } from './CommonType'
 import { Dropdown } from '@/components/ui'
-import { BANNER_PAGE_NAME } from '@/common/banner'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import ImageMODAL from '@/common/ImageModal'
 
 type ProductVariant = {
     name: string
@@ -79,6 +78,8 @@ const Products = () => {
 
     const [filterInput, setFilterInput] = useState('')
     const [searchType, setSearchType] = useState<string>('')
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState([])
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -134,14 +135,13 @@ const Products = () => {
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: (info) => (
-                    <a href={info.getValue() as string}>
-                        <img
-                            src={info.getValue() as string}
-                            alt="Image"
-                            className="w-24 h-20 object-cover"
-                        />
-                    </a>
+                cell: ({ getValue, row }) => (
+                    <img
+                        src={getValue().split(',')[0]}
+                        alt="Image"
+                        className="w-24 h-20 object-cover cursor-pointer"
+                        onClick={() => handleOpenModal(row.original.image)}
+                    />
                 ),
             },
             {
@@ -273,6 +273,14 @@ const Products = () => {
         setSearchType(event.target.value)
     }
 
+    const handleOpenModal = (img: any) => {
+        console.log('sdsds', img)
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
+
+    console.log('Images', particularRowImage)
+
     return (
         <div>
             <div className="flex justify-between mb-2">
@@ -388,6 +396,13 @@ const Products = () => {
                     />
                 </div>
             </div>
+            {showImageModal && (
+                <ImageMODAL
+                    dialogIsOpen={showImageModal}
+                    setIsOpen={setShowImageModal}
+                    image={particularRowImage && particularRowImage?.split(',')}
+                />
+            )}
         </div>
     )
 }
