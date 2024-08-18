@@ -14,6 +14,7 @@ type ProductTableProps = {
         product: string
         image: string[]
         brand: string
+        name: string
     }[]
     handleActionClick: (e: any) => void
 }
@@ -28,6 +29,10 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
             {
                 header: 'Barcode',
                 accessorKey: 'barcode',
+            },
+            {
+                header: 'Name',
+                accessorKey: 'name',
             },
             {
                 header: 'Product',
@@ -57,9 +62,9 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
                     <button
                         type="button"
                         onClick={() => handleActionClick(row.original.barcode)}
-                        className="text-blue-500 hover:underline"
+                        className="text-white bg-green-700 px-3 py-1 rounded-lg hover:bg-green-500"
                     >
-                        ADD
+                        <span className="text-sm">ADD</span>
                     </button>
                 ),
             },
