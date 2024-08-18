@@ -97,7 +97,7 @@ const PageAddModal: React.FC<modalProps> = ({
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
-        const handleSelect1 = (value: any) => {
+        const handleSelect = (value: any) => {
             const selected = DROPDOWNARRAY.find((item) => item.value === value)
             if (selected) {
                 setCurrentSelectedPage(selected)
@@ -902,7 +902,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                         ? currentSelectedPage.label
                                                         : 'SELECT'
                                                 }
-                                                onSelect={handleSelect1}
+                                                onSelect={handleSelect}
                                             >
                                                 {DROPDOWNARRAY?.map(
                                                     (item, key) => {
