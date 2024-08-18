@@ -41,7 +41,7 @@ const Infor = () => {
     }
 
     return (
-        <div className="text-[14px] max-h-[200px] xl:text-[18px]">
+        <div className="text-[14px] max-h-[140px] xl:text-[18px]">
             <Dropdown
                 key={selectedCompany.id}
                 title={` ${selectedCompany.name}`}
@@ -56,7 +56,7 @@ const Infor = () => {
                         >
                             <div
                                 onClick={handleOption}
-                                className="text-[12px] capitalize whitespace-break-spaces w-full min-w-[250px] xl:w-[400px] xl:text-[18px]"
+                                className="text-[12px] capitalize whitespace-break-spaces  min-w-[250px] xl:w-[500px] xl:text-[14px]"
                             >
                                 {item.name}, {item.registered_name}
                             </div>

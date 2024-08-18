@@ -50,6 +50,7 @@ type WebType = {
     section_heading: string
     background_image: string
     sub_header_config: Config
+    mobile_background_image: string
 }
 
 const PageSettings = () => {
@@ -151,7 +152,6 @@ const PageSettings = () => {
     }
     const handleRemoveButton = (row: WebType) => {
         setData((prev) => prev.filter((item) => item !== row))
-        // DUMMY DELETE.........................API CHAHIYE MEREKO
     }
 
     useEffect(() => {
@@ -183,6 +183,17 @@ const PageSettings = () => {
             {
                 header: 'Background Image',
                 accessorKey: 'background_image',
+                cell: (info) => (
+                    <img
+                        src={info.getValue()}
+                        alt=""
+                        className=" object-contain bg-black"
+                    />
+                ),
+            },
+            {
+                header: 'Mobile Background Image',
+                accessorKey: 'mobile_background_image',
                 cell: (info) => (
                     <img
                         src={info.getValue()}
@@ -363,7 +374,11 @@ const PageSettings = () => {
 
     const handleButton = async () => {
         const webData = data.reduce((acc, item, index) => {
-            acc[index + 1] = item
+            const { mobile_background_array, ...allData } = item
+            acc[index + 1] = {
+                ...allData,
+                mobile_background_image: item.mobile_background_image || '',
+            }
             return acc
         }, {})
 

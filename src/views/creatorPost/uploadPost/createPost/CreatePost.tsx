@@ -171,6 +171,7 @@ const CreatePost = () => {
         console.log('Barcode', value)
         setProductData((prev) => (prev ? [...prev, value] : value))
         setShowTable(false)
+        setSearchInput('')
     }
 
     const handleSubmit = async (values: Post) => {

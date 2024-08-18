@@ -37,7 +37,9 @@ type WebType = {
     section_heading: string
     background_image: string
     sub_header_config: Config
+    mobile_background_image: string
     background_image_array: File[]
+    mobile_background_array: File[]
     footer_config_icon_Array: File[] //.........
     footer_config_image_Array: File[]
     header_config_icon_Array: File[]
@@ -109,19 +111,20 @@ const PageModal: React.FC<modalProps> = ({
         section_heading: particularRow.section_heading,
         background_image: particularRow.background_image,
         sub_header_config: particularRow.sub_header_config,
+        mobile_background_image: particularRow.mobile_background_image,
     })
 
     const handleimage = async (files: File[]) => {
-        if(!files || files?.length == 0){
-            return;
+        if (!files || files?.length == 0) {
+            return
         }
-        
-        const formData = new FormData();
+
+        const formData = new FormData()
 
         files.forEach((file) => {
-            formData.append('file', file);
-        });
-        formData.append('file_type', 'banners');
+            formData.append('file', file)
+        })
+        formData.append('file_type', 'banners')
 
         try {
             return await axioisInstance
@@ -153,19 +156,29 @@ const PageModal: React.FC<modalProps> = ({
                 })
         } catch (error: any) {
             console.error('Error uploading files:', error)
-            return '';
+            return ''
         }
     }
 
     const handleSubmit = async (row: WebType) => {
-        const imageUpload = await handleimage(row.background_image_array);
-        const footerImageUpload = await handleimage(row.footer_config_image_Array);
-        const headerImageUpload = await handleimage(row.header_config_image_Array);
-        const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array);
+        const imageUpload = await handleimage(row.background_image_array)
+        const mobileimageUpload = await handleimage(row.mobile_background_array)
+        const footerImageUpload = await handleimage(
+            row.footer_config_image_Array,
+        )
+        const headerImageUpload = await handleimage(
+            row.header_config_image_Array,
+        )
+        const subHeaderImageUpload = await handleimage(
+            row.sub_header_config_image_Array,
+        )
 
         const newRow = {
             ...row,
-            background_image: imageUpload,
+            background_image: imageUpload ? imageUpload : row.background_image,
+            mobile_background_image: mobileimageUpload
+                ? mobileimageUpload
+                : row.mobile_background_image,
             footer_config: {
                 ...row.footer_config,
                 image: footerImageUpload,
@@ -181,18 +194,24 @@ const PageModal: React.FC<modalProps> = ({
             data_type: {
                 ...row.data_type,
             },
-        };
+        }
 
-        console.log('row', newRow);
-        setParticularRow(newRow);
-    };
-
+        console.log('row', newRow)
+        setParticularRow(newRow)
+    }
 
     console.log('---------------', particularRow)
     const handleRemoveImage = () => {
         setInitalValue((prev: any) => ({
             ...prev,
             background_image: null,
+        }))
+    }
+
+    const handleRemoveMobileImage = () => {
+        setInitalValue((prev: any) => ({
+            ...prev,
+            mobile_background_image: null,
         }))
     }
 
@@ -241,11 +260,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Section Header"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -258,11 +272,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Component Types"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field name="component_type">
@@ -299,7 +308,7 @@ const PageModal: React.FC<modalProps> = ({
                                 {/* image */}
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
                                     <div className="font-semibold mb-1">
-                                        Image
+                                        Background Image
                                     </div>
                                     {initialValue.background_image ? (
                                         <div className="flex flex-col items-center justify-center min-w-[100px]">
@@ -323,13 +332,6 @@ const PageModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
-                                            // }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="background_image_array">
@@ -345,12 +347,11 @@ const PageModal: React.FC<modalProps> = ({
                                                             fileList={
                                                                 values.background_image_array
                                                             } // uploadedd the file
-                                                            onChange={(
-                                                                files,
-                                                            ) => form.setFieldValue(
-                                                                'background_image_array',
-                                                                files,
-                                                            )
+                                                            onChange={(files) =>
+                                                                form.setFieldValue(
+                                                                    'background_image_array',
+                                                                    files,
+                                                                )
                                                             }
                                                             className=""
                                                             onFileRemove={(
@@ -369,17 +370,78 @@ const PageModal: React.FC<modalProps> = ({
                                     </FormContainer>
                                 </FormContainer>
 
-                                <FormItem
-                                    label=""
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    {' '}
-                                </FormItem>
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                    <div className="font-semibold mb-1">
+                                        Mobile Background Image
+                                    </div>
+                                    {initialValue.mobile_background_image ? (
+                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
+                                            <img
+                                                src={
+                                                    initialValue.mobile_background_image
+                                                }
+                                                alt={`Image `}
+                                                className="w-[100px] h-[40px] flex object-contain "
+                                            />
+                                            <button
+                                                className="text-red-500 text-md "
+                                                onClick={
+                                                    handleRemoveMobileImage
+                                                }
+                                            >
+                                                x
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        'No Image'
+                                    )}
+                                    <FormContainer className=" mt-5 ">
+                                        <FormItem
+                                            label=""
+                                            // invalid={Boolean(
+                                            //     errors.document &&
+                                            //         touched.document,
+                                            // )}
+                                            // errorMessage={
+                                            //     errors.document as string
+                                            // }
+                                            className="grid grid-rows-2"
+                                        >
+                                            <Field name="mobile_background_array">
+                                                {({
+                                                    field,
+                                                    form,
+                                                }: FieldProps<WebType>) => (
+                                                    <>
+                                                        <Upload
+                                                            beforeUpload={
+                                                                beforeUpload
+                                                            }
+                                                            fileList={
+                                                                values.mobile_background_array
+                                                            } // uploadedd the file
+                                                            onChange={(files) =>
+                                                                form.setFieldValue(
+                                                                    'mobile_background_array',
+                                                                    files,
+                                                                )
+                                                            }
+                                                            className=""
+                                                            onFileRemove={(
+                                                                files,
+                                                            ) =>
+                                                                form.setFieldValue(
+                                                                    'mobile_background_array',
+                                                                    files,
+                                                                )
+                                                            }
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+                                </FormContainer>
 
                                 {/* ............Header Config................................................. */}
 
