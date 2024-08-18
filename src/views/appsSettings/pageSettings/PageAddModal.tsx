@@ -97,7 +97,7 @@ const PageAddModal: React.FC<modalProps> = ({
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
-        const handleSelect = (value: any) => {
+        const handleSelect1 = (value: any) => {
             const selected = DROPDOWNARRAY.find((item) => item.value === value)
             if (selected) {
                 setCurrentSelectedPage(selected)
@@ -264,7 +264,13 @@ const PageAddModal: React.FC<modalProps> = ({
             return ''
         }
     }
-    
+     const handleSelect = (a: any, b: any) => {
+        console.log('data.....................', a, b)
+        // setCurrentSelectedPage({
+        //     value: a,
+        //     name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || '',
+        // })
+    }
 
     const handleSubmit = async (row: WebType) => {
         console.log(row)
@@ -896,7 +902,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                         ? currentSelectedPage.label
                                                         : 'SELECT'
                                                 }
-                                                onSelect={handleSelect}
+                                                onSelect={handleSelect1}
                                             >
                                                 {DROPDOWNARRAY?.map(
                                                     (item, key) => {
