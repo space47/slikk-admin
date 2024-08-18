@@ -212,6 +212,7 @@ const PageAddModal: React.FC<modalProps> = ({
         console.log('Barcode', value)
         setProductData((prev) => (prev ? [...prev, value] : value))
         setShowTable(false)
+        setSearchInput('')
     }
 
     const handleimage = async (files: File[]) => {
