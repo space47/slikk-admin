@@ -47,6 +47,7 @@ type WebType = {
     section_heading: string
     background_image: string
     sub_header_config: Config
+    mobile_background_array: File[]
     background_image_array: File[]
     footer_config_icon_Array: File[] //.........
     footer_config_image_Array: File[]
@@ -96,13 +97,6 @@ const PageAddModal: React.FC<modalProps> = ({
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
-
-        const handleSelect = (value: any) => {
-            const selected = DROPDOWNARRAY.find((item) => item.value === value)
-            if (selected) {
-                setCurrentSelectedPage(selected)
-            }
-        }
 
         const allowedFileType = [
             'application/pdf',
@@ -264,19 +258,20 @@ const PageAddModal: React.FC<modalProps> = ({
             return ''
         }
     }
-    const handleSelect = (a: any, b: any) => {
-        console.log('data.....................', a, b)
-        // setCurrentSelectedPage({
-        //     value: a,
-        //     name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || '',
-        // })
+
+    const handleSelect = (value: any) => {
+        const selected = DROPDOWNARRAY.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
     }
 
     const handleSubmit = async (row: WebType) => {
         console.log(row)
         const imageUpload = await handleimage(row.background_image_array)
-        // console.log(imageUpload);
-        // return;
+
+        const mobileImageUpload = await handleimage(row.mobile_background_array)
+
         const footerImageUpload = await handleimage(
             row.footer_config_image_Array,
         )
@@ -291,6 +286,7 @@ const PageAddModal: React.FC<modalProps> = ({
         const newRowAdd = {
             ...row,
             background_image: imageUpload,
+            mobile_background_image: mobileImageUpload,
             footer_config: {
                 ...row.footer_config,
                 image:
@@ -473,17 +469,59 @@ const PageAddModal: React.FC<modalProps> = ({
                                     </FormContainer>
                                 </FormContainer>
 
-                                <FormItem
-                                    label=""
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    {' '}
-                                </FormItem>
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                    <div className="font-semibold mb-1 text-md">
+                                        Mobile Background Image
+                                    </div>
+
+                                    <FormContainer className=" mt-5 ">
+                                        <FormItem
+                                            label=""
+                                            className="grid grid-rows-2"
+                                        >
+                                            <Field name="mobile_background_array">
+                                                {({
+                                                    field,
+                                                    form,
+                                                }: FieldProps<WebType>) => (
+                                                    <>
+                                                        <Upload
+                                                            beforeUpload={
+                                                                beforeUpload
+                                                            }
+                                                            fileList={
+                                                                values.mobile_background_array
+                                                            } // uploadedd the file
+                                                            onChange={(
+                                                                files,
+                                                            ) => {
+                                                                console.log(
+                                                                    'OnchangeFiles',
+                                                                    files,
+                                                                    field.name,
+                                                                    values.mobile_background_array,
+                                                                )
+                                                                form.setFieldValue(
+                                                                    'mobile_background_array',
+                                                                    files,
+                                                                )
+                                                            }}
+                                                            className=""
+                                                            onFileRemove={(
+                                                                files,
+                                                            ) =>
+                                                                form.setFieldValue(
+                                                                    'mobile_background_array',
+                                                                    files,
+                                                                )
+                                                            }
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+                                </FormContainer>
 
                                 {/* ............Header Config................................................. */}
 
