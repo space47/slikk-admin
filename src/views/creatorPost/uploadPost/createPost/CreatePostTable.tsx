@@ -39,8 +39,8 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
                 cell: ({ getValue }) => (
                     <div className="flex gap-2">
                         <img
-                            src={getValue() as string}
-                            alt=""
+                            src={getValue().split(',')[0]}
+                            alt="Image"
                             className="w-[100px] h-[100px]"
                         />
                     </div>
@@ -51,7 +51,7 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
                 accessorKey: 'brand',
             },
             {
-                header: 'Edit',
+                header: 'ADD',
                 accessorKey: '',
                 cell: ({ row }) => (
                     <button
