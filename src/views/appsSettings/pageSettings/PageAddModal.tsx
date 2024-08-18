@@ -264,13 +264,7 @@ const PageAddModal: React.FC<modalProps> = ({
             return ''
         }
     }
-    const handleSelect = (a: any, b: any) => {
-        console.log('data.....................', a, b)
-        // setCurrentSelectedPage({
-        //     value: a,
-        //     name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || '',
-        // })
-    }
+    
 
     const handleSubmit = async (row: WebType) => {
         console.log(row)
