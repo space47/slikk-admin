@@ -306,7 +306,7 @@ const PageModal: React.FC<modalProps> = ({
                                 </FormItem>
 
                                 {/* image */}
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Background Image
                                     </div>
@@ -353,7 +353,7 @@ const PageModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -370,7 +370,7 @@ const PageModal: React.FC<modalProps> = ({
                                     </FormContainer>
                                 </FormContainer>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Mobile Background Image
                                     </div>
@@ -398,13 +398,6 @@ const PageModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
-                                            // }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="mobile_background_array">
@@ -426,7 +419,7 @@ const PageModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -448,11 +441,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Header Style"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -465,11 +453,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Header Text"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -481,7 +464,7 @@ const PageModal: React.FC<modalProps> = ({
                                 </FormItem>
 
                                 {/* .................................................................... */}
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Header Image
                                     </div>
@@ -506,12 +489,6 @@ const PageModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
                                             // }
                                             className="grid grid-rows-2"
                                         >
@@ -542,7 +519,7 @@ const PageModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }}
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -561,11 +538,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Header Position"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -580,11 +552,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Sub Header Style"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -597,11 +564,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Sub Header Text"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -612,7 +574,7 @@ const PageModal: React.FC<modalProps> = ({
                                     />
                                 </FormItem>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Sub Header Image
                                     </div>
@@ -639,13 +601,6 @@ const PageModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
-                                            // }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="sub_header_config_image_Array">
@@ -675,7 +630,7 @@ const PageModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }}
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -715,11 +670,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Footer Style"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -732,11 +682,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Footer Text"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -747,7 +692,7 @@ const PageModal: React.FC<modalProps> = ({
                                     />
                                 </FormItem>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Footer Image
                                     </div>
@@ -774,13 +719,6 @@ const PageModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
-                                            // }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="footer_config_image_Array">
@@ -810,7 +748,7 @@ const PageModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }}
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -829,11 +767,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Footer Position"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -851,11 +784,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Data Type"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -868,11 +796,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Filters"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field

@@ -409,7 +409,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                 </FormItem>
 
                                 {/* image */}
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Background Image
                                     </div>
@@ -453,7 +453,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }}
-                                                            className=""
+                                                            className="items-center flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -470,7 +470,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                     </FormContainer>
                                 </FormContainer>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1 text-md">
                                         Mobile Background Image
                                     </div>
@@ -507,7 +507,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }}
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -562,7 +562,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                 </FormItem>
 
                                 {/* .................................................................... */}
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Header Image
                                     </div>
@@ -606,7 +606,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }}
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -676,7 +676,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                     />
                                 </FormItem>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Sub Header Image
                                     </div>
@@ -684,13 +684,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
-                                            // }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="sub_header_config_image_Array">
@@ -720,7 +713,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }}
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
@@ -792,7 +785,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                     />
                                 </FormItem>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[170px] items-center h-[160px] rounded-xl mb-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">
                                         Footer Image
                                     </div>
@@ -836,7 +829,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                     files,
                                                                 )
                                                             }}
-                                                            className=""
+                                                            className="flex justify-center"
                                                             onFileRemove={(
                                                                 files,
                                                             ) =>
