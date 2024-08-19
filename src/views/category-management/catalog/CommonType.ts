@@ -1,6 +1,6 @@
 type Product = {
     company: number
-    brand_name: string
+    brand: string
     name: string
     description: string
     about: string
