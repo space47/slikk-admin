@@ -503,12 +503,12 @@ const EditProduct = () => {
                                     </FormItem>
                                 ))}
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden ">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
                                     Image
                                     <FormContainer className=" mt-5 w-full ">
                                         {/* DIV */}
 
-                                        <div className="overflow-x-scroll w-[350px]">
+                                        <div className="overflow-x-scroll w-[350px] scrollbar-hide flex justify-center">
                                             <div className="image w-[80%] min-h-[100px] h-auto mt-5 flex gap-3 items-center">
                                                 {allImage &&
                                                 allImage.length > 0 ? (
@@ -528,7 +528,7 @@ const EditProduct = () => {
                                                                     />
 
                                                                     <button
-                                                                        className="bg-red-600 w-1/2 rounded-full text-white text-sm"
+                                                                        className="bg-red-600 w-1/2 rounded-full text-white text-sm mb-5"
                                                                         onClick={(
                                                                             e,
                                                                         ) =>
@@ -560,6 +560,7 @@ const EditProduct = () => {
                                                     <>
                                                         <Upload
                                                             multiple
+                                                            className="flex justify-center"
                                                             beforeUpload={
                                                                 beforeUpload
                                                             }
@@ -606,10 +607,10 @@ const EditProduct = () => {
 
                                 {/* .............................................................. */}
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide">
                                     Color Code Thumbnail
                                     <FormContainer className=" mt-5 ">
-                                        <div className=" overflow-x-scroll w-[350px] ">
+                                        <div className=" overflow-x-scroll w-[350px] scrollbar-hide flex justify-center">
                                             <div className=" image w-[20%] h-[20%] mt-5 flex gap-3 items-center  ">
                                                 {allColor &&
                                                 allColor.length > 0 ? (
@@ -629,7 +630,7 @@ const EditProduct = () => {
                                                                     />
 
                                                                     <button
-                                                                        className="bg-red-600 w-1/2 rounded-full text-white  text-sm"
+                                                                        className="bg-red-600 w-1/2 rounded-full text-white  text-sm mb-5"
                                                                         onClick={(
                                                                             e,
                                                                         ) =>
@@ -662,6 +663,7 @@ const EditProduct = () => {
                                                     <>
                                                         <Upload
                                                             multiple
+                                                            className="flex justify-center"
                                                             beforeUpload={
                                                                 beforeUpload
                                                             }

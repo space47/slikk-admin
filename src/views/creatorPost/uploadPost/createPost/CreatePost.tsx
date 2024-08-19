@@ -43,7 +43,7 @@ interface Product {
 }
 
 interface Post {
-    products: Product
+    products: Product[]
     file: string
     file_array: File[]
     caption: string
@@ -86,7 +86,7 @@ const CreatePost = () => {
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
-    const [productData, setProductData] = useState([])
+    const [productData, setProductData] = useState<string[]>([])
 
     const handleSelect = (value: any) => {
         const selected = DROPDOWNARRAY.find((item) => item.value === value)
@@ -169,7 +169,7 @@ const CreatePost = () => {
 
     const handleActionClick = (value: any) => {
         console.log('Barcode', value)
-        setProductData((prev) => (prev ? [...prev, value] : value))
+        setProductData((prev) => (prev ? [...prev, value] : [value]))
         setShowTable(false)
         setSearchInput('')
     }
@@ -418,7 +418,7 @@ const CreatePost = () => {
                                     <Field
                                         type="text"
                                         name="products"
-                                        value={productData}
+                                        value={productData.join(', ')}
                                         onChange={(e: any) => {
                                             setProductData(e.target.value)
                                             setFieldValue(
