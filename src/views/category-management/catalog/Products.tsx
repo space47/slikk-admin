@@ -102,9 +102,38 @@ const Products = () => {
         }
     }
 
+    const filter = async (
+        page: number,
+        pageSize: number,
+        filter: string = '',
+    ) => {
+        try {
+            let type = ''
+            if (currentSelectedPage?.label && searchType) {
+                type = `&${currentSelectedPage.value}=${searchType}`
+            }
+
+            const response = await axiosInstance.get(
+                `search/product?dashboard=true&p=${page}&page_size=${pageSize}${type}&sku=${filter}`,
+            )
+
+            const data = response.data.results
+            const total = response.data.count
+
+            setData(data)
+            setTotalData(total)
+        } catch (error) {
+            console.error('Error fetching data:', error)
+        }
+    }
+
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, globalFilter, currentSelectedPage, searchType])
+    }, [page, pageSize, currentSelectedPage, searchType])
+
+    useEffect(() => {
+        filter(page, pageSize, globalFilter)
+    }, [page, pageSize, globalFilter, searchType])
 
     const handleActionClick = (barcode: any) => {
         navigate(`/app/catalog/products/${barcode}`)
