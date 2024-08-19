@@ -13,6 +13,7 @@ import Product from '@/views/category-management/catalog/CommonType'
 import { Checkbox } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdCloseCircle } from 'react-icons/io'
+import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from './ProductCommon'
 
 const EditProduct = () => {
     const [datas, setDatas] = useState()
@@ -20,10 +21,9 @@ const EditProduct = () => {
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
-
     const [initialValue, setInitialValue] = useState<Product>({
         company: 1,
-        brand_name: '',
+        brand: '',
         name: '',
         description: '',
         about: '',
@@ -97,7 +97,6 @@ const EditProduct = () => {
         fit: '',
         fabric: '',
     })
-
     const [allImage, setAllImage] = useState<string[]>([])
     const [allVideo, setAllVideo] = useState<string[]>([])
     const [allColor, setAllColor] = useState<string[]>([])
@@ -179,7 +178,7 @@ const EditProduct = () => {
             const userData = response.data.data
             setInitialValue({
                 company: 1,
-                brand_name: userData.brand,
+                brand: userData.brand,
                 name: userData.name,
                 description: userData.description,
                 about: userData.about,
@@ -220,7 +219,7 @@ const EditProduct = () => {
                 skinType: userData.skintype,
                 formulation: userData.formulation,
                 hairType: userData.hairtype,
-                gender: userData.gender || 'Women',
+                gender: userData.gender,
                 finish: userData.finish,
                 skintone: userData.skintone,
                 coverage: userData.coverage,
@@ -475,7 +474,10 @@ const EditProduct = () => {
 
     return (
         <div>
-            <h3 className="mb-5 text-neutral-900">ADD NEW PRODUCT</h3>
+            <h3 className="mb-5 text-neutral-900">
+                EDIT PRODUCT{' '}
+                <span className="font-light text-md">#{barcode}</span>
+            </h3>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
@@ -486,219 +488,60 @@ const EditProduct = () => {
                     <Form className="w-2/3" onKeyDown={handleKeyDown}>
                         <FormContainer>
                             <div className="grid grid-cols-2 gap-4">
-                                <FormItem label="Barcode">
-                                    <Field
-                                        type="text"
-                                        name="barcode"
-                                        placeholder="Enter Barcode"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="SKU">
-                                    <Field
-                                        type="text"
-                                        name="sku"
-                                        placeholder="Enter SKU"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Brand Name">
-                                    <Field
-                                        type="text"
-                                        name="brand_name"
-                                        placeholder="Enter Brand Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Name">
-                                    <Field
-                                        type="text"
-                                        name="name"
-                                        placeholder="Enter Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Description">
-                                    <Field
-                                        type="text"
-                                        name="description"
-                                        placeholder="Enter Description"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                {/* <FormItem label="About">
-                                    <Field
-                                        type="text"
-                                        name="about"
-                                        placeholder="Enter About"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Benefits">
-                                    <Field
-                                        type="text"
-                                        name="benefits"
-                                        placeholder="Enter Benefits"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Includes">
-                                    <Field
-                                        type="text"
-                                        name="includes"
-                                        placeholder="Enter Includes"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                <FormItem label=" Other Product Info">
-                                    <Field
-                                        type="text"
-                                        name="other_product_info"
-                                        placeholder="Enter Other Product Info"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label=" Variant Type">
-                                    <Field
-                                        type="text"
-                                        name="variant_type"
-                                        placeholder="Enter Variant Type"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label=" Style Code">
-                                    <Field
-                                        type="text"
-                                        name="variant_id"
-                                        placeholder="Enter Variant ID"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Tax Rate">
-                                    <Field
-                                        type="number"
-                                        name="tax_rate"
-                                        placeholder="Enter Tax Rate"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="MRP">
-                                    <Field
-                                        type="text"
-                                        name="mrp"
-                                        placeholder="Enter MRP"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="SP">
-                                    <Field
-                                        type="text"
-                                        name="sp"
-                                        placeholder="Enter SP"
-                                        component={Input}
-                                    />
-                                </FormItem>
+                                {PRODUCT_EDIT_COMMON.map((item, key) => (
+                                    <FormItem
+                                        key={key}
+                                        label={item.label}
+                                        className={item.classname}
+                                    >
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                ))}
 
-                                <FormItem label="HSN">
-                                    <Field
-                                        type="text"
-                                        name="hsn"
-                                        placeholder="Enter HSN"
-                                        component={Input}
-                                    />
-                                </FormItem>
-
-                                {/* <FormItem label="Usage">
-                                    <Field
-                                        type="text"
-                                        name="usage"
-                                        placeholder="Enter Usage"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                <FormItem label="Imported By/Manufactured By">
-                                    <Field
-                                        type="text"
-                                        name="imported_by"
-                                        placeholder="Enter Imported By"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                {/* <FormItem label=" Shelf Life">
-                                    <Field
-                                        type="number"
-                                        name="shelf_life"
-                                        placeholder="Enter Shelf Life"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Height">
-                                    <Field
-                                        type="number"
-                                        name="height"
-                                        placeholder="Enter Height"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Width">
-                                    <Field
-                                        type="number"
-                                        name="width"
-                                        placeholder="Enter Width"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Depth">
-                                    <Field
-                                        type="number"
-                                        name="depth"
-                                        placeholder="Enter Depth"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label=" Minimum Quantity">
-                                    <Field
-                                        type="number"
-                                        name="minimum_quantity"
-                                        placeholder="Enter Minimum Quantity"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Reserve Quantity">
-                                    <Field
-                                        type="number"
-                                        name="reserve_quantity"
-                                        placeholder="Enter Reserve Quantity"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                <FormItem label="Status">
-                                    <Field
-                                        type="text"
-                                        name="status"
-                                        placeholder="Enter Status"
-                                        component={Input}
-                                    />
-                                </FormItem>
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden ">
                                     Image
-                                    <FormContainer className=" mt-5 ">
+                                    <FormContainer className=" mt-5 w-full ">
                                         {/* DIV */}
 
-                                        <div className=" overflow-x-scroll w-[500px] ">
-                                            <div className=" image w-[10%] h-[20%] mt-5 flex gap-3 items-center  ">
+                                        <div className="overflow-x-scroll w-[350px]">
+                                            <div className="image w-[80%] min-h-[100px] h-auto mt-5 flex gap-3 items-center">
                                                 {allImage &&
                                                 allImage.length > 0 ? (
                                                     allImage.map(
-                                                        (img, index) => (
-                                                            <img
-                                                                key={index}
-                                                                src={img}
-                                                                alt="img"
-                                                                className="rounded-xl"
-                                                            />
-                                                        ),
+                                                        (img, index) =>
+                                                            img && (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex flex-col gap-3"
+                                                                >
+                                                                    <img
+                                                                        src={
+                                                                            img
+                                                                        }
+                                                                        alt="img"
+                                                                        className="w-[100px]"
+                                                                    />
+
+                                                                    <button
+                                                                        className="bg-red-600 w-1/2 rounded-full text-white text-sm"
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) =>
+                                                                            handleRemoveImage(
+                                                                                e,
+                                                                                index,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        x
+                                                                    </button>
+                                                                </div>
+                                                            ),
                                                     )
                                                 ) : (
                                                     <p>No image</p>
@@ -708,12 +551,6 @@ const EditProduct = () => {
 
                                         <FormItem
                                             label=""
-                                            invalid={Boolean(
-                                                errors.images && touched.images,
-                                            )}
-                                            errorMessage={
-                                                errors.images as string
-                                            }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="image">
@@ -743,7 +580,6 @@ const EditProduct = () => {
                                                                     files,
                                                                 )
                                                             }
-                                                            // uploadButtonText="Add Files"
                                                         />
                                                     </>
                                                 )}
@@ -770,21 +606,56 @@ const EditProduct = () => {
 
                                 {/* .............................................................. */}
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden">
                                     Color Code Thumbnail
                                     <FormContainer className=" mt-5 ">
+                                        <div className=" overflow-x-scroll w-[350px] ">
+                                            <div className=" image w-[20%] h-[20%] mt-5 flex gap-3 items-center  ">
+                                                {allColor &&
+                                                allColor.length > 0 ? (
+                                                    allColor.map(
+                                                        (img, index) =>
+                                                            img ? (
+                                                                <div
+                                                                    key={index}
+                                                                    className="flex flex-col gap-3"
+                                                                >
+                                                                    <img
+                                                                        src={
+                                                                            img
+                                                                        }
+                                                                        alt="img"
+                                                                        className="rounded-xl"
+                                                                    />
+
+                                                                    <button
+                                                                        className="bg-red-600 w-1/2 rounded-full text-white  text-sm"
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) =>
+                                                                            handleRemoveColor(
+                                                                                e,
+                                                                                index,
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        x
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
+                                                                ''
+                                                            ),
+                                                    )
+                                                ) : (
+                                                    <p>No image</p>
+                                                )}
+                                            </div>
+                                        </div>
                                         <FormItem
                                             label=""
-                                            invalid={Boolean(
-                                                errors.color_code &&
-                                                    touched.color_code,
-                                            )}
-                                            errorMessage={
-                                                errors.color_code as string
-                                            }
                                             className="grid grid-rows-2"
                                         >
-                                            <Field name="color_code_link">
+                                            <Field name="color_code">
                                                 {({
                                                     form,
                                                 }: FieldProps<Product>) => (
@@ -799,7 +670,7 @@ const EditProduct = () => {
                                                             }
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
-                                                                    'image',
+                                                                    'color_code',
                                                                     files,
                                                                 )
                                                             }
@@ -807,7 +678,7 @@ const EditProduct = () => {
                                                                 files,
                                                             ) =>
                                                                 form.setFieldValue(
-                                                                    'image',
+                                                                    'color_code',
                                                                     files,
                                                                 )
                                                             }
@@ -823,14 +694,12 @@ const EditProduct = () => {
                                     </FormContainer>
                                     <FormItem
                                         label=""
-                                        invalid={errors.image && touched.image}
-                                        errorMessage={errors.image}
                                         className="col-span-1 w-[80%]"
                                     >
                                         <Field
                                             type="text"
-                                            name="images"
-                                            placeholder="Enter ImageUrl or Upload Image file"
+                                            name="color_code_link"
+                                            placeholder="Enter Color Url or Upload Color file"
                                             component={Input}
                                         />
                                     </FormItem>
@@ -841,6 +710,28 @@ const EditProduct = () => {
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                     Video
                                     <FormContainer className=" mt-5 ">
+                                        <div className=" overflow-x-scroll w-[350px] ">
+                                            <div className=" image w-[10%] h-[20%] mt-5 flex gap-3 items-center  ">
+                                                {allVideo &&
+                                                allVideo.length > 0 ? (
+                                                    allVideo.map(
+                                                        (img, index) =>
+                                                            img ? (
+                                                                <img
+                                                                    key={index}
+                                                                    src={img}
+                                                                    alt="img"
+                                                                    className="rounded-xl"
+                                                                />
+                                                            ) : (
+                                                                ''
+                                                            ),
+                                                    )
+                                                ) : (
+                                                    <p>No image</p>
+                                                )}
+                                            </div>
+                                        </div>
                                         <FormItem
                                             label=""
                                             invalid={Boolean(
@@ -904,346 +795,22 @@ const EditProduct = () => {
                                         />
                                     </FormItem>
                                 </FormContainer>
-                                <FormItem label="Category Name">
-                                    <Field
-                                        type="text"
-                                        name="category_name"
-                                        placeholder="Enter Category Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-
-                                {/* .............................................. */}
-
-                                {/*  */}
-                                <FormItem label=" Sub Category Name">
-                                    <Field
-                                        type="text"
-                                        name="sub_category_name"
-                                        placeholder="Enter Sub Category Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Product Type Name">
-                                    <Field
-                                        type="text"
-                                        name="product_type_name"
-                                        placeholder="Enter Product Type Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-
-                                {/* ....................................................................... */}
-
-                                {/* ................................................................................ */}
-                                <FormItem label=" Division Name">
-                                    <Field
-                                        type="text"
-                                        name="division_name"
-                                        placeholder="Enter Division Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Colour">
-                                    <Field
-                                        type="text"
-                                        name="color"
-                                        placeholder="Enter Color Name"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Skin Type">
-                                    <Field
-                                        type="text"
-                                        name="skinType"
-                                        placeholder="Enter Skin Type"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                {/* <FormItem label="Formulation">
-                                    <Field
-                                        type="text"
-                                        name="formulation"
-                                        placeholder="Enter Formulation"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Hair Type">
-                                    <Field
-                                        type="text"
-                                        name="hairType"
-                                        placeholder="Enter Hair Type"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                <FormItem label="Gender">
-                                    <Field
-                                        type="text"
-                                        name="gender"
-                                        placeholder="Enter Gender"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                {/* <FormItem label="Finish">
-                                    <Field
-                                        type="text"
-                                        name="finish"
-                                        placeholder="Enter Finish"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Skin Tone">
-                                    <Field
-                                        type="text"
-                                        name="skintone"
-                                        placeholder="Enter Skin Tone"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Coverage">
-                                    <Field
-                                        type="text"
-                                        name="coverage"
-                                        placeholder="Enter Coverage"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Sun Protection">
-                                    <Field
-                                        type="text"
-                                        name="sunprotection"
-                                        placeholder="Enter Sun Protection"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-
-                                {/* <FormItem label="Conscious">
-                                    <Field
-                                        type="text"
-                                        name="concious"
-                                        placeholder="Enter Conscious"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label=" Product Hex Code">
-                                    <Field
-                                        type="text"
-                                        name="productHexCode"
-                                        placeholder="Enter Product Hex Code"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                <FormItem label="Pack Size">
-                                    <Field
-                                        type="text"
-                                        name="packsize"
-                                        placeholder="Enter Pack Size"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Product Size">
-                                    <Field
-                                        type="text"
-                                        name="size"
-                                        placeholder="Enter Product Size"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                {/* <FormItem label="Ingredients">
-                                    <Field
-                                        type="text"
-                                        name="ingrediants"
-                                        placeholder="Enter Ingredients"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label=" Veg/Non-Veg">
-                                    <Field
-                                        type="text"
-                                        name="vegnonveg"
-                                        placeholder="Enter Veg/Non-Veg"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Ingredients Preferences">
-                                    <Field
-                                        type="text"
-                                        name="ingrediantsPreferences"
-                                        placeholder="Enter Ingredients Preferences"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Concern">
-                                    <Field
-                                        type="text"
-                                        name="concern"
-                                        placeholder="Enter Concern"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Recommendation For">
-                                    <Field
-                                        type="text"
-                                        name="recommendationfor"
-                                        placeholder="Enter Recommendation For"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                {/* <FormItem label="Scent Top Notes">
-                                    <Field
-                                        type="text"
-                                        name="scenttopnotes"
-                                        placeholder="Enter Scent Top Notes"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="SCENT HEART NOTRS">
-                                    <Field
-                                        type="text"
-                                        name="scentheartnotes"
-                                        placeholder="Enter Scent Heart Notes"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Scent Base Notes">
-                                    <Field
-                                        type="text"
-                                        name="scentbasenotes"
-                                        placeholder="Enter Scent Base Notes"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-                                <FormItem label="Origin Country">
-                                    <Field
-                                        type="text"
-                                        name="origincountry"
-                                        placeholder="Enter Origin Country"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                {/* ........................... */}
-                                <FormItem label="Care Instruction">
-                                    <Field
-                                        type="text"
-                                        name="careinstruction"
-                                        placeholder="Enter Care Instruction"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Antiodour ">
-                                    <Field
-                                        type="text"
-                                        name="antiodour"
-                                        placeholder="Enter Antidour"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Pattern">
-                                    <Field
-                                        type="text"
-                                        name="pattern"
-                                        placeholder="Enter Pattern"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Closure Type">
-                                    <Field
-                                        type="text"
-                                        name="closuretype"
-                                        placeholder="Enter Closure Type"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Length">
-                                    <Field
-                                        type="text"
-                                        name="length"
-                                        placeholder="Enter Length"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Neck Type">
-                                    <Field
-                                        type="text"
-                                        name="necktype"
-                                        placeholder="Enter Neck Type"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Rise Type">
-                                    <Field
-                                        type="text"
-                                        name="risetype"
-                                        placeholder="Enter Rise Type"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Sleeve Type">
-                                    <Field
-                                        type="text"
-                                        name="sleevtype"
-                                        placeholder="Enter Sleeve Type"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Trend">
-                                    <Field
-                                        type="text"
-                                        name="trend"
-                                        placeholder="Enter Trend"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Trend Type">
-                                    <Field
-                                        type="text"
-                                        name="trendtype"
-                                        placeholder="Enter Trend Type"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Fit">
-                                    <Field
-                                        type="text"
-                                        name="fit"
-                                        placeholder="Enter Fit"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem label="Fabric">
-                                    <Field
-                                        type="text"
-                                        name="fabric"
-                                        placeholder="Enter Fabric"
-                                        component={Input}
-                                    />
-                                </FormItem>
-
-                                {/* CheckBoxes............................................. */}
-
-                                {/* ............................................................... */}
+                                {PRODUCT_EDIT_COMMON_DOWN.map((item, key) => (
+                                    <FormItem
+                                        key={key}
+                                        label={item.label}
+                                        className={item.classname}
+                                    >
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item.component}
+                                        />
+                                    </FormItem>
+                                ))}
                             </div>
-                            <FormItem label="Is Premium">
-                                <Field name="is_premium" component={Checkbox}>
-                                    Premium
-                                </Field>
-                            </FormItem>
-                            <FormItem label="Is Returnable">
-                                <Field
-                                    name="is_returnable"
-                                    component={Checkbox}
-                                >
-                                    Returnable
-                                </Field>
-                            </FormItem>
-                            <FormItem label="Is Premium">
-                                <Field
-                                    name="is_try_and_buy"
-                                    component={Checkbox}
-                                >
-                                    Try & Buy
-                                </Field>
-                            </FormItem>
+
                             <FormContainer className="flex justify-end mt-5">
                                 <Button
                                     type="reset"

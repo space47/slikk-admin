@@ -9,7 +9,6 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     flexRender,
-    GlobalFiltering,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
@@ -98,8 +97,39 @@ const OrderList = () => {
         }
     }
 
+    const fetchFilter = async (
+        page: number,
+        pageSize: number,
+        from: string,
+        to: string,
+        filter: string = '',
+    ) => {
+        try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const status =
+                dropdownStatus?.value === 'ALL'
+                    ? ''
+                    : `&status=${dropdownStatus?.value}`
+            const response = await axiosInstance.get(
+                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&id=${filter}`,
+            )
+
+            const ordersData = response.data?.data.results
+            const orderCount = response.data?.data.count
+
+            setOrders(ordersData)
+            setOrderCount(orderCount)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
+    }, [page, pageSize, from, to, dropdownStatus])
+
+    useEffect(() => {
+        fetchFilter(page, pageSize, from, to, globalFilter)
     }, [page, pageSize, from, to, dropdownStatus, globalFilter])
 
     const columns = useMemo(
