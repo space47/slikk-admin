@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Modal, notification } from 'antd'
 import { Field, Form, Formik } from 'formik'
 import Upload from '@/components/ui/Upload'
@@ -8,9 +8,12 @@ import type { FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import Button from '@/components/ui/Button'
+import { Dropdown, Button } from '@/components/ui'
 import Select from '@/components/ui/Select'
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
+import Checkbox from '@/components/ui/Checkbox'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 
 interface DataType {
     type: string
@@ -27,6 +30,14 @@ interface Config {
     image: string
     style: string
     position: string
+}
+
+type ProductTable = {
+    sku: string
+    barcode: string
+    product: string
+    image: string[]
+    brand: string
 }
 
 type WebType = {
@@ -46,6 +57,8 @@ type WebType = {
     header_config_image_Array: File[]
     sub_header_config_icon_Array: File[]
     sub_header_config_image_Array: File[]
+    is_section_clickable: boolean
+    section_filters: string
 }
 
 type modalProps = {
@@ -58,6 +71,11 @@ type modalProps = {
     setParticularRow: (data: any) => void
 }
 
+const DROPDOWNARRAY = [
+    { label: 'Name', value: 'name' },
+    { label: 'SKU', value: 'sku' },
+]
+
 const PageModal: React.FC<modalProps> = ({
     isModalOpen,
     setIsModalOpen,
@@ -67,7 +85,15 @@ const PageModal: React.FC<modalProps> = ({
     particularRow,
     setParticularRow,
 }) => {
-    const [imagview, setImageView] = useState<string[]>([])
+    const [currentSelectedPage, setCurrentSelectedPage] =
+        useState<Record<string, string>>()
+    const [searchInput, setSearchInput] = useState<string>('')
+    const [showTable, setShowTable] = useState(false)
+    const [tableData, setTableData] = useState<ProductTable[]>([])
+    const [productData, setProductData] = useState<string[]>([
+        particularRow.data_type.barcodes,
+    ])
+    const [textAreaValue, setTextAreaValue] = useState()
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -113,6 +139,37 @@ const PageModal: React.FC<modalProps> = ({
         sub_header_config: particularRow.sub_header_config,
         mobile_background_image: particularRow.mobile_background_image,
     })
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value)
+        setShowTable(true)
+    }
+
+    const fetchInput = async () => {
+        try {
+            if (searchInput) {
+                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'q'
+                const response = await axioisInstance.get(
+                    `/search/product?dashboard=true&${qname}=${searchInput}`,
+                )
+                const data = response.data.results
+                setTableData(data)
+                console.log(data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchInput()
+    }, [searchInput])
+
+    const handleActionClick = (value: any) => {
+        console.log('Barcode', value)
+        setProductData((prev) => (prev ? [...prev, value] : [value]))
+        setShowTable(false)
+        setSearchInput('')
+    }
 
     const handleimage = async (files: File[]) => {
         if (!files || files?.length == 0) {
@@ -160,6 +217,13 @@ const PageModal: React.FC<modalProps> = ({
         }
     }
 
+    const handleSelect = (value: any) => {
+        const selected = DROPDOWNARRAY.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
+    }
+
     const handleSubmit = async (row: WebType) => {
         const imageUpload = await handleimage(row.background_image_array)
         const mobileimageUpload = await handleimage(row.mobile_background_array)
@@ -193,7 +257,9 @@ const PageModal: React.FC<modalProps> = ({
             },
             data_type: {
                 ...row.data_type,
+                barcodes: productData.join(','),
             },
+            section_filter: textAreaValue,
         }
 
         console.log('row', newRow)
@@ -254,7 +320,13 @@ const PageModal: React.FC<modalProps> = ({
 
                     onSubmit={handleSubmit}
                 >
-                    {({ values, touched, errors, resetForm }) => (
+                    {({
+                        values,
+                        touched,
+                        errors,
+                        resetForm,
+                        setFieldValue,
+                    }) => (
                         <Form className="w-full">
                             <FormContainer className="grid grid-cols-2 gap-3">
                                 <FormItem
@@ -306,18 +378,16 @@ const PageModal: React.FC<modalProps> = ({
                                 </FormItem>
 
                                 {/* image */}
+
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">
-                                        Background Image
-                                    </div>
                                     {initialValue.background_image ? (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
+                                        <div className="flex flex-col items-center justify-center w-[150px]">
                                             <img
                                                 src={
                                                     initialValue.background_image
                                                 }
                                                 alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
+                                                className="w-[150px] h-[40px] flex object-contain "
                                             />
                                             <button
                                                 className="text-red-500 text-md "
@@ -329,7 +399,7 @@ const PageModal: React.FC<modalProps> = ({
                                     ) : (
                                         'No Image'
                                     )}
-                                    <FormContainer className=" mt-5 ">
+                                    <FormContainer className=" ">
                                         <FormItem
                                             label=""
                                             className="grid grid-rows-2"
@@ -340,6 +410,9 @@ const PageModal: React.FC<modalProps> = ({
                                                     form,
                                                 }: FieldProps<WebType>) => (
                                                     <>
+                                                        <div className="font-semibold flex justify-center">
+                                                            Background Image
+                                                        </div>
                                                         <Upload
                                                             beforeUpload={
                                                                 beforeUpload
@@ -371,9 +444,6 @@ const PageModal: React.FC<modalProps> = ({
                                 </FormContainer>
 
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">
-                                        Mobile Background Image
-                                    </div>
                                     {initialValue.mobile_background_image ? (
                                         <div className="flex flex-col items-center justify-center min-w-[100px]">
                                             <img
@@ -406,6 +476,10 @@ const PageModal: React.FC<modalProps> = ({
                                                     form,
                                                 }: FieldProps<WebType>) => (
                                                     <>
+                                                        <div className="font-semibold flex justify-center">
+                                                            Mobile Background
+                                                            Image
+                                                        </div>
                                                         <Upload
                                                             beforeUpload={
                                                                 beforeUpload
@@ -590,7 +664,7 @@ const PageModal: React.FC<modalProps> = ({
                                             />
                                             <button
                                                 className="text-red-500 text-md "
-                                                onClick={(e) =>
+                                                onClick={(e: any) =>
                                                     handleRemoveImage(e)
                                                 }
                                             >
@@ -649,11 +723,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Sub Header Position"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -816,17 +885,78 @@ const PageModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem
-                                    label="Data Type Barcode"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.barcodes"
-                                        placeholder="Place your dataType"
-                                        component={Input}
-                                    />
-                                </FormItem>
+                                <FormContainer className="flex flex-col gap-4 ">
+                                    <div className="text-xl">Barcode</div>
+                                    <div className="flex gap-10">
+                                        <div className="flex justify-start ">
+                                            <input
+                                                type="search"
+                                                name="search"
+                                                id=""
+                                                placeholder="search SKU for product"
+                                                value={searchInput}
+                                                className=" w-[250px] rounded-[10px]"
+                                                onChange={handleSearch}
+                                            />
+                                        </div>
+                                        <div className="bg-gray-200 rounded-[10px] font-bold text-lg ">
+                                            <Dropdown
+                                                className=" text-xl text-black bg-gray-200 font-bold "
+                                                title={
+                                                    currentSelectedPage?.value
+                                                        ? currentSelectedPage.label
+                                                        : 'SELECT'
+                                                }
+                                                onSelect={handleSelect}
+                                            >
+                                                {DROPDOWNARRAY?.map(
+                                                    (item, key) => {
+                                                        return (
+                                                            <DropdownItem
+                                                                key={key}
+                                                                eventKey={
+                                                                    item.value
+                                                                }
+                                                            >
+                                                                <span>
+                                                                    {item.label}
+                                                                </span>
+                                                            </DropdownItem>
+                                                        )
+                                                    },
+                                                )}
+                                            </Dropdown>
+                                        </div>
+                                    </div>
+
+                                    {showTable && searchInput && (
+                                        <CreatePostTable
+                                            data={tableData}
+                                            handleActionClick={
+                                                handleActionClick
+                                            }
+                                        />
+                                    )}
+
+                                    <FormItem
+                                        label="Barcodes"
+                                        className="w-full"
+                                    >
+                                        <Field
+                                            type="text"
+                                            name="data_type.barcodes"
+                                            value={productData}
+                                            onChange={(e: any) => {
+                                                setProductData(e.target.value)
+                                                setFieldValue(
+                                                    'products',
+                                                    e.target.value,
+                                                )
+                                            }}
+                                            placeholder="Enter product barcode"
+                                        />
+                                    </FormItem>
+                                </FormContainer>
                                 <FormItem
                                     label="Data Type Posts"
                                     className="col-span-1 w-[60%] h-[80%]"
@@ -859,6 +989,26 @@ const PageModal: React.FC<modalProps> = ({
                                         placeholder="Place your dataType"
                                         component={Input}
                                     />
+                                </FormItem>
+                                <FormItem
+                                    label="Is Section"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        name="is_section_clickable"
+                                        component={Checkbox}
+                                    />
+                                </FormItem>
+                                <FormItem label="Section Filter">
+                                    <textarea
+                                        name="footer"
+                                        value={textAreaValue}
+                                        onChange={(e: any) =>
+                                            setTextAreaValue(e.target.value)
+                                        }
+                                        id=""
+                                        className="w-2/3 border border-gray-200 rounded-lg items-center h-[100px] p-2"
+                                    ></textarea>
                                 </FormItem>
 
                                 {/* ..................................................... */}
