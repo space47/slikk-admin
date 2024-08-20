@@ -9,6 +9,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Dropdown, Button } from '@/components/ui'
+import Checkbox from '@/components/ui/Checkbox'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import Select from '@/components/ui/Select'
@@ -55,6 +56,8 @@ type WebType = {
     header_config_image_Array: File[]
     sub_header_config_icon_Array: File[]
     sub_header_config_image_Array: File[]
+    is_section_clickable: boolean
+    section_filters: string
 }
 
 type modalProps = {
@@ -93,7 +96,8 @@ const PageAddModal: React.FC<modalProps> = ({
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
-    const [productData, setProductData] = useState([])
+    const [productData, setProductData] = useState<string[]>([])
+    const [textAreaValue, setTextAreaValue] = useState()
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -169,6 +173,8 @@ const PageAddModal: React.FC<modalProps> = ({
         header_config_image_Array: [],
         sub_header_config_icon_Array: [],
         sub_header_config_image_Array: [],
+        is_section_clickable: false,
+        section_filters: '',
     })
     const [selectedType, setSelectedType] = useState('')
 
@@ -210,7 +216,7 @@ const PageAddModal: React.FC<modalProps> = ({
 
     const handleActionClick = (value: any) => {
         console.log('Barcode', value)
-        setProductData((prev) => (prev ? [...prev, value] : value))
+        setProductData((prev) => (prev ? [...prev, value] : [value]))
         setShowTable(false)
         setSearchInput('')
     }
@@ -225,7 +231,7 @@ const PageAddModal: React.FC<modalProps> = ({
         files.forEach((file) => {
             formData.append('file', file)
         })
-        formData.append('file_type', 'banners')
+        formData.append('file_type', 'product')
         try {
             return await axioisInstance
                 .post('fileupload', formData, {
@@ -269,6 +275,9 @@ const PageAddModal: React.FC<modalProps> = ({
 
     const handleSubmit = async (row: WebType) => {
         console.log(row)
+
+        console.log('proddduct', productData)
+        console.log('joined', productData.join(','))
         const imageUpload = await handleimage(row.background_image_array)
 
         const mobileImageUpload = await handleimage(row.mobile_background_array)
@@ -311,7 +320,9 @@ const PageAddModal: React.FC<modalProps> = ({
             },
             data_type: {
                 ...row.data_type,
+                barcodes: productData.join(','),
             },
+            section_filter: textAreaValue,
         }
 
         setData((prevData: WebType[]) => [...prevData, newRowAdd])
@@ -353,11 +364,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Section Header"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -370,11 +376,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Component Types"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field name="component_type">
@@ -417,13 +418,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
-                                            // }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="background_image_array">
@@ -529,11 +523,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Header Style"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -546,11 +535,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Header Text"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -570,13 +554,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
-                                            // }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="header_config_image_Array">
@@ -625,11 +602,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Header Position"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -644,11 +616,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Sub Header Style"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -661,11 +628,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Sub Header Text"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -732,11 +694,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Sub Header Position"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -753,11 +710,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Footer Style"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -770,11 +722,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Footer Text"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -793,13 +740,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            // invalid={Boolean(
-                                            //     errors.document &&
-                                            //         touched.document,
-                                            // )}
-                                            // errorMessage={
-                                            //     errors.document as string
-                                            // }
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="footer_config_image_Array">
@@ -848,11 +788,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Footer Position"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -870,11 +805,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Data Type"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -887,11 +817,6 @@ const PageAddModal: React.FC<modalProps> = ({
                                 <FormItem
                                     asterisk
                                     label="Filters"
-                                    // invalid={
-                                    //     errors.document_number &&
-                                    //     touched.document_number
-                                    // }
-                                    // errorMessage={errors.document_number}
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -965,10 +890,13 @@ const PageAddModal: React.FC<modalProps> = ({
                                         />
                                     )}
 
-                                    <FormItem label="Product" className="w-1/2">
+                                    <FormItem
+                                        label="Barcodes"
+                                        className="w-full"
+                                    >
                                         <Field
                                             type="text"
-                                            name="products"
+                                            name="data_type.barcodes"
                                             value={productData}
                                             onChange={(e: any) => {
                                                 setProductData(e.target.value)
@@ -981,7 +909,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                         />
                                     </FormItem>
                                 </FormContainer>
-                                <FormItem
+                                {/* <FormItem
                                     label="Data Type Barcode"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
@@ -991,7 +919,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                         placeholder="Place your dataType"
                                         component={Input}
                                     />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormItem
                                     label="Data Type Posts"
                                     className="col-span-1 w-[60%] h-[80%]"
@@ -1024,6 +952,26 @@ const PageAddModal: React.FC<modalProps> = ({
                                         placeholder="Place your dataType"
                                         component={Input}
                                     />
+                                </FormItem>
+                                <FormItem
+                                    label="Is Section Clickable"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        name="is_section_clickable"
+                                        component={Checkbox}
+                                    />
+                                </FormItem>
+                                <FormItem label="Section Filter">
+                                    <textarea
+                                        name="footer"
+                                        value={textAreaValue}
+                                        onChange={(e: any) =>
+                                            setTextAreaValue(e.target.value)
+                                        }
+                                        id=""
+                                        className="w-2/3 border border-gray-200 rounded-lg items-center h-[100px] p-2"
+                                    ></textarea>
                                 </FormItem>
 
                                 {/* ..................................................... */}
