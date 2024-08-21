@@ -127,20 +127,30 @@ const AppBanners = () => {
             {
                 header: 'Image (WEB)',
                 accessorKey: 'image_web',
-                cell: ({ getValue }) => (
-                    <a href={getValue()}>
-                        <img src={getValue()} alt="" />
-                    </a>
-                ),
+                cell: (info) =>
+                    info.getValue() ? (
+                        <img
+                            src={info.getValue()}
+                            alt=""
+                            className=" object-contain w-[100px] h-[100xp] "
+                        />
+                    ) : (
+                        ''
+                    ),
             },
             {
                 header: 'Image (Mobile)',
                 accessorKey: 'image_mobile',
-                cell: ({ getValue }) => (
-                    <a href={getValue()}>
-                        <img src={getValue()} alt="" />
-                    </a>
-                ),
+                cell: (info) =>
+                    info.getValue() ? (
+                        <img
+                            src={info.getValue()}
+                            alt=""
+                            className=" object-contain w-[100px]  "
+                        />
+                    ) : (
+                        ''
+                    ),
             },
 
             { header: 'Offers', accessorKey: 'offers' },
@@ -172,11 +182,18 @@ const AppBanners = () => {
             {
                 header: 'Section Background Web',
                 accessorKey: 'section_background_web',
-                cell: ({ getValue }) => (
-                    <a href={getValue()}>
-                        <img src={getValue()} alt="" />
-                    </a>
-                ),
+                cell: ({ getValue }) => {
+                    const imageUrl = getValue() as string
+                    console.log('SECTION URL:', imageUrl)
+
+                    return (
+                        <img
+                            src={imageUrl}
+                            alt="Image"
+                            style={{ width: '100px', height: 'auto' }}
+                        />
+                    )
+                },
             },
             {
                 header: 'Section Background Mobile',

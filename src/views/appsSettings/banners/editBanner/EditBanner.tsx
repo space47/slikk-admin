@@ -169,15 +169,11 @@ const EditBanner = () => {
 
         try {
             console.log(formData.get('file'))
-            const response = await axioisInstance.post(
-                'fileupload/dashboard',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
+            const response = await axioisInstance.post('fileupload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
                 },
-            )
+            })
             console.log(response)
             const newData = response.data.url
 
@@ -209,39 +205,34 @@ const EditBanner = () => {
     }
 
     const handleSubmit = async (values: BANNERMODEL) => {
-        const webImageUpload = await handleimage(values.image_web_array)
-        const mobileImageUpload = await handleimage(values.image_mobile_array)
-        console.log(
-            'Image Values',
-            values.division.map((item) => item.name).join(','),
-        )
-        const { image_mobile_array, image_web_array, ...formData } = values
+        let webImageUpload = values.image_web
+        let mobileImageUpload = values.image_mobile
 
-        formData.banner_id = values.id
-        formData.image_web = webImageUpload ? webImageUpload : values.image_web
-        formData.image_mobile = mobileImageUpload
-            ? mobileImageUpload
-            : values.image_mobile
-        formData.division = values.division.map((item) => item.name).join(',')
-        formData.category = values.category.map((item) => item.name).join(',')
-        formData.sub_category = values.sub_category
-            .map((item) => item.name)
-            .join(',')
-        formData.product_type = values.product_type
-            .map((item) => item.name)
-            .join(',')
-        formData.brand = values.brand.map((item) => item.name).join(',')
+        if (values.image_web_array.length > 0) {
+            webImageUpload = await handleimage(values.image_web_array)
+        }
 
-        // const formData = {
-        //     ...values,
-        //     banner_id: values.id,
-        //     image_web: webImageUpload ? webImageUpload : values.image_web,
-        //     image_mobile: mobileImageUpload
-        //         ? mobileImageUpload
-        //         : values.image_mobile,
-        //     image_web_array: null,
-        //     image_mobile_array: null,
-        // }
+        if (values.image_mobile_array.length > 0) {
+            mobileImageUpload = await handleimage(values.image_mobile_array)
+        }
+
+        const formData = {
+            ...values,
+            banner_id: values.id,
+            image_web: webImageUpload,
+            image_mobile: mobileImageUpload,
+            image_web_array: null,
+            image_mobile_array: null,
+            division: values.division.map((item) => item.name).join(','),
+            category: values.category.map((item) => item.name).join(','),
+            sub_category: values.sub_category
+                .map((item) => item.name)
+                .join(','),
+            product_type: values.product_type
+                .map((item) => item.name)
+                .join(','),
+            brand: values.brand.map((item) => item.name).join(','),
+        }
 
         try {
             const response = await axioisInstance.patch(`banners`, formData)
@@ -251,7 +242,8 @@ const EditBanner = () => {
                 description:
                     response?.data?.message || 'Banner Edited Successfully',
             })
-            navigate('/app/appSettings/banners')
+
+            // navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',

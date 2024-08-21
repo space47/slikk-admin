@@ -271,6 +271,7 @@ const PageSettings = () => {
                 accessorKey: 'footer_config.style',
                 cell: (info) => info.getValue(),
             },
+
             {
                 header: 'Footer Position',
                 accessorKey: 'footer_config.position',
@@ -316,6 +317,16 @@ const PageSettings = () => {
             {
                 header: 'Data Type',
                 accessorKey: 'data_type.type',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Section',
+                accessorKey: 'is_section_clickable',
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            },
+            {
+                header: 'Section Filter',
+                accessorKey: 'section_filters',
                 cell: (info) => info.getValue(),
             },
             {

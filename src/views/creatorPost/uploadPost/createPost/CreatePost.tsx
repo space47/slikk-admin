@@ -177,28 +177,38 @@ const CreatePost = () => {
     const handleSubmit = async (values: Post) => {
         console.log('Type', values.type)
         console.log('Products', values.products)
-        if (
-            values.file_array.length <= 0 ||
-            values.thumbnail_array.length <= 0
-        ) {
-            notification.warning({
-                message: 'CAUTION',
-                description: 'ALL FIELDS ARE REQUIRED',
-            })
-            return
-        }
+
+        // if (productData.length === 0) {
+        //     notification.warning({
+        //         message: 'CAUTION',
+        //         description: 'Please add at least one product',
+        //     })
+        //     return
+        // }
+
         try {
-            console.log('Cheking formdata')
+            console.log('Checking formdata')
+
+            console.log('Product Data:', productData)
+            console.log('Joining', productData.join(','))
 
             const formData = new FormData()
-            formData.append('file', values.file_array[0])
-            formData.append('thumbnail', values.thumbnail_array[0])
+
+            if (values.file_array.length > 0) {
+                formData.append('file', values.file_array[0])
+            }
+
+            if (values.thumbnail_array.length > 0) {
+                formData.append('thumbnail', values.thumbnail_array[0])
+            }
+
             formData.append('caption', values.caption)
             formData.append('products', productData.join(','))
             formData.append('type', values.type)
             formData.append('latitude', values.latitude)
             formData.append('longitude', values.longitude)
-            console.log(' Finifshed Cheking formdata')
+
+            console.log('Finished checking formdata')
             console.log('Starting API call')
             const response = await axioisInstance.post('userpost', formData, {
                 headers: {
@@ -212,7 +222,7 @@ const CreatePost = () => {
                     response?.data?.message || 'POST created successfully',
             })
             navigate('/app/uploadPost')
-            console.log('Ending A{i} call')
+            console.log('Ending API call')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -418,7 +428,7 @@ const CreatePost = () => {
                                     <Field
                                         type="text"
                                         name="products"
-                                        value={productData.join(', ')}
+                                        value={productData}
                                         onChange={(e: any) => {
                                             setProductData(e.target.value)
                                             setFieldValue(

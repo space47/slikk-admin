@@ -101,7 +101,10 @@ const DivisionTable = () => {
         {
             header: 'Image',
             accessor: 'image',
-            format: (value) => <img src={value} alt="product" width="50" />,
+            format: (value) => {
+                console.log('ValueData', value)
+                return <img src={value} alt="product" width="50" />
+            },
         },
         { header: 'Footer', accessor: 'footer' },
         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
