@@ -216,8 +216,9 @@ const OrderList = () => {
         pageCount: Math.ceil(orderCount ?? 0 / pageSize),
     })
 
-    const handleInvoiceClick = (invoiceId: string) => {
+    const handleInvoiceClick = (return_order_id: string) => {
         // navigate(`/app/orders/${invoiceId}`)
+        navigate(`/app/returnOrders/${return_order_id}`)
     }
 
     const onPaginationChange = (page: number) => {

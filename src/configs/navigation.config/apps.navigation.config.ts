@@ -46,6 +46,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsOrderManagement.deliveryOrders',
+                        path: `${APP_PREFIX_PATH}/deliveryOrders`,
+                        title: 'Delivery Orders',
+                        translateKey: 'nav.appsOrderManagement.deliveryOrders',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 

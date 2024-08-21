@@ -11,9 +11,16 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Dropdown, Button } from '@/components/ui'
 import Checkbox from '@/components/ui/Checkbox'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
+import { COMPONENT_CATEGORY_TYPES, BANNER_UPLOAD_DATA } from '@/common/banner'
 import Select from '@/components/ui/Select'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
+import { useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { CATEGORY_STATE } from '@/store/types/category.types'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
+import { BRAND_STATE } from '@/store/types/brand.types'
+import { FILTER_STATE } from '@/store/types/filters.types'
 
 interface DataType {
     type: string
@@ -99,6 +106,17 @@ const PageAddModal: React.FC<modalProps> = ({
     const [productData, setProductData] = useState<string[]>([])
     const [textAreaValue, setTextAreaValue] = useState()
     const MAX_UPLOAD = 10000
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
+    const subCategory = useAppSelector<SUBCATEGORY_STATE>(
+        (state) => state.subCategory,
+    )
+    const product_type = useAppSelector<PRODUCTTYPE_STATE>(
+        (state) => state.product_type,
+    )
+    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
