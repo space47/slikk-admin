@@ -90,12 +90,26 @@ const RiderTracking = () => {
         {
             header: 'Client Order ID',
             accessor: 'client_order_id',
-            format: (_: any, row: TaskDetails) => row.client_order_id || '',
+            format: (_: any, row: TaskDetails) =>
+                row.client_order_id ? (
+                    <div
+                        className="bg-gray-100 px-4 flex justify-center items-center rounded-lg font-bold w-1/2 cursor-pointer hover:bg-gray-200"
+                        onClick={() => handleOrder(row.client_order_id)}
+                    >
+                        {row.client_order_id}
+                    </div>
+                ) : (
+                    ''
+                ),
         },
     ]
 
     const handleRider = (task_id: any) => {
         navigate(`/app/tryAndBuy/riderTracking/${task_id}`)
+    }
+
+    const handleOrder = (order_id: any) => {
+        navigate(`/app/orders/${order_id}`)
     }
 
     return (

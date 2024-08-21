@@ -4,7 +4,7 @@ import base, { BaseState } from './slices/base'
 import locale, { LocaleState } from './slices/locale/localeSlice'
 import theme, { ThemeState } from './slices/theme/themeSlice'
 import RtkQueryService from '@/services/RtkQueryService'
-import { AuthState as Authorization} from '@/@types/types'
+import { AuthState as Authorization } from '@/@types/types'
 import { authReducer } from '@/store/reducers/authReducers'
 import { companyReducer } from './reducers/company.reducer'
 import { divisionReducer } from './reducers/divison.reducer'
@@ -13,13 +13,16 @@ import { subCategoryReducer } from './reducers/subcategory.reducer'
 import { productTypeReducer } from './reducers/productType.reducer'
 import { brandsReducer } from './reducers/brands.reducer'
 import { filtersReducer } from './reducers/filters.reducer'
+import returnOrdersReducer from './slices/returnOrderDetails/returnOrderDetails'
+import { ReturnOrderState } from './types/returnDetails.types'
 
 export type RootState = CombinedState<{
-    authorization:CombinedState<Authorization>
+    authorization: CombinedState<Authorization>
     auth: CombinedState<AuthState>
     base: CombinedState<BaseState>
     locale: LocaleState
     theme: ThemeState
+    returnOrders: ReturnOrderState
     /* eslint-disable @typescript-eslint/no-explicit-any */
     [RtkQueryService.reducerPath]: any
 }>
@@ -33,14 +36,15 @@ const staticReducers = {
     base,
     locale,
     theme,
-    authorization:authReducer,
-    company : companyReducer,
-    division : divisionReducer,
-    category : categoryReducer,
-    subCategory : subCategoryReducer,
-    product_type : productTypeReducer,
-    brands : brandsReducer,
-    filters : filtersReducer,
+    authorization: authReducer,
+    company: companyReducer,
+    division: divisionReducer,
+    category: categoryReducer,
+    subCategory: subCategoryReducer,
+    product_type: productTypeReducer,
+    brands: brandsReducer,
+    filters: filtersReducer,
+    returnOrders: returnOrdersReducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
 
