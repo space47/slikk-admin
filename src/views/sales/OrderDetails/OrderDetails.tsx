@@ -11,14 +11,12 @@ import ShippingInfo from './components/ShippingInfo'
 import Activity from './components/Activity'
 import CustomerInfo from './components/CustomerInfo'
 import { HiOutlineCalendar } from 'react-icons/hi'
-// import { apiGetSalesOrderDetails } from '@/services/SalesService'
-// import { useLocation } from 'react-router-dom'
 import isEmpty from 'lodash/isEmpty'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-// import { ordercommon } from '@/views/category-management/orderlist/commontypes'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
+import ReturnOrderDrawer from './components/ReturnOrderDrawer'
+import CancelModal from './components/CancelModal'
 // import { string } from 'yup'
 
 type SalesOrderDetailsResponse = {
@@ -68,6 +66,7 @@ type SalesOrderDetailsResponse = {
         final_price: number
         sku: string
         id: number
+        returnable_quantity: number
     }[]
 
     log: {
@@ -94,6 +93,8 @@ const OrderDetails = () => {
 
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<SalesOrderDetailsResponse>()
+    const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
+    const [showCancelModal, setShowCancelModal] = useState(false)
 
     const { invoice_id } = useParams()
 
@@ -116,19 +117,47 @@ const OrderDetails = () => {
         fetchOrders()
     }, [invoice_id])
 
+    const handleReturnOrder = () => {
+        setReturnOrderDrawer(true)
+    }
+    const handleCancelOrder = () => {
+        setShowCancelModal(true)
+    }
+    const handleCloseModal = () => {
+        setShowCancelModal(false)
+    }
+
     return (
         <Container className="h-auto w-auto">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
                         <div className="mb-6">
-                            <div className="flex items-center mb-2">
+                            <div className="flex items-center mb-2 justify-between">
                                 <h3>
                                     <span>Order</span>
                                     <span className="ltr:ml-2 rtl:mr-2">
                                         #{data.invoice_id}
                                     </span>
                                 </h3>
+
+                                <div>
+                                    {data.status === 'COMPLETED' ? (
+                                        <button
+                                            className="bg-red-600 text-white px-4 py-2 rounded-lg"
+                                            onClick={handleReturnOrder}
+                                        >
+                                            RETURN ORDER
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="bg-red-600 text-white px-4 py-2 rounded-lg"
+                                            onClick={handleCancelOrder}
+                                        >
+                                            CANCEL ORDER
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                             <span className="flex items-center">
                                 <HiOutlineCalendar className="text-lg" />
@@ -173,6 +202,24 @@ const OrderDetails = () => {
                                     store={data.store}
                                 />
                             </div>
+
+                            {returnOrderDrawer && (
+                                <ReturnOrderDrawer
+                                    isOpen={returnOrderDrawer}
+                                    setIsOpen={setReturnOrderDrawer}
+                                    product={data.order_items}
+                                    invoice_id={invoice_id}
+                                />
+                            )}
+
+                            {showCancelModal && (
+                                <CancelModal
+                                    product={data.order_items}
+                                    isModalOpen={showCancelModal}
+                                    handleClose={handleCloseModal}
+                                    invoice_id={invoice_id}
+                                />
+                            )}
                         </div>
                     </>
                 )}

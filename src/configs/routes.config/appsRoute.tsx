@@ -122,6 +122,25 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsOrderManagement.returnOrderList',
+        path: `${APP_PREFIX_PATH}/returnOrders/:return_order_id`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/sales/returnOrders/returnOrderDetails/ReturnOrderDetails'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrderManagement.deliveryOrders',
+        path: `${APP_PREFIX_PATH}/deliveryOrders`,
+        component: lazy(
+            () => import('@/views/sales/DeliveryOrders/DeliveryOrders'),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     // SELLERS................................................................................................................
 
