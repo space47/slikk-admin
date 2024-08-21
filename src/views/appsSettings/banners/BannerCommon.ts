@@ -39,6 +39,8 @@ export interface BANNERMODEL {
     is_clickable: boolean
     section_background_web: string
     section_background_mobile: string
+    section_background_web_array: []
+    section_background_mobile_array: []
     max_price: number
     min_price: number
     barcodes: string
