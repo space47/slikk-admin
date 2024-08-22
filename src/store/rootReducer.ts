@@ -14,6 +14,7 @@ import { productTypeReducer } from './reducers/productType.reducer'
 import { brandsReducer } from './reducers/brands.reducer'
 import { filtersReducer } from './reducers/filters.reducer'
 import returnOrdersReducer from './slices/returnOrderDetails/returnOrderDetails'
+import orderListReducer from './slices/orderList/OrderList'
 import { ReturnOrderState } from './types/returnDetails.types'
 
 export type RootState = CombinedState<{
@@ -45,7 +46,8 @@ const staticReducers = {
     brands: brandsReducer,
     filters: filtersReducer,
     returnOrders: returnOrdersReducer,
-    [RtkQueryService.reducerPath]: RtkQueryService.reducer,
+    order: orderListReducer,
+    [RtkQueryService.reducerPath]: RtkQueryService.reducer
 }
 
 const rootReducer =
@@ -53,7 +55,7 @@ const rootReducer =
     (state: RootState, action: AnyAction) => {
         const combinedReducer = combineReducers({
             ...staticReducers,
-            ...asyncReducers,
+            ...asyncReducers
         })
         return combinedReducer(state, action)
     }

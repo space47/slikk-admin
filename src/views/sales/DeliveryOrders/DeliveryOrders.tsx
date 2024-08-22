@@ -1,7 +1,297 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    flexRender
+} from '@tanstack/react-table'
+import moment from 'moment'
+import {
+    Table,
+    Pagination,
+    Select,
+    DatePicker,
+    Dropdown
+} from '@/components/ui'
+import {
+    fetchOrders,
+    setDropdownStatus,
+    setGlobalFilter,
+    setPageSize,
+    setPage,
+    setFrom,
+    setTo
+} from '@/store/slices/orderList/OrderList'
+import { OrderState } from '@/store/types/orderList.types'
+import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
+import type { FilterFn } from '@tanstack/react-table'
+import { rankItem } from '@tanstack/match-sorter-utils'
+import { TbCalendarStats } from 'react-icons/tb'
+import { HiOutlineCalendar } from 'react-icons/hi'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { useAppDispatch, useAppSelector } from '@/store'
 
-const DeliveryOrders = () => {
-    return <div>DeliveryOrders</div>
+const { Tr, Th, Td, THead, TBody, Sorter } = Table
+
+const pageSizeOptions = [
+    { value: 10, label: '10 / page' },
+    { value: 25, label: '25 / page' },
+    { value: 50, label: '50 / page' },
+    { value: 100, label: '100 / page' }
+]
+
+const OrderList = () => {
+    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
+
+    const {
+        orders,
+        orderCount,
+        page,
+        pageSize,
+        globalFilter,
+        from,
+        to,
+        dropdownStatus
+    } = useAppSelector((state) => state.order)
+
+    useEffect(() => {
+        dispatch(fetchOrders())
+    }, [dispatch, page, pageSize, from, to, dropdownStatus, globalFilter])
+
+    const columns = [
+        {
+            header: 'Invoice Id',
+            accessorKey: 'invoice_id',
+            cell: ({ getValue }: any) => (
+                <div
+                    className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                    onClick={() => handleInvoiceClick(getValue())}
+                >
+                    {getValue()}
+                </div>
+            )
+        },
+        {
+            header: 'Order Date',
+            accessorKey: 'create_date',
+            cell: ({ getValue }: any) => (
+                <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+            )
+        },
+        { header: 'Mobile Number', accessorKey: 'user.mobile' },
+        { header: 'Customer Name', accessorKey: 'user.name' },
+        { header: 'Store Address', accessorKey: 'store.address' },
+        { header: 'Rating', accessorKey: 'rating' },
+        { header: 'Payment Mode', accessorKey: 'payment.mode' },
+        { header: 'Total Items', accessorKey: 'order_items.length' },
+        { header: 'Order Total', accessorKey: 'payment.amount' },
+        { header: 'Status', accessorKey: 'status' },
+        {
+            header: 'Last Update',
+            accessorKey: 'update_date',
+            cell: ({ getValue }: any) => (
+                <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+            )
+        }
+    ]
+
+    const table = useReactTable({
+        data: orders,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        manualPagination: true,
+        pageCount: Math.ceil(orderCount / pageSize),
+        globalFilterFn: fuzzyFilter
+    })
+
+    const handleInvoiceClick = (invoiceId: string) => {
+        navigate(`/app/orders/${invoiceId}`)
+    }
+
+    const onPaginationChange = (page: number) => {
+        dispatch(setPage(page))
+    }
+
+    const handleFromChange = (date: Date | null) => {
+        dispatch(
+            setFrom(
+                date
+                    ? moment(date).format('YYYY-MM-DD')
+                    : moment().format('YYYY-MM-DD')
+            )
+        )
+    }
+
+    const handleToChange = (date: Date | null) => {
+        dispatch(
+            setTo(
+                date
+                    ? moment(date).format('YYYY-MM-DD')
+                    : moment().format('YYYY-MM-DD')
+            )
+        )
+    }
+
+    // const handleDropdownSelect = (a: any) => {
+    //     dispatch(
+    //         setDropdownStatus({
+    //             value: a,
+    //             name: ORDER_STATUS.find((item) => item.value == a)?.name || ''
+    //         })
+    //     )
+    // }
+    console.log('ssssssswddwdwdw', dropdownStatus)
+    return (
+        <div className="overflow-x-auto">
+            <div className="flex justify-between mb-10 items-center ">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) =>
+                            dispatch(setGlobalFilter(e.target.value))
+                        }
+                        className="p-2 border rounded"
+                    />
+                </div>
+
+                <div className="flex gap-10 items-center justify-between">
+                    {/* <div className="relative w-50 bg-gray-100 items-center flex justify-center">
+                        <Dropdown
+                            className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                            title={dropdownStatus}
+                            onSelect={handleDropdownSelect}
+                        >
+                            <div className="max-h-60 overflow-y-auto">
+                                {ORDER_STATUS?.map((item, key) => {
+                                    return (
+                                        <DropdownItem
+                                            key={key}
+                                            eventKey={item.value}
+                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                        >
+                                            <span>{item.name}</span>
+                                        </DropdownItem>
+                                    )
+                                })}
+                            </div>
+                        </Dropdown>
+                    </div> */}
+
+                    <div className="flex gap-5">
+                        <div>
+                            <div className="mb-1 font-semibold text-sm">
+                                FROM DATE:
+                            </div>
+                            <DatePicker
+                                inputPrefix={
+                                    <HiOutlineCalendar className="text-lg" />
+                                }
+                                defaultValue={new Date()}
+                                value={new Date(from)}
+                                onChange={handleFromChange}
+                            />
+                        </div>
+                        <div>
+                            <div className="mb-1 font-semibold text-sm">
+                                TO DATE:
+                            </div>
+                            <DatePicker
+                                inputSuffix={
+                                    <TbCalendarStats className="text-xl" />
+                                }
+                                defaultValue={new Date()}
+                                value={moment(to).toDate()}
+                                onChange={handleToChange}
+                                minDate={moment(from).add(1, 'day').toDate()}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <Table>
+                <THead>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <Tr key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <Th key={header.id} colSpan={header.colSpan}>
+                                    {header.isPlaceholder ? null : (
+                                        <div
+                                            className={
+                                                header.column.getCanSort()
+                                                    ? 'cursor-pointer select-none'
+                                                    : ''
+                                            }
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                            <Sorter
+                                                sort={header.column.getIsSorted()}
+                                            />
+                                        </div>
+                                    )}
+                                </Th>
+                            ))}
+                        </Tr>
+                    ))}
+                </THead>
+                <TBody>
+                    {table.getRowModel().rows.map((row) => (
+                        <Tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <Td key={cell.id}>
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext()
+                                    )}
+                                </Td>
+                            ))}
+                        </Tr>
+                    ))}
+                </TBody>
+            </Table>
+            <div className="flex items-center justify-between mt-4">
+                <Pagination
+                    pageSize={pageSize}
+                    currentPage={page}
+                    total={orderCount}
+                    onChange={onPaginationChange}
+                />
+                <div style={{ minWidth: 130 }}>
+                    <Select
+                        size="sm"
+                        value={pageSizeOptions.find(
+                            (option) => option.value === pageSize
+                        )}
+                        options={pageSizeOptions}
+                        onChange={(option) =>
+                            dispatch(setPageSize(option?.value))
+                        }
+                        className="flex justify-end"
+                    />
+                </div>
+            </div>
+        </div>
+    )
 }
 
-export default DeliveryOrders
+export default OrderList
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    const itemRank = rankItem(row.getValue(columnId), value)
+    addMeta(itemRank)
+    return itemRank.passed
+}
