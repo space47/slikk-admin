@@ -165,7 +165,7 @@ const EditBanner = () => {
         files.forEach((file) => {
             formData.append('file', file)
         })
-        formData.append('file_type', 'products')
+        formData.append('file_type', 'product')
 
         try {
             console.log(formData.get('file'))

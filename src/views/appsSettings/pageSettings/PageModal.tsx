@@ -91,7 +91,7 @@ const PageModal: React.FC<modalProps> = ({
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState<string[]>([
-        particularRow ? particularRow.data_type.barcodes : []
+        particularRow.data_type.barcodes
     ])
     const [textAreaValue, setTextAreaValue] = useState()
     const MAX_UPLOAD = 10000
@@ -259,7 +259,8 @@ const PageModal: React.FC<modalProps> = ({
                 ...row.data_type,
                 barcodes: productData.join(',')
             },
-            section_filter: textAreaValue
+            section_filter: textAreaValue,
+            section_heading: row.section_heading.split(',')
         }
 
         console.log('row', newRow)
