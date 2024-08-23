@@ -14,6 +14,13 @@ import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import Checkbox from '@/components/ui/Checkbox'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
+import { useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { CATEGORY_STATE } from '@/store/types/category.types'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
+import { BRAND_STATE } from '@/store/types/brand.types'
+import { FILTER_STATE } from '@/store/types/filters.types'
 
 interface DataType {
     type: string
@@ -94,6 +101,47 @@ const PageModal: React.FC<modalProps> = ({
         particularRow.data_type.barcodes
     ])
     const [textAreaValue, setTextAreaValue] = useState()
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
+    const subCategory = useAppSelector<SUBCATEGORY_STATE>(
+        (state) => state.subCategory
+    )
+    const product_type = useAppSelector<PRODUCTTYPE_STATE>(
+        (state) => state.product_type
+    )
+    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+
+    const categoryOptions = category.categories.map((item) => ({
+        label: item.name,
+        value: item.id
+    }))
+
+    const divisionOptions = divisions.divisions.map((item) => ({
+        label: item.name,
+        value: item.id
+    }))
+
+    const subcategoryOptions = subCategory.subcategories.map((item) => ({
+        label: item.name,
+        value: item.id
+    }))
+
+    const productTypeOptions = product_type.product_types.map((item) => ({
+        label: item.name,
+        value: item.id
+    }))
+
+    const brandOptions = brands.brands.map((item) => ({
+        label: item.name,
+        value: item.id
+    }))
+
+    const filterOptions = filters.filters.map((item) => ({
+        label: item.name,
+        value: item.id
+    }))
+
     const MAX_UPLOAD = 10000
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -171,6 +219,12 @@ const PageModal: React.FC<modalProps> = ({
         setSearchInput('')
     }
 
+    const handleMultiSelect = (field: string, value: string) => {
+        if (formikRef.current) {
+            formikRef.current.setFieldValue(field, value)
+        }
+    }
+
     const handleimage = async (files: File[]) => {
         if (!files || files?.length == 0) {
             return
@@ -224,7 +278,7 @@ const PageModal: React.FC<modalProps> = ({
         }
     }
 
-    const handleSubmit = async (row: WebType) => {
+    const handleSubmit = async (row: any) => {
         const imageUpload = await handleimage(row.background_image_array)
         const mobileimageUpload = await handleimage(row.mobile_background_array)
         const footerImageUpload = await handleimage(
@@ -236,7 +290,8 @@ const PageModal: React.FC<modalProps> = ({
         const subHeaderImageUpload = await handleimage(
             row.sub_header_config_image_Array
         )
-
+        const sectionFilter = `${row.division},${row.category},${row.subcategory},${row.product_type},${row.brand},${row.filters}`
+        console.log('Sections', sectionFilter.split(','))
         const newRow = {
             ...row,
             background_image: imageUpload ? imageUpload : row.background_image,
@@ -259,7 +314,7 @@ const PageModal: React.FC<modalProps> = ({
                 ...row.data_type,
                 barcodes: productData.join(',')
             },
-            section_filter: textAreaValue,
+            section_filter: sectionFilter.split(','),
             section_heading: row.section_heading.split(',')
         }
 
@@ -1000,17 +1055,174 @@ const PageModal: React.FC<modalProps> = ({
                                         component={Checkbox}
                                     />
                                 </FormItem>
-                                <FormItem label="Section Filter">
-                                    <textarea
-                                        name="footer"
-                                        value={textAreaValue}
-                                        onChange={(e: any) =>
-                                            setTextAreaValue(e.target.value)
-                                        }
-                                        id=""
-                                        className="w-2/3 border border-gray-200 rounded-lg items-center h-[100px] p-2"
-                                    ></textarea>
+                                <FormItem
+                                    label="Section Filter"
+                                    className="col-span-1 w-[60%] h-[80%]"
+                                >
+                                    <Field
+                                        type="text"
+                                        name="section_filter"
+                                        placeholder="Place your dataType"
+                                        component={Input}
+                                    />
                                 </FormItem>
+
+                                <FormContainer className="grid grid-cols-2 gap-4 w-3/4">
+                                    <FormItem label="Division">
+                                        <Select
+                                            isMulti
+                                            name="division"
+                                            options={divisionOptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            getOptionValue={(option) =>
+                                                option.value.toString()
+                                            }
+                                            onChange={(newVal, actionMeta) => {
+                                                console.log(newVal, actionMeta)
+                                                handleMultiSelect(
+                                                    'division',
+                                                    newVal
+                                                        ?.map(
+                                                            (val) => val.label
+                                                        )
+                                                        ?.join(',')
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+
+                                    {/* Category */}
+                                    <FormItem label="Category">
+                                        <Select
+                                            isMulti
+                                            name="category"
+                                            options={categoryOptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            getOptionValue={(option) =>
+                                                option.value.toString()
+                                            }
+                                            onChange={(newVal, actionMeta) => {
+                                                console.log(newVal, actionMeta)
+                                                handleMultiSelect(
+                                                    'category',
+                                                    newVal
+                                                        ?.map(
+                                                            (val) => val.label
+                                                        )
+                                                        ?.join(',')
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+
+                                    {/* Subcategory */}
+                                    <FormItem label="Subcategory">
+                                        <Select
+                                            isMulti
+                                            name="subcategory"
+                                            options={subcategoryOptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            getOptionValue={(option) =>
+                                                option.value.toString()
+                                            }
+                                            onChange={(newVal, actionMeta) => {
+                                                console.log(newVal, actionMeta)
+                                                handleMultiSelect(
+                                                    'subcategory',
+                                                    newVal
+                                                        ?.map(
+                                                            (val) => val.label
+                                                        )
+                                                        ?.join(',')
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+
+                                    {/* Product Type */}
+                                    <FormItem label="Product Type">
+                                        <Select
+                                            isMulti
+                                            name="product_type"
+                                            options={productTypeOptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            getOptionValue={(option) =>
+                                                option.value.toString()
+                                            }
+                                            onChange={(newVal, actionMeta) => {
+                                                console.log(newVal, actionMeta)
+                                                handleMultiSelect(
+                                                    'product_type',
+                                                    newVal
+                                                        ?.map(
+                                                            (val) => val.label
+                                                        )
+                                                        ?.join(',')
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+
+                                    {/* Brand */}
+                                    <FormItem label="Brand">
+                                        <Select
+                                            isMulti
+                                            name="brand"
+                                            options={brandOptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            getOptionValue={(option) =>
+                                                option.value.toString()
+                                            }
+                                            onChange={(newVal, actionMeta) => {
+                                                console.log(newVal, actionMeta)
+                                                handleMultiSelect(
+                                                    'brand',
+                                                    newVal
+                                                        ?.map(
+                                                            (val) => val.label
+                                                        )
+                                                        ?.join(',')
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+
+                                    {/* Filters */}
+                                    <FormItem label="Filters">
+                                        <Select
+                                            isMulti
+                                            name="filters"
+                                            options={filterOptions}
+                                            getOptionLabel={(option) =>
+                                                option.label
+                                            }
+                                            getOptionValue={(option) =>
+                                                option.value.toString()
+                                            }
+                                            onChange={(newVal, actionMeta) => {
+                                                console.log(newVal, actionMeta)
+                                                handleMultiSelect(
+                                                    'filters',
+                                                    newVal
+                                                        ?.map(
+                                                            (val) => val.label
+                                                        )
+                                                        ?.join(',')
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+                                </FormContainer>
 
                                 {/* ..................................................... */}
                             </FormContainer>

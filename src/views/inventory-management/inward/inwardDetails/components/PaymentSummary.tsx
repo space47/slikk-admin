@@ -13,7 +13,7 @@ type PaymentSummaryProps = {
 
 const PaymentSummary = ({
     received_address,
-    received_by,
+    received_by
 }: PaymentSummaryProps) => {
     return (
         <Card className="mb-4">
@@ -35,19 +35,19 @@ const PaymentSummary = ({
                         <div className="text-[15px] font-bold mb-4 flex gap-7">
                             Name:{' '}
                             <span className="font-normal">
-                                {received_by.name}
+                                {received_by?.name}
                             </span>
                         </div>
                         <div className="text-[15px] font-bold mb-4 flex gap-7">
                             Mobile:{' '}
                             <span className="font-normal">
-                                {received_by.mobile}
+                                {received_by?.mobile}
                             </span>
                         </div>
                         <div className="text-[15px] font-bold mb-4 flex gap-7">
                             Email:{' '}
                             <span className="font-normal">
-                                {received_by.email}
+                                {received_by?.email}
                             </span>
                         </div>
                         <hr className="" />

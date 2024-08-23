@@ -7,12 +7,13 @@ import { HiOutlineCalendar } from 'react-icons/hi'
 import moment from 'moment'
 import ReturnProductsDetails from './components/ReturnProductsDetails'
 import ReturnSummary from './components/ReturnSummary'
+import ReturnUserInfo from './components/ReturnUserInfo'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
     const dispatch = useAppDispatch()
     const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders,
+        (state) => state.returnOrders
     )
     const returnDetails = returnOrder?.returnOrders
     useEffect(() => {
@@ -35,7 +36,7 @@ const ReturnOrderDetails = () => {
                         <HiOutlineCalendar className="text-lg" />
                         <span className="ltr:ml-1 rtl:mr-1">
                             {moment(returnDetails?.create_date).format(
-                                'MM/DD/YYYY hh:mm:ss a',
+                                'MM/DD/YYYY hh:mm:ss a'
                             )}
                         </span>
                     </span>
@@ -43,9 +44,16 @@ const ReturnOrderDetails = () => {
             </div>
 
             {/* Components */}
-            <div className="flex gap-5 justify-around mt-10">
-                <ReturnProductsDetails />
-                <ReturnSummary />
+            <div className="flex flex-wrap gap-8 justify-between mt-10">
+                <div className="flex-1 bg-gray-100 p-4 rounded-lg shadow-md">
+                    <ReturnProductsDetails />
+                </div>
+                <div className="flex-1 bg-gray-100 p-4 rounded-lg shadow-md gap-5">
+                    <div className="flex flex-col gap-5">
+                        <ReturnUserInfo />
+                        <ReturnSummary />
+                    </div>
+                </div>
             </div>
         </div>
     )

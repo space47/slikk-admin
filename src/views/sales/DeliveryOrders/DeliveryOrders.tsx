@@ -10,6 +10,7 @@ import {
     flexRender
 } from '@tanstack/react-table'
 import moment from 'moment'
+import Button from '@/components/ui/Button'
 import {
     Table,
     Pagination,
@@ -44,6 +45,12 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' }
 ]
 
+const LOGISTIC_PARTNER = [
+    { value: 'Porter', label: 'Porter' },
+    { value: 'Shiprocket', label: 'Shiprocket' },
+    { value: 'Shadowfax', label: 'Shadowfax' }
+]
+
 const OrderList = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
@@ -57,46 +64,100 @@ const OrderList = () => {
         from,
         to,
         dropdownStatus
-    } = useAppSelector((state) => state.order)
+    } = useAppSelector<OrderState>((state) => state.order)
 
     useEffect(() => {
         dispatch(fetchOrders())
     }, [dispatch, page, pageSize, from, to, dropdownStatus, globalFilter])
 
+    console.log(
+        'Data for Table',
+        orders.map((item) => item)
+    )
+
     const columns = [
         {
-            header: 'Invoice Id',
-            accessorKey: 'invoice_id',
-            cell: ({ getValue }: any) => (
-                <div
-                    className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                    onClick={() => handleInvoiceClick(getValue())}
-                >
-                    {getValue()}
-                </div>
-            )
+            header: 'Order Invoice Id',
+            accessorKey: 'logistic.reference_id',
+            cell: ({ row }: any) => {
+                const referenceId = row.original.logistic?.reference_id
+                return referenceId ? (
+                    <div
+                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                        onClick={() => handleInvoiceClick(referenceId)}
+                    >
+                        {referenceId}
+                    </div>
+                ) : (
+                    ''
+                )
+            }
         },
         {
-            header: 'Order Date',
-            accessorKey: 'create_date',
-            cell: ({ getValue }: any) => (
-                <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-            )
+            header: 'Return Invoide Id',
+            accessorKey: 'return_order',
+            cell: ({ row }: any) => {
+                const returnOrderArray = row.original?.return_order
+                const returnOrder = returnOrderArray?.find((item: any) => item)
+                console.log('ReturnOrder', returnOrder)
+                const returnOrderId = returnOrder?.return_order_id
+
+                return returnOrderId ? (
+                    <div className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer">
+                        {returnOrderId}
+                    </div>
+                ) : (
+                    ''
+                )
+            }
         },
-        { header: 'Mobile Number', accessorKey: 'user.mobile' },
+        { header: 'Store', accessorKey: 'store.address' },
         { header: 'Customer Name', accessorKey: 'user.name' },
-        { header: 'Store Address', accessorKey: 'store.address' },
-        { header: 'Rating', accessorKey: 'rating' },
-        { header: 'Payment Mode', accessorKey: 'payment.mode' },
-        { header: 'Total Items', accessorKey: 'order_items.length' },
-        { header: 'Order Total', accessorKey: 'payment.amount' },
-        { header: 'Status', accessorKey: 'status' },
+        { header: 'Mobile Number', accessorKey: 'store.mobile' },
+        { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
         {
-            header: 'Last Update',
-            accessorKey: 'update_date',
+            header: 'Runner Number',
+            accessorKey: 'logistic.runner_phone_number'
+        },
+        { header: 'Pickup Time', accessorKey: 'logistic.pickup_time' },
+        { header: 'Drop Time', accessorKey: 'logistic.drop_time' },
+        {
+            header: 'Eta Pickup',
+            accessorKey: 'logistic.eta_pickup',
             cell: ({ getValue }: any) => (
                 <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
             )
+        },
+        { header: 'Eta drop_off', accessorKey: 'logistic.eta_dropoff' },
+        {
+            header: 'Partner',
+            accessorKey: 'logistic.partner',
+            cell: ({ row, getValue }: any) => (
+                <Dropdown
+                    className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                    title={getValue()}
+                    // onSelect={handleDropdownSelect}
+                >
+                    <div className="max-h-60 overflow-y-auto">
+                        {LOGISTIC_PARTNER?.map((item, key) => {
+                            return (
+                                <DropdownItem
+                                    key={key}
+                                    eventKey={item.value}
+                                    className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                >
+                                    <span>{item.label}</span>
+                                </DropdownItem>
+                            )
+                        })}
+                    </div>
+                </Dropdown>
+            )
+        },
+        {
+            header: 'Assigned Logistic',
+            accessorKey: '',
+            cell: ({ row }: any) => <Button size="sm">Create Task</Button>
         }
     ]
 
@@ -140,14 +201,15 @@ const OrderList = () => {
         )
     }
 
-    // const handleDropdownSelect = (a: any) => {
-    //     dispatch(
-    //         setDropdownStatus({
-    //             value: a,
-    //             name: ORDER_STATUS.find((item) => item.value == a)?.name || ''
-    //         })
-    //     )
-    // }
+    const handleDropdownSelect = (a: any) => {
+        console.log('Values', a)
+        dispatch(
+            setDropdownStatus({
+                value: a,
+                name: ORDER_STATUS.find((item) => item.value == a)?.name || ''
+            })
+        )
+    }
     console.log('ssssssswddwdwdw', dropdownStatus)
     return (
         <div className="overflow-x-auto">
@@ -165,14 +227,15 @@ const OrderList = () => {
                 </div>
 
                 <div className="flex gap-10 items-center justify-between">
-                    {/* <div className="relative w-50 bg-gray-100 items-center flex justify-center">
+                    <div className="relative w-50 bg-gray-100 items-center flex justify-center">
                         <Dropdown
                             className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                            title={dropdownStatus}
+                            title={dropdownStatus.name}
                             onSelect={handleDropdownSelect}
                         >
                             <div className="max-h-60 overflow-y-auto">
                                 {ORDER_STATUS?.map((item, key) => {
+                                    console.log('rrrr', dropdownStatus)
                                     return (
                                         <DropdownItem
                                             key={key}
@@ -185,7 +248,7 @@ const OrderList = () => {
                                 })}
                             </div>
                         </Dropdown>
-                    </div> */}
+                    </div>
 
                     <div className="flex gap-5">
                         <div>

@@ -86,7 +86,7 @@ const InwardEdit = () => {
     const [showImage, setShowImage] = useState(false)
     const [docsView, setDocsView] = useState<string[]>([])
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
+        (store) => store.company.currCompany
     )
 
     const { grn } = useParams()
@@ -105,7 +105,7 @@ const InwardEdit = () => {
             'image/webp',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -142,9 +142,9 @@ const InwardEdit = () => {
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                },
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
             )
             console.log(response)
             const newData = response.data.url
@@ -153,7 +153,7 @@ const InwardEdit = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'File uploaded successfully',
+                    response?.data?.message || 'File uploaded successfully'
             })
             return newData
         } catch (error: any) {
@@ -161,7 +161,7 @@ const InwardEdit = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                    error?.response?.data?.message || 'File Not uploaded'
             })
             return 'Error'
         }
@@ -182,9 +182,9 @@ const InwardEdit = () => {
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                },
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
             )
             console.log(response)
             const newData = response.data.url
@@ -194,7 +194,7 @@ const InwardEdit = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Image uploaded successfully',
+                    response?.data?.message || 'Image uploaded successfully'
             })
             return newData
         } catch (error: any) {
@@ -202,7 +202,7 @@ const InwardEdit = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                    error?.response?.data?.message || 'File Not uploaded'
             })
             return 'Error'
         }
@@ -211,7 +211,7 @@ const InwardEdit = () => {
     const fetchData = async () => {
         try {
             const response = await axioisInstance.get(
-                `goods/received?grn_number=${grn}`,
+                `goods/received?grn_number=${grn}`
             )
             const inwardData = response.data?.data
             setDatas(inwardData)
@@ -241,7 +241,7 @@ const InwardEdit = () => {
         received_by: {
             name: datas?.received_by?.name || '',
             mobile: datas?.received_by?.mobile || '',
-            email: datas?.received_by.email || '',
+            email: datas?.received_by?.email || ''
         },
         document_date: datas?.document_date || null,
         origin_address: datas?.origin_address || '',
@@ -251,7 +251,7 @@ const InwardEdit = () => {
         total_quantity: datas?.total_quantity || null,
         document: datas?.document || '',
         images: datas?.images || '',
-        image: datas?.image || [],
+        image: datas?.image || []
     }
 
     const handleSubmit = async (values: FormModel) => {
@@ -266,7 +266,7 @@ const InwardEdit = () => {
             ...values,
             company: selectedCompany.id,
             document: docsUpload,
-            images: imageUpload,
+            images: imageUpload
         }
 
         console.log('formDaata', formData)
@@ -274,14 +274,14 @@ const InwardEdit = () => {
         try {
             const response = await axioisInstance.patch(
                 'goods/received', //
-                formData,
+                formData
             )
 
             console.log(response)
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'GRN created Successfully',
+                    response?.data?.message || 'GRN created Successfully'
             })
             navigate('/app/goods/received')
         } catch (error: any) {
@@ -289,7 +289,7 @@ const InwardEdit = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'GRN not created ',
+                    error?.response?.data?.message || 'GRN not created '
             })
         }
     }
@@ -341,7 +341,7 @@ const InwardEdit = () => {
                                     >
                                         {({
                                             field,
-                                            form,
+                                            form
                                         }: FieldProps<FormModel>) => (
                                             <DatePicker
                                                 field={field}
@@ -351,7 +351,7 @@ const InwardEdit = () => {
                                                     console.log(field.name)
                                                     form.setFieldValue(
                                                         field.name,
-                                                        date,
+                                                        date
                                                     )
                                                 }}
                                             />
@@ -480,7 +480,7 @@ const InwardEdit = () => {
                                     <FormItem
                                         label=""
                                         invalid={Boolean(
-                                            errors.document && touched.document,
+                                            errors.document && touched.document
                                         )}
                                         errorMessage={errors.document as string}
                                         className="grid grid-rows-2"
@@ -488,7 +488,7 @@ const InwardEdit = () => {
                                         <Field name="files">
                                             {({
                                                 field,
-                                                form,
+                                                form
                                             }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
@@ -501,17 +501,17 @@ const InwardEdit = () => {
                                                                 'OnchangeFiles',
                                                                 files,
                                                                 field.name,
-                                                                values.document,
+                                                                values.document
                                                             )
                                                             form.setFieldValue(
                                                                 'files',
-                                                                files,
+                                                                files
                                                             )
                                                         }}
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'files',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         // uploadButtonText="Add Files"
@@ -568,14 +568,14 @@ const InwardEdit = () => {
                                     <FormItem
                                         label=""
                                         invalid={Boolean(
-                                            errors.files && touched.files,
+                                            errors.files && touched.files
                                         )}
                                         errorMessage={errors.files as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="image">
                                             {({
-                                                form,
+                                                form
                                             }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
@@ -587,13 +587,13 @@ const InwardEdit = () => {
                                                         onChange={(files) =>
                                                             form.setFieldValue(
                                                                 'image',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'image',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         // uploadButtonText="Add Files"
