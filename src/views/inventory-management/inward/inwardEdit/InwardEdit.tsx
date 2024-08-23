@@ -187,7 +187,7 @@ const InwardEdit = () => {
                 }
             )
             console.log(response)
-            const newData = response.data.url
+            const newData = response.data.images
             setImageView(newData)
             console.log(newData)
             setShowImage(true)
@@ -207,6 +207,8 @@ const InwardEdit = () => {
             return 'Error'
         }
     }
+
+    console.log('images', imagview)
 
     const fetchData = async () => {
         try {
@@ -256,17 +258,41 @@ const InwardEdit = () => {
 
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
-        const docsUpload = await handleUpload(values.files)
+        let docsUpload = null
+        if (values.files && values.files.length > 0) {
+            docsUpload = await handleUpload(values.files)
+        }
 
-        const imageUpload = await handleimage(values.image)
+        let imageUpload = null
+        if (values.image && values.image.length > 0) {
+            imageUpload = await handleimage(values.image)
+        }
+
+        let docsShow = null
+        if (docsUpload && values.document) {
+            docsShow = [docsUpload, values.document].join(',')
+        } else if (docsUpload) {
+            docsShow = docsUpload
+        } else if (values.document) {
+            docsShow = values.document
+        }
+
+        let imageShow = null
+        if (imageUpload && values.images) {
+            imageShow = [imageUpload, values.images].join(',')
+        } else if (imageUpload) {
+            imageShow = imageUpload
+        } else if (values.image) {
+            imageShow = values.images
+        }
 
         console.log('Dataas', docsUpload)
         console.log('Immage', imageUpload)
         const formData = {
             ...values,
             company: selectedCompany.id,
-            document: docsUpload,
-            images: imageUpload
+            document: docsShow,
+            images: imageShow
         }
 
         console.log('formDaata', formData)
@@ -479,9 +505,6 @@ const InwardEdit = () => {
                                 <FormContainer className=" mt-5 ">
                                     <FormItem
                                         label=""
-                                        invalid={Boolean(
-                                            errors.document && touched.document
-                                        )}
                                         errorMessage={errors.document as string}
                                         className="grid grid-rows-2"
                                     >
@@ -501,7 +524,7 @@ const InwardEdit = () => {
                                                                 'OnchangeFiles',
                                                                 files,
                                                                 field.name,
-                                                                values.document
+                                                                values.files
                                                             )
                                                             form.setFieldValue(
                                                                 'files',

@@ -9,13 +9,14 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter,
+    useGlobalFilter
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { MdEdit } from 'react-icons/md'
+import { FaEdit } from 'react-icons/fa'
 
 interface categoryItem {
     id: number
@@ -47,7 +48,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const CategoryTable = () => {
@@ -87,12 +88,12 @@ const CategoryTable = () => {
             {
                 header: 'Name',
                 accessorKey: 'name',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Description',
                 accessorKey: 'description',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Image',
@@ -103,47 +104,47 @@ const CategoryTable = () => {
                         alt="product"
                         width="50"
                     />
-                ),
+                )
             },
             {
                 header: 'Division',
                 accessorKey: 'division',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Division Name',
                 accessorKey: 'division_name',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Title',
                 accessorKey: 'title',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Footer',
                 accessorKey: 'footer',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Quick Filter Tags',
                 accessorKey: 'quick_filter_tags',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Position',
                 accessorKey: 'position',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Gender',
                 accessorKey: 'gender',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Active',
                 accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+                cell: (info) => (info.getValue() ? 'Yes' : 'No')
             },
             {
                 header: 'Create Date',
@@ -152,7 +153,7 @@ const CategoryTable = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                ),
+                )
             },
             {
                 header: 'Update Date',
@@ -161,17 +162,17 @@ const CategoryTable = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                ),
+                )
             },
             {
                 header: 'Try_&_Buy',
                 accessorKey: 'is_try_and_buy',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+                cell: (info) => (info.getValue() ? 'Yes' : 'No')
             },
             {
                 header: 'Last Updated By',
                 accessorKey: 'last_updated_by',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Edit',
@@ -181,12 +182,12 @@ const CategoryTable = () => {
                         onClick={() => handleActionClick(row.original.id)}
                         className="bg-none border-none"
                     >
-                        <MdEdit className="text-xl" />
+                        <FaEdit className="text-xl" />
                     </Button>
-                ),
-            },
+                )
+            }
         ],
-        [],
+        []
     )
 
     const table = useReactTable({
@@ -200,15 +201,15 @@ const CategoryTable = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize,
+                pageSize: pageSize
             },
-            globalFilter,
+            globalFilter
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: setGlobalFilter
     })
 
     const onPaginationChange = (page: number) => {
@@ -253,7 +254,7 @@ const CategoryTable = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext(),
+                                        header.getContext()
                                     )}
                                 </Th>
                             ))}
@@ -267,7 +268,7 @@ const CategoryTable = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </Td>
                             ))}
@@ -287,7 +288,7 @@ const CategoryTable = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}

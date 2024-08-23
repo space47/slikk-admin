@@ -81,9 +81,6 @@ const columns = [
             return <ProductColumn row={row} />
         }
     }),
-    columnHelper.accessor('location', {
-        header: 'Location'
-    }),
 
     columnHelper.accessor('size', {
         header: 'Size',
@@ -91,6 +88,9 @@ const columns = [
             const row = props.row.original
             return <div>{row.size ? row.size.toUpperCase() : ''}</div>
         }
+    }),
+    columnHelper.accessor('location', {
+        header: 'Location'
     }),
     columnHelper.accessor('color', {
         header: 'Color',

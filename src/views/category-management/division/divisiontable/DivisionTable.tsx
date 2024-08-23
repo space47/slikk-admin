@@ -7,6 +7,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
+import { FaEdit } from 'react-icons/fa'
 
 interface DataItem {
     id: number
@@ -34,7 +35,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const DivisionTable = () => {
@@ -68,8 +69,8 @@ const DivisionTable = () => {
                       .toString()
                       .toLowerCase()
                       .includes(globalFilter.toLowerCase())
-                : false,
-        ),
+                : false
+        )
     )
 
     const navigate = useNavigate()
@@ -85,7 +86,7 @@ const DivisionTable = () => {
     // Paginate filtered data
     const paginatedData = filteredData.slice(
         (page - 1) * pageSize,
-        page * pageSize,
+        page * pageSize
     )
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
@@ -94,7 +95,7 @@ const DivisionTable = () => {
         {
             header: 'Create Date',
             accessor: 'create_date',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value) => moment(value).format('YYYY-MM-DD')
         },
         { header: 'Title', accessor: 'title' },
         { header: 'Description', accessor: 'description' },
@@ -104,7 +105,7 @@ const DivisionTable = () => {
             format: (value) => {
                 console.log('ValueData', value)
                 return <img src={value} alt="product" width="50" />
-            },
+            }
         },
         { header: 'Footer', accessor: 'footer' },
         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
@@ -113,26 +114,31 @@ const DivisionTable = () => {
         {
             header: 'Active',
             accessor: 'is_active',
-            format: (value) => (value ? 'Yes' : 'No'),
+            format: (value) => (value ? 'Yes' : 'No')
         },
         {
             header: 'Update Date',
             accessor: 'update_date',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value) => moment(value).format('YYYY-MM-DD')
         },
         {
             header: 'Try and Buy',
             accessor: 'is_try_and_buy',
-            format: (value) => (value ? 'Yes' : 'No'),
+            format: (value) => (value ? 'Yes' : 'No')
         },
         { header: 'Last Updated By', accessor: 'last_updated_by' },
         {
             header: 'Action',
             accessor: 'id',
             format: (value) => (
-                <Button onClick={() => handleActionClick(value)}>EDIT</Button>
-            ),
-        },
+                <button
+                    onClick={() => handleActionClick(value)}
+                    className="border-none bg-none"
+                >
+                    <FaEdit className="text-xl" />
+                </button>
+            )
+        }
     ]
 
     return (
@@ -189,7 +195,7 @@ const DivisionTable = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) =>

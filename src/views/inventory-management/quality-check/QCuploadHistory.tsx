@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -8,7 +9,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    flexRender,
+    flexRender
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 // import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -46,7 +47,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const PaginationTable = () => {
@@ -58,7 +59,7 @@ const PaginationTable = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axioisInstance.get(
-                `bulkupload/history?type=quality_check&p=${page}&page_size=${pageSize}`,
+                `bulkupload/history?type=quality_check&p=${page}&page_size=${pageSize}`
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -92,7 +93,7 @@ const PaginationTable = () => {
     const handleDownload = async (
         failure: number,
         error_file: string,
-        uploaded_file: string,
+        uploaded_file: string
     ) => {
         console.log(`Action clicked `, error_file, uploaded_file, failure)
 
@@ -101,7 +102,7 @@ const PaginationTable = () => {
 
             const response = await axioisInstance.get(
                 `file/presign?file_url=${requiredUrl}`,
-                { responseType: 'blob' },
+                { responseType: 'blob' }
             )
 
             const preSignedUrl = response.data.data
@@ -138,17 +139,17 @@ const PaginationTable = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                ),
+                )
             },
             {
                 header: 'File name',
                 accessorKey: 'uploaded_file',
-                cell: (info) => extractFileName(info.getValue()),
+                cell: (info) => extractFileName(info.getValue())
             },
             {
                 header: 'Batch Id',
                 accessorKey: 'id',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Upload Status',
@@ -156,22 +157,22 @@ const PaginationTable = () => {
                 cell: (info) => {
                     const failure = info.getValue() as number
                     return getUploadStatus(failure)
-                },
+                }
             },
             {
                 header: '#Uploaded',
                 accessorKey: 'success',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: '#Rejected',
                 accessorKey: 'failure',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Error File',
                 accessorKey: 'error_file',
-                cell: (info) => extractErrorName(info.getValue()),
+                cell: (info) => extractErrorName(info.getValue())
             },
             {
                 header: 'Action',
@@ -182,16 +183,16 @@ const PaginationTable = () => {
                             handleDownload(
                                 row.original.failure,
                                 row.original.error_file,
-                                row.original.uploaded_file,
+                                row.original.uploaded_file
                             )
                         }
                     >
                         DOWNLOAD
                     </Button>
-                ),
-            },
+                )
+            }
         ],
-        [],
+        []
     )
 
     const table = useReactTable({
@@ -205,13 +206,13 @@ const PaginationTable = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize,
-            },
+                pageSize: pageSize
+            }
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1) // React Table uses zero-based index
             setPageSize(pageSize)
-        },
+        }
     })
 
     const onPaginationChange = (page: number) => {
@@ -232,7 +233,7 @@ const PaginationTable = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext(),
+                                        header.getContext()
                                     )}
                                 </Th>
                             ))}
@@ -246,7 +247,7 @@ const PaginationTable = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </Td>
                             ))}
@@ -266,7 +267,7 @@ const PaginationTable = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}

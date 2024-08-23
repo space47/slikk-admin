@@ -8,7 +8,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    flexRender,
+    flexRender
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -18,6 +18,7 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { Modal, notification } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 
 interface User {
     first_name: string
@@ -42,7 +43,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const Seller = () => {
@@ -55,13 +56,13 @@ const Seller = () => {
     const [getMobilenumber, setGetMobileNumber] = useState('')
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
+        (store) => store.company.currCompany
     )
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `company/${selectedCompany.id}/users`,
+                `company/${selectedCompany.id}/users`
             )
             const data = response.data.data
             const total = response.data.data.length
@@ -92,12 +93,12 @@ const Seller = () => {
             {
                 header: 'Name',
                 accessorFn: (row) => `${row.first_name} ${row.last_name}`,
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Mobile',
                 accessorKey: 'mobile',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Image',
@@ -108,7 +109,7 @@ const Seller = () => {
                         alt="User"
                         className="w-12 h-12 object-cover"
                     />
-                ),
+                )
             },
             {
                 header: 'Date Joined',
@@ -117,33 +118,34 @@ const Seller = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                ),
+                )
             },
             {
                 header: 'Edit',
                 accessorKey: 'mobile',
                 cell: ({ row }) => (
-                    <Button
+                    <button
                         onClick={() => handleActionClick(row.original.mobile)}
+                        className="border-none bg-none"
                     >
-                        EDIT
-                    </Button>
-                ),
+                        <FaEdit className="text-xl" />
+                    </button>
+                )
             },
             {
                 header: 'Delete',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <Button
+                    <button
                         onClick={() => handleDeleteClick(row.original.mobile)}
-                        variant="reject"
+                        className="border-none bg-none"
                     >
-                        Delete
-                    </Button>
-                ),
-            },
+                        <FaTrash className="text-xl text-red-500" />
+                    </button>
+                )
+            }
         ],
-        [],
+        []
     )
 
     const handleCloseModal = () => {
@@ -153,26 +155,26 @@ const Seller = () => {
     const deleteUser = async () => {
         const body = {
             company_id: selectedCompany.id,
-            action: 'remove',
+            action: 'remove'
         }
 
         try {
             const response = await axiosInstance.patch(
                 `company/user/${getMobilenumber}`,
-                body,
+                body
             )
             notification.success({
                 message: 'Success',
                 description:
                     response?.data?.message ||
-                    'User has benn Successfully deleted',
+                    'User has benn Successfully deleted'
             })
             navigate(0)
         } catch (error) {
             console.log(error)
             notification.error({
                 message: 'Failure',
-                description: 'Unable to delete',
+                description: 'Unable to delete'
             })
         }
 
@@ -190,15 +192,15 @@ const Seller = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize,
+                pageSize: pageSize
             },
-            globalFilter,
+            globalFilter
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: setGlobalFilter
     })
 
     const onPaginationChange = (page: number) => {
@@ -242,7 +244,7 @@ const Seller = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext(),
+                                        header.getContext()
                                     )}
                                 </Th>
                             ))}
@@ -256,7 +258,7 @@ const Seller = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </Td>
                             ))}
@@ -276,7 +278,7 @@ const Seller = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
@@ -292,7 +294,7 @@ const Seller = () => {
                     onCancel={handleCloseModal}
                     okText="DELETE"
                     okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
+                        style: { backgroundColor: 'red', borderColor: 'red' }
                     }}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
