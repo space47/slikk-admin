@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 
 import { BANNERMODEL } from './BannerCommon'
+import { FaEdit } from 'react-icons/fa'
 
 type Option = {
     value: number
@@ -220,12 +221,15 @@ const AppBanners = () => {
                 )
             },
             {
-                header: 'Action',
+                header: 'Edit',
                 accessorKey: 'id',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        EDIT
-                    </Button>
+                    <button
+                        onClick={() => handleActionClick(row.original.id)}
+                        className="border-none bg-none"
+                    >
+                        <FaEdit className="text-xl" />
+                    </button>
                 )
             }
         ],

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
@@ -6,6 +7,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
+import { FaEdit } from 'react-icons/fa'
 
 type Product = {
     id: number
@@ -37,7 +39,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const Subcategory = () => {
@@ -71,14 +73,14 @@ const Subcategory = () => {
                       .toString()
                       .toLowerCase()
                       .includes(globalFilter.toLowerCase())
-                : false,
-        ),
+                : false
+        )
     )
 
     // Paginate filtered data
     const paginatedData = filteredData.slice(
         (page - 1) * pageSize,
-        page * pageSize,
+        page * pageSize
     )
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
@@ -87,14 +89,14 @@ const Subcategory = () => {
         {
             header: 'Create Date',
             accessor: 'create_date',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value: any) => moment(value).format('YYYY-MM-DD')
         },
         { header: 'Title', accessor: 'title' },
         { header: 'Description', accessor: 'description' },
         {
             header: 'Image',
             accessor: 'image',
-            format: (value) => <img src={value} alt="product" width="50" />,
+            format: (value: any) => <img src={value} alt="product" width="50" />
         },
         { header: 'Footer', accessor: 'footer' },
         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
@@ -103,26 +105,31 @@ const Subcategory = () => {
         {
             header: 'Active',
             accessor: 'is_active',
-            format: (value) => (value ? 'Yes' : 'No'),
+            format: (value: any) => (value ? 'Yes' : 'No')
         },
         {
             header: 'Update Date',
             accessor: 'update_date',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value: any) => moment(value).format('YYYY-MM-DD')
         },
         {
             header: 'Try and Buy',
             accessor: 'is_try_and_buy',
-            format: (value) => (value ? 'Yes' : 'No'),
+            format: (value: any) => (value ? 'Yes' : 'No')
         },
         { header: 'Last Updated By', accessor: 'last_updated_by' },
         {
-            header: 'Action',
+            header: 'Edit',
             accessor: 'id',
-            format: (value) => (
-                <Button onClick={() => handleActionClick(value)}>EDIT</Button>
-            ),
-        },
+            format: (value: any) => (
+                <button
+                    onClick={() => handleActionClick(value)}
+                    className="border-none bg-none"
+                >
+                    <FaEdit className="text-xl" />
+                </button>
+            )
+        }
     ]
 
     const navigate = useNavigate()
@@ -189,7 +196,7 @@ const Subcategory = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) =>

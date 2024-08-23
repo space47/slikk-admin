@@ -117,6 +117,7 @@ const InwardDetails = () => {
             company: selectedCompany.id,
             grn_number: grnNumber
         }
+        setShowSyncModal(false)
         setIsSyncing(true)
 
         try {
@@ -125,7 +126,6 @@ const InwardDetails = () => {
                 message: 'Success',
                 description: 'GRN synced successfully'
             })
-            setShowSyncModal(false)
         } catch (error) {
             console.log('sssssssss', error)
             notification.error({
@@ -256,7 +256,7 @@ const InwardDetails = () => {
                                 </div>
                             </Modal>
                         )}
-                        {isSyncing && <Loading />}
+                        {isSyncing && <Loading loading={loading} />}
                     </>
                 )}
             </Loading>
