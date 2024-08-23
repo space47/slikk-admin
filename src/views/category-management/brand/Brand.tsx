@@ -61,7 +61,7 @@ const Brand = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `brands?p=${page}&page_size=${pageSize}`,
+                `brands?dashboard=true&p=${page}&page_size=${pageSize}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
