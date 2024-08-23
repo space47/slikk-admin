@@ -9,7 +9,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    flexRender,
+    flexRender
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -19,6 +19,7 @@ import { DROPDOWNARRAY } from './CommonType'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import ImageMODAL from '@/common/ImageModal'
+import { FaEdit } from 'react-icons/fa'
 
 type ProductVariant = {
     name: string
@@ -63,7 +64,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const Products = () => {
@@ -89,7 +90,7 @@ const Products = () => {
             }
 
             const response = await axiosInstance.get(
-                `search/product?dashboard=true&p=${page}&page_size=${pageSize}${type}`,
+                `search/product?dashboard=true&p=${page}&page_size=${pageSize}${type}`
             )
 
             const data = response.data.results
@@ -105,7 +106,7 @@ const Products = () => {
     const filter = async (
         page: number,
         pageSize: number,
-        filter: string = '',
+        filter: string = ''
     ) => {
         try {
             let type = ''
@@ -114,7 +115,7 @@ const Products = () => {
             }
 
             const response = await axiosInstance.get(
-                `search/product?dashboard=true&p=${page}&page_size=${pageSize}${type}&sku=${filter}`,
+                `search/product?dashboard=true&p=${page}&page_size=${pageSize}${type}&sku=${filter}`
             )
 
             const data = response.data.results
@@ -144,22 +145,22 @@ const Products = () => {
             {
                 header: 'SKU',
                 accessorKey: 'sku',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Barcode',
                 accessorKey: 'barcode',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Product Name',
                 accessorKey: 'name',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Brand',
                 accessorKey: 'brand',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Image',
@@ -171,17 +172,17 @@ const Products = () => {
                         className="w-24 h-20 object-cover cursor-pointer"
                         onClick={() => handleOpenModal(row.original.image)}
                     />
-                ),
+                )
             },
             {
                 header: 'Price',
                 accessorKey: 'mrp',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Selling Price',
                 accessorKey: 'sp',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
 
             // {
@@ -192,17 +193,17 @@ const Products = () => {
             {
                 header: 'Division',
                 accessorKey: 'division',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Category',
                 accessorKey: 'category',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Sub Category',
                 accessorKey: 'sub_category',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             // {
             //     header: 'Product Type',
@@ -212,26 +213,27 @@ const Products = () => {
             {
                 header: 'COLOR',
                 accessorKey: 'color',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'SIZE',
                 accessorKey: 'size',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <Button
+                    <button
                         onClick={() => handleActionClick(row.original.barcode)}
+                        className="border-none bg-none"
                     >
-                        EDIT
-                    </Button>
-                ),
-            },
+                        <FaEdit className="text-xl" />
+                    </button>
+                )
+            }
         ],
-        [],
+        []
     )
 
     const handleSelect = (value: any) => {
@@ -252,15 +254,15 @@ const Products = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize,
+                pageSize: pageSize
             },
-            globalFilter,
+            globalFilter
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: setGlobalFilter
     })
 
     const onPaginationChange = (page: number) => {
@@ -276,12 +278,12 @@ const Products = () => {
             const response = await axiosInstance.get(
                 'merchant/products?download=true',
                 {
-                    responseType: 'blob', // This is important to correctly handle binary data
-                },
+                    responseType: 'blob' // This is important to correctly handle binary data
+                }
             )
 
             const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
+                new Blob([response.data])
             )
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
@@ -384,7 +386,7 @@ const Products = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext(),
+                                        header.getContext()
                                     )}
                                 </Th>
                             ))}
@@ -398,7 +400,7 @@ const Products = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </Td>
                             ))}
@@ -418,7 +420,7 @@ const Products = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}

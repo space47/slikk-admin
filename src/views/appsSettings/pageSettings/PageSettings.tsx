@@ -4,7 +4,7 @@ import Table from '@/components/ui/Table'
 import {
     flexRender,
     getCoreRowModel,
-    useReactTable,
+    useReactTable
 } from '@tanstack/react-table'
 import { DragDropContext, Draggable } from 'react-beautiful-dnd'
 import { MdDragIndicator } from 'react-icons/md'
@@ -22,6 +22,7 @@ import { notification } from 'antd'
 import PageModal from './PageModal'
 import { FormikProps } from 'formik'
 import PageAddModal from './PageAddModal'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -146,7 +147,7 @@ const PageSettings = () => {
 
     const newRowData = (data: any) => {
         setData((prev) =>
-            prev.map((item) => (item === particularRow ? data : item)),
+            prev.map((item) => (item === particularRow ? data : item))
         )
         console.log('object------------', data)
     }
@@ -168,17 +169,17 @@ const PageSettings = () => {
                     <span {...(props as any).dragHandleProps}>
                         <MdDragIndicator />
                     </span>
-                ),
+                )
             },
             {
                 header: 'Section Heading',
                 accessorKey: 'section_heading',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Component Type',
                 accessorKey: 'component_type',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Background Image',
@@ -189,7 +190,7 @@ const PageSettings = () => {
                         alt=""
                         className=" object-contain bg-black"
                     />
-                ),
+                )
             },
             {
                 header: 'Mobile Background Image',
@@ -200,7 +201,7 @@ const PageSettings = () => {
                         alt=""
                         className=" object-contain bg-black"
                     />
-                ),
+                )
             },
             {
                 header: 'Header Icon',
@@ -211,12 +212,12 @@ const PageSettings = () => {
                         alt=""
                         className=" object-contain bg-black"
                     />
-                ),
+                )
             },
             {
                 header: 'Header Text',
                 accessorKey: 'header_config.text',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Header Image',
@@ -227,17 +228,17 @@ const PageSettings = () => {
                         alt=""
                         className=" object-contain bg-black"
                     />
-                ),
+                )
             },
             {
                 header: 'Header Style',
                 accessorKey: 'header_config.style',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Header Position',
                 accessorKey: 'header_config.position',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Footer Icon',
@@ -248,12 +249,12 @@ const PageSettings = () => {
                         alt=""
                         className=" object-contain bg-black"
                     />
-                ),
+                )
             },
             {
                 header: 'Footer Text',
                 accessorKey: 'footer_config.text',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Footer Image',
@@ -264,18 +265,18 @@ const PageSettings = () => {
                         alt=""
                         className=" object-contain bg-black"
                     />
-                ),
+                )
             },
             {
                 header: 'Footer Style',
                 accessorKey: 'footer_config.style',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
 
             {
                 header: 'Footer Position',
                 accessorKey: 'footer_config.position',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Sub Header Icon',
@@ -286,12 +287,12 @@ const PageSettings = () => {
                         alt=""
                         className=" object-contain bg-black"
                     />
-                ),
+                )
             },
             {
                 header: 'Sub Header Text',
                 accessorKey: 'sub_header_config.text',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Sub Header Image',
@@ -302,32 +303,32 @@ const PageSettings = () => {
                         alt=""
                         className=" object-contain bg-black"
                     />
-                ),
+                )
             },
             {
                 header: 'Sub Header Style',
                 accessorKey: 'sub_header_config.style',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Sub Header Position',
                 accessorKey: 'sub_header_config.position',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Data Type',
                 accessorKey: 'data_type.type',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Section',
                 accessorKey: 'is_section_clickable',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+                cell: (info) => (info.getValue() ? 'Yes' : 'No')
             },
             {
                 header: 'Section Filter',
                 accessorKey: 'section_filters',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Data Type Values',
@@ -342,44 +343,47 @@ const PageSettings = () => {
                             {key}-{value}
                         </div>
                     )
-                },
+                }
             },
             {
-                header: 'Action',
+                header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
-                        Edit
-                    </Button>
-                ),
+                    <button
+                        onClick={() => handleActionClick(row.original)}
+                        className="border-none bg-none"
+                    >
+                        <FaEdit className="text-xl" />
+                    </button>
+                )
             },
             {
                 header: 'Delete',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <Button
+                    <button
                         onClick={() => handleRemoveButton(row.original)}
-                        variant="reject"
+                        className="border-none bg-none"
                     >
-                        Delete
-                    </Button>
-                ),
-            },
+                        <FaTrash className="text-xl text-red-500" />
+                    </button>
+                )
+            }
         ],
-        [],
+        []
     )
 
     const table = useReactTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
+        getCoreRowModel: getCoreRowModel()
     })
 
     const handleSelect = (a: any, b: any) => {
         console.log('data.....................', a, b)
         setCurrentSelectedPage({
             value: a,
-            name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || '',
+            name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || ''
         })
     }
 
@@ -388,7 +392,7 @@ const PageSettings = () => {
             const { mobile_background_array, ...allData } = item
             acc[index + 1] = {
                 ...allData,
-                mobile_background_image: item.mobile_background_image || '',
+                mobile_background_image: item.mobile_background_image || ''
             }
             return acc
         }, {})
@@ -398,8 +402,8 @@ const PageSettings = () => {
         const body = {
             page_name: `${currentSelectedPage.value}`,
             value: {
-                Web: webData,
-            },
+                Web: webData
+            }
         }
 
         console.log('boooooooooooooooo', body)
@@ -409,13 +413,13 @@ const PageSettings = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Page Updated successfully',
+                    response?.data?.message || 'Page Updated successfully'
             })
         } catch (error) {
             console.log(error)
             notification.error({
                 message: 'Failure',
-                description: 'Page Failure',
+                description: 'Page Failure'
             })
         }
     }
@@ -498,7 +502,7 @@ const PageSettings = () => {
                                         >
                                             {flexRender(
                                                 header.column.columnDef.header,
-                                                header.getContext(),
+                                                header.getContext()
                                             )}
                                         </Th>
                                     )
@@ -551,7 +555,7 @@ const PageSettings = () => {
                                                                                 .column
                                                                                 .columnDef
                                                                                 .cell,
-                                                                            cell.getContext(),
+                                                                            cell.getContext()
                                                                         )}
                                                                     </Td>
                                                                 )
