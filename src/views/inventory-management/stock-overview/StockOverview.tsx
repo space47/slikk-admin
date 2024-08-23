@@ -9,7 +9,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter,
+    useGlobalFilter
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -63,7 +63,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const StockOverview = () => {
@@ -79,12 +79,12 @@ const StockOverview = () => {
         page: number,
         pageSize: number,
         from: string,
-        to: string,
+        to: string
     ) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`,
+                `inventory?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -112,43 +112,48 @@ const StockOverview = () => {
             {
                 header: 'SKU',
                 accessorKey: 'product.sku',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Product Name',
                 accessorKey: 'product.name',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Store Number',
                 accessorKey: 'store',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
+            },
+            {
+                header: 'Location',
+                accessorKey: 'location',
+                cell: (info) => info.getValue()
             },
             {
                 header: 'QTY',
                 accessorKey: 'quantity',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Brand',
                 accessorKey: 'product.brand_name',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
 
             {
                 header: 'Color',
                 accessorKey: 'product.color',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Size',
                 accessorKey: 'product.size',
-                cell: (info) => info.getValue().toUpperCase(),
+                cell: (info) => info.getValue().toUpperCase()
             },
             {
                 header: ' Stock',
                 accessorKey: 'quantity',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             // {
             //     header: 'Active',
@@ -163,12 +168,12 @@ const StockOverview = () => {
             {
                 header: 'Expiry',
                 accessorKey: 'expiry_date',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Batch Num',
                 accessorKey: 'batch_number',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Created',
@@ -177,7 +182,7 @@ const StockOverview = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                ),
+                )
             },
             {
                 header: 'Updated',
@@ -186,20 +191,20 @@ const StockOverview = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                ),
+                )
             },
             {
                 header: 'GRN number',
                 accessorKey: 'grn',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Updated By',
                 accessorKey: 'last_updated_by.name',
-                cell: (info) => info.getValue(),
-            },
+                cell: (info) => info.getValue()
+            }
         ],
-        [],
+        []
     )
 
     const table = useReactTable({
@@ -213,15 +218,15 @@ const StockOverview = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize,
+                pageSize: pageSize
             },
-            globalFilter,
+            globalFilter
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: setGlobalFilter
     })
 
     const onPaginationChange = (page: number) => {
@@ -303,7 +308,7 @@ const StockOverview = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext(),
+                                        header.getContext()
                                     )}
                                 </Th>
                             ))}
@@ -317,7 +322,7 @@ const StockOverview = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </Td>
                             ))}
@@ -337,7 +342,7 @@ const StockOverview = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}

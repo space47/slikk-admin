@@ -41,7 +41,7 @@ type FormModel = {
     slikk_owned: boolean
     total_sku: number | null
     total_quantity: number | null
-    document: File[]
+    document: string
     images: string
     image: File[]
 }
@@ -65,9 +65,9 @@ const initialValue: FormModel = {
     slikk_owned: false,
     total_sku: null,
     total_quantity: null,
-    document: [],
+    document: '',
     images: '',
-    image: [],
+    image: []
 }
 
 // const validationSchema = Yup.object().shape({
@@ -99,7 +99,7 @@ const MixedFormControl = () => {
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
+        (store) => store.company.currCompany
     )
 
     const navigate = useNavigate()
@@ -117,7 +117,7 @@ const MixedFormControl = () => {
             'image/png',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -154,9 +154,9 @@ const MixedFormControl = () => {
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                },
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
             )
             console.log(response)
             const newData = response.data.url
@@ -165,7 +165,7 @@ const MixedFormControl = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'File uploaded successfully',
+                    response?.data?.message || 'File uploaded successfully'
             })
             return newData
         } catch (error: any) {
@@ -173,7 +173,7 @@ const MixedFormControl = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                    error?.response?.data?.message || 'File Not uploaded'
             })
             return 'Error'
         }
@@ -190,13 +190,13 @@ const MixedFormControl = () => {
         try {
             console.log(formData.get('file'))
             const response = await axioisInstance.post(
-                'fileupload/dashboard', //only fileupload // image
+                'fileupload/dashboard',
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                },
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
             )
             console.log(response)
             const newData = response.data.url
@@ -206,7 +206,7 @@ const MixedFormControl = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Image uploaded successfully',
+                    response?.data?.message || 'Image uploaded successfully'
             })
             return newData
         } catch (error: any) {
@@ -214,7 +214,7 @@ const MixedFormControl = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                    error?.response?.data?.message || 'File Not uploaded'
             })
             return 'Error'
         }
@@ -222,17 +222,41 @@ const MixedFormControl = () => {
 
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
-        const docsUpload = await handleUpload(values.files)
+        let docsUpload = null
+        if (values.files && values.files.length > 0) {
+            docsUpload = await handleUpload(values.files)
+        }
 
-        const imageUpload = await handleimage(values.image)
+        let imageUpload = null
+        if (values.image && values.image.length > 0) {
+            imageUpload = await handleimage(values.image)
+        }
+
+        let docsShow = null
+        if (docsUpload && values.document) {
+            docsShow = [docsUpload, values.document].join(',')
+        } else if (docsUpload) {
+            docsShow = docsUpload
+        } else if (values.document) {
+            docsShow = values.document
+        }
+
+        let imageShow = null
+        if (imageUpload && values.images) {
+            imageShow = [imageUpload, values.images].join(',')
+        } else if (imageUpload) {
+            imageShow = imageUpload
+        } else if (values.image) {
+            imageShow = values.images
+        }
 
         console.log('Dataas', docsUpload)
         console.log('Immage', imageUpload)
         const formData = {
             ...values,
             company: selectedCompany.id,
-            document: docsUpload,
-            images: imageUpload,
+            document: docsShow,
+            images: imageShow
         }
 
         console.log('formDaata', formData)
@@ -240,14 +264,14 @@ const MixedFormControl = () => {
         try {
             const response = await axioisInstance.post(
                 'goods/received',
-                formData,
+                formData
             )
 
             console.log(response)
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'GRN created Successfully',
+                    response?.data?.message || 'GRN created Successfully'
             })
             navigate('/app/goods/received')
         } catch (error: any) {
@@ -255,7 +279,7 @@ const MixedFormControl = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'GRN not created ',
+                    error?.response?.data?.message || 'GRN not created '
             })
         }
     }
@@ -306,7 +330,7 @@ const MixedFormControl = () => {
                                     >
                                         {({
                                             field,
-                                            form,
+                                            form
                                         }: FieldProps<FormModel>) => (
                                             <DatePicker
                                                 field={field}
@@ -316,7 +340,7 @@ const MixedFormControl = () => {
                                                     console.log(field.name)
                                                     form.setFieldValue(
                                                         field.name,
-                                                        date,
+                                                        date
                                                     )
                                                 }}
                                             />
@@ -428,7 +452,7 @@ const MixedFormControl = () => {
                                     <FormItem
                                         label=""
                                         invalid={Boolean(
-                                            errors.document && touched.document,
+                                            errors.document && touched.document
                                         )}
                                         errorMessage={errors.document as string}
                                         className="grid grid-rows-2"
@@ -436,32 +460,30 @@ const MixedFormControl = () => {
                                         <Field name="document">
                                             {({
                                                 field,
-                                                form,
+                                                form
                                             }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
                                                         beforeUpload={
                                                             beforeUpload
                                                         }
-                                                        fileList={
-                                                            values.document
-                                                        } // uploadedd the file
+                                                        fileList={values.files} // uploadedd the file
                                                         onChange={(files) => {
                                                             console.log(
                                                                 'OnchangeFiles',
                                                                 files,
                                                                 field.name,
-                                                                values.document,
+                                                                values.files
                                                             )
                                                             form.setFieldValue(
                                                                 'files',
-                                                                files,
+                                                                files
                                                             )
                                                         }}
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'files',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         // uploadButtonText="Add Files"
@@ -504,14 +526,14 @@ const MixedFormControl = () => {
                                     <FormItem
                                         label=""
                                         invalid={Boolean(
-                                            errors.files && touched.files,
+                                            errors.files && touched.files
                                         )}
                                         errorMessage={errors.files as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="images">
                                             {({
-                                                form,
+                                                form
                                             }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
@@ -523,13 +545,13 @@ const MixedFormControl = () => {
                                                         onChange={(files) =>
                                                             form.setFieldValue(
                                                                 'image',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'image',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         // uploadButtonText="Add Files"

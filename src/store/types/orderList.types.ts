@@ -177,12 +177,17 @@ export type Order = {
     reference_return: string | null
 }
 
+export interface DropdownStatus {
+    value: string
+    name: string
+}
+
 export interface OrderState {
     orders: Order[]
     loading: boolean
     message: string
     orderCount: number
-    dropdownStatus: string
+    dropdownStatus: DropdownStatus
     globalFilter: string
     pageSize: number
     page: number

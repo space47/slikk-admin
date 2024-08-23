@@ -3,26 +3,20 @@ import Card from '@/components/ui/Card'
 import IconText from '@/components/shared/IconText'
 import { HiPhone, HiExternalLink, HiMail } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
+import { useAppSelector } from '@/store'
+import { ReturnOrderState } from '@/store/types/returnDetails.types'
 
-type CustomerInfoProps = {
-    last_updated_by: {
-        name: string
-        email: string
-        mobile: string
-    }
+const ReturnUserInfo = () => {
+    const returnOrder = useAppSelector<ReturnOrderState>(
+        (state) => state.returnOrders
+    )
+    const returnProducts = returnOrder?.returnOrders?.user
 
-    total_sku: number
-    total_quantity: number
-}
+    console.log('ReturnProducts', returnProducts)
 
-const CustomerInfo = ({
-    total_sku,
-    last_updated_by,
-    total_quantity
-}: CustomerInfoProps) => {
     return (
         <Card>
-            <h5 className="mb-4">Updated By</h5>
+            <h5 className="mb-4">Customer Details</h5>
             <Link
                 className="group flex items-center justify-between"
                 to="/app/crm/customer-details?id=11"
@@ -33,8 +27,9 @@ const CustomerInfo = ({
                         {/* <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
                             {data?.name}
                         </div> */}
-                        <span className="text-xl font-bold">
-                            {last_updated_by?.name}
+                        <span className="text-xl font-bold flex gap-1">
+                            {returnProducts?.first_name}
+                            {returnProducts?.last_name}
                         </span>
                     </div>
                 </div>
@@ -43,28 +38,23 @@ const CustomerInfo = ({
             <hr className="my-5" />
 
             <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                <span className="font-semibold">{last_updated_by?.mobile}</span>
+                <span className="font-semibold">{returnProducts?.mobile}</span>
             </IconText>
             <IconText icon={<HiMail className="text-xl opacity-70" />}>
-                <span className="font-semibold">{last_updated_by?.email}</span>
+                <span className="font-semibold">{returnProducts?.email}</span>
             </IconText>
-            <hr className="my-5" />
-
-            <address className="not-italic flex gap-4 items-start">
-                <h6 className="mb-4 ">Total SKU:</h6>{' '}
-                <div className="font-bold text-[16px]">{total_sku}</div>
-            </address>
-            <address className="not-italic flex gap-4 items-start">
-                <h6 className="mb-4 ">Total Quantity:</h6>{' '}
-                <div className="font-bold text-[16px]">{total_quantity}</div>
-            </address>
-
-            {/* <h6 className="mb-4">Billing address</h6>
+            {/* <hr className="my-5" />
+            <h6 className="mb-4">Shipping Address</h6>
             <address className="not-italic">
-                <div className="mb-1">{billing_address}</div>
+                
+            </address>
+            <hr className="my-5" />
+            <h6 className="mb-4">Billing address</h6>
+            <address className="not-italic">
+              
             </address> */}
         </Card>
     )
 }
 
-export default CustomerInfo
+export default ReturnUserInfo

@@ -8,7 +8,7 @@ const initialState: OrderState = {
     loading: false,
     message: '',
     orderCount: 0,
-    dropdownStatus: 'ALL',
+    dropdownStatus: { value: 'ALL', name: 'ALL' },
     globalFilter: '',
     pageSize: 10,
     page: 1,
@@ -24,7 +24,9 @@ export const fetchOrders = createAsyncThunk(
             const { page, pageSize, from, to, dropdownStatus, globalFilter } =
                 state.order
             const statusQuery =
-                dropdownStatus === 'ALL' ? '' : `&status=${dropdownStatus}`
+                dropdownStatus.value === 'ALL'
+                    ? ''
+                    : `&status=${dropdownStatus.value}`
             const filterQuery = globalFilter ? `&id=${globalFilter}` : ''
             const response = await axioisInstance.get(
                 `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${to}${statusQuery}${filterQuery}`
