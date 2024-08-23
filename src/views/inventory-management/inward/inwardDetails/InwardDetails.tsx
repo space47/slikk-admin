@@ -17,7 +17,7 @@ import QCtable from './components/QCtable'
 
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 // import { ordercommon } from '@/views/category-management/orderlist/commontypes'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { Modal, notification } from 'antd'
 import { useAppSelector } from '@/store'
@@ -81,17 +81,18 @@ const InwardDetails = () => {
     const [data, setData] = useState<inwardDetailsResponse>()
     const { document_number } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
+    const [isSyncing, setIsSyncing] = useState(false)
     const [grnNumber, setGrnNumber] = useState('')
-
+    const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
+        (store) => store.company.currCompany
     )
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
                 const response = await axioisInstance.get(
-                    `goods/received?grn_number=${document_number}`,
+                    `goods/received?grn_number=${document_number}`
                 )
 
                 const ordersData = response.data?.data || []
@@ -114,21 +115,26 @@ const InwardDetails = () => {
     const syncGRN = async () => {
         const body = {
             company: selectedCompany.id,
-            grn_number: grnNumber,
+            grn_number: grnNumber
         }
+        setIsSyncing(true)
 
         try {
             await axioisInstance.post(`goods/synctoinventory`, body)
             notification.success({
                 message: 'Success',
-                description: 'GRN synced successfully',
+                description: 'GRN synced successfully'
             })
+            setShowSyncModal(false)
         } catch (error) {
             console.log('sssssssss', error)
             notification.error({
                 message: 'FAILURE',
-                description: 'GRN sync Failed',
+                description: 'GRN sync Failed'
             })
+        } finally {
+            setIsSyncing(false)
+            navigate(`/app/goods/received`)
         }
     }
 
@@ -139,7 +145,7 @@ const InwardDetails = () => {
     const handleUrl = async (document_url: any) => {
         try {
             const response = await axioisInstance.get(
-                `file/presign?file_url=${document_url}`,
+                `file/presign?file_url=${document_url}`
             )
             console.log('dooooocs', document_url)
             const val = response.data?.data
@@ -182,7 +188,7 @@ const InwardDetails = () => {
                                 <HiOutlineCalendar className="text-lg" />
                                 <span className="ltr:ml-1 rtl:mr-1">
                                     {moment(data.document_date).format(
-                                        'MM/DD/YYYY hh:mm:ss a',
+                                        'MM/DD/YYYY hh:mm:ss a'
                                     )}
                                 </span>
                             </span>
@@ -233,15 +239,24 @@ const InwardDetails = () => {
                         {showSyncModal && (
                             <Modal
                                 title=""
+                                okText="SYNC"
+                                okButtonProps={{
+                                    style: {
+                                        backgroundColor: 'green',
+                                        borderColor: 'green',
+                                        fontWeight: 'bold'
+                                    }
+                                }}
                                 open={showSyncModal}
                                 onOk={syncGRN}
                                 onCancel={handleCloseModal}
                             >
-                                <div className="italic text-lg">
+                                <div className="italic text-lg font-semibold">
                                     SYNC YOUR GRN NUMBER
                                 </div>
                             </Modal>
                         )}
+                        {isSyncing && <Loading />}
                     </>
                 )}
             </Loading>
