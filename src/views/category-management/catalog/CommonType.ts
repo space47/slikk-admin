@@ -1,6 +1,6 @@
 type Product = {
     company: number
-    brand: string
+    brand_name: string
     name: string
     description: string
     about: string
@@ -79,7 +79,7 @@ export const DROPDOWNARRAY = [
     { label: 'Division', value: 'division' },
     { label: 'Sub Category', value: 'sub_category' },
     { label: 'Category', value: 'category' },
-    { label: 'Product Type', value: 'Product_type' },
+    { label: 'Product Type', value: 'Product_type' }
 ]
 
 export default Product

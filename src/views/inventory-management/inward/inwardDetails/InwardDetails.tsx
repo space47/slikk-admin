@@ -134,7 +134,7 @@ const InwardDetails = () => {
             })
         } finally {
             setIsSyncing(false)
-            navigate(`/app/goods/received`)
+            navigate(-1)
         }
     }
 
@@ -256,7 +256,7 @@ const InwardDetails = () => {
                                 </div>
                             </Modal>
                         )}
-                        {isSyncing && <Loading loading={loading} />}
+                        {isSyncing && <Loading loading={isSyncing} />}
                     </>
                 )}
             </Loading>
