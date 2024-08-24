@@ -18,7 +18,7 @@ const ProductUploader = () => {
         setFile(fileList[0])
     }
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
+        (store) => store.company.currCompany
     )
 
     const handleSave = async () => {
@@ -38,29 +38,74 @@ const ProductUploader = () => {
             maxBodyLength: Infinity,
             url: 'products/bulkupload',
             headers: {
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'multipart/form-data'
             },
-            data: data,
+            data: data
         }
 
         try {
             const response = await axioisInstance(config)
             console.log(
                 'File uploaded successfully:',
-                JSON.stringify(response.data),
+                JSON.stringify(response.data)
             )
 
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'File uploaded successfully',
+                    response?.data?.message || 'File uploaded successfully'
             })
             setFile(null)
         } catch (error) {
             console.error('File upload error:', error)
             notification.success({
                 message: 'failure',
-                description: 'File upload failed',
+                description: 'File upload failed'
+            })
+        }
+    }
+
+    const handleUpdate = async () => {
+        if (!file) {
+            console.log('No file uploaded')
+            return
+        }
+
+        console.log('File to be uploaded:', file)
+
+        const data = new FormData()
+        data.append('catalogue_file', file)
+        data.append('company', selectedCompany.id)
+        data.append('action', 'bulk_update')
+
+        const config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'products/bulkupload',
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            data: data
+        }
+
+        try {
+            const response = await axioisInstance(config)
+            console.log(
+                'File uploaded successfully:',
+                JSON.stringify(response.data)
+            )
+
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message || 'File uploaded successfully'
+            })
+            setFile(null)
+        } catch (error) {
+            console.error('File upload error:', error)
+            notification.success({
+                message: 'failure',
+                description: 'File upload failed'
             })
         }
     }
@@ -86,6 +131,7 @@ const ProductUploader = () => {
             <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
                 <Button onClick={handleSave}>Save</Button>
                 <Button>Download</Button>
+                <Button onClick={handleUpdate}>Upddate</Button>
             </div>
         </div>
     )
