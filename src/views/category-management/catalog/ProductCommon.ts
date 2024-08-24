@@ -9,7 +9,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Barcode',
         placeholder: 'Enter Barcode',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'sku',
@@ -17,15 +17,15 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'SKU',
         placeholder: 'Enter SKU',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
-        name: 'brand',
+        name: 'brand_name',
         type: 'text',
         label: 'Brand Name',
         placeholder: 'Enter Brand Name',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'name',
@@ -33,7 +33,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Name',
         placeholder: 'Enter Name',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'description',
@@ -41,7 +41,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Description',
         placeholder: 'Enter Description',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'other_product_info',
@@ -49,7 +49,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Other Product Info',
         placeholder: 'Enter Other Product Info',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'variant_type',
@@ -57,7 +57,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Variant Type',
         placeholder: 'Enter Variant Type',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'variant_id',
@@ -65,7 +65,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Style Code',
         placeholder: 'Enter Variant ID',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'tax_rate',
@@ -73,7 +73,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Tax Rate',
         placeholder: 'Enter Tax Rate',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'mrp',
@@ -81,7 +81,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'MRP',
         placeholder: 'Enter MRP',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'sp',
@@ -89,7 +89,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'SP',
         placeholder: 'Enter SP',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'hsn',
@@ -97,7 +97,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'HSN',
         placeholder: 'Enter HSN',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'imported_by',
@@ -105,7 +105,7 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Imported By/Manufactured By',
         placeholder: 'Enter Imported By',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'status',
@@ -113,8 +113,8 @@ export const PRODUCT_EDIT_COMMON = [
         label: 'Status',
         placeholder: 'Enter Status',
         component: Input,
-        classname: 'w-full',
-    },
+        classname: 'w-full'
+    }
 ]
 
 export const PRODUCT_EDIT_COMMON_DOWN = [
@@ -124,7 +124,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Category Name',
         placeholder: 'Enter Category Name',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'sub_category_name',
@@ -132,7 +132,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Sub Category Name',
         placeholder: 'Enter Sub Category Name',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'product_type_name',
@@ -140,7 +140,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Product Type Name',
         placeholder: 'Enter Product Type Name',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'division_name',
@@ -148,7 +148,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Division Name',
         placeholder: 'Enter Division Name',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'color',
@@ -156,7 +156,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Colour',
         placeholder: 'Enter Color Name',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'skinType',
@@ -164,7 +164,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Skin Type',
         placeholder: 'Enter Skin Type',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'gender',
@@ -172,7 +172,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Gender',
         placeholder: 'Enter Gender',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'packsize',
@@ -180,7 +180,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Pack Size',
         placeholder: 'Enter Pack Size',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'size',
@@ -188,7 +188,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Product Size',
         placeholder: 'Enter Product Size',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'origincountry',
@@ -196,7 +196,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Origin Country',
         placeholder: 'Enter Origin Country',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'careinstruction',
@@ -204,7 +204,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Care Instruction',
         placeholder: 'Enter Care Instruction',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'antiodour',
@@ -212,7 +212,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Antiodour',
         placeholder: 'Enter Antiodour',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'pattern',
@@ -220,7 +220,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Pattern',
         placeholder: 'Enter Pattern',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'closuretype',
@@ -228,7 +228,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Closure Type',
         placeholder: 'Enter Closure Type',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'length',
@@ -236,7 +236,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Length',
         placeholder: 'Enter Length',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'necktype',
@@ -244,7 +244,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Neck Type',
         placeholder: 'Enter Neck Type',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'risetype',
@@ -252,7 +252,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Rise Type',
         placeholder: 'Enter Rise Type',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'sleevtype',
@@ -260,7 +260,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Sleeve Type',
         placeholder: 'Enter Sleeve Type',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'trend',
@@ -268,7 +268,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Trend',
         placeholder: 'Enter Trend',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'trendtype',
@@ -276,7 +276,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Trend Type',
         placeholder: 'Enter Trend Type',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'fit',
@@ -284,7 +284,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Fit',
         placeholder: 'Enter Fit',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'fabric',
@@ -292,29 +292,29 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         label: 'Fabric',
         placeholder: 'Enter Fabric',
         component: Input,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'is_premium',
         type: 'checkbox',
         label: 'Is Premium',
         component: Checkbox,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'is_returnable',
         type: 'checkbox',
         label: 'Is Returnable',
         component: Checkbox,
-        classname: 'w-full',
+        classname: 'w-full'
     },
     {
         name: 'is_try_and_buy',
         type: 'checkbox',
         label: 'Is Try & Buy',
         component: Checkbox,
-        classname: 'w-full',
-    },
+        classname: 'w-full'
+    }
 ]
 
 export const INITIALVALUES: Product = {
@@ -390,5 +390,5 @@ export const INITIALVALUES: Product = {
     trend: '',
     trendtype: '',
     fit: '',
-    fabric: '',
+    fabric: ''
 }
