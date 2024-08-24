@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     useReactTable,
@@ -35,6 +35,8 @@ import { TbCalendarStats } from 'react-icons/tb'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useAppDispatch, useAppSelector } from '@/store'
+import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -46,9 +48,9 @@ const pageSizeOptions = [
 ]
 
 const LOGISTIC_PARTNER = [
-    { value: 'Porter', label: 'Porter' },
-    { value: 'Shiprocket', label: 'Shiprocket' },
-    { value: 'Shadowfax', label: 'Shadowfax' }
+    { value: 'porter', label: 'Porter' },
+    { value: 'shiprocket', label: 'Shiprocket' },
+    { value: 'shadowfax', label: 'Shadowfax' }
 ]
 
 const OrderList = () => {
@@ -70,6 +72,9 @@ const OrderList = () => {
         dispatch(fetchOrders())
     }, [dispatch, page, pageSize, from, to, dropdownStatus, globalFilter])
 
+    const [partner, setPartner] = useState<{
+        [key: string]: { value: string; label: string }
+    }>({})
     console.log(
         'Data for Table',
         orders.map((item) => item)
@@ -78,9 +83,10 @@ const OrderList = () => {
     const columns = [
         {
             header: 'Order Invoice Id',
-            accessorKey: 'logistic.reference_id',
+            accessorKey: 'invoice_id',
             cell: ({ row }: any) => {
-                const referenceId = row.original.logistic?.reference_id
+                const referenceId = row.original?.invoice_id
+
                 return referenceId ? (
                     <div
                         className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
@@ -103,7 +109,10 @@ const OrderList = () => {
                 const returnOrderId = returnOrder?.return_order_id
 
                 return returnOrderId ? (
-                    <div className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer">
+                    <div
+                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                        onClick={() => handleRemove(returnOrderId)}
+                    >
                         {returnOrderId}
                     </div>
                 ) : (
@@ -132,15 +141,18 @@ const OrderList = () => {
         {
             header: 'Partner',
             accessorKey: 'logistic.partner',
-            cell: ({ row, getValue }: any) => (
-                <Dropdown
-                    className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                    title={getValue()}
-                    // onSelect={handleDropdownSelect}
-                >
-                    <div className="max-h-60 overflow-y-auto">
-                        {LOGISTIC_PARTNER?.map((item, key) => {
-                            return (
+            cell: ({ row }: any) => {
+                const selectedPartner =
+                    partner[row.id]?.label || row.original?.logistic?.partner
+
+                return (
+                    <Dropdown
+                        className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                        title={selectedPartner || 'SELECT'}
+                        onSelect={(value) => handlePartnerSelect(value, row)}
+                    >
+                        <div className="max-h-60 overflow-y-auto">
+                            {LOGISTIC_PARTNER.map((item, key) => (
                                 <DropdownItem
                                     key={key}
                                     eventKey={item.value}
@@ -148,16 +160,28 @@ const OrderList = () => {
                                 >
                                     <span>{item.label}</span>
                                 </DropdownItem>
-                            )
-                        })}
-                    </div>
-                </Dropdown>
-            )
+                            ))}
+                        </div>
+                    </Dropdown>
+                )
+            }
         },
         {
             header: 'Assigned Logistic',
             accessorKey: '',
-            cell: ({ row }: any) => <Button size="sm">Create Task</Button>
+            cell: ({ row }: any) => (
+                <Button
+                    size="sm"
+                    onClick={() =>
+                        handleCreateTask(
+                            partner[row.id],
+                            row.original.invoice_id
+                        )
+                    }
+                >
+                    Create Task
+                </Button>
+            )
         }
     ]
 
@@ -175,6 +199,10 @@ const OrderList = () => {
 
     const handleInvoiceClick = (invoiceId: string) => {
         navigate(`/app/orders/${invoiceId}`)
+    }
+
+    const handleRemove = (return_id: any) => {
+        navigate(`/app/returnOrders/${return_id}`)
     }
 
     const onPaginationChange = (page: number) => {
@@ -201,6 +229,18 @@ const OrderList = () => {
         )
     }
 
+    const handlePartnerSelect = (selectedValue: any, row: any) => {
+        console.log('VALUE', selectedValue, row)
+        const selectedLabel =
+            LOGISTIC_PARTNER.find((item) => item.value === selectedValue)
+                ?.label || ''
+
+        setPartner((prev) => ({
+            ...prev,
+            [row.id]: { value: selectedValue, label: selectedLabel }
+        }))
+    }
+
     const handleDropdownSelect = (a: any) => {
         console.log('Values', a)
         dispatch(
@@ -210,6 +250,34 @@ const OrderList = () => {
             })
         )
     }
+
+    const handleCreateTask = async (partner: any, order_id: any) => {
+        console.log('TASK', partner?.label, order_id)
+
+        try {
+            const body = {
+                action: 'PACKED',
+                delivery_partner: partner?.value
+            }
+            const response = await axioisInstance.patch(
+                `/merchant/order/${order_id}`,
+                body
+            )
+
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message || 'Created Task Successfully'
+            })
+        } catch (error) {
+            console.error(error)
+            notification.error({
+                message: 'Failure',
+                description: 'Failed to create Task'
+            })
+        }
+    }
+
     console.log('ssssssswddwdwdw', dropdownStatus)
     return (
         <div className="overflow-x-auto">
