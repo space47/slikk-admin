@@ -1,12 +1,10 @@
 import Card from '@/components/ui/Card'
-import { NumericFormat } from 'react-number-format'
-import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 
 const ReturnSummary = () => {
     const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders,
+        (state) => state.returnOrders
     )
     const returnDetails = returnOrder.returnOrders
     return (

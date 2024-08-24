@@ -171,37 +171,55 @@ const OrderDetails = () => {
                         </div>
                         <div className="xl:flex gap-4">
                             <div className="w-full">
-                                <OrderProducts data={data.order_items} />
+                                <div className="bg-gray-100 shadow-lg p-1 rounded-md mb-5">
+                                    <OrderProducts data={data.order_items} />
+                                </div>
                                 <div className="xl:grid grid-cols-2 gap-4">
-                                    <ShippingInfo
-                                        data={data.logistic}
-                                        logistic_partner={data.logistic_partner}
-                                        delivery_type={data.delivery_type}
-                                    />
-                                    <PaymentSummary
-                                        data={data.payment}
-                                        tax={data.tax}
-                                        delivery={data.delivery}
-                                        amount={data.amount}
-                                        coupon_discount={data.coupon_discount}
-                                        loyalty_discount={data.loyalty_discount}
-                                        points_discount={data.points_discount}
+                                    <div className="bg-gray-100 shadow-lg p-2 rounded-md">
+                                        <ShippingInfo
+                                            data={data.logistic}
+                                            logistic_partner={
+                                                data.logistic_partner
+                                            }
+                                            delivery_type={data.delivery_type}
+                                        />
+                                    </div>
+                                    <div className="bg-gray-100 shadow-lg p-2 rounded-md">
+                                        <PaymentSummary
+                                            data={data.payment}
+                                            tax={data.tax}
+                                            delivery={data.delivery}
+                                            amount={data.amount}
+                                            coupon_discount={
+                                                data.coupon_discount
+                                            }
+                                            loyalty_discount={
+                                                data.loyalty_discount
+                                            }
+                                            points_discount={
+                                                data.points_discount
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                                <div className="mt-5">
+                                    <Activity
+                                        data={data.log}
+                                        status={data.status}
+                                        product={data.order_items}
+                                        payment={data.payment}
+                                        invoice_id={data.invoice_id}
                                     />
                                 </div>
-                                <Activity
-                                    data={data.log}
-                                    status={data.status}
-                                    product={data.order_items}
-                                    payment={data.payment}
-                                    invoice_id={data.invoice_id}
-                                />
                             </div>
-                            <div className="xl:max-w-[360px] w-[300px]">
-                                <CustomerInfo
-                                    user={data.user}
-                                    billing_address={data.billing_address}
-                                    store={data.store}
-                                />
+                            <div className="xl:max-w-[360px] w-[300px] ">
+                                <div className="bg-gray-100 shadow-lg p-4 rounded-md">
+                                    <CustomerInfo
+                                        user={data.user}
+                                        billing_address={data.billing_address}
+                                        store={data.store}
+                                    />
+                                </div>
                             </div>
 
                             {returnOrderDrawer && (
