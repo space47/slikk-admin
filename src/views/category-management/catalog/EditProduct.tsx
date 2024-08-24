@@ -23,7 +23,7 @@ const EditProduct = () => {
     const navigate = useNavigate()
     const [initialValue, setInitialValue] = useState<Product>({
         company: 1,
-        brand: '',
+        brand_name: '',
         name: '',
         description: '',
         about: '',
@@ -95,7 +95,7 @@ const EditProduct = () => {
         trend: '',
         trendtype: '',
         fit: '',
-        fabric: '',
+        fabric: ''
     })
     const [allImage, setAllImage] = useState<string[]>([])
     const [allVideo, setAllVideo] = useState<string[]>([])
@@ -116,7 +116,7 @@ const EditProduct = () => {
             'image/png',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -148,7 +148,7 @@ const EditProduct = () => {
             'video/avi',
             'video/wmv',
             'video/webm',
-            'video/avchd',
+            'video/avchd'
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -178,7 +178,7 @@ const EditProduct = () => {
             const userData = response.data.data
             setInitialValue({
                 company: 1,
-                brand: userData.brand,
+                brand_name: userData.brand,
                 name: userData.name,
                 description: userData.description,
                 about: userData.about,
@@ -249,7 +249,7 @@ const EditProduct = () => {
                 trend: userData.trend,
                 trendtype: userData.trendtype,
                 fit: userData.fit,
-                fabric: userData.fabric,
+                fabric: userData.fabric
             })
 
             console.log('user Objeccct....', userData.image)
@@ -281,13 +281,13 @@ const EditProduct = () => {
             'cccccsss',
             allImage,
             initialValue.images,
-            initialValue.image,
+            initialValue.image
         )
     }, [initialValue])
 
     const handleRemoveImage = (
         e: React.MouseEvent<HTMLButtonElement>,
-        index: number,
+        index: number
     ) => {
         e.preventDefault()
 
@@ -296,7 +296,7 @@ const EditProduct = () => {
     }
     const handleRemoveVideo = (
         e: React.MouseEvent<HTMLButtonElement>,
-        index: number,
+        index: number
     ) => {
         e.preventDefault()
         const updatedVideo = allVideo.filter((_, i) => i !== index)
@@ -305,7 +305,7 @@ const EditProduct = () => {
 
     const handleRemoveColor = (
         e: React.MouseEvent<HTMLButtonElement>,
-        index: number,
+        index: number
     ) => {
         e.preventDefault()
         const updatedColor = allColor.filter((_, i) => i !== index)
@@ -331,8 +331,8 @@ const EditProduct = () => {
             console.log(formData.get('file'))
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Content-Type': 'multipart/form-data'
+                }
             })
             console.log(response)
             const newData = response.data.url
@@ -343,7 +343,7 @@ const EditProduct = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Image uploaded successfully',
+                    response?.data?.message || 'Image uploaded successfully'
             })
             return newData
         } catch (error: any) {
@@ -351,7 +351,7 @@ const EditProduct = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                    error?.response?.data?.message || 'File Not uploaded'
             })
             return 'Error'
         }
@@ -375,8 +375,8 @@ const EditProduct = () => {
             console.log(formData.get('file'))
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Content-Type': 'multipart/form-data'
+                }
             })
             console.log(response)
             const newData = response.data.url
@@ -386,7 +386,7 @@ const EditProduct = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Video uploaded successfully',
+                    response?.data?.message || 'Video uploaded successfully'
             })
             return newData
         } catch (error: any) {
@@ -394,7 +394,7 @@ const EditProduct = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Video Not uploaded',
+                    error?.response?.data?.message || 'Video Not uploaded'
             })
             return 'Error'
         }
@@ -439,22 +439,23 @@ const EditProduct = () => {
 
         const formData = {
             ...values,
+
             color_code: color_code_url,
             image: img_url,
-            video_link: video_url,
+            video_link: video_url
         }
 
         try {
             const response = await axioisInstance.patch(
                 `product/${barcode}`,
-                formData,
+                formData
             )
 
             console.log(response)
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Product Edited Successfully',
+                    response?.data?.message || 'Product Edited Successfully'
             })
             navigate('/app/catalog/products')
         } catch (error: any) {
@@ -462,7 +463,7 @@ const EditProduct = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Product not Updated ',
+                    error?.response?.data?.message || 'Product not Updated '
             })
         }
     }
@@ -530,18 +531,18 @@ const EditProduct = () => {
                                                                     <button
                                                                         className="bg-red-600 w-1/2 rounded-full text-white text-sm mb-5"
                                                                         onClick={(
-                                                                            e,
+                                                                            e
                                                                         ) =>
                                                                             handleRemoveImage(
                                                                                 e,
-                                                                                index,
+                                                                                index
                                                                             )
                                                                         }
                                                                     >
                                                                         x
                                                                     </button>
                                                                 </div>
-                                                            ),
+                                                            )
                                                     )
                                                 ) : (
                                                     <p>No image</p>
@@ -555,7 +556,7 @@ const EditProduct = () => {
                                         >
                                             <Field name="image">
                                                 {({
-                                                    form,
+                                                    form
                                                 }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
@@ -570,15 +571,15 @@ const EditProduct = () => {
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
                                                                     'images',
-                                                                    files,
+                                                                    files
                                                                 )
                                                             }
                                                             onFileRemove={(
-                                                                files,
+                                                                files
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'images',
-                                                                    files,
+                                                                    files
                                                                 )
                                                             }
                                                         />
@@ -632,11 +633,11 @@ const EditProduct = () => {
                                                                     <button
                                                                         className="bg-red-600 w-1/2 rounded-full text-white  text-sm mb-5"
                                                                         onClick={(
-                                                                            e,
+                                                                            e
                                                                         ) =>
                                                                             handleRemoveColor(
                                                                                 e,
-                                                                                index,
+                                                                                index
                                                                             )
                                                                         }
                                                                     >
@@ -645,7 +646,7 @@ const EditProduct = () => {
                                                                 </div>
                                                             ) : (
                                                                 ''
-                                                            ),
+                                                            )
                                                     )
                                                 ) : (
                                                     <p>No image</p>
@@ -658,7 +659,7 @@ const EditProduct = () => {
                                         >
                                             <Field name="color_code">
                                                 {({
-                                                    form,
+                                                    form
                                                 }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
@@ -673,15 +674,15 @@ const EditProduct = () => {
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
                                                                     'color_code',
-                                                                    files,
+                                                                    files
                                                                 )
                                                             }
                                                             onFileRemove={(
-                                                                files,
+                                                                files
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'color_code',
-                                                                    files,
+                                                                    files
                                                                 )
                                                             }
                                                             // uploadButtonText="Add Files"
@@ -727,7 +728,7 @@ const EditProduct = () => {
                                                                 />
                                                             ) : (
                                                                 ''
-                                                            ),
+                                                            )
                                                     )
                                                 ) : (
                                                     <p>No image</p>
@@ -737,7 +738,7 @@ const EditProduct = () => {
                                         <FormItem
                                             label=""
                                             invalid={Boolean(
-                                                errors.video && touched.video,
+                                                errors.video && touched.video
                                             )}
                                             errorMessage={
                                                 errors.video as string
@@ -746,7 +747,7 @@ const EditProduct = () => {
                                         >
                                             <Field name="video_link">
                                                 {({
-                                                    form,
+                                                    form
                                                 }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
@@ -760,15 +761,15 @@ const EditProduct = () => {
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
                                                                     'Video',
-                                                                    files,
+                                                                    files
                                                                 )
                                                             }
                                                             onFileRemove={(
-                                                                files,
+                                                                files
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'images',
-                                                                    files,
+                                                                    files
                                                                 )
                                                             }
                                                         />

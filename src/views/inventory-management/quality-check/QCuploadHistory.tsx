@@ -113,7 +113,7 @@ const PaginationTable = () => {
 
                     const a = document.createElement('a')
                     a.href = url
-                    a.download = `${requiredUrl}.csv`
+                    a.download = `QualityCheck.csv`
 
                     document.body.appendChild(a)
 
