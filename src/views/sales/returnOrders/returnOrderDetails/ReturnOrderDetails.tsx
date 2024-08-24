@@ -8,6 +8,7 @@ import moment from 'moment'
 import ReturnProductsDetails from './components/ReturnProductsDetails'
 import ReturnSummary from './components/ReturnSummary'
 import ReturnUserInfo from './components/ReturnUserInfo'
+import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
@@ -44,15 +45,14 @@ const ReturnOrderDetails = () => {
             </div>
 
             {/* Components */}
-            <div className="flex flex-wrap gap-8 justify-between mt-10">
-                <div className="flex-1 bg-gray-100 p-4 rounded-lg shadow-md">
+            <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
+                <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md">
                     <ReturnProductsDetails />
                 </div>
-                <div className="flex-1 bg-gray-100 p-4 rounded-lg shadow-md gap-5">
-                    <div className="flex flex-col gap-5">
-                        <ReturnUserInfo />
-                        <ReturnSummary />
-                    </div>
+                <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow-md gap-5 w-full xl:w-1/3">
+                    <ReturnUserInfo />
+                    <ReturnRunnerDetails />
+                    <ReturnSummary />
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     flexRender,
-    useGlobalFilter,
+    useGlobalFilter
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
@@ -50,7 +50,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const OrderList = () => {
@@ -71,7 +71,7 @@ const OrderList = () => {
         pageSize: number,
         from: string,
         to: string,
-        filter: string = '',
+        filter: string = ''
     ) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -80,7 +80,7 @@ const OrderList = () => {
                     ? ''
                     : `&status=${dropdownStatus?.value}`
             const response = await axiosInstance.get(
-                `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&name=${filter}`,
+                `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&name=${filter}`
                 //
             )
 
@@ -106,32 +106,32 @@ const OrderList = () => {
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <div
                         className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                        onClick={() => handleInvoiceClick(getValue())}
+                        onClick={() => handleRemoveClick(getValue())}
                     >
                         {getValue()}
                     </div>
-                ),
+                )
             },
             {
                 header: 'Order Date',
                 accessorKey: 'return_order_items.create_date',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                ),
+                )
             },
             {
                 header: 'Return Type',
                 accessorKey: 'return_type',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                ),
+                )
             },
             {
                 header: 'Total Amount',
                 accessorKey: 'amount',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                ),
+                )
             },
             {
                 header: 'Return Reason',
@@ -140,7 +140,7 @@ const OrderList = () => {
                     <span>
                         {row.original.return_order_items[0]?.order_item || ''}
                     </span>
-                ),
+                )
             },
             {
                 header: 'Return Reason',
@@ -149,7 +149,7 @@ const OrderList = () => {
                     <span>
                         {row.original.return_order_items[0]?.quantity || ''}
                     </span>
-                ),
+                )
             },
             {
                 header: 'Return Reason',
@@ -159,52 +159,52 @@ const OrderList = () => {
                         {row.original.return_order_items[0]?.return_reason ||
                             ''}
                     </span>
-                ),
+                )
             },
             {
                 header: 'Order Total',
                 accessorKey: 'amount',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                ),
+                )
             },
             {
                 header: 'Status',
                 accessorKey: 'status',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                ),
+                )
             },
             {
                 header: 'Last Update',
                 accessorKey: 'return_order_items.update_date',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                ),
+                )
             },
             {
                 header: 'UUID',
                 accessorKey: 'uuid',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                ),
-            },
+                )
+            }
         ],
-        [],
+        []
     )
 
     const table = useReactTable({
         data: orders,
         columns,
         filterFns: {
-            fuzzy: fuzzyFilter,
+            fuzzy: fuzzyFilter
         },
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize,
+                pageSize: pageSize
             },
-            globalFilter,
+            globalFilter
         },
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
@@ -213,10 +213,10 @@ const OrderList = () => {
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
-        pageCount: Math.ceil(orderCount ?? 0 / pageSize),
+        pageCount: Math.ceil(orderCount ?? 0 / pageSize)
     })
 
-    const handleInvoiceClick = (return_order_id: string) => {
+    const handleRemoveClick = (return_order_id: string) => {
         // navigate(`/app/orders/${invoiceId}`)
         navigate(`/app/returnOrders/${return_order_id}`)
     }
@@ -251,7 +251,7 @@ const OrderList = () => {
     const handleDropdownSelect = (a: any) => {
         setDropdownStatus({
             value: a,
-            name: RETURN_ORDERS.find((item) => item.value == a)?.name || '',
+            name: RETURN_ORDERS.find((item) => item.value == a)?.name || ''
         })
     }
     console.log('ssssssswddwdwdw', dropdownStatus)
@@ -340,7 +340,7 @@ const OrderList = () => {
                                         >
                                             {flexRender(
                                                 header.column.columnDef.header,
-                                                header.getContext(),
+                                                header.getContext()
                                             )}
                                             <Sorter
                                                 sort={header.column.getIsSorted()}
@@ -359,7 +359,7 @@ const OrderList = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </Td>
                             ))}
@@ -379,7 +379,7 @@ const OrderList = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}

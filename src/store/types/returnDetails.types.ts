@@ -35,6 +35,36 @@ export interface ReturnOrderStore {
     is_fulfillment_center: boolean
 }
 
+export type Logistic = {
+    id: number
+    partner: string
+    reference_id: string
+    state: string
+    task_id: string
+    distance: string
+    eta_pickup: string
+    eta_dropoff: string
+    runner_name: string
+    runner_phone_number: string
+    runner_profile_pic_url: string
+    latitude: number
+    longitude: number
+    cancelled_by: string | null
+    price: number | null
+    total_time: number | null
+    tracking_url: string
+    pickup_time: string | null
+    drop_time: string | null
+    pickup_otp: string | null
+    drop_otp: string | null
+    awb_code: string | null
+    attempt_number: number
+    create_date: string
+    update_date: string
+    cancellation_reason: string | null
+    order: number
+}
+
 export interface ReturnOrder {
     id: number
     return_order_items: ReturnOrderItem[]
@@ -69,6 +99,7 @@ export interface ReturnOrder {
     return_type: string
     create_date: string
     update_date: string
+    logistic: Logistic
 }
 
 export interface ReturnOrderState {
@@ -79,8 +110,8 @@ export interface ReturnOrderState {
 
 export const getAllReturnOrdersRequest = 'getAllReturnOrdersRequest'
 export const getAllReturnOrdersSuccess = createAction<ReturnOrderState>(
-    'getAllReturnOrdersSuccess',
+    'getAllReturnOrdersSuccess'
 )
 export const getAllReturnOrdersFailure = createAction<ReturnOrderState>(
-    'getAllReturnOrdersFailure',
+    'getAllReturnOrdersFailure'
 )
