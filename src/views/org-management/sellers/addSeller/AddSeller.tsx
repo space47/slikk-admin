@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -61,7 +62,7 @@ const initialValue: FormModel = {
     segment: '',
     settlement_days: 0,
     update_date: '',
-    warehouse_charge_per_sku: 0,
+    warehouse_charge_per_sku: 0
 }
 
 // const validationSchema = Yup.object().shape({
@@ -95,8 +96,8 @@ const SegmentOptions = () => {
     return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor'].map(
         (segment) => ({
             label: segment,
-            value: segment,
-        }),
+            value: segment
+        })
     )
 }
 
@@ -106,23 +107,23 @@ const AddSeller = () => {
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
 
-        if (values.account_number !== values.confirm) {
-            notification.error({
-                message: 'Failure',
-                description: 'Account number does not match',
-            })
-            return
-        }
-        if (values.contact_number === values.alternate_contact_number) {
-            notification.error({
-                message: 'Failure',
-                description: 'Alternate Mobile Number Should be different',
-            })
-            return
-        }
+        // if (values.account_number !== values.confirm) {
+        //     notification.error({
+        //         message: 'Failure',
+        //         description: 'Account number does not match',
+        //     })
+        //     return
+        // }
+        // if (values.contact_number === values.alternate_contact_number) {
+        //     notification.error({
+        //         message: 'Failure',
+        //         description: 'Alternate Mobile Number Should be different',
+        //     })
+        //     return
+        // }
 
         const formData = {
-            ...values,
+            ...values
         }
 
         console.log('formData', formData)
@@ -130,14 +131,14 @@ const AddSeller = () => {
         try {
             const response = await axioisInstance.post(
                 'merchant/company',
-                formData,
+                formData
             )
 
             console.log(response)
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Seller created Successfully',
+                    response?.data?.message || 'Seller created Successfully'
             })
             navigate('/app/sellers')
         } catch (error: any) {
@@ -145,7 +146,7 @@ const AddSeller = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Seller not created',
+                    error?.response?.data?.message || 'Seller not created'
             })
         }
     }
@@ -192,13 +193,13 @@ const AddSeller = () => {
                                                 value={SegmentOptions().find(
                                                     (option) =>
                                                         option.value ===
-                                                        field.value,
+                                                        field.value
                                                 )}
                                                 options={SegmentOptions()}
                                                 onChange={(option) =>
                                                     setFieldValue(
                                                         'segment',
-                                                        option?.value,
+                                                        option?.value
                                                     )
                                                 }
                                             />
