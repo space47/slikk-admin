@@ -519,7 +519,6 @@ const PageSettings = () => {
                                 {...provided.droppableProps}
                             >
                                 {table.getRowModel().rows.map((row) => {
-                                    console.log('row', row)
                                     return (
                                         <Draggable
                                             key={row.id}

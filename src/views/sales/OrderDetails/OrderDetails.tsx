@@ -129,30 +129,30 @@ const OrderDetails = () => {
     }
 
     return (
-        <Container className="h-auto w-auto">
+        <Container className="h-auto w-auto ">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
                         <div className="mb-6">
-                            <div className="flex items-center mb-2 justify-between">
-                                <h3>
+                            <div className="flex flex-col md:flex-row items-center mb-2 xl:justify-between justify-center w-1/3 xl:w-full">
+                                <h3 className="text-center md:text-left">
                                     <span>Order</span>
                                     <span className="ltr:ml-2 rtl:mr-2">
                                         #{data.invoice_id}
                                     </span>
                                 </h3>
 
-                                <div>
+                                <div className="mt-4 md:mt-0">
                                     {data.status === 'COMPLETED' ? (
                                         <button
-                                            className="bg-red-600 text-white px-4 py-2 rounded-lg"
+                                            className="bg-red-600 text-white px-4 py-2 rounded-lg w-full md:w-auto"
                                             onClick={handleReturnOrder}
                                         >
                                             RETURN ORDER
                                         </button>
                                     ) : (
                                         <button
-                                            className="bg-red-600 text-white px-4 py-2 rounded-lg"
+                                            className="bg-red-600 text-white px-4 py-2 rounded-lg w-full md:w-auto"
                                             onClick={handleCancelOrder}
                                         >
                                             CANCEL ORDER
@@ -160,7 +160,7 @@ const OrderDetails = () => {
                                     )}
                                 </div>
                             </div>
-                            <span className="flex items-center">
+                            <span className="flex items-center justify-center md:justify-start xl:w-full w-1/3">
                                 <HiOutlineCalendar className="text-lg" />
                                 <span className="ltr:ml-1 rtl:mr-1">
                                     {moment(data.create_date).format(
@@ -170,16 +170,16 @@ const OrderDetails = () => {
                             </span>
                         </div>
                         <div className="xl:flex gap-4">
-                            <div className="w-full">
+                            <div className="xl:w-full w-1/3">
                                 <div className="bg-gray-100 shadow-lg p-1 rounded-md mb-5">
                                     <OrderProducts data={data.order_items} />
                                 </div>
-                                <div className="xl:grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="bg-gray-100 shadow-lg p-2 rounded-md">
                                         <ShippingInfo
                                             data={data.logistic}
                                             logistic_partner={
-                                                data.logistic_partner
+                                                data.logistic?.partner
                                             }
                                             delivery_type={data.delivery_type}
                                         />
@@ -202,7 +202,7 @@ const OrderDetails = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className="mt-5">
+                                <div className="mt-5  xl:w-auto">
                                     <Activity
                                         data={data.log}
                                         status={data.status}
@@ -212,7 +212,7 @@ const OrderDetails = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="xl:max-w-[360px] w-[300px] ">
+                            <div className="mt-5 w-1/3 xl:mt-0 xl:max-w-[360px]  xl:w-[360px]">
                                 <div className="bg-gray-100 shadow-lg p-4 rounded-md">
                                     <CustomerInfo
                                         user={data.user}
@@ -250,7 +250,7 @@ const OrderDetails = () => {
                         darkModeSrc="/img/others/img-2-dark.png"
                         alt="No order found!"
                     />
-                    <h3 className="mt-8">No order found!</h3>
+                    <h3 className="mt-8 text-center">No order found!</h3>
                 </div>
             )}
         </Container>

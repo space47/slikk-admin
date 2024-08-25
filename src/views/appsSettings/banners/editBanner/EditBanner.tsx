@@ -3,6 +3,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
+import DatePicker from '@/components/ui/DatePicker'
 import { Field, Form, Formik, FieldProps } from 'formik'
 // import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
@@ -18,6 +19,7 @@ import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import Upload from '@/components/ui/Upload'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import moment from 'moment'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -142,8 +144,8 @@ const EditBanner = () => {
         offers: bannerData?.offers || false,
         offer_id: bannerData?.offer_id || '',
         page: bannerData?.page || '',
-        from_date: bannerData?.from_date || '',
-        to_date: bannerData?.to_date || '',
+        from_date: moment(bannerData?.from_date).format('MM/DD/YYYY') || '',
+        to_date: moment(bannerData?.to_date).format('MM/DD/YYYY') || '',
         uptooff: bannerData?.uptooff || '',
         tags: bannerData?.tags || [],
         footer: bannerData?.footer || null,
@@ -305,6 +307,29 @@ const EditBanner = () => {
                                     </FormItem>
                                 ))}
                             </FormContainer>
+                            {/* <FormItem
+                                asterisk
+                                label="From Date"
+                                className="col-span-1 w-1/2"
+                            >
+                                <Field name="from_date" placeholder="Date">
+                                    {({ field, form }: FieldProps<any>) => (
+                                        <DatePicker
+                                            field={field}
+                                            form={form}
+                                            value={field.value}
+                                            onChange={(date) => {
+                                                console.log(field.name)
+                                                form.setFieldValue(
+                                                    field.name,
+                                                    date
+                                                )
+                                            }}
+                                             
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem> */}
 
                             {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>

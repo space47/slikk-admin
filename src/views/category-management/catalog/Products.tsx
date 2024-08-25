@@ -51,6 +51,7 @@ type Product = {
     sub_category: string
     product_type: string
     variants: ProductVariant[]
+    sku: string
 }
 
 type Option = {
@@ -114,9 +115,15 @@ const Products = () => {
                 type = `&${currentSelectedPage.value}=${searchType}`
             }
 
-            const response = await axiosInstance.get(
+            let response = await axiosInstance.get(
                 `search/product?dashboard=true&p=${page}&page_size=${pageSize}${type}&sku=${filter}`
             )
+
+            if (response.data.results.length === 0) {
+                response = await axiosInstance.get(
+                    `search/product?dashboard=true&p=${page}&page_size=${pageSize}${type}&name=${filter}`
+                )
+            }
 
             const data = response.data.results
             const total = response.data.count
@@ -275,10 +282,14 @@ const Products = () => {
 
     const handleDownload = async () => {
         try {
+            let type = ''
+            if (currentSelectedPage?.label && searchType) {
+                type = `&${currentSelectedPage.value}=${searchType}`
+            }
             const response = await axiosInstance.get(
-                'merchant/products?download=true',
+                `merchant/products?download=true&${type}`,
                 {
-                    responseType: 'blob' // This is important to correctly handle binary data
+                    responseType: 'blob'
                 }
             )
 
@@ -309,8 +320,6 @@ const Products = () => {
         setParticularROwImage(img)
         setShowImageModal(true)
     }
-
-    console.log('Images', particularRowImage)
 
     return (
         <div>
