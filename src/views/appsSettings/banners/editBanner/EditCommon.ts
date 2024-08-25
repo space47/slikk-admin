@@ -181,5 +181,21 @@ export const BANNER_FIELDS_TYPE = [
         name: 'is_clickable',
         component: { Checkbox },
         status: 'is_clickable'
+    },
+    {
+        label: 'From Date',
+        classname: '',
+        type: 'text',
+        name: 'from_date',
+        component: { Input },
+        status: 'from_date'
+    },
+    {
+        label: 'To Date',
+        classname: '',
+        type: 'text',
+        name: 'to_date',
+        component: { Input },
+        status: 'to_date'
     }
 ]

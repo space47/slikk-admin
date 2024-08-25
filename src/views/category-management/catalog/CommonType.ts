@@ -1,5 +1,5 @@
 type Product = {
-    company: number
+    company: number | null
     brand_name: string
     name: string
     description: string

@@ -112,30 +112,7 @@ const PageModal: React.FC<modalProps> = ({
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    const categoryOptions = category.categories.map((item) => ({
-        label: item.name,
-        value: item.id
-    }))
-
-    const divisionOptions = divisions.divisions.map((item) => ({
-        label: item.name,
-        value: item.id
-    }))
-
-    const subcategoryOptions = subCategory.subcategories.map((item) => ({
-        label: item.name,
-        value: item.id
-    }))
-
-    const productTypeOptions = product_type.product_types.map((item) => ({
-        label: item.name,
-        value: item.id
-    }))
-
-    const brandOptions = brands.brands.map((item) => ({
-        label: item.name,
-        value: item.id
-    }))
+    console.log('Filters', filters)
 
     const filterOptions = filters.filters.map((item) => ({
         label: item.name,
@@ -185,7 +162,9 @@ const PageModal: React.FC<modalProps> = ({
         section_heading: particularRow.section_heading,
         background_image: particularRow.background_image,
         sub_header_config: particularRow.sub_header_config,
-        mobile_background_image: particularRow.mobile_background_image
+        mobile_background_image: particularRow.mobile_background_image,
+        is_section_clickable: particularRow.is_section_clickable,
+        section_filters: particularRow.section_filters
     })
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -290,8 +269,16 @@ const PageModal: React.FC<modalProps> = ({
         const subHeaderImageUpload = await handleimage(
             row.sub_header_config_image_Array
         )
-        const sectionFilter = `${row.division},${row.category},${row.subcategory},${row.product_type},${row.brand},${row.filters}`
-        console.log('Sections', sectionFilter.split(','))
+        const sectionFilterArray = [
+            row.division,
+            row.category,
+            row.sub_category,
+            row.product_type,
+            row.brand,
+            row.filters
+        ].filter((item) => item && item !== 'undefined')
+        const sectionFilter = sectionFilterArray.join(',')
+
         const newRow = {
             ...row,
             background_image: imageUpload ? imageUpload : row.background_image,
@@ -314,9 +301,11 @@ const PageModal: React.FC<modalProps> = ({
                 ...row.data_type,
                 barcodes: productData.join(',')
             },
-            section_filter: sectionFilter.split(','),
+            // section_filters: sectionFilter.split(','),
+            section_filters: textAreaValue,
             section_heading: row.section_heading.split(',')
         }
+        console.log('Section', newRow.section_filters)
 
         console.log('row', newRow)
         setParticularRow(newRow)
@@ -357,6 +346,7 @@ const PageModal: React.FC<modalProps> = ({
     const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialDataType(e.target.value)
     }
+    console.log('BBBrand', brands)
 
     return (
         <>
@@ -1047,7 +1037,7 @@ const PageModal: React.FC<modalProps> = ({
                                     />
                                 </FormItem>
                                 <FormItem
-                                    label="Is Section"
+                                    label="Is Section Clickable"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <Field
@@ -1059,150 +1049,24 @@ const PageModal: React.FC<modalProps> = ({
                                     label="Section Filter"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="section_filter"
-                                        placeholder="Place your dataType"
-                                        component={Input}
-                                    />
+                                    <textarea
+                                        name="footer"
+                                        value={textAreaValue}
+                                        onChange={(e: any) =>
+                                            setTextAreaValue(e.target.value)
+                                        }
+                                        id=""
+                                        className="w-2/3 border border-gray-200 rounded-lg items-center h-[100px] p-2"
+                                    ></textarea>
                                 </FormItem>
 
                                 <FormContainer className="grid grid-cols-2 gap-4 w-3/4">
-                                    <FormItem label="Division">
-                                        <Select
-                                            isMulti
-                                            name="division"
-                                            options={divisionOptions}
-                                            getOptionLabel={(option) =>
-                                                option.label
-                                            }
-                                            getOptionValue={(option) =>
-                                                option.value.toString()
-                                            }
-                                            onChange={(newVal, actionMeta) => {
-                                                console.log(newVal, actionMeta)
-                                                handleMultiSelect(
-                                                    'division',
-                                                    newVal
-                                                        ?.map(
-                                                            (val) => val.label
-                                                        )
-                                                        ?.join(',')
-                                                )
-                                            }}
-                                        />
-                                    </FormItem>
-
-                                    {/* Category */}
-                                    <FormItem label="Category">
-                                        <Select
-                                            isMulti
-                                            name="category"
-                                            options={categoryOptions}
-                                            getOptionLabel={(option) =>
-                                                option.label
-                                            }
-                                            getOptionValue={(option) =>
-                                                option.value.toString()
-                                            }
-                                            onChange={(newVal, actionMeta) => {
-                                                console.log(newVal, actionMeta)
-                                                handleMultiSelect(
-                                                    'category',
-                                                    newVal
-                                                        ?.map(
-                                                            (val) => val.label
-                                                        )
-                                                        ?.join(',')
-                                                )
-                                            }}
-                                        />
-                                    </FormItem>
-
-                                    {/* Subcategory */}
-                                    <FormItem label="Subcategory">
-                                        <Select
-                                            isMulti
-                                            name="subcategory"
-                                            options={subcategoryOptions}
-                                            getOptionLabel={(option) =>
-                                                option.label
-                                            }
-                                            getOptionValue={(option) =>
-                                                option.value.toString()
-                                            }
-                                            onChange={(newVal, actionMeta) => {
-                                                console.log(newVal, actionMeta)
-                                                handleMultiSelect(
-                                                    'subcategory',
-                                                    newVal
-                                                        ?.map(
-                                                            (val) => val.label
-                                                        )
-                                                        ?.join(',')
-                                                )
-                                            }}
-                                        />
-                                    </FormItem>
-
-                                    {/* Product Type */}
-                                    <FormItem label="Product Type">
-                                        <Select
-                                            isMulti
-                                            name="product_type"
-                                            options={productTypeOptions}
-                                            getOptionLabel={(option) =>
-                                                option.label
-                                            }
-                                            getOptionValue={(option) =>
-                                                option.value.toString()
-                                            }
-                                            onChange={(newVal, actionMeta) => {
-                                                console.log(newVal, actionMeta)
-                                                handleMultiSelect(
-                                                    'product_type',
-                                                    newVal
-                                                        ?.map(
-                                                            (val) => val.label
-                                                        )
-                                                        ?.join(',')
-                                                )
-                                            }}
-                                        />
-                                    </FormItem>
-
-                                    {/* Brand */}
-                                    <FormItem label="Brand">
-                                        <Select
-                                            isMulti
-                                            name="brand"
-                                            options={brandOptions}
-                                            getOptionLabel={(option) =>
-                                                option.label
-                                            }
-                                            getOptionValue={(option) =>
-                                                option.value.toString()
-                                            }
-                                            onChange={(newVal, actionMeta) => {
-                                                console.log(newVal, actionMeta)
-                                                handleMultiSelect(
-                                                    'brand',
-                                                    newVal
-                                                        ?.map(
-                                                            (val) => val.label
-                                                        )
-                                                        ?.join(',')
-                                                )
-                                            }}
-                                        />
-                                    </FormItem>
-
                                     {/* Filters */}
                                     <FormItem label="Filters">
                                         <Select
                                             isMulti
                                             name="filters"
-                                            options={filterOptions}
+                                            options={filters.filters}
                                             getOptionLabel={(option) =>
                                                 option.label
                                             }
