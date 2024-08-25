@@ -12,6 +12,8 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
+import AdaptableCard from '@/components/shared/AdaptableCard'
+import RichTextEditor from '@/components/shared/RichTextEditor'
 
 type FormModel = {
     id: number | undefined
@@ -357,7 +359,7 @@ const DivisionEdit = () => {
 
                             {/* Text area.................................................................. */}
 
-                            <FormContainer className="flex flex-row gap-7 ">
+                           <AdaptableCard divider className="mb-4">
                                 {/* <FormItem
                                     label="Footer"
                                     invalid={errors.footer && touched.footer}
@@ -378,17 +380,21 @@ const DivisionEdit = () => {
                                 </FormItem> */}
                                 <FormItem
                                     label="Footer"
+                                    labelClass="!justify-start"
                                     invalid={errors.footer && touched.footer}
                                     errorMessage={errors.footer}
                                     className="col-span-1 w-full"
                                 >
-                                    <textarea
-                                        name="footer"
-                                        value={footer}
-                                        onChange={handleFooterChange}
-                                        id=""
-                                        className="w-full border border-gray-200 rounded-lg items-center h-[200px] p-2"
-                                    ></textarea>
+                                    <Field name="footer">
+                                        {({ field, form }: FieldProps) => (
+                                            <RichTextEditor
+                                                value={field.value}
+                                                onChange={(val) =>
+                                                    form.setFieldValue(field.name, val)
+                                                }
+                                            />
+                                        )}
+                                    </Field>
                                 </FormItem>
                             </FormContainer>
 
