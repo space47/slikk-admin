@@ -360,25 +360,7 @@ const DivisionEdit = () => {
                             {/* Text area.................................................................. */}
 
                            <AdaptableCard divider className="mb-4">
-                                {/* <FormItem
-                                    label="Footer"
-                                    invalid={errors.footer && touched.footer}
-                                    errorMessage={errors.footer}
-                                    className="col-span-1 w-full"
-                                >
-                                    <Field
-                                        as="textarea"
-                                        name="footer"
-                                        placeholder="Footer"
-                                        component={Input}
-                                        style={{
-                                            width: '100%',
-                                            height: '150px',
-                                            resize: 'vertical',
-                                        }}
-                                    />
-                                </FormItem> */}
-                                <FormItem
+                               <FormItem
                                     label="Footer"
                                     labelClass="!justify-start"
                                     invalid={errors.footer && touched.footer}
@@ -396,6 +378,7 @@ const DivisionEdit = () => {
                                         )}
                                     </Field>
                                 </FormItem>
+                               </AdaptableCard>
                             </FormContainer>
 
                             {/* QUick Filter Tag and Position and Gender............................................................ */}
