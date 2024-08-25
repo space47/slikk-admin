@@ -6,7 +6,7 @@ import type { MouseEvent } from 'react'
 type ImageProps = {
     dialogIsOpen: boolean
     setIsOpen: (isOpen: boolean) => void
-    image: string[]
+    image: string[] | ''
 }
 
 const ImageMODAL = ({ dialogIsOpen, setIsOpen, image }: ImageProps) => {
@@ -39,7 +39,7 @@ const ImageMODAL = ({ dialogIsOpen, setIsOpen, image }: ImageProps) => {
                                         />
                                     </div>
                                 </SplideSlide>
-                            ) : null,
+                            ) : null
                         )}
                     </Splide>
                 ) : (

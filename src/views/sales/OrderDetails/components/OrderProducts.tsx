@@ -8,6 +8,8 @@ import {
     createColumnHelper
 } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
+import { useState } from 'react'
+import ImageMODAL from '@/common/ImageModal'
 
 type Product = {
     barcode: string
@@ -36,11 +38,20 @@ const { Tr, Th, Td, THead, TBody } = Table
 const columnHelper = createColumnHelper<Product>()
 
 const ProductColumn = ({ row }: { row: Product }) => {
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState('')
+
+    const handleImageView = (img: any) => {
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
+
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
             <img
                 src={row.image.split(',')[0]}
-                className=" xl:mt-3 w-[100px] h-[120px]"
+                className=" xl:mt-3 w-[100px] h-[120px] cursor-pointer"
+                onClick={() => handleImageView(row.image)}
             />
             <div className="ltr:ml-2 rtl:mr-2">
                 <div className="mb-2 text-[18px] font-bold ">
@@ -58,6 +69,13 @@ const ProductColumn = ({ row }: { row: Product }) => {
                 {/* skv */}
                 <h4 className="font-light text-[14px]"> SKU:{row.sku} </h4>
             </div>
+            {showImageModal && (
+                <ImageMODAL
+                    dialogIsOpen={showImageModal}
+                    setIsOpen={setShowImageModal}
+                    image={particularRowImage && particularRowImage?.split(',')}
+                />
+            )}
         </div>
     )
 }
