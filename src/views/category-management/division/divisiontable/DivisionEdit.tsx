@@ -12,6 +12,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
+import { RichTextEditor } from '@/components/shared'
 
 type FormModel = {
     id: number | undefined
@@ -106,7 +107,7 @@ const DivisionEdit = () => {
             setDivData(divisionData)
             const transformedOptions = divisionData.map((item: Division) => ({
                 value: item.id,
-                label: item.name,
+                label: item.name
             }))
             setOptions(transformedOptions)
         } catch (error) {
@@ -133,7 +134,7 @@ const DivisionEdit = () => {
             'image/png',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -170,15 +171,15 @@ const DivisionEdit = () => {
         try {
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Content-Type': 'multipart/form-data'
+                }
             })
             const newData = response.data.url
             setImageView(newData)
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Image uploaded successfully',
+                    response?.data?.message || 'Image uploaded successfully'
             })
             return newData
         } catch (error: any) {
@@ -186,7 +187,7 @@ const DivisionEdit = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                    error?.response?.data?.message || 'File Not uploaded'
             })
             return 'Error'
         }
@@ -195,8 +196,8 @@ const DivisionEdit = () => {
     const handleSubmit = async (values: FormModel) => {
         const formData = {
             ...values,
-            footer,
-            images: values.image,
+            footer: values.footer,
+            images: values.image
         }
 
         console.log('formDaata', formData)
@@ -207,14 +208,14 @@ const DivisionEdit = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Category Changed Successfully',
+                    response?.data?.message || 'Category Changed Successfully'
             })
             navigate('/app/category/division')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description: error?.response?.data?.message || 'Failed to edit',
+                description: error?.response?.data?.message || 'Failed to edit'
             })
         }
     }
@@ -239,7 +240,7 @@ const DivisionEdit = () => {
         update_date: catedate.update_date,
         is_try_and_buy: catedate.is_try_and_buy,
         last_updated_by: catedate.last_updated_by,
-        images: [],
+        images: []
     }
 
     return (
@@ -307,14 +308,14 @@ const DivisionEdit = () => {
                                     <FormItem
                                         label="ADD NEW IMAGE"
                                         invalid={Boolean(
-                                            errors.image && touched.image,
+                                            errors.image && touched.image
                                         )}
                                         errorMessage={errors.image as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="image">
                                             {({
-                                                form,
+                                                form
                                             }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
@@ -324,26 +325,26 @@ const DivisionEdit = () => {
                                                         }
                                                         fileList={values.images}
                                                         onChange={async (
-                                                            files,
+                                                            files
                                                         ) => {
                                                             const uploadedImage =
                                                                 await handleFileupload(
-                                                                    files,
+                                                                    files
                                                                 )
                                                             {
                                                                 form.setFieldValue(
                                                                     'image',
-                                                                    uploadedImage,
+                                                                    uploadedImage
                                                                 )
                                                                 setImageView([
-                                                                    uploadedImage,
+                                                                    uploadedImage
                                                                 ])
                                                             }
                                                         }}
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'image',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                     />
@@ -356,39 +357,27 @@ const DivisionEdit = () => {
                             </FormContainer>
 
                             {/* Text area.................................................................. */}
-
-                            <FormContainer className="flex flex-row gap-7 ">
-                                {/* <FormItem
-                                    label="Footer"
-                                    invalid={errors.footer && touched.footer}
-                                    errorMessage={errors.footer}
-                                    className="col-span-1 w-full"
-                                >
-                                    <Field
-                                        as="textarea"
-                                        name="footer"
-                                        placeholder="Footer"
-                                        component={Input}
-                                        style={{
-                                            width: '100%',
-                                            height: '150px',
-                                            resize: 'vertical',
-                                        }}
-                                    />
-                                </FormItem> */}
+                            <FormContainer>
                                 <FormItem
                                     label="Footer"
+                                    labelClass="!justify-start"
                                     invalid={errors.footer && touched.footer}
                                     errorMessage={errors.footer}
                                     className="col-span-1 w-full"
                                 >
-                                    <textarea
-                                        name="footer"
-                                        value={footer}
-                                        onChange={handleFooterChange}
-                                        id=""
-                                        className="w-full border border-gray-200 rounded-lg items-center h-[200px] p-2"
-                                    ></textarea>
+                                    <Field name="footer">
+                                        {({ field, form }: FieldProps) => (
+                                            <RichTextEditor
+                                                value={field.value}
+                                                onChange={(val) =>
+                                                    form.setFieldValue(
+                                                        field.name,
+                                                        val
+                                                    )
+                                                }
+                                            />
+                                        )}
+                                    </Field>
                                 </FormItem>
                             </FormContainer>
 
@@ -445,12 +434,12 @@ const DivisionEdit = () => {
                                             const genderOptions = [
                                                 {
                                                     value: 'Men',
-                                                    label: 'Men',
+                                                    label: 'Men'
                                                 },
                                                 {
                                                     value: 'Women',
-                                                    label: 'Women',
-                                                },
+                                                    label: 'Women'
+                                                }
                                             ]
 
                                             return (
@@ -461,12 +450,12 @@ const DivisionEdit = () => {
                                                     value={genderOptions.find(
                                                         (option) =>
                                                             option.value ===
-                                                            field.value,
+                                                            field.value
                                                     )}
                                                     onChange={(option) =>
                                                         form.setFieldValue(
                                                             field.name,
-                                                            option?.value,
+                                                            option?.value
                                                         )
                                                     }
                                                 />
