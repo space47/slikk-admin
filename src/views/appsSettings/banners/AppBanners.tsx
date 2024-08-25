@@ -17,7 +17,9 @@ import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 
 import { BANNERMODEL } from './BannerCommon'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
+import { Modal, notification } from 'antd'
+import { IoWarningOutline } from 'react-icons/io5'
 
 type Option = {
     value: number
@@ -39,6 +41,9 @@ const AppBanners = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [bannerid, setBannerid] = useState<number>()
+
     const navigate = useNavigate()
 
     const fetchData = async (
@@ -231,6 +236,18 @@ const AppBanners = () => {
                         <FaEdit className="text-xl" />
                     </button>
                 )
+            },
+            {
+                header: 'Delete',
+                accessorKey: 'id',
+                cell: ({ row }) => (
+                    <button
+                        onClick={() => handleDeleteClick(row.original.id)}
+                        className="border-none bg-none"
+                    >
+                        <FaTrash className="text-xl text-red-500" />
+                    </button>
+                )
             }
         ],
         []
@@ -239,6 +256,17 @@ const AppBanners = () => {
     const handleActionClick = (id: number) => {
         navigate(`/app/appSettings/banners/${id}`)
     }
+
+    const handleDeleteClick = (id: number) => {
+        setShowDeleteModal(true)
+        setBannerid(id)
+    }
+
+    const handleCloseModal = () => {
+        setShowDeleteModal(false)
+    }
+
+    console.log('Bannner Id', bannerid)
 
     const table = useReactTable({
         data,
@@ -272,6 +300,32 @@ const AppBanners = () => {
 
     const handleBanner = () => {
         navigate('/app/appSettings/banners/addNew')
+    }
+
+    const deleteBanner = async () => {
+        const formData = {
+            banner_id: bannerid
+        }
+        console.log('data', formData)
+        try {
+            const response = await axiosInstance.delete(`/banners`, {
+                data: formData
+            })
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message ||
+                    'User has benn Successfully deleted'
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failure',
+                description: 'Unable to delete'
+            })
+        }
+
+        setShowDeleteModal(false)
     }
 
     return (
@@ -346,6 +400,24 @@ const AppBanners = () => {
                     />
                 </div>
             </div>
+            {showDeleteModal && (
+                <Modal
+                    title=""
+                    open={showDeleteModal}
+                    onOk={deleteBanner}
+                    onCancel={handleCloseModal}
+                    okText="DELETE"
+                    okButtonProps={{
+                        style: { backgroundColor: 'red', borderColor: 'red' }
+                    }}
+                >
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
+                        ARE YOU SURE YOU WANT TO DELETE THE BANNER Id:{' '}
+                        {bannerid} !!
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

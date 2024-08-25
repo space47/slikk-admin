@@ -22,7 +22,7 @@ const EditProduct = () => {
     const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
     const [initialValue, setInitialValue] = useState<Product>({
-        company: 1,
+        company: null,
         brand_name: '',
         name: '',
         description: '',
@@ -177,7 +177,7 @@ const EditProduct = () => {
 
             const userData = response.data.data
             setInitialValue({
-                company: 1,
+                company: userData.company,
                 brand_name: userData.brand,
                 name: userData.name,
                 description: userData.description,
@@ -246,10 +246,12 @@ const EditProduct = () => {
                 necktype: userData.necktype,
                 risetype: userData.risetype,
                 sleevtype: userData.sleevtype,
-                trend: userData.trend,
-                trendtype: userData.trendtype,
-                fit: userData.fit,
-                fabric: userData.fabric
+                trend: userData.filter_tags.trend.map((item: any) => item),
+                trendtype: userData.filter_tags.trendtype.map(
+                    (item: any) => item
+                ),
+                fit: userData.filter_tags.fit.map((item: any) => item),
+                fabric: userData.filter_tags.fabric.map((item: any) => item)
             })
 
             console.log('user Objeccct....', userData.image)
