@@ -257,7 +257,8 @@ const PageAddModal: React.FC<modalProps> = ({
     const fetchInput = async () => {
         try {
             if (searchInput) {
-                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'q'
+                const qname =
+                    currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
                 const response = await axioisInstance.get(
                     `/search/product?dashboard=true&${qname}=${searchInput}`
                 )

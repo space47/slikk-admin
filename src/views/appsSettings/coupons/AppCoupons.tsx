@@ -6,25 +6,9 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-
-interface CouponData {
-    code: string
-    image: string | null
-    type: string
-    value: string
-    min_cart_value: string
-    max_count: string
-    maximum_price: string
-    valid_from: string
-    valid_to: string
-    description: string
-    max_count_per_user: string
-    coupon_used_count: string
-    frequency: string | null
-    // freq_config: string
-    coupon_discount_type: string
-    user: string
-}
+import { fetchCoupons } from '@/store/slices/couponSlice/couponSlice'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { COUPON_STATE } from '@/store/types/coupons.types'
 
 type Option = {
     value: number
@@ -37,52 +21,38 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const AppCoupons = () => {
-    const [data, setData] = useState<CouponData[]>([])
-
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
 
-    const fetchData = async () => {
-        try {
-            const response = await axiosInstance.get('merchant/coupon')
-            const data = response.data.data
-
-            setData(data)
-        } catch (error) {
-            console.error(error)
-        }
-    }
+    const { coupons } = useAppSelector<COUPON_STATE>((state) => state.coupon)
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        dispatch(fetchCoupons())
+    }, [dispatch])
 
-    const filteredData = data.filter((item) =>
+    const filteredData = coupons.filter((item) =>
         Object.values(item).some((val) =>
             val
                 ? val
                       .toString()
                       .toLowerCase()
                       .includes(globalFilter.toLowerCase())
-                : false,
-        ),
+                : false
+        )
     )
 
-    // const navigate = useNavigate()
-
-    const handleActionClick = (id: string) => {
-        console.log('clicked', id)
-    }
+    const navigate = useNavigate()
 
     // Paginate filtered data
     const paginatedData = filteredData.slice(
         (page - 1) * pageSize,
-        page * pageSize,
+        page * pageSize
     )
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
@@ -92,7 +62,7 @@ const AppCoupons = () => {
             header: 'Image',
             accessor: 'image',
             format: (value) =>
-                value ? <img src={value} alt="coupon" width="50" /> : 'N/A',
+                value ? <img src={value} alt="coupon" width="50" /> : 'N/A'
         },
         { header: 'Type', accessor: 'type' },
         { header: 'Value', accessor: 'value' },
@@ -102,12 +72,12 @@ const AppCoupons = () => {
         {
             header: 'Valid From',
             accessor: 'valid_from',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value) => moment(value).format('YYYY-MM-DD')
         },
         {
             header: 'Valid To',
             accessor: 'valid_to',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value) => moment(value).format('YYYY-MM-DD')
         },
         { header: 'Description', accessor: 'description' },
         { header: 'Max Count Per User', accessor: 'max_count_per_user' },
@@ -117,13 +87,18 @@ const AppCoupons = () => {
         { header: 'Coupon Discount Type', accessor: 'coupon_discount_type' },
         { header: 'User', accessor: 'user' },
         {
-            header: 'Action',
-            accessor: 'id',
-            format: (value) => (
+            header: 'Edit',
+            accessor: 'coupon_discount_type',
+            format: (value, row) => (
                 <Button onClick={() => handleActionClick(value)}>EDIT</Button>
-            ),
-        },
+            )
+        }
     ]
+
+    const handleActionClick = (coupon_type: string) => {
+        console.log('clicked', coupon_type)
+        navigate(`/app/appSettings/coupons/${coupon_type}`)
+    }
 
     return (
         <div>
@@ -169,7 +144,7 @@ const AppCoupons = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) =>
