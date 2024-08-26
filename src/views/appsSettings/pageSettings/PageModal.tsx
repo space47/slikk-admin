@@ -98,7 +98,7 @@ const PageModal: React.FC<modalProps> = ({
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState<string[]>([
-        particularRow.data_type.barcodes
+        particularRow ? particularRow.data_type.barcodes : []
     ])
     const [textAreaValue, setTextAreaValue] = useState()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
@@ -174,7 +174,8 @@ const PageModal: React.FC<modalProps> = ({
     const fetchInput = async () => {
         try {
             if (searchInput) {
-                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'q'
+                const qname =
+                    currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
                 const response = await axioisInstance.get(
                     `/search/product?dashboard=true&${qname}=${searchInput}`
                 )
@@ -258,57 +259,57 @@ const PageModal: React.FC<modalProps> = ({
     }
 
     const handleSubmit = async (row: any) => {
-        const imageUpload = await handleimage(row.background_image_array)
-        const mobileimageUpload = await handleimage(row.mobile_background_array)
-        const footerImageUpload = await handleimage(
-            row.footer_config_image_Array
-        )
-        const headerImageUpload = await handleimage(
-            row.header_config_image_Array
-        )
-        const subHeaderImageUpload = await handleimage(
-            row.sub_header_config_image_Array
-        )
-        const sectionFilterArray = [
-            row.division,
-            row.category,
-            row.sub_category,
-            row.product_type,
-            row.brand,
-            row.filters
-        ].filter((item) => item && item !== 'undefined')
-        const sectionFilter = sectionFilterArray.join(',')
+        try {
+            console.log('handleSubmit called')
+            const imageUpload = await handleimage(row.background_image_array)
+            const mobileimageUpload = await handleimage(
+                row.mobile_background_array
+            )
+            const footerImageUpload = await handleimage(
+                row.footer_config_image_Array
+            )
+            const headerImageUpload = await handleimage(
+                row.header_config_image_Array
+            )
+            const subHeaderImageUpload = await handleimage(
+                row.sub_header_config_image_Array
+            )
 
-        const newRow = {
-            ...row,
-            background_image: imageUpload ? imageUpload : row.background_image,
-            mobile_background_image: mobileimageUpload
-                ? mobileimageUpload
-                : row.mobile_background_image,
-            footer_config: {
-                ...row.footer_config,
-                image: footerImageUpload
-            },
-            header_config: {
-                ...row.header_config,
-                image: headerImageUpload
-            },
-            sub_header_config: {
-                ...row.sub_header_config,
-                image: subHeaderImageUpload
-            },
-            data_type: {
-                ...row.data_type,
-                barcodes: productData.join(',')
-            },
-            // section_filters: sectionFilter.split(','),
-            section_filters: textAreaValue,
-            section_heading: row.section_heading.split(',')
+            console.log('New Row below')
+
+            const newRow = {
+                ...row,
+
+                background_image: imageUpload
+                    ? imageUpload
+                    : row.background_image,
+                mobile_background_image: mobileimageUpload
+                    ? mobileimageUpload
+                    : row.mobile_background_image,
+                footer_config: {
+                    ...row.footer_config,
+                    image: footerImageUpload
+                },
+                header_config: {
+                    ...row.header_config,
+                    image: headerImageUpload
+                },
+                sub_header_config: {
+                    ...row.sub_header_config,
+                    image: subHeaderImageUpload
+                },
+                data_type: {
+                    ...row.data_type,
+                    barcodes: productData.join(',')
+                },
+                section_filters: textAreaValue
+            }
+            console.log('New Row completed')
+            console.log('newRow:', newRow)
+            setParticularRow(newRow)
+        } catch (error) {
+            console.error('Error in handleSubmit:', error)
         }
-        console.log('Section', newRow.section_filters)
-
-        console.log('row', newRow)
-        setParticularRow(newRow)
     }
 
     console.log('---------------', particularRow)
@@ -1050,7 +1051,7 @@ const PageModal: React.FC<modalProps> = ({
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
                                     <textarea
-                                        name="footer"
+                                        name="section_filter"
                                         value={textAreaValue}
                                         onChange={(e: any) =>
                                             setTextAreaValue(e.target.value)
