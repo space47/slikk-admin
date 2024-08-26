@@ -10,6 +10,13 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4 } from './Modal'
 
+const LOGISTIC_PARTNER = [
+    { value: 'porter', label: 'PORTER' },
+    { value: 'shiprocket', label: 'SHIPROCKET' },
+    { value: 'shadowfax', label: 'SHADOWFAX' },
+    { value: 'slikk', label: 'SLIKK' }
+]
+
 type Event = {
     timestamp: string
     status: string
@@ -31,12 +38,18 @@ export type Product = {
     id: number
 }
 
+type LOGISTIC = {
+    order: number
+    partner: string
+}
+
 type ActivityProps = {
     data?: Event[]
     status: string
     product?: Product[]
     payment?: Payment
     invoice_id?: string
+    logistic: LOGISTIC
 }
 
 const Activity = ({
@@ -45,6 +58,7 @@ const Activity = ({
     product = [],
     payment,
     invoice_id,
+    logistic
 }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
@@ -60,6 +74,10 @@ const Activity = ({
         useState<boolean>(false)
     const [cancelCall, setCancelCall] = useState<boolean>(false)
     const navigate = useNavigate()
+    const [partner, setPartner] = useState<{
+        value: string
+        label: string
+    } | null>(null)
 
     const showModal = (content: string | undefined) => {
         setModalContent(content)
@@ -69,7 +87,7 @@ const Activity = ({
     const handleSelectChange = (id: number, value: string) => {
         setFulfilledQuantities((prevQuantities) => ({
             ...prevQuantities,
-            [id]: parseInt(value, 10),
+            [id]: parseInt(value, 10)
         }))
     }
 
@@ -89,17 +107,17 @@ const Activity = ({
                             }
                             return acc
                         },
-                        {} as { [key: number]: number },
+                        {} as { [key: number]: number }
                     )
 
                     const body = {
                         action,
-                        data,
+                        data
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body,
+                        body
                     )
 
                     console.log(response.data)
@@ -119,7 +137,7 @@ const Activity = ({
 
     const handleReject = () => {
         const hasFulfilledQty = Object.values(fulfilledQuantities).some(
-            (item) => item > 0,
+            (item) => item > 0
         )
 
         if (hasFulfilledQty) {
@@ -142,17 +160,17 @@ const Activity = ({
                 try {
                     const data = Object.entries(fulfilledQuantities).reduce(
                         (acc) => acc,
-                        {} as { [key: number]: number },
+                        {} as { [key: number]: number }
                     )
 
                     const body = {
                         action,
-                        data,
+                        data
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body,
+                        body
                     )
 
                     console.log(response.data)
@@ -181,11 +199,12 @@ const Activity = ({
                 try {
                     const body = {
                         action,
+                        delivery_partner: partner?.value
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body,
+                        body
                     )
                     navigate(0)
                     console.log(response.data)
@@ -195,7 +214,7 @@ const Activity = ({
                         message: 'Success',
                         description:
                             response?.data?.message ||
-                            'Order status updated successfully.',
+                            'Order status updated successfully.'
                     })
                 } catch (error: any) {
                     console.error(error)
@@ -205,7 +224,7 @@ const Activity = ({
 
                     notification.error({
                         message: 'Error',
-                        description: errorMessage,
+                        description: errorMessage
                     })
                 } finally {
                     setTriggerpackCall(false)
@@ -227,12 +246,12 @@ const Activity = ({
             const sendApiRequest = async () => {
                 try {
                     const body = {
-                        action,
+                        action
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body,
+                        body
                     )
                     navigate(0)
                     console.log(response.data)
@@ -242,7 +261,7 @@ const Activity = ({
                         message: 'Success',
                         description:
                             response?.data?.message ||
-                            'Order status updated successfully.',
+                            'Order status updated successfully.'
                     })
                 } catch (error: any) {
                     console.error(error)
@@ -252,7 +271,7 @@ const Activity = ({
 
                     notification.error({
                         message: 'Error',
-                        description: errorMessage,
+                        description: errorMessage
                     })
                 } finally {
                     setTriggerShipCall(false)
@@ -276,12 +295,12 @@ const Activity = ({
             const sendApiRequest = async () => {
                 try {
                     const body = {
-                        action,
+                        action
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body,
+                        body
                     )
                     navigate(0)
                     console.log(response.data)
@@ -291,7 +310,7 @@ const Activity = ({
                         message: 'Success',
                         description:
                             response?.data?.message ||
-                            'Order status updated successfully.',
+                            'Order status updated successfully.'
                     })
                 } catch (error: any) {
                     console.error(error)
@@ -301,7 +320,7 @@ const Activity = ({
 
                     notification.error({
                         message: 'Error',
-                        description: errorMessage,
+                        description: errorMessage
                     })
                 } finally {
                     setTriggerDeliveryCall(false)
@@ -313,6 +332,15 @@ const Activity = ({
 
     // CLOSE...........................................................................
 
+    const handlePartnerSelect = (selectedValue: any) => {
+        console.log('VALUE', selectedValue)
+        const selectedLabel =
+            LOGISTIC_PARTNER.find((item) => item.value === selectedValue)
+                ?.label || ''
+
+        setPartner({ value: selectedValue, label: selectedLabel })
+    }
+
     const handleClose = () => {
         setIsModalOpen(false)
     }
@@ -321,35 +349,37 @@ const Activity = ({
         switch (status) {
             case 'PENDING':
                 return {
-                    buttonText: 'ACCEPT/REJECT',
+                    buttonText: 'ACCEPT/REJECT'
                 }
             case 'ACCEPTED':
                 return {
-                    buttonText: 'PICK AND PACK',
+                    buttonText: 'PICK AND PACK'
                 }
             case 'PACKED':
                 return {
-                    buttonText: 'MARK AS SHIPPED',
+                    buttonText: 'MARK AS SHIPPED'
                 }
             case 'OUT FOR DELIVERY':
                 return {
-                    buttonText: 'MARK AS DELIVERED',
+                    buttonText: 'MARK AS DELIVERED'
                 }
             case 'SHIPPED':
                 return {
-                    buttonText: 'MARK AS DELIVERED',
+                    buttonText: 'MARK AS DELIVERED'
                 }
             case 'CANCELLED':
                 return {
-                    buttonText: '',
+                    buttonText: ''
                 }
             default:
                 return {
                     buttonText: '',
-                    modalContent: '',
+                    modalContent: ''
                 }
         }
     }
+
+    console.log('Paaaaaaaart', partner?.value)
 
     const { buttonText, modalContent: content } =
         getButtonAndModalContent(status)
@@ -371,7 +401,7 @@ const Activity = ({
                                         innerClass={classNames(
                                             activity.timestamp
                                                 ? 'bg-emerald-500'
-                                                : 'bg-blue-500',
+                                                : 'bg-blue-500'
                                         )}
                                     />
                                 </div>
@@ -382,7 +412,7 @@ const Activity = ({
                             </div>
                             <div>
                                 {moment(activity.timestamp).format(
-                                    'DD:MM:YYYY hh:mm',
+                                    'DD:MM:YYYY hh:mm'
                                 )}
                             </div>
                         </Timeline.Item>
@@ -421,6 +451,9 @@ const Activity = ({
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={status}
+                    logistic={logistic}
+                    handlePartnerSelect={handlePartnerSelect}
+                    partner={partner?.label}
                 />
             )}
             {status === 'PACKED' && (

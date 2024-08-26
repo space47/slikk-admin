@@ -63,19 +63,19 @@ const initialValue: Post = {
     latitude: '',
     longitude: '',
     thumbnail: '',
-    thumbnail_array: [],
+    thumbnail_array: []
 }
 
 const SegmentOptions = () => {
     return ['video', 'image'].map((option) => ({
         label: option,
-        value: option,
+        value: option
     }))
 }
 
 const DROPDOWNARRAY = [
     { label: 'Name', value: 'name' },
-    { label: 'SKU', value: 'sku' },
+    { label: 'SKU', value: 'sku' }
 ]
 
 const CreatePost = () => {
@@ -119,7 +119,7 @@ const CreatePost = () => {
             'video/webm',
             'video/avchd',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]
         const MAX_FILE_SIZE = 5000000000
 
@@ -150,9 +150,10 @@ const CreatePost = () => {
     const fetchInput = async () => {
         try {
             if (searchInput) {
-                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'q'
+                const qname =
+                    currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
                 const response = await axioisInstance.get(
-                    `/search/product?dashboard=true&${qname}=${searchInput}`,
+                    `/search/product?dashboard=true&${qname}=${searchInput}`
                 )
                 const data = response.data.results
                 setTableData(data)
@@ -212,14 +213,14 @@ const CreatePost = () => {
             console.log('Starting API call')
             const response = await axioisInstance.post('userpost', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Content-Type': 'multipart/form-data'
+                }
             })
             console.log(response)
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'POST created successfully',
+                    response?.data?.message || 'POST created successfully'
             })
             navigate('/app/uploadPost')
             console.log('Ending API call')
@@ -228,7 +229,7 @@ const CreatePost = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'POST not created',
+                    error?.response?.data?.message || 'POST not created'
             })
         }
     }
@@ -278,13 +279,13 @@ const CreatePost = () => {
                                                 value={SegmentOptions().find(
                                                     (option) =>
                                                         option.value ===
-                                                        field.value,
+                                                        field.value
                                                 )}
                                                 options={SegmentOptions()}
                                                 onChange={(option) =>
                                                     form.setFieldValue(
                                                         'type',
-                                                        option?.value,
+                                                        option?.value
                                                     )
                                                 }
                                             />
@@ -303,7 +304,7 @@ const CreatePost = () => {
                                     >
                                         <Field name="file_array">
                                             {({
-                                                form,
+                                                form
                                             }: FieldProps<Product>) => (
                                                 <>
                                                     <Upload
@@ -317,13 +318,13 @@ const CreatePost = () => {
                                                         onChange={(files) =>
                                                             form.setFieldValue(
                                                                 'file_array',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'file_array',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                     />
@@ -344,7 +345,7 @@ const CreatePost = () => {
                                     >
                                         <Field name="thumbnail_array">
                                             {({
-                                                form,
+                                                form
                                             }: FieldProps<Product>) => (
                                                 <>
                                                     <Upload
@@ -358,13 +359,13 @@ const CreatePost = () => {
                                                         onChange={(files) =>
                                                             form.setFieldValue(
                                                                 'thumbnail_array',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'thumbnail_array',
-                                                                files,
+                                                                files
                                                             )
                                                         }
                                                         // uploadButtonText="Add Files"
@@ -433,7 +434,7 @@ const CreatePost = () => {
                                             setProductData(e.target.value)
                                             setFieldValue(
                                                 'products',
-                                                e.target.value,
+                                                e.target.value
                                             )
                                         }}
                                         placeholder="Enter product barcode"

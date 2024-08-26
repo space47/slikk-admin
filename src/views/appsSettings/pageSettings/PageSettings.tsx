@@ -124,6 +124,12 @@ const PageSettings = () => {
         console.log('pppppppppppppppppp', particularRow)
     }
 
+    useEffect(() => {
+        if (particularRow) {
+            console.log('Updated particularRow:', particularRow)
+        }
+    }, [particularRow])
+
     const handleADDCancel = () => {
         setAddModal(false)
     }
@@ -423,6 +429,7 @@ const PageSettings = () => {
             })
         }
     }
+    console.log('PPPPPPPPPPPPPP', particularRow)
 
     return (
         <div>
