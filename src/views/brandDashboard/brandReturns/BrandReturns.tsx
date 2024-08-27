@@ -9,7 +9,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter,
+    useGlobalFilter
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -19,6 +19,7 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
+import { FaDownload } from 'react-icons/fa'
 
 interface Product {
     name: string
@@ -50,7 +51,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const BrandReturns = () => {
@@ -62,19 +63,19 @@ const BrandReturns = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
+        (store) => store.company.currCompany
     )
 
     const fetchData = async (
         page: number,
         pageSize: number,
         from: string,
-        to: string,
+        to: string
     ) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `merchant/return_order_items?company_id=${selectedCompany.id}&from=${from}&to=${To_Date}`,
+                `merchant/return_order_items?company_id=${selectedCompany.id}&from=${from}&to=${To_Date}`
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -94,57 +95,92 @@ const BrandReturns = () => {
             {
                 header: 'SKU',
                 accessorKey: 'product.sku',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Name',
                 accessorKey: 'product.name',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Brand',
                 accessorKey: 'product.brand',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
+            },
+            {
+                header: 'Size',
+                accessorKey: 'value.size',
+                cell: (info) => info.getValue()
+            },
+
+            {
+                header: 'Color',
+                accessorKey: 'value.color',
+                cell: (info) => info.getValue()
             },
 
             {
                 header: 'MRP',
                 accessorKey: 'product.mrp',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'SP',
                 accessorKey: 'product.sp',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Quantity',
                 accessorKey: 'quantity',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Order Item',
                 accessorKey: 'order_item',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Return Amount',
                 accessorKey: 'return_amount',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Return Reason',
                 accessorKey: 'return_reason',
-                cell: (info) => info.getValue(),
-            },
+                cell: (info) => info.getValue()
+            }
         ],
-        [],
+        []
     )
+
+    const handleDownload = async () => {
+        try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const response = await axiosInstance.get(
+                `merchant/return_order_items?company_id=${selectedCompany.id}&from=${from}&to=${To_Date}&download=true`,
+                {
+                    responseType: 'blob'
+                }
+            )
+
+            const urlToBeDownloaded = window.URL.createObjectURL(
+                new Blob([response.data])
+            )
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = 'ReturnOrder.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.error('Error downloading the file:', error)
+        }
+    }
 
     const table = useReactTable({
         data,
@@ -157,15 +193,15 @@ const BrandReturns = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize,
+                pageSize: pageSize
             },
-            globalFilter,
+            globalFilter
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: setGlobalFilter
     })
 
     const onPaginationChange = (page: number) => {
@@ -192,10 +228,6 @@ const BrandReturns = () => {
         }
     }
 
-    const addOneDay = (date: string) => {
-        return moment(date).add(1, 'days').format('YYYY-MM-DD')
-    }
-
     return (
         <div className="overflow-x-auto">
             <div className="upper flex justify-between mb-5 items-center ">
@@ -209,7 +241,19 @@ const BrandReturns = () => {
                     />
                 </div>
 
-                <div className="flex gap-5">
+                <div className="flex gap-5 items-center">
+                    <div>
+                        <div className="flex items-end justify-end mb-2">
+                            <button
+                                className="bg-none text-black px-5 py-3  "
+                                onClick={handleDownload}
+                            >
+                                <FaDownload className="text-2xl hover:text-3xl" />
+                            </button>{' '}
+                            <br />
+                            <br />
+                        </div>
+                    </div>
                     <div>
                         <div className="mb-1 font-semibold text-sm">
                             FROM DATE:
@@ -247,7 +291,7 @@ const BrandReturns = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext(),
+                                        header.getContext()
                                     )}
                                 </Th>
                             ))}
@@ -261,7 +305,7 @@ const BrandReturns = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </Td>
                             ))}
@@ -281,7 +325,7 @@ const BrandReturns = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
