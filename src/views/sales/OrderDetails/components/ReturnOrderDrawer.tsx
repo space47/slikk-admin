@@ -30,31 +30,31 @@ type ReturnOrderProps = {
 const returnReasons = [
     {
         label: "Size and Fit Issues: The clothing doesn't fit as expected.",
-        value: 'size_fit_issues',
+        value: 'size_fit_issues'
     },
     {
         label: 'Colour and Appearance: The actual color or appearance of the clothing item differs from how it appeared online.',
-        value: 'colour_appearance',
+        value: 'colour_appearance'
     },
     {
         label: "Quality and Fabric: The quality or feel of the fabric doesn't meet the expectation.",
-        value: 'quality_fabric',
+        value: 'quality_fabric'
     },
     {
         label: 'Change of mind: I no longer want the item.',
-        value: 'change_of_mind',
+        value: 'change_of_mind'
     },
     {
         label: 'Defects and Damage: The clothing arrived damaged or with manufacturing defects, such as holes, loose threads, or stains.',
-        value: 'defects_damage',
-    },
+        value: 'defects_damage'
+    }
 ]
 
 const ReturnOrderDrawer = ({
     isOpen,
     setIsOpen,
     product,
-    invoice_id,
+    invoice_id
 }: ReturnOrderProps) => {
     const [returnQuantities, setReturnQuantities] = useState<{
         [key: string]: number
@@ -72,7 +72,7 @@ const ReturnOrderDrawer = ({
     const handleSelectChange = useCallback((id: number, value: number) => {
         setReturnQuantities((prev) => ({
             ...prev,
-            [id]: value,
+            [id]: value
         }))
     }, [])
 
@@ -84,49 +84,49 @@ const ReturnOrderDrawer = ({
                     value: reasonValue,
                     label:
                         returnReasons.find((p) => p.value === reasonValue)
-                            ?.label || '',
-                },
+                            ?.label || ''
+                }
             }))
         },
-        [],
+        []
     )
 
     const handleReturnClick = async () => {
         const returnReasonMap = Object.fromEntries(
             Object.entries(currentSelectedPage).map(([id, { value }]) => [
                 id,
-                value,
-            ]),
+                value
+            ])
         )
         const returnQtyMap = Object.fromEntries(
             Object.entries(returnQuantities).map(([id, quantity]) => [
                 id,
-                quantity,
-            ]),
+                quantity
+            ])
         )
 
         const body = {
             return_reason: returnReasonMap,
-            items: returnQtyMap,
+            items: returnQtyMap
         }
 
         try {
             const response = await axioisInstance.post(
                 `merchant/returnorder/create/${invoice_id}`,
-                body,
+                body
             )
 
             notification.success({
                 message: 'SUCCESS',
                 description:
-                    response.data.message || 'Order successfully Returned',
+                    response.data.message || 'Order successfully Returned'
             })
             navigate(0)
         } catch (error) {
             console.error('Error:', error)
             notification.error({
                 message: 'FAILURE',
-                description: 'Failed to return order',
+                description: 'Failed to return order'
             })
         }
     }
@@ -194,38 +194,43 @@ const ReturnOrderDrawer = ({
                                                 {pdts.fulfilled_quantity}
                                             </td>
                                             <td className="px-4 py-2">
-                                                <Select
-                                                    value={
-                                                        returnQuantities[
-                                                            pdts.id
-                                                        ] || 0
-                                                    }
-                                                    className="w-full"
-                                                    onChange={(value) =>
-                                                        handleSelectChange(
-                                                            pdts.id,
-                                                            value,
-                                                        )
-                                                    }
-                                                >
-                                                    {Array.from(
-                                                        {
-                                                            length:
-                                                                parseInt(
-                                                                    pdts.quantity.toString(),
-                                                                    10,
-                                                                ) + 1,
-                                                        },
-                                                        (_, i) => (
-                                                            <Option
-                                                                key={i}
-                                                                value={i}
-                                                            >
-                                                                {i}
-                                                            </Option>
-                                                        ),
-                                                    )}
-                                                </Select>
+                                                {pdts.returnable_quantity >
+                                                0 ? (
+                                                    <Select
+                                                        value={
+                                                            returnQuantities[
+                                                                pdts.id
+                                                            ] || 0
+                                                        }
+                                                        className="w-full"
+                                                        onChange={(value) =>
+                                                            handleSelectChange(
+                                                                pdts.id,
+                                                                value
+                                                            )
+                                                        }
+                                                    >
+                                                        {Array.from(
+                                                            {
+                                                                length:
+                                                                    parseInt(
+                                                                        pdts.returnable_quantity.toString(),
+                                                                        10
+                                                                    ) + 1
+                                                            },
+                                                            (_, i) => (
+                                                                <Option
+                                                                    key={i}
+                                                                    value={i}
+                                                                >
+                                                                    {i}
+                                                                </Option>
+                                                            )
+                                                        )}
+                                                    </Select>
+                                                ) : (
+                                                    'NOT RETURNABLE'
+                                                )}
                                             </td>
 
                                             <td className="px-4 py-2">
@@ -240,7 +245,7 @@ const ReturnOrderDrawer = ({
                                                     onSelect={(value) =>
                                                         handleSelect(
                                                             pdts.id,
-                                                            value,
+                                                            value
                                                         )
                                                     }
                                                 >
@@ -256,7 +261,7 @@ const ReturnOrderDrawer = ({
                                                                     {item.value}
                                                                 </span>
                                                             </DropdownItem>
-                                                        ),
+                                                        )
                                                     )}
                                                 </Dropdown>
                                             </td>

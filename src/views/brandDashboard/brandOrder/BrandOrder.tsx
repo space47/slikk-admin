@@ -11,7 +11,7 @@ import {
     flexRender,
     // useGlobalFilter,
     PaginationState,
-    Updater,
+    Updater
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -23,6 +23,8 @@ import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import BrandOrderGraph from './brandOrderGraph/BrandOrderGraph'
 import BrandQuantityGraph from './brandOrderGraph/BrandQuantityGraph'
+import { Button } from 'antd'
+import { FaDownload } from 'react-icons/fa'
 
 type SKU_DETAILS = {
     name: string
@@ -61,7 +63,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
+    { value: 100, label: '100 / page' }
 ]
 
 const BrandOrder = () => {
@@ -71,7 +73,7 @@ const BrandOrder = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
+        (store) => store.company.currCompany
     )
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
@@ -84,15 +86,15 @@ const BrandOrder = () => {
     >([])
 
     const fetchData = async (
-        page: number,
-        pageSize: number,
-        // from: string,
-        // to: string,
+        // page: number,
+        // pageSize: number,
+        from: string,
+        to: string
     ) => {
         try {
-            // const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `/merchant/sales?p=${page}&page_size=${pageSize}`,
+                `/merchant/sales?from=${from}&to=${To_Date}&company_id=${selectedCompany.id}`
             )
             const data = response.data
 
@@ -105,8 +107,8 @@ const BrandOrder = () => {
             const skuDetailsArray = Object.entries(skuData).map(
                 ([key, value]) => ({
                     key,
-                    value,
-                }),
+                    value
+                })
             )
 
             setSkuWiseDetails(skuDetailsArray)
@@ -114,8 +116,8 @@ const BrandOrder = () => {
             const dateWIseDetailArray = Object.entries(dateWiseData).map(
                 ([key, value]) => ({
                     key,
-                    value,
-                }),
+                    value
+                })
             )
 
             console.log('dddddddddd', dateWIseDetailArray)
@@ -126,7 +128,7 @@ const BrandOrder = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
+        fetchData(from, to)
     }, [page, pageSize, selectedCompany, from, to])
 
     console.log('SKU Details:', skuWiseDetails)
@@ -139,32 +141,49 @@ const BrandOrder = () => {
             {
                 header: 'SKU',
                 accessorKey: 'key',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Name',
                 accessorKey: 'value.name',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
+            },
+
+            {
+                header: 'Size',
+                accessorKey: 'value.size',
+                cell: (info) => info.getValue()
+            },
+
+            {
+                header: 'Color',
+                accessorKey: 'value.color',
+                cell: (info) => info.getValue()
             },
             {
                 header: 'MRP',
                 accessorKey: 'value.mrp',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'SP',
                 accessorKey: 'value.sp',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Total Quantity',
                 accessorKey: 'value.total_quantity',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
+            },
+            {
+                header: 'Total Quantity',
+                accessorKey: 'value.total_quantity',
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Total Amount',
                 accessorKey: 'value.total_amount',
-                cell: (info) => info.getValue(),
+                cell: (info) => info.getValue()
             },
             {
                 header: 'Image',
@@ -179,14 +198,45 @@ const BrandOrder = () => {
                             height={50}
                         />
                     )
-                },
-            },
+                }
+            }
         ],
-        [],
+        []
+    )
+
+    console.log('LENGTH', skuWiseDetails.length)
+
+    const handleDownload = async () => {
+        try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const response = await axiosInstance.get(
+                `/merchant/sales?from=${from}&to=${To_Date}&company_id=${selectedCompany.id}&download=true`,
+                {
+                    responseType: 'blob'
+                }
+            )
+
+            const urlToBeDownloaded = window.URL.createObjectURL(
+                new Blob([response.data])
+            )
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = 'BrandOrder.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.error('Error downloading the file:', error)
+        }
+    }
+
+    const paginatedData = skuWiseDetails.slice(
+        (page - 1) * pageSize,
+        page * pageSize
     )
 
     const table = useReactTable({
-        data: skuWiseDetails,
+        data: paginatedData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -196,9 +246,9 @@ const BrandOrder = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize,
+                pageSize: pageSize
             },
-            globalFilter,
+            globalFilter
         },
         onPaginationChange: (updater: Updater<PaginationState>) => {
             const newPagination =
@@ -209,7 +259,7 @@ const BrandOrder = () => {
             setPage(newPagination.pageIndex + 1)
             setPageSize(newPagination.pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: setGlobalFilter
     })
 
     const onPaginationChange = (page: number) => {
@@ -237,8 +287,8 @@ const BrandOrder = () => {
 
     return (
         <div className="overflow-x-auto">
-            <div className="upper flex justify-between mb-5 items-center ">
-                <div className="mb-4">
+            <div className="upper flex justify-end mb-5 items-center ">
+                {/* <div className="mb-4">
                     <input
                         type="text"
                         placeholder="Search here"
@@ -246,9 +296,21 @@ const BrandOrder = () => {
                         onChange={(e) => setGlobalFilter(e.target.value)}
                         className="p-2 border rounded"
                     />
-                </div>
+                </div> */}
 
-                <div className="flex gap-5">
+                <div className="flex gap-5 items-center">
+                    <div>
+                        <div className="flex items-end justify-end mb-2">
+                            <button
+                                className="bg-none text-black px-5 py-3  "
+                                onClick={handleDownload}
+                            >
+                                <FaDownload className="text-2xl hover:text-3xl" />
+                            </button>{' '}
+                            <br />
+                            <br />
+                        </div>
+                    </div>
                     <div>
                         <div className="mb-1 font-semibold text-sm">
                             FROM DATE:
@@ -259,7 +321,6 @@ const BrandOrder = () => {
                             }
                             defaultValue={new Date()}
                             value={new Date(from)}
-                            selected={moment(from).toDate()}
                             onChange={handleFromChange}
                         />
                     </div>
@@ -273,7 +334,6 @@ const BrandOrder = () => {
                             }
                             defaultValue={new Date()}
                             value={new Date(to)}
-                            selected={moment(to).toDate()}
                             onChange={handleToChange}
                             minDate={moment(from).add(1, 'day').toDate()}
                         />
@@ -295,14 +355,14 @@ const BrandOrder = () => {
                 <BrandOrderGraph
                     data={datewisedetails.map((item) => ({
                         dateKey: item.key,
-                        total_amount: item.value.total_amount,
+                        total_amount: item.value.total_amount
                     }))}
                 />
 
                 <BrandQuantityGraph
                     data={datewisedetails.map((item) => ({
                         dateKey: item.key,
-                        total_quantity: item.value.total_quantity,
+                        total_quantity: item.value.total_quantity
                     }))}
                 />
             </div>
@@ -315,7 +375,7 @@ const BrandOrder = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext(),
+                                        header.getContext()
                                     )}
                                 </Th>
                             ))}
@@ -329,7 +389,7 @@ const BrandOrder = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </Td>
                             ))}
@@ -349,7 +409,7 @@ const BrandOrder = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
+                            (option) => option.value === pageSize
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
