@@ -4,7 +4,7 @@ import {
     useReactTable,
     getCoreRowModel,
     flexRender,
-    ColumnDef,
+    ColumnDef
 } from '@tanstack/react-table'
 
 type ProductTableProps = {
@@ -24,19 +24,19 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
         () => [
             {
                 header: 'SKU',
-                accessorKey: 'sku',
+                accessorKey: 'sku'
             },
             {
                 header: 'Barcode',
-                accessorKey: 'barcode',
+                accessorKey: 'barcode'
             },
             {
                 header: 'Name',
-                accessorKey: 'name',
+                accessorKey: 'name'
             },
             {
                 header: 'Product',
-                accessorKey: 'product_type',
+                accessorKey: 'product_type'
             },
             {
                 header: 'Image',
@@ -49,11 +49,16 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
                             className="w-[100px] h-[100px]"
                         />
                     </div>
-                ),
+                )
             },
             {
                 header: 'Brand',
-                accessorKey: 'brand',
+                accessorKey: 'brand'
+            },
+            {
+                header: 'Stocks',
+                accessorKey: 'inventory_count',
+                cell: (info) => info.getValue()
             },
             {
                 header: 'ADD',
@@ -66,16 +71,16 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
                     >
                         <span className="text-sm">ADD</span>
                     </button>
-                ),
-            },
+                )
+            }
         ],
-        [],
+        []
     )
 
     const table = useReactTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
+        getCoreRowModel: getCoreRowModel()
     })
 
     return (
@@ -91,7 +96,7 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
                                 >
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext(),
+                                        header.getContext()
                                     )}
                                 </th>
                             ))}
@@ -108,7 +113,7 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
                                 >
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext(),
+                                        cell.getContext()
                                     )}
                                 </td>
                             ))}
