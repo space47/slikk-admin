@@ -212,11 +212,11 @@ const Products = () => {
                 accessorKey: 'sub_category',
                 cell: (info) => info.getValue()
             },
-            // {
-            //     header: 'Product Type',
-            //     accessorKey: 'product_type',
-            //     cell: (info) => info.getValue(),
-            // },
+            {
+                header: 'Stocks',
+                accessorKey: 'inventory_count',
+                cell: (info) => info.getValue()
+            },
             {
                 header: 'COLOR',
                 accessorKey: 'color',

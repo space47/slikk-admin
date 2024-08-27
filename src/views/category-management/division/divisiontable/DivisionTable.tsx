@@ -107,7 +107,21 @@ const DivisionTable = () => {
                 return <img src={value} alt="product" width="50" />
             }
         },
-        { header: 'Footer', accessor: 'footer' },
+        {
+            header: 'Footer',
+            accessor: 'footer',
+            format: (value) => {
+                console.log('ValueData', value)
+                return (
+                    <div className="w-[200px] h-[70px] overflow-hidden">
+                        <div
+                            className="text-ellipsis whitespace-wrap line-clamp-3 overflow-hidden"
+                            dangerouslySetInnerHTML={{ __html: value }}
+                        />
+                    </div>
+                )
+            }
+        },
         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
         { header: 'Position', accessor: 'position' },
         { header: 'Gender', accessor: 'gender' },
