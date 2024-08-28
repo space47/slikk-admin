@@ -185,7 +185,7 @@ export const BANNER_FIELDS_TYPE = [
     {
         label: 'From Date',
         classname: '',
-        type: 'text',
+        type: 'date',
         name: 'from_date',
         component: { Input },
         status: 'from_date'
@@ -193,7 +193,7 @@ export const BANNER_FIELDS_TYPE = [
     {
         label: 'To Date',
         classname: '',
-        type: 'text',
+        type: 'date',
         name: 'to_date',
         component: { Input },
         status: 'to_date'

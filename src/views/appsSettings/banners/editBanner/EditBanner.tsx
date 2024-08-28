@@ -20,6 +20,7 @@ import { BRAND_STATE } from '@/store/types/brand.types'
 import Upload from '@/components/ui/Upload'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
+import { formatDate } from '@/common/date'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -144,8 +145,8 @@ const EditBanner = () => {
         offers: bannerData?.offers || false,
         offer_id: bannerData?.offer_id || '',
         page: bannerData?.page || '',
-        from_date: moment(bannerData?.from_date).format('MM/DD/YYYY') || '',
-        to_date: moment(bannerData?.to_date).format('MM/DD/YYYY') || '',
+        from_date: formatDate(bannerData?.from_date || ''),
+        to_date: formatDate(bannerData?.to_date || ''),
         uptooff: bannerData?.uptooff || '',
         tags: bannerData?.tags || [],
         footer: bannerData?.footer || null,
