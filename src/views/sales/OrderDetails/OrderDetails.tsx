@@ -103,7 +103,7 @@ const OrderDetails = () => {
         const fetchOrders = async () => {
             try {
                 const response = await axioisInstance.get(
-                    `merchant/order/${invoice_id}`
+                    `merchant/order/${invoice_id}`,
                 )
 
                 const ordersData = response.data?.data || []
@@ -164,7 +164,7 @@ const OrderDetails = () => {
                                 <HiOutlineCalendar className="text-lg" />
                                 <span className="ltr:ml-1 rtl:mr-1">
                                     {moment(data.create_date).format(
-                                        'MM/DD/YYYY hh:mm:ss a'
+                                        'MM/DD/YYYY hh:mm:ss a',
                                     )}
                                 </span>
                             </span>
