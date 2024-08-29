@@ -1,72 +1,79 @@
-import Avatar from '@/components/ui/Avatar'
 import Dropdown from '@/components/ui/Dropdown'
 import withHeaderItem from '@/utils/hoc/withHeaderItem'
 import useAuth from '@/utils/hooks/useAuth'
-import { useAppSelector } from '@/store'
-import { Link } from 'react-router-dom'
-import classNames from 'classnames'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { HiOutlineUser, HiOutlineCog, HiOutlineLogout } from 'react-icons/hi'
-import { FiActivity } from 'react-icons/fi'
 import type { CommonProps } from '@/@types/common'
+import { useEffect, useState } from 'react'
+import { Modal } from 'antd'
+
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { FaMobile, FaPhone, FaPhoneAlt, FaRegUserCircle } from 'react-icons/fa'
+import { IoIosMail } from 'react-icons/io'
 
 type DropdownList = {
     label: string
-    path: string
     icon: JSX.Element
 }
 
 const dropdownItemList: DropdownList[] = [
     {
         label: 'Profile',
-        path: '/app/account/settings/profile',
+
         icon: <HiOutlineUser />,
     },
-    {
-        label: 'Account Setting',
-        path: '/app/account/settings/profile',
-        icon: <HiOutlineCog />,
-    },
-    {
-        label: 'Activity Log',
-        path: '/app/account/activity-log',
-        icon: <FiActivity />,
-    },
+    // {
+    //     label: 'Account Setting',
+    //     path: '/app/account/settings/profile',
+    //     icon: <HiOutlineCog />
+    // },
+    // {
+    //     label: 'Activity Log',
+    //     path: '/app/account/activity-log',
+    //     icon: <FiActivity />
+    // }
 ]
 
 const _UserDropdown = ({ className }: CommonProps) => {
-    const { avatar, userName, authority, email } = useAppSelector(
-        (state) => state.auth.user
+    const { mobile, name } = useAppSelector((state) => state.authorization)
+    // const [profileData, setProfileData] = useState<>({})
+
+    const selectedCompany = useAppSelector<USER_PROFILE_DATA>(
+        (store) => store.company,
     )
+
+    console.log('NAAAAAAME', selectedCompany.first_name)
+    const [openModal, setOpenModal] = useState(false)
 
     const { signOut } = useAuth()
 
-    const UserAvatar = (
-        <div className={classNames(className, 'flex items-center gap-2')}>
-            <Avatar size={32} shape="circle" src={avatar} />
-            <div className="hidden md:block">
-                <div className="text-xs capitalize">
-                    {authority?.[0] || 'guest'}
-                </div>
-                <div className="font-bold">{userName}</div>
-            </div>
-        </div>
-    )
+    const handleOpenModal = () => {
+        setOpenModal(true)
+    }
+    const hanldeClose = () => {
+        setOpenModal(false)
+        console.log('clicked')
+    }
+
+    const handleOk = () => {
+        setOpenModal(false)
+    }
 
     return (
-        <div>
+        <div className="cursor-pointer flex flex-row text-xl items-center">
+            <HiOutlineUser />
             <Dropdown
                 menuStyle={{ minWidth: 240 }}
-                renderTitle={UserAvatar}
+                renderTitle={selectedCompany.first_name}
                 placement="bottom-end"
             >
                 <Dropdown.Item variant="header">
                     <div className="py-2 px-3 flex items-center gap-2">
-                        <Avatar shape="circle" src={avatar} />
                         <div>
                             <div className="font-bold text-gray-900 dark:text-gray-100">
-                                {userName}
+                                {mobile}
                             </div>
-                            <div className="text-xs">{email}</div>
+                            <div className="text-xs">{name}</div>
                         </div>
                     </div>
                 </Dropdown.Item>
@@ -77,9 +84,9 @@ const _UserDropdown = ({ className }: CommonProps) => {
                         eventKey={item.label}
                         className="mb-1 px-0"
                     >
-                        <Link 
-                            className="flex h-full w-full px-2" 
-                            to={item.path}
+                        <div
+                            className="flex h-full w-full px-2"
+                            onClick={handleOpenModal}
                         >
                             <span className="flex gap-2 items-center w-full">
                                 <span className="text-xl opacity-50">
@@ -87,7 +94,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
                                 </span>
                                 <span>{item.label}</span>
                             </span>
-                        </Link>
+                        </div>
                     </Dropdown.Item>
                 ))}
                 <Dropdown.Item variant="divider" />
@@ -102,6 +109,42 @@ const _UserDropdown = ({ className }: CommonProps) => {
                     <span>Sign Out</span>
                 </Dropdown.Item>
             </Dropdown>
+
+            {openModal && (
+                <Modal
+                    open={openModal}
+                    footer={null}
+                    onCancel={hanldeClose}
+                    width={800}
+                    className="max-w-md mx-auto rounded-lg overflow-hidden shadow-2xl"
+                >
+                    <div className="p-8 bg-white rounded-lg">
+                        <div className="flex items-center gap-6">
+                            <div className="w-[100px] h-[100px]">
+                                <img
+                                    src="/img/avatars/userAvatar.png"
+                                    alt="User Avatar"
+                                    className="w-full h-full object-cover rounded-full shadow-md"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-3 text-lg">
+                                <span className="font-semibold text-gray-900 text-xl">
+                                    {selectedCompany.first_name}{' '}
+                                    {selectedCompany.last_name}
+                                </span>
+                                <span className="text-gray-600 font-medium flex items-center gap-2">
+                                    <IoIosMail className="text-gray-500" />{' '}
+                                    {selectedCompany.email}
+                                </span>
+                                <span className="text-gray-600 font-medium flex items-center gap-2">
+                                    <FaPhoneAlt className="text-gray-500" />{' '}
+                                    {selectedCompany.mobile}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

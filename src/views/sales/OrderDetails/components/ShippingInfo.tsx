@@ -41,7 +41,8 @@ const ShippingInfo = ({
                                 <span>{data?.runner_name}-</span>
                             </div>
                             <div className="flex gap-2 items-center">
-                                <HiPhone /> <span>{data?.runner_name}</span>
+                                <HiPhone />{' '}
+                                <span>{data?.runner_phone_number}</span>
                             </div>
                         </div>
                     </div>
