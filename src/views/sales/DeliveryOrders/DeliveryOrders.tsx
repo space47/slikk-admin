@@ -7,7 +7,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    flexRender
+    flexRender,
 } from '@tanstack/react-table'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
@@ -16,7 +16,7 @@ import {
     Pagination,
     Select,
     DatePicker,
-    Dropdown
+    Dropdown,
 } from '@/components/ui'
 import {
     fetchOrders,
@@ -25,7 +25,7 @@ import {
     setPageSize,
     setPage,
     setFrom,
-    setTo
+    setTo,
 } from '@/store/slices/orderList/OrderList'
 import { OrderState } from '@/store/types/orderList.types'
 import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
@@ -44,14 +44,14 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const LOGISTIC_PARTNER = [
     { value: 'porter', label: 'PORTER' },
     { value: 'shiprocket', label: 'SHIPROCKET' },
     { value: 'shadowfax', label: 'SHADOWFAX' },
-    { value: 'slikk', label: 'SLIKK' }
+    { value: 'slikk', label: 'SLIKK' },
 ]
 
 const OrderList = () => {
@@ -66,7 +66,7 @@ const OrderList = () => {
         globalFilter,
         from,
         to,
-        dropdownStatus
+        dropdownStatus,
     } = useAppSelector<OrderState>((state) => state.order)
 
     useEffect(() => {
@@ -78,7 +78,7 @@ const OrderList = () => {
     }>({})
     console.log(
         'Data for Table',
-        orders.map((item) => item)
+        orders.map((item) => item),
     )
 
     const columns = [
@@ -98,7 +98,7 @@ const OrderList = () => {
                 ) : (
                     ''
                 )
-            }
+            },
         },
         {
             header: 'Return Invoide Id',
@@ -119,7 +119,7 @@ const OrderList = () => {
                 ) : (
                     ''
                 )
-            }
+            },
         },
         { header: 'Store', accessorKey: 'store.address' },
         { header: 'Customer Name', accessorKey: 'user.name' },
@@ -127,7 +127,7 @@ const OrderList = () => {
         { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
         {
             header: 'Runner Number',
-            accessorKey: 'logistic.runner_phone_number'
+            accessorKey: 'logistic.runner_phone_number',
         },
         { header: 'Pickup Time', accessorKey: 'logistic.pickup_time' },
         { header: 'Drop Time', accessorKey: 'logistic.drop_time' },
@@ -136,7 +136,7 @@ const OrderList = () => {
             accessorKey: 'logistic.eta_pickup',
             cell: ({ getValue }: any) => (
                 <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-            )
+            ),
         },
         { header: 'Eta drop_off', accessorKey: 'logistic.eta_dropoff' },
         {
@@ -165,25 +165,26 @@ const OrderList = () => {
                         </div>
                     </Dropdown>
                 )
-            }
+            },
         },
         {
             header: 'Assigned Logistic',
-            accessorKey: '',
-            cell: ({ row }: any) => (
+            accessorKey: 'logistic.partner',
+            cell: ({ row, getValue }: any) => (
                 <Button
                     size="sm"
                     onClick={() =>
                         handleCreateTask(
                             partner[row.id],
-                            row.original.invoice_id
+                            getValue(),
+                            row.original.invoice_id,
                         )
                     }
                 >
                     Create Task
                 </Button>
-            )
-        }
+            ),
+        },
     ]
 
     const table = useReactTable({
@@ -195,7 +196,7 @@ const OrderList = () => {
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
         pageCount: Math.ceil(orderCount / pageSize),
-        globalFilterFn: fuzzyFilter
+        globalFilterFn: fuzzyFilter,
     })
 
     const handleInvoiceClick = (invoiceId: string) => {
@@ -215,8 +216,8 @@ const OrderList = () => {
             setFrom(
                 date
                     ? moment(date).format('YYYY-MM-DD')
-                    : moment().format('YYYY-MM-DD')
-            )
+                    : moment().format('YYYY-MM-DD'),
+            ),
         )
     }
 
@@ -225,8 +226,8 @@ const OrderList = () => {
             setTo(
                 date
                     ? moment(date).format('YYYY-MM-DD')
-                    : moment().format('YYYY-MM-DD')
-            )
+                    : moment().format('YYYY-MM-DD'),
+            ),
         )
     }
 
@@ -238,7 +239,7 @@ const OrderList = () => {
 
         setPartner((prev) => ({
             ...prev,
-            [row.id]: { value: selectedValue, label: selectedLabel }
+            [row.id]: { value: selectedValue, label: selectedLabel },
         }))
     }
 
@@ -247,34 +248,42 @@ const OrderList = () => {
         dispatch(
             setDropdownStatus({
                 value: a,
-                name: ORDER_STATUS.find((item) => item.value == a)?.name || ''
-            })
+                name: ORDER_STATUS.find((item) => item.value == a)?.name || '',
+            }),
         )
     }
 
-    const handleCreateTask = async (partner: any, order_id: any) => {
-        console.log('TASK', partner?.label, order_id)
+    console.log('PPPPPPPPPP', partner)
+
+    const handleCreateTask = async (
+        partner: any,
+        logistic_partner: any,
+        order_id: any,
+    ) => {
+        console.log('TASK', partner?.label, order_id, logistic_partner)
 
         try {
             const body = {
                 action: 'PACKED',
                 delivery_partner: partner?.value
+                    ? partner?.value
+                    : logistic_partner,
             }
             const response = await axioisInstance.patch(
                 `/merchant/order/${order_id}`,
-                body
+                body,
             )
 
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Created Task Successfully'
+                    response?.data?.message || 'Created Task Successfully',
             })
         } catch (error) {
             console.error(error)
             notification.error({
                 message: 'Failure',
-                description: 'Failed to create Task'
+                description: 'Failed to create Task',
             })
         }
     }
@@ -304,7 +313,6 @@ const OrderList = () => {
                         >
                             <div className="max-h-60 overflow-y-auto">
                                 {ORDER_STATUS?.map((item, key) => {
-                                    console.log('rrrr', dropdownStatus)
                                     return (
                                         <DropdownItem
                                             key={key}
@@ -368,7 +376,7 @@ const OrderList = () => {
                                         >
                                             {flexRender(
                                                 header.column.columnDef.header,
-                                                header.getContext()
+                                                header.getContext(),
                                             )}
                                             <Sorter
                                                 sort={header.column.getIsSorted()}
@@ -387,7 +395,7 @@ const OrderList = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -406,7 +414,7 @@ const OrderList = () => {
                     <Select
                         size="sm"
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) =>
