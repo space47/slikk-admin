@@ -37,38 +37,19 @@ interface permission {
     name: string
 }
 
-// const validationSchema = Yup.object().shape({
-//     document_number: Yup.string().required('Document Number is required'),
-//     document_date: Yup.date().required('Document Date is required').nullable(),
-//     origin_address: Yup.string()
-//         .required('Supplier Address is required')
-//         .transform((value) => value.trim()),
-//     received_address: Yup.string()
-//         .required('Receiver Address is required')
-//         .transform((value) => value.trim()),
-//     received_by: Yup.string()
-//         .required('Received By is required')
-//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-//     total_sku: Yup.number()
-//         .required('Total SKUs is required')
-//         .integer('Must be an integer'),
-//     total_quantity: Yup.number()
-//         .required('Total Quantity is required')
-//         .integer('Must be an integer'),
-//     singleCheckbox: Yup.boolean(),
-//     // images: Yup.string().nullable(),
-//     // document: Yup.string().nullable(),
-// })
-
 const AddUser = () => {
     const [getPermission, setGetPermission] = useState<permission[]>()
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
     const [getGroups, setGetGroups] = useState<GROUPS[]>([])
     const [selectedGroups, setSelectedGroups] = useState<number[]>([])
+    const [selectedCompanyList, setSelectedCompanyList] = useState<number[]>([])
     const [addedPermissions, setAddedPermissions] = useState<
         { id: number; name: string }[]
     >([])
     const [addedGroups, setAddedGroups] = useState<
+        { id: number; name: string }[]
+    >([])
+    const [addedCompanyList, setAddedCompanyList] = useState<
         { id: number; name: string }[]
     >([])
 
@@ -80,11 +61,20 @@ const AddUser = () => {
 
     const [addGroupInput, setAddGroupInput] = useState('')
 
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
+    const [companyInput, setCompanyInput] = useState('')
+    const [addcompanyInput, setAddCompanyInput] = useState('')
+
+    // const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
+    //     (store) => store.company.company,
+    // )
+
+    // console.log('idddddddd', selectedCompany)
+
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>(
+        (state) => state.company.company,
     )
 
-    console.log('idddddddd', selectedCompany)
+    console.log('Company', companyList)
 
     const navigate = useNavigate()
 
@@ -127,7 +117,19 @@ const AddUser = () => {
     }
 
     const handleGroupSelect = (id: number) => {
-        setSelectedGroups([id])
+        setSelectedGroups((prevSelected) =>
+            prevSelected.includes(id)
+                ? prevSelected.filter((permId) => permId !== id)
+                : [...prevSelected, id],
+        )
+    }
+
+    const handleCompanySelect = (id: number) => {
+        setSelectedCompanyList((prevSelected) =>
+            prevSelected.includes(id)
+                ? prevSelected.filter((permId) => permId !== id)
+                : [...prevSelected, id],
+        )
     }
 
     const handleAddPermissions = () => {
@@ -149,6 +151,27 @@ const AddUser = () => {
 
         setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
         setSelectedPermissions([])
+    }
+
+    const handleAddCompany = () => {
+        const alreadyAdded = selectedCompanyList.filter((permId) =>
+            addedCompanyList.some((added) => added.id === permId),
+        )
+
+        if (alreadyAdded.length > 0) {
+            notification.warning({
+                message: 'Warning',
+                description: 'Company already added',
+            })
+        }
+        const selected = companyList?.filter(
+            (perm) =>
+                selectedCompanyList.includes(perm?.id) &&
+                !addedCompanyList.some((added) => added.id === perm.id),
+        )
+
+        setAddedCompanyList((prevAdded) => [...prevAdded, ...selected])
+        setSelectedGroups([])
     }
 
     const handleAddGroups = () => {
@@ -184,141 +207,31 @@ const AddUser = () => {
         )
     }
 
-    const handleAddUser = async (data: FormModel) => {
-        const formdata = {
-            ...data,
-            permission: data.permission,
-        }
-        try {
-            const response = await axioisInstance.post(
-                `company/${selectedCompany.id}/users/add`,
-                formdata,
-            )
-            const data = response.data
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message ||
-                    'User Successfully Added to Company',
-            })
-            return data
-        } catch (error) {
-            notification.error({
-                message: 'Failure',
-                description:
-                    'User Not Added to Company, All Fields are mandatory',
-            })
-            return 'Error'
-        }
+    const handleRemoveCompany = (id: number) => {
+        setAddedCompanyList((prevAdded) =>
+            prevAdded.filter((perm) => perm.id !== id),
+        )
     }
-
-    // const handleAddGroupDatas = async (data: FormModel) => {
-    //     const formdata = {
-    //         ...data,
-    //         groups: data.groups,
-    //     }
-    //     try {
-    //         const response = await axioisInstance.post(
-    //             `merchant/user/groups`,
-    //             formdata,
-    //         )
-    //         const data = response.data
-    //         notification.success({
-    //             message: 'Success',
-    //             description:
-    //                 response?.data?.message ||
-    //                 'User Successfully Added to Company',
-    //         })
-    //         return data
-    //     } catch (error) {
-    //         notification.error({
-    //             message: 'Failure',
-    //             description:
-    //                 'User Not Added to Company, All Fields are mandatory',
-    //         })
-    //         return 'Error'
-    //     }
-    // }
-
     const handleSubmit = async (values: any) => {
+        const groupIds = addedGroups.map((item) => item.id)
+        const permissionIds = addedPermissions.map((item) => item.id)
+        const company_ids = addedCompanyList.map((item) => item.id)
         const bodyData = {
             ...values,
+            company_ids: `${company_ids.join(',')}`,
+            group_id: `${groupIds.join(',')}`,
+            permission_id: `${permissionIds.join(',')}`,
         }
         console.log('body', bodyData)
         try {
             const response = await axioisInstance.post(
-                `company/${selectedCompany.id}/users/add`,
+                `company/users/add`, //-companyid
                 bodyData,
             )
             console.log('response of add users', response)
+            navigate('/app/users')
         } catch (error) {
             console.log(error)
-        }
-
-        const groupIds = addedGroups.map((item) => item.id)
-        console.log('ttttttttttt', groupIds, values.mobile)
-        // const groupdetails = await handleAddGroupDatas(values)
-        // console.log('aaaaaaaaaa', groupdetails)
-        // if (groupdetails === 'Error') {
-        //     return
-        // }
-
-        const addGroupData = {
-            mobile: `${values.mobile}`,
-            group_id: `${groupIds}`,
-        }
-
-        try {
-            const response = await axioisInstance.post(
-                `merchant/user/groups`,
-                addGroupData,
-            )
-
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message ||
-                    'Groups successfully assigned to the user.',
-            })
-        } catch (error) {
-            notification.error({
-                message: 'Failure',
-                description: 'Failed to assign groups to the user.',
-            })
-            return
-        }
-
-        const userdetails = await handleAddUser(values)
-        console.log('uuuuuuuuuuuuuuu', userdetails)
-        if (userdetails === 'Error') {
-            return
-        }
-        const permissionIds = addedPermissions.map((item) => item.id)
-        const formData = {
-            action: 'update_permission',
-            permission_id: `${permissionIds.join(',')}`,
-        }
-
-        try {
-            const response = await axioisInstance.post(
-                `company/user/permission/${values.mobile}`,
-                formData,
-            )
-
-            console.log(response)
-            notification.success({
-                message: 'Success',
-                description:
-                    response?.data?.message || 'User Successfully Added',
-            })
-            navigate('/app/vendor/users')
-        } catch (error: any) {
-            console.error('Error submitting form:', error)
-            notification.error({
-                message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'User not created ',
-            })
         }
     }
 
@@ -339,6 +252,9 @@ const AddUser = () => {
     const filteredGroups = getGroups?.filter((item) =>
         item.name.toLowerCase().includes(groupInput.toLowerCase()),
     )
+    const filteredComapny = companyList?.filter((item) =>
+        item?.name?.toLowerCase().includes(companyInput.toLowerCase()),
+    )
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -346,6 +262,9 @@ const AddUser = () => {
 
     const handleGroupSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setGroupInput(e.target.value)
+    }
+    const handleCompanySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCompanyInput(e.target.value)
     }
 
     const filteredAddPermission = addedPermissions?.filter((item) =>
@@ -355,11 +274,19 @@ const AddUser = () => {
         item.name.toLowerCase().includes(addGroupInput.toLowerCase()),
     )
 
+    const filteredAddCompany = addedCompanyList?.filter((item) =>
+        item.name.toLowerCase().includes(addcompanyInput.toLowerCase()),
+    )
+
     const handleAddPerm = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddInput(e.target.value)
     }
     const handleAddGroup = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddGroupInput(e.target.value)
+    }
+
+    const handleAddCompanyList = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAddCompanyInput(e.target.value)
     }
 
     return (
@@ -477,6 +404,124 @@ const AddUser = () => {
                             {/* ........................................................................................ */}
 
                             <div className="text-xl font-semibold mt-4">
+                                COMPANYS
+                            </div>
+                            <br />
+
+                            <FormContainer className="mb-7">
+                                <FormContainer className="flex justify-between">
+                                    {/* All Permissions */}
+                                    <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
+                                        <div className="sticky top-0 z-10 bg-white">
+                                            <div className="mb-3 bg-white">
+                                                <input
+                                                    type="text"
+                                                    className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
+                                                    placeholder="Search Permissions"
+                                                    value={companyInput}
+                                                    onChange={
+                                                        handleCompanySearch
+                                                    }
+                                                    onKeyDown={(e: any) =>
+                                                        e.key === 'Enter' &&
+                                                        e.preventDefault()
+                                                    }
+                                                />
+                                            </div>
+                                            <label
+                                                htmlFor="All Groups"
+                                                className="font-bold bg-white"
+                                            >
+                                                All Companys
+                                            </label>
+                                        </div>
+                                        <div className="">
+                                            {filteredComapny?.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    className="flex flex-col"
+                                                >
+                                                    <label className="bg-gray-100 px-2 py-2 flex items-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedCompanyList.includes(
+                                                                item?.id,
+                                                            )}
+                                                            onChange={() =>
+                                                                handleCompanySelect(
+                                                                    item.id,
+                                                                )
+                                                            }
+                                                        />
+                                                        <span className="ml-2">
+                                                            {item.name}
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Card>
+
+                                    {/* Buttons */}
+                                    <div className="flex justify-center items-center flex-col gap-4">
+                                        <Button
+                                            type="button"
+                                            variant="accept"
+                                            className="w-32 px-8"
+                                            onClick={handleAddCompany}
+                                        >
+                                            ADD {'>>'}
+                                        </Button>
+                                    </div>
+
+                                    {/* Added Permissions */}
+                                    <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
+                                        <div className="sticky top-0 z-10 bg-white">
+                                            {/* <div className="mb-3 bg-white">
+                                                <input
+                                                    type="text"
+                                                    value={addInput}
+                                                    onChange={handleAddGroup}
+                                                    className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
+                                                    placeholder="Search Permissions"
+                                                />
+                                            </div> */}
+                                            <label
+                                                htmlFor="Added Permissions"
+                                                className="font-bold bg-white"
+                                            >
+                                                Added Company
+                                            </label>
+                                        </div>
+                                        <div className="">
+                                            {filteredAddCompany?.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    className="flex flex-col"
+                                                >
+                                                    <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
+                                                        <span>{item.name}</span>
+                                                        <button
+                                                            className="text-red-500 ml-2"
+                                                            onClick={() =>
+                                                                handleRemoveCompany(
+                                                                    item.id,
+                                                                )
+                                                            }
+                                                        >
+                                                            <IoMdCloseCircle className="text-red-400" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Card>
+                                </FormContainer>
+                            </FormContainer>
+
+                            {/* .................................................................... */}
+
+                            <div className="text-xl font-semibold mt-4">
                                 USER GROUPS
                             </div>
                             <br />
@@ -514,7 +559,7 @@ const AddUser = () => {
                                                 >
                                                     <label className="bg-gray-100 px-2 py-2 flex items-center">
                                                         <input
-                                                            type="radio"
+                                                            type="checkbox"
                                                             checked={selectedGroups.includes(
                                                                 item.id,
                                                             )}

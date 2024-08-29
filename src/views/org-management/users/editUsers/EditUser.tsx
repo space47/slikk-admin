@@ -57,7 +57,7 @@ const BrandUserEdit = () => {
         fetchData()
     }, [])
 
-    const fetchUser = async () => {
+    const fetchDataRightPermission = async () => {
         try {
             const response = await axioisInstance.get(
                 `company/user/permission/${mobile}`,
@@ -73,7 +73,7 @@ const BrandUserEdit = () => {
     }
 
     useEffect(() => {
-        fetchUser()
+        fetchDataRightPermission()
     }, [])
 
     console.log('sssd', userData)
