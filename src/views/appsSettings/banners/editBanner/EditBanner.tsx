@@ -11,7 +11,7 @@ import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BANNER_FIELDS_TYPE } from './EditCommon'
 import { BANNERMODEL } from '../BannerCommon'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
@@ -21,6 +21,9 @@ import Upload from '@/components/ui/Upload'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
 import { formatDate } from '@/common/date'
+import { getAllBrandsAPI } from '@/store/action/brand.action'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
+import { FILTER_STATE } from '@/store/types/filters.types'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -32,12 +35,21 @@ const EditBanner = () => {
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const subCategory = useAppSelector<SUBCATEGORY_STATE>(
-        (state) => state.subCategory
+        (state) => state.subCategory,
     )
     const product_type = useAppSelector<PRODUCTTYPE_STATE>(
-        (state) => state.product_type
+        (state) => state.product_type,
     )
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+
+    console.log('SSSSSSSSSS', filters)
+
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(getAllBrandsAPI())
+        dispatch(getAllFiltersAPI())
+    }, [])
 
     const MAX_UPLOAD = 8
 
@@ -52,7 +64,7 @@ const EditBanner = () => {
             'image/png',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -77,27 +89,27 @@ const EditBanner = () => {
 
     const categoryOptions = category.categories.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const divisionOptions = divisions.divisions.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const subcategoryOptions = subCategory.subcategories.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const productTypeOptions = product_type.product_types.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const brandOptions = brands.brands.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const { id } = useParams()
@@ -110,12 +122,14 @@ const EditBanner = () => {
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
             setSectionBGweb(
-                data.section_background_web ? [data.section_background_web] : []
+                data.section_background_web
+                    ? [data.section_background_web]
+                    : [],
             )
             setSectionBGmobile(
                 data.section_background_mobile
                     ? [data.section_background_mobile]
-                    : []
+                    : [],
             )
         } catch (error) {
             console.log(error)
@@ -159,7 +173,7 @@ const EditBanner = () => {
         max_price: bannerData?.max_price || 0,
         min_price: bannerData?.min_price || 0,
         barcodes: bannerData?.barcodes || '',
-        redirection_url: bannerData?.redirection_url || null
+        redirection_url: bannerData?.redirection_url || null,
     }
 
     const handleimage = async (files: File[]) => {
@@ -174,8 +188,8 @@ const EditBanner = () => {
             console.log(formData.get('file'))
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             })
             console.log(response)
             const newData = response.data.url
@@ -184,7 +198,7 @@ const EditBanner = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Image uploaded successfully'
+                    response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
@@ -228,14 +242,16 @@ const EditBanner = () => {
         }
         if (values.section_background_mobile_array.length > 0) {
             sectionBgMobileUpload = await handleimage(
-                values.section_background_mobile_array
+                values.section_background_mobile_array,
             )
         }
         if (values.section_background_web_array.length > 0) {
             sectiioBgWebUpload = await handleimage(
-                values.section_background_web_array
+                values.section_background_web_array,
             )
         }
+
+        console.log('tags', values)
 
         const formData = {
             ...values,
@@ -254,7 +270,7 @@ const EditBanner = () => {
             product_type: values.product_type
                 .map((item) => item.name)
                 .join(','),
-            brand: values.brand.map((item) => item.name).join(',')
+            brand: values.brand.map((item) => item.name).join(','),
         }
 
         try {
@@ -263,7 +279,7 @@ const EditBanner = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Banner Edited Successfully'
+                    response?.data?.message || 'Banner Edited Successfully',
             })
 
             // navigate('/app/appSettings/banners')
@@ -271,10 +287,43 @@ const EditBanner = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Banner not Edited'
+                    error?.response?.data?.message || 'Banner not Edited',
             })
         }
     }
+
+    const SELECTDATAS = [
+        {
+            name: 'category',
+            label: 'Category',
+            placeholder: 'Enter Category',
+            stats: categoryOptions,
+        },
+        {
+            name: 'division',
+            label: 'Division',
+            placeholder: 'Enter Division',
+            stats: divisionOptions,
+        },
+        {
+            name: 'sub_category',
+            label: 'Sub-Category',
+            placeholder: 'Enter Sub-Category',
+            stats: subcategoryOptions,
+        },
+        {
+            name: 'product_type',
+            label: 'Product Type',
+            placeholder: 'Enter Product Type',
+            stats: productTypeOptions,
+        },
+        {
+            name: 'brand',
+            label: 'Brand',
+            placeholder: 'Enter Brand',
+            stats: brandOptions,
+        },
+    ]
 
     return (
         <div>
@@ -308,30 +357,6 @@ const EditBanner = () => {
                                     </FormItem>
                                 ))}
                             </FormContainer>
-                            {/* <FormItem
-                                asterisk
-                                label="From Date"
-                                className="col-span-1 w-1/2"
-                            >
-                                <Field name="from_date" placeholder="Date">
-                                    {({ field, form }: FieldProps<any>) => (
-                                        <DatePicker
-                                            field={field}
-                                            form={form}
-                                            value={field.value}
-                                            onChange={(date) => {
-                                                console.log(field.name)
-                                                form.setFieldValue(
-                                                    field.name,
-                                                    date
-                                                )
-                                            }}
-                                             
-                                        />
-                                    )}
-                                </Field>
-                            </FormItem> */}
-
                             {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex flex-col items-center justify-center rounded-xl mb-4">
@@ -354,7 +379,7 @@ const EditBanner = () => {
                                                         onClick={() =>
                                                             handleImageRemove(
                                                                 index,
-                                                                'mobile'
+                                                                'mobile',
                                                             )
                                                         }
                                                         className="text-red-600 font-bold"
@@ -381,13 +406,13 @@ const EditBanner = () => {
                                                     onChange={(files) =>
                                                         form.setFieldValue(
                                                             'image_mobile_array',
-                                                            files
+                                                            files,
                                                         )
                                                     }
                                                     onFileRemove={(files) =>
                                                         form.setFieldValue(
                                                             'image_mobile_array',
-                                                            files
+                                                            files,
                                                         )
                                                     }
                                                 />
@@ -419,7 +444,7 @@ const EditBanner = () => {
                                                         onClick={() =>
                                                             handleImageRemove(
                                                                 index,
-                                                                'web'
+                                                                'web',
                                                             )
                                                         }
                                                         className="text-red-600 font-bold"
@@ -444,13 +469,13 @@ const EditBanner = () => {
                                                     onChange={(files) =>
                                                         form.setFieldValue(
                                                             'image_web_array',
-                                                            files
+                                                            files,
                                                         )
                                                     }
                                                     onFileRemove={(files) =>
                                                         form.setFieldValue(
                                                             'image_web_array',
-                                                            files
+                                                            files,
                                                         )
                                                     }
                                                 />
@@ -481,7 +506,7 @@ const EditBanner = () => {
                                                         onClick={() =>
                                                             handleImageRemove(
                                                                 index,
-                                                                'SecWeb'
+                                                                'SecWeb',
                                                             )
                                                         }
                                                         className="text-red-600 font-bold"
@@ -506,13 +531,13 @@ const EditBanner = () => {
                                                     onChange={(files) =>
                                                         form.setFieldValue(
                                                             'section_background_web_array',
-                                                            files
+                                                            files,
                                                         )
                                                     }
                                                     onFileRemove={(files) =>
                                                         form.setFieldValue(
                                                             'section_background_web_array',
-                                                            files
+                                                            files,
                                                         )
                                                     }
                                                 />
@@ -545,7 +570,7 @@ const EditBanner = () => {
                                                             onClick={() =>
                                                                 handleImageRemove(
                                                                     index,
-                                                                    'SecMob'
+                                                                    'SecMob',
                                                                 )
                                                             }
                                                             className="text-red-600 font-bold"
@@ -553,7 +578,7 @@ const EditBanner = () => {
                                                             X
                                                         </button>
                                                     </div>
-                                                )
+                                                ),
                                             )
                                         ) : (
                                             <p>No image</p>
@@ -571,13 +596,13 @@ const EditBanner = () => {
                                                     onChange={(files) =>
                                                         form.setFieldValue(
                                                             'section_background_mobile_array',
-                                                            files
+                                                            files,
                                                         )
                                                     }
                                                     onFileRemove={(files) =>
                                                         form.setFieldValue(
                                                             'section_background_mobile_array',
-                                                            files
+                                                            files,
                                                         )
                                                     }
                                                 />
@@ -589,239 +614,97 @@ const EditBanner = () => {
 
                             {/* ...................................................................... */}
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="Category Name"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="category">
-                                            {({
-                                                field,
-                                                form
-                                            }: FieldProps<any>) => {
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        placeholder="Select Category"
-                                                        options={
-                                                            categoryOptions
-                                                        }
-                                                        value={field.value.map(
-                                                            (value: any) =>
-                                                                categoryOptions.find(
-                                                                    (option) =>
-                                                                        option.value ===
-                                                                        value.id
-                                                                )
-                                                        )}
-                                                        onChange={(
-                                                            selected
-                                                        ) => {
-                                                            console.log(
-                                                                'Selected',
-                                                                selected
-                                                            )
-                                                            setFieldValue(
-                                                                field.name,
-                                                                selected.map(
+                                {SELECTDATAS.map((item, key) => {
+                                    return (
+                                        <FormContainer key={key}>
+                                            <FormItem
+                                                asterisk
+                                                label={item.label}
+                                                className="col-span-1 w-full"
+                                            >
+                                                <Field name={item.name}>
+                                                    {({
+                                                        field,
+                                                    }: FieldProps<any>) => {
+                                                        return (
+                                                            <Select
+                                                                isMulti
+                                                                placeholder={
+                                                                    item.placeholder
+                                                                }
+                                                                options={
+                                                                    item.stats
+                                                                }
+                                                                value={field.value.map(
                                                                     (
-                                                                        option: any
-                                                                    ) => ({
-                                                                        id: option.value,
-                                                                        name: option.label
-                                                                    })
-                                                                )
-                                                            )
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
+                                                                        value: any,
+                                                                    ) =>
+                                                                        item.stats.find(
+                                                                            (
+                                                                                option,
+                                                                            ) =>
+                                                                                option.value ===
+                                                                                value.id,
+                                                                        ),
+                                                                )}
+                                                                onChange={(
+                                                                    selected,
+                                                                ) => {
+                                                                    setFieldValue(
+                                                                        field.name,
+                                                                        selected.map(
+                                                                            (
+                                                                                option: any,
+                                                                            ) => ({
+                                                                                id: option.value,
+                                                                                name: option.label,
+                                                                            }),
+                                                                        ),
+                                                                    )
+                                                                }}
+                                                            />
+                                                        )
+                                                    }}
+                                                </Field>
+                                            </FormItem>
+                                        </FormContainer>
+                                    )
+                                })}
 
-                                {/* Division */}
+                                {/* Tags */}
 
                                 <FormContainer>
                                     <FormItem
                                         asterisk
-                                        label="Division Name"
+                                        label="Filter Tags"
                                         className="col-span-1 w-full"
                                     >
-                                        <Field name="division">
-                                            {({
-                                                field,
-                                                form
-                                            }: FieldProps<any>) => {
+                                        <Field name="tags">
+                                            {({ field }: FieldProps<any>) => {
                                                 return (
                                                     <Select
                                                         isMulti
-                                                        placeholder="Select Division"
+                                                        placeholder="Select Filter Tags"
                                                         options={
-                                                            divisionOptions
+                                                            filters.filters
                                                         }
-                                                        value={field.value.map(
-                                                            (value: any) =>
-                                                                divisionOptions.find(
-                                                                    (option) =>
-                                                                        option.value ===
-                                                                        value.id
-                                                                )
-                                                        )}
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.label}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) => option.value}
                                                         onChange={(selected) =>
                                                             setFieldValue(
                                                                 field.name,
                                                                 selected.map(
                                                                     (
-                                                                        option: any
+                                                                        option: any,
                                                                     ) => ({
                                                                         id: option.value,
-                                                                        name: option.label
-                                                                    })
-                                                                )
-                                                            )
-                                                        }
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* Subcategory */}
-
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="Sub Category Name"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="sub_category">
-                                            {({
-                                                field,
-                                                form
-                                            }: FieldProps<any>) => {
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        placeholder="Select Subcategory"
-                                                        options={
-                                                            subcategoryOptions
-                                                        }
-                                                        value={field.value.map(
-                                                            (value: any) =>
-                                                                subcategoryOptions.find(
-                                                                    (option) =>
-                                                                        option.value ===
-                                                                        value.id
-                                                                )
-                                                        )}
-                                                        onChange={(selected) =>
-                                                            setFieldValue(
-                                                                field.name,
-                                                                selected.map(
-                                                                    (
-                                                                        option: any
-                                                                    ) => ({
-                                                                        id: option.value,
-                                                                        name: option.label
-                                                                    })
-                                                                )
-                                                            )
-                                                        }
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* Product Type */}
-
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="Product Type"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="product_type">
-                                            {({
-                                                field,
-                                                form
-                                            }: FieldProps<any>) => {
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        placeholder="Select Product Type"
-                                                        options={
-                                                            productTypeOptions
-                                                        }
-                                                        value={field.value.map(
-                                                            (value: any) =>
-                                                                productTypeOptions.find(
-                                                                    (option) =>
-                                                                        option.value ===
-                                                                        value.id
-                                                                )
-                                                        )}
-                                                        onChange={(selected) =>
-                                                            setFieldValue(
-                                                                field.name,
-                                                                selected.map(
-                                                                    (
-                                                                        option: any
-                                                                    ) => ({
-                                                                        id: option.value,
-                                                                        name: option.label
-                                                                    })
-                                                                )
-                                                            )
-                                                        }
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* Brand */}
-
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="Brand"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="brand">
-                                            {({
-                                                field,
-                                                form
-                                            }: FieldProps<any>) => {
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        placeholder="Select Brand"
-                                                        options={brandOptions}
-                                                        value={field.value.map(
-                                                            (value: any) =>
-                                                                brandOptions.find(
-                                                                    (option) =>
-                                                                        option.value ===
-                                                                        value.id
-                                                                )
-                                                        )}
-                                                        onChange={(selected) =>
-                                                            setFieldValue(
-                                                                field.name,
-                                                                selected.map(
-                                                                    (
-                                                                        option: any
-                                                                    ) => ({
-                                                                        id: option.value,
-                                                                        name: option.label
-                                                                    })
-                                                                )
+                                                                        name: option.label,
+                                                                    }),
+                                                                ),
                                                             )
                                                         }
                                                     />

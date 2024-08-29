@@ -23,13 +23,21 @@ import {
     HiOutlineShare,
     HiOutlineVariable,
     HiOutlineCode,
+    HiOutlineUsers,
 } from 'react-icons/hi'
 import { BiCategory } from 'react-icons/bi'
 import { LiaUserTagSolid } from 'react-icons/lia'
-import { MdOutlineInventory, MdDisplaySettings } from 'react-icons/md'
+import {
+    MdOutlineInventory,
+    MdDisplaySettings,
+    MdBusinessCenter,
+} from 'react-icons/md'
 import { CgOrganisation } from 'react-icons/cg'
 import { BsCameraReels } from 'react-icons/bs'
 import { TbTruckDelivery } from 'react-icons/tb'
+import { RiBillLine } from 'react-icons/ri'
+import { PiKeyReturn, PiKeyReturnLight } from 'react-icons/pi'
+import { HiOutlineBanknotes } from 'react-icons/hi2'
 
 export type NavigationIcons = Record<string, JSX.Element>
 
@@ -40,6 +48,11 @@ const navigationIcon: NavigationIcons = {
     sales: <HiOutlineTrendingUp />,
     org: <CgOrganisation />,
     reels: <BsCameraReels />,
+    users: <HiOutlineUsers />,
+    bill: <RiBillLine />,
+    note: <HiOutlineBanknotes />,
+    return: <PiKeyReturn />,
+    business: <MdBusinessCenter />,
     delivery: <TbTruckDelivery />,
     appsettings: <MdDisplaySettings />,
     category: <BiCategory />,
