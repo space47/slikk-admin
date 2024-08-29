@@ -8,7 +8,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    flexRender
+    flexRender,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
@@ -55,7 +55,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const OrderList = () => {
@@ -75,7 +75,7 @@ const OrderList = () => {
         page: number,
         pageSize: number,
         from: string,
-        to: string
+        to: string,
     ) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -84,7 +84,7 @@ const OrderList = () => {
                     ? ''
                     : `&status=${dropdownStatus?.value}`
             const response = await axiosInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`
+                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
             )
 
             const ordersData = response.data?.data.results
@@ -102,7 +102,7 @@ const OrderList = () => {
         pageSize: number,
         from: string,
         to: string,
-        filter: string = ''
+        filter: string = '',
     ) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -111,7 +111,7 @@ const OrderList = () => {
                     ? ''
                     : `&status=${dropdownStatus?.value}`
             const response = await axiosInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&id=${filter}`
+                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&id=${filter}`,
             )
 
             const ordersData = response.data?.data.results
@@ -137,21 +137,26 @@ const OrderList = () => {
             {
                 header: 'Invoice Id',
                 accessorKey: 'invoice_id',
-                cell: ({ getValue }) => (
-                    <div
-                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                        onClick={() => handleInvoiceClick(getValue() as string)}
-                    >
-                        {getValue()}
-                    </div>
-                )
+                cell: ({ getValue }) => {
+                    return (
+                        <a
+                            href={`/app/orders/${getValue()}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                            // onClick={() => handleInvoiceClick(getValue() as string)}
+                        >
+                            {getValue()}
+                        </a>
+                    )
+                },
             },
             {
                 header: 'Order Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                )
+                ),
             },
             { header: 'Mobile Number', accessorKey: 'user.mobile' },
             { header: 'Customer Name', accessorKey: 'user.name' },
@@ -166,24 +171,24 @@ const OrderList = () => {
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                )
-            }
+                ),
+            },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
         data: orders,
         columns,
         filterFns: {
-            fuzzy: fuzzyFilter
+            fuzzy: fuzzyFilter,
         },
         state: {
             globalFilter: globalFilter,
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize
-            }
+                pageSize: pageSize,
+            },
         },
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
@@ -192,7 +197,7 @@ const OrderList = () => {
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
-        pageCount: Math.ceil(orderCount ?? 0 / pageSize)
+        pageCount: Math.ceil(orderCount ?? 0 / pageSize),
     })
 
     const handleInvoiceClick = (invoiceId: string) => {
@@ -229,7 +234,7 @@ const OrderList = () => {
     const handleDropdownSelect = (a: any) => {
         setDropdownStatus({
             value: a,
-            name: ORDER_STATUS.find((item) => item.value == a)?.name || ''
+            name: ORDER_STATUS.find((item) => item.value == a)?.name || '',
         })
     }
     console.log('ssssssswddwdwdw', dropdownStatus)
@@ -318,7 +323,7 @@ const OrderList = () => {
                                         >
                                             {flexRender(
                                                 header.column.columnDef.header,
-                                                header.getContext()
+                                                header.getContext(),
                                             )}
                                             <Sorter
                                                 sort={header.column.getIsSorted()}
@@ -337,7 +342,7 @@ const OrderList = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -357,7 +362,7 @@ const OrderList = () => {
                         size="sm"
                         isSearchable={true}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
