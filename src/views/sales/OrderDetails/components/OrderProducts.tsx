@@ -5,7 +5,7 @@ import {
     useReactTable,
     getCoreRowModel,
     flexRender,
-    createColumnHelper
+    createColumnHelper,
 } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
@@ -97,7 +97,7 @@ const columns = [
         cell: (props) => {
             const row = props.row.original
             return <ProductColumn row={row} />
-        }
+        },
     }),
 
     columnHelper.accessor('size', {
@@ -105,64 +105,67 @@ const columns = [
         cell: (props) => {
             const row = props.row.original
             return <div>{row.size ? row.size.toUpperCase() : ''}</div>
-        }
+        },
     }),
     columnHelper.accessor('location', {
-        header: 'Location'
+        header: 'Location',
     }),
     columnHelper.accessor('color', {
         header: 'Color',
         cell: (props) => {
             const row = props.row.original
             return <div>{row.color}</div>
-        }
+        },
     }),
     columnHelper.accessor('sp', {
         header: 'Price',
         cell: (props) => {
             const row = props.row.original
+            console.log('MRP', row?.mrp)
+            console.log('SP', row?.sp)
             return row.mrp > row.sp ? (
-                <div>Rs.{row.sp}</div>
-            ) : (
-                <div className="w-[200px] overflow-ellipsis flex flex-col ">
+                <div className="w-[200px] overflow-ellipsis flex flex-col">
                     <span className="line-through">Rs.{row.mrp}</span>
                     <span>Rs.{row.sp}</span>
                     <span>
-                        {' '}
                         {parseFloat(
                             (
                                 ((Number(row.mrp) - Number(row.sp)) /
                                     Number(row.mrp)) *
                                 100
-                            ).toFixed(0)
-                        )}
+                            ).toFixed(0),
+                        )}{' '}
                         % off
                     </span>
                 </div>
+            ) : row.mrp === row.sp ? (
+                <div>Rs.{row.sp}</div>
+            ) : (
+                <div>Rs.{row.sp}</div>
             )
-        }
+        },
     }),
     columnHelper.accessor('quantity', {
-        header: 'Quantity'
+        header: 'Quantity',
     }),
 
     columnHelper.accessor('fulfilled_quantity', {
-        header: 'Fullfilled Quantity'
+        header: 'Fullfilled Quantity',
     }),
     columnHelper.accessor('final_price', {
         header: 'Final Price',
         cell: (props) => {
             const row = props.row.original
             return <PriceAmount amount={row.final_price} />
-        }
-    })
+        },
+    }),
 ]
 
 const OrderProducts = ({ data = [] }: OrderProductsProps) => {
     const table = useReactTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel()
+        getCoreRowModel: getCoreRowModel(),
     })
 
     return (
@@ -179,7 +182,7 @@ const OrderProducts = ({ data = [] }: OrderProductsProps) => {
                                     >
                                         {flexRender(
                                             header.column.columnDef.header,
-                                            header.getContext()
+                                            header.getContext(),
                                         )}
                                     </Th>
                                 )
@@ -196,7 +199,7 @@ const OrderProducts = ({ data = [] }: OrderProductsProps) => {
                                         <Td key={cell.id}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
-                                                cell.getContext()
+                                                cell.getContext(),
                                             )}
                                         </Td>
                                     )
