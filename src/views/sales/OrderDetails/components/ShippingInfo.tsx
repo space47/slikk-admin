@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Card from '@/components/ui/Card'
-import { HiPhone } from 'react-icons/hi'
+import { HiLocationMarker, HiPhone } from 'react-icons/hi'
 import Avatar from '@/components/ui/Avatar'
 
 type ShippingInfoProps = {
@@ -14,6 +14,7 @@ type ShippingInfoProps = {
         runner_phone_number: string
         runner_profile_pic_url: string
         state: string
+        tracking_url: string
     }
     logistic_partner: any
     delivery_type: string
@@ -43,6 +44,15 @@ const ShippingInfo = ({
                             <div className="flex gap-2 items-center">
                                 <HiPhone />{' '}
                                 <span>{data?.runner_phone_number}</span>
+                            </div>
+                            <div className="url">
+                                <a
+                                    href={data?.tracking_url}
+                                    className="flex items-center"
+                                >
+                                    <HiLocationMarker />{' '}
+                                    <p>Click to track location</p>
+                                </a>
                             </div>
                         </div>
                     </div>

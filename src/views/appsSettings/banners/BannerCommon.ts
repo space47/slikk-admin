@@ -11,6 +11,11 @@ type DIVTYPES = {
     id: number
 }
 
+type TAGSTYPE = {
+    id: string
+    name: string
+}
+
 export interface BANNERMODEL {
     id: number
     name: string
@@ -33,7 +38,7 @@ export interface BANNERMODEL {
     from_date: string
     to_date: string
     uptooff: string
-    tags: string[]
+    tags: TAGSTYPE[]
     footer: string | null
     coupon_code: string | null
     is_clickable: boolean
