@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -9,14 +10,16 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
+import { IoMdDownload } from 'react-icons/io'
+import { notification } from 'antd'
+import ImageMODAL from '@/common/ImageModal'
+import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
+import { Dropdown } from '@/components/ui'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 interface LastUpdatedBy {
     name: string
@@ -33,12 +36,13 @@ interface Product {
     size: string
     sku: string
     variant_id: string
+    image: string
 }
 
 interface Stock {
     product: Product
     store: number
-    quantity: number
+    quantity: any
     last_updated_by: LastUpdatedBy
     show_out_of_stock: boolean
     is_active: boolean
@@ -50,6 +54,8 @@ interface Stock {
     grn: any
     from: string
     to: string
+    id: any
+    location: string
 }
 
 type Option = {
@@ -63,7 +69,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const StockOverview = () => {
@@ -72,19 +78,28 @@ const StockOverview = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
+    const [filterInput, setFilterInput] = useState('')
+    const [updatedQuantities, setUpdatedQuantities] = useState<{
+        [key: number]: number
+    }>({})
+    const [updatedLocation, setUpdatedLocation] = useState<{
+        [key: number]: string
+    }>({})
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState([])
+    const [currentSelectedPage, setCurrentSelectedPage] =
+        useState<Record<string, string>>()
+    const [searchType, setSearchType] = useState<string>('')
 
-    const fetchData = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string
-    ) => {
+    const fetchData = async (page: number, pageSize: number) => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            let type = ''
+            if (currentSelectedPage?.label && searchType) {
+                type = `&${currentSelectedPage.value}=${searchType}`
+            }
+
             const response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
+                `inventory?p=${page}&page_size=${pageSize}${type}`, // /rowId(patch)...........body me quantity: {numberic value}, //location : text
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -95,85 +110,145 @@ const StockOverview = () => {
         }
     }
 
-    useEffect(() => {
-        fetchData(page, pageSize, from, to)
-    }, [page, pageSize, from, to])
+    const filter = async (
+        page: number,
+        pageSize: number,
+        filter: string = '',
+    ) => {
+        try {
+            let type = ''
+            if (currentSelectedPage?.label && searchType) {
+                type = `&${currentSelectedPage.value}=${searchType}`
+            }
 
-    const getUploadStatus = (is_active: any) => {
-        if (is_active == true) {
-            return 'Yes'
-        } else {
-            return 'No'
+            let searchInputType = `&sku=${filter}`
+            setFilterInput(searchInputType)
+            let response = await axiosInstance.get(
+                `inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`,
+            )
+
+            if (response.data.data.results.length === 0) {
+                searchInputType = `&name=${filter}`
+                setFilterInput(searchInputType)
+                response = await axiosInstance.get(
+                    `inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`,
+                )
+            }
+
+            const data = response.data.results
+            const total = response.data.count
+
+            setData(data)
+            setTotalData(total)
+        } catch (error) {
+            console.error('Error fetching data:', error)
         }
     }
+
+    useEffect(() => {
+        fetchData(page, pageSize)
+    }, [page, pageSize, currentSelectedPage])
+
+    useEffect(() => {
+        filter(page, pageSize, globalFilter)
+    }, [page, pageSize, globalFilter])
 
     const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
             {
                 header: 'SKU',
                 accessorKey: 'product.sku',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Product Name',
                 accessorKey: 'product.name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Image',
+                accessorKey: 'product.image',
+                cell: ({ getValue, row }) => (
+                    <img
+                        src={getValue().split(',')[0]}
+                        alt="Image"
+                        className="w-24 h-20 object-cover cursor-pointer"
+                        onClick={() =>
+                            handleOpenModal(row.original.product.image)
+                        }
+                    />
+                ),
             },
             {
                 header: 'Store Number',
                 accessorKey: 'store',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Location',
                 accessorKey: 'location',
-                cell: (info) => info.getValue()
-            },
-            {
-                header: 'QTY',
-                accessorKey: 'quantity',
-                cell: (info) => info.getValue()
+                cell: ({ row }) => {
+                    const stockId = row.original.id
+                    const location =
+                        updatedLocation[stockId] ?? row.original.location
+                    return (
+                        <input
+                            type="text"
+                            value={location}
+                            onChange={(e) =>
+                                handleLocationChange(stockId, e.target.value)
+                            }
+                        />
+                    )
+                },
             },
             {
                 header: 'Brand',
                 accessorKey: 'product.brand_name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
 
             {
                 header: 'Color',
                 accessorKey: 'product.color',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Size',
                 accessorKey: 'product.size',
-                cell: (info) => info.getValue().toUpperCase()
+                cell: (info) => info.getValue().toUpperCase(),
             },
             {
-                header: ' Stock',
+                header: 'Stock',
                 accessorKey: 'quantity',
-                cell: (info) => info.getValue()
+                cell: ({ row }) => {
+                    const stockId = row.original.id
+                    const quantity =
+                        updatedQuantities[stockId] ?? row.original.quantity
+                    return (
+                        <input
+                            className="w-[100px]"
+                            type="number"
+                            value={quantity}
+                            onChange={(e) =>
+                                handleQuantityChange(
+                                    stockId,
+                                    Number(e.target.value),
+                                )
+                            }
+                        />
+                    )
+                },
             },
-            // {
-            //     header: 'Active',
-            //     accessorKey: 'is_active',
-            //     cell: (info) => getUploadStatus(info.getValue()),
-            // },
-            // {
-            //     header: 'Offer Active',
-            //     accessorKey: ' offer_is_active',
-            //     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            // },
             {
                 header: 'Expiry',
                 accessorKey: 'expiry_date',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Batch Num',
                 accessorKey: 'batch_number',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Created',
@@ -182,7 +257,7 @@ const StockOverview = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Updated',
@@ -191,21 +266,86 @@ const StockOverview = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             {
                 header: 'GRN number',
                 accessorKey: 'grn',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Updated By',
                 accessorKey: 'last_updated_by.name',
-                cell: (info) => info.getValue()
-            }
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Update Table',
+                accessorKey: 'id',
+                cell: ({ getValue, row }) => (
+                    <button
+                        onClick={() => handleUpdate(row.original.id)}
+                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                    >
+                        Update
+                    </button>
+                ),
+            },
         ],
-        []
+        [updatedQuantities, updatedLocation],
     )
+    const handleSelect = (value: any) => {
+        const selected = DROPDOWNARRAY.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
+    }
+    const handleSearchType = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchType(event.target.value)
+    }
+
+    const handleOpenModal = (img: any) => {
+        console.log('sdsds', img)
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
+
+    const handleQuantityChange = (id: number, newQuantity: number) => {
+        setUpdatedQuantities((prevQuantities) => ({
+            ...prevQuantities,
+            [id]: newQuantity,
+        }))
+    }
+
+    const handleLocationChange = (id: number, newLocation: string) => {
+        setUpdatedLocation((prev) => ({
+            ...prev,
+            [id]: newLocation,
+        }))
+    }
+
+    const handleUpdate = async (id: any) => {
+        const location = updatedLocation[id] ?? null
+        const quantity = updatedQuantities[id] ?? null
+
+        try {
+            const body = {
+                quantity: quantity,
+                location: location,
+            }
+
+            console.log('BODY', body)
+
+            const response = await axiosInstance.patch(`inventory/${id}`, body)
+            notification.success({
+                message: 'SUCCESS',
+                description: response?.data?.message || 'UPDATE SUCCESS',
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    console.log('UPPPPPPPPP', updatedQuantities, updatedLocation)
 
     const table = useReactTable({
         data,
@@ -218,15 +358,15 @@ const StockOverview = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize
+                pageSize: pageSize,
             },
-            globalFilter
+            globalFilter,
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter
+        onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -237,24 +377,35 @@ const StockOverview = () => {
         setPageSize(Number(value))
     }
 
-    const handleFromChange = (date: Date | null) => {
-        if (date) {
-            setFrom(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setFrom(moment().format('YYYY-MM-DD'))
-        }
-    }
+    const handleDownload = async () => {
+        try {
+            let type = ''
+            if (currentSelectedPage?.label && searchType) {
+                type = `&${currentSelectedPage.value}=${searchType}`
+            }
 
-    const handleToChange = (date: Date | null) => {
-        if (date) {
-            setTo(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setTo(moment().format('YYYY-MM-DD'))
+            let filterParam = ''
+            if (filterInput.includes('&name=')) {
+                filterParam = `&name=${globalFilter}`
+            } else if (filterInput.includes('&sku=')) {
+                filterParam = `&sku=${globalFilter}`
+            }
+            const downloadUrl = `inventory?download=true${type}${filterParam}`
+            const response = await axiosInstance.get(downloadUrl, {
+                responseType: 'blob',
+            })
+            const urlToBeDownloaded = window.URL.createObjectURL(
+                new Blob([response.data]),
+            )
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = 'Product.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.error('Error downloading the file:', error)
         }
-    }
-
-    const addOneDay = (date: string) => {
-        return moment(date).add(1, 'days').format('YYYY-MM-DD')
     }
 
     return (
@@ -269,34 +420,42 @@ const StockOverview = () => {
                         className="p-2 border rounded"
                     />
                 </div>
-
-                <div className="flex gap-5">
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            FROM DATE:
-                        </div>
-                        <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
-                        />
-                    </div>
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            TO DATE:
-                        </div>
-                        <DatePicker
-                            inputSuffix={
-                                <TbCalendarStats className="text-xl" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(to)}
-                            onChange={handleToChange}
-                            minDate={moment(from).add(1, 'day').toDate()}
-                        />
+                <div className="drop border  bg-gray-200 text-black text-lg font-semibold flex gap-5 w-[100px] mb-6 ">
+                    <input
+                        type="text"
+                        placeholder="Search Type here"
+                        value={searchType}
+                        onChange={handleSearchType}
+                        className="p-2 border rounded"
+                    />
+                    <Dropdown
+                        className=" text-xl text-black "
+                        title={
+                            currentSelectedPage?.value
+                                ? currentSelectedPage.label
+                                : 'SELECT'
+                        }
+                        onSelect={handleSelect}
+                    >
+                        {DROPDOWNARRAY?.map((item, key) => {
+                            return (
+                                <DropdownItem key={key} eventKey={item.value}>
+                                    <span>{item.label}</span>
+                                </DropdownItem>
+                            )
+                        })}
+                    </Dropdown>
+                </div>
+                <div>
+                    <div className="flex items-end justify-end mb-2">
+                        <button
+                            className="bg-gray-100 text-black px-5 py-3  hover:bg-gray-200 rounded-lg"
+                            onClick={handleDownload}
+                        >
+                            <IoMdDownload className="text-3xl" />
+                        </button>{' '}
+                        <br />
+                        <br />
                     </div>
                 </div>
             </div>
@@ -308,7 +467,7 @@ const StockOverview = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext()
+                                        header.getContext(),
                                     )}
                                 </Th>
                             ))}
@@ -322,7 +481,7 @@ const StockOverview = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -342,13 +501,20 @@ const StockOverview = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
                 </div>
             </div>
+            {showImageModal && (
+                <ImageMODAL
+                    dialogIsOpen={showImageModal}
+                    setIsOpen={setShowImageModal}
+                    image={particularRowImage && particularRowImage?.split(',')}
+                />
+            )}
         </div>
     )
 }
