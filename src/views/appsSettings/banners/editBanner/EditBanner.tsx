@@ -221,6 +221,15 @@ const EditBanner = () => {
     //     return result
     // }
 
+    console.log('DIVISIONDATA', initialValue.division)
+
+    // const getInitialValues = (division: any) => {
+    //     return division.map((div) => ({
+    //         value: div.id,
+    //         label: div.name,
+    //     }))
+    // }
+
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
             setMobileImageView((item) => item.filter((_, id) => id !== index))
@@ -851,7 +860,7 @@ const EditBanner = () => {
                                                         // defaultOptions={transformArray(
                                                         //     initialValue.tags,
                                                         // )}
-                                                        getOptionLabel={(
+                                                getOptionLabel={(
                                                             option,
                                                         ) => option.label}
                                                         getOptionValue={(

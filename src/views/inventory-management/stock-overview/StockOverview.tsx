@@ -283,7 +283,13 @@ const StockOverview = () => {
                 accessorKey: 'id',
                 cell: ({ getValue, row }) => (
                     <button
-                        onClick={() => handleUpdate(row.original.id)}
+                        onClick={() =>
+                            handleUpdate(
+                                row.original.id,
+                                row.original.quantity,
+                                row.original.location,
+                            )
+                        }
                         className="px-4 py-2 bg-blue-500 text-white rounded"
                     >
                         Update
@@ -323,14 +329,18 @@ const StockOverview = () => {
         }))
     }
 
-    const handleUpdate = async (id: any) => {
+    const handleUpdate = async (
+        id: any,
+        originalQuantity: any,
+        originalLocation: any,
+    ) => {
         const location = updatedLocation[id] ?? null
         const quantity = updatedQuantities[id] ?? null
 
         try {
             const body = {
-                quantity: quantity,
-                location: location,
+                quantity: originalQuantity ? originalQuantity : quantity,
+                location: originalLocation ? originalLocation : location,
             }
 
             console.log('BODY', body)
