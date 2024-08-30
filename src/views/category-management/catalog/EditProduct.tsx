@@ -179,7 +179,7 @@ const EditProduct = () => {
         concious: productData?.concious,
         productHexCode: productData?.productHexCode,
         packsize: productData?.size,
-        size: productData?.filter_tags.size,
+        size: productData?.filter_tags?.size?.join('/'),
         ingrediants: productData?.ingredients,
         vegnonveg: productData?.vegnonveg,
         ingrediantsPreferences: productData?.ingrediantsPreferences,
@@ -198,12 +198,10 @@ const EditProduct = () => {
         necktype: productData?.necktype,
         risetype: productData?.risetype,
         sleevtype: productData?.sleevtype,
-        trend: productData?.filter_tags?.trend?.map((item: any) => item),
-        trendtype: productData?.filter_tags?.trendtype?.map(
-            (item: any) => item,
-        ),
-        fit: productData?.filter_tags?.fit?.map((item: any) => item),
-        fabric: productData?.filter_tags?.fabric?.map((item: any) => item),
+        trend: productData?.filter_tags?.trend?.join('/'),
+        trendtype: productData?.filter_tags?.trendtype?.join('/'),
+        fit: productData?.filter_tags?.fit?.join('/'),
+        fabric: productData?.filter_tags?.fabric?.join('/'),
     }
 
     useEffect(() => {
@@ -214,6 +212,9 @@ const EditProduct = () => {
             initialValue.image,
         )
     }, [initialValue])
+
+    console.log('SIZE', initialValue.trend)
+    console.log('PRODUCTDSATA', initialValue.fabric)
 
     const handleRemoveImage = (
         e: React.MouseEvent<HTMLButtonElement>,
