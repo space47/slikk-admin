@@ -10,7 +10,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter
+    useGlobalFilter,
 } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
@@ -32,7 +32,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const AppBanners = () => {
@@ -49,11 +49,11 @@ const AppBanners = () => {
     const fetchData = async (
         page: number,
         pageSize: number,
-        filter: string
+        filter: string,
     ) => {
         try {
             const response = await axiosInstance.get(
-                `/banners?p=${page}&page_size=${pageSize}&filter=${filter}`
+                `/banners?p=${page}&page_size=${pageSize}&filter=${filter}`,
             )
             const data = response.data.data.results
 
@@ -82,7 +82,7 @@ const AppBanners = () => {
             {
                 header: 'Quick Filter Tags',
                 accessorKey: 'quick_filter_tags',
-                cell: (info: any) => info.getValue().join(', ')
+                cell: (info: any) => info.getValue().join(', '),
             },
             {
                 header: 'Brand Name',
@@ -90,7 +90,7 @@ const AppBanners = () => {
                 cell: (info: any) =>
                     info.row.original.brand.map((item: any, key: number) => (
                         <div key={key}>{item.name}</div>
-                    ))
+                    )),
             },
             {
                 header: 'DIVISION Name',
@@ -98,7 +98,7 @@ const AppBanners = () => {
                 cell: (info: any) =>
                     info.row.original.division.map((item: any, key: number) => (
                         <div key={key}>{item.name}</div>
-                    ))
+                    )),
             },
 
             {
@@ -107,7 +107,7 @@ const AppBanners = () => {
                 cell: (info) =>
                     info.row.original.category.map((item: any, key: number) => (
                         <div key={key}>{item.name}</div>
-                    ))
+                    )),
             },
 
             {
@@ -117,8 +117,8 @@ const AppBanners = () => {
                     info.row.original.sub_category.map(
                         (item: any, key: number) => (
                             <div key={key}>{item.name}</div>
-                        )
-                    )
+                        ),
+                    ),
             },
             {
                 header: 'Product Type Name',
@@ -127,8 +127,8 @@ const AppBanners = () => {
                     info.row.original.product_type.map(
                         (item: any, key: number) => (
                             <div key={key}>{item.name}</div>
-                        )
-                    )
+                        ),
+                    ),
             },
             {
                 header: 'Image (WEB)',
@@ -142,7 +142,7 @@ const AppBanners = () => {
                         />
                     ) : (
                         ''
-                    )
+                    ),
             },
             {
                 header: 'Image (Mobile)',
@@ -156,7 +156,7 @@ const AppBanners = () => {
                         />
                     ) : (
                         ''
-                    )
+                    ),
             },
 
             { header: 'Offers', accessorKey: 'offers' },
@@ -167,21 +167,21 @@ const AppBanners = () => {
                 accessorKey: 'from_date',
                 cell: ({ getValue }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                )
+                ),
             },
             {
                 header: 'To Date',
                 accessorKey: 'to_date',
                 cell: ({ getValue }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                )
+                ),
             },
             { header: 'Upto Off', accessorKey: 'uptoff' },
-            {
-                header: 'Tags',
-                accessorKey: 'tags',
-                cell: (info: any) => info.getValue().join(', ')
-            },
+            // {
+            //     header: 'Tags',
+            //     accessorKey: 'tags',
+            //     cell: (info: any) => info.getValue(),
+            // },
             { header: 'Footer', accessorKey: 'footer' },
             { header: 'Coupon Code', accessorKey: 'coupon_code' },
             { header: 'Is Clickable', accessorKey: 'is_clickable' },
@@ -199,7 +199,7 @@ const AppBanners = () => {
                             style={{ width: '100px', height: 'auto' }}
                         />
                     )
-                }
+                },
             },
             {
                 header: 'Section Background Mobile',
@@ -208,7 +208,7 @@ const AppBanners = () => {
                     <a href={getValue()}>
                         <img src={getValue()} alt="" />
                     </a>
-                )
+                ),
             },
             { header: 'Max Price', accessorKey: 'max_price' },
             { header: 'Min Price', accessorKey: 'min_price' },
@@ -223,7 +223,7 @@ const AppBanners = () => {
                             {row.original.redirection_url}
                         </a>
                     </div>
-                )
+                ),
             },
             {
                 header: 'Edit',
@@ -235,7 +235,7 @@ const AppBanners = () => {
                     >
                         <FaEdit className="text-xl" />
                     </button>
-                )
+                ),
             },
             {
                 header: 'Delete',
@@ -247,10 +247,10 @@ const AppBanners = () => {
                     >
                         <FaTrash className="text-xl text-red-500" />
                     </button>
-                )
-            }
+                ),
+            },
         ],
-        []
+        [],
     )
 
     const handleActionClick = (id: number) => {
@@ -279,15 +279,15 @@ const AppBanners = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize
+                pageSize: pageSize,
             },
-            globalFilter
+            globalFilter,
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter
+        onGlobalFilterChange: setGlobalFilter,
     })
 
     // const onPaginationChange = (page: number) => {
@@ -304,24 +304,24 @@ const AppBanners = () => {
 
     const deleteBanner = async () => {
         const formData = {
-            banner_id: bannerid
+            banner_id: bannerid,
         }
         console.log('data', formData)
         try {
             const response = await axiosInstance.delete(`/banners`, {
-                data: formData
+                data: formData,
             })
             notification.success({
                 message: 'Success',
                 description:
                     response?.data?.message ||
-                    'User has benn Successfully deleted'
+                    'User has benn Successfully deleted',
             })
         } catch (error) {
             console.log(error)
             notification.error({
                 message: 'Failure',
-                description: 'Unable to delete'
+                description: 'Unable to delete',
             })
         }
 
@@ -359,7 +359,7 @@ const AppBanners = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext()
+                                        header.getContext(),
                                     )}
                                 </Th>
                             ))}
@@ -373,7 +373,7 @@ const AppBanners = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -393,7 +393,7 @@ const AppBanners = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
@@ -408,7 +408,7 @@ const AppBanners = () => {
                     onCancel={handleCloseModal}
                     okText="DELETE"
                     okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' }
+                        style: { backgroundColor: 'red', borderColor: 'red' },
                     }}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">

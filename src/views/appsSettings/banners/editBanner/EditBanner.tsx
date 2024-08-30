@@ -87,30 +87,11 @@ const EditBanner = () => {
         return valid
     }
 
-    const categoryOptions = category.categories.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const divisionOptions = divisions.divisions.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const subcategoryOptions = subCategory.subcategories.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const productTypeOptions = product_type.product_types.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const brandOptions = brands.brands.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
+    console.log(
+        'CAATEGORY',
+        category.categories.map((item) => item.name),
+    )
+    console.log('FILTERS', filters.filters)
 
     const { id } = useParams()
 
@@ -176,6 +157,11 @@ const EditBanner = () => {
         redirection_url: bannerData?.redirection_url || null,
     }
 
+    console.log(
+        'DIVISION',
+        initialValue.division.map((item) => item.name),
+    )
+
     const handleimage = async (files: File[]) => {
         const formData = new FormData()
 
@@ -211,6 +197,29 @@ const EditBanner = () => {
             return 'Error'
         }
     }
+
+    // const transformArray = (arr) => {
+    //     const result = []
+
+    //     arr.forEach((item) => {
+    //         // Split the string into type (brand/cat) and name
+    //         const [type, name] = item.split('_')
+
+    //         // Find the existing category in the result array
+    //         let category = result.find((obj) => obj.label === type)
+
+    //         // If the category doesn't exist, create a new one
+    //         if (!category) {
+    //             category = { label: type, options: [] }
+    //             result.push(category)
+    //         }
+
+    //         // Add the item to the options array of the found or created category
+    //         category.options.push({ name: name, label: name, value: item })
+    //     })
+
+    //     return result
+    // }
 
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
@@ -262,15 +271,15 @@ const EditBanner = () => {
             section_background_mobile: sectionBgMobileUpload,
             image_web_array: null,
             image_mobile_array: null,
-            division: values.division.map((item) => item.name).join(','),
-            category: values.category.map((item) => item.name).join(','),
-            sub_category: values.sub_category
-                .map((item) => item.name)
-                .join(','),
-            product_type: values.product_type
-                .map((item) => item.name)
-                .join(','),
-            brand: values.brand.map((item) => item.name).join(','),
+            // // division: values.division.map((item) => item.name).join(','),
+            // category: values.category.map((item) => item.name).join(','),
+            // sub_category: values.sub_category
+            //     .map((item) => item.name)
+            //     .join(','),
+            // product_type: values.product_type
+            //     .map((item) => item.name)
+            //     .join(','),
+            // brand: values.brand.map((item) => item.name).join(','),
         }
 
         try {
@@ -291,39 +300,6 @@ const EditBanner = () => {
             })
         }
     }
-
-    const SELECTDATAS = [
-        {
-            name: 'category',
-            label: 'Category',
-            placeholder: 'Enter Category',
-            stats: categoryOptions,
-        },
-        {
-            name: 'division',
-            label: 'Division',
-            placeholder: 'Enter Division',
-            stats: divisionOptions,
-        },
-        {
-            name: 'sub_category',
-            label: 'Sub-Category',
-            placeholder: 'Enter Sub-Category',
-            stats: subcategoryOptions,
-        },
-        {
-            name: 'product_type',
-            label: 'Product Type',
-            placeholder: 'Enter Product Type',
-            stats: productTypeOptions,
-        },
-        {
-            name: 'brand',
-            label: 'Brand',
-            placeholder: 'Enter Brand',
-            stats: brandOptions,
-        },
-    ]
 
     return (
         <div>
@@ -614,62 +590,243 @@ const EditBanner = () => {
 
                             {/* ...................................................................... */}
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {SELECTDATAS.map((item, key) => {
-                                    return (
-                                        <FormContainer key={key}>
-                                            <FormItem
-                                                asterisk
-                                                label={item.label}
-                                                className="col-span-1 w-full"
-                                            >
-                                                <Field name={item.name}>
-                                                    {({
-                                                        field,
-                                                    }: FieldProps<any>) => {
-                                                        return (
-                                                            <Select
-                                                                isMulti
-                                                                placeholder={
-                                                                    item.placeholder
-                                                                }
-                                                                options={
-                                                                    item.stats
-                                                                }
-                                                                value={field.value.map(
-                                                                    (
-                                                                        value: any,
-                                                                    ) =>
-                                                                        item.stats.find(
-                                                                            (
-                                                                                option,
-                                                                            ) =>
-                                                                                option.value ===
-                                                                                value.id,
-                                                                        ),
-                                                                )}
-                                                                onChange={(
-                                                                    selected,
-                                                                ) => {
-                                                                    setFieldValue(
-                                                                        field.name,
-                                                                        selected.map(
-                                                                            (
-                                                                                option: any,
-                                                                            ) => ({
-                                                                                id: option.value,
-                                                                                name: option.label,
-                                                                            }),
-                                                                        ),
+                                <FormContainer>
+                                    <FormItem
+                                        asterisk
+                                        label="division"
+                                        className="col-span-1 w-full"
+                                    >
+                                        <Field name="division">
+                                            {({ field }: FieldProps<any>) => {
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        options={
+                                                            divisions.divisions
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'division',
+                                                                newVal
+                                                                    ?.map(
+                                                                        (val) =>
+                                                                            val.name,
                                                                     )
-                                                                }}
-                                                            />
-                                                        )
-                                                    }}
-                                                </Field>
-                                            </FormItem>
-                                        </FormContainer>
-                                    )
-                                })}
+                                                                    .join(','),
+                                                            )
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+
+                                {/* CATEGORY...................................... */}
+                                <FormContainer>
+                                    <FormItem
+                                        asterisk
+                                        label="Category"
+                                        className="col-span-1 w-full"
+                                    >
+                                        <Field name="category">
+                                            {({ field }: FieldProps<any>) => {
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        options={
+                                                            category.categories
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'category',
+                                                                newVal
+                                                                    ?.map(
+                                                                        (val) =>
+                                                                            val.name,
+                                                                    )
+                                                                    .join(','),
+                                                            )
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+
+                                {/* SUB CATEGORY................................................. */}
+
+                                <FormContainer>
+                                    <FormItem
+                                        asterisk
+                                        label="sub_category"
+                                        className="col-span-1 w-full"
+                                    >
+                                        <Field name="sub_category">
+                                            {({ field }: FieldProps<any>) => {
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        options={
+                                                            subCategory.subcategories
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'sub_category',
+                                                                newVal
+                                                                    ?.map(
+                                                                        (val) =>
+                                                                            val.name,
+                                                                    )
+                                                                    .join(','),
+                                                            )
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+
+                                <FormContainer>
+                                    <FormItem
+                                        asterisk
+                                        label="product_type"
+                                        className="col-span-1 w-full"
+                                    >
+                                        <Field name="product_type">
+                                            {({ field }: FieldProps<any>) => {
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        options={
+                                                            product_type.product_types
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'product_type',
+                                                                newVal
+                                                                    ?.map(
+                                                                        (val) =>
+                                                                            val.name,
+                                                                    )
+                                                                    .join(','),
+                                                            )
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+
+                                {/* BRAND   */}
+
+                                <FormContainer>
+                                    <FormItem
+                                        asterisk
+                                        label="BRAND"
+                                        className="col-span-1 w-full"
+                                    >
+                                        <Field name="brand">
+                                            {({ field }: FieldProps<any>) => {
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        options={brands.brands}
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'brand',
+                                                                newVal
+                                                                    ?.map(
+                                                                        (val) =>
+                                                                            val.name,
+                                                                    )
+                                                                    .join(','),
+                                                            )
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
 
                                 {/* Tags */}
 
@@ -688,25 +845,35 @@ const EditBanner = () => {
                                                         options={
                                                             filters.filters
                                                         }
+                                                        // value={transformArray(
+                                                        //     initialValue.tags,
+                                                        // )}
+                                                        // defaultOptions={transformArray(
+                                                        //     initialValue.tags,
+                                                        // )}
                                                         getOptionLabel={(
                                                             option,
                                                         ) => option.label}
                                                         getOptionValue={(
                                                             option,
                                                         ) => option.value}
-                                                        onChange={(selected) =>
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                'OKKKK',
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
                                                             setFieldValue(
-                                                                field.name,
-                                                                selected.map(
-                                                                    (
-                                                                        option: any,
-                                                                    ) => ({
-                                                                        id: option.value,
-                                                                        name: option.label,
-                                                                    }),
+                                                                'tags',
+                                                                newVal?.map(
+                                                                    (val) =>
+                                                                        val.value,
                                                                 ),
                                                             )
-                                                        }
+                                                        }}
                                                     />
                                                 )
                                             }}

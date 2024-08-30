@@ -155,14 +155,26 @@ const OrderList = () => {
                 header: 'Order Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => (
-                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                    <span className="">
+                        {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
+                    </span>
                 ),
             },
             { header: 'Mobile Number', accessorKey: 'user.mobile' },
             { header: 'Customer Name', accessorKey: 'user.name' },
             { header: 'Store Address', accessorKey: 'store.address' },
+            {
+                header: 'Customer Address',
+                accessorKey: 'location_url',
+                cell: ({ getValue }) => (
+                    <a href={getValue()} target="_blank" rel="noreferrer">
+                        {getValue()}
+                    </a>
+                ),
+            },
             { header: 'Rating', accessorKey: 'rating' },
             { header: 'Payment Mode', accessorKey: 'payment.mode' },
+            { header: 'Payment Status', accessorKey: 'payment.status' },
             { header: 'Total Items', accessorKey: 'order_items.length' },
             { header: 'Order Total', accessorKey: 'payment.amount' },
             { header: 'Status', accessorKey: 'status' },
@@ -170,7 +182,9 @@ const OrderList = () => {
                 header: 'Last Update',
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => (
-                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                    <span>
+                        {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
+                    </span>
                 ),
             },
         ],

@@ -87,6 +87,7 @@ type SalesOrderDetailsResponse = {
     status: string
     loyalty_discount: string
     points_discount: string
+    location_url: string
 }
 
 const OrderDetails = () => {
@@ -218,6 +219,7 @@ const OrderDetails = () => {
                                         user={data.user}
                                         billing_address={data.billing_address}
                                         store={data.store}
+                                        location_url={data.location_url}
                                     />
                                 </div>
                             </div>

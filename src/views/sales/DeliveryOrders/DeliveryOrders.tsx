@@ -123,7 +123,7 @@ const OrderList = () => {
         },
         { header: 'Store', accessorKey: 'store.address' },
         { header: 'Customer Name', accessorKey: 'user.name' },
-        { header: 'Mobile Number', accessorKey: 'store.mobile' },
+        { header: 'Mobile Number', accessorKey: 'user.mobile' },
         { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
         {
             header: 'Runner Number',
@@ -131,11 +131,14 @@ const OrderList = () => {
         },
         { header: 'Pickup Time', accessorKey: 'logistic.pickup_time' },
         { header: 'Drop Time', accessorKey: 'logistic.drop_time' },
+        { header: 'AWB Code', accessorKey: 'logistic.awb_code' },
         {
             header: 'Eta Pickup',
             accessorKey: 'logistic.eta_pickup',
             cell: ({ getValue }: any) => (
-                <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                <span>
+                    {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
+                </span>
             ),
         },
         { header: 'Eta drop_off', accessorKey: 'logistic.eta_dropoff' },
