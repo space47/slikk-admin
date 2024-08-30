@@ -22,82 +22,6 @@ const EditProduct = () => {
     const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
     const [productData, setProductData] = useState<any>()
-    // const [initialValue, setInitialValue] = useState<Product>({
-    //     company: null,
-    //     brand_name: '',
-    //     name: '',
-    //     description: '',
-    //     about: '',
-    //     benefits: '',
-    //     includes: '',
-    //     other_product_info: '',
-    //     variant_type: '',
-    //     variant_id: '',
-    //     tax_rate: 0,
-    //     mrp: 0,
-    //     sp: 0,
-    //     barcode: '',
-    //     hsn: '',
-    //     sku: '',
-    //     usage: '',
-    //     imported_by: '',
-    //     shelf_life: 0,
-    //     height: 0,
-    //     width: 0,
-    //     depth: 0,
-    //     video_link: '',
-    //     video: [],
-    //     minimum_quantity: 1,
-    //     reserve_quantity: 1,
-    //     Status: 'Available',
-    //     image: '',
-    //     images: [],
-    //     color_code: [],
-    //     category_name: '',
-    //     is_premium: false,
-    //     is_try_and_buy: false,
-    //     is_returnable: false,
-    //     sub_category_name: '',
-    //     product_type_name: '',
-    //     division_name: '',
-    //     color: '', //
-    //     colorshade: '',
-    //     skinType: '',
-    //     formulation: '',
-    //     hairType: '',
-    //     gender: 'Women',
-    //     finish: '',
-    //     skintone: '',
-    //     coverage: '',
-    //     sunprotection: '',
-
-    //     concious: '',
-    //     productHexCode: '',
-    //     packsize: '',
-    //     size: '',
-    //     ingrediants: '',
-    //     vegnonveg: '',
-    //     ingrediantsPreferences: '',
-    //     concern: '',
-    //     recommendationfor: '',
-    //     scenttopnotes: '',
-    //     scentheartnotes: '',
-    //     scentbasenotes: '',
-    //     color_code_link: '',
-    //     origincountry: 'India',
-    //     careinstruction: '',
-    //     antiodour: '',
-    //     pattern: '',
-    //     closuretype: '',
-    //     length: '',
-    //     necktype: '',
-    //     risetype: '',
-    //     sleevtype: '',
-    //     trend: '',
-    //     trendtype: '',
-    //     fit: '',
-    //     fabric: '',
-    // })
     const [allImage, setAllImage] = useState<string[]>([])
     const [allVideo, setAllVideo] = useState<string[]>([])
     const [allColor, setAllColor] = useState<string[]>([])
@@ -200,6 +124,10 @@ const EditProduct = () => {
         }
     }
 
+    useEffect(() => {
+        fetchUser()
+    }, [])
+
     const initialValue = {
         company: productData?.company,
         brand_name: productData?.brand,
@@ -274,13 +202,9 @@ const EditProduct = () => {
         trendtype: productData?.filter_tags?.trendtype?.map(
             (item: any) => item,
         ),
-        fit: productData?.filter_tags.fit.map((item: any) => item),
-        fabric: productData?.filter_tags.fabric.map((item: any) => item),
+        fit: productData?.filter_tags?.fit?.map((item: any) => item),
+        fabric: productData?.filter_tags?.fabric?.map((item: any) => item),
     }
-
-    useEffect(() => {
-        fetchUser()
-    }, [])
 
     useEffect(() => {
         console.log(
@@ -495,7 +419,7 @@ const EditProduct = () => {
                     <Form className="w-2/3" onKeyDown={handleKeyDown}>
                         <FormContainer>
                             <div className="grid grid-cols-2 gap-4">
-                                {PRODUCT_EDIT_COMMON.map((item, key) => (
+                                {PRODUCT_EDIT_COMMON?.map((item, key) => (
                                     <FormItem
                                         key={key}
                                         label={item.label}
@@ -519,7 +443,7 @@ const EditProduct = () => {
                                             <div className="image w-[80%] min-h-[100px] h-auto mt-5 flex gap-3 items-center">
                                                 {allImage &&
                                                 allImage.length > 0 ? (
-                                                    allImage.map(
+                                                    allImage?.map(
                                                         (img, index) =>
                                                             img && (
                                                                 <div
@@ -621,7 +545,7 @@ const EditProduct = () => {
                                             <div className=" image w-[20%] h-[20%] mt-5 flex gap-3 items-center  ">
                                                 {allColor &&
                                                 allColor.length > 0 ? (
-                                                    allColor.map(
+                                                    allColor?.map(
                                                         (img, index) =>
                                                             img ? (
                                                                 <div
@@ -723,7 +647,7 @@ const EditProduct = () => {
                                             <div className=" image w-[10%] h-[20%] mt-5 flex gap-3 items-center  ">
                                                 {allVideo &&
                                                 allVideo.length > 0 ? (
-                                                    allVideo.map(
+                                                    allVideo?.map(
                                                         (img, index) =>
                                                             img ? (
                                                                 <img
@@ -804,7 +728,7 @@ const EditProduct = () => {
                                         />
                                     </FormItem>
                                 </FormContainer>
-                                {PRODUCT_EDIT_COMMON_DOWN.map((item, key) => (
+                                {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
                                     <FormItem
                                         key={key}
                                         label={item.label}
