@@ -1,7 +1,7 @@
 import Card from '@/components/ui/Card'
 // import Avatar from '@/components/ui/Avatar'
 import IconText from '@/components/shared/IconText'
-import { HiPhone, HiExternalLink } from 'react-icons/hi'
+import { HiPhone, HiExternalLink, HiLocationMarker } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 
 type CustomerInfoProps = {
@@ -15,9 +15,15 @@ type CustomerInfoProps = {
         longitude: number
     }
     billing_address: string
+    location_url: string
 }
 
-const CustomerInfo = ({ user, billing_address, store }: CustomerInfoProps) => {
+const CustomerInfo = ({
+    user,
+    billing_address,
+    store,
+    location_url,
+}: CustomerInfoProps) => {
     return (
         <Card>
             <h5 className="mb-4">Customer Details</h5>
@@ -47,7 +53,12 @@ const CustomerInfo = ({ user, billing_address, store }: CustomerInfoProps) => {
                 <div>{store.address}</div>
             </address>
             <hr className="my-5" />
-            <h6 className="mb-4">Billing address</h6>
+            <h6 className="mb-4 flex justify-between items-center">
+                Billing address{' '}
+                <a href={location_url} target="_blank" rel="noreferrer">
+                    <HiLocationMarker />
+                </a>
+            </h6>
             <address className="not-italic">
                 <div className="mb-1">{billing_address}</div>
             </address>
