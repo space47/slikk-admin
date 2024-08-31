@@ -23,6 +23,7 @@ import { TbCalendarStats } from 'react-icons/tb'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown } from '@/components/ui'
 import { ORDER_STATUS } from './commontypes'
+import { IoMdDownload } from 'react-icons/io'
 
 interface Order {
     invoice_id: string
@@ -61,6 +62,7 @@ const pageSizeOptions = [
 const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
+    const [mobileFilter, setMobileFilter] = useState('')
     const [pageSize, setPageSize] = useState(10)
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
@@ -97,21 +99,34 @@ const OrderList = () => {
         }
     }
 
-    const fetchFilter = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-        filter: string = '',
-    ) => {
+    const fetchFilter = async (filter: string = '') => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
                 dropdownStatus?.value === 'ALL'
                     ? ''
                     : `&status=${dropdownStatus?.value}`
             const response = await axiosInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&id=${filter}`,
+                `/merchant/orders?invoice_id=${filter}${status}`,
+            )
+
+            const ordersData = response.data?.data.results
+            const orderCount = response.data?.data.count
+
+            setOrders(ordersData)
+            setOrderCount(orderCount)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const fetchMobileFilter = async (filter: string = '') => {
+        try {
+            const status =
+                dropdownStatus?.value === 'ALL'
+                    ? ''
+                    : `&status=${dropdownStatus?.value}`
+            const response = await axiosInstance.get(
+                `/merchant/orders?mobile=${filter}${status}`,
             )
 
             const ordersData = response.data?.data.results
@@ -126,11 +141,15 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus])
+    }, [page, pageSize, from, to, dropdownStatus, mobileFilter])
 
     useEffect(() => {
-        fetchFilter(page, pageSize, from, to, globalFilter)
-    }, [page, pageSize, from, to, dropdownStatus, globalFilter])
+        fetchFilter(globalFilter)
+    }, [dropdownStatus, globalFilter])
+
+    useEffect(() => {
+        fetchMobileFilter(mobileFilter)
+    }, [dropdownStatus, mobileFilter])
 
     const columns = useMemo(
         () => [
@@ -218,6 +237,41 @@ const OrderList = () => {
         navigate(`/app/orders/${invoiceId}`)
     }
 
+    const handleDownload = async () => {
+        try {
+            const status =
+                dropdownStatus?.value === 'ALL'
+                    ? ''
+                    : `&status=${dropdownStatus?.value}`
+
+            let searwiseDownload = ''
+
+            if (globalFilter) {
+                searwiseDownload = `&invoice_id=${globalFilter}`
+            } else if (mobileFilter) {
+                searwiseDownload = `&mobile=${mobileFilter}`
+            }
+
+            const downloadUrl = `merchant/orders?download=true${searwiseDownload}${status}`
+
+            const response = await axiosInstance.get(downloadUrl, {
+                responseType: 'blob',
+            })
+
+            const urlToBeDownloaded = window.URL.createObjectURL(
+                new Blob([response.data]),
+            )
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = 'OrderDetails.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.error('Error downloading the file:', error)
+        }
+    }
+
     const onPaginationChange = (page: number) => {
         setPage(page)
 
@@ -253,135 +307,175 @@ const OrderList = () => {
     }
     console.log('ssssssswddwdwdw', dropdownStatus)
     return (
-        <div className="overflow-x-auto">
-            <div className="flex justify-between mb-10 items-center ">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
-                    />
-                </div>
-
-                <div className="flex gap-10 items-center justify-between">
-                    <div className="relative w-50 bg-gray-100 items-center flex justify-center">
-                        <Dropdown
-                            className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                            title={dropdownStatus.name}
-                            onSelect={handleDropdownSelect}
-                        >
-                            <div className="max-h-60 overflow-y-auto">
-                                {ORDER_STATUS?.map((item, key) => {
-                                    return (
-                                        <DropdownItem
-                                            key={key}
-                                            eventKey={item.value}
-                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                        >
-                                            <span>{item.name}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </div>
-                        </Dropdown>
-                    </div>
-
-                    <div className="flex gap-5">
-                        <div>
-                            <div className="mb-1 font-semibold text-sm">
-                                FROM DATE:
-                            </div>
-                            <DatePicker
-                                inputPrefix={
-                                    <HiOutlineCalendar className="text-lg" />
-                                }
-                                defaultValue={new Date()}
-                                value={new Date(from)}
-                                onChange={handleFromChange}
-                            />
-                        </div>
-                        <div>
-                            <div className="mb-1 font-semibold text-sm">
-                                TO DATE:
-                            </div>
-                            <DatePicker
-                                inputSuffix={
-                                    <TbCalendarStats className="text-xl" />
-                                }
-                                defaultValue={new Date()}
-                                value={moment(to).toDate()}
-                                onChange={handleToChange}
-                                minDate={moment(from).add(1, 'day').toDate()}
-                            />
-                        </div>
-                    </div>
-                </div>
+        <div>
+            <div className="flex items-end justify-end mb-2">
+                <button
+                    className="bg-gray-100 text-black px-5 py-3  hover:bg-gray-200 rounded-lg"
+                    onClick={handleDownload}
+                >
+                    <IoMdDownload className="text-3xl" />
+                </button>{' '}
+                <br />
+                <br />
             </div>
 
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={
-                                                header.column.getCanSort()
-                                                    ? 'cursor-pointer select-none'
-                                                    : ''
-                                            }
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
-                                            <Sorter
-                                                sort={header.column.getIsSorted()}
-                                            />
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-            <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={orderCount}
-                    onChange={onPaginationChange}
-                />
-                <div style={{ minWidth: 130 }}>
-                    <Select
-                        size="sm"
-                        isSearchable={true}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
-                        options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
-                        className="flex justify-end"
+            <div className="overflow-x-auto">
+                <div className="flex justify-between mb-10 items-center ">
+                    <div className="flex gap-10">
+                        <div className="mb-4">
+                            <div>SEARCH BY INVOICE_ID</div> <br />
+                            <input
+                                type="text"
+                                placeholder="Search here"
+                                value={globalFilter}
+                                onChange={(e) =>
+                                    setGlobalFilter(e.target.value)
+                                }
+                                className="p-2 border rounded"
+                            />
+                        </div>
+                        {/* MOBILE */}
+
+                        <div className="mb-4">
+                            <div>SEARCH BY MOBILE</div> <br />
+                            <input
+                                type="text"
+                                placeholder="Search through mobile"
+                                value={mobileFilter}
+                                onChange={(e) =>
+                                    setMobileFilter(e.target.value)
+                                }
+                                className="p-2 border rounded"
+                            />
+                        </div>
+                    </div>
+
+                    {/* DOWNLOAD */}
+
+                    <div className="flex gap-10 items-center justify-between">
+                        <div className="relative w-50 bg-gray-100 items-center flex justify-center">
+                            <Dropdown
+                                className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                                title={dropdownStatus.name}
+                                onSelect={handleDropdownSelect}
+                            >
+                                <div className="max-h-60 overflow-y-auto">
+                                    {ORDER_STATUS?.map((item, key) => {
+                                        return (
+                                            <DropdownItem
+                                                key={key}
+                                                eventKey={item.value}
+                                                className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                            >
+                                                <span>{item.name}</span>
+                                            </DropdownItem>
+                                        )
+                                    })}
+                                </div>
+                            </Dropdown>
+                        </div>
+
+                        <div className="flex gap-5">
+                            <div>
+                                <div className="mb-1 font-semibold text-sm">
+                                    FROM DATE:
+                                </div>
+                                <DatePicker
+                                    inputPrefix={
+                                        <HiOutlineCalendar className="text-lg" />
+                                    }
+                                    defaultValue={new Date()}
+                                    value={new Date(from)}
+                                    onChange={handleFromChange}
+                                />
+                            </div>
+                            <div>
+                                <div className="mb-1 font-semibold text-sm">
+                                    TO DATE:
+                                </div>
+                                <DatePicker
+                                    inputSuffix={
+                                        <TbCalendarStats className="text-xl" />
+                                    }
+                                    defaultValue={new Date()}
+                                    value={moment(to).toDate()}
+                                    onChange={handleToChange}
+                                    minDate={moment(from)
+                                        .add(1, 'day')
+                                        .toDate()}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <Table>
+                    <THead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <Tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <Th
+                                        key={header.id}
+                                        colSpan={header.colSpan}
+                                    >
+                                        {header.isPlaceholder ? null : (
+                                            <div
+                                                className={
+                                                    header.column.getCanSort()
+                                                        ? 'cursor-pointer select-none'
+                                                        : ''
+                                                }
+                                                onClick={header.column.getToggleSortingHandler()}
+                                            >
+                                                {flexRender(
+                                                    header.column.columnDef
+                                                        .header,
+                                                    header.getContext(),
+                                                )}
+                                                <Sorter
+                                                    sort={header.column.getIsSorted()}
+                                                />
+                                            </div>
+                                        )}
+                                    </Th>
+                                ))}
+                            </Tr>
+                        ))}
+                    </THead>
+                    <TBody>
+                        {table.getRowModel().rows.map((row) => (
+                            <Tr key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <Td key={cell.id}>
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext(),
+                                        )}
+                                    </Td>
+                                ))}
+                            </Tr>
+                        ))}
+                    </TBody>
+                </Table>
+                <div className="flex items-center justify-between mt-4">
+                    <Pagination
+                        pageSize={pageSize}
+                        currentPage={page}
+                        total={orderCount}
+                        onChange={onPaginationChange}
                     />
+                    <div style={{ minWidth: 130 }}>
+                        <Select
+                            size="sm"
+                            isSearchable={true}
+                            value={pageSizeOptions.find(
+                                (option) => option.value === pageSize,
+                            )}
+                            options={pageSizeOptions}
+                            onChange={(option) => onSelectChange(option?.value)}
+                            className="flex justify-end"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
