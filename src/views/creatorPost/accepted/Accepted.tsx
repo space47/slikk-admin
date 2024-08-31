@@ -100,8 +100,8 @@ const Accepted: React.FC<PendingProps> = ({
 }) => {
     const navigate = useNavigate()
 
-    const handlePostClick = (id: number, post_id: string) => {
-        navigate(`/app/postApproval/approved/${id}?post_id=${post_id}`)
+    const handlePostClick = (id: number, post_id: string, owner:any) => {
+        navigate(`/app/postApproval/approved/${id}?post_id=${post_id}&owner=${owner}`)
     }
 
     const columns = useMemo<ColumnDef<Post>[]>(
@@ -121,6 +121,7 @@ const Accepted: React.FC<PendingProps> = ({
                             handlePostClick(
                                 row.original.id,
                                 getValue() as string,
+                                row.original.owner
                             )
                         }
                     >
