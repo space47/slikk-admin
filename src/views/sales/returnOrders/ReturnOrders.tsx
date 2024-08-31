@@ -101,15 +101,31 @@ const OrderList = () => {
     const columns = useMemo(
         () => [
             {
+                header: 'Order Id',
+                accessorKey: 'order',
+                cell: ({ getValue }: { getValue: () => string }) => (
+                    <a
+                        href={`/app/orders/${getValue()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white bg-red-600 flex items-center justify-center py-1 px-4 rounded-[7px] font-semibold cursor-pointer"
+                    >
+                        {getValue()}
+                    </a>
+                )
+            },
+            {
                 header: 'Return_Order Id',
                 accessorKey: 'return_order_id',
                 cell: ({ getValue }: { getValue: () => string }) => (
-                    <div
+                    <a
+                        href={`/app/returnOrders/${getValue()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                        onClick={() => handleRemoveClick(getValue())}
                     >
                         {getValue()}
-                    </div>
+                    </a>
                 )
             },
             {
@@ -134,7 +150,7 @@ const OrderList = () => {
                 )
             },
             {
-                header: 'Return Reason',
+                header: 'Return Order Item',
                 accessorKey: 'return_order_items',
                 cell: ({ row }: { row: { original: ReturnOrder } }) => (
                     <span>
@@ -143,7 +159,7 @@ const OrderList = () => {
                 )
             },
             {
-                header: 'Return Reason',
+                header: 'Return QTY',
                 accessorKey: 'return_order_items',
                 cell: ({ row }: { row: { original: ReturnOrder } }) => (
                     <span>
@@ -192,6 +208,11 @@ const OrderList = () => {
         ],
         []
     )
+
+    const handleOrderClick = (orderId: string) => {
+        navigate(`/app/orders/${orderId}`)
+    }
+
 
     const table = useReactTable({
         data: orders,
