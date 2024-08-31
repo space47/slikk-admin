@@ -4,6 +4,20 @@ import { ADMIN, USER } from '@/constants/roles.constant'
 import type { Routes } from '@/@types/routes'
 
 const appsRoute: Routes = [
+    {
+        key: 'apps.homePage',
+        path: `${APP_PREFIX_PATH}/homePage`,
+        component: lazy(() => import('@/views/homePage/homes/Home')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'apps.homePage',
+        path: `${APP_PREFIX_PATH}/customerAnalytics/:mobile`,
+        component: lazy(
+            () => import('@/views/homePage/homes/CustomerAnalytics'),
+        ),
+        authority: [ADMIN, USER],
+    },
     //slikk nav category
     {
         key: 'appsCategory.productNew',
@@ -12,9 +26,6 @@ const appsRoute: Routes = [
             () => import('@/views/category-management/division/DivisionNew'),
         ),
         authority: [ADMIN, USER],
-        meta: {
-            header: 'Add New Division',
-        },
     },
     {
         key: 'appsCategory.division',

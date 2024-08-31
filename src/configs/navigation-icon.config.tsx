@@ -38,6 +38,7 @@ import { TbTruckDelivery } from 'react-icons/tb'
 import { RiBillLine } from 'react-icons/ri'
 import { PiKeyReturn, PiKeyReturnLight } from 'react-icons/pi'
 import { HiOutlineBanknotes } from 'react-icons/hi2'
+import { IoHomeOutline } from 'react-icons/io5'
 
 export type NavigationIcons = Record<string, JSX.Element>
 
@@ -52,6 +53,7 @@ const navigationIcon: NavigationIcons = {
     bill: <RiBillLine />,
     note: <HiOutlineBanknotes />,
     return: <PiKeyReturn />,
+    home: <IoHomeOutline />,
     business: <MdBusinessCenter />,
     delivery: <TbTruckDelivery />,
     appsettings: <MdDisplaySettings />,
