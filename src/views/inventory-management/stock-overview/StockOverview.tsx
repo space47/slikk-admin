@@ -339,8 +339,8 @@ const StockOverview = () => {
 
         try {
             const body = {
-                quantity: originalQuantity ? originalQuantity : quantity,
-                location: originalLocation ? originalLocation : location,
+                quantity: quantity ? quantity : originalQuantity ,
+                location: location ? location : originalLocation,
             }
 
             console.log('BODY', body)

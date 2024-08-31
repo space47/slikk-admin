@@ -2,6 +2,7 @@ type BRANDTYPES = {
     image: string
     name: string
     title: string
+    id:number
 }
 
 type DIVTYPES = {
