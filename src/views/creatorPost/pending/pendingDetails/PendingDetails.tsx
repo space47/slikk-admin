@@ -78,13 +78,14 @@ const PendingDetails = () => {
     const { id } = useParams<{ id: any }>()
     const query = useQuery()
     const post_id = query.get('post_id')
+    const owner = query.get('owner')
 
     useEffect(() => {
         console.log('idddddddd', post_id)
         const fetchOrders = async () => {
             try {
                 const response = await axioisInstance.get(
-                    `userposts/approval?post_id=${post_id}`,
+                    `userposts/approval?post_id=${post_id}&mobile=${owner}`,
                 )
 
                 const PendingData = response.data?.data || []
@@ -97,7 +98,7 @@ const PendingDetails = () => {
         }
 
         fetchOrders()
-    }, [id, post_id])
+    }, [id, post_id, owner])
 
     const navigate = useNavigate()
 
