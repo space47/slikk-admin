@@ -282,13 +282,13 @@ const EditBanner = () => {
             image_mobile_array: null,
             division: values.division.map((item) => item.name).join(','),
             category: values.category.map((item) => item.name).join(','),
-             sub_category: values.sub_category
-                 .map((item) => item.name)
-                 .join(','),
-             product_type: values.product_type
-                 .map((item) => item.name)
-                 .join(','),
-             brand: values.brand.map((item) => item.name).join(','),
+            sub_category: values.sub_category
+                .map((item) => item.name)
+                .join(','),
+            product_type: values.product_type
+                .map((item) => item.name)
+                .join(','),
+            brand: values.brand.map((item) => item.name).join(','),
         }
 
         try {
@@ -606,37 +606,62 @@ const EditBanner = () => {
                                         className="col-span-1 w-full"
                                     >
                                         <Field name="division">
-                                    {({ field }: FieldProps<any>) => {
+                                            {({ field }: FieldProps<any>) => {
+                                                console.log('FIELD', field)
+                                                const fieldValue =
+                                                    Array.isArray(field.value)
+                                                        ? field.value
+                                                        : []
 
-                                        console.log('FIELD', field)
-                                        const fieldValue = Array.isArray(field.value) ? field.value : [];
+                                                console.log(
+                                                    'MAIN',
+                                                    initialValue.division.map(
+                                                        (item) => item.name,
+                                                    ),
+                                                )
 
-                                        console.log("MAIN", initialValue.division.map((item) => item.name));
-
-                                        return (
-                                            <Select
-                                                isMulti
-                                                field={field}
-                                                defaultValue={initialValue.division
-                                                    .filter((option) =>
-                                                        fieldValue.some(
-                                                            (item) => item.name === option.name,
-                                                        ),
-                                                    )}
-                                                options={divisions.divisions}
-                                                getOptionLabel={(option) => option.name}
-                                                getOptionValue={(option) => option.id.toString()}
-                                                onChange={(newVal, actionMeta) => {
-                                                    console.log(newVal, actionMeta);
-                                                    setFieldValue(
-                                                        'division',
-                                                        newVal ? newVal : [], 
-                                                    );
-                                                }}
-                                            />
-                                        );
-                                    }}
-                                </Field>
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.division.filter(
+                                                            (option) =>
+                                                                fieldValue.some(
+                                                                    (item) =>
+                                                                        item.name ===
+                                                                        option.name,
+                                                                ),
+                                                        )}
+                                                        options={
+                                                            divisions.divisions
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'division',
+                                                                newVal
+                                                                    ? newVal
+                                                                    : [],
+                                                            )
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
                                     </FormItem>
                                 </FormContainer>
 
@@ -648,31 +673,51 @@ const EditBanner = () => {
                                         className="col-span-1 w-full"
                                     >
                                         <Field name="category">
-                                            
                                             {({ field }: FieldProps<any>) => {
-                                                const fieldValue = Array.isArray(field.value) ? field.value : [];
+                                                const fieldValue =
+                                                    Array.isArray(field.value)
+                                                        ? field.value
+                                                        : []
 
                                                 return (
                                                     <Select
-                                                    isMulti
-                                                    field={field}
-                                                    defaultValue={initialValue.category
-                                                        .filter((option) =>
-                                                            fieldValue.some(
-                                                                (item) => item.name === option.name,
-                                                            ),
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.category.filter(
+                                                            (option) =>
+                                                                fieldValue.some(
+                                                                    (item) =>
+                                                                        item.name ===
+                                                                        option.name,
+                                                                ),
                                                         )}
-                                                    options={category.categories}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id.toString()}
-                                                    onChange={(newVal, actionMeta) => {
-                                                        console.log(newVal, actionMeta);
-                                                        setFieldValue(
-                                                            'category',
-                                                            newVal ? newVal : [], 
-                                                        );
-                                                    }}
-                                                />
+                                                        options={
+                                                            category.categories
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'category',
+                                                                newVal
+                                                                    ? newVal
+                                                                    : [],
+                                                            )
+                                                        }}
+                                                    />
                                                 )
                                             }}
                                         </Field>
@@ -689,28 +734,49 @@ const EditBanner = () => {
                                     >
                                         <Field name="sub_category">
                                             {({ field }: FieldProps<any>) => {
-                                                const fieldValue = Array.isArray(field.value) ? field.value : [];
+                                                const fieldValue =
+                                                    Array.isArray(field.value)
+                                                        ? field.value
+                                                        : []
                                                 return (
                                                     <Select
-                                                    isMulti
-                                                    field={field}
-                                                    defaultValue={initialValue.sub_category
-                                                        .filter((option) =>
-                                                            fieldValue.some(
-                                                                (item) => item.name === option.name,
-                                                            ),
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.sub_category.filter(
+                                                            (option) =>
+                                                                fieldValue.some(
+                                                                    (item) =>
+                                                                        item.name ===
+                                                                        option.name,
+                                                                ),
                                                         )}
-                                                    options={subCategory.subcategories}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id.toString()}
-                                                    onChange={(newVal, actionMeta) => {
-                                                        console.log(newVal, actionMeta);
-                                                        setFieldValue(
-                                                            'sub_category',
-                                                            newVal ? newVal : [], 
-                                                        );
-                                                    }}
-                                                />
+                                                        options={
+                                                            subCategory.subcategories
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'sub_category',
+                                                                newVal
+                                                                    ? newVal
+                                                                    : [],
+                                                            )
+                                                        }}
+                                                    />
                                                 )
                                             }}
                                         </Field>
@@ -725,28 +791,49 @@ const EditBanner = () => {
                                     >
                                         <Field name="product_type">
                                             {({ field }: FieldProps<any>) => {
-                                                 const fieldValue = Array.isArray(field.value) ? field.value : [];
+                                                const fieldValue =
+                                                    Array.isArray(field.value)
+                                                        ? field.value
+                                                        : []
                                                 return (
                                                     <Select
-                                                    isMulti
-                                                    field={field}
-                                                    defaultValue={initialValue.product_type
-                                                        .filter((option) =>
-                                                            fieldValue.some(
-                                                                (item) => item.name === option.name,
-                                                            ),
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.product_type.filter(
+                                                            (option) =>
+                                                                fieldValue.some(
+                                                                    (item) =>
+                                                                        item.name ===
+                                                                        option.name,
+                                                                ),
                                                         )}
-                                                    options={product_type.product_types}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id.toString()}
-                                                    onChange={(newVal, actionMeta) => {
-                                                        console.log(newVal, actionMeta);
-                                                        setFieldValue(
-                                                            'product_type',
-                                                            newVal ? newVal : [], 
-                                                        );
-                                                    }}
-                                                />
+                                                        options={
+                                                            product_type.product_types
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'product_type',
+                                                                newVal
+                                                                    ? newVal
+                                                                    : [],
+                                                            )
+                                                        }}
+                                                    />
                                                 )
                                             }}
                                         </Field>
@@ -763,28 +850,47 @@ const EditBanner = () => {
                                     >
                                         <Field name="brand">
                                             {({ field }: FieldProps<any>) => {
-                                                 const fieldValue = Array.isArray(field.value) ? field.value : [];
+                                                const fieldValue =
+                                                    Array.isArray(field.value)
+                                                        ? field.value
+                                                        : []
                                                 return (
                                                     <Select
-                                                    isMulti
-                                                    field={field}
-                                                    defaultValue={initialValue.brand
-                                                        .filter((option) =>
-                                                            fieldValue.some(
-                                                                (item) => item.name === option.name,
-                                                            ),
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.brand.filter(
+                                                            (option) =>
+                                                                fieldValue.some(
+                                                                    (item) =>
+                                                                        item.name ===
+                                                                        option.name,
+                                                                ),
                                                         )}
-                                                    options={brands.brands}
-                                                    getOptionLabel={(option) => option.name}
-                                                    getOptionValue={(option) => option.id.toString()}
-                                                    onChange={(newVal, actionMeta) => {
-                                                        console.log(newVal, actionMeta);
-                                                        setFieldValue(
-                                                            'brand',
-                                                            newVal ? newVal : [], 
-                                                        );
-                                                    }}
-                                                />
+                                                        options={brands.brands}
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.name}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) =>
+                                                            option.id.toString()
+                                                        }
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            console.log(
+                                                                newVal,
+                                                                actionMeta,
+                                                            )
+                                                            setFieldValue(
+                                                                'brand',
+                                                                newVal
+                                                                    ? newVal
+                                                                    : [],
+                                                            )
+                                                        }}
+                                                    />
                                                 )
                                             }}
                                         </Field>
@@ -800,8 +906,28 @@ const EditBanner = () => {
                                         className="col-span-1 w-full"
                                     >
                                         <Field name="tags">
-                                            {({ field }: FieldProps<any>) => {
-                                                
+                                            {({
+                                                field,
+                                                form,
+                                            }: FieldProps<any>) => {
+                                                const selectedTags =
+                                                    field.value.map(
+                                                        (tag: string) => {
+                                                            const matchedOption =
+                                                                filters.filters.find(
+                                                                    (option) =>
+                                                                        option.value ===
+                                                                        tag,
+                                                                )
+                                                            return (
+                                                                matchedOption || {
+                                                                    value: tag,
+                                                                    label: tag,
+                                                                }
+                                                            )
+                                                        },
+                                                    )
+
                                                 return (
                                                     <Select
                                                         isMulti
@@ -809,13 +935,8 @@ const EditBanner = () => {
                                                         options={
                                                             filters.filters
                                                         }
-                                                        // value={transformArray(
-                                                        //     initialValue.tags,
-                                                        // )}
-                                                        // defaultOptions={transformArray(
-                                                        //     initialValue.tags,
-                                                        // )}
-                                                getOptionLabel={(
+                                                        value={selectedTags}
+                                                        getOptionLabel={(
                                                             option,
                                                         ) => option.label}
                                                         getOptionValue={(
@@ -825,17 +946,18 @@ const EditBanner = () => {
                                                             newVal,
                                                             actionMeta,
                                                         ) => {
-                                                            console.log(
-                                                                'OKKKK',
-                                                                newVal,
-                                                                actionMeta,
-                                                            )
-                                                            setFieldValue(
-                                                                'tags',
-                                                                newVal?.map(
-                                                                    (val) =>
-                                                                        val.value,
-                                                                ),
+                                                            const newValues =
+                                                                newVal
+                                                                    ? newVal.map(
+                                                                          (
+                                                                              val,
+                                                                          ) =>
+                                                                              val.value,
+                                                                      )
+                                                                    : []
+                                                            form.setFieldValue(
+                                                                field.name,
+                                                                newValues,
                                                             )
                                                         }}
                                                     />
