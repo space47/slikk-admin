@@ -427,7 +427,7 @@ const StockOverview = () => {
                         placeholder="Search here"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
+                        className="p-2 border rounded shadow-md"
                     />
                 </div>
                 <div className="drop border  bg-gray-200 text-black text-lg font-semibold flex gap-5 w-[100px] mb-6 ">

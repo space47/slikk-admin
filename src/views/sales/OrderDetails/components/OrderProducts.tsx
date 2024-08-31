@@ -123,7 +123,7 @@ const columns = [
             const row = props.row.original
             console.log('MRP', row?.mrp)
             console.log('SP', row?.sp)
-            return row.mrp > row.sp ? (
+            return row.mrp < row.sp ? (
                 <div className="w-[200px] overflow-ellipsis flex flex-col">
                     <span className="line-through">Rs.{row.mrp}</span>
                     <span>Rs.{row.sp}</span>
