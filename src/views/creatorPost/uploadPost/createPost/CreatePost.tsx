@@ -95,7 +95,7 @@ const CreatePost = () => {
         }
     }
 
-    const MAX_UPLOAD = 10000000000
+    const MAX_UPLOAD = 1000000000000000
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -121,7 +121,7 @@ const CreatePost = () => {
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ]
-        const MAX_FILE_SIZE = 50000000000
+        const MAX_FILE_SIZE = 50000000000000
 
         if (fileList.length >= MAX_UPLOAD) {
             return `You can only upload ${MAX_UPLOAD} file(s)`
