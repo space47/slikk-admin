@@ -80,6 +80,7 @@ const AcceptedDetails = () => {
     const { id } = useParams<{ id: any }>()
     const query = useQuery()
     const post_id = query.get('post_id')
+    const mobile = query.get('owner')
 
     useEffect(() => {
         console.log('idddddddd', post_id)
@@ -87,7 +88,7 @@ const AcceptedDetails = () => {
         const fetchOrders = async () => {
             try {
                 const response = await axioisInstance.get(
-                    `userposts/approval?post_id=${post_id}`,
+                    `userposts/approval?post_id=${post_id}&mobile=${mobile}`,
                 )
 
                 const PendingData = response.data?.data || []
@@ -100,7 +101,7 @@ const AcceptedDetails = () => {
         }
 
         fetchOrders()
-    }, [id, post_id])
+    }, [id, post_id,mobile])
 
     const handleReject = async () => {
         const body = {
