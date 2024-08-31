@@ -141,7 +141,7 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, mobileFilter])
+    }, [page, pageSize, from, to, dropdownStatus])
 
     useEffect(() => {
         fetchFilter(globalFilter)
@@ -223,7 +223,7 @@ const OrderList = () => {
                 pageSize: pageSize,
             },
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: setMobileFilter,
         globalFilterFn: fuzzyFilter,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),

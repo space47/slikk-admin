@@ -18,6 +18,16 @@ const appsNavigationConfig: NavigationTree[] = [
         authority: [ADMIN, USER],
         subMenu: [
             {
+                key: 'apps.homePage',
+                path: `${APP_PREFIX_PATH}/homePage`,
+                title: 'Home',
+                translateKey: 'nav.appsHomepage.homePage',
+                icon: 'home',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [],
+            },
+            {
                 key: 'apps.orderManagement',
                 path: '',
                 title: 'Order Management',
