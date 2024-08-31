@@ -127,7 +127,7 @@ const StockOverview = () => {
                 `inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`,
             )
 
-            if (response.data.data.results.length === 0) {
+            if (response?.data?.data?.results?.length === 0) {
                 searchInputType = `&name=${filter}`
                 setFilterInput(searchInputType)
                 response = await axiosInstance.get(
@@ -135,8 +135,8 @@ const StockOverview = () => {
                 )
             }
 
-            const data = response.data.results
-            const total = response.data.count
+            const data = response.data.data.results
+            const total = response.data.data.count
 
             setData(data)
             setTotalData(total)
