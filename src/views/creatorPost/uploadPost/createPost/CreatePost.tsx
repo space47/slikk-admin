@@ -52,6 +52,7 @@ interface Post {
     longitude: string
     thumbnail: string
     thumbnail_array: File[]
+    mobile: string
 }
 
 const initialValue: Post = {
@@ -63,7 +64,8 @@ const initialValue: Post = {
     latitude: '',
     longitude: '',
     thumbnail: '',
-    thumbnail_array: []
+    thumbnail_array: [],
+    mobile: ''
 }
 
 const SegmentOptions = () => {
@@ -208,10 +210,10 @@ const CreatePost = () => {
             formData.append('type', values.type)
             formData.append('latitude', values.latitude)
             formData.append('longitude', values.longitude)
-
+            formData.append('mobile', values.mobile)
             console.log('Finished checking formdata')
             console.log('Starting API call')
-            const response = await axioisInstance.post('userpost', formData, {
+            const response = await axioisInstance.post('merchant/userpost', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

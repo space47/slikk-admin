@@ -21,4 +21,11 @@ export const CREATE_POST = [
         className: 'w-full',
         placeholder: 'Enter Latitude',
     },
+    {
+        label: 'Mobile',
+        name: 'mobile',
+        type: 'text',
+        className: 'w-full',
+        placeholder: 'Enter Mobile Number',
+    },
 ]
