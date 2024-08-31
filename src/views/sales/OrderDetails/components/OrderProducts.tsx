@@ -123,18 +123,15 @@ const columns = [
             const row = props.row.original
             console.log('MRP', row?.mrp)
             console.log('SP', row?.sp)
-            return row.mrp < row.sp ? (
+
+           const percentageCalculation =Math.round(((parseFloat(row.mrp) - parseFloat(row.sp)) / parseFloat(row.mrp)) * 100);
+
+            return percentageCalculation > 0 ? (
                 <div className="w-[200px] overflow-ellipsis flex flex-col">
                     <span className="line-through">Rs.{row.mrp}</span>
                     <span>Rs.{row.sp}</span>
                     <span>
-                        {parseFloat(
-                            (
-                                ((Number(row.mrp) - Number(row.sp)) /
-                                    Number(row.mrp)) *
-                                100
-                            ).toFixed(0),
-                        )}{' '}
+                        {percentageCalculation}{' '}
                         % off
                     </span>
                 </div>
