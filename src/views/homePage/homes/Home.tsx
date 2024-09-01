@@ -12,11 +12,12 @@ import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import { BiSolidBarChartAlt2 } from 'react-icons/bi'
 import { TbCalendarStats } from 'react-icons/tb'
+import { HiMiniBanknotes } from 'react-icons/hi2'
 
 const Home = () => {
     const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [inputValues, setInputValues] = useState({
         customer: '',
         invoice_id: '',
@@ -157,11 +158,11 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <BiSolidBarChartAlt2 className="text-4xl mx-4 " />
+                            <HiMiniBanknotes className="text-4xl mx-4 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Net Sales</h2>
-                            <p>AMOUNT: {netSales}</p>
+                            <p>AMOUNT: Rs.{netSales}</p>
                         </div>
                     </div>
                 </Card>
