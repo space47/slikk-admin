@@ -16,7 +16,7 @@ const CustomerAnalytics = () => {
     const fetchCustomerData = async () => {
         try {
             const response = await axioisInstance.get(
-                `/merchant/analytics/order?&${mobile}&type=user_summary`,
+                `/merchant/analytics/order?mobile=${mobile}&type=user_summary`,
             )
             const data = response.data.data
             setCustomerData(data)
