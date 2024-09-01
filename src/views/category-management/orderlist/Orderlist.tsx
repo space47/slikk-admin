@@ -125,6 +125,7 @@ const OrderList = () => {
                 dropdownStatus?.value === 'ALL'
                     ? ''
                     : `&status=${dropdownStatus?.value}`
+
             const response = await axiosInstance.get(
                 `/merchant/orders?mobile=${filter}${status}`,
             )
@@ -239,6 +240,7 @@ const OrderList = () => {
 
     const handleDownload = async () => {
         try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
                 dropdownStatus?.value === 'ALL'
                     ? ''
@@ -252,7 +254,7 @@ const OrderList = () => {
                 searwiseDownload = `&mobile=${mobileFilter}`
             }
 
-            const downloadUrl = `merchant/orders?download=true${searwiseDownload}${status}`
+            const downloadUrl = `merchant/orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
