@@ -10,10 +10,13 @@ import { HiOutlineCalendar } from 'react-icons/hi'
 import DatePicker from '@/components/ui/DatePicker'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
+import { BiSolidBarChartAlt2 } from 'react-icons/bi'
+import { TbCalendarStats } from 'react-icons/tb'
 
 const Home = () => {
     const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const [inputValues, setInputValues] = useState({
         customer: '',
         invoice_id: '',
@@ -22,8 +25,9 @@ const Home = () => {
 
     const fetchHome = async () => {
         try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `/merchant/analytics/order?from=${from}`,
+                `/merchant/analytics/order?from=${from}&to=${To_Date}`,
             )
             const data: SalesData = response.data.data
             setHomeData(data)
@@ -34,13 +38,25 @@ const Home = () => {
 
     useEffect(() => {
         fetchHome()
-    }, [from])
+    }, [from, to])
+
+    const netSales =
+        (homeData?.received?.total_amount || 0) -
+        (homeData?.returned?.total_amount || 0)
 
     const handleFromChange = (date: Date | null) => {
         if (date) {
             setFrom(moment(date).format('YYYY-MM-DD'))
         } else {
             setFrom(moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    const handleToChange = (date: Date | null) => {
+        if (date) {
+            setTo(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setTo(moment().format('YYYY-MM-DD'))
         }
     }
 
@@ -54,7 +70,7 @@ const Home = () => {
 
     const handleCustomerFunction = (inputName: string, from: string) => {
         console.log('CUSTOMER', inputName)
-        navigate(`/app/customerAnalytics/${inputName}?from=${from}`)
+        navigate(`/app/customerAnalytics/${inputName}`)
     }
 
     const handleInvoiceFunction = (inputName: string) => {
@@ -64,14 +80,24 @@ const Home = () => {
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="flex justify-end gap-1 items-center">
-                <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
-                <div className="w-[200px]">
+            <div className="flex gap-5 justify-end">
+                <div>
+                    <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
                     <DatePicker
                         inputPrefix={<HiOutlineCalendar className="text-lg" />}
                         defaultValue={new Date()}
                         value={new Date(from)}
                         onChange={handleFromChange}
+                    />
+                </div>
+                <div>
+                    <div className="mb-1 font-semibold text-sm">TO DATE:</div>
+                    <DatePicker
+                        inputSuffix={<TbCalendarStats className="text-xl" />}
+                        defaultValue={new Date()}
+                        value={moment(to).toDate()}
+                        onChange={handleToChange}
+                        minDate={moment(from).add(1, 'day').toDate()}
                     />
                 </div>
             </div>
@@ -122,7 +148,7 @@ const Home = () => {
                             </h2>
                             <p>Count: {homeData?.returned.count}</p>
                             <p>
-                                Total Amount: $
+                                Total Amount: Rs.
                                 {homeData?.returned.total_amount.toFixed(2)}
                             </p>
                         </div>
@@ -131,13 +157,11 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <FaBoxOpen className="text-4xl mx-4" />
+                            <BiSolidBarChartAlt2 className="text-4xl mx-4 " />
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold">
-                                Open Orders
-                            </h2>
-                            <p>Count: {homeData?.open}</p>
+                            <h2 className="text-xl font-semibold">Net Sales</h2>
+                            <p>AMOUNT: {netSales}</p>
                         </div>
                     </div>
                 </Card>
