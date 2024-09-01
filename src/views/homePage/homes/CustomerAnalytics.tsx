@@ -6,18 +6,17 @@ import Avatar from '@/components/ui/Avatar'
 
 const CustomerAnalytics = () => {
     const [customerData, setCustomerData] = useState<CUSTOMERANALYTICS>()
-    const useQuery = () => {
-        return new URLSearchParams(useLocation().search)
-    }
+    // const useQuery = () => {
+    //     return new URLSearchParams(useLocation().search)
+    // }
 
     const { mobile } = useParams<{ mobile: any }>()
-    const query = useQuery()
-    const from = query.get('from')
+    // const query = useQuery()
 
     const fetchCustomerData = async () => {
         try {
             const response = await axioisInstance.get(
-                `/merchant/analytics/order?from=${from}&${mobile}&type=user_summary`,
+                `/merchant/analytics/order?&${mobile}&type=user_summary`,
             )
             const data = response.data.data
             setCustomerData(data)
@@ -98,7 +97,7 @@ const CustomerAnalytics = () => {
                         </p>
                         <p className="text-sm">
                             <span className="font-semibold">Total Amount:</span>{' '}
-                            ${customerData.orders.total_amount.toFixed(2)}
+                            Rs.{customerData.orders.total_amount.toFixed(2)}
                         </p>
                     </li>
                     <li className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">

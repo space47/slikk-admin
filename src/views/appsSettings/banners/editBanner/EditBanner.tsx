@@ -912,7 +912,7 @@ const EditBanner = () => {
                                             }: FieldProps<any>) => {
                                                 const selectedTags =
                                                     field.value.map(
-                                                        (tag: string) => {
+                                                        (tag: any) => {
                                                             const matchedOption =
                                                                 filters.filters.find(
                                                                     (option) =>
