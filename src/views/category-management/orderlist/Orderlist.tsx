@@ -67,7 +67,7 @@ const OrderList = () => {
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
     const [dropdownStatus, setDropdownStatus] = useState<
         Record<string, string>
@@ -82,7 +82,7 @@ const OrderList = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
-                dropdownStatus?.value === 'ALL'
+                dropdownStatus?.value === 'ALL_ORDERS'
                     ? ''
                     : `&status=${dropdownStatus?.value}`
 
@@ -285,15 +285,6 @@ const OrderList = () => {
 
     return (
         <div className="p-4">
-            <div className="flex flex-col md:flex-row items-end justify-end mb-4">
-                <button
-                    className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2"
-                    onClick={handleDownload}
-                >
-                    <IoMdDownload className="text-2xl md:text-3xl" />
-                </button>
-            </div>
-
             <div className="overflow-x-auto">
                 <div className="flex flex-col lg:flex-row justify-between mb-6 items-center xl:gap-14">
                     <div className="flex flex-col lg:flex-row gap-6">
@@ -329,24 +320,29 @@ const OrderList = () => {
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mt-4 lg:mt-0">
-                        <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
-                            <Dropdown
-                                className="w-full px-1 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                                title={dropdownStatus.name}
-                                onSelect={handleDropdownSelect}
-                            >
-                                <div className="max-h-60 overflow-y-auto">
-                                    {ORDER_STATUS?.map((item, key) => (
-                                        <DropdownItem
-                                            key={key}
-                                            eventKey={item.value}
-                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                        >
-                                            <span>{item.name}</span>
-                                        </DropdownItem>
-                                    ))}
-                                </div>
-                            </Dropdown>
+                        <div className="flex gap-2 items-center xl:flex-col ">
+                            <label htmlFor="" className="font-semibold">
+                                SELECT STATUS
+                            </label>
+                            <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
+                                <Dropdown
+                                    className="w-full px-1 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                                    title={dropdownStatus.name}
+                                    onSelect={handleDropdownSelect}
+                                >
+                                    <div className="max-h-60 overflow-y-auto">
+                                        {ORDER_STATUS?.map((item, key) => (
+                                            <DropdownItem
+                                                key={key}
+                                                eventKey={item.value}
+                                                className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                            >
+                                                <span>{item.name}</span>
+                                            </DropdownItem>
+                                        ))}
+                                    </div>
+                                </Dropdown>
+                            </div>
                         </div>
 
                         <div className="flex flex-col lg:flex-row gap-6">
@@ -361,6 +357,7 @@ const OrderList = () => {
                                     defaultValue={new Date()}
                                     value={new Date(from)}
                                     onChange={handleFromChange}
+                                    className="w-[240px]"
                                 />
                             </div>
                             <div>
@@ -374,15 +371,15 @@ const OrderList = () => {
                                     defaultValue={new Date()}
                                     value={moment(to).toDate()}
                                     onChange={handleToChange}
-                                    minDate={moment(from)
-                                        .add(1, 'day')
-                                        .toDate()}
+                                    minDate={moment(from).toDate()}
+                                    className="w-[240px]"
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
                 <br />
+
                 <Table>
                     <THead>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -440,7 +437,7 @@ const OrderList = () => {
                         onChange={onPaginationChange}
                         className="mb-4 md:mb-0"
                     />
-                    <div className="min-w-[130px]">
+                    <div className="min-w-[130px] flex gap-5">
                         <Select
                             size="sm"
                             isSearchable={true}
@@ -451,6 +448,15 @@ const OrderList = () => {
                             onChange={(option) => onSelectChange(option?.value)}
                             className="w-full"
                         />
+
+                        <div className="flex flex-col md:flex-row items-end justify-end mb-4">
+                            <button
+                                className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2"
+                                onClick={handleDownload}
+                            >
+                                <IoMdDownload className="text-xl md:text-xl" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

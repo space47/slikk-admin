@@ -13,7 +13,7 @@ const initialState: OrderState = {
     pageSize: 10,
     page: 1,
     from: moment().format('YYYY-MM-DD'),
-    to: moment().add(1, 'days').format('YYYY-MM-DD')
+    to: moment().add(1, 'days').format('YYYY-MM-DD'),
 }
 
 export const fetchOrders = createAsyncThunk(
@@ -29,17 +29,17 @@ export const fetchOrders = createAsyncThunk(
                     : `&status=${dropdownStatus.value}`
             const filterQuery = globalFilter ? `&id=${globalFilter}` : ''
             const response = await axioisInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${to}${statusQuery}${filterQuery}`
+                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${to}${statusQuery}${filterQuery}`,
             )
 
             return {
                 orders: response.data?.data.results,
-                orderCount: response.data?.data.count
+                orderCount: response.data?.data.count,
             }
         } catch (error) {
             console.log('error')
         }
-    }
+    },
 )
 
 export const orderSlice = createSlice({
@@ -63,7 +63,7 @@ export const orderSlice = createSlice({
         },
         setTo(state, action) {
             state.to = action.payload
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -80,7 +80,7 @@ export const orderSlice = createSlice({
                     (state.message =
                         action.error.message || 'Failed to fetch Order Lists')
             })
-    }
+    },
 })
 
 export const {
@@ -89,7 +89,7 @@ export const {
     setPageSize,
     setPage,
     setFrom,
-    setTo
+    setTo,
 } = orderSlice.actions
 
 export default orderSlice.reducer
