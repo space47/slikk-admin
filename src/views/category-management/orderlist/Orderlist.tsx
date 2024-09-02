@@ -295,7 +295,7 @@ const OrderList = () => {
             </div>
 
             <div className="overflow-x-auto">
-                <div className="flex flex-col lg:flex-row justify-between mb-6 items-center">
+                <div className="flex flex-col lg:flex-row justify-between mb-6 items-center xl:gap-14">
                     <div className="flex flex-col lg:flex-row gap-6">
                         <div className="mb-4 lg:mb-0">
                             <div className="text-sm md:text-base">
@@ -329,9 +329,9 @@ const OrderList = () => {
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mt-4 lg:mt-0">
-                        <div className="relative w-full lg:w-52 bg-gray-100 flex justify-center lg:justify-start">
+                        <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
                             <Dropdown
-                                className="w-full px-4 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                                className="w-full px-1 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
                                 title={dropdownStatus.name}
                                 onSelect={handleDropdownSelect}
                             >
