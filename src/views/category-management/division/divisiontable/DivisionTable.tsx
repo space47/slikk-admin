@@ -7,7 +7,9 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
+import { Modal } from 'antd'
+import { IoWarningOutline } from 'react-icons/io5'
 
 interface DataItem {
     id: number
@@ -35,7 +37,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const DivisionTable = () => {
@@ -44,6 +46,8 @@ const DivisionTable = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [deleteModal, setDeleteModal] = useState(false)
+    const [idStoreForDelete, setIdStoreForDelete] = useState()
 
     const fetchData = async () => {
         try {
@@ -69,8 +73,8 @@ const DivisionTable = () => {
                       .toString()
                       .toLowerCase()
                       .includes(globalFilter.toLowerCase())
-                : false
-        )
+                : false,
+        ),
     )
 
     const navigate = useNavigate()
@@ -86,7 +90,7 @@ const DivisionTable = () => {
     // Paginate filtered data
     const paginatedData = filteredData.slice(
         (page - 1) * pageSize,
-        page * pageSize
+        page * pageSize,
     )
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
@@ -95,7 +99,7 @@ const DivisionTable = () => {
         {
             header: 'Create Date',
             accessor: 'create_date',
-            format: (value) => moment(value).format('YYYY-MM-DD')
+            format: (value) => moment(value).format('YYYY-MM-DD'),
         },
         { header: 'Title', accessor: 'title' },
         { header: 'Description', accessor: 'description' },
@@ -105,7 +109,7 @@ const DivisionTable = () => {
             format: (value) => {
                 console.log('ValueData', value)
                 return <img src={value} alt="product" width="50" />
-            }
+            },
         },
         {
             header: 'Footer',
@@ -120,7 +124,7 @@ const DivisionTable = () => {
                         />
                     </div>
                 )
-            }
+            },
         },
         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
         { header: 'Position', accessor: 'position' },
@@ -128,32 +132,68 @@ const DivisionTable = () => {
         {
             header: 'Active',
             accessor: 'is_active',
-            format: (value) => (value ? 'Yes' : 'No')
+            format: (value) => (value ? 'Yes' : 'No'),
         },
         {
             header: 'Update Date',
             accessor: 'update_date',
-            format: (value) => moment(value).format('YYYY-MM-DD')
+            format: (value) => moment(value).format('YYYY-MM-DD'),
         },
         {
             header: 'Try and Buy',
             accessor: 'is_try_and_buy',
-            format: (value) => (value ? 'Yes' : 'No')
+            format: (value) => (value ? 'Yes' : 'No'),
         },
         { header: 'Last Updated By', accessor: 'last_updated_by' },
         {
-            header: 'Action',
+            header: 'Edit',
             accessor: 'id',
             format: (value) => (
                 <button
                     onClick={() => handleActionClick(value)}
                     className="border-none bg-none"
                 >
-                    <FaEdit className="text-xl" />
+                    <FaEdit className="text-xl text-blue-600" />
                 </button>
-            )
-        }
+            ),
+        },
+        {
+            header: 'Delete',
+            accessor: 'id',
+            format: (value) => (
+                <button
+                    onClick={() => handleDeleteClick(value)}
+                    className="border-none bg-none"
+                >
+                    <FaTrash className="text-xl text-red-600" />
+                </button>
+            ),
+        },
     ]
+
+    const handleDeleteClick = (id: any) => {
+        console.log('DELETE', id)
+        setDeleteModal(true)
+        setIdStoreForDelete(id)
+    }
+
+    const deleteUser = async () => {
+        try {
+            const body = {
+                id: idStoreForDelete,
+            }
+            const response = await axiosInstance.delete(`division`, {
+                data: body,
+            })
+            setDeleteModal(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleCloseModal = () => {
+        setDeleteModal(false)
+    }
 
     return (
         <div>
@@ -209,7 +249,7 @@ const DivisionTable = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) =>
@@ -218,6 +258,24 @@ const DivisionTable = () => {
                     />
                 </div>
             </div>
+
+            {deleteModal && (
+                <Modal
+                    title=""
+                    open={deleteModal}
+                    onOk={deleteUser}
+                    onCancel={handleCloseModal}
+                    okText="DELETE"
+                    okButtonProps={{
+                        style: { backgroundColor: 'red', borderColor: 'red' },
+                    }}
+                >
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
+                        ARE YOU SURE YOU WANT TO DELETE !!
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

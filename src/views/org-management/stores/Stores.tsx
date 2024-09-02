@@ -8,7 +8,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    flexRender
+    flexRender,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -28,7 +28,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const Stores = () => {
@@ -41,7 +41,7 @@ const Stores = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `merchant/store?p=${page}&page_size=${pageSize}`
+                `merchant/store?p=${page}&page_size=${pageSize}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -71,122 +71,122 @@ const Stores = () => {
             {
                 header: 'Name',
                 accessorKey: 'name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'CODE',
                 accessorKey: 'code',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'IMAGE',
                 accessorKey: 'image',
-                cell: (info) => <img src={info.getValue() as string} alt="" />
+                cell: (info) => <img src={info.getValue() as string} alt="" />,
             },
             {
                 header: 'Fullfillment Center',
                 accessorKey: 'is_fulfillment_center',
-                cell: (info) => (info.getValue() ? 'YES' : 'NO')
+                cell: (info) => (info.getValue() ? 'YES' : 'NO'),
             },
             {
                 header: 'Description',
                 accessorKey: 'description',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Area',
                 accessorKey: 'area',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'City',
                 accessorKey: 'city',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'State',
                 accessorKey: 'state',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Pincode',
                 accessorKey: 'pincode',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Rating',
                 accessorKey: 'rating',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Latitude',
                 accessorKey: 'latitude',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Longitude',
                 accessorKey: 'longitude',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Contact Number',
                 accessorKey: 'contactNumber',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Alternate Contact Number',
                 accessorKey: 'alternate_contact_number',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'POC',
                 accessorKey: 'poc',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'POC Designation',
                 accessorKey: 'poc_designation',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Type',
                 accessorKey: 'type',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Return Area',
                 accessorKey: 'return_area',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Return City',
                 accessorKey: 'return_city',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Return State',
                 accessorKey: 'return_state',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Return Pincode',
                 accessorKey: 'return_pincode',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'GSTIN',
                 accessorKey: 'gstin',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Instruction',
                 accessorKey: 'instruction',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Active',
                 accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No')
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
             {
                 header: 'Create Date',
@@ -195,7 +195,7 @@ const Stores = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Update Date',
@@ -204,7 +204,7 @@ const Stores = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Location URL',
@@ -217,7 +217,7 @@ const Stores = () => {
                     >
                         Location
                     </a>
-                )
+                ),
             },
 
             {
@@ -228,12 +228,12 @@ const Stores = () => {
                         onClick={() => handleActionClick(row.original.id)}
                         className="border-none bg-none"
                     >
-                        <FaEdit className="text-xl" />
+                        <FaEdit className="text-xl text-blue-600" />
                     </button>
-                )
-            }
+                ),
+            },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
@@ -247,15 +247,15 @@ const Stores = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize
+                pageSize: pageSize,
             },
-            globalFilter
+            globalFilter,
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter
+        onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -300,7 +300,7 @@ const Stores = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext()
+                                        header.getContext(),
                                     )}
                                 </Th>
                             ))}
@@ -314,7 +314,7 @@ const Stores = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -334,7 +334,7 @@ const Stores = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}

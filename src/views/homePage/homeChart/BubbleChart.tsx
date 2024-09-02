@@ -1,13 +1,17 @@
 import Chart from 'react-apexcharts'
-import { COLORS } from '@/constants/chart.constant'
+import { COLOR_6 } from '@/constants/chart.constant'
 
 interface BRANDWISEDATA {
     brandData: Record<string, number>
 }
 
 const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
-    const categories = Object.keys(brandData)
+    const categories = Object.keys(brandData).map(
+        (key) => `${key} (${brandData[key]})`,
+    )
     const dataValues = Object.values(brandData)
+
+    console.log('CATE', categories)
 
     const data = [
         {
@@ -28,26 +32,23 @@ const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
                             },
                         },
                     },
-                    colors: COLORS,
+                    colors: COLOR_6,
                     dataLabels: {
                         enabled: true,
                         offsetX: -6,
                         style: {
-                            fontSize: '12px',
+                            fontSize: 'auto',
                             colors: ['#fff'],
                         },
                     },
-                    stroke: {
-                        show: true,
-                        width: 1,
-                        colors: ['#fff'],
-                    },
+
                     xaxis: {
                         categories: categories,
+                        data: dataValues,
                     },
                 }}
                 series={data}
-                height={300}
+                height={600}
                 type="bar"
             />
         </div>

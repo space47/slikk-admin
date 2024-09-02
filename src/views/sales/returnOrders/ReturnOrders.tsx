@@ -60,7 +60,7 @@ const OrderList = () => {
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
     const [dropdownStatus, setDropdownStatus] = useState<
         Record<string, string>
@@ -336,7 +336,7 @@ const OrderList = () => {
                                 defaultValue={new Date()}
                                 value={new Date(to)}
                                 onChange={handleToChange}
-                                minDate={moment(from).add(1, 'day').toDate()}
+                                minDate={moment(from).toDate()}
                             />
                         </div>
                     </div>

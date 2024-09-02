@@ -339,7 +339,7 @@ const StockOverview = () => {
 
         try {
             const body = {
-                quantity: quantity ? quantity : originalQuantity ,
+                quantity: quantity ? quantity : originalQuantity,
                 location: location ? location : originalLocation,
             }
 
@@ -419,27 +419,27 @@ const StockOverview = () => {
     }
 
     return (
-        <div className="overflow-x-auto">
-            <div className="upper flex justify-between mb-5 items-center ">
-                <div className="mb-4">
+        <div className="overflow-x-auto p-4">
+            <div className="upper flex flex-col md:flex-row justify-between mb-5 items-center">
+                <div className="mb-4 w-2/3 md:w-auto">
                     <input
                         type="text"
-                        placeholder="Search here"
+                        placeholder="Search SKU/Name"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded shadow-md"
+                        className="p-2 border rounded shadow-md w-full md:w-auto"
                     />
                 </div>
-                <div className="drop border  bg-gray-200 text-black text-lg font-semibold flex gap-5 w-[100px] mb-6 ">
+                <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
                     <input
                         type="text"
-                        placeholder="Search Type here"
+                        placeholder="Enter brand/category"
                         value={searchType}
                         onChange={handleSearchType}
-                        className="p-2 border rounded"
+                        className="p-2 border rounded shadow-md w-full md:w-auto"
                     />
                     <Dropdown
-                        className=" text-xl text-black "
+                        className="text-xl text-black w-full md:w-auto"
                         title={
                             currentSelectedPage?.value
                                 ? currentSelectedPage.label
@@ -447,29 +447,15 @@ const StockOverview = () => {
                         }
                         onSelect={handleSelect}
                     >
-                        {DROPDOWNARRAY?.map((item, key) => {
-                            return (
-                                <DropdownItem key={key} eventKey={item.value}>
-                                    <span>{item.label}</span>
-                                </DropdownItem>
-                            )
-                        })}
+                        {DROPDOWNARRAY?.map((item, key) => (
+                            <DropdownItem key={key} eventKey={item.value}>
+                                <span>{item.label}</span>
+                            </DropdownItem>
+                        ))}
                     </Dropdown>
                 </div>
-                <div>
-                    <div className="flex items-end justify-end mb-2">
-                        <button
-                            className="bg-gray-100 text-black px-5 py-3  hover:bg-gray-200 rounded-lg"
-                            onClick={handleDownload}
-                        >
-                            <IoMdDownload className="text-3xl" />
-                        </button>{' '}
-                        <br />
-                        <br />
-                    </div>
-                </div>
             </div>
-            <Table>
+            <Table className="w-full">
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>
@@ -499,14 +485,15 @@ const StockOverview = () => {
                     ))}
                 </TBody>
             </Table>
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
                     total={totalData}
                     onChange={onPaginationChange}
+                    className="w-[400px] md:w-auto mb-4 md:mb-0 "
                 />
-                <div style={{ minWidth: 130 }}>
+                <div className="flex flex-row items-center justify-between xl:justify-normal w-full md:w-auto xl:gap-5">
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
@@ -515,7 +502,14 @@ const StockOverview = () => {
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
+                        className="w-1/2 md:w-auto"
                     />
+                    <button
+                        className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg "
+                        onClick={handleDownload}
+                    >
+                        <IoMdDownload className="text-xl" />
+                    </button>
                 </div>
             </div>
             {showImageModal && (

@@ -162,7 +162,7 @@ const Home = () => {
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Net Sales</h2>
-                            <p>AMOUNT: Rs.{netSales.toFixed(2)}</p>
+                            <p>Amount: Rs.{netSales.toFixed(2)}</p>
                         </div>
                     </div>
                 </Card>
