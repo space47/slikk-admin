@@ -9,7 +9,7 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     flexRender,
-    useGlobalFilter
+    useGlobalFilter,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
@@ -50,7 +50,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const OrderList = () => {
@@ -71,7 +71,7 @@ const OrderList = () => {
         pageSize: number,
         from: string,
         to: string,
-        filter: string = ''
+        filter: string = '',
     ) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -80,7 +80,7 @@ const OrderList = () => {
                     ? ''
                     : `&status=${dropdownStatus?.value}`
             const response = await axiosInstance.get(
-                `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&name=${filter}`
+                `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&name=${filter}`,
                 //
             )
 
@@ -112,7 +112,7 @@ const OrderList = () => {
                     >
                         {getValue()}
                     </a>
-                )
+                ),
             },
             {
                 header: 'Return_Order Id',
@@ -126,28 +126,28 @@ const OrderList = () => {
                     >
                         {getValue()}
                     </a>
-                )
+                ),
             },
             {
                 header: 'Order Date',
                 accessorKey: 'return_order_items.create_date',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                )
+                ),
             },
             {
                 header: 'Return Type',
                 accessorKey: 'return_type',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                )
+                ),
             },
             {
                 header: 'Total Amount',
                 accessorKey: 'amount',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                )
+                ),
             },
             {
                 header: 'Return Order Item',
@@ -156,7 +156,7 @@ const OrderList = () => {
                     <span>
                         {row.original.return_order_items[0]?.order_item || ''}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Return QTY',
@@ -165,7 +165,7 @@ const OrderList = () => {
                     <span>
                         {row.original.return_order_items[0]?.quantity || ''}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Return Reason',
@@ -175,57 +175,56 @@ const OrderList = () => {
                         {row.original.return_order_items[0]?.return_reason ||
                             ''}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Order Total',
                 accessorKey: 'amount',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                )
+                ),
             },
             {
                 header: 'Status',
                 accessorKey: 'status',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                )
+                ),
             },
             {
                 header: 'Last Update',
                 accessorKey: 'return_order_items.update_date',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                )
+                ),
             },
             {
                 header: 'UUID',
                 accessorKey: 'uuid',
                 cell: ({ getValue }: { getValue: () => string }) => (
                     <span>{getValue()}</span>
-                )
-            }
+                ),
+            },
         ],
-        []
+        [],
     )
 
     const handleOrderClick = (orderId: string) => {
         navigate(`/app/orders/${orderId}`)
     }
 
-
     const table = useReactTable({
         data: orders,
         columns,
         filterFns: {
-            fuzzy: fuzzyFilter
+            fuzzy: fuzzyFilter,
         },
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize
+                pageSize: pageSize,
             },
-            globalFilter
+            globalFilter,
         },
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
@@ -234,7 +233,7 @@ const OrderList = () => {
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
-        pageCount: Math.ceil(orderCount ?? 0 / pageSize)
+        pageCount: Math.ceil(orderCount ?? 0 / pageSize),
     })
 
     const handleRemoveClick = (return_order_id: string) => {
@@ -272,27 +271,27 @@ const OrderList = () => {
     const handleDropdownSelect = (a: any) => {
         setDropdownStatus({
             value: a,
-            name: RETURN_ORDERS.find((item) => item.value == a)?.name || ''
+            name: RETURN_ORDERS.find((item) => item.value == a)?.name || '',
         })
     }
     console.log('ssssssswddwdwdw', dropdownStatus)
     return (
         <div className="overflow-x-auto">
-            <div className="flex justify-between mb-10 items-center ">
-                <div className="mb-4">
+            <div className="flex flex-col lg:flex-row lg:justify-between mb-10 items-center gap-4">
+                <div className="w-full lg:w-auto mb-4 lg:mb-0">
                     <input
                         type="text"
                         placeholder="Search here"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
+                        className="w-full p-2 border rounded lg:w-auto"
                     />
                 </div>
 
-                <div className="flex gap-10 items-center justify-between">
-                    <div className="relative w-50 bg-gray-100 items-center flex justify-center">
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full lg:w-auto">
+                    <div className="relative w-full md:w-1/2 lg:w-auto bg-gray-100 items-center flex justify-center">
                         <Dropdown
-                            className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                            className="w-full px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
                             title={dropdownStatus.name}
                             onSelect={handleDropdownSelect}
                         >
@@ -312,9 +311,9 @@ const OrderList = () => {
                         </Dropdown>
                     </div>
 
-                    <div className="flex gap-5">
+                    <div className="flex flex-col md:flex-row gap-4 lg:gap-5">
                         <div>
-                            <div className="mb-1 font-semibold text-sm">
+                            <div className="mb-1 font-semibold text-sm text-center md:text-left">
                                 FROM DATE:
                             </div>
                             <DatePicker
@@ -327,7 +326,7 @@ const OrderList = () => {
                             />
                         </div>
                         <div>
-                            <div className="mb-1 font-semibold text-sm">
+                            <div className="mb-1 font-semibold text-sm text-center md:text-left">
                                 TO DATE:
                             </div>
                             <DatePicker
@@ -361,7 +360,7 @@ const OrderList = () => {
                                         >
                                             {flexRender(
                                                 header.column.columnDef.header,
-                                                header.getContext()
+                                                header.getContext(),
                                             )}
                                             <Sorter
                                                 sort={header.column.getIsSorted()}
@@ -380,7 +379,7 @@ const OrderList = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -388,23 +387,23 @@ const OrderList = () => {
                     ))}
                 </TBody>
             </Table>
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col md:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
                     total={orderCount}
                     onChange={onPaginationChange}
                 />
-                <div style={{ minWidth: 130 }}>
+                <div className="w-full md:w-auto min-w-[130px]">
                     <Select
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
-                        className="flex justify-end"
+                        className="w-full flex justify-end"
                     />
                 </div>
             </div>

@@ -4,15 +4,15 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
 import { IoMdReturnLeft } from 'react-icons/io'
-import { FaBoxOpen, FaSearch } from 'react-icons/fa'
+import { FaSearch } from 'react-icons/fa'
 import { GrCompliance } from 'react-icons/gr'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import DatePicker from '@/components/ui/DatePicker'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
-import { BiSolidBarChartAlt2 } from 'react-icons/bi'
 import { TbCalendarStats } from 'react-icons/tb'
 import { HiMiniBanknotes } from 'react-icons/hi2'
+import BrandDataChart from '../homeChart/BubbleChart'
 
 const Home = () => {
     const [homeData, setHomeData] = useState<SalesData | null>(null)
@@ -69,7 +69,7 @@ const Home = () => {
         }))
     }
 
-    const handleCustomerFunction = (inputName: string, from: string) => {
+    const handleCustomerFunction = (inputName: string) => {
         console.log('CUSTOMER', inputName)
         navigate(`/app/customerAnalytics/${inputName}`)
     }
@@ -80,9 +80,9 @@ const Home = () => {
     }
 
     return (
-        <div className="flex flex-col gap-6">
-            <div className="flex gap-5 justify-end">
-                <div>
+        <div className="flex flex-col gap-6 p-4">
+            <div className="flex flex-wrap gap-5 justify-end">
+                <div className="w-full sm:w-auto">
                     <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
                     <DatePicker
                         inputPrefix={<HiOutlineCalendar className="text-lg" />}
@@ -91,7 +91,7 @@ const Home = () => {
                         onChange={handleFromChange}
                     />
                 </div>
-                <div>
+                <div className="w-full sm:w-auto">
                     <div className="mb-1 font-semibold text-sm">TO DATE:</div>
                     <DatePicker
                         inputSuffix={<TbCalendarStats className="text-xl" />}
@@ -103,11 +103,11 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 ">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 xl:mx-10">
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <RiFileList3Fill className="text-4xl mx-4" />
+                            <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">
@@ -124,7 +124,7 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <GrCompliance className="text-4xl mx-4" />
+                            <GrCompliance className="text-4xl mx-4 text-green-500" />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">
@@ -141,7 +141,7 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <IoMdReturnLeft className="text-4xl mx-4" />
+                            <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">
@@ -158,37 +158,45 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <HiMiniBanknotes className="text-4xl mx-4 " />
+                            <HiMiniBanknotes className="text-4xl mx-4 text-yellow-400 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Net Sales</h2>
-                            <p>AMOUNT: Rs.{netSales}</p>
+                            <p>AMOUNT: Rs.{netSales.toFixed(2)}</p>
                         </div>
                     </div>
                 </Card>
             </div>
-            {/* 2 imputs */}
 
-            <div className="flex gap-10 p-4 bg-white shadow-lg rounded-lg justify-center mt-5">
-                <div className="flex items-center gap-1  p-2 rounded-md w-[400px] ">
+            {/* CHART */}
+
+            <div className="mt-5 w-[350px] xl:w-full">
+                <div className="font-bold text-xl">BrandWise Data Chart</div>
+                {homeData?.brand_wise_sale && (
+                    <BrandDataChart brandData={homeData?.brand_wise_sale} />
+                )}
+            </div>
+
+            <div className="flex flex-col xl:flex-row gap-4 mt-5 xl:justify-center">
+                <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
                     <input
                         type="text"
                         name="customer"
                         value={inputValues.customer}
                         onChange={handleInputChange}
                         placeholder="Customer"
-                        className="flex-1 p-2  rounded-md focus:outline-none focus:ring-2 "
+                        className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2"
                     />
                     <button
                         onClick={() =>
-                            handleCustomerFunction(inputValues.customer, from)
+                            handleCustomerFunction(inputValues.customer)
                         }
-                        className="p-2 bg-blue-500 text-white rounded-md  hover:bg-blue-600 transition-colors"
+                        className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                     >
                         <FaSearch />
                     </button>
                 </div>
-                <div className="flex items-center gap-1 p-2 rounded-md w-[400px] ">
+                <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
                     <input
                         type="text"
                         name="invoice_id"
@@ -201,7 +209,7 @@ const Home = () => {
                         onClick={() =>
                             handleInvoiceFunction(inputValues.invoice_id)
                         }
-                        className="p-2 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                        className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                     >
                         <FaSearch />
                     </button>

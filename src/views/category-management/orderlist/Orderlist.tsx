@@ -85,50 +85,26 @@ const OrderList = () => {
                 dropdownStatus?.value === 'ALL'
                     ? ''
                     : `&status=${dropdownStatus?.value}`
-            const response = await axiosInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
-            )
 
-            const ordersData = response.data?.data.results
-            const orderCount = response.data?.data.count
+            let response
 
-            setOrders(ordersData)
-            setOrderCount(orderCount)
-        } catch (error) {
-            console.error(error)
-        }
-    }
+            if (globalFilter) {
+                response = await axiosInstance.get(
+                    `/merchant/orders?invoice_id=${globalFilter}${status}`,
+                )
+            } else if (mobileFilter) {
+                response = await axiosInstance.get(
+                    `/merchant/orders?mobile=${mobileFilter}${status}&p=${page}&page_size=${pageSize}`,
+                )
 
-    const fetchFilter = async (filter: string = '') => {
-        try {
-            const status =
-                dropdownStatus?.value === 'ALL'
-                    ? ''
-                    : `&status=${dropdownStatus?.value}`
-            const response = await axiosInstance.get(
-                `/merchant/orders?invoice_id=${filter}${status}`,
-            )
-
-            const ordersData = response.data?.data.results
-            const orderCount = response.data?.data.count
-
-            setOrders(ordersData)
-            setOrderCount(orderCount)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    const fetchMobileFilter = async (filter: string = '') => {
-        try {
-            const status =
-                dropdownStatus?.value === 'ALL'
-                    ? ''
-                    : `&status=${dropdownStatus?.value}`
-
-            const response = await axiosInstance.get(
-                `/merchant/orders?mobile=${filter}${status}`,
-            )
+                const totalOrders = response.data?.data.count
+                setPageSize(totalOrders)
+                setPage(1)
+            } else {
+                response = await axiosInstance.get(
+                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
+                )
+            }
 
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
@@ -142,15 +118,13 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus])
+    }, [page, pageSize, from, to, dropdownStatus, mobileFilter, globalFilter])
 
     useEffect(() => {
-        fetchFilter(globalFilter)
-    }, [dropdownStatus, globalFilter])
-
-    useEffect(() => {
-        fetchMobileFilter(mobileFilter)
-    }, [dropdownStatus, mobileFilter])
+        if (!mobileFilter) {
+            setPageSize(10)
+        }
+    }, [mobileFilter])
 
     const columns = useMemo(
         () => [
@@ -308,24 +282,25 @@ const OrderList = () => {
         })
     }
     console.log('ssssssswddwdwdw', dropdownStatus)
+
     return (
-        <div>
-            <div className="flex items-end justify-end mb-2">
+        <div className="p-4">
+            <div className="flex flex-col md:flex-row items-end justify-end mb-4">
                 <button
-                    className="bg-gray-100 text-black px-5 py-3  hover:bg-gray-200 rounded-lg"
+                    className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2"
                     onClick={handleDownload}
                 >
-                    <IoMdDownload className="text-3xl" />
-                </button>{' '}
-                <br />
-                <br />
+                    <IoMdDownload className="text-2xl md:text-3xl" />
+                </button>
             </div>
 
             <div className="overflow-x-auto">
-                <div className="flex justify-between mb-10 items-center ">
-                    <div className="flex gap-10">
-                        <div className="mb-4">
-                            <div>SEARCH BY INVOICE_ID</div> <br />
+                <div className="flex flex-col lg:flex-row justify-between mb-6 items-center">
+                    <div className="flex flex-col lg:flex-row gap-6">
+                        <div className="mb-4 lg:mb-0">
+                            <div className="text-sm md:text-base">
+                                SEARCH BY INVOICE_ID
+                            </div>
                             <input
                                 type="text"
                                 placeholder="Search here"
@@ -333,13 +308,14 @@ const OrderList = () => {
                                 onChange={(e) =>
                                     setGlobalFilter(e.target.value)
                                 }
-                                className="p-2 border rounded"
+                                className="p-2 border rounded mt-1 w-full"
                             />
                         </div>
-                        {/* MOBILE */}
 
-                        <div className="mb-4">
-                            <div>SEARCH BY MOBILE</div> <br />
+                        <div className="mb-4 lg:mb-0">
+                            <div className="text-sm md:text-base">
+                                SEARCH BY MOBILE
+                            </div>
                             <input
                                 type="text"
                                 placeholder="Search through mobile"
@@ -347,44 +323,40 @@ const OrderList = () => {
                                 onChange={(e) =>
                                     setMobileFilter(e.target.value)
                                 }
-                                className="p-2 border rounded"
+                                className="p-2 border rounded mt-1 w-full"
                             />
                         </div>
                     </div>
 
-                    {/* DOWNLOAD */}
-
-                    <div className="flex gap-10 items-center justify-between">
-                        <div className="relative w-50 bg-gray-100 items-center flex justify-center">
+                    <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mt-4 lg:mt-0">
+                        <div className="relative w-full lg:w-52 bg-gray-100 flex justify-center lg:justify-start">
                             <Dropdown
-                                className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                                className="w-full px-4 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
                                 title={dropdownStatus.name}
                                 onSelect={handleDropdownSelect}
                             >
                                 <div className="max-h-60 overflow-y-auto">
-                                    {ORDER_STATUS?.map((item, key) => {
-                                        return (
-                                            <DropdownItem
-                                                key={key}
-                                                eventKey={item.value}
-                                                className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                            >
-                                                <span>{item.name}</span>
-                                            </DropdownItem>
-                                        )
-                                    })}
+                                    {ORDER_STATUS?.map((item, key) => (
+                                        <DropdownItem
+                                            key={key}
+                                            eventKey={item.value}
+                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                        >
+                                            <span>{item.name}</span>
+                                        </DropdownItem>
+                                    ))}
                                 </div>
                             </Dropdown>
                         </div>
 
-                        <div className="flex gap-5">
+                        <div className="flex flex-col lg:flex-row gap-6">
                             <div>
-                                <div className="mb-1 font-semibold text-sm">
+                                <div className="mb-1 font-semibold text-xs md:text-sm">
                                     FROM DATE:
                                 </div>
                                 <DatePicker
                                     inputPrefix={
-                                        <HiOutlineCalendar className="text-lg" />
+                                        <HiOutlineCalendar className="text-base md:text-lg" />
                                     }
                                     defaultValue={new Date()}
                                     value={new Date(from)}
@@ -392,12 +364,12 @@ const OrderList = () => {
                                 />
                             </div>
                             <div>
-                                <div className="mb-1 font-semibold text-sm">
+                                <div className="mb-1 font-semibold text-xs md:text-sm">
                                     TO DATE:
                                 </div>
                                 <DatePicker
                                     inputSuffix={
-                                        <TbCalendarStats className="text-xl" />
+                                        <TbCalendarStats className="text-base md:text-xl" />
                                     }
                                     defaultValue={new Date()}
                                     value={moment(to).toDate()}
@@ -410,7 +382,7 @@ const OrderList = () => {
                         </div>
                     </div>
                 </div>
-
+                <br />
                 <Table>
                     <THead>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -459,14 +431,16 @@ const OrderList = () => {
                         ))}
                     </TBody>
                 </Table>
-                <div className="flex items-center justify-between mt-4">
+
+                <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                     <Pagination
                         pageSize={pageSize}
                         currentPage={page}
                         total={orderCount}
                         onChange={onPaginationChange}
+                        className="mb-4 md:mb-0"
                     />
-                    <div style={{ minWidth: 130 }}>
+                    <div className="min-w-[130px]">
                         <Select
                             size="sm"
                             isSearchable={true}
@@ -475,7 +449,7 @@ const OrderList = () => {
                             )}
                             options={pageSizeOptions}
                             onChange={(option) => onSelectChange(option?.value)}
-                            className="flex justify-end"
+                            className="w-full"
                         />
                     </div>
                 </div>
