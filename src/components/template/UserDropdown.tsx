@@ -119,7 +119,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
                     className="max-w-md mx-auto rounded-lg overflow-hidden shadow-2xl"
                 >
                     <div className="p-8 bg-white rounded-lg">
-                        <div className="flex items-center gap-6">
+                        <div className="flex flex-col items-start gap-6 xl:flex-row xl:items-center">
                             <div className="w-[100px] h-[100px]">
                                 <img
                                     src="/img/avatars/userAvatar.png"
