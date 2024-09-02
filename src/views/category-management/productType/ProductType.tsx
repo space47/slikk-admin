@@ -6,7 +6,9 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
+import { Modal } from 'antd'
+import { IoWarningOutline } from 'react-icons/io5'
 
 type Product = {
     id: number
@@ -38,7 +40,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const ProductType = () => {
@@ -47,6 +49,8 @@ const ProductType = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [deleteModal, setDeleteModal] = useState(false)
+    const [idStoreForDelete, setIdStoreForDelete] = useState()
 
     const fetchData = async () => {
         try {
@@ -72,14 +76,14 @@ const ProductType = () => {
                       .toString()
                       .toLowerCase()
                       .includes(globalFilter.toLowerCase())
-                : false
-        )
+                : false,
+        ),
     )
 
     // Paginate filtered data
     const paginatedData = filteredData.slice(
         (page - 1) * pageSize,
-        page * pageSize
+        page * pageSize,
     )
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
@@ -89,7 +93,7 @@ const ProductType = () => {
             header: 'Create Date',
             accessor: 'create_date',
             format: (value: moment.MomentInput) =>
-                moment(value).format('YYYY-MM-DD')
+                moment(value).format('YYYY-MM-DD'),
         },
         { header: 'Title', accessor: 'title' },
         { header: 'Description', accessor: 'description' },
@@ -98,7 +102,7 @@ const ProductType = () => {
             accessor: 'image',
             format: (value: string | undefined) => (
                 <img src={value} alt="product" width="50" />
-            )
+            ),
         },
         { header: 'Footer', accessor: 'footer' },
         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
@@ -107,18 +111,18 @@ const ProductType = () => {
         {
             header: 'Active',
             accessor: 'is_active',
-            format: (value: any) => (value ? 'Yes' : 'No')
+            format: (value: any) => (value ? 'Yes' : 'No'),
         },
         {
             header: 'Update Date',
             accessor: 'update_date',
             format: (value: moment.MomentInput) =>
-                moment(value).format('YYYY-MM-DD')
+                moment(value).format('YYYY-MM-DD'),
         },
         {
             header: 'Try and Buy',
             accessor: 'is_try_and_buy',
-            format: (value: any) => (value ? 'Yes' : 'No')
+            format: (value: any) => (value ? 'Yes' : 'No'),
         },
         { header: 'Last Updated By', accessor: 'last_updated_by' },
         {
@@ -129,10 +133,22 @@ const ProductType = () => {
                     onClick={() => handleActionClick(value)}
                     className="border-none bg-none"
                 >
-                    <FaEdit className="text-xl" />
+                    <FaEdit className="text-xl text-blue-600" />
                 </button>
-            )
-        }
+            ),
+        },
+        {
+            header: 'Delete',
+            accessor: 'id',
+            format: (value) => (
+                <button
+                    onClick={() => handleDeleteClick(value)}
+                    className="border-none bg-none"
+                >
+                    <FaTrash className="text-xl text-red-600" />
+                </button>
+            ),
+        },
     ]
 
     const navigate = useNavigate()
@@ -143,6 +159,30 @@ const ProductType = () => {
 
     const handleSeller = () => {
         navigate('/app/category/productType/addNew')
+    }
+
+    const handleDeleteClick = (id: any) => {
+        console.log('DELETE', id)
+        setDeleteModal(true)
+        setIdStoreForDelete(id)
+    }
+
+    const deleteUser = async () => {
+        try {
+            const body = {
+                id: idStoreForDelete,
+            }
+            const response = await axiosInstance.delete(`product-type`, {
+                data: body,
+            })
+            setDeleteModal(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleCloseModal = () => {
+        setDeleteModal(false)
     }
 
     return (
@@ -200,7 +240,7 @@ const ProductType = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) =>
@@ -209,6 +249,23 @@ const ProductType = () => {
                     />
                 </div>
             </div>
+            {deleteModal && (
+                <Modal
+                    title=""
+                    open={deleteModal}
+                    onOk={deleteUser}
+                    onCancel={handleCloseModal}
+                    okText="DELETE"
+                    okButtonProps={{
+                        style: { backgroundColor: 'red', borderColor: 'red' },
+                    }}
+                >
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
+                        ARE YOU SURE YOU WANT TO DELETE !!
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

@@ -70,7 +70,7 @@ export type ordercommon = {
 }
 
 export const ORDER_STATUS = [
-    { name: 'ALL', value: 'ALL' },
+    { name: 'ALL ORDERS', value: 'ALL_ORDERS' },
     { name: 'PENDING', value: 'PENDING' },
     { name: 'ACCEPTED', value: 'ACCEPTED' },
     { name: 'PACKED', value: 'PACKED' },

@@ -8,7 +8,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    flexRender
+    flexRender,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -54,7 +54,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const Seller = () => {
@@ -67,7 +67,7 @@ const Seller = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `merchant/company?p=${page}&page_size=${pageSize}`
+                `merchant/company?p=${page}&page_size=${pageSize}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -107,54 +107,54 @@ const Seller = () => {
             {
                 header: 'ID',
                 accessorKey: 'id',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
 
             {
                 header: 'Name',
                 accessorKey: 'name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Seller Code',
                 accessorKey: 'code',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Registered Name',
                 accessorKey: 'registered_name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
 
             {
                 header: 'Alternate Contact Number',
                 accessorKey: 'alternate_contact_number',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'GSTIN',
                 accessorKey: 'gstin',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'POC',
                 accessorKey: 'poc',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'POC Email',
                 accessorKey: 'poc_email',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Contact Number',
                 accessorKey: 'contact_number',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Address',
                 accessorKey: 'address',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             // {
             //     header: 'Bank Name',
@@ -174,7 +174,7 @@ const Seller = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             // {
             //     header: 'Damages Per SKU',
@@ -200,7 +200,7 @@ const Seller = () => {
             {
                 header: 'Is Active',
                 accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No')
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
 
             // {
@@ -216,7 +216,7 @@ const Seller = () => {
             {
                 header: 'Segment',
                 accessorKey: 'segment',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             // {
             //     header: 'Settlement Days',
@@ -230,7 +230,7 @@ const Seller = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             // {
             //     header: 'Warehouse Charge Per SKU',
@@ -246,12 +246,12 @@ const Seller = () => {
                         onClick={() => handleActionClick(row.original.id)}
                         className="border-none bg-none"
                     >
-                        <FaEdit className="text-xl" />
+                        <FaEdit className="text-xl text-blue-600" />
                     </button>
-                )
-            }
+                ),
+            },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
@@ -265,15 +265,15 @@ const Seller = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize
+                pageSize: pageSize,
             },
-            globalFilter
+            globalFilter,
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter
+        onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -318,7 +318,7 @@ const Seller = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext()
+                                        header.getContext(),
                                     )}
                                 </Th>
                             ))}
@@ -332,7 +332,7 @@ const Seller = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -352,7 +352,7 @@ const Seller = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}

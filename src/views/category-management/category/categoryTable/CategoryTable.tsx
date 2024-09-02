@@ -9,14 +9,16 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    useGlobalFilter
+    useGlobalFilter,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { MdEdit } from 'react-icons/md'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
+import { Modal } from 'antd'
+import { IoWarningOutline } from 'react-icons/io5'
 
 interface categoryItem {
     id: number
@@ -48,7 +50,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const CategoryTable = () => {
@@ -56,6 +58,8 @@ const CategoryTable = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [deleteModal, setDeleteModal] = useState(false)
+    const [idStoreForDelete, setIdStoreForDelete] = useState()
     const navigate = useNavigate()
 
     const fetchData = async (filter: string = '') => {
@@ -88,12 +92,12 @@ const CategoryTable = () => {
             {
                 header: 'Name',
                 accessorKey: 'name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Description',
                 accessorKey: 'description',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Image',
@@ -104,47 +108,47 @@ const CategoryTable = () => {
                         alt="product"
                         width="50"
                     />
-                )
+                ),
             },
             {
                 header: 'Division',
                 accessorKey: 'division',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Division Name',
                 accessorKey: 'division_name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Title',
                 accessorKey: 'title',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Footer',
                 accessorKey: 'footer',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Quick Filter Tags',
                 accessorKey: 'quick_filter_tags',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Position',
                 accessorKey: 'position',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Gender',
                 accessorKey: 'gender',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Active',
                 accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No')
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
             {
                 header: 'Create Date',
@@ -153,7 +157,7 @@ const CategoryTable = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Update Date',
@@ -162,17 +166,17 @@ const CategoryTable = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Try_&_Buy',
                 accessorKey: 'is_try_and_buy',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No')
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
             {
                 header: 'Last Updated By',
                 accessorKey: 'last_updated_by',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Edit',
@@ -182,12 +186,24 @@ const CategoryTable = () => {
                         onClick={() => handleActionClick(row.original.id)}
                         className="bg-none border-none"
                     >
-                        <FaEdit className="text-xl" />
+                        <FaEdit className="text-xl text-blue-600" />
                     </Button>
-                )
-            }
+                ),
+            },
+            {
+                header: 'Delete',
+                accessorKey: 'id',
+                cell: ({ getValue, row }) => (
+                    <button
+                        onClick={() => handleDeleteClick(row.original.id)}
+                        className="border-none bg-none"
+                    >
+                        <FaTrash className="text-xl text-red-600" />
+                    </button>
+                ),
+            },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
@@ -201,15 +217,15 @@ const CategoryTable = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize
+                pageSize: pageSize,
             },
-            globalFilter
+            globalFilter,
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter
+        onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -223,6 +239,30 @@ const CategoryTable = () => {
 
     const handleSeller = () => {
         navigate('/app/category/category/add')
+    }
+
+    const handleDeleteClick = (id: any) => {
+        console.log('DELETE', id)
+        setDeleteModal(true)
+        setIdStoreForDelete(id)
+    }
+
+    const deleteUser = async () => {
+        try {
+            const body = {
+                id: idStoreForDelete,
+            }
+            const response = await axiosInstance.delete(`category`, {
+                data: body,
+            })
+            setDeleteModal(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleCloseModal = () => {
+        setDeleteModal(false)
     }
 
     return (
@@ -254,7 +294,7 @@ const CategoryTable = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext()
+                                        header.getContext(),
                                     )}
                                 </Th>
                             ))}
@@ -268,7 +308,7 @@ const CategoryTable = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -288,13 +328,30 @@ const CategoryTable = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
                 </div>
             </div>
+            {deleteModal && (
+                <Modal
+                    title=""
+                    open={deleteModal}
+                    onOk={deleteUser}
+                    onCancel={handleCloseModal}
+                    okText="DELETE"
+                    okButtonProps={{
+                        style: { backgroundColor: 'red', borderColor: 'red' },
+                    }}
+                >
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
+                        ARE YOU SURE YOU WANT TO DELETE !!
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

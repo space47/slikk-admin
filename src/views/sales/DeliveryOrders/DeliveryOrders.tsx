@@ -351,9 +351,9 @@ const OrderList = () => {
                                     <TbCalendarStats className="text-xl" />
                                 }
                                 defaultValue={new Date()}
-                                value={moment(to).toDate()}
+                                value={moment(to).subtract(1, 'days').toDate()}
                                 onChange={handleToChange}
-                                minDate={moment(from).add(1, 'day').toDate()}
+                                minDate={moment(from).toDate()}
                             />
                         </div>
                     </div>
