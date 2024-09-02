@@ -294,8 +294,8 @@ const OrderList = () => {
     console.log('ssssssswddwdwdw', dropdownStatus)
     return (
         <div className="overflow-x-auto">
-            <div className="flex justify-between mb-10 items-center ">
-                <div className="mb-4">
+            <div className="flex flex-col lg:flex-row lg:justify-between mb-10 items-center gap-4">
+                <div className="w-full lg:w-auto mb-4 lg:mb-0">
                     <input
                         type="text"
                         placeholder="Search here"
@@ -303,36 +303,34 @@ const OrderList = () => {
                         onChange={(e) =>
                             dispatch(setGlobalFilter(e.target.value))
                         }
-                        className="p-2 border rounded"
+                        className="w-full p-2 border rounded"
                     />
                 </div>
 
-                <div className="flex gap-10 items-center justify-between">
-                    <div className="relative w-50 bg-gray-100 items-center flex justify-center">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-10 items-center justify-between w-full lg:w-auto">
+                    <div className="relative w-full lg:w-auto bg-gray-100 flex justify-center">
                         <Dropdown
-                            className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                            className="w-full lg:w-50 px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
                             title={dropdownStatus.name}
                             onSelect={handleDropdownSelect}
                         >
                             <div className="max-h-60 overflow-y-auto">
-                                {ORDER_STATUS?.map((item, key) => {
-                                    return (
-                                        <DropdownItem
-                                            key={key}
-                                            eventKey={item.value}
-                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                        >
-                                            <span>{item.name}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
+                                {ORDER_STATUS?.map((item, key) => (
+                                    <DropdownItem
+                                        key={key}
+                                        eventKey={item.value}
+                                        className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                    >
+                                        <span>{item.name}</span>
+                                    </DropdownItem>
+                                ))}
                             </div>
                         </Dropdown>
                     </div>
 
-                    <div className="flex gap-5">
+                    <div className="flex flex-col sm:flex-row gap-4 lg:gap-5">
                         <div>
-                            <div className="mb-1 font-semibold text-sm">
+                            <div className="mb-1 font-semibold text-sm text-center sm:text-left">
                                 FROM DATE:
                             </div>
                             <DatePicker
@@ -345,7 +343,7 @@ const OrderList = () => {
                             />
                         </div>
                         <div>
-                            <div className="mb-1 font-semibold text-sm">
+                            <div className="mb-1 font-semibold text-sm text-center sm:text-left">
                                 TO DATE:
                             </div>
                             <DatePicker
@@ -406,14 +404,15 @@ const OrderList = () => {
                     ))}
                 </TBody>
             </Table>
-            <div className="flex items-center justify-between mt-4">
+
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
                     total={orderCount}
                     onChange={onPaginationChange}
                 />
-                <div style={{ minWidth: 130 }}>
+                <div className="w-full sm:w-auto min-w-[130px]">
                     <Select
                         size="sm"
                         value={pageSizeOptions.find(
@@ -423,7 +422,7 @@ const OrderList = () => {
                         onChange={(option) =>
                             dispatch(setPageSize(option?.value))
                         }
-                        className="flex justify-end"
+                        className="w-full flex justify-end"
                     />
                 </div>
             </div>
