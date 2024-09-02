@@ -16,38 +16,41 @@ const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
     ]
 
     return (
-        <Chart
-            options={{
-                plotOptions: {
-                    bar: {
-                        horizontal: true,
-                        dataLabels: {
-                            position: 'top',
+        <div>
+            <div className="text-xl font-semibold">BRAND WISE DATA CHART</div>
+            <Chart
+                options={{
+                    plotOptions: {
+                        bar: {
+                            horizontal: true,
+                            dataLabels: {
+                                position: 'top',
+                            },
                         },
                     },
-                },
-                colors: COLORS,
-                dataLabels: {
-                    enabled: true,
-                    offsetX: -6,
-                    style: {
-                        fontSize: '12px',
+                    colors: COLORS,
+                    dataLabels: {
+                        enabled: true,
+                        offsetX: -6,
+                        style: {
+                            fontSize: '12px',
+                            colors: ['#fff'],
+                        },
+                    },
+                    stroke: {
+                        show: true,
+                        width: 1,
                         colors: ['#fff'],
                     },
-                },
-                stroke: {
-                    show: true,
-                    width: 1,
-                    colors: ['#fff'],
-                },
-                xaxis: {
-                    categories: categories,
-                },
-            }}
-            series={data}
-            height={300}
-            type="bar"
-        />
+                    xaxis: {
+                        categories: categories,
+                    },
+                }}
+                series={data}
+                height={300}
+                type="bar"
+            />
+        </div>
     )
 }
 

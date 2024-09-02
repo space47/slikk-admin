@@ -171,48 +171,50 @@ const Home = () => {
             {/* CHART */}
 
             <div className="mt-5 w-[350px] xl:w-full">
-                <div className="font-bold text-xl">BrandWise Data Chart</div>
                 {homeData?.brand_wise_sale && (
                     <BrandDataChart brandData={homeData?.brand_wise_sale} />
                 )}
             </div>
 
-            <div className="flex flex-col xl:flex-row gap-4 mt-5 xl:justify-center">
-                <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
-                    <input
-                        type="text"
-                        name="customer"
-                        value={inputValues.customer}
-                        onChange={handleInputChange}
-                        placeholder="Customer"
-                        className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2"
-                    />
-                    <button
-                        onClick={() =>
-                            handleCustomerFunction(inputValues.customer)
-                        }
-                        className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                    >
-                        <FaSearch />
-                    </button>
-                </div>
-                <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
-                    <input
-                        type="text"
-                        name="invoice_id"
-                        value={inputValues.invoice_id}
-                        onChange={handleInputChange}
-                        placeholder="Invoice ID"
-                        className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2"
-                    />
-                    <button
-                        onClick={() =>
-                            handleInvoiceFunction(inputValues.invoice_id)
-                        }
-                        className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                    >
-                        <FaSearch />
-                    </button>
+            <div>
+                <h5>Search By</h5>
+                <div className="flex flex-col xl:flex-row gap-4 mt-5 xl:justify-center">
+                    <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
+                        <input
+                            type="text"
+                            name="customer"
+                            value={inputValues.customer}
+                            onChange={handleInputChange}
+                            placeholder="Customer Number"
+                            className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2"
+                        />
+                        <button
+                            onClick={() =>
+                                handleCustomerFunction(inputValues.customer)
+                            }
+                            className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                        >
+                            <FaSearch />
+                        </button>
+                    </div>
+                    <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
+                        <input
+                            type="text"
+                            name="invoice_id"
+                            value={inputValues.invoice_id}
+                            onChange={handleInputChange}
+                            placeholder="Invoice ID"
+                            className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2"
+                        />
+                        <button
+                            onClick={() =>
+                                handleInvoiceFunction(inputValues.invoice_id)
+                            }
+                            className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                        >
+                            <FaSearch />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

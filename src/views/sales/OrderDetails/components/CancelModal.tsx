@@ -32,39 +32,39 @@ type Props5 = {
 const CancelReasons = [
     {
         label: 'Found a Better Price: I found the same item at a lower price elsewhere.',
-        value: 'better_price'
+        value: 'better_price',
     },
     {
         label: 'Ordered by Mistake: I accidentally ordered the wrong item or quantity.',
-        value: 'ordered_by_mistake'
+        value: 'ordered_by_mistake',
     },
     {
         label: 'Shipping Delay: The estimated delivery date is too late.',
-        value: 'shipping_delay'
+        value: 'shipping_delay',
     },
     {
         label: 'Payment Issues: There was a problem with my payment method.',
-        value: 'payment_issues'
+        value: 'payment_issues',
     },
     {
         label: 'No Longer Needed: I no longer need the item.',
-        value: 'no_longer_needed'
+        value: 'no_longer_needed',
     },
     {
         label: 'Changed Mind: I changed my mind about the purchase.',
-        value: 'changed_mind'
+        value: 'changed_mind',
     },
     {
         label: 'Other: I have another reason for canceling my order.',
-        value: 'other'
-    }
+        value: 'other',
+    },
 ]
 
 const CancelModal: React.FC<Props5> = ({
     isModalOpen,
     handleClose,
     product,
-    invoice_id
+    invoice_id,
 }) => {
     const [returnQuantities, setReturnQuantities] = useState<{
         [key: string]: number
@@ -76,7 +76,7 @@ const CancelModal: React.FC<Props5> = ({
     const handleSelectChange = useCallback((id: number, value: number) => {
         setReturnQuantities((prev) => ({
             ...prev,
-            [id]: value
+            [id]: value,
         }))
     }, [])
 
@@ -88,83 +88,82 @@ const CancelModal: React.FC<Props5> = ({
                     value: reasonValue,
                     label:
                         CancelReasons.find((p) => p.value === reasonValue)
-                            ?.label || ''
-                }
+                            ?.label || '',
+                },
             }))
         },
-        []
+        [],
     )
 
     const handlePack = async () => {
         const returnReasonMap = Object.fromEntries(
             Object.entries(currentSelectedPage).map(([id, { value }]) => [
                 id,
-                value
-            ])
+                value,
+            ]),
         )
         const returnQtyMap = Object.fromEntries(
             Object.entries(returnQuantities).map(([id, quantity]) => [
                 id,
-                quantity
-            ])
+                quantity,
+            ]),
         )
 
         const body = {
             return_reason: returnReasonMap,
-            items: returnQtyMap
+            items: returnQtyMap,
         }
 
         try {
             const response = await axioisInstance.post(
                 `merchant/returnorder/create/${invoice_id}`,
-                body
+                body,
             )
 
             notification.success({
                 message: 'SUCCESS',
                 description:
-                    response.data.message || 'Order successfully Cancelled'
+                    response.data.message || 'Order successfully Cancelled',
             })
         } catch (error) {
             console.error('Error:', error)
             notification.error({
                 message: 'Failure',
-                description: 'Order failed to cancel'
+                description: 'Order failed to cancel',
             })
         }
     }
 
     return (
         <Dialog
-            width={1200}
-            // height={350}
-            className="custom-modal"
+            width="100%" // Adjusting to full width for better responsiveness
+            className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mx-auto p-4 sm:p-6 md:p-8"
             isOpen={isModalOpen}
             onClose={handleClose}
         >
-            <div className="p-6 bg-white rounded-lg shadow-lg">
-                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-1">
+            <div className="p-4 sm:p-6 md:p-8 bg-white rounded-lg shadow-lg">
+                <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center gap-1">
                     Cancel Order{' '}
-                    <IoIosWarning className="text-yellow-600 text-3xl" />{' '}
+                    <IoIosWarning className="text-yellow-600 text-2xl sm:text-3xl" />{' '}
                 </h2>
                 {product.map((item) => (
                     <div
                         key={item.id}
-                        className="border-b border-gray-200 py-4 flex items-center justify-around bg-gray-50 rounded-lg p-4"
+                        className="border-b border-gray-200 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-50 rounded-lg p-4 mb-4 last:mb-0"
                     >
-                        <div className="w-1/3">
-                            <p className="font-medium text-lg ">{item.name}</p>
-                            <p className=" mt-1">
+                        <div className="w-full sm:w-1/3 mb-4 sm:mb-0">
+                            <p className="font-medium text-lg">{item.name}</p>
+                            <p className="mt-1 text-sm">
                                 ARE YOU SURE YOU WANT TO CANCEL THIS ORDER?
                             </p>
                         </div>
-                        <div className="flex flex-col mr-4 w-1/4">
-                            <div className="text-base font-medium  mb-1">
+                        <div className="flex flex-col sm:mr-4 w-full sm:w-1/4 mb-4 sm:mb-0">
+                            <div className="text-base font-medium mb-1">
                                 Quantity to Cancel
                             </div>
                             <Select
                                 value={returnQuantities[item.id] || 0}
-                                className="w-1/2"
+                                className="w-full sm:w-1/2"
                                 onChange={(value) =>
                                     handleSelectChange(item.id, value)
                                 }
@@ -174,23 +173,23 @@ const CancelModal: React.FC<Props5> = ({
                                         length:
                                             parseInt(
                                                 item.quantity.toString(),
-                                                10
-                                            ) + 1
+                                                10,
+                                            ) + 1,
                                     },
                                     (_, i) => (
                                         <Option key={i} value={i}>
                                             {i}
                                         </Option>
-                                    )
+                                    ),
                                 )}
                             </Select>
                         </div>
-                        <div className="ml-4 w-1/3 flex flex-col justify-center">
-                            <div className="text-base font-medium  mb-1">
+                        <div className="w-full sm:w-1/3 flex flex-col justify-center">
+                            <div className="text-base font-medium mb-1">
                                 Reason For Cancelling
                             </div>
                             <Dropdown
-                                className="bg-gray-300"
+                                className="bg-gray-300 w-full sm:w-auto"
                                 title={
                                     currentSelectedPage[item.id]?.label ||
                                     'SELECT RETURN REASON'
