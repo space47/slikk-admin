@@ -147,11 +147,11 @@ const StockOverview = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, currentSelectedPage])
+    }, [page, pageSize, currentSelectedPage, searchType])
 
     useEffect(() => {
         filter(page, pageSize, globalFilter)
-    }, [page, pageSize, globalFilter])
+    }, [page, pageSize, globalFilter, searchType])
 
     const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
