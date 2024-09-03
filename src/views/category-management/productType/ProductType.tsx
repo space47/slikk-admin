@@ -172,10 +172,11 @@ const ProductType = () => {
             const body = {
                 id: idStoreForDelete,
             }
-            const response = await axiosInstance.delete(`product-type`, {
+            await axiosInstance.delete(`product-type`, {
                 data: body,
             })
             setDeleteModal(false)
+            navigate(0)
         } catch (error) {
             console.log(error)
         }

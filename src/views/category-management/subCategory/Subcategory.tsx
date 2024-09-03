@@ -171,10 +171,11 @@ const Subcategory = () => {
             const body = {
                 id: idStoreForDelete,
             }
-            const response = await axiosInstance.delete(`sub-category`, {
+            await axiosInstance.delete(`sub-category`, {
                 data: body,
             })
             setDeleteModal(false)
+            navigate(0)
         } catch (error) {
             console.log(error)
         }

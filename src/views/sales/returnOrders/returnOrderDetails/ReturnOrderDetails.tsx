@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { fetchReturnOrders } from '@/store/slices/returnOrderDetails/returnOrderDetails'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { useParams } from 'react-router-dom'
@@ -9,38 +9,75 @@ import ReturnProductsDetails from './components/ReturnProductsDetails'
 import ReturnSummary from './components/ReturnSummary'
 import ReturnUserInfo from './components/ReturnUserInfo'
 import ReturnRunnerDetails from './components/ReturnRunnerDetails'
+import { Button } from '@/components/ui'
+import { Modal } from 'antd'
 
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
     const dispatch = useAppDispatch()
     const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders
+        (state) => state.returnOrders,
     )
     const returnDetails = returnOrder?.returnOrders
+
+    const [showRefundModal, setShowRefundModal] = useState(false)
+    const [valueInsideModal, setValueInsideModal] = useState({
+        refundAmount: '',
+        refundId: '',
+    })
+    console.log('Before Rendering')
+
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
-    }, [dispatch, return_order_id])
+    }, [])
 
-    console.log('ordersss', returnDetails?.create_date)
+    const handleRefundButton = () => {
+        console.log('Before State')
+        // setShowRefundModal(true)
+    }
+
+    const handleCloseModal = () => {
+        setShowRefundModal(false)
+    }
+
+    const refundItem = () => {
+        console.log('Refund item')
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setValueInsideModal((prev) => ({
+            ...prev,
+            [name]: value,
+        }))
+    }
 
     return (
         <div>
-            <div className="flex flex-col gap-1">
-                <div className="flex gap-2 font-bold text-xl">
-                    Return Order: #
-                    <span className="font-normal">
-                        {returnDetails?.return_order_id}
-                    </span>
-                </div>
-                <div>
-                    <span className="flex items-center">
-                        <HiOutlineCalendar className="text-lg" />
-                        <span className="ltr:ml-1 rtl:mr-1">
-                            {moment(returnDetails?.create_date).format(
-                                'MM/DD/YYYY hh:mm:ss a'
-                            )}
+            <div className="flex flex-col justify-between xl:flex-row xl:justify-between">
+                <div className="flex flex-col gap-1">
+                    <div className="flex gap-2 font-bold text-xl">
+                        Return Order: #
+                        <span className="font-normal">
+                            {returnDetails?.return_order_id}
                         </span>
-                    </span>
+                    </div>
+                    <div>
+                        <span className="flex items-center">
+                            <HiOutlineCalendar className="text-lg" />
+                            <span className="ltr:ml-1 rtl:mr-1">
+                                {moment(returnDetails?.create_date).format(
+                                    'MM/DD/YYYY hh:mm:ss a',
+                                )}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <Button variant="reject" onClick={handleRefundButton}>
+                        Refund
+                    </Button>
                 </div>
             </div>
 
@@ -55,6 +92,35 @@ const ReturnOrderDetails = () => {
                     <ReturnSummary />
                 </div>
             </div>
+
+            {showRefundModal && (
+                <Modal
+                    open={showRefundModal}
+                    onOk={refundItem}
+                    onCancel={handleCloseModal}
+                    okText="Refund"
+                    okButtonProps={{
+                        style: { backgroundColor: 'red', borderColor: 'red' },
+                    }}
+                >
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                        <input
+                            type="text"
+                            name="refundAmount"
+                            value={valueInsideModal.refundAmount}
+                            placeholder="Enter Refund Amount"
+                            onChange={handleInputChange}
+                        />
+                        <input
+                            type="text"
+                            name="refundId"
+                            value={valueInsideModal.refundId}
+                            placeholder="Enter Refund Id"
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

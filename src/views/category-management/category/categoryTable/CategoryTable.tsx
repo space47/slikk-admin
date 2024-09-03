@@ -256,6 +256,7 @@ const CategoryTable = () => {
                 data: body,
             })
             setDeleteModal(false)
+            navigate(0)
         } catch (error) {
             console.log(error)
         }
