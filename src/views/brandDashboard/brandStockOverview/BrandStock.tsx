@@ -123,16 +123,16 @@ const BrandStock = () => {
                 accessorKey: 'product.name',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Store Number',
-                accessorKey: 'store',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'QTY',
-                accessorKey: 'quantity',
-                cell: (info) => info.getValue(),
-            },
+            // {
+            //     header: 'Store Number',
+            //     accessorKey: 'store',
+            //     cell: (info) => info.getValue(),
+            // },
+            // {
+            //     header: 'QTY',
+            //     accessorKey: 'quantity',
+            //     cell: (info) => info.getValue(),
+            // },
             {
                 header: 'Brand',
                 accessorKey: 'product.brand_name',
@@ -192,16 +192,16 @@ const BrandStock = () => {
                     </span>
                 ),
             },
-            {
-                header: 'GRN number',
-                accessorKey: 'grn',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Updated By',
-                accessorKey: 'last_updated_by.name',
-                cell: (info) => info.getValue(),
-            },
+            // {
+            //     header: 'GRN number',
+            //     accessorKey: 'grn',
+            //     cell: (info) => info.getValue(),
+            // },
+            // {
+            //     header: 'Updated By',
+            //     accessorKey: 'last_updated_by.name',
+            //     cell: (info) => info.getValue(),
+            // },
         ],
         [],
     )

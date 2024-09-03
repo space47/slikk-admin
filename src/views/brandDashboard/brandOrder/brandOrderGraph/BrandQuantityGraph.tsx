@@ -11,10 +11,14 @@ type GraphProps = {
 }
 
 const BrandQuantityGraph: React.FC<GraphProps> = ({ data }) => {
+    const sortedData = data.sort(
+        (a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime(),
+    )
+
     const Quantitydata = [
         {
             name: 'Total Quantity',
-            data: data.map((item) => item.total_quantity),
+            data: sortedData.map((item) => item.total_quantity),
         },
     ]
 
@@ -40,7 +44,7 @@ const BrandQuantityGraph: React.FC<GraphProps> = ({ data }) => {
                     },
                     colors: [COLOR_4],
                     xaxis: {
-                        categories: data.map((item) => item.dateKey),
+                        categories: sortedData.map((item) => item.dateKey),
                     },
                 }}
                 series={Quantitydata}

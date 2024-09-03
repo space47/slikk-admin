@@ -11,10 +11,13 @@ type GraphProps = {
 }
 
 const BrandOrderGraph: React.FC<GraphProps> = ({ data }) => {
+    const sortedData = data.sort(
+        (a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime(),
+    )
     const Amountdata = [
         {
             name: 'Total Amount',
-            data: data.map((item) => item.total_amount),
+            data: sortedData.map((item) => item.total_amount),
         },
     ]
 
@@ -40,7 +43,7 @@ const BrandOrderGraph: React.FC<GraphProps> = ({ data }) => {
                     },
                     colors: [COLOR_2],
                     xaxis: {
-                        categories: data.map((item) => item.dateKey),
+                        categories: sortedData.map((item) => item.dateKey),
                     },
                 }}
                 series={Amountdata}
