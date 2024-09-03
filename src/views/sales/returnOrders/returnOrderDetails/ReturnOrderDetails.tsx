@@ -25,15 +25,13 @@ const ReturnOrderDetails = () => {
         refundAmount: '',
         refundId: '',
     })
-    console.log('Before Rendering')
 
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
     }, [])
 
     const handleRefundButton = () => {
-        console.log('Before State')
-        // setShowRefundModal(true)
+        setShowRefundModal(true)
     }
 
     const handleCloseModal = () => {
