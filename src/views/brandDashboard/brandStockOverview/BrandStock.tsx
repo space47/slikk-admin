@@ -256,20 +256,20 @@ const BrandStock = () => {
     }
 
     return (
-        <div className="overflow-x-auto">
-            <div className="upper flex justify-between mb-5 items-center ">
-                <div className="mb-4">
+        <div className="overflow-x-auto p-4">
+            <div className="upper flex flex-col md:flex-row justify-between mb-5 items-start md:items-center">
+                <div className="mb-4 w-full md:w-auto">
                     <input
                         type="text"
                         placeholder="Search here"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
+                        className="p-2 border rounded w-full md:w-auto"
                     />
                 </div>
 
-                <div className="flex gap-5">
-                    <div>
+                <div className="flex flex-col md:flex-row gap-5 w-full md:w-auto">
+                    <div className="w-full md:w-auto">
                         <div className="mb-1 font-semibold text-sm">
                             FROM DATE:
                         </div>
@@ -280,9 +280,10 @@ const BrandStock = () => {
                             defaultValue={new Date()}
                             value={new Date(from)}
                             onChange={handleFromChange}
+                            className="w-full md:w-auto"
                         />
                     </div>
-                    <div>
+                    <div className="w-full md:w-auto">
                         <div className="mb-1 font-semibold text-sm">
                             TO DATE:
                         </div>
@@ -294,11 +295,12 @@ const BrandStock = () => {
                             value={new Date(to)}
                             onChange={handleToChange}
                             minDate={moment(from).add(1, 'day').toDate()}
+                            className="w-full md:w-auto"
                         />
                     </div>
                 </div>
             </div>
-            <Table>
+            <Table className="w-full">
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>
@@ -328,14 +330,15 @@ const BrandStock = () => {
                     ))}
                 </TBody>
             </Table>
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
                     total={totalData}
                     onChange={onPaginationChange}
+                    className="w-full md:w-auto mb-4 md:mb-0"
                 />
-                <div style={{ minWidth: 130 }}>
+                <div className="min-w-[130px] hidden md:w-auto xl:block">
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
@@ -344,6 +347,7 @@ const BrandStock = () => {
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
+                        className="w-full md:w-auto"
                     />
                 </div>
             </div>
