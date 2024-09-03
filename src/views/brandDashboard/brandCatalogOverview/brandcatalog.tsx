@@ -137,11 +137,11 @@ const BrandCatalog = () => {
                 accessorKey: 'sp',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Active',
-                accessorKey: 'is_active',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
+            // {
+            //     header: 'Active',
+            //     accessorKey: 'is_active',
+            //     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            // },
             {
                 header: 'Division',
                 accessorKey: 'division',
@@ -167,11 +167,11 @@ const BrandCatalog = () => {
                 accessorKey: 'is_try_and_buy',
                 cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
-            {
-                header: 'Trends',
-                accessorKey: 'trends',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
+            // {
+            //     header: 'Trends',
+            //     accessorKey: 'trends',
+            //     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+            // },
             {
                 header: 'Action',
                 accessorKey: 'action',
