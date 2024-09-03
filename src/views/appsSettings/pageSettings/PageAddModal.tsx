@@ -14,13 +14,14 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { COMPONENT_CATEGORY_TYPES, BANNER_UPLOAD_DATA } from '@/common/banner'
 import Select from '@/components/ui/Select'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
 
 interface DataType {
     type: string
@@ -79,14 +80,14 @@ type modalProps = {
 
 const DROPDOWNARRAY = [
     { label: 'Name', value: 'name' },
-    { label: 'SKU', value: 'sku' }
+    { label: 'SKU', value: 'sku' },
 ]
 
 const dataType = [
     { name: 'Barcodes', value: 'barcodes' },
     { name: 'Brands', value: 'brands' },
     { name: 'Handles', value: 'handles' },
-    { name: 'Posts', value: 'posts' }
+    { name: 'Posts', value: 'posts' },
 ]
 
 const PageAddModal: React.FC<modalProps> = ({
@@ -96,7 +97,7 @@ const PageAddModal: React.FC<modalProps> = ({
     handleCancel,
     formikRef,
     data,
-    setData
+    setData,
 }) => {
     const [currentSelectedPage, setCurrentSelectedPage] =
         useState<Record<string, string>>()
@@ -109,10 +110,10 @@ const PageAddModal: React.FC<modalProps> = ({
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const subCategory = useAppSelector<SUBCATEGORY_STATE>(
-        (state) => state.subCategory
+        (state) => state.subCategory,
     )
     const product_type = useAppSelector<PRODUCTTYPE_STATE>(
-        (state) => state.product_type
+        (state) => state.product_type,
     )
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -120,33 +121,38 @@ const PageAddModal: React.FC<modalProps> = ({
 
     const categoryOptions = category.categories.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const divisionOptions = divisions.divisions.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const subcategoryOptions = subCategory.subcategories.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const productTypeOptions = product_type.product_types.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const brandOptions = brands.brands.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
 
     const filterOptions = filters.filters.map((item) => ({
         label: item.name,
-        value: item.id
+        value: item.id,
     }))
+
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(getAllFiltersAPI())
+    }, [])
 
     console.log('Optioins', brandOptions)
 
@@ -164,7 +170,7 @@ const PageAddModal: React.FC<modalProps> = ({
             'image/png',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -194,21 +200,21 @@ const PageAddModal: React.FC<modalProps> = ({
             barcodes: '',
             posts: '',
             brands: '',
-            handles: ''
+            handles: '',
         },
         footer_config: {
             icon: '',
             text: '',
             image: '',
             style: '',
-            position: ''
+            position: '',
         },
         header_config: {
             icon: '',
             text: '',
             image: '',
             style: '',
-            position: ''
+            position: '',
         },
         component_type: '',
         section_heading: '',
@@ -218,7 +224,7 @@ const PageAddModal: React.FC<modalProps> = ({
             text: '',
             image: '',
             style: '',
-            position: ''
+            position: '',
         },
         background_image_array: [],
         footer_config_icon_Array: [],
@@ -228,7 +234,7 @@ const PageAddModal: React.FC<modalProps> = ({
         sub_header_config_icon_Array: [],
         sub_header_config_image_Array: [],
         is_section_clickable: false,
-        section_filters: ''
+        section_filters: '',
     })
     const [selectedType, setSelectedType] = useState('')
 
@@ -260,7 +266,7 @@ const PageAddModal: React.FC<modalProps> = ({
                 const qname =
                     currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
                 const response = await axioisInstance.get(
-                    `/search/product?dashboard=true&${qname}=${searchInput}`
+                    `/search/product?dashboard=true&${qname}=${searchInput}`,
                 )
                 const data = response.data.results
                 setTableData(data)
@@ -297,8 +303,8 @@ const PageAddModal: React.FC<modalProps> = ({
             return await axioisInstance
                 .post('fileupload', formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                        'Content-Type': 'multipart/form-data',
+                    },
                 })
                 .then((response) => {
                     console.log(response)
@@ -307,7 +313,7 @@ const PageAddModal: React.FC<modalProps> = ({
                         message: 'Success',
                         description:
                             response?.data?.message ||
-                            'Image uploaded successfully'
+                            'Image uploaded successfully',
                     })
                     return newData
                 })
@@ -317,7 +323,7 @@ const PageAddModal: React.FC<modalProps> = ({
                         message: 'Upload Failed',
                         description:
                             error?.response?.data?.message ||
-                            'Image upload failed'
+                            'Image upload failed',
                     })
                     return ''
                 })
@@ -335,28 +341,21 @@ const PageAddModal: React.FC<modalProps> = ({
     }
 
     const handleSubmit = async (row: any) => {
-        console.log(row)
-
-        console.log('proddduct', productData)
-        console.log('joined', productData.join(','))
         const imageUpload = await handleimage(row.background_image_array)
 
         const mobileImageUpload = await handleimage(row.mobile_background_array)
 
         const footerImageUpload = await handleimage(
-            row.footer_config_image_Array
+            row.footer_config_image_Array,
         )
 
         const headerImageUpload = await handleimage(
-            row.header_config_image_Array
+            row.header_config_image_Array,
         )
 
         const subHeaderImageUpload = await handleimage(
-            row.sub_header_config_image_Array
+            row.sub_header_config_image_Array,
         )
-
-        const sectionFilter = `${row.division},${row.category},${row.subcategory},${row.product_type},${row.brand},${row.filters}`
-        console.log('object,', sectionFilter)
 
         const newRowAdd = {
             ...row,
@@ -367,29 +366,27 @@ const PageAddModal: React.FC<modalProps> = ({
                 image:
                     row.footer_config_image_Array.length > 0
                         ? footerImageUpload
-                        : ''
+                        : '',
             },
             header_config: {
                 ...row.header_config,
                 image:
                     row.header_config_image_Array.length > 0
                         ? headerImageUpload
-                        : ''
+                        : '',
             },
             sub_header_config: {
                 ...row.sub_header_config,
                 image:
                     row.sub_header_config_image_Array.length > 0
                         ? subHeaderImageUpload
-                        : ''
+                        : '',
             },
             data_type: {
                 ...row.data_type,
-                barcodes: productData.join(',')
+                barcodes: productData.join(','),
             },
-            // section_filters: sectionFilter.split(','),
-            section_filters: textAreaValue,
-            section_heading: row.section_heading.split(',')
+            section_filters: row.data_type.filters,
         }
 
         setData((prevData: WebType[]) => [...prevData, newRowAdd])
@@ -425,7 +422,7 @@ const PageAddModal: React.FC<modalProps> = ({
                         touched,
                         errors,
                         resetForm,
-                        setFieldValue
+                        setFieldValue,
                     }) => (
                         <Form className="w-full">
                             <FormContainer className="grid grid-cols-2 gap-3">
@@ -459,12 +456,12 @@ const PageAddModal: React.FC<modalProps> = ({
                                                     value={componentOptions.find(
                                                         (option) =>
                                                             option.value ===
-                                                            field.value
+                                                            field.value,
                                                     )}
                                                     onChange={(option) =>
                                                         form.setFieldValue(
                                                             field.name,
-                                                            option?.value
+                                                            option?.value,
                                                         )
                                                     }
                                                     onKeyDown={(e) =>
@@ -491,7 +488,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                             <Field name="background_image_array">
                                                 {({
                                                     field,
-                                                    form
+                                                    form,
                                                 }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
@@ -502,26 +499,26 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                 values.background_image_array
                                                             } // uploadedd the file
                                                             onChange={(
-                                                                files
+                                                                files,
                                                             ) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
-                                                                    values.background_image_array
+                                                                    values.background_image_array,
                                                                 )
                                                                 form.setFieldValue(
                                                                     'background_image_array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }}
                                                             className="items-center flex justify-center"
                                                             onFileRemove={(
-                                                                files
+                                                                files,
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'background_image_array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                         />
@@ -545,7 +542,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                             <Field name="mobile_background_array">
                                                 {({
                                                     field,
-                                                    form
+                                                    form,
                                                 }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
@@ -556,26 +553,26 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                 values.mobile_background_array
                                                             } // uploadedd the file
                                                             onChange={(
-                                                                files
+                                                                files,
                                                             ) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
-                                                                    values.mobile_background_array
+                                                                    values.mobile_background_array,
                                                                 )
                                                                 form.setFieldValue(
                                                                     'mobile_background_array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }}
                                                             className="flex justify-center"
                                                             onFileRemove={(
-                                                                files
+                                                                files,
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'mobile_background_array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                         />
@@ -627,7 +624,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                             <Field name="header_config_image_Array">
                                                 {({
                                                     field,
-                                                    form
+                                                    form,
                                                 }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
@@ -638,26 +635,26 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                 values.header_config_image_Array
                                                             } // uploadedd the file
                                                             onChange={(
-                                                                files
+                                                                files,
                                                             ) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
-                                                                    values.header_config_image_Array
+                                                                    values.header_config_image_Array,
                                                                 )
                                                                 form.setFieldValue(
                                                                     'header_config_image_Array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }}
                                                             className="flex justify-center"
                                                             onFileRemove={(
-                                                                files
+                                                                files,
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'header_config_image_Array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                         />
@@ -719,7 +716,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                             <Field name="sub_header_config_image_Array">
                                                 {({
                                                     field,
-                                                    form
+                                                    form,
                                                 }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
@@ -730,26 +727,26 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                 values.sub_header_config_image_Array
                                                             } // uploadedd the file
                                                             onChange={(
-                                                                files
+                                                                files,
                                                             ) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
-                                                                    values.sub_header_config_image_Array
+                                                                    values.sub_header_config_image_Array,
                                                                 )
                                                                 form.setFieldValue(
                                                                     'sub_header_config_image_Array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }}
                                                             className="flex justify-center"
                                                             onFileRemove={(
-                                                                files
+                                                                files,
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'sub_header_config_image_Array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                         />
@@ -813,7 +810,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                             <Field name="footer_config_image_Array">
                                                 {({
                                                     field,
-                                                    form
+                                                    form,
                                                 }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
@@ -824,26 +821,26 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                 values.footer_config_image_Array
                                                             } // uploadedd the file
                                                             onChange={(
-                                                                files
+                                                                files,
                                                             ) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
-                                                                    values.footer_config_image_Array
+                                                                    values.footer_config_image_Array,
                                                                 )
                                                                 form.setFieldValue(
                                                                     'footer_config_image_Array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }}
                                                             className="flex justify-center"
                                                             onFileRemove={(
-                                                                files
+                                                                files,
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'footer_config_image_Array',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                         />
@@ -943,7 +940,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                                 </span>
                                                             </DropdownItem>
                                                         )
-                                                    }
+                                                    },
                                                 )}
                                             </Dropdown>
                                         </div>
@@ -970,7 +967,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                                 setProductData(e.target.value)
                                                 setFieldValue(
                                                     'products',
-                                                    e.target.value
+                                                    e.target.value,
                                                 )
                                             }}
                                             placeholder="Enter product barcode"
@@ -1030,7 +1027,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                         component={Checkbox}
                                     />
                                 </FormItem>
-                                <FormItem
+                                {/* <FormItem
                                     label="Section Filter"
                                     className="col-span-1 w-[60%] h-[80%]"
                                 >
@@ -1043,33 +1040,51 @@ const PageAddModal: React.FC<modalProps> = ({
                                         id=""
                                         className="w-2/3 border border-gray-200 rounded-lg items-center h-[100px] p-2"
                                     ></textarea>
-                                </FormItem>
+                                </FormItem> */}
 
                                 <FormContainer className="grid grid-cols-2 gap-4 w-3/4">
                                     {/* Filters */}
                                     <FormItem label="Filters">
-                                        <Select
-                                            isMulti
-                                            name="filters"
-                                            options={filterOptions}
-                                            getOptionLabel={(option) =>
-                                                option.label
-                                            }
-                                            getOptionValue={(option) =>
-                                                option.value.toString()
-                                            }
-                                            onChange={(newVal, actionMeta) => {
-                                                console.log(newVal, actionMeta)
-                                                handleMultiSelect(
-                                                    'filters',
-                                                    newVal
-                                                        ?.map(
-                                                            (val) => val.label
-                                                        )
-                                                        ?.join(',')
+                                        <Field name="data_type.filters">
+                                            {({
+                                                field,
+                                                form,
+                                            }: FieldProps<any>) => {
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        placeholder="Select Filter Tags"
+                                                        options={
+                                                            filters.filters
+                                                        }
+                                                        getOptionLabel={(
+                                                            option,
+                                                        ) => option.label}
+                                                        getOptionValue={(
+                                                            option,
+                                                        ) => option.value}
+                                                        onChange={(
+                                                            newVal,
+                                                            actionMeta,
+                                                        ) => {
+                                                            const newValues =
+                                                                newVal
+                                                                    ? newVal.map(
+                                                                          (
+                                                                              val,
+                                                                          ) =>
+                                                                              val.value,
+                                                                      )
+                                                                    : []
+                                                            form.setFieldValue(
+                                                                field.name,
+                                                                newValues,
+                                                            )
+                                                        }}
+                                                    />
                                                 )
                                             }}
-                                        />
+                                        </Field>
                                     </FormItem>
                                 </FormContainer>
 

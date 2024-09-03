@@ -116,7 +116,7 @@ const Home = () => {
                             <p>Count: {homeData?.received.count}</p>
                             <p>
                                 Total Amount: Rs.
-                                {homeData?.received.total_amount.toFixed(2)}
+                                {homeData?.received.total_amount?.toFixed(2)}
                             </p>
                         </div>
                     </div>
@@ -133,7 +133,7 @@ const Home = () => {
                             <p>Count: {homeData?.completed.count}</p>
                             <p>
                                 Total Amount: Rs.
-                                {homeData?.completed.total_amount.toFixed(2)}
+                                {homeData?.completed.total_amount?.toFixed(2)}
                             </p>
                         </div>
                     </div>
@@ -147,10 +147,10 @@ const Home = () => {
                             <h2 className="text-xl font-semibold">
                                 Returned Orders
                             </h2>
-                            <p>Count: {homeData?.returned.count}</p>
+                            <p>Count: {homeData?.returned?.count}</p>
                             <p>
                                 Total Amount: Rs.
-                                {homeData?.returned.total_amount.toFixed(2)}
+                                {homeData?.returned?.total_amount?.toFixed(2)}
                             </p>
                         </div>
                     </div>
@@ -162,7 +162,7 @@ const Home = () => {
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Net Sales</h2>
-                            <p>Amount: Rs.{netSales.toFixed(2)}</p>
+                            <p>Amount: Rs.{netSales?.toFixed(2)}</p>
                         </div>
                     </div>
                 </Card>
