@@ -45,6 +45,11 @@ const Home = () => {
         (homeData?.received?.total_amount || 0) -
         (homeData?.returned?.total_amount || 0)-(homeData?.cancelled?.total_amount || 0)-(homeData?.declined?.total_amount || 0)
 
+    const netReturn =
+        (homeData?.returned?.count || 0)+(homeData?.cancelled?.count || 0)+(homeData?.declined?.count || 0)
+    const netReturnSales =
+        (homeData?.returned?.total_amount || 0)+(homeData?.cancelled?.total_amount || 0)+(homeData?.declined?.total_amount || 0)
+    
     const handleFromChange = (date: Date | null) => {
         if (date) {
             setFrom(moment(date).format('YYYY-MM-DD'))
@@ -132,7 +137,7 @@ const Home = () => {
                             </h2>
                             <p>Count: {homeData?.completed.count}</p>
                             <p>
-                                Total Amount: Rs.
+                                Total Amount: Rs. 
                                 {homeData?.completed.total_amount?.toFixed(2)}
                             </p>
                         </div>
@@ -147,11 +152,9 @@ const Home = () => {
                             <h2 className="text-xl font-semibold">
                                 Returned Orders
                             </h2>
-                            <p>Count: {homeData?.returned?.count}+{homeData?.cancelled?.count}+{homeData?.declined?.count}</p>
+                            <p>Count: {netReturn}</p>
                             <p>
-                                Total Amount: Rs.
-                                {homeData?.returned?.total_amount?.toFixed(2)}+{homeData?.cancelled?.total_amount?.toFixed(2)}+
-                                {homeData?.declined?.total_amount?.toFixed(2)}
+                                Total Amount: Rs. {netReturnSales?.toFixed(2)}
                             </p>
                         </div>
                     </div>
@@ -163,7 +166,7 @@ const Home = () => {
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Net Sales</h2>
-                            <p>Amount: Rs.{netSales?.toFixed(2)}</p>
+                            <p>Amount: Rs. {netSales?.toFixed(2)}</p>
                         </div>
                     </div>
                 </Card>
