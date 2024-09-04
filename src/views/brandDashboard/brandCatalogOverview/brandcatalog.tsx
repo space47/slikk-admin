@@ -75,7 +75,7 @@ const BrandCatalog = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const response = await axiosInstance.get(
-                `search/product?p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`,
+                `search/product?dashboard=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`,
             )
             const data = response.data.results
             const total = response.data.count

@@ -43,7 +43,7 @@ const Home = () => {
 
     const netSales =
         (homeData?.received?.total_amount || 0) -
-        (homeData?.returned?.total_amount || 0)
+        (homeData?.returned?.total_amount || 0)-(homeData?.cancelled?.total_amount || 0)-(homeData?.declined?.total_amount || 0)
 
     const handleFromChange = (date: Date | null) => {
         if (date) {
@@ -147,10 +147,11 @@ const Home = () => {
                             <h2 className="text-xl font-semibold">
                                 Returned Orders
                             </h2>
-                            <p>Count: {homeData?.returned?.count}</p>
+                            <p>Count: {homeData?.returned?.count}+{homeData?.cancelled?.count}+{homeData?.declined?.count}</p>
                             <p>
                                 Total Amount: Rs.
-                                {homeData?.returned?.total_amount?.toFixed(2)}
+                                {homeData?.returned?.total_amount?.toFixed(2)}+{homeData?.cancelled?.total_amount?.toFixed(2)}+
+                                {homeData?.declined?.total_amount?.toFixed(2)}
                             </p>
                         </div>
                     </div>
