@@ -100,27 +100,27 @@ const OrderList = () => {
                 )
             },
         },
-        {
-            header: 'Return Invoide Id',
-            accessorKey: 'return_order',
-            cell: ({ row }: any) => {
-                const returnOrderArray = row.original?.return_order
-                const returnOrder = returnOrderArray?.find((item: any) => item)
-                console.log('ReturnOrder', returnOrder)
-                const returnOrderId = returnOrder?.return_order_id
+        // {
+        //     header: 'Return Invoide Id',
+        //     accessorKey: 'return_order',
+        //     cell: ({ row }: any) => {
+        //         const returnOrderArray = row.original?.return_order
+        //         const returnOrder = returnOrderArray?.find((item: any) => item)
+        //         console.log('ReturnOrder', returnOrder)
+        //         const returnOrderId = returnOrder?.return_order_id
 
-                return returnOrderId ? (
-                    <div
-                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                        onClick={() => handleRemove(returnOrderId)}
-                    >
-                        {returnOrderId}
-                    </div>
-                ) : (
-                    ''
-                )
-            },
-        },
+        //         return returnOrderId ? (
+        //             <div
+        //                 className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+        //                 onClick={() => handleRemove(returnOrderId)}
+        //             >
+        //                 {returnOrderId}
+        //             </div>
+        //         ) : (
+        //             ''
+        //         )
+        //     },
+        // },
         { header: 'Store', accessorKey: 'store.address' },
         { header: 'Customer Name', accessorKey: 'user.name' },
         { header: 'Mobile Number', accessorKey: 'user.mobile' },
@@ -137,7 +137,9 @@ const OrderList = () => {
             accessorKey: 'logistic.eta_pickup',
             cell: ({ getValue }: any) => (
                 <span>
-                    {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
+                    {getValue()
+                        ? moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')
+                        : ''}
                 </span>
             ),
         },

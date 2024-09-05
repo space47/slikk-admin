@@ -1065,23 +1065,34 @@ const PageModal: React.FC<modalProps> = ({
                                                 field,
                                                 form,
                                             }: FieldProps<any>) => {
-                                                const selectedTags =
-                                                    field.value.map(
-                                                        (tag: any) => {
-                                                            const matchedOption =
-                                                                filters.filters.find(
-                                                                    (option) =>
-                                                                        option.value ===
-                                                                        tag,
-                                                                )
-                                                            return (
-                                                                matchedOption || {
-                                                                    value: tag,
-                                                                    label: tag,
-                                                                }
-                                                            )
-                                                        },
-                                                    )
+                                                console.log(
+                                                    'Field Value Selected',
+                                                )
+                                                const selectedTags = field.value
+                                                    ? field.value.map(
+                                                          (tag: any) => {
+                                                              const matchedOption =
+                                                                  filters.filters.find(
+                                                                      (
+                                                                          option,
+                                                                      ) =>
+                                                                          option.value ===
+                                                                          tag,
+                                                                  )
+                                                              return (
+                                                                  matchedOption || {
+                                                                      value: tag,
+                                                                      label: tag,
+                                                                  }
+                                                              )
+                                                          },
+                                                      )
+                                                    : []
+
+                                                console.log(
+                                                    'Finsished selectedTags',
+                                                    selectedTags,
+                                                )
 
                                                 return (
                                                     <Select

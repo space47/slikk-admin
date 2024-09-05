@@ -20,35 +20,35 @@ const ReturnOrderDetails = () => {
     )
     const returnDetails = returnOrder?.returnOrders
 
-    const [showRefundModal, setShowRefundModal] = useState(false)
-    const [valueInsideModal, setValueInsideModal] = useState({
-        refundAmount: '',
-        refundId: '',
-    })
+    // const [showRefundModal, setShowRefundModal] = useState(false)
+    // const [valueInsideModal, setValueInsideModal] = useState({
+    //     refundAmount: '',
+    //     refundId: '',
+    // })
 
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
     }, [])
 
-    const handleRefundButton = () => {
-        setShowRefundModal(true)
-    }
+    // const handleRefundButton = () => {
+    //     setShowRefundModal(true)
+    // }
 
-    const handleCloseModal = () => {
-        setShowRefundModal(false)
-    }
+    // const handleCloseModal = () => {
+    //     setShowRefundModal(false)
+    // }
 
-    const refundItem = () => {
-        console.log('Refund item')
-    }
+    // const refundItem = () => {
+    //     console.log('Refund item')
+    // }
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setValueInsideModal((prev) => ({
-            ...prev,
-            [name]: value,
-        }))
-    }
+    // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const { name, value } = e.target
+    //     setValueInsideModal((prev) => ({
+    //         ...prev,
+    //         [name]: value,
+    //     }))
+    // }
 
     return (
         <div>
@@ -71,12 +71,6 @@ const ReturnOrderDetails = () => {
                         </span>
                     </div>
                 </div>
-
-                <div>
-                    <Button variant="reject" onClick={handleRefundButton}>
-                        Refund
-                    </Button>
-                </div>
             </div>
 
             {/* Components */}
@@ -90,35 +84,6 @@ const ReturnOrderDetails = () => {
                     <ReturnSummary />
                 </div>
             </div>
-
-            {showRefundModal && (
-                <Modal
-                    open={showRefundModal}
-                    onOk={refundItem}
-                    onCancel={handleCloseModal}
-                    okText="Refund"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                >
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <input
-                            type="text"
-                            name="refundAmount"
-                            value={valueInsideModal.refundAmount}
-                            placeholder="Enter Refund Amount"
-                            onChange={handleInputChange}
-                        />
-                        <input
-                            type="text"
-                            name="refundId"
-                            value={valueInsideModal.refundId}
-                            placeholder="Enter Refund Id"
-                            onChange={handleInputChange}
-                        />
-                    </div>
-                </Modal>
-            )}
         </div>
     )
 }

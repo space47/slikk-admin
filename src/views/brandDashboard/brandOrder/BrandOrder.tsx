@@ -106,10 +106,9 @@ const BrandOrder = () => {
         try {
             setSkuWiseDetails([])
             setDatewisedetails([])
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
             const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${To_Date}&company_id=${selectedCompany.id}&${typeFetch}`,
+                `/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}`,
             )
             const data = response.data
 
@@ -248,9 +247,8 @@ const BrandOrder = () => {
 
     const handleDownload = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${To_Date}&company_id=${selectedCompany.id}&${typeFetch}&download=true`,
+                `/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}&download=true`,
                 {
                     responseType: 'blob',
                 },
@@ -436,7 +434,7 @@ const BrandOrder = () => {
                             defaultValue={new Date()}
                             value={new Date(to)}
                             onChange={handleToChange}
-                            minDate={moment(from).add(1, 'day').toDate()}
+                            minDate={moment(from).toDate()}
                         />
                     </div>
                     <div>

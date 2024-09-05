@@ -58,6 +58,10 @@ const pageSizeOptions = [
     { value: 50, label: '50 / page' },
     { value: 100, label: '100 / page' },
 ]
+interface DropdownStatus {
+    value: string[]
+    name: string[]
+}
 
 const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
@@ -69,9 +73,10 @@ const OrderList = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
-    const [dropdownStatus, setDropdownStatus] = useState<
-        Record<string, string>
-    >(ORDER_STATUS[0])
+    const [dropdownStatus, setDropdownStatus] = useState<DropdownStatus>({
+        value: [],
+        name: [],
+    })
 
     const fetchOrders = async (
         page: number,
@@ -82,7 +87,7 @@ const OrderList = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
-                dropdownStatus?.value === 'ALL_ORDERS'
+                dropdownStatus?.value.length === 0
                     ? ''
                     : `&status=${dropdownStatus?.value}`
 
@@ -211,12 +216,13 @@ const OrderList = () => {
     const handleInvoiceClick = (invoiceId: string) => {
         navigate(`/app/orders/${invoiceId}`)
     }
+    console.log('STATUS', dropdownStatus.value.length)
 
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
-                dropdownStatus?.value === 'ALL'
+                dropdownStatus?.value.length === 0
                     ? ''
                     : `&status=${dropdownStatus?.value}`
 
@@ -275,10 +281,32 @@ const OrderList = () => {
         }
     }
 
-    const handleDropdownSelect = (a: any) => {
-        setDropdownStatus({
-            value: a,
-            name: ORDER_STATUS.find((item) => item.value == a)?.name || '',
+    const handleDropdownSelect = (selectedValue: string) => {
+        setDropdownStatus((prevStatus) => {
+            const isSelected = prevStatus.value.includes(selectedValue)
+
+            const updatedValue = isSelected
+                ? prevStatus.value.filter((val) => val !== selectedValue)
+                : [...prevStatus.value, selectedValue]
+
+            const updatedName = isSelected
+                ? prevStatus.name.filter(
+                      (name) =>
+                          name !==
+                          ORDER_STATUS.find(
+                              (item) => item.value === selectedValue,
+                          )?.name,
+                  )
+                : [
+                      ...prevStatus.name,
+                      ORDER_STATUS.find((item) => item.value === selectedValue)
+                          ?.name || '',
+                  ]
+
+            return {
+                value: updatedValue,
+                name: updatedName,
+            }
         })
     }
     console.log('ssssssswddwdwdw', dropdownStatus)
@@ -327,16 +355,40 @@ const OrderList = () => {
                             <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
                                 <Dropdown
                                     className="w-full px-1 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                                    title={dropdownStatus.name}
-                                    onSelect={handleDropdownSelect}
+                                    title={
+                                        dropdownStatus.name.length > 0
+                                            ? dropdownStatus.name.join(', ')
+                                            : 'Select Status'
+                                    }
+                                    onSelect={(eventKey) =>
+                                        handleDropdownSelect(eventKey as string)
+                                    }
                                 >
                                     <div className="max-h-60 overflow-y-auto">
                                         {ORDER_STATUS?.map((item, key) => (
                                             <DropdownItem
                                                 key={key}
                                                 eventKey={item.value}
-                                                className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                                className={`px-2 py-2 text-black hover:bg-gray-100 cursor-pointer ${
+                                                    dropdownStatus.value.includes(
+                                                        item.value,
+                                                    )
+                                                        ? 'bg-gray-200'
+                                                        : ''
+                                                }`}
                                             >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={dropdownStatus.value.includes(
+                                                        item.value,
+                                                    )}
+                                                    onChange={() =>
+                                                        handleDropdownSelect(
+                                                            item.value,
+                                                        )
+                                                    }
+                                                    className="mr-2"
+                                                />
                                                 <span>{item.name}</span>
                                             </DropdownItem>
                                         ))}
