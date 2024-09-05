@@ -1068,6 +1068,7 @@ const PageModal: React.FC<modalProps> = ({
                                                 console.log(
                                                     'Field Value Selected',
                                                 )
+                                                console.log('FIELDS', field)
                                                 const selectedTags = field.value
                                                     ? field.value.map(
                                                           (tag: any) => {
@@ -1101,7 +1102,9 @@ const PageModal: React.FC<modalProps> = ({
                                                         options={
                                                             filters.filters
                                                         }
-                                                        value={selectedTags}
+                                                        value={
+                                                            selectedTags || []
+                                                        }
                                                         getOptionLabel={(
                                                             option,
                                                         ) => option.label}
