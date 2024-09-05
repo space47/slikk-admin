@@ -11,6 +11,8 @@ const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
     )
     const dataValues = Object.values(brandData)
 
+    const sum = dataValues.reduce((acc, value) => acc + value, 0)
+
     console.log('CATE', categories)
 
     const data = [
@@ -21,7 +23,9 @@ const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
 
     return (
         <div>
-            <div className="text-xl font-semibold">BRAND WISE DATA CHART</div>
+            <div className="text-xl font-semibold">
+                BRAND WISE DATA CHART : <span>({sum})</span>
+            </div>
             <Chart
                 options={{
                     plotOptions: {
