@@ -20,6 +20,7 @@ import ImageMODAL from '@/common/ImageModal'
 import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { TfiExchangeVertical } from 'react-icons/tfi'
 
 interface LastUpdatedBy {
     name: string
@@ -290,9 +291,9 @@ const StockOverview = () => {
                                 row.original.location,
                             )
                         }
-                        className="px-4 py-2 bg-blue-500 text-white rounded"
+                        className="px-4 py-2 bg-none text-4xl rounded font-bold"
                     >
-                        Update
+                        <TfiExchangeVertical />
                     </button>
                 ),
             },
@@ -335,11 +336,14 @@ const StockOverview = () => {
         originalLocation: any,
     ) => {
         const location = updatedLocation[id] ?? null
-        const quantity = updatedQuantities[id] ?? null
+        const quantity =
+            updatedQuantities[id] >= 0 ? updatedQuantities[id] : null
+
+        console.log('Quantity', quantity)
 
         try {
             const body = {
-                quantity: quantity ? quantity : originalQuantity,
+                quantity: quantity >= 0 ? quantity : originalQuantity,
                 location: location ? location : originalLocation,
             }
 
