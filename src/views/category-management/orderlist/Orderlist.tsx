@@ -161,7 +161,8 @@ const OrderList = () => {
             },
             { header: 'Mobile Number', accessorKey: 'user.mobile' },
             { header: 'Customer Name', accessorKey: 'user.name' },
-            { header: 'Store Address', accessorKey: 'store.address' },
+            { header: 'Delivery Type', accessorKey: 'delivery_type' },
+            // { header: 'Store Address', accessorKey: 'store.address' },
             {
                 header: 'Customer Address',
                 accessorKey: 'location_url',

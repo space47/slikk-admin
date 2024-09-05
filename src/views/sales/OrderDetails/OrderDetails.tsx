@@ -142,24 +142,6 @@ const OrderDetails = () => {
                                         #{data.invoice_id}
                                     </span>
                                 </h3>
-
-                                <div className="mt-4 md:mt-0">
-                                    {data.status === 'COMPLETED' ? (
-                                        <button
-                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
-                                            onClick={handleReturnOrder}
-                                        >
-                                            RETURN ORDER
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
-                                            onClick={handleCancelOrder}
-                                        >
-                                            CANCEL ORDER
-                                        </button>
-                                    )}
-                                </div>
                             </div>
                             <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
                                 <HiOutlineCalendar className="text-xl" />
@@ -221,6 +203,26 @@ const OrderDetails = () => {
                                         payment={data.payment}
                                         invoice_id={data.invoice_id}
                                     />
+                                </div>
+                                <div className="mt-4 md:mt-0 flex justify-end">
+                                    {data.status === 'COMPLETED' ? (
+                                        <button
+                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
+                                            onClick={handleReturnOrder}
+                                        >
+                                            RETURN ORDER
+                                        </button>
+                                    ) : data.status !== 'DECLINED' &&
+                                      data.status !== 'CANCELLED' ? (
+                                        <button
+                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
+                                            onClick={handleCancelOrder}
+                                        >
+                                            CANCEL ORDER
+                                        </button>
+                                    ) : (
+                                        ''
+                                    )}
                                 </div>
                             </div>
                             <div className="mt-6 xl:mt-0 xl:max-w-xs xl:w-full"></div>
