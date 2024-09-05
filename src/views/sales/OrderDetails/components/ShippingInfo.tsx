@@ -50,7 +50,7 @@ const ShippingInfo = ({
                                     href={data?.tracking_url}
                                     className="flex items-center cursor-pointer"
                                 >
-                                    <HiLocationMarker />{' '}
+                                    <HiLocationMarker className="text-xl" />{' '}
                                     <p>Click to track location</p>
                                 </a>
                             </div>

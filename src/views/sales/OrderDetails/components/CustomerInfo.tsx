@@ -3,6 +3,7 @@ import Card from '@/components/ui/Card'
 import IconText from '@/components/shared/IconText'
 import { HiPhone, HiExternalLink, HiLocationMarker } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
+import { FaMapMarkedAlt } from 'react-icons/fa'
 
 type CustomerInfoProps = {
     user: {
@@ -29,7 +30,7 @@ const CustomerInfo = ({
             <h5 className="mb-4">Customer Details</h5>
             <Link
                 className="group flex items-center justify-between"
-                to="/app/crm/customer-details?id=11"
+                to={`/app/customerAnalytics/${user.mobile}`}
             >
                 <div className="flex items-center">
                     {/* <Avatar shape="circle" src={data?.img} /> */}
@@ -53,10 +54,14 @@ const CustomerInfo = ({
                 <div>{store.address}</div>
             </address>
             <hr className="my-5" />
-            <h6 className="mb-4 flex justify-between items-center">
-                Billing address{' '}
-                <a href={location_url} target="_blank" rel="noreferrer">
-                    <HiLocationMarker />
+            <h6 className="mb-4 ">
+                <a
+                    href={location_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex gap-2 items-center"
+                >
+                    Billing address <FaMapMarkedAlt className="text-lg" />
                 </a>
             </h6>
             <address className="not-italic">

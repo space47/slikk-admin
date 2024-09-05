@@ -121,29 +121,63 @@ const OrderList = () => {
         //         )
         //     },
         // },
-        { header: 'Store', accessorKey: 'store.address' },
-        { header: 'Customer Name', accessorKey: 'user.name' },
+        // { header: 'Store', accessorKey: 'store.address' },
+        // { header: 'Customer Name', accessorKey: 'user.name' },
         { header: 'Mobile Number', accessorKey: 'user.mobile' },
+        { header: 'Delivery Type', accessorKey: 'delivery_type' },
         { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
         {
             header: 'Runner Number',
             accessorKey: 'logistic.runner_phone_number',
         },
-        { header: 'Pickup Time', accessorKey: 'logistic.pickup_time' },
-        { header: 'Drop Time', accessorKey: 'logistic.drop_time' },
-        { header: 'AWB Code', accessorKey: 'logistic.awb_code' },
         {
-            header: 'Eta Pickup',
-            accessorKey: 'logistic.eta_pickup',
-            cell: ({ getValue }: any) => (
-                <span>
-                    {getValue()
-                        ? moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')
-                        : ''}
-                </span>
-            ),
+            header: 'Pickup Time',
+            accessorKey: 'log',
+            cell: ({ row }: any) => {
+                const deliveryCreatedLog = row.original.log.find(
+                    (logEntry: any) => logEntry.status === 'DELIVERY_CREATED',
+                )
+
+                return deliveryCreatedLog ? (
+                    <div>
+                        {moment(deliveryCreatedLog.timestamp).format(
+                            'YYYY-MM-DD hh:mm:ss a',
+                        )}
+                    </div>
+                ) : null
+            },
         },
-        { header: 'Eta drop_off', accessorKey: 'logistic.eta_dropoff' },
+
+        {
+            header: 'Drop Time',
+            accessorKey: 'log',
+            cell: ({ row }: any) => {
+                const deliveryCreatedLog = row.original.log.find(
+                    (logEntry: any) => logEntry.status === 'DELIVERED',
+                )
+
+                return deliveryCreatedLog ? (
+                    <div>
+                        {moment(deliveryCreatedLog.timestamp).format(
+                            'YYYY-MM-DD hh:mm:ss a',
+                        )}
+                    </div>
+                ) : null
+            },
+        },
+        { header: 'AWB Code', accessorKey: 'logistic.awb_code' },
+        // {
+        //     header: 'Eta Pickup',
+        //     accessorKey: 'logistic.eta_pickup',
+        //     cell: ({ getValue }: any) => (
+        //         <span>
+        //             {getValue()
+        //                 ? moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')
+        //                 : ''}
+        //         </span>
+        //     ),
+        // },
+        // { header: 'Eta drop_off', accessorKey: 'logistic.eta_dropoff' },
         {
             header: 'Partner',
             accessorKey: 'logistic.partner',
