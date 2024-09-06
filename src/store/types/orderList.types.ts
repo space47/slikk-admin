@@ -189,6 +189,7 @@ export interface OrderState {
     orderCount: number
     dropdownStatus: DropdownStatus
     globalFilter: string
+    mobileFilter: string
     pageSize: number
     page: number
     from: string

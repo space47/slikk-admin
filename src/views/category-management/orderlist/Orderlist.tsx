@@ -24,6 +24,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown } from '@/components/ui'
 import { ORDER_STATUS } from './commontypes'
 import { IoMdDownload } from 'react-icons/io'
+import { FaLocationDot } from 'react-icons/fa6'
 
 interface Order {
     invoice_id: string
@@ -168,7 +169,9 @@ const OrderList = () => {
                 accessorKey: 'location_url',
                 cell: ({ getValue }) => (
                     <a href={getValue()} target="_blank" rel="noreferrer">
-                        {getValue()}
+                        <div className="flex justify-center">
+                            <FaLocationDot className="text-xl" />
+                        </div>
                     </a>
                 ),
             },

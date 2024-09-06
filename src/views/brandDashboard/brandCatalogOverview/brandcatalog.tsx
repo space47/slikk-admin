@@ -70,6 +70,8 @@ const BrandCatalog = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
     )
+    const [filterInput, setFilterInput] = useState('')
+
     console.log('ssssssssssssss', selectedCompany)
 
     const fetchData = async (page: number, pageSize: number) => {
@@ -86,9 +88,44 @@ const BrandCatalog = () => {
         }
     }
 
+    const filter = async (
+        page: number,
+        pageSize: number,
+        filter: string = '',
+    ) => {
+        try {
+            let searchInputType = `&sku=${filter}`
+            setFilterInput(searchInputType)
+            let response = await axiosInstance.get(
+                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}${searchInputType}&company_id=${selectedCompany.id}`,
+            )
+
+            if (response.data.data.results.length === 0) {
+                searchInputType = `&name=${filter}`
+                setFilterInput(searchInputType)
+                response = await axiosInstance.get(
+                    `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}${searchInputType}&company_id=${selectedCompany.id}`,
+                )
+            }
+
+            const data = response.data.data.results
+            const total = response.data.data.count
+
+            setData(data)
+            setTotalData(total)
+        } catch (error) {
+            console.error('Error fetching data:', error)
+        }
+    }
+
     useEffect(() => {
         fetchData(page, pageSize)
     }, [page, pageSize, selectedCompany])
+    useEffect(() => {
+        if (globalFilter) {
+            filter(page, pageSize, globalFilter)
+        }
+    }, [page, pageSize, globalFilter])
 
     const getFirstImageUrl = (images: string) => {
         const img = images.length > 0 ? images.split(',') : ''
@@ -99,11 +136,18 @@ const BrandCatalog = () => {
         console.log('OK', id)
     }
 
+    console.log('LENGTGH', data.length)
+
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
             {
                 header: 'Barcode',
                 accessorKey: 'barcode',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
                 cell: (info) => info.getValue(),
             },
             {

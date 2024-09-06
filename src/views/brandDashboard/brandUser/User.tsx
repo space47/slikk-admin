@@ -59,7 +59,7 @@ const Seller = () => {
         (store) => store.company.currCompany,
     )
 
-    const fetchData = async (page: number, pageSize: number) => {
+    const fetchData = async () => {
         try {
             const response = await axiosInstance.get(
                 `company/${selectedCompany.id}/users`,
@@ -74,19 +74,19 @@ const Seller = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
+        fetchData()
     }, [page, pageSize, selectedCompany])
 
     const navigate = useNavigate()
 
-    const handleActionClick = (mobile: string) => {
-        navigate(`/app/vendor/users/${mobile}`)
-    }
+    // const handleActionClick = (mobile: string) => {
+    //     navigate(`/app/vendor/users/${mobile}`)
+    // }
 
-    const handleDeleteClick = async (mobile: string) => {
-        setShowDeleteModal(true)
-        setGetMobileNumber(mobile)
-    }
+    // const handleDeleteClick = async (mobile: string) => {
+    //     setShowDeleteModal(true)
+    //     setGetMobileNumber(mobile)
+    // }
 
     const columns = useMemo<ColumnDef<User>[]>(
         () => [
@@ -181,8 +181,22 @@ const Seller = () => {
         setShowDeleteModal(false)
     }
 
+    const onPaginationChange = (page: number) => {
+        setPage(page)
+    }
+
+    const onSelectChange = (value = 0) => {
+        setPageSize(Number(value))
+    }
+    const paginatedData = data.slice((page - 1) * pageSize, page * pageSize)
+
+    const handleUser = () => {
+        navigate('/app/vendor/users/addNew')
+    }
+    console.log('CURRENT PAGE', page)
+
     const table = useReactTable({
-        data,
+        data: paginatedData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -202,18 +216,6 @@ const Seller = () => {
         },
         onGlobalFilterChange: setGlobalFilter,
     })
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
-
-    const handleUser = () => {
-        navigate('/app/vendor/users/addNew')
-    }
 
     return (
         <div>

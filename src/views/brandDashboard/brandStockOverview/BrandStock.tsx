@@ -78,6 +78,7 @@ const BrandStock = () => {
     )
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
+    const [filterInput, setFilterInput] = useState('')
 
     const fetchData = async (
         page: number,
@@ -99,17 +100,53 @@ const BrandStock = () => {
         }
     }
 
-    useEffect(() => {
-        fetchData(page, pageSize, from, to)
-    }, [page, pageSize, selectedCompany, from, to])
+    const filter = async (
+        page: number,
+        pageSize: number,
+        filter: string = '',
+    ) => {
+        try {
+            let searchInputType = `&sku=${filter}`
+            setFilterInput(searchInputType)
 
-    const getUploadStatus = (is_active: any) => {
-        if (is_active == true) {
-            return 'Yes'
-        } else {
-            return 'No'
+            let response = await axiosInstance.get(
+                `inventory?dashboard=true&p=${page}&page_size=${pageSize}${searchInputType}&company_id=${selectedCompany.id}`,
+            )
+
+            if (response.data.data.results.length === 0) {
+                searchInputType = `&name=${filter}`
+                setFilterInput(searchInputType)
+                response = await axiosInstance.get(
+                    `inventory?dashboard=true&p=${page}&page_size=${pageSize}${searchInputType}&company_id=${selectedCompany.id}`,
+                )
+            }
+
+            const data = response.data.data.results
+            const total = response.data.data.count
+
+            setData(data)
+            setTotalData(total)
+        } catch (error) {
+            console.error('Error fetching data:', error)
         }
     }
+
+    useEffect(() => {
+        fetchData(page, pageSize, from, to)
+    }, [page, pageSize, selectedCompany, from, to, globalFilter])
+    useEffect(() => {
+        if (globalFilter) {
+            filter(page, pageSize, globalFilter)
+        }
+    }, [page, pageSize, globalFilter])
+
+    // const getUploadStatus = (is_active: any) => {
+    //     if (is_active == true) {
+    //         return 'Yes'
+    //     } else {
+    //         return 'No'
+    //     }
+    // }
 
     const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
