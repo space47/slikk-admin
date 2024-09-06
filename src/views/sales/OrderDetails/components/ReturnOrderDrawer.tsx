@@ -48,6 +48,10 @@ const returnReasons = [
         label: 'Defects and Damage: The clothing arrived damaged or with manufacturing defects, such as holes, loose threads, or stains.',
         value: 'defects_damage',
     },
+    {
+        label: 'Try And Buy',
+        value: 'try_and_buy',
+    },
 ]
 
 const ReturnOrderDrawer = ({
