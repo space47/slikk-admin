@@ -94,6 +94,7 @@ const PaginationTable = () => {
         uploaded_file: string,
     ) => {
         try {
+            console.log('OK', failure, 'Err', error_file, 'upo', uploaded_file)
             const requiredFile = failure === 0 ? uploaded_file : error_file
             const response = await axioisInstance.get(
                 `file/presign?file_url=${requiredFile}`,
