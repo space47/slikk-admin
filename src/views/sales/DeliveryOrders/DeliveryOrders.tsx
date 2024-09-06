@@ -22,6 +22,7 @@ import {
     fetchOrders,
     setDropdownStatus,
     setGlobalFilter,
+    setMobileFilter,
     setPageSize,
     setPage,
     setFrom,
@@ -65,6 +66,7 @@ const OrderList = () => {
         pageSize,
         globalFilter,
         from,
+        mobileFilter,
         to,
         dropdownStatus,
     } = useAppSelector<OrderState>((state) => state.order)
@@ -72,13 +74,16 @@ const OrderList = () => {
     useEffect(() => {
         dispatch(fetchOrders())
     }, [dispatch, page, pageSize, from, to, dropdownStatus, globalFilter])
+    useEffect(() => {
+        dispatch(fetchOrders())
+    }, [dispatch, page, pageSize, from, to, dropdownStatus, mobileFilter])
 
     const [partner, setPartner] = useState<{
         [key: string]: { value: string; label: string }
     }>({})
     console.log(
         'Data for Table',
-        orders.map((item) => item),
+        orders?.map((item) => item),
     )
 
     const columns = [
@@ -100,29 +105,6 @@ const OrderList = () => {
                 )
             },
         },
-        // {
-        //     header: 'Return Invoide Id',
-        //     accessorKey: 'return_order',
-        //     cell: ({ row }: any) => {
-        //         const returnOrderArray = row.original?.return_order
-        //         const returnOrder = returnOrderArray?.find((item: any) => item)
-        //         console.log('ReturnOrder', returnOrder)
-        //         const returnOrderId = returnOrder?.return_order_id
-
-        //         return returnOrderId ? (
-        //             <div
-        //                 className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-        //                 onClick={() => handleRemove(returnOrderId)}
-        //             >
-        //                 {returnOrderId}
-        //             </div>
-        //         ) : (
-        //             ''
-        //         )
-        //     },
-        // },
-        // { header: 'Store', accessorKey: 'store.address' },
-        // { header: 'Customer Name', accessorKey: 'user.name' },
         { header: 'Mobile Number', accessorKey: 'user.mobile' },
         { header: 'Delivery Type', accessorKey: 'delivery_type' },
         { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
@@ -166,18 +148,6 @@ const OrderList = () => {
             },
         },
         { header: 'AWB Code', accessorKey: 'logistic.awb_code' },
-        // {
-        //     header: 'Eta Pickup',
-        //     accessorKey: 'logistic.eta_pickup',
-        //     cell: ({ getValue }: any) => (
-        //         <span>
-        //             {getValue()
-        //                 ? moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')
-        //                 : ''}
-        //         </span>
-        //     ),
-        // },
-        // { header: 'Eta drop_off', accessorKey: 'logistic.eta_dropoff' },
         {
             header: 'Partner',
             accessorKey: 'logistic.partner',
@@ -331,16 +301,36 @@ const OrderList = () => {
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row lg:justify-between mb-10 items-center gap-4">
-                <div className="w-full lg:w-auto mb-4 lg:mb-0">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) =>
-                            dispatch(setGlobalFilter(e.target.value))
-                        }
-                        className="w-full p-2 border rounded"
-                    />
+                <div className="flex flex-col lg:flex-row gap-6">
+                    <div className="mb-4 lg:mb-0">
+                        <div className="text-sm md:text-base">
+                            SEARCH BY INVOICE_ID
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search here"
+                            value={globalFilter}
+                            onChange={(e) =>
+                                dispatch(setGlobalFilter(e.target.value))
+                            }
+                            className="p-2 border rounded mt-1 w-full"
+                        />
+                    </div>
+
+                    <div className="mb-4 lg:mb-0">
+                        <div className="text-sm md:text-base">
+                            SEARCH BY MOBILE
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search through mobile"
+                            value={mobileFilter}
+                            onChange={(e) =>
+                                dispatch(setMobileFilter(e.target.value))
+                            }
+                            className="p-2 border rounded mt-1 w-full"
+                        />
+                    </div>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-4 lg:gap-10 items-center justify-between w-full lg:w-auto">
