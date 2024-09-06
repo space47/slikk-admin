@@ -152,10 +152,10 @@ const OrderDetails = () => {
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
-                        <div className="mb-8 flex justify-between">
-                            <div>
+                        <div className="mb-8 flex flex-col justify-center xl:flex-row xl:justify-between">
+                            <div className="w-full xl:w-1/2">
                                 <div className="flex flex-col md:flex-row items-center mb-4 xl:justify-between justify-center w-full">
-                                    <h3 className="text-2xl font-semibold text-gray-800 text-center md:text-left">
+                                    <h3 className="text-3xl font-bold text-gray-800 text-center md:text-left">
                                         <span>Order</span>
                                         <span className="ml-2 text-gray-600">
                                             #{data.invoice_id}
@@ -163,7 +163,7 @@ const OrderDetails = () => {
                                     </h3>
                                 </div>
                                 <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
-                                    <HiOutlineCalendar className="text-xl" />
+                                    <HiOutlineCalendar className="text-2xl" />
                                     <span className="ml-2">
                                         {moment(data.create_date).format(
                                             'MM/DD/YYYY hh:mm:ss a',
@@ -171,10 +171,10 @@ const OrderDetails = () => {
                                     </span>
                                 </span>
                             </div>
-                            <div className="mt-4 md:mt-0 flex flex-col items-end gap-5">
+                            <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
                                 {data.status === 'COMPLETED' ? (
                                     <button
-                                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
+                                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                         onClick={handleReturnOrder}
                                     >
                                         RETURN ORDER
@@ -182,17 +182,19 @@ const OrderDetails = () => {
                                 ) : data.status !== 'DECLINED' &&
                                   data.status !== 'CANCELLED' ? (
                                     <button
-                                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
+                                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                         onClick={handleCancelOrder}
                                     >
                                         CANCEL ORDER
                                     </button>
                                 ) : null}
 
-                                <div className="flex gap-2 items-center">
-                                    {data.return_order.length > 0 && (
-                                        <div className=" flex gap-3">
-                                            <span>Return Orders:</span>
+                                {data.return_order.length > 0 && (
+                                    <div className="flex flex-col xl:flex-row gap-2 items-center">
+                                        <span className="text-gray-700">
+                                            Return Orders:
+                                        </span>
+                                        <div className="flex flex-wrap gap-2">
                                             {data.return_order.map(
                                                 (item, key) => (
                                                     <a
@@ -200,17 +202,18 @@ const OrderDetails = () => {
                                                         key={key}
                                                         target="_blank"
                                                         rel="noreferrer"
-                                                        className="text-blue-500 hover:underline  gap-1 "
+                                                        className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
                                                     >
                                                         {item.return_order_id}
                                                     </a>
                                                 ),
                                             )}
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
+
                         <div className="xl:flex gap-6">
                             <div className="xl:flex-1">
                                 <div className="bg-white shadow-lg p-4 rounded-lg mb-6">
