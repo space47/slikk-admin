@@ -23,6 +23,7 @@ import { TbCalendarStats } from 'react-icons/tb'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown } from '@/components/ui'
 import { RETURN_ORDERS } from '@/views/category-management/orderlist/commontypes'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 interface ReturnOrderItem {
     order_item: number
@@ -71,7 +72,6 @@ const OrderList = () => {
         pageSize: number,
         from: string,
         to: string,
-        filter: string = '',
     ) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -79,13 +79,20 @@ const OrderList = () => {
                 dropdownStatus?.value === 'ALL'
                     ? ''
                     : `&status=${dropdownStatus?.value}`
-            const response = await axiosInstance.get(
-                `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}&name=${filter}`,
-                //
-            )
 
-            const ordersData = response.data?.data.results
-            const orderCount = response.data?.data.count
+            let response
+            if (globalFilter) {
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?return_order_id=${globalFilter}${status}`,
+                )
+            } else {
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
+                )
+            }
+
+            const ordersData = response?.data?.data.results
+            const orderCount = response?.data?.data.count
 
             setOrders(ordersData)
             setOrderCount(orderCount)
@@ -95,7 +102,7 @@ const OrderList = () => {
     }
 
     useEffect(() => {
-        fetchOrders(page, pageSize, from, to, globalFilter)
+        fetchOrders(page, pageSize, from, to)
     }, [page, pageSize, from, to, dropdownStatus, globalFilter])
 
     const columns = useMemo(
@@ -281,7 +288,7 @@ const OrderList = () => {
                 <div className="w-full lg:w-auto mb-4 lg:mb-0">
                     <input
                         type="text"
-                        placeholder="Search here"
+                        placeholder="Search Return Id here"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
                         className="w-full p-2 border rounded lg:w-auto"

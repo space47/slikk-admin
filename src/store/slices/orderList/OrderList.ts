@@ -10,6 +10,7 @@ const initialState: OrderState = {
     orderCount: 0,
     dropdownStatus: { value: 'ALL', name: 'ALL' },
     globalFilter: '',
+    mobileFilter: '',
     pageSize: 10,
     page: 1,
     from: moment().format('YYYY-MM-DD'),
@@ -21,16 +22,35 @@ export const fetchOrders = createAsyncThunk(
     async (_, { getState }) => {
         try {
             const state = getState() as { order: OrderState }
-            const { page, pageSize, from, to, dropdownStatus, globalFilter } =
-                state.order
+            const {
+                page,
+                pageSize,
+                from,
+                to,
+                dropdownStatus,
+                globalFilter,
+                mobileFilter,
+            } = state.order
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const statusQuery =
                 dropdownStatus.value === 'ALL'
                     ? ''
                     : `&status=${dropdownStatus.value}`
-            const filterQuery = globalFilter ? `&id=${globalFilter}` : ''
-            const response = await axioisInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${to}${statusQuery}${filterQuery}`,
-            )
+            let response
+
+            if (globalFilter) {
+                response = await axioisInstance.get(
+                    `/merchant/orders?invoice_id=${globalFilter}${statusQuery}`,
+                )
+            } else if (mobileFilter) {
+                response = await axioisInstance.get(
+                    `/merchant/orders?mobile=${mobileFilter}${statusQuery}&p=${page}&page_size=${pageSize}`,
+                )
+            } else {
+                response = await axioisInstance.get(
+                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${statusQuery}`,
+                )
+            }
 
             return {
                 orders: response.data?.data.results,
@@ -51,6 +71,9 @@ export const orderSlice = createSlice({
         },
         setGlobalFilter(state, action) {
             state.globalFilter = action.payload
+        },
+        setMobileFilter(state, action) {
+            state.mobileFilter = action.payload
         },
         setPageSize(state, action) {
             state.pageSize = action.payload
@@ -86,6 +109,7 @@ export const orderSlice = createSlice({
 export const {
     setDropdownStatus,
     setGlobalFilter,
+    setMobileFilter,
     setPageSize,
     setPage,
     setFrom,
