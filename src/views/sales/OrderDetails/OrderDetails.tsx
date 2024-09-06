@@ -19,6 +19,18 @@ import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import CancelModal from './components/CancelModal'
 // import { string } from 'yup'
 
+type RETURNORDER = {
+    amount: string
+    create_date: string
+    order: string
+    return_order_delivery: any
+    return_order_id: string
+    return_order_items: any
+    return_type: string
+    status: string
+    uuid: string
+}
+
 type SalesOrderDetailsResponse = {
     amount: string
     invoice_id?: string
@@ -88,6 +100,7 @@ type SalesOrderDetailsResponse = {
     loyalty_discount: string
     points_discount: string
     location_url: string
+    return_order: RETURNORDER[]
 }
 
 const OrderDetails = () => {
@@ -129,28 +142,74 @@ const OrderDetails = () => {
         setShowCancelModal(false)
     }
 
+    console.log(
+        'RETRUNORDER',
+        data?.return_order.map((item) => item.return_order_id).join(','),
+    )
+
     return (
         <Container className="p-4 xl:px-10">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
-                        <div className="mb-8">
-                            <div className="flex flex-col md:flex-row items-center mb-4 xl:justify-between justify-center w-full">
-                                <h3 className="text-2xl font-semibold text-gray-800 text-center md:text-left">
-                                    <span>Order</span>
-                                    <span className="ml-2 text-gray-600">
-                                        #{data.invoice_id}
+                        <div className="mb-8 flex justify-between">
+                            <div>
+                                <div className="flex flex-col md:flex-row items-center mb-4 xl:justify-between justify-center w-full">
+                                    <h3 className="text-2xl font-semibold text-gray-800 text-center md:text-left">
+                                        <span>Order</span>
+                                        <span className="ml-2 text-gray-600">
+                                            #{data.invoice_id}
+                                        </span>
+                                    </h3>
+                                </div>
+                                <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
+                                    <HiOutlineCalendar className="text-xl" />
+                                    <span className="ml-2">
+                                        {moment(data.create_date).format(
+                                            'MM/DD/YYYY hh:mm:ss a',
+                                        )}
                                     </span>
-                                </h3>
-                            </div>
-                            <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
-                                <HiOutlineCalendar className="text-xl" />
-                                <span className="ml-2">
-                                    {moment(data.create_date).format(
-                                        'MM/DD/YYYY hh:mm:ss a',
-                                    )}
                                 </span>
-                            </span>
+                            </div>
+                            <div className="mt-4 md:mt-0 flex flex-col items-end gap-5">
+                                {data.status === 'COMPLETED' ? (
+                                    <button
+                                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
+                                        onClick={handleReturnOrder}
+                                    >
+                                        RETURN ORDER
+                                    </button>
+                                ) : data.status !== 'DECLINED' &&
+                                  data.status !== 'CANCELLED' ? (
+                                    <button
+                                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
+                                        onClick={handleCancelOrder}
+                                    >
+                                        CANCEL ORDER
+                                    </button>
+                                ) : null}
+
+                                <div className="flex gap-2 items-center">
+                                    {data.return_order.length > 0 && (
+                                        <div className=" flex gap-3">
+                                            <span>Return Orders:</span>
+                                            {data.return_order.map(
+                                                (item, key) => (
+                                                    <a
+                                                        href={`/app/returnOrders/${item.return_order_id}`}
+                                                        key={key}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="text-blue-500 hover:underline  gap-1 "
+                                                    >
+                                                        {item.return_order_id}
+                                                    </a>
+                                                ),
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                         <div className="xl:flex gap-6">
                             <div className="xl:flex-1">
@@ -203,26 +262,6 @@ const OrderDetails = () => {
                                         payment={data.payment}
                                         invoice_id={data.invoice_id}
                                     />
-                                </div>
-                                <div className="mt-4 md:mt-0 flex justify-end">
-                                    {data.status === 'COMPLETED' ? (
-                                        <button
-                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
-                                            onClick={handleReturnOrder}
-                                        >
-                                            RETURN ORDER
-                                        </button>
-                                    ) : data.status !== 'DECLINED' &&
-                                      data.status !== 'CANCELLED' ? (
-                                        <button
-                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-md transition w-full md:w-auto"
-                                            onClick={handleCancelOrder}
-                                        >
-                                            CANCEL ORDER
-                                        </button>
-                                    ) : (
-                                        ''
-                                    )}
                                 </div>
                             </div>
                             <div className="mt-6 xl:mt-0 xl:max-w-xs xl:w-full"></div>

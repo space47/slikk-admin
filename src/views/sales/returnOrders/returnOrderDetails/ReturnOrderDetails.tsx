@@ -61,6 +61,17 @@ const ReturnOrderDetails = () => {
                         </span>
                     </div>
                     <div>
+                        Original Order:
+                        <a
+                            href={`/app/orders/${returnDetails?.order.invoice_id}`}
+                            className="text-blue-500 hover:underline"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            {returnDetails?.order.invoice_id}
+                        </a>
+                    </div>
+                    <div>
                         <span className="flex items-center">
                             <HiOutlineCalendar className="text-lg" />
                             <span className="ltr:ml-1 rtl:mr-1">
