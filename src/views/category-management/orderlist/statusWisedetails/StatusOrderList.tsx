@@ -16,17 +16,16 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
-import type { OrderItem } from './commontypes'
+import type { OrderItem } from '../commontypes'
 import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown } from '@/components/ui'
-import { ORDER_STATUS } from './commontypes'
+import { ORDER_STATUS } from '../commontypes'
 import { IoMdDownload } from 'react-icons/io'
 import { FaLocationDot } from 'react-icons/fa6'
 import { FaMapMarkedAlt } from 'react-icons/fa'
-import { RiEBike2Fill } from 'react-icons/ri'
 
 interface Order {
     invoice_id: string
@@ -66,7 +65,7 @@ interface DropdownStatus {
     name: string[]
 }
 
-const OrderList = () => {
+const StatusOrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [mobileFilter, setMobileFilter] = useState('')
@@ -98,11 +97,11 @@ const OrderList = () => {
 
             if (globalFilter) {
                 response = await axiosInstance.get(
-                    `/merchant/orders?invoice_id=${globalFilter}${status}`,
+                    `/merchant/orders?invoice_id=${globalFilter}&status=COMPLETED`,
                 )
             } else if (mobileFilter) {
                 response = await axiosInstance.get(
-                    `/merchant/orders?mobile=${mobileFilter}${status}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/orders?mobile=${mobileFilter}&status=COMPLETED&p=${page}&page_size=${pageSize}`,
                 )
 
                 const totalOrders = response.data?.data.count
@@ -110,7 +109,7 @@ const OrderList = () => {
                 setPage(1)
             } else {
                 response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
+                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}&status=COMPLETED`,
                 )
             }
 
@@ -177,7 +176,6 @@ const OrderList = () => {
                     </a>
                 ),
             },
-
             { header: 'Rating', accessorKey: 'rating' },
             { header: 'Payment Mode', accessorKey: 'payment.mode' },
             { header: 'Payment Status', accessorKey: 'payment.status' },
@@ -241,7 +239,7 @@ const OrderList = () => {
                 searwiseDownload = `&mobile=${mobileFilter}`
             }
 
-            const downloadUrl = `merchant/orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}`
+            const downloadUrl = `merchant/orders?download=true${searwiseDownload}&status=COMPLETED&from=${from}&to=${To_Date}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
@@ -355,7 +353,7 @@ const OrderList = () => {
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mt-4 lg:mt-0">
-                        <div className="flex gap-2 items-center xl:flex-col ">
+                        {/* <div className="flex gap-2 items-center xl:flex-col ">
                             <label htmlFor="" className="font-semibold">
                                 SELECT STATUS
                             </label>
@@ -402,7 +400,7 @@ const OrderList = () => {
                                     </div>
                                 </Dropdown>
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="flex flex-col lg:flex-row gap-6">
                             <div>
@@ -523,7 +521,7 @@ const OrderList = () => {
     )
 }
 
-export default OrderList
+export default StatusOrderList
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value)
