@@ -11,7 +11,7 @@ const QCbulkUpload = () => {
 
     return (
         <div>
-            <h2>Bulk Product File Upload</h2>
+            <div className="font-bold text-xl mb-5">QUALITY CHECK</div>
             <QCUploader />
             <br />
             <QCuploadHistory />

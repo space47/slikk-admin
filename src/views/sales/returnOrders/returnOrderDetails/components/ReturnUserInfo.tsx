@@ -8,11 +8,9 @@ import { ReturnOrderState } from '@/store/types/returnDetails.types'
 
 const ReturnUserInfo = () => {
     const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders
+        (state) => state.returnOrders,
     )
     const returnProducts = returnOrder?.returnOrders?.user
-
-    console.log('ReturnProducts', returnProducts)
 
     return (
         <Card>

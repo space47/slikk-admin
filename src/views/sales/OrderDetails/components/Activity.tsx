@@ -14,7 +14,7 @@ const LOGISTIC_PARTNER = [
     { value: 'porter', label: 'PORTER' },
     { value: 'shiprocket', label: 'SHIPROCKET' },
     { value: 'shadowfax', label: 'SHADOWFAX' },
-    { value: 'slikk', label: 'SLIKK' }
+    { value: 'slikk', label: 'SLIKK' },
 ]
 
 type Event = {
@@ -58,7 +58,7 @@ const Activity = ({
     product = [],
     payment,
     invoice_id,
-    logistic
+    logistic,
 }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
@@ -87,7 +87,7 @@ const Activity = ({
     const handleSelectChange = (id: number, value: string) => {
         setFulfilledQuantities((prevQuantities) => ({
             ...prevQuantities,
-            [id]: parseInt(value, 10)
+            [id]: parseInt(value, 10),
         }))
     }
 
@@ -107,17 +107,19 @@ const Activity = ({
                             }
                             return acc
                         },
-                        {} as { [key: number]: number }
+                        {} as { [key: number]: number },
                     )
+
+                    console.log('BEFORE PACK', data)
 
                     const body = {
                         action,
-                        data
+                        data,
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body
+                        body,
                     )
 
                     console.log(response.data)
@@ -137,7 +139,7 @@ const Activity = ({
 
     const handleReject = () => {
         const hasFulfilledQty = Object.values(fulfilledQuantities).some(
-            (item) => item > 0
+            (item) => item > 0,
         )
 
         if (hasFulfilledQty) {
@@ -160,17 +162,17 @@ const Activity = ({
                 try {
                     const data = Object.entries(fulfilledQuantities).reduce(
                         (acc) => acc,
-                        {} as { [key: number]: number }
+                        {} as { [key: number]: number },
                     )
 
                     const body = {
                         action,
-                        data
+                        data,
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body
+                        body,
                     )
 
                     console.log(response.data)
@@ -199,12 +201,14 @@ const Activity = ({
                 try {
                     const body = {
                         action,
-                        delivery_partner: partner?.value
+                        delivery_partner: partner?.value,
                     }
+
+                    console.log('BEFORE DELIVERY', partner?.value)
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body
+                        body,
                     )
                     navigate(0)
                     console.log(response.data)
@@ -214,7 +218,7 @@ const Activity = ({
                         message: 'Success',
                         description:
                             response?.data?.message ||
-                            'Order status updated successfully.'
+                            'Order status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
@@ -224,7 +228,7 @@ const Activity = ({
 
                     notification.error({
                         message: 'Error',
-                        description: errorMessage
+                        description: errorMessage,
                     })
                 } finally {
                     setTriggerpackCall(false)
@@ -246,12 +250,12 @@ const Activity = ({
             const sendApiRequest = async () => {
                 try {
                     const body = {
-                        action
+                        action,
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body
+                        body,
                     )
                     navigate(0)
                     console.log(response.data)
@@ -261,7 +265,7 @@ const Activity = ({
                         message: 'Success',
                         description:
                             response?.data?.message ||
-                            'Order status updated successfully.'
+                            'Order status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
@@ -271,7 +275,7 @@ const Activity = ({
 
                     notification.error({
                         message: 'Error',
-                        description: errorMessage
+                        description: errorMessage,
                     })
                 } finally {
                     setTriggerShipCall(false)
@@ -295,12 +299,12 @@ const Activity = ({
             const sendApiRequest = async () => {
                 try {
                     const body = {
-                        action
+                        action,
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/order/${invoice_id}`,
-                        body
+                        body,
                     )
                     navigate(0)
                     console.log(response.data)
@@ -310,7 +314,7 @@ const Activity = ({
                         message: 'Success',
                         description:
                             response?.data?.message ||
-                            'Order status updated successfully.'
+                            'Order status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
@@ -320,7 +324,7 @@ const Activity = ({
 
                     notification.error({
                         message: 'Error',
-                        description: errorMessage
+                        description: errorMessage,
                     })
                 } finally {
                     setTriggerDeliveryCall(false)
@@ -349,32 +353,32 @@ const Activity = ({
         switch (status) {
             case 'PENDING':
                 return {
-                    buttonText: 'ACCEPT/REJECT'
+                    buttonText: 'ACCEPT/REJECT',
                 }
             case 'ACCEPTED':
                 return {
-                    buttonText: 'PICK AND PACK'
+                    buttonText: 'PICK AND PACK',
                 }
             case 'PACKED':
                 return {
-                    buttonText: 'MARK AS SHIPPED'
+                    buttonText: 'MARK AS SHIPPED',
                 }
             case 'OUT FOR DELIVERY':
                 return {
-                    buttonText: 'MARK AS DELIVERED'
+                    buttonText: 'MARK AS DELIVERED',
                 }
             case 'SHIPPED':
                 return {
-                    buttonText: 'MARK AS DELIVERED'
+                    buttonText: 'MARK AS DELIVERED',
                 }
             case 'CANCELLED':
                 return {
-                    buttonText: ''
+                    buttonText: '',
                 }
             default:
                 return {
                     buttonText: '',
-                    modalContent: ''
+                    modalContent: '',
                 }
         }
     }
@@ -401,7 +405,7 @@ const Activity = ({
                                         innerClass={classNames(
                                             activity.timestamp
                                                 ? 'bg-emerald-500'
-                                                : 'bg-blue-500'
+                                                : 'bg-blue-500',
                                         )}
                                     />
                                 </div>
@@ -412,7 +416,7 @@ const Activity = ({
                             </div>
                             <div>
                                 {moment(activity.timestamp).format(
-                                    'DD:MM:YYYY hh:mm'
+                                    'DD:MM:YYYY hh:mm',
                                 )}
                             </div>
                         </Timeline.Item>

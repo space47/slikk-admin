@@ -143,7 +143,9 @@ const PaginationTable = () => {
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => (
                     <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
+                        {moment(getValue() as string).format(
+                            'YYYY-MM-DD hh:mm:ss a',
+                        )}
                     </span>
                 ),
             },

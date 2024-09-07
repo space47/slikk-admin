@@ -139,7 +139,9 @@ const OrderList = () => {
                 header: 'Order Date',
                 accessorKey: 'return_order_items.create_date',
                 cell: ({ getValue }: { getValue: () => string }) => (
-                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                    <span>
+                        {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
+                    </span>
                 ),
             },
             {
@@ -202,7 +204,9 @@ const OrderList = () => {
                 header: 'Last Update',
                 accessorKey: 'return_order_items.update_date',
                 cell: ({ getValue }: { getValue: () => string }) => (
-                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
+                    <span>
+                        {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
+                    </span>
                 ),
             },
             {
