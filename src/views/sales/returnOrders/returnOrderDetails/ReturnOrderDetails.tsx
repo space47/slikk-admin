@@ -11,8 +11,15 @@ import ReturnUserInfo from './components/ReturnUserInfo'
 import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 import { Button } from '@/components/ui'
 import { Modal } from 'antd'
+import RiderActivity from '@/views/slikkLogistics/riderTracking/riderDetails/RiderActivity'
 
 const ReturnOrderDetails = () => {
+    // const [showRefundModal, setShowRefundModal] = useState(false)
+    // const [valueInsideModal, setValueInsideModal] = useState({
+    //     refundAmount: '',
+    //     refundId: '',
+    // })
+
     const { return_order_id } = useParams()
     const dispatch = useAppDispatch()
     const returnOrder = useAppSelector<ReturnOrderState>(
@@ -20,17 +27,12 @@ const ReturnOrderDetails = () => {
     )
     const returnDetails = returnOrder?.returnOrders
 
-    // const [showRefundModal, setShowRefundModal] = useState(false)
-    // const [valueInsideModal, setValueInsideModal] = useState({
-    //     refundAmount: '',
-    //     refundId: '',
-    // })
-
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
-    }, [])
+    }, [return_order_id])
 
     // const handleRefundButton = () => {
+    //     console.log('CLICKED')
     //     setShowRefundModal(true)
     // }
 
@@ -88,6 +90,13 @@ const ReturnOrderDetails = () => {
             <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md">
                     <ReturnProductsDetails />
+                    <RiderActivity
+                        data={returnDetails?.log}
+                        status="completed"
+                        task_id={returnDetails?.id}
+                        latitude="11"
+                        longitude="22"
+                    />
                 </div>
                 <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow-md gap-5 w-full xl:w-1/3">
                     <ReturnUserInfo />
@@ -95,6 +104,36 @@ const ReturnOrderDetails = () => {
                     <ReturnSummary />
                 </div>
             </div>
+            {/* For Modal */}
+            {/* {showRefundModal && (
+                <Modal
+                    open={showRefundModal}
+                    onOk={refundItem}
+                    onCancel={handleCloseModal}
+                    okText="Refund"
+                    okButtonProps={{
+                        style: { backgroundColor: 'red', borderColor: 'red' },
+                    }}
+                >
+                    <h1>INPUTS</h1>
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                        <input
+                            type="text"
+                            name="refundAmount"
+                            value={valueInsideModal.refundAmount}
+                            placeholder="Enter Refund Amount"
+                            onChange={handleInputChange}
+                        />
+                        <input
+                            type="text"
+                            name="refundId"
+                            value={valueInsideModal.refundId}
+                            placeholder="Enter Refund Id"
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                </Modal>
+            )} */}
         </div>
     )
 }

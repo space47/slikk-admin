@@ -120,6 +120,17 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrderManagement.orderList',
+        path: `${APP_PREFIX_PATH}/orders/completed`,
+        component: lazy(
+            () =>
+                import(
+                    '@/views/category-management/orderlist/statusWisedetails/StatusOrderList'
+                ),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrderManagement.orderDetails',
         path: `${APP_PREFIX_PATH}/orders/:invoice_id`,
         component: lazy(() => import('@/views/sales/OrderDetails')),

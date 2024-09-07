@@ -8,11 +8,9 @@ import { Avatar } from '@/components/ui'
 
 const ReturnRunnerDetails = () => {
     const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders
+        (state) => state.returnOrders,
     )
     const returnProducts = returnOrder?.returnOrders?.logistic
-
-    console.log('ReturnProducts', returnProducts)
 
     return (
         <Card>

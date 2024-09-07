@@ -39,17 +39,27 @@ const Home = () => {
 
     useEffect(() => {
         fetchHome()
+
+        const interval = setInterval(fetchHome, 100000)
+
+        return () => clearInterval(interval)
     }, [from, to])
 
     const netSales =
         (homeData?.received?.total_amount || 0) -
-        (homeData?.returned?.total_amount || 0)-(homeData?.cancelled?.total_amount || 0)-(homeData?.declined?.total_amount || 0)
+        (homeData?.returned?.total_amount || 0) -
+        (homeData?.cancelled?.total_amount || 0) -
+        (homeData?.declined?.total_amount || 0)
 
     const netReturn =
-        (homeData?.returned?.count || 0)+(homeData?.cancelled?.count || 0)+(homeData?.declined?.count || 0)
+        (homeData?.returned?.count || 0) +
+        (homeData?.cancelled?.count || 0) +
+        (homeData?.declined?.count || 0)
     const netReturnSales =
-        (homeData?.returned?.total_amount || 0)+(homeData?.cancelled?.total_amount || 0)+(homeData?.declined?.total_amount || 0)
-    
+        (homeData?.returned?.total_amount || 0) +
+        (homeData?.cancelled?.total_amount || 0) +
+        (homeData?.declined?.total_amount || 0)
+
     const handleFromChange = (date: Date | null) => {
         if (date) {
             setFrom(moment(date).format('YYYY-MM-DD'))
@@ -83,6 +93,16 @@ const Home = () => {
         console.log('INVOICE', inputName)
         navigate(`/app/orders/${inputName}`)
     }
+    const handleReceived = () => {
+        navigate(`/app/orders`)
+    }
+    const handleReturned = () => {
+        navigate(`/app/returnOrders`)
+    }
+
+    const handleCompleted = () => {
+        navigate(`/app/orders/completed`)
+    }
 
     return (
         <div className="flex flex-col gap-6 p-4">
@@ -109,7 +129,10 @@ const Home = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 xl:mx-10">
-                <Card className="shadow-lg">
+                <Card
+                    className="shadow-lg cursor-pointer"
+                    onClick={handleReceived}
+                >
                     <div className="flex justify-between items-center">
                         <div>
                             <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />
@@ -126,7 +149,10 @@ const Home = () => {
                         </div>
                     </div>
                 </Card>
-                <Card className="shadow-lg">
+                <Card
+                    className="shadow-lg cursor-pointer"
+                    onClick={handleCompleted}
+                >
                     <div className="flex justify-between items-center">
                         <div>
                             <GrCompliance className="text-4xl mx-4 text-green-500" />
@@ -137,13 +163,16 @@ const Home = () => {
                             </h2>
                             <p>Count: {homeData?.completed.count}</p>
                             <p>
-                                Total Amount: Rs. 
+                                Total Amount: Rs.
                                 {homeData?.completed.total_amount?.toFixed(2)}
                             </p>
                         </div>
                     </div>
                 </Card>
-                <Card className="shadow-lg">
+                <Card
+                    className="shadow-lg cursor-pointer"
+                    onClick={handleReturned}
+                >
                     <div className="flex justify-between items-center">
                         <div>
                             <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />

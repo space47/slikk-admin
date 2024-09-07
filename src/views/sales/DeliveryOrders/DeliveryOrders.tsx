@@ -38,6 +38,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { RiEBike2Fill } from 'react-icons/ri'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -107,10 +108,25 @@ const OrderList = () => {
         },
         { header: 'Mobile Number', accessorKey: 'user.mobile' },
         { header: 'Delivery Type', accessorKey: 'delivery_type' },
+        { header: 'STATUS', accessorKey: 'status' },
         { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
         {
             header: 'Runner Number',
             accessorKey: 'logistic.runner_phone_number',
+        },
+        {
+            header: 'Tracking Url',
+            accessorKey: 'logistic.tracking_url',
+            cell: ({ getValue }) => {
+                const url = getValue()
+                return url ? (
+                    <a href={url} target="_blank" rel="noreferrer">
+                        <div className="flex justify-center">
+                            <RiEBike2Fill className="text-xl" />
+                        </div>
+                    </a>
+                ) : null
+            },
         },
         {
             header: 'Pickup Time',
