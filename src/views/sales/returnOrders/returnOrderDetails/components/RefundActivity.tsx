@@ -52,6 +52,11 @@ const RefundActivity = () => {
         useState<boolean>(false)
     const [triggerDelivered, setTriggerDelivered] = useState<boolean>(false)
     const [triggerCancelled, setTriggerCancelled] = useState<boolean>(false)
+    const [triggerComplete, setTriggerComplete] = useState<boolean>(false)
+    const [valueInsideModal, setValueInsideModal] = useState({
+        refundAmount: '',
+        refundId: '',
+    })
 
     const [modalContent, setModalContent] = useState<string>()
     const navigate = useNavigate()
@@ -80,13 +85,13 @@ const RefundActivity = () => {
                     buttonText: 'OUT_FOR_DELIVERY',
                 }
 
-            case 'OUT_OF_DELIVERY':
+            case 'OUT_FOR_DELIVERY':
                 return {
                     buttonText: 'DELIVERED',
                 }
             case 'DELIVERED':
                 return {
-                    buttonText: '', // isme ek naya modal banaunga with the inputs and and send it to the body
+                    buttonText: 'COMPLETE RETURN', // isme ek naya modal banaunga with the inputs and and send it to the body
                 }
             case 'CANCELLED':
                 return {
@@ -103,6 +108,14 @@ const RefundActivity = () => {
     const { buttonText, modalContent: content } = getButtonAndModalContent(
         returnDetails?.status || '',
     )
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setValueInsideModal((prev) => ({
+            ...prev,
+            [name]: value,
+        }))
+    }
 
     // PICKED UP STATUS.............................
 
@@ -254,7 +267,7 @@ const RefundActivity = () => {
     // OUT FOr Delivery........................................................
 
     const hanldeOutForDelivery = () => {
-        setAction('out_of_delivery')
+        setAction('out_for_delivery')
         setTriggerOutForDelivery(true)
     }
 
@@ -348,6 +361,56 @@ const RefundActivity = () => {
     }, [triggerDelivered, navigate])
 
     // .......................................................................
+
+    const hanldeComplete = () => {
+        setAction('return_completed')
+        setTriggerComplete(true)
+    }
+
+    useEffect(() => {
+        if (triggerComplete) {
+            const sendApiRequest = async () => {
+                try {
+                    const body = {
+                        action,
+                        reference_id: valueInsideModal.refundId,
+                        return_amount: valueInsideModal.refundAmount,
+                    }
+
+                    const response = await axiosInstance.patch(
+                        `merchant/return_order/${returnDetails?.return_order_id}`,
+                        body,
+                    )
+
+                    console.log(response.data)
+                    setIsModalOpen(false)
+                    setTriggerComplete(false)
+                    notification.success({
+                        message: 'Success',
+                        description:
+                            response?.data?.message ||
+                            'Rider status updated successfully.',
+                    })
+                    navigate(0)
+                } catch (error: any) {
+                    console.error(error)
+                    const errorMessage =
+                        error.response?.data?.message ||
+                        'There was an error updating the order status. Please try again.'
+
+                    notification.error({
+                        message: 'Error',
+                        description: errorMessage,
+                    })
+                } finally {
+                    setTriggerComplete(false)
+                }
+            }
+            sendApiRequest()
+        }
+    }, [triggerComplete, navigate])
+
+    // ........................................................................
     const handleClose = () => {
         setIsModalOpen(false)
     }
@@ -366,7 +429,7 @@ const RefundActivity = () => {
                                   <div className="flex mt-1.5">
                                       <Badge
                                           innerClass={classNames(
-                                              activity.update_date
+                                              activity.timestamp
                                                   ? 'bg-emerald-500'
                                                   : 'bg-blue-500',
                                           )}
@@ -378,7 +441,7 @@ const RefundActivity = () => {
                                   {activity.status}
                               </div>
                               <div>
-                                  {moment(activity.update_date).format(
+                                  {moment(activity.timestamp).format(
                                       'DD:MM:YYYY hh:mm',
                                   )}
                               </div>
@@ -431,7 +494,7 @@ const RefundActivity = () => {
                     status={returnDetails.status}
                 />
             )}
-            {returnDetails?.status === 'OUT_OF_DELIVERY' && (
+            {returnDetails?.status === 'OUT_FOR_DELIVERY' && (
                 <DeliveredModal
                     isModalOpen={isModalOpen}
                     handleDelivered={handleDelivered}
@@ -439,6 +502,32 @@ const RefundActivity = () => {
                     modalContent={modalContent}
                     status={returnDetails.status}
                 />
+            )}
+
+            {returnDetails?.status === 'DELIVERED' && (
+                <Modal
+                    open={isModalOpen}
+                    onOk={hanldeComplete}
+                    onClose={handleClose}
+                >
+                    <div className="font-bold text-xl italic mb-8">INPUTS</div>
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                        <input
+                            type="text"
+                            name="refundAmount"
+                            value={valueInsideModal.refundAmount}
+                            placeholder="Enter Refund Amount"
+                            onChange={handleInputChange}
+                        />
+                        <input
+                            type="text"
+                            name="refundId"
+                            value={valueInsideModal.refundId}
+                            placeholder="Enter Refund Id"
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                </Modal>
             )}
         </Card>
     )
