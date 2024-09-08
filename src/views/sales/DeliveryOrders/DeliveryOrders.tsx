@@ -107,13 +107,6 @@ const OrderList = () => {
             },
         },
         { header: 'Mobile Number', accessorKey: 'user.mobile' },
-        { header: 'Delivery Type', accessorKey: 'delivery_type' },
-        { header: 'STATUS', accessorKey: 'status' },
-        { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
-        {
-            header: 'Runner Number',
-            accessorKey: 'logistic.runner_phone_number',
-        },
         {
             header: 'Tracking Url',
             accessorKey: 'logistic.tracking_url',
@@ -128,6 +121,14 @@ const OrderList = () => {
                 ) : null
             },
         },
+        { header: 'Delivery Type', accessorKey: 'delivery_type' },
+        { header: 'STATUS', accessorKey: 'status' },
+        { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
+        {
+            header: 'Runner Number',
+            accessorKey: 'logistic.runner_phone_number',
+        },
+
         {
             header: 'Pickup Time',
             accessorKey: 'log',
