@@ -8,8 +8,8 @@ type LocationDetails = {
     name: string
     address: string
     landmark: string
-    latitude: string
-    longitude: string
+    latitude: any
+    longitude: any
     contact_number: string
 }
 

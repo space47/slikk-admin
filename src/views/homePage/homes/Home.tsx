@@ -13,8 +13,10 @@ import { useNavigate } from 'react-router-dom'
 import { TbCalendarStats } from 'react-icons/tb'
 import { HiMiniBanknotes } from 'react-icons/hi2'
 import BrandDataChart from '../homeChart/BubbleChart'
+import MultipleMap from '@/common/multipleMap'
 
 const Home = () => {
+    const [orders, setOrders] = useState<any[]>([])
     const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
@@ -36,6 +38,21 @@ const Home = () => {
             console.log('Error fetching data:', error)
         }
     }
+
+    const fetchOrderForLocation = async () => {
+        try {
+            const response = await axiosInstance.get(`/merchant/orders`)
+
+            const ordersData = response.data?.data.results
+            setOrders(ordersData)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchOrderForLocation()
+    }, [])
 
     useEffect(() => {
         fetchHome()
@@ -207,6 +224,13 @@ const Home = () => {
                 {homeData?.brand_wise_sale && (
                     <BrandDataChart brandData={homeData?.brand_wise_sale} />
                 )}
+            </div>
+
+            <div className=" xl:w-2/3  xl:mx-10 flex justify-center items-center">
+                <MultipleMap
+                    latitudes={orders?.map((item) => item?.latitude || [])}
+                    longitudes={orders?.map((item) => item?.longitude || [])}
+                />
             </div>
 
             <div>

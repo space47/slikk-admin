@@ -27,6 +27,8 @@ import { IoMdDownload } from 'react-icons/io'
 import { FaLocationDot } from 'react-icons/fa6'
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import { RiEBike2Fill } from 'react-icons/ri'
+import MapComponent from '@/common/mapLocation'
+import MultipleMap from '@/common/multipleMap'
 
 interface Order {
     invoice_id: string
@@ -51,6 +53,8 @@ interface Order {
     update_date: string
     from: string
     to: string
+    latitude: any
+    longitude: any
 }
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
@@ -316,7 +320,10 @@ const OrderList = () => {
             }
         })
     }
-    console.log('ssssssswddwdwdw', dropdownStatus)
+    console.log(
+        'ssssssswddwdwdw',
+        orders.map((item) => item.longitude),
+    )
 
     return (
         <div className="p-4">
