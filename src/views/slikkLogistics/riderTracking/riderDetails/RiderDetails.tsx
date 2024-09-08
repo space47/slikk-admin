@@ -8,6 +8,7 @@ import { TaskDetails } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import RiderInfo from './RiderInfo'
 import RiderActivity from './RiderActivity'
 import { useParams } from 'react-router-dom'
+import MapComponent from '@/common/mapLocation'
 
 const RiderDetails = () => {
     const [loading, setLoading] = useState(true)
@@ -16,11 +17,11 @@ const RiderDetails = () => {
     const { task_id } = useParams()
     const [latitude, setLatitude] = useState()
     const [longitude, setLongitude] = useState()
-    const [location, setLocation] = useState({
-        latitude: null,
-        longitude: null,
-    })
-    const [error, setError] = useState(null)
+    // const [location, setLocation] = useState({
+    //     latitude: null,
+    //     longitude: null,
+    // })
+    // const [error, setError] = useState(null)
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -43,23 +44,30 @@ const RiderDetails = () => {
         fetchOrders()
     }, [task_id])
 
-    useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setLocation({
-                        latitude: position?.coords?.latitude,
-                        longitude: position?.coords?.longitude,
-                    })
-                },
-                (error) => {
-                    setError(error.message)
-                },
-            )
-        } else {
-            setError('Geolocation is not supported by this browser.')
-        }
-    }, [])
+    console.log('LATITY & LONGI', latitude, longitude)
+
+    // useEffect(() => {
+    //     if (navigator.geolocation) {
+    //         navigator.geolocation.getCurrentPosition(
+    //             (position) => {
+    //                 setLocation({
+    //                     latitude: position?.coords?.latitude,
+    //                     longitude: position?.coords?.longitude,
+    //                 })
+    //             },
+    //             (error) => {
+    //                 setError(error.message)
+    //             },
+    //         )
+    //     } else {
+    //         setError('Geolocation is not supported by this browser.')
+    //     }
+    // }, [])
+
+    console.log(
+        'LONG',
+        data.map((item) => item.pickup_details.latitude).join(','),
+    )
 
     return (
         <Container className="h-auto w-auto">
@@ -110,9 +118,21 @@ const RiderDetails = () => {
                                 />
                             </div>
                         </div>
-                        <div className="flex justify-center gap-4 mb-6">
+                        {/* <div className="flex justify-center gap-4 mb-6">
                             LOCATIONS:: <p>{location.latitude}</p> &{' '}
                             <p>{location.longitude}</p> <br />
+                        </div> */}
+                        <div className="my-10 mx-12">
+                            <MapComponent
+                                latitude={data
+                                    .map((item) => item.pickup_details.latitude)
+                                    .join(',')}
+                                longitude={data
+                                    .map(
+                                        (item) => item.pickup_details.longitude,
+                                    )
+                                    .join(',')}
+                            />
                         </div>
                         <RiderActivity
                             data={data}
