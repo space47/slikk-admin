@@ -17,9 +17,14 @@ L.Marker.prototype.options.icon = DefaultIcon
 interface MultipleMapProps {
     latitudes: any[]
     longitudes: any[]
+    amount: any[]
 }
 
-const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes }) => {
+const MultipleMap: React.FC<MultipleMapProps> = ({
+    latitudes,
+    longitudes,
+    amount,
+}) => {
     // Center the map on the first location if available, otherwise use a default center
     const center =
         latitudes.length > 0 && longitudes.length > 0
@@ -39,9 +44,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes }) => {
                 />
                 {latitudes.map((lat, index) => (
                     <Marker key={index} position={[lat, longitudes[index]]}>
-                        <Popup>
-                            Location: {lat}, {longitudes[index]}
-                        </Popup>
+                        <Popup>Amount: Rs.{amount[index]}</Popup>
                     </Marker>
                 ))}
             </MapContainer>
