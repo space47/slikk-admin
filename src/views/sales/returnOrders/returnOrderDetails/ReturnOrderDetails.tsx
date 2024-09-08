@@ -12,6 +12,7 @@ import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 import { Button } from '@/components/ui'
 import { Modal } from 'antd'
 import RiderActivity from '@/views/slikkLogistics/riderTracking/riderDetails/RiderActivity'
+import RefundActivity from './components/RefundActivity'
 
 const ReturnOrderDetails = () => {
     // const [showRefundModal, setShowRefundModal] = useState(false)
@@ -90,7 +91,7 @@ const ReturnOrderDetails = () => {
             <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md">
                     <ReturnProductsDetails />
-                    <RiderActivity
+                    <RefundActivity
                         data={returnDetails?.log}
                         status="completed"
                         task_id={returnDetails?.id}
