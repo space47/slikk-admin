@@ -41,9 +41,11 @@ const Home = () => {
 
     const fetchOrderForLocation = async () => {
         try {
-            const response = await axiosInstance.get(`/merchant/orders`)
+            const response = await axiosInstance.get(
+                `/merchant/orders?location_data=true`,
+            )
 
-            const ordersData = response.data?.data.results
+            const ordersData = response.data?.data
             setOrders(ordersData)
         } catch (error) {
             console.log(error)
@@ -120,6 +122,11 @@ const Home = () => {
     const handleCompleted = () => {
         navigate(`/app/orders/completed`)
     }
+
+    console.log(
+        'ORDERS',
+        orders.map((item) => item.amount),
+    )
 
     return (
         <div className="flex flex-col gap-6 p-4">
@@ -228,8 +235,9 @@ const Home = () => {
 
             <div className=" xl:w-2/3  xl:mx-10 flex justify-center items-center">
                 <MultipleMap
-                    latitudes={orders?.map((item) => item?.latitude || [])}
+                    latitudes={orders.map((item) => item.latitude || [])}
                     longitudes={orders?.map((item) => item?.longitude || [])}
+                    amount={orders?.map((item) => item?.amount || [])}
                 />
             </div>
 
