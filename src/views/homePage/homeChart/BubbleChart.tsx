@@ -41,14 +41,23 @@ const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
                         enabled: true,
                         offsetX: -6,
                         style: {
-                            fontSize: 'auto',
+                            fontSize: '10px',
                             colors: ['#fff'],
                         },
                     },
 
                     xaxis: {
                         categories: categories,
-                        data: dataValues,
+                    },
+                    yaxis: {
+                        labels: {
+                            style: {
+                                fontSize: '7px',
+                                display: 'flex',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            },
+                        },
                     },
                 }}
                 series={data}
