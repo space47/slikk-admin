@@ -14,9 +14,16 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon
 
+const officeIcon = L.icon({
+    iconUrl: '/img/logo/location-pin.png',
+    iconSize: [35, 40],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+})
+
 interface MultipleMapProps {
-    latitudes: any[]
-    longitudes: any[]
+    latitudes: number[]
+    longitudes: number[]
     amount: any[]
 }
 
@@ -25,30 +32,57 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
     longitudes,
     amount,
 }) => {
-    // Center the map on the first location if available, otherwise use a default center
-    const center =
-        latitudes.length > 0 && longitudes.length > 0
-            ? [latitudes, longitudes]
-            : [12.9716, 77.5946] // Default to Bangalore if no locations
+    const currLat = 12.9014
+    const currLong = 77.65122
+    const R = 6371
+
+    const markers = latitudes.map((lat, index) => {
+        const lon = longitudes[index]
+        const dLat = (lat - currLat) * (Math.PI / 180)
+        const dLon = (lon - currLong) * (Math.PI / 180)
+
+        const rLat1 = currLat * (Math.PI / 180)
+        const rLat2 = lat * (Math.PI / 180)
+
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.sin(dLon / 2) *
+                Math.sin(dLon / 2) *
+                Math.cos(rLat1) *
+                Math.cos(rLat2)
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+        const distance = (R * c).toFixed(2)
+
+        return { lat, lon, amount: amount[index], distance }
+    })
 
     return (
-        <div style={{ height: '500px', width: '100%' }}>
-            <MapContainer
-                center={center}
-                zoom={13}
-                style={{ height: '100%', width: '100%' }}
-            >
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-                {latitudes.map((lat, index) => (
-                    <Marker key={index} position={[lat, longitudes[index]]}>
-                        <Popup>Amount: Rs.{amount[index]}</Popup>
-                    </Marker>
-                ))}
-            </MapContainer>
-        </div>
+        <MapContainer
+            center={[currLat, currLong]}
+            zoom={13}
+            style={{ height: '100vh', width: '100%' }}
+        >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            {markers.map((marker, index) => (
+                <Marker key={index} position={[marker.lat, marker.lon]}>
+                    <Popup>
+                        <div>
+                            <p>Amount: Rs.{marker.amount}</p>
+                            <p>Distance: {marker.distance} km</p>
+                        </div>
+                    </Popup>
+                </Marker>
+            ))}
+
+            <Marker position={[currLat, currLong]} icon={officeIcon}>
+                <Popup>
+                    <div>
+                        <p>SlikkSync Technologies</p>
+                    </div>
+                </Popup>
+            </Marker>
+        </MapContainer>
     )
 }
 
