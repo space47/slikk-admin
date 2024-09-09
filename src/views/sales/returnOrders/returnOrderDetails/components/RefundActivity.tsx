@@ -413,6 +413,7 @@ const RefundActivity = () => {
     // ........................................................................
     const handleClose = () => {
         setIsModalOpen(false)
+        console.log('okkk')
     }
 
     //
@@ -420,33 +421,38 @@ const RefundActivity = () => {
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
             <Timeline className="mb-5">
-                {returnDetails?.status === ''
-                    ? ''
-                    : returnDetails?.log?.map((activity, i) => (
-                          <Timeline.Item
-                              key={activity.status + i}
-                              media={
-                                  <div className="flex mt-1.5">
-                                      <Badge
-                                          innerClass={classNames(
-                                              activity.timestamp
-                                                  ? 'bg-emerald-500'
-                                                  : 'bg-blue-500',
-                                          )}
-                                      />
-                                  </div>
-                              }
-                          >
-                              <div className="font-bold text-md">
-                                  {activity.status}
-                              </div>
-                              <div>
-                                  {moment(activity.timestamp).format(
-                                      'DD:MM:YYYY hh:mm',
-                                  )}
-                              </div>
-                          </Timeline.Item>
-                      ))}
+                {returnDetails?.status === '' ? (
+                    ''
+                ) : returnDetails?.log.length === 0 &&
+                  returnDetails?.status === 'CANCELLED' ? (
+                    <div>Order cancelled</div>
+                ) : (
+                    returnDetails?.log.map((activity, i) => (
+                        <Timeline.Item
+                            key={activity.status + i}
+                            media={
+                                <div className="flex mt-1.5">
+                                    <Badge
+                                        innerClass={classNames(
+                                            activity.timestamp
+                                                ? 'bg-emerald-500'
+                                                : 'bg-blue-500',
+                                        )}
+                                    />
+                                </div>
+                            }
+                        >
+                            <div className="font-bold text-md">
+                                {activity.status}
+                            </div>
+                            <div>
+                                {moment(activity.timestamp).format(
+                                    'DD:MM:YYYY hh:mm a',
+                                )}
+                            </div>
+                        </Timeline.Item>
+                    ))
+                )}
             </Timeline>
             {/* buttons........................................................................................................ */}
             {buttonText && (
@@ -508,9 +514,11 @@ const RefundActivity = () => {
                 <Modal
                     open={isModalOpen}
                     onOk={hanldeComplete}
-                    onClose={handleClose}
+                    onCancel={handleClose}
                 >
-                    <div className="font-bold text-xl italic mb-8">INPUTS</div>
+                    <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">
+                        INPUTS
+                    </div>
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
                         <input
                             type="text"
