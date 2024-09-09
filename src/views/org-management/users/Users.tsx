@@ -113,18 +113,18 @@ const Seller = () => {
                     </span>
                 ),
             },
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button
-                        onClick={() => handleActionClick(row.original.mobile)}
-                        className="border-none bg-none"
-                    >
-                        <FaEdit className="text-xl" />
-                    </button>
-                ),
-            },
+            // {
+            //     header: 'Edit',
+            //     accessorKey: '',
+            //     cell: ({ row }) => (
+            //         <button
+            //             onClick={() => handleActionClick(row.original.mobile)}
+            //             className="border-none bg-none"
+            //         >
+            //             <FaEdit className="text-xl" />
+            //         </button>
+            //     ),
+            // },
         ],
         [],
     )

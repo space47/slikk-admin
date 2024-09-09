@@ -241,7 +241,7 @@ const Products = () => {
                         onClick={() => handleActionClick(row.original.barcode)}
                         className="border-none bg-none"
                     >
-                        <FaEdit className="text-xl" />
+                        <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
             },
