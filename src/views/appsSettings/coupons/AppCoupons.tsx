@@ -21,7 +21,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const AppCoupons = () => {
@@ -43,8 +43,8 @@ const AppCoupons = () => {
                       .toString()
                       .toLowerCase()
                       .includes(globalFilter.toLowerCase())
-                : false
-        )
+                : false,
+        ),
     )
 
     const navigate = useNavigate()
@@ -52,7 +52,7 @@ const AppCoupons = () => {
     // Paginate filtered data
     const paginatedData = filteredData.slice(
         (page - 1) * pageSize,
-        page * pageSize
+        page * pageSize,
     )
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
@@ -62,7 +62,7 @@ const AppCoupons = () => {
             header: 'Image',
             accessor: 'image',
             format: (value) =>
-                value ? <img src={value} alt="coupon" width="50" /> : 'N/A'
+                value ? <img src={value} alt="coupon" width="50" /> : 'N/A',
         },
         { header: 'Type', accessor: 'type' },
         { header: 'Value', accessor: 'value' },
@@ -72,12 +72,12 @@ const AppCoupons = () => {
         {
             header: 'Valid From',
             accessor: 'valid_from',
-            format: (value) => moment(value).format('YYYY-MM-DD')
+            format: (value) => moment(value).format('YYYY-MM-DD'),
         },
         {
             header: 'Valid To',
             accessor: 'valid_to',
-            format: (value) => moment(value).format('YYYY-MM-DD')
+            format: (value) => moment(value).format('YYYY-MM-DD'),
         },
         { header: 'Description', accessor: 'description' },
         { header: 'Max Count Per User', accessor: 'max_count_per_user' },
@@ -91,8 +91,8 @@ const AppCoupons = () => {
             accessor: 'coupon_discount_type',
             format: (value, row) => (
                 <Button onClick={() => handleActionClick(value)}>EDIT</Button>
-            )
-        }
+            ),
+        },
     ]
 
     const handleActionClick = (coupon_type: string) => {
@@ -100,17 +100,34 @@ const AppCoupons = () => {
         navigate(`/app/appSettings/coupons/${coupon_type}`)
     }
 
+    const handleCoupons = () => {
+        navigate(`/app/appSettings/coupons/addNew`)
+    }
+
     return (
         <div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="p-2 border rounded"
-                />
+            <div className="flex justify-between items-center">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border rounded"
+                    />
+                </div>
+                <div className="flex items-end justify-end mb-2">
+                    <button
+                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                        onClick={handleCoupons}
+                    >
+                        Add Coupons
+                    </button>{' '}
+                    <br />
+                    <br />
+                </div>
             </div>
+
             <Table>
                 <THead>
                     <Tr>
@@ -144,7 +161,7 @@ const AppCoupons = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) =>

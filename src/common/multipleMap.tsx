@@ -1,7 +1,8 @@
-import React from 'react'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import React, { useState } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { FaMapMarkerAlt } from 'react-icons/fa' // You can use any icon library you prefer
 
 // Fix for default icon issues with leaflet
 import icon from 'leaflet/dist/images/marker-icon.png'
@@ -25,6 +26,38 @@ interface MultipleMapProps {
     latitudes: number[]
     longitudes: number[]
     amount: any[]
+}
+
+const CurrentLocationButton = ({
+    setCenter,
+}: {
+    setCenter: React.Dispatch<React.SetStateAction<[number, number]>>
+}) => {
+    const map = useMap()
+
+    const handleClick = () => {
+        map.setView([12.9014, 77.65122], 13) // Adjust the zoom level as needed
+    }
+
+    return (
+        <button
+            onClick={handleClick}
+            style={{
+                position: 'absolute',
+                bottom: '3px',
+                right: '10px',
+                backgroundColor: 'white',
+                border: 'none',
+                borderRadius: '20%',
+                padding: '10px',
+                boxShadow: '0 0 5px rgba(0,0,0,0.3)',
+                cursor: 'pointer',
+                zIndex: 1000,
+            }}
+        >
+            <FaMapMarkerAlt size={24} color="black" />
+        </button>
+    )
 }
 
 const MultipleMap: React.FC<MultipleMapProps> = ({
@@ -82,6 +115,8 @@ const MultipleMap: React.FC<MultipleMapProps> = ({
                     </div>
                 </Popup>
             </Marker>
+
+            <CurrentLocationButton setCenter={() => {}} />
         </MapContainer>
     )
 }
