@@ -14,6 +14,7 @@ import { Checkbox } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdCloseCircle } from 'react-icons/io'
 import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from './ProductCommon'
+import { MdCancel } from 'react-icons/md'
 
 const EditProduct = () => {
     const [datas, setDatas] = useState()
@@ -460,7 +461,7 @@ const EditProduct = () => {
                                                                     />
 
                                                                     <button
-                                                                        className="bg-red-600 w-1/2 rounded-full text-white text-sm mb-5"
+                                                                        className=" mb-5"
                                                                         onClick={(
                                                                             e,
                                                                         ) =>
@@ -470,7 +471,7 @@ const EditProduct = () => {
                                                                             )
                                                                         }
                                                                     >
-                                                                        x
+                                                                        <MdCancel className="text-red-500 bg-none text-lg" />
                                                                     </button>
                                                                 </div>
                                                             ),
@@ -562,7 +563,7 @@ const EditProduct = () => {
                                                                     />
 
                                                                     <button
-                                                                        className="bg-red-600 w-1/2 rounded-full text-white  text-sm mb-5"
+                                                                        className=" text-sm mb-5"
                                                                         onClick={(
                                                                             e,
                                                                         ) =>
@@ -572,7 +573,7 @@ const EditProduct = () => {
                                                                             )
                                                                         }
                                                                     >
-                                                                        x
+                                                                        <MdCancel className="text-red-500 bg-none text-lg" />
                                                                     </button>
                                                                 </div>
                                                             ) : (
