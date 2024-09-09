@@ -27,6 +27,7 @@ type Props5 = {
     status: string
     product: Product[]
     invoice_id: any
+    setIsModalOpen: any
 }
 
 const CancelReasons = [
@@ -65,6 +66,7 @@ const CancelModal: React.FC<Props5> = ({
     handleClose,
     product,
     invoice_id,
+    setIsModalOpen,
 }) => {
     const [returnQuantities, setReturnQuantities] = useState<{
         [key: string]: number
@@ -125,6 +127,7 @@ const CancelModal: React.FC<Props5> = ({
                 description:
                     response.data.message || 'Order successfully Cancelled',
             })
+            setIsModalOpen(false)
         } catch (error) {
             console.error('Error:', error)
             notification.error({
@@ -137,11 +140,11 @@ const CancelModal: React.FC<Props5> = ({
     return (
         <Dialog
             width="100%" // Adjusting to full width for better responsiveness
-            className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mx-auto p-4 sm:p-6 md:p-8"
+            className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mx-auto p-4 sm:p-6 md:p-8  "
             isOpen={isModalOpen}
             onClose={handleClose}
         >
-            <div className="p-4 sm:p-6 md:p-8 bg-white rounded-lg shadow-lg">
+            <div className="p-4 sm:p-6 md:p-8 bg-white rounded-lg shadow-lg overflow-y-scroll h-[600px] xl:h-[500px] overflow-scroll scrollbar-hide">
                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center gap-1">
                     Cancel Order{' '}
                     <IoIosWarning className="text-yellow-600 text-2xl sm:text-3xl" />{' '}
@@ -149,7 +152,7 @@ const CancelModal: React.FC<Props5> = ({
                 {product.map((item) => (
                     <div
                         key={item.id}
-                        className="border-b border-gray-200 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-50 rounded-lg p-4 mb-4 last:mb-0"
+                        className="border-b border-gray-200 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-50 rounded-lg p-4 mb-4 last:mb-0 "
                     >
                         <div className="w-full sm:w-1/3 mb-4 sm:mb-0">
                             <p className="font-medium text-lg">{item.name}</p>

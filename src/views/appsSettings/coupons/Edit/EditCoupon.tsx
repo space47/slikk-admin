@@ -1,26 +1,76 @@
 import React, { useEffect } from 'react'
 import { fetchCoupons } from '@/store/slices/couponSlice/couponSlice'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { COUPON_STATE } from '@/store/types/coupons.types'
+import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik'
 import { COUPON_FORM } from './EditCommon'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
 
-const EditCoupon = () => {
+const CouponsType = () => {
+    return ['FLATT_OFF', 'PERCENT_OFF', 'MONEY_OFF'].map((segment) => ({
+        label: segment,
+        value: segment,
+    }))
+}
+
+const AddCoupons = () => {
     const { coupons } = useAppSelector<COUPON_STATE>((state) => state.coupon)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         dispatch(fetchCoupons())
-    }, [dispatch])
-    console.log('coupons', coupons)
+    }, [])
 
-    const initialValue = {}
+    console.log('COUPONDATA', coupons)
 
-    const handleSubmit = () => {}
+    const initialValue: COUPONDATA = {
+        code: '',
+        imageArray: [],
+        image: null,
+        type: '',
+        value: '',
+        min_cart_value: '',
+        max_count: '',
+        maximum_price: '',
+        valid_from: '',
+        valid_to: '',
+        description: '',
+        max_count_per_user: '',
+        coupon_used_count: '',
+        frequency: null,
+        coupon_discount_type: '',
+        user: '',
+    }
+
+    const handleSubmit = async (values: COUPONDATA) => {
+        const formData = {
+            ...values,
+            type: values.type,
+        }
+
+        try {
+            const response = await axioisInstance.post(
+                `/merchant/coupon`,
+                formData,
+            )
+            notification.success({
+                message: 'Success',
+                description:
+                    response?.data?.message || 'Coupon created Successfully',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failure',
+                description: 'Failed to create Coupon',
+            })
+        }
+    }
 
     return (
         <div>
@@ -35,7 +85,47 @@ const EditCoupon = () => {
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {COUPON_FORM.map((item, key) => (
+                                {COUPON_FORM.slice(0, 5).map((item, key) => (
+                                    <FormItem
+                                        key={key}
+                                        label={item.label}
+                                        className={item.classname}
+                                    >
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                ))}
+
+                                <FormItem
+                                    label="Coupon Type"
+                                    className="col-span-1 w-full"
+                                >
+                                    <Field name="type">
+                                        {({ field }: FieldProps) => (
+                                            <Select
+                                                {...field}
+                                                value={CouponsType().find(
+                                                    (option) =>
+                                                        option.value ===
+                                                        field.value,
+                                                )}
+                                                options={CouponsType()}
+                                                onChange={(option) =>
+                                                    setFieldValue(
+                                                        'type',
+                                                        option?.value,
+                                                    )
+                                                }
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+
+                                {COUPON_FORM.slice(5, 20).map((item, key) => (
                                     <FormItem
                                         key={key}
                                         label={item.label}
@@ -50,6 +140,7 @@ const EditCoupon = () => {
                                     </FormItem>
                                 ))}
                             </FormContainer>
+
                             <FormContainer className="flex justify-end mt-5">
                                 <Button
                                     type="reset"
@@ -74,4 +165,4 @@ const EditCoupon = () => {
     )
 }
 
-export default EditCoupon
+export default AddCoupons

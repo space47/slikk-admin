@@ -285,6 +285,7 @@ const OrderDetails = () => {
                                     isModalOpen={showCancelModal}
                                     handleClose={handleCloseModal}
                                     invoice_id={invoice_id}
+                                    setIsModalOpen={setShowCancelModal}
                                 />
                             )}
                         </div>
