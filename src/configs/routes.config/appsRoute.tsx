@@ -12,6 +12,14 @@ const appsRoute: Routes = [
     },
     {
         key: 'apps.homePage',
+        path: `${APP_PREFIX_PATH}/homePage/fullMap`,
+        component: lazy(
+            () => import('@/views/homePage/fullMapComponent/FullMap'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'apps.homePage',
         path: `${APP_PREFIX_PATH}/customerAnalytics/:mobile`,
         component: lazy(
             () => import('@/views/homePage/homes/CustomerAnalytics'),
@@ -854,6 +862,14 @@ const appsRoute: Routes = [
         path: `${APP_PREFIX_PATH}/appSettings/coupons`,
         component: lazy(
             () => import('@/views/appsSettings/coupons/AppCoupons'),
+        ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.coupons',
+        path: `${APP_PREFIX_PATH}/appSettings/coupons/addNew`,
+        component: lazy(
+            () => import('@/views/appsSettings/coupons/Add/AddCoupons'),
         ),
         authority: [ADMIN, USER],
     },

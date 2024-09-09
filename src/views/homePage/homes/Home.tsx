@@ -29,7 +29,7 @@ const Home = () => {
     const navigate = useNavigate()
 
     const handleShowFullScreen = () => {
-        setShowFullScreen(!showFullScreen)
+        navigate(`/app/homePage/fullMap`)
     }
 
     const fetchHome = async () => {
@@ -248,12 +248,12 @@ const Home = () => {
                         )}
                         amount={orders?.map((item) => item?.amount || [])}
                     />
-                    {/* <div
+                    <div
                         className="flex justify-start items-start cursor-pointer"
                         onClick={handleShowFullScreen}
                     >
-                        <MdOutlineFullscreen />
-                    </div> */}
+                        <MdOutlineFullscreen className="text-xl" />
+                    </div>
                 </div>
             </div>
 
