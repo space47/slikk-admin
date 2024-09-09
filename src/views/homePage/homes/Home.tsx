@@ -14,6 +14,7 @@ import { TbCalendarStats } from 'react-icons/tb'
 import { HiMiniBanknotes } from 'react-icons/hi2'
 import BrandDataChart from '../homeChart/BubbleChart'
 import MultipleMap from '@/common/multipleMap'
+import { MdOutlineFullscreen } from 'react-icons/md'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -24,7 +25,12 @@ const Home = () => {
         customer: '',
         invoice_id: '',
     })
+    const [showFullScreen, setShowFullScreen] = useState(false)
     const navigate = useNavigate()
+
+    const handleShowFullScreen = () => {
+        setShowFullScreen(!showFullScreen)
+    }
 
     const fetchHome = async () => {
         try {
@@ -233,12 +239,22 @@ const Home = () => {
                 )}
             </div>
 
-            <div className=" xl:w-2/3  xl:mx-10 flex justify-center items-center">
-                <MultipleMap
-                    latitudes={orders.map((item) => item.latitude || [])}
-                    longitudes={orders?.map((item) => item?.longitude || [])}
-                    amount={orders?.map((item) => item?.amount || [])}
-                />
+            <div className="flex justify-center items-start my-10 z-10">
+                <div className="w-full xl:w-3/4">
+                    <MultipleMap
+                        latitudes={orders.map((item) => item.latitude || [])}
+                        longitudes={orders?.map(
+                            (item) => item?.longitude || [],
+                        )}
+                        amount={orders?.map((item) => item?.amount || [])}
+                    />
+                    {/* <div
+                        className="flex justify-start items-start cursor-pointer"
+                        onClick={handleShowFullScreen}
+                    >
+                        <MdOutlineFullscreen />
+                    </div> */}
+                </div>
             </div>
 
             <div>
