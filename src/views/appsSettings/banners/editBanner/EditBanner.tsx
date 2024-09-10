@@ -24,6 +24,7 @@ import { formatDate } from '@/common/date'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
+import { MdCancel } from 'react-icons/md'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -198,37 +199,7 @@ const EditBanner = () => {
         }
     }
 
-    // const transformArray = (arr) => {
-    //     const result = []
-
-    //     arr.forEach((item) => {
-    //         // Split the string into type (brand/cat) and name
-    //         const [type, name] = item.split('_')
-
-    //         // Find the existing category in the result array
-    //         let category = result.find((obj) => obj.label === type)
-
-    //         // If the category doesn't exist, create a new one
-    //         if (!category) {
-    //             category = { label: type, options: [] }
-    //             result.push(category)
-    //         }
-
-    //         // Add the item to the options array of the found or created category
-    //         category.options.push({ name: name, label: name, value: item })
-    //     })
-
-    //     return result
-    // }
-
     console.log('DIVISIONDATA', initialValue.division)
-
-    // const getInitialValues = (division: any) => {
-    //     return division.map((div) => ({
-    //         value: div.id,
-    //         label: div.name,
-    //     }))
-    // }
 
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
@@ -367,9 +338,9 @@ const EditBanner = () => {
                                                                 'mobile',
                                                             )
                                                         }
-                                                        className="text-red-600 font-bold"
+                                                        className="flex justify-center"
                                                     >
-                                                        X
+                                                        <MdCancel className="text-red-500 bg-none text-lg" />
                                                     </button>
                                                 </div>
                                             ))
@@ -432,9 +403,9 @@ const EditBanner = () => {
                                                                 'web',
                                                             )
                                                         }
-                                                        className="text-red-600 font-bold"
+                                                        className="flex justify-center"
                                                     >
-                                                        X
+                                                        <MdCancel className="text-red-500 bg-none text-lg" />
                                                     </button>
                                                 </div>
                                             ))
@@ -558,9 +529,9 @@ const EditBanner = () => {
                                                                     'SecMob',
                                                                 )
                                                             }
-                                                            className="text-red-600 font-bold"
+                                                            className=""
                                                         >
-                                                            X
+                                                            <MdCancel className="text-red-500 bg-none text-lg" />
                                                         </button>
                                                     </div>
                                                 ),
