@@ -118,7 +118,7 @@ const CancelModal: React.FC<Props5> = ({
 
         try {
             const response = await axioisInstance.post(
-                `merchant/returnorder/create/${invoice_id}`,
+                `merchant/cancelorder/${invoice_id}`,
                 body,
             )
 
@@ -139,7 +139,7 @@ const CancelModal: React.FC<Props5> = ({
 
     return (
         <Dialog
-            width="100%" // Adjusting to full width for better responsiveness
+            width="100%"
             className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/3 mx-auto p-4 sm:p-6 md:p-8  "
             isOpen={isModalOpen}
             onClose={handleClose}
