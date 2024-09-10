@@ -211,6 +211,18 @@ const OrderList = () => {
                 </Button>
             ),
         },
+        {
+            header: 'Cancel Task',
+            accessorKey: 'id',
+            cell: ({ row, getValue }: any) => (
+                <Button
+                    size="sm"
+                    onClick={() => handleCancelTask(row.original.invoice_id)}
+                >
+                    Cancel Task
+                </Button>
+            ),
+        },
     ]
 
     const table = useReactTable({
@@ -224,6 +236,24 @@ const OrderList = () => {
         pageCount: Math.ceil(orderCount / pageSize),
         globalFilterFn: fuzzyFilter,
     })
+
+    const handleCancelTask = async (invoce_id: any) => {
+        console.log('Id', invoce_id)
+
+        try {
+            await axioisInstance.patch(`logistic/cancel/order/${invoce_id}`)
+            notification.success({
+                message: 'success',
+                description: 'Order successfully cancelled',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failure',
+                description: 'Failed to cancel order',
+            })
+        }
+    }
 
     const handleInvoiceClick = (invoiceId: string) => {
         navigate(`/app/orders/${invoiceId}`)
