@@ -56,7 +56,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
     }
     console.log(
         'BRRRRRRRRRRRADN',
-        `${import.meta.env.VITE_WEB_URI}${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`,
+        `https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`,
     )
 
     return (
