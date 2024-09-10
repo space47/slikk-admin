@@ -314,6 +314,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsCategory.uploader',
+                        path: `${APP_PREFIX_PATH}/category/uploader`,
+                        title: 'Uploader',
+                        translateKey: 'nav.appsCategory.productFeedback',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
             //..........................................................................................................
