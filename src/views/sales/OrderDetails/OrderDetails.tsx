@@ -201,8 +201,6 @@ const OrderDetails = () => {
                                                     <a
                                                         href={`/app/returnOrders/${item.return_order_id}`}
                                                         key={key}
-                                                        target="_blank"
-                                                        rel="noreferrer"
                                                         className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
                                                     >
                                                         {item.return_order_id}

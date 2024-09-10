@@ -47,7 +47,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
     const navigate = useNavigate()
 
     const segregatedNames = (value: any) => {
-        return value.replace(/\s+/g, '-')
+        return value?.replace(/\s+/g, '-')
     }
 
     const handleImageView = (img: any) => {
@@ -69,7 +69,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
                 />
                 <div className="cursor-pointer text-blue-500 hover:underline">
                     <a
-                        href={`${`${import.meta.env.VITE_WEB_URI}${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`}`}
+                        href={`${`${import.meta.env.VITE_WEB_URI}${segregatedNames(row?.category)}/${segregatedNames(row?.sub_category)}/${segregatedNames(row?.brand)}/${segregatedNames(row?.name)}/${row?.barcode}`}`}
                     >
                         Redirect
                     </a>

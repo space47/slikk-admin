@@ -17,6 +17,7 @@ type ShippingInfoProps = {
         state: string
         tracking_url: string
         awb_code: any
+        task_id: any
     }
     logistic_partner: any
     delivery_type: string
@@ -32,32 +33,42 @@ const ShippingInfo = ({
             <h5 className="mb-4">Shipping</h5>
             <div className="flex flex-col mb-6 gap-5">
                 <span className="font-bold"> RIDER DETAILS:</span>
-                <div className="flex flex-col gap-3">
-                    <div className="flex gap-3">
+                <div className="flex flex-col gap-3 ">
+                    <div className="flex flex-col gap-3">
                         {' '}
                         <Avatar
                             shape="circle"
                             src={data?.runner_profile_pic_url}
+                            size="lg"
                         />
-                        <div className="items-start flex flex-col gap-1">
-                            <div className="flex gap-2 items-center">
-                                <FaUserAlt />
-                                <span>{data?.runner_name}</span>
-                            </div>
-                            <div className="flex gap-2 items-center">
-                                <HiPhone className="font-bold" />{' '}
-                                <span>{data?.runner_phone_number}</span>
-                            </div>
-                            <div className="flex gap-2">
-                                <span>AWB :{data?.awb_code}</span>
-                            </div>
-                            <div className="url">
-                                <a
-                                    href={data?.tracking_url}
-                                    className="flex items-center cursor-pointer"
-                                >
-                                    <HiLocationMarker className="text-xl" />{' '}
-                                </a>
+                        <div className="mx-3">
+                            <div className="items-start flex flex-col gap-1">
+                                <div className="flex gap-2 items-center">
+                                    <FaUserAlt />
+                                    <span>{data?.runner_name}</span>
+                                </div>
+                                <div className="flex gap-2 items-center">
+                                    <HiPhone className="font-bold" />{' '}
+                                    <span>{data?.runner_phone_number}</span>
+                                </div>
+                                <div className="flex gap-2">
+                                    {data?.awb_code ? (
+                                        <span>AWB :{data?.awb_code}</span>
+                                    ) : (
+                                        <span>Task_id:{data?.task_id}</span>
+                                    )}
+                                </div>
+                                <div className="url">
+                                    <a
+                                        href={data?.tracking_url}
+                                        className="flex items-center cursor-pointer"
+                                    >
+                                        <HiLocationMarker className="text-xl" />{' '}
+                                        <p className="text-blue-600 hover:underline">
+                                            Track location
+                                        </p>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

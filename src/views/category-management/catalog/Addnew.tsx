@@ -78,7 +78,7 @@ const AddProduct = () => {
             'video/webm',
             'video/avchd',
         ]
-        const MAX_FILE_SIZE = 5000000
+        const MAX_FILE_SIZE = 9000000000000000
 
         if (fileList.length >= MAX_UPLOAD) {
             return `You can only upload ${MAX_UPLOAD} file(s)`
