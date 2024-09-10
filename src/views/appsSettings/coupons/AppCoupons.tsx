@@ -118,7 +118,7 @@ const AppCoupons = () => {
     return (
         <div>
             {loading ? (
-                <div>
+                <div className="flex justify-center items-center h-screen">
                     <Spinner size={40} indicator={ImSpinner9} />
                 </div>
             ) : (
