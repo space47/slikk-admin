@@ -36,9 +36,16 @@ const AppCoupons = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(fetchCoupons())
-        setLoading(false)
+        const fetchData = async () => {
+            setLoading(true)
+            await dispatch(fetchCoupons())
+            setLoading(false)
+        }
+
+        fetchData()
     }, [dispatch])
+
+    console.log('CURRENT STATE', loading)
 
     const filteredData = coupons.filter((item) =>
         Object.values(item).some((val) =>
