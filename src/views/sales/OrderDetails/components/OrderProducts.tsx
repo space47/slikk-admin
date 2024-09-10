@@ -10,6 +10,9 @@ import {
 import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
+import { useNavigate } from 'react-router-dom'
+
+import.meta.env.VITE_WEB_URI
 
 type Product = {
     barcode: string
@@ -27,6 +30,7 @@ type Product = {
     fulfilled_quantity: string
     final_price: number
     sku: string
+    category: string
 }
 
 type OrderProductsProps = {
@@ -40,19 +44,37 @@ const columnHelper = createColumnHelper<Product>()
 const ProductColumn = ({ row }: { row: Product }) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
+    const navigate = useNavigate()
+
+    const segregatedNames = (value: any) => {
+        return value.replace(/\s+/g, '-')
+    }
 
     const handleImageView = (img: any) => {
         setParticularROwImage(img)
         setShowImageModal(true)
     }
+    console.log(
+        'BRRRRRRRRRRRADN',
+        `${import.meta.env.VITE_WEB_URI}${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`,
+    )
 
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
-            <img
-                src={row.image.split(',')[0]}
-                className=" xl:mt-3 w-[100px] h-[120px] cursor-pointer"
-                onClick={() => handleImageView(row.image)}
-            />
+            <div className="flex flex-col items-center gap-1">
+                <img
+                    src={row.image.split(',')[0]}
+                    className=" xl:mt-3 w-[100px] h-[120px] cursor-pointer"
+                    onClick={() => handleImageView(row.image)}
+                />
+                <div className="cursor-pointer text-blue-500 hover:underline">
+                    <a
+                        href={`${`${import.meta.env.VITE_WEB_URI}${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`}`}
+                    >
+                        Redirect
+                    </a>
+                </div>
+            </div>
             <div className="ltr:ml-2 rtl:mr-2">
                 <div className="mb-2 text-[18px] font-bold ">
                     Brand Name:
@@ -124,16 +146,17 @@ const columns = [
             console.log('MRP', row?.mrp)
             console.log('SP', row?.sp)
 
-           const percentageCalculation =Math.round(((parseFloat(row.mrp) - parseFloat(row.sp)) / parseFloat(row.mrp)) * 100);
+            const percentageCalculation = Math.round(
+                ((parseFloat(row.mrp) - parseFloat(row.sp)) /
+                    parseFloat(row.mrp)) *
+                    100,
+            )
 
             return percentageCalculation > 0 ? (
                 <div className="w-[200px] overflow-ellipsis flex flex-col">
                     <span className="line-through">Rs.{row.mrp}</span>
                     <span>Rs.{row.sp}</span>
-                    <span>
-                        {percentageCalculation}{' '}
-                        % off
-                    </span>
+                    <span>{percentageCalculation} % off</span>
                 </div>
             ) : row.mrp === row.sp ? (
                 <div>Rs.{row.sp}</div>
