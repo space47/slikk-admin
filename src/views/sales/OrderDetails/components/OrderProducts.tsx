@@ -69,7 +69,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
                 />
                 <div className="cursor-pointer text-blue-500 hover:underline">
                     <a
-                        href={`${`https://slikk.club/${segregatedNames(row?.category)}/${segregatedNames(row?.sub_category)}/${segregatedNames(row?.brand)}/${segregatedNames(row?.name)}/${row?.barcode}`}`}
+                        href={`https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`}
                     >
                         Redirect
                     </a>
