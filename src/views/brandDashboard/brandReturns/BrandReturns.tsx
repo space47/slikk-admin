@@ -75,7 +75,7 @@ const BrandReturns = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `merchant/return_order_items?company_id=${selectedCompany.id}&from=${from}&to=${To_Date}`,
+                `merchant/return_order_items?company_id=${selectedCompany.id}&brand=true&from=${from}&to=${To_Date}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -162,7 +162,7 @@ const BrandReturns = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `merchant/return_order_items?company_id=${selectedCompany.id}&from=${from}&to=${To_Date}&download=true`,
+                `merchant/return_order_items?company_id=${selectedCompany.id}&brand=true&from=${from}&to=${To_Date}&download=true`,
                 {
                     responseType: 'blob',
                 },
@@ -173,7 +173,7 @@ const BrandReturns = () => {
             )
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = 'ReturnOrder.csv'
+            link.download = `${selectedCompany.name}(${from}-${to}).csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)

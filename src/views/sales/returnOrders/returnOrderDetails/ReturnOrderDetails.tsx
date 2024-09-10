@@ -32,27 +32,6 @@ const ReturnOrderDetails = () => {
         dispatch(fetchReturnOrders(return_order_id))
     }, [return_order_id])
 
-    // const handleRefundButton = () => {
-    //     console.log('CLICKED')
-    //     setShowRefundModal(true)
-    // }
-
-    // const handleCloseModal = () => {
-    //     setShowRefundModal(false)
-    // }
-
-    // const refundItem = () => {
-    //     console.log('Refund item')
-    // }
-
-    // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const { name, value } = e.target
-    //     setValueInsideModal((prev) => ({
-    //         ...prev,
-    //         [name]: value,
-    //     }))
-    // }
-
     return (
         <div>
             <div className="flex flex-col justify-between xl:flex-row xl:justify-between">
@@ -68,8 +47,6 @@ const ReturnOrderDetails = () => {
                         <a
                             href={`/app/orders/${returnDetails?.order.invoice_id}`}
                             className="text-blue-500 hover:underline"
-                            target="_blank"
-                            rel="noreferrer"
                         >
                             {returnDetails?.order.invoice_id}
                         </a>

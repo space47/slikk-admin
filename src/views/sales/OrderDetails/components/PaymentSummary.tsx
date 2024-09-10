@@ -16,6 +16,7 @@ type PaymentSummaryProps = {
         amount: number
         mode: string
         transaction_time: string
+        status: string
     }
     coupon_discount: string
     loyalty_discount: string
@@ -69,8 +70,19 @@ const PaymentSummary = ({
 }: PaymentSummaryProps) => {
     return (
         <Card className="mb-4">
-            <h5 className="mb-4">Payment Summary</h5>
-            <ul>
+            <div className="flex justify-between">
+                <h5 className="mb-4">Payment Summary</h5>
+                <div>
+                    {data?.status === 'PAID' ? (
+                        <p className="bg-gray-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg">
+                            {data?.status}
+                        </p>
+                    ) : (
+                        ''
+                    )}
+                </div>
+            </div>
+            <ul className="mt-5">
                 <div className="flex justify-between mb-1">
                     Amount <span className="font-semibold">Rs.{amount}</span>
                 </div>

@@ -216,15 +216,15 @@ const BrandCatalog = () => {
             //     accessorKey: 'trends',
             //     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             // },
-            {
-                header: 'Action',
-                accessorKey: 'action',
-                cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original)}>
-                        EDIT
-                    </Button>
-                ),
-            },
+            // {
+            //     header: 'Action',
+            //     accessorKey: 'action',
+            //     cell: ({ row }) => (
+            //         <Button onClick={() => handleActionClick(row.original)}>
+            //             EDIT
+            //         </Button>
+            //     ),
+            // },
         ],
         [],
     )

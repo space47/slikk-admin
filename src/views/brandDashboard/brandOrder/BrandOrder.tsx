@@ -259,7 +259,7 @@ const BrandOrder = () => {
             )
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = 'BrandOrder.csv'
+            link.download = `${selectedCompany.name}(${from} to ${to}).csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
