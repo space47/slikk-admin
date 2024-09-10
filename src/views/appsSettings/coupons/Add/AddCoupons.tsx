@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from 'react'
-import { fetchCoupons } from '@/store/slices/couponSlice/couponSlice'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
+import React from 'react'
+import { COUPONDATA } from '@/store/types/coupons.types'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -35,9 +33,6 @@ const DiscountType = () => {
 }
 
 const AddCoupons = () => {
-    const { coupons } = useAppSelector<COUPON_STATE>((state) => state.coupon)
-    const dispatch = useAppDispatch()
-
     const MAX_UPLOAD = 90000000
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {

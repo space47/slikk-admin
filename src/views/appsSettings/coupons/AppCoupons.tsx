@@ -9,6 +9,8 @@ import Button from '@/components/ui/Button'
 import { fetchCoupons } from '@/store/slices/couponSlice/couponSlice'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { COUPON_STATE } from '@/store/types/coupons.types'
+import Spinner from '@/components/ui/Spinner'
+import { ImSpinner9 } from 'react-icons/im'
 
 type Option = {
     value: number
@@ -28,12 +30,14 @@ const AppCoupons = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [loading, setLoading] = useState(true)
 
     const { coupons } = useAppSelector<COUPON_STATE>((state) => state.coupon)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         dispatch(fetchCoupons())
+        setLoading(false)
     }, [dispatch])
 
     const filteredData = coupons.filter((item) =>
@@ -106,70 +110,73 @@ const AppCoupons = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
-                    />
+            {loading ? (
+                <div>
+                    <Spinner size={40} indicator={ImSpinner9} />
                 </div>
-                <div className="flex items-end justify-end mb-2">
-                    <button
-                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                        onClick={handleCoupons}
-                    >
-                        Add Coupons
-                    </button>{' '}
-                    <br />
-                    <br />
-                </div>
-            </div>
+            ) : (
+                <>
+                    <div className="flex justify-between items-center mb-4">
+                        <input
+                            type="text"
+                            placeholder="Search here"
+                            value={globalFilter}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            className="p-2 border rounded"
+                        />
+                        <button
+                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                            onClick={handleCoupons}
+                        >
+                            Add Coupons
+                        </button>
+                    </div>
 
-            <Table>
-                <THead>
-                    <Tr>
-                        {columns.map((col) => (
-                            <Th key={col.header}>{col.header}</Th>
-                        ))}
-                    </Tr>
-                </THead>
-                <TBody>
-                    {paginatedData.map((row) => (
-                        <Tr key={row.code}>
-                            {columns.map((col) => (
-                                <Td key={col.accessor}>
-                                    {col.format
-                                        ? col.format(row[col.accessor])
-                                        : row[col.accessor]}
-                                </Td>
+                    <Table>
+                        <THead>
+                            <Tr>
+                                {columns.map((col) => (
+                                    <Th key={col.header}>{col.header}</Th>
+                                ))}
+                            </Tr>
+                        </THead>
+                        <TBody>
+                            {paginatedData.map((row) => (
+                                <Tr key={row.code}>
+                                    {columns.map((col) => (
+                                        <Td key={col.accessor}>
+                                            {col.format
+                                                ? col.format(row[col.accessor])
+                                                : row[col.accessor]}
+                                        </Td>
+                                    ))}
+                                </Tr>
                             ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-            <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    currentPage={page}
-                    total={totalPages}
-                    onChange={(page) => setPage(page)}
-                />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
-                        options={pageSizeOptions}
-                        onChange={(option) =>
-                            setPageSize(Number(option?.value))
-                        }
-                    />
-                </div>
-            </div>
+                        </TBody>
+                    </Table>
+
+                    <div className="flex items-center justify-between mt-4">
+                        <Pagination
+                            currentPage={page}
+                            total={totalPages}
+                            onChange={(page) => setPage(page)}
+                        />
+                        <div className="min-w-[130px]">
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find(
+                                    (option) => option.value === pageSize,
+                                )}
+                                options={pageSizeOptions}
+                                onChange={(option) =>
+                                    setPageSize(Number(option?.value))
+                                }
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     )
 }
