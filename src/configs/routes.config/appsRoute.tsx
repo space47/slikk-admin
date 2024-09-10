@@ -306,6 +306,14 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsCategory.uploader',
+        path: `${APP_PREFIX_PATH}/category/uploader`,
+        component: lazy(
+            () => import('@/views/category-management/uploader/Uploader'),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     // ......................................
     {
@@ -573,6 +581,18 @@ const appsRoute: Routes = [
         path: `${APP_PREFIX_PATH}/category/category`,
         component: lazy(
             () => import('@/views/category-management/category/CategoryList'),
+        ),
+        authority: [ADMIN, USER],
+        meta: {
+            header: 'Add New Category',
+        },
+    },
+
+    {
+        key: 'appsCategory.category',
+        path: `${APP_PREFIX_PATH}/category/Uploader`,
+        component: lazy(
+            () => import('@/views/category-management/uploader/Uploader'),
         ),
         authority: [ADMIN, USER],
         meta: {
