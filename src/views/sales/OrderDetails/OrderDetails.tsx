@@ -181,7 +181,10 @@ const OrderDetails = () => {
                                         RETURN ORDER
                                     </button>
                                 ) : data.status !== 'DECLINED' &&
-                                  data.status !== 'CANCELLED' ? (
+                                  data.status !== 'CANCELLED' &&
+                                  ['PENDING', 'ACCEPTED', 'PACKED'].includes(
+                                      data.status,
+                                  ) ? (
                                     <button
                                         className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                         onClick={handleCancelOrder}
