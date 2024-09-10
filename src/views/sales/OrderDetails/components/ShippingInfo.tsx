@@ -2,6 +2,7 @@
 import Card from '@/components/ui/Card'
 import { HiLocationMarker, HiPhone } from 'react-icons/hi'
 import Avatar from '@/components/ui/Avatar'
+import { FaUserAlt } from 'react-icons/fa'
 
 type ShippingInfoProps = {
     data?: {
@@ -38,12 +39,13 @@ const ShippingInfo = ({
                             shape="circle"
                             src={data?.runner_profile_pic_url}
                         />
-                        <div className="items-start">
-                            <div className="flex gap-2">
-                                <span>{data?.runner_name}-</span>
+                        <div className="items-start flex flex-col gap-1">
+                            <div className="flex gap-2 items-center">
+                                <FaUserAlt />
+                                <span>{data?.runner_name}</span>
                             </div>
                             <div className="flex gap-2 items-center">
-                                <HiPhone />{' '}
+                                <HiPhone className="font-bold" />{' '}
                                 <span>{data?.runner_phone_number}</span>
                             </div>
                             <div className="flex gap-2">
@@ -55,7 +57,6 @@ const ShippingInfo = ({
                                     className="flex items-center cursor-pointer"
                                 >
                                     <HiLocationMarker className="text-xl" />{' '}
-                                    <p>Click to track location</p>
                                 </a>
                             </div>
                         </div>
