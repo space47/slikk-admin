@@ -17,7 +17,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import {
     PRODUCT_EDIT_COMMON,
     PRODUCT_EDIT_COMMON_DOWN,
-    INITIALVALUES
+    INITIALVALUES,
 } from './ProductCommon'
 
 const AddProduct = () => {
@@ -44,7 +44,7 @@ const AddProduct = () => {
             'image/PNG',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -76,7 +76,7 @@ const AddProduct = () => {
             'video/avi',
             'video/wmv',
             'video/webm',
-            'video/avchd'
+            'video/avchd',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -111,8 +111,8 @@ const AddProduct = () => {
             console.log(formData.get('file'))
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             })
             console.log(response)
             const newData = response.data.url
@@ -123,7 +123,7 @@ const AddProduct = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Image uploaded successfully'
+                    response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
@@ -131,7 +131,7 @@ const AddProduct = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'File Not uploaded'
+                    error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -149,8 +149,8 @@ const AddProduct = () => {
             console.log(formData.get('file'))
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             })
             console.log(response)
             const newData = response.data.url
@@ -160,7 +160,7 @@ const AddProduct = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Video uploaded successfully'
+                    response?.data?.message || 'Video uploaded successfully',
             })
             return newData
         } catch (error: any) {
@@ -168,50 +168,39 @@ const AddProduct = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Video Not uploaded'
+                    error?.response?.data?.message || 'Video Not uploaded',
             })
             return 'Error'
         }
     }
 
+    const handleImageCheck = async (field: any) => {
+        return field && field.length > 0 ? await handleimage(field) : null
+    }
+    const handleVideoCheck = async (field: any) => {
+        return field && field.length > 0 ? await handleVideo(field) : null
+    }
+
+    const fileShow = (uploadFile: any, value: any) => {
+        if (uploadFile && value) {
+            return [uploadFile, value].join(',')
+        }
+        return uploadFile || value || null
+    }
+
     const handleSubmit = async (values: Product) => {
-        let imageUpload = null
-        if (values.images && values.images.length > 0) {
-            imageUpload = await handleimage(values.images)
-        }
+        const imageUpload = await handleImageCheck(values.images)
+        const colorlink = await handleImageCheck(values.color_code)
+        const videoUpload = await handleVideoCheck(values.video)
 
-        let colorlink = null
-        if (values.color_code && values.color_code.length > 0) {
-            colorlink = await handleimage(values.color_code)
-        }
+        const imageShow = fileShow(imageUpload, values.image)
+        const videoShow = fileShow(videoUpload, values.video_link)
 
-        let videoUpload = null
-        if (values.video && values.video.length > 0) {
-            videoUpload = await handleimage(values.video)
-        }
-
-        let imageShow = null
-        if (imageUpload && values.image) {
-            imageShow = [imageUpload, values.image].join(',')
-        } else if (imageUpload) {
-            imageShow = imageUpload
-        } else if (values.image) {
-            imageShow = values.image
-        }
-
-        let videoShow = null
-        if (videoUpload && values.video_link) {
-            videoShow = [videoUpload, values.video_link].join(',')
-        } else if (videoUpload) {
-            videoShow = videoUpload
-        } else if (values.video_link) {
-            videoShow = values.video_link
-        }
         const formData = {
             ...values,
             color_code_link: colorlink ? colorlink : values.color_code_link,
             image: imageShow,
-            video_link: videoShow
+            video_link: videoShow,
         }
 
         try {
@@ -221,7 +210,7 @@ const AddProduct = () => {
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'Product created Successfully'
+                    response?.data?.message || 'Product created Successfully',
             })
             navigate('/app/catalog/products')
         } catch (error: any) {
@@ -229,7 +218,7 @@ const AddProduct = () => {
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'Product not created '
+                    error?.response?.data?.message || 'Product not created ',
             })
         }
     }
@@ -278,10 +267,11 @@ const AddProduct = () => {
                                         >
                                             <Field name="image">
                                                 {({
-                                                    form
+                                                    form,
                                                 }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
+                                                            className="flex justify-center"
                                                             multiple
                                                             beforeUpload={
                                                                 beforeUpload
@@ -292,15 +282,15 @@ const AddProduct = () => {
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
                                                                     'images',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                             onFileRemove={(
-                                                                files
+                                                                files,
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'images',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                         />
@@ -338,10 +328,11 @@ const AddProduct = () => {
                                         >
                                             <Field name="color_code">
                                                 {({
-                                                    form
+                                                    form,
                                                 }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
+                                                            className="flex justify-center"
                                                             multiple
                                                             beforeUpload={
                                                                 beforeUpload
@@ -352,15 +343,15 @@ const AddProduct = () => {
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
                                                                     'color_code',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                             onFileRemove={(
-                                                                files
+                                                                files,
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'color_code',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                             // uploadButtonText="Add Files"
@@ -394,7 +385,7 @@ const AddProduct = () => {
                                         <FormItem
                                             label=""
                                             invalid={Boolean(
-                                                errors.video && touched.video
+                                                errors.video && touched.video,
                                             )}
                                             errorMessage={
                                                 errors.video as string
@@ -403,7 +394,7 @@ const AddProduct = () => {
                                         >
                                             <Field name="video_link">
                                                 {({
-                                                    form
+                                                    form,
                                                 }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
@@ -417,15 +408,15 @@ const AddProduct = () => {
                                                             onChange={(files) =>
                                                                 form.setFieldValue(
                                                                     'Video',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                             onFileRemove={(
-                                                                files
+                                                                files,
                                                             ) =>
                                                                 form.setFieldValue(
                                                                     'images',
-                                                                    files
+                                                                    files,
                                                                 )
                                                             }
                                                         />
