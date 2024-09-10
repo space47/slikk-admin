@@ -76,7 +76,7 @@ const EditProduct = () => {
             'video/webm',
             'video/avchd',
         ]
-        const MAX_FILE_SIZE = 5000000
+        const MAX_FILE_SIZE = 9000000000000000
 
         if (fileList.length >= MAX_UPLOAD) {
             return `You can only upload ${MAX_UPLOAD} file(s)`
@@ -376,6 +376,8 @@ const EditProduct = () => {
             image: img_url,
             video_link: video_url,
         }
+
+        console.log('FORMDATA', formData)
 
         try {
             const response = await axioisInstance.patch(

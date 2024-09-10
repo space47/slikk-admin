@@ -11,7 +11,7 @@ const BulkProductUpload = () => {
 
     return (
         <div>
-            <h2>Bulk Product File Upload</h2>
+            <h2>Bulk Product File Upload</h2> <br />
             <ProductUploader />
             <br />
             <br />

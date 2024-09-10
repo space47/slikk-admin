@@ -24,6 +24,8 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown } from '@/components/ui'
 import { RETURN_ORDERS } from '@/views/category-management/orderlist/commontypes'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { IoMdDownload } from 'react-icons/io'
+import { notification } from 'antd'
 
 interface ReturnOrderItem {
     order_item: number
@@ -286,6 +288,45 @@ const OrderList = () => {
         })
     }
     console.log('ssssssswddwdwdw', dropdownStatus)
+
+    const handleDownload = async () => {
+        try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const status =
+                dropdownStatus?.value === 'ALL'
+                    ? ''
+                    : `&status=${dropdownStatus?.value}`
+
+            let searwiseDownload = ''
+
+            if (globalFilter) {
+                searwiseDownload = `&return_order_id=${globalFilter}`
+            }
+
+            const downloadUrl = `merchant/return_orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}`
+
+            const response = await axiosInstance.get(downloadUrl, {
+                responseType: 'blob',
+            })
+
+            const urlToBeDownloaded = window.URL.createObjectURL(
+                new Blob([response.data]),
+            )
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = 'ReturnOrders.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            notification.success({
+                message: 'SUCCESS',
+                description: 'File successfully downloaded',
+            })
+        } catch (error) {
+            console.error('Error downloading the file:', error)
+        }
+    }
+
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row lg:justify-between mb-10 items-center gap-4">
@@ -405,17 +446,26 @@ const OrderList = () => {
                     total={orderCount}
                     onChange={onPaginationChange}
                 />
-                <div className="w-full md:w-auto min-w-[130px]">
+                <div className="min-w-[130px] flex gap-5">
                     <Select
                         size="sm"
-                        isSearchable={false}
+                        isSearchable={true}
                         value={pageSizeOptions.find(
                             (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
-                        className="w-full flex justify-end"
+                        className="w-full"
                     />
+
+                    <div className="flex flex-col md:flex-row items-end justify-end mb-4">
+                        <button
+                            className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2"
+                            onClick={handleDownload}
+                        >
+                            <IoMdDownload className="text-xl md:text-xl" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

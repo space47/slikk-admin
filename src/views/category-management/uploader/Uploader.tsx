@@ -13,11 +13,13 @@ import Product from '@/views/category-management/catalog/CommonType'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { INITIALVALUES } from '../catalog/ProductCommon'
 import { AiOutlineCopy } from 'react-icons/ai'
+import Spinner from '@/components/ui/Spinner'
 
 const Uploader = () => {
     const [finalImage, setFinalImage] = useState('')
     const [finalVideo, setFinalVideo] = useState('')
     const [finalColorLink, setFinalColorLink] = useState('')
+    const [showLoading, setShowLoading] = useState(false)
 
     const MAX_UPLOAD = 100
 
@@ -38,7 +40,7 @@ const Uploader = () => {
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]
-        const MAX_FILE_SIZE = 5000000
+        const MAX_FILE_SIZE = 5000000000
 
         if (fileList.length >= MAX_UPLOAD) {
             return `You can only upload ${MAX_UPLOAD} file(s)`
@@ -70,7 +72,7 @@ const Uploader = () => {
             'video/webm',
             'video/avchd',
         ]
-        const MAX_FILE_SIZE = 5000000
+        const MAX_FILE_SIZE = 9000000000000000
 
         if (fileList.length >= MAX_UPLOAD) {
             return `You can only upload ${MAX_UPLOAD} file(s)`
@@ -164,6 +166,7 @@ const Uploader = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        setShowLoading(true)
         const imageUpload = await handleImageCheck(values.images)
         const colorlink = await handleImageCheck(values.color_code)
         const videoUpload = await handleVideoCheck(values.video)
@@ -175,6 +178,14 @@ const Uploader = () => {
         setFinalImage(imageShow)
         setFinalColorLink(colorCodeShow)
         setFinalVideo(videoShow)
+        setShowLoading(false)
+    }
+
+    const handleCopy = (file) => {
+        navigator.clipboard.writeText(file)
+        notification.success({
+            message: 'Copied',
+        })
     }
 
     return (
@@ -339,7 +350,7 @@ const Uploader = () => {
                                     type="submit"
                                     className="bg-blue-500 text-white"
                                 >
-                                    Submit
+                                    Generate
                                 </Button>
                             </FormContainer>
                         </FormContainer>
@@ -350,47 +361,55 @@ const Uploader = () => {
             <br />
             <br />
 
-            <div className="flex flex-col mt-5  shadow-lg w-[60%] items-center text-md ">
-                {finalImage && (
-                    <div className="flex items-center gap-2">
-                        <p>Image:</p>
-
-                        {finalImage}
+            <div className="flex flex-col mt-5">
+                {finalImage && !showLoading && (
+                    <div className="flex gap-2 items-center">
+                        <p>Image Link:</p>
+                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis">
+                            <p className="truncate">{finalImage}</p>
+                        </div>
                         <AiOutlineCopy
                             className="text-gray-500 cursor-pointer"
-                            onClick={() =>
-                                navigator.clipboard.writeText(finalImage)
-                            }
-                        />
-                    </div>
-                )}
-                {finalColorLink && (
-                    <div className="flex items-center gap-2">
-                        <p>Color Code:</p>
-
-                        {finalColorLink}
-                        <AiOutlineCopy
-                            className="text-gray-500 cursor-pointer"
-                            onClick={() =>
-                                navigator.clipboard.writeText(finalColorLink)
-                            }
-                        />
-                    </div>
-                )}
-                {finalVideo && (
-                    <div className="flex items-center gap-2">
-                        <p>Video:</p>
-
-                        {finalVideo}
-                        <AiOutlineCopy
-                            className="text-gray-500 cursor-pointer"
-                            onClick={() =>
-                                navigator.clipboard.writeText(finalVideo)
-                            }
+                            onClick={() => handleCopy(finalImage)}
                         />
                     </div>
                 )}
             </div>
+
+            <div className="flex flex-col mt-5">
+                {finalColorLink && !showLoading && (
+                    <div className="flex gap-2 items-center">
+                        <p>Color Code Link:</p>
+                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis">
+                            <p className="truncate">{finalColorLink}</p>
+                        </div>
+                        <AiOutlineCopy
+                            className="text-gray-500 cursor-pointer"
+                            onClick={() => handleCopy(finalColorLink)}
+                        />
+                    </div>
+                )}
+            </div>
+
+            <div className="flex flex-col mt-5">
+                {finalVideo && !showLoading && (
+                    <div className="flex gap-2 items-center">
+                        <p>Video Link:</p>
+                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis">
+                            <p className="truncate">{finalVideo}</p>
+                        </div>
+                        <AiOutlineCopy
+                            className="text-gray-500 cursor-pointer"
+                            onClick={() => handleCopy(finalVideo)}
+                        />
+                    </div>
+                )}
+            </div>
+            {showLoading && (
+                <div className="flex justify-center items-center">
+                    <Spinner size="40px" />
+                </div>
+            )}
         </div>
     )
 }
