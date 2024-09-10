@@ -65,7 +65,7 @@ const Home = () => {
     useEffect(() => {
         fetchHome()
 
-        const interval = setInterval(fetchHome, 100000)
+        const interval = setInterval(fetchHome, 60000)
 
         return () => clearInterval(interval)
     }, [from, to])
@@ -138,22 +138,24 @@ const Home = () => {
         <div className="flex flex-col gap-6 p-4">
             <div className="flex flex-wrap gap-5 justify-end">
                 <div className="w-full sm:w-auto">
-                    <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
+                    <div className="mb-1 font-semibold text-sm">FROM:</div>
                     <DatePicker
                         inputPrefix={<HiOutlineCalendar className="text-lg" />}
                         defaultValue={new Date()}
                         value={new Date(from)}
                         onChange={handleFromChange}
+                        className=" shadow-lg border-none bg-none"
                     />
                 </div>
                 <div className="w-full sm:w-auto">
-                    <div className="mb-1 font-semibold text-sm">TO DATE:</div>
+                    <div className="mb-1 font-semibold text-sm">TO:</div>
                     <DatePicker
                         inputSuffix={<TbCalendarStats className="text-xl" />}
                         defaultValue={new Date()}
                         value={moment(to).toDate()}
                         onChange={handleToChange}
                         minDate={moment(from).add(1, 'day').toDate()}
+                        className="shadow-lg "
                     />
                 </div>
             </div>

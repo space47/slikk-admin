@@ -15,6 +15,7 @@ type ShippingInfoProps = {
         runner_profile_pic_url: string
         state: string
         tracking_url: string
+        awb_code: any
     }
     logistic_partner: any
     delivery_type: string
@@ -44,6 +45,9 @@ const ShippingInfo = ({
                             <div className="flex gap-2 items-center">
                                 <HiPhone />{' '}
                                 <span>{data?.runner_phone_number}</span>
+                            </div>
+                            <div className="flex gap-2">
+                                <span>AWB :{data?.awb_code}</span>
                             </div>
                             <div className="url">
                                 <a
