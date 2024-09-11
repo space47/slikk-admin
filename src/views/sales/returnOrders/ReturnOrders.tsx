@@ -36,8 +36,9 @@ interface ReturnOrderItem {
     update_date: string
 }
 
-interface ReturnOrder {
+export interface ReturnOrder {
     amount: string
+    order: any
     create_date: string
     return_order_delivery: any[]
     return_order_id: string

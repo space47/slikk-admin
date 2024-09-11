@@ -65,7 +65,7 @@ export type Logistic = {
     order: number
 }
 
-export interface ReturnOrder {
+export interface ReturnOrderOverall {
     id: number
     return_order_items: ReturnOrderItem[]
     return_order_delivery: any[]
@@ -102,16 +102,28 @@ export interface ReturnOrder {
     logistic: Logistic
 }
 
-export interface ReturnOrderState {
-    returnOrders: ReturnOrder | null
-    loading: boolean
-    message: string
+export interface ReturnStatus {
+    value: any
+    name: any
 }
 
-export const getAllReturnOrdersRequest = 'getAllReturnOrdersRequest'
-export const getAllReturnOrdersSuccess = createAction<ReturnOrderState>(
-    'getAllReturnOrdersSuccess',
-)
-export const getAllReturnOrdersFailure = createAction<ReturnOrderState>(
-    'getAllReturnOrdersFailure',
-)
+export interface ReturnOrderOverallState {
+    returnOrders: ReturnOrderOverall[]
+    loading: boolean
+    message: string
+    orderCount: number
+    dropdownStatus: ReturnStatus
+    globalFilter: string
+    mobileFilter: string
+    pageSize: number
+    page: number
+    from: string
+    to: string
+}
+
+export const getAllReturnOrdersOverallRequest =
+    'getAllReturnOrdersOverallRequest'
+export const getAllReturnOrdersOverallSuccess =
+    createAction<ReturnOrderOverall>('getAllReturnOrdersOverallSuccess')
+export const getAllReturnOrdersOverallFailure =
+    createAction<ReturnOrderOverall>('getAllReturnOrdersOverallFailure')
