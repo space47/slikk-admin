@@ -308,7 +308,7 @@ const ReverseDelivery = () => {
     }
 
     const handleInvoiceClick = (invoiceId: string) => {
-        navigate(`/app/orders/${invoiceId}`)
+        navigate(`/app/returnOrders/${invoiceId}`)
     }
 
     // const handleRemove = (return_id: any) => {
