@@ -188,6 +188,12 @@ const Uploader = () => {
         })
     }
 
+    const handleDataReset = () => {
+        setFinalImage('')
+        setFinalVideo('')
+        setFinalColorLink('')
+    }
+
     return (
         <div>
             <Formik
@@ -361,15 +367,15 @@ const Uploader = () => {
             <br />
             <br />
 
-            <div className="flex flex-col mt-5">
+            <div className="flex flex-col mt-5 w-full  ">
                 {finalImage && !showLoading && (
                     <div className="flex gap-2 items-center">
-                        <p>Image Link:</p>
-                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis">
+                        <p className="text-lg font-bold ">Image Link:</p>
+                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
                             <p className="truncate">{finalImage}</p>
                         </div>
                         <AiOutlineCopy
-                            className="text-gray-500 cursor-pointer"
+                            className="text-gray-500 cursor-pointer text-xl"
                             onClick={() => handleCopy(finalImage)}
                         />
                     </div>
@@ -379,12 +385,12 @@ const Uploader = () => {
             <div className="flex flex-col mt-5">
                 {finalColorLink && !showLoading && (
                     <div className="flex gap-2 items-center">
-                        <p>Color Code Link:</p>
-                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis">
+                        <p className="text-lg font-bold">Color Code Link:</p>
+                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
                             <p className="truncate">{finalColorLink}</p>
                         </div>
                         <AiOutlineCopy
-                            className="text-gray-500 cursor-pointer"
+                            className="text-gray-500 cursor-pointer text-xl"
                             onClick={() => handleCopy(finalColorLink)}
                         />
                     </div>
@@ -394,17 +400,30 @@ const Uploader = () => {
             <div className="flex flex-col mt-5">
                 {finalVideo && !showLoading && (
                     <div className="flex gap-2 items-center">
-                        <p>Video Link:</p>
-                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis">
+                        <p className="text-lg font-bold">Video Link:</p>
+                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl ">
                             <p className="truncate">{finalVideo}</p>
                         </div>
                         <AiOutlineCopy
-                            className="text-gray-500 cursor-pointer"
+                            className="text-gray-500 cursor-pointer text-xl"
                             onClick={() => handleCopy(finalVideo)}
                         />
                     </div>
                 )}
             </div>
+            {finalImage || finalColorLink || finalVideo ? (
+                <div className="">
+                    <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleDataReset}
+                    >
+                        Reset Data
+                    </Button>
+                </div>
+            ) : (
+                ''
+            )}
             {showLoading && (
                 <div className="flex justify-center items-center">
                     <Spinner size="40px" />

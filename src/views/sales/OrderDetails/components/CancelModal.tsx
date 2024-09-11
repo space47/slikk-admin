@@ -8,26 +8,11 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const { Option } = Select
 
-type Product = {
-    image: string
-    quantity: string
-    fulfilled_quantity: string
-    final_price: number
-    sku: string
-    name: string
-    id: number
-    returnable_quantity: number
-}
-
 type Props5 = {
     isModalOpen: boolean
-    handlePack: () => void
     handleClose: () => void
-    modalContent?: string
-    status: string
-    product: Product[]
     invoice_id: any
-    setIsModalOpen: any
+    setIsModalOpen: (open: boolean) => void
 }
 
 const CancelReasons = [
@@ -64,56 +49,28 @@ const CancelReasons = [
 const CancelModal: React.FC<Props5> = ({
     isModalOpen,
     handleClose,
-    product,
     invoice_id,
     setIsModalOpen,
 }) => {
-    const [returnQuantities, setReturnQuantities] = useState<{
-        [key: string]: number
-    }>({})
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<
-        Record<string, { value: string; label: string }>
-    >({})
-
-    const handleSelectChange = useCallback((id: number, value: number) => {
-        setReturnQuantities((prev) => ({
-            ...prev,
-            [id]: value,
-        }))
-    }, [])
-
-    const handleSelect = useCallback(
-        (productId: number, reasonValue: string) => {
-            setCurrentSelectedPage((prev) => ({
-                ...prev,
-                [productId]: {
-                    value: reasonValue,
-                    label:
-                        CancelReasons.find((p) => p.value === reasonValue)
-                            ?.label || '',
-                },
-            }))
-        },
-        [],
+    const [cancelReason, setCancelReason] = useState<string | undefined>(
+        undefined,
     )
 
+    const handleSelect = useCallback((value: string) => {
+        setCancelReason(value)
+    }, [])
+
     const handlePack = async () => {
-        const returnReasonMap = Object.fromEntries(
-            Object.entries(currentSelectedPage).map(([id, { value }]) => [
-                id,
-                value,
-            ]),
-        )
-        const returnQtyMap = Object.fromEntries(
-            Object.entries(returnQuantities).map(([id, quantity]) => [
-                id,
-                quantity,
-            ]),
-        )
+        if (!cancelReason) {
+            notification.error({
+                message: 'Selection Required',
+                description: 'Please select a cancel reason before proceeding.',
+            })
+            return
+        }
 
         const body = {
-            return_reason: returnReasonMap,
-            items: returnQtyMap,
+            return_reason: cancelReason,
         }
 
         try {
@@ -149,71 +106,31 @@ const CancelModal: React.FC<Props5> = ({
                     Cancel Order{' '}
                     <IoIosWarning className="text-yellow-600 text-2xl sm:text-3xl" />{' '}
                 </h2>
-                {product.map((item) => (
-                    <div
-                        key={item.id}
-                        className="border-b border-gray-200 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-50 rounded-lg p-4 mb-4 last:mb-0 "
-                    >
-                        <div className="w-full sm:w-1/3 mb-4 sm:mb-0">
-                            <p className="font-medium text-lg">{item.name}</p>
-                            <p className="mt-1 text-sm">
-                                ARE YOU SURE YOU WANT TO CANCEL THIS ORDER?
-                            </p>
-                        </div>
-                        <div className="flex flex-col sm:mr-4 w-full sm:w-1/4 mb-4 sm:mb-0">
-                            <div className="text-base font-medium mb-1">
-                                Quantity to Cancel
-                            </div>
-                            <Select
-                                value={returnQuantities[item.id] || 0}
-                                className="w-full sm:w-1/2"
-                                onChange={(value) =>
-                                    handleSelectChange(item.id, value)
-                                }
-                            >
-                                {Array.from(
-                                    {
-                                        length:
-                                            parseInt(
-                                                item.quantity.toString(),
-                                                10,
-                                            ) + 1,
-                                    },
-                                    (_, i) => (
-                                        <Option key={i} value={i}>
-                                            {i}
-                                        </Option>
-                                    ),
-                                )}
-                            </Select>
-                        </div>
-                        <div className="w-full sm:w-1/3 flex flex-col justify-center">
-                            <div className="text-base font-medium mb-1">
-                                Reason For Cancelling
-                            </div>
-                            <Dropdown
-                                className="bg-gray-300 w-full sm:w-auto"
-                                title={
-                                    currentSelectedPage[item.id]?.label ||
-                                    'SELECT RETURN REASON'
-                                }
-                                onSelect={(value) =>
-                                    handleSelect(item.id, value)
-                                }
-                            >
-                                {CancelReasons.map((reason) => (
-                                    <DropdownItem
-                                        key={reason.value}
-                                        eventKey={reason.value}
-                                    >
-                                        <span>{reason.value}</span>
-                                    </DropdownItem>
-                                ))}
-                            </Dropdown>
-                        </div>
+                <div className="w-full sm:w-1/3 flex flex-col justify-center items-start">
+                    <div className="text-base font-medium mb-1 text-red-500">
+                        Reason For Cancelling
                     </div>
-                ))}
-
+                    <Dropdown
+                        className="bg-gray-300 w-full sm:w-auto"
+                        title={
+                            cancelReason
+                                ? CancelReasons.find(
+                                      (reason) => reason.value === cancelReason,
+                                  )?.label || 'SELECT RETURN REASON'
+                                : 'SELECT RETURN REASON'
+                        }
+                        onSelect={handleSelect}
+                    >
+                        {CancelReasons.map((reason) => (
+                            <DropdownItem
+                                key={reason.value}
+                                eventKey={reason.value}
+                            >
+                                <span>{reason.label}</span>
+                            </DropdownItem>
+                        ))}
+                    </Dropdown>
+                </div>
                 <div className="flex justify-end mt-6 gap-3">
                     <button
                         onClick={handleClose}
