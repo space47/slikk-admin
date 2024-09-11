@@ -171,6 +171,14 @@ const appsRoute: Routes = [
         ),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsOrderManagement.reverseDelivery',
+        path: `${APP_PREFIX_PATH}/reverseDelivery`,
+        component: lazy(
+            () => import('@/views/sales/reverseDelivery/ReverseDelivery'),
+        ),
+        authority: [ADMIN, USER],
+    },
 
     // SELLERS................................................................................................................
 

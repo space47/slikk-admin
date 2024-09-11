@@ -19,26 +19,18 @@ import {
     Dropdown,
 } from '@/components/ui'
 import {
-    fetchOrders,
-    setDropdownStatus,
-    setGlobalFilter,
-    setMobileFilter,
-    setPageSize,
-    setPage,
-    setFrom,
-    setTo,
-} from '@/store/slices/orderList/OrderList'
-import { OrderState } from '@/store/types/orderList.types'
-import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
+    ORDER_STATUS,
+    RETURN_ORDERS,
+} from '@/views/category-management/orderlist/commontypes'
 import type { FilterFn } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import { TbCalendarStats } from 'react-icons/tb'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { useAppDispatch, useAppSelector } from '@/store'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiEBike2Fill } from 'react-icons/ri'
+import { ReturnOrder } from '../returnOrders/ReturnOrders'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -56,28 +48,56 @@ const LOGISTIC_PARTNER = [
     { value: 'slikk', label: 'SLIKK' },
 ]
 
-const DeliveryOrders = () => {
+const ReverseDelivery = () => {
+    const [orders, setOrders] = useState<ReturnOrder[]>([])
+    const [globalFilter, setGlobalFilter] = useState('')
+    const [pageSize, setPageSize] = useState(10)
+    const [page, setPage] = useState(1)
     const navigate = useNavigate()
-    const dispatch = useAppDispatch()
+    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [orderCount, setOrderCount] = useState()
+    const [dropdownStatus, setDropdownStatus] = useState<
+        Record<string, string>
+    >(RETURN_ORDERS[0])
 
-    const {
-        orders,
-        orderCount,
-        page,
-        pageSize,
-        globalFilter,
-        from,
-        mobileFilter,
-        to,
-        dropdownStatus,
-    } = useAppSelector<OrderState>((state) => state.order)
+    const fetchOrders = async (
+        page: number,
+        pageSize: number,
+        from: string,
+        to: string,
+    ) => {
+        try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const status =
+                dropdownStatus?.value === 'ALL'
+                    ? ''
+                    : `&status=${dropdownStatus?.value}`
+
+            let response
+            if (globalFilter) {
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?return_order_id=${globalFilter}${status}`,
+                )
+            } else {
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
+                )
+            }
+
+            const ordersData = response?.data?.data.results
+            const orderCount = response?.data?.data.count
+
+            setOrders(ordersData)
+            setOrderCount(orderCount)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     useEffect(() => {
-        dispatch(fetchOrders())
-    }, [dispatch, page, pageSize, from, to, dropdownStatus, globalFilter])
-    useEffect(() => {
-        dispatch(fetchOrders())
-    }, [dispatch, page, pageSize, from, to, dropdownStatus, mobileFilter])
+        fetchOrders(page, pageSize, from, to)
+    }, [page, pageSize, from, to, dropdownStatus, globalFilter])
 
     const [partner, setPartner] = useState<{
         [key: string]: { value: string; label: string }
@@ -87,12 +107,14 @@ const DeliveryOrders = () => {
         orders?.map((item) => item),
     )
 
+    console.log('FILTERS', globalFilter)
+
     const columns = [
         {
-            header: 'Order Invoice Id',
-            accessorKey: 'invoice_id',
-            cell: ({ row }: any) => {
-                const referenceId = row.original?.invoice_id
+            header: 'Return Order Id',
+            accessorKey: 'return_order_id',
+            cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                const referenceId = row.original.return_order_id
 
                 return referenceId ? (
                     <div
@@ -109,8 +131,8 @@ const DeliveryOrders = () => {
         { header: 'Mobile Number', accessorKey: 'user.mobile' },
         {
             header: 'Tracking Url',
-            accessorKey: 'logistic.tracking_url',
-            cell: ({ getValue }) => {
+            accessorKey: 'return_order_delivery[0].tracking_url', // Adjust if you need to access tracking_url from an array
+            cell: ({ getValue }: { getValue: () => string }) => {
                 const url = getValue()
                 return url ? (
                     <a href={url} target="_blank" rel="noreferrer">
@@ -121,21 +143,36 @@ const DeliveryOrders = () => {
                 ) : null
             },
         },
-        { header: 'Delivery Type', accessorKey: 'delivery_type' },
+        { header: 'Delivery Type', accessorKey: 'return_type' },
         { header: 'STATUS', accessorKey: 'status' },
-        { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
+        {
+            header: 'Runner Name',
+            accessorKey: 'return_order_delivery',
+            cell: ({ row }: { row: { original: ReturnOrder } }) => (
+                <span>
+                    {row.original.return_order_delivery[0]?.runner_name || ''}
+                </span>
+            ),
+        },
         {
             header: 'Runner Number',
-            accessorKey: 'logistic.runner_phone_number',
+            accessorKey: 'return_order_delivery',
+            cell: ({ row }: { row: { original: ReturnOrder } }) => (
+                <span>
+                    {row.original.return_order_delivery[0]
+                        ?.runner_phone_number || ''}
+                </span>
+            ),
         },
-
         {
             header: 'Pickup Time',
-            accessorKey: 'log',
-            cell: ({ row }: any) => {
-                const deliveryCreatedLog = row.original.log.find(
-                    (logEntry: any) => logEntry.status === 'DELIVERY_CREATED',
-                )
+            accessorKey: 'return_order_delivery',
+            cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                const deliveryCreatedLog =
+                    row.original.return_order_delivery[0]?.log?.find(
+                        (logEntry: any) =>
+                            logEntry.status === 'DELIVERY_CREATED',
+                    )
 
                 return deliveryCreatedLog ? (
                     <div>
@@ -146,14 +183,14 @@ const DeliveryOrders = () => {
                 ) : null
             },
         },
-
         {
             header: 'Drop Time',
-            accessorKey: 'log',
-            cell: ({ row }: any) => {
-                const deliveryCreatedLog = row.original.log.find(
-                    (logEntry: any) => logEntry.status === 'DELIVERED',
-                )
+            accessorKey: 'return_order_delivery',
+            cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                const deliveryCreatedLog =
+                    row.original.return_order_delivery[0]?.log?.find(
+                        (logEntry: any) => logEntry.status === 'DELIVERED',
+                    )
 
                 return deliveryCreatedLog ? (
                     <div>
@@ -164,13 +201,22 @@ const DeliveryOrders = () => {
                 ) : null
             },
         },
-        { header: 'AWB Code', accessorKey: 'logistic.awb_code' },
+        {
+            header: 'AWB Code',
+            accessorKey: 'return_order_delivery',
+            cell: ({ row }: { row: { original: ReturnOrder } }) => (
+                <span>
+                    {row.original.return_order_delivery[0]?.awb_code || ''}
+                </span>
+            ),
+        },
         {
             header: 'Partner',
-            accessorKey: 'logistic.partner',
-            cell: ({ row }: any) => {
+            accessorKey: 'return_order_delivery[0].partner',
+            cell: ({ row }: { row: { original: ReturnOrder } }) => {
                 const selectedPartner =
-                    partner[row.id]?.label || row.original?.logistic?.partner
+                    partner[row.id]?.label ||
+                    row.original.return_order_delivery[0]?.partner
 
                 return (
                     <Dropdown
@@ -195,15 +241,21 @@ const DeliveryOrders = () => {
         },
         {
             header: 'Assigned Logistic',
-            accessorKey: 'logistic.partner',
-            cell: ({ row, getValue }: any) => (
+            accessorKey: 'return_order_delivery[0].partner',
+            cell: ({
+                row,
+                getValue,
+            }: {
+                row: { original: ReturnOrder }
+                getValue: () => string
+            }) => (
                 <Button
                     size="sm"
                     onClick={() =>
                         handleCreateTask(
                             partner[row.id],
                             getValue(),
-                            row.original.invoice_id,
+                            row.original.order,
                         )
                     }
                 >
@@ -213,11 +265,11 @@ const DeliveryOrders = () => {
         },
         {
             header: 'Cancel Task',
-            accessorKey: 'id',
-            cell: ({ row, getValue }: any) => (
+            accessorKey: 'order',
+            cell: ({ row }: { row: { original: ReturnOrder } }) => (
                 <Button
                     size="sm"
-                    onClick={() => handleCancelTask(row.original.invoice_id)}
+                    onClick={() => handleCancelTask(row.original.order)}
                 >
                     Cancel Task
                 </Button>
@@ -233,7 +285,7 @@ const DeliveryOrders = () => {
         getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
-        pageCount: Math.ceil(orderCount / pageSize),
+        pageCount: Math.ceil(orderCount ?? 0 / pageSize),
         globalFilterFn: fuzzyFilter,
     })
 
@@ -259,31 +311,27 @@ const DeliveryOrders = () => {
         navigate(`/app/orders/${invoiceId}`)
     }
 
-    const handleRemove = (return_id: any) => {
-        navigate(`/app/returnOrders/${return_id}`)
-    }
+    // const handleRemove = (return_id: any) => {
+    //     navigate(`/app/returnOrders/${return_id}`)
+    // }
 
     const onPaginationChange = (page: number) => {
-        dispatch(setPage(page))
+        setPage(page)
     }
 
     const handleFromChange = (date: Date | null) => {
-        dispatch(
-            setFrom(
-                date
-                    ? moment(date).format('YYYY-MM-DD')
-                    : moment().format('YYYY-MM-DD'),
-            ),
+        setFrom(
+            date
+                ? moment(date).format('YYYY-MM-DD')
+                : moment().format('YYYY-MM-DD'),
         )
     }
 
     const handleToChange = (date: Date | null) => {
-        dispatch(
-            setTo(
-                date
-                    ? moment(date).format('YYYY-MM-DD')
-                    : moment().format('YYYY-MM-DD'),
-            ),
+        setTo(
+            date
+                ? moment(date).format('YYYY-MM-DD')
+                : moment().format('YYYY-MM-DD'),
         )
     }
 
@@ -301,12 +349,10 @@ const DeliveryOrders = () => {
 
     const handleDropdownSelect = (a: any) => {
         console.log('Values', a)
-        dispatch(
-            setDropdownStatus({
-                value: a,
-                name: ORDER_STATUS.find((item) => item.value == a)?.name || '',
-            }),
-        )
+        setDropdownStatus({
+            value: a,
+            name: RETURN_ORDERS.find((item) => item.value == a)?.name || '',
+        })
     }
 
     console.log('PPPPPPPPPP', partner)
@@ -357,14 +403,12 @@ const DeliveryOrders = () => {
                             type="text"
                             placeholder="Search here"
                             value={globalFilter}
-                            onChange={(e) =>
-                                dispatch(setGlobalFilter(e.target.value))
-                            }
+                            onChange={(e) => setGlobalFilter(e.target.value)}
                             className="p-2 border rounded mt-1 w-full"
                         />
                     </div>
 
-                    <div className="mb-4 lg:mb-0">
+                    {/* <div className="mb-4 lg:mb-0">
                         <div className="text-sm md:text-base">
                             SEARCH BY MOBILE
                         </div>
@@ -377,7 +421,7 @@ const DeliveryOrders = () => {
                             }
                             className="p-2 border rounded mt-1 w-full"
                         />
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-4 lg:gap-10 items-center justify-between w-full lg:w-auto">
@@ -492,9 +536,7 @@ const DeliveryOrders = () => {
                             (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
-                        onChange={(option) =>
-                            dispatch(setPageSize(option?.value))
-                        }
+                        onChange={(option) => setPageSize(option?.value)}
                         className="w-full flex justify-end"
                     />
                 </div>
@@ -503,7 +545,7 @@ const DeliveryOrders = () => {
     )
 }
 
-export default DeliveryOrders
+export default ReverseDelivery
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value)
