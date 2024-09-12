@@ -511,6 +511,38 @@ const appsNavigationConfig: NavigationTree[] = [
                 ],
             },
 
+            {
+                key: 'apps.analytics',
+                path: '',
+                title: 'Analytics',
+                translateKey: 'nav.appsAnalytics.analytics',
+                icon: '',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    {
+                        key: 'appsAnalytics.overview',
+                        path: `${APP_PREFIX_PATH}/analytics/overview`,
+                        title: 'Task Tracking',
+                        translateKey: 'nav.appsAnalytics.overview',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    // {
+                    //     key: 'appsAnalytics.riderTracking',
+                    //     path: `${APP_PREFIX_PATH}/tryAndBuy/riderTracking`,
+                    //     title: 'Rider Tracking',
+                    //     translateKey: 'nav.appstryAndBuy.tryAndBuy',
+                    //     icon: '',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     subMenu: [],
+                    // },
+                ],
+            },
+
             // ..............................................................................................................
 
             // {

@@ -2,6 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import moment from 'moment'
 import { OrderState, Order } from '@/store/types/orderList.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
+
+const SEARCHOPTIONS = [
+    { label: 'INVOICE', value: 'invoice' },
+    { label: 'MOBILE', value: 'mobile' },
+]
 
 const initialState: OrderState = {
     orders: [],
@@ -9,8 +15,8 @@ const initialState: OrderState = {
     message: '',
     orderCount: 0,
     dropdownStatus: { value: 'ALL', name: 'ALL' },
-    globalFilter: '',
-    mobileFilter: '',
+    searchInput: '',
+    currentSelectedPage: {},
     pageSize: 10,
     page: 1,
     from: moment().format('YYYY-MM-DD'),
@@ -28,36 +34,46 @@ export const fetchOrders = createAsyncThunk(
                 from,
                 to,
                 dropdownStatus,
-                globalFilter,
-                mobileFilter,
+                searchInput,
+                currentSelectedPage,
             } = state.order
+
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const statusQuery =
                 dropdownStatus.value === 'ALL'
                     ? ''
                     : `&status=${dropdownStatus.value}`
+
             let response
 
-            if (globalFilter) {
+            if (currentSelectedPage.value === 'invoice' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?invoice_id=${globalFilter}${statusQuery}`,
+                    `/merchant/orders?invoice_id=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}`,
                 )
-            } else if (mobileFilter) {
+            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?mobile=${mobileFilter}${statusQuery}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/orders?mobile=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}`,
                 )
-            } else {
+            } else if (currentSelectedPage.value === 'awb' && searchInput) {
+                response = await axioisInstance.get(
+                    `/merchant/orders?awb=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}`,
+                )
+            } else if (!searchInput) {
                 response = await axioisInstance.get(
                     `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${statusQuery}`,
                 )
+            } else {
+                notification.error({
+                    message: 'NO DATA',
+                })
             }
 
             return {
-                orders: response.data?.data.results,
-                orderCount: response.data?.data.count,
+                orders: response?.data?.data.results,
+                orderCount: response?.data?.data.count,
             }
         } catch (error) {
-            console.log('error')
+            console.log('error', error)
         }
     },
 )
@@ -69,11 +85,11 @@ export const orderSlice = createSlice({
         setDropdownStatus(state, action) {
             state.dropdownStatus = action.payload
         },
-        setGlobalFilter(state, action) {
-            state.globalFilter = action.payload
+        setCurrentSelectedPage(state, action) {
+            state.currentSelectedPage = action.payload
         },
-        setMobileFilter(state, action) {
-            state.mobileFilter = action.payload
+        setSearchInput(state, action) {
+            state.searchInput = action.payload
         },
         setPageSize(state, action) {
             state.pageSize = action.payload
@@ -108,8 +124,8 @@ export const orderSlice = createSlice({
 
 export const {
     setDropdownStatus,
-    setGlobalFilter,
-    setMobileFilter,
+    setCurrentSelectedPage,
+    setSearchInput,
     setPageSize,
     setPage,
     setFrom,

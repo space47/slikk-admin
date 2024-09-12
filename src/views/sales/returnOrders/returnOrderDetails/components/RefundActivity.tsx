@@ -52,6 +52,8 @@ const RefundActivity = () => {
         useState<boolean>(false)
     const [triggerDelivered, setTriggerDelivered] = useState<boolean>(false)
     const [triggerCancelled, setTriggerCancelled] = useState<boolean>(false)
+    const [triggerPickedUpGenerate, setTriggerPickedUpGenerate] =
+        useState<boolean>(false)
     const [triggerComplete, setTriggerComplete] = useState<boolean>(false)
     const [valueInsideModal, setValueInsideModal] = useState({
         refundAmount: '',
@@ -69,14 +71,19 @@ const RefundActivity = () => {
     const getButtonAndModalContent = (status: string) => {
         switch (status) {
             case 'APPROVED':
+            case 'ACCEPTED':
                 return {
                     buttonText: 'CREATE RETURN PICKUP',
                 }
-            case 'PICKED_UP':
+            case 'PICKUP_GENERATED':
                 return {
                     buttonText: 'OUT FOR PICKUP',
                 }
             case 'OUT_FOR_PICKUP':
+                return {
+                    buttonText: 'PICK UP',
+                }
+            case 'PICKED_UP':
                 return {
                     buttonText: 'IN TRANSIT',
                 }
@@ -123,14 +130,14 @@ const RefundActivity = () => {
         setIsModalOpen(true)
         // action ko PICKUP_CREATED kr dunga
     }
-    const handlePICKUP = () => {
+    const handlePICKUPGenerate = () => {
         console.log('OK')
-        setAction('picked_up')
-        setTriggerPickedUp(true)
+        setAction('create_reverse_pickup')
+        setTriggerPickedUpGenerate(true)
     }
 
     useEffect(() => {
-        if (triggerPickedUp) {
+        if (triggerPickedUpGenerate) {
             const sendApiRequest = async () => {
                 try {
                     const body = {
@@ -144,7 +151,7 @@ const RefundActivity = () => {
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
-                    setTriggerPickedUp(false)
+                    setTriggerPickedUpGenerate(false)
                     notification.success({
                         message: 'Success',
                         description:
@@ -162,16 +169,16 @@ const RefundActivity = () => {
                         description: errorMessage,
                     })
                 } finally {
-                    setTriggerPickedUp(false)
+                    setTriggerPickedUpGenerate(false)
                 }
             }
             sendApiRequest()
         }
-    }, [triggerPickedUp, navigate])
+    }, [triggerPickedUpGenerate, navigate])
 
     // FOR OUT FOR DELIVERY..................................................
 
-    const handleDelivery = () => {
+    const handleOutForPickup = () => {
         setAction('out_for_pickup')
         setTriggerOutForPickup(true)
     }
@@ -216,9 +223,61 @@ const RefundActivity = () => {
             sendApiRequest()
         }
     }, [triggerOutForPickup, navigate])
+    //.................................................................
+
+    const handlePickedUp = () => {
+        setAction('picked_up')
+        setTriggerPickedUp(true)
+    }
+
+    //    function handleInTrasit() {
+    //     setAction('in_transit')
+    //     setTriggerIntransit(true)
+    // }
+
+    useEffect(() => {
+        if (triggerPickedUp) {
+            const sendApiRequest = async () => {
+                try {
+                    const body = {
+                        action,
+                    }
+
+                    const response = await axiosInstance.patch(
+                        `merchant/return_order/${returnDetails?.return_order_id}`,
+                        body,
+                    )
+
+                    console.log(response.data)
+                    setIsModalOpen(false)
+                    setTriggerPickedUp(false)
+                    notification.success({
+                        message: 'Success',
+                        description:
+                            response?.data?.message ||
+                            'Rider status updated successfully.',
+                    })
+                    navigate(0)
+                } catch (error: any) {
+                    console.error(error)
+                    const errorMessage =
+                        error.response?.data?.message ||
+                        'There was an error updating the order status. Please try again.'
+
+                    notification.error({
+                        message: 'Error',
+                        description: errorMessage,
+                    })
+                } finally {
+                    setTriggerPickedUp(false)
+                }
+            }
+            sendApiRequest()
+        }
+    }, [triggerPickedUp, navigate])
 
     // In transit.............................................................
-    const handleInTrasit = () => {
+    function handleInTrasit() {
         setAction('in_transit')
         setTriggerIntransit(true)
     }
@@ -464,17 +523,17 @@ const RefundActivity = () => {
             {returnDetails?.status === 'APPROVED' && (
                 <PickedUpModal
                     isModalOpen={isModalOpen}
-                    handlePickup={handlePICKUP}
+                    handlePickup={handlePICKUPGenerate}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={returnDetails?.status || ''}
                 />
             )}
 
-            {returnDetails?.status === 'PICKED_UP' && (
+            {returnDetails?.status === 'PICKED_UP_GENERATE' && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
-                    handleoutForDelivery={handleDelivery}
+                    handleoutForDelivery={handleOutForPickup}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={returnDetails.status}
@@ -484,7 +543,17 @@ const RefundActivity = () => {
             {returnDetails?.status === 'OUT_FOR_PICKUP' && (
                 <InTransitModal
                     isModalOpen={isModalOpen}
-                    handleInTransit={handleInTrasit}
+                    handleInTransit={handlePickedUp}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={returnDetails.status}
+                />
+            )}
+
+            {returnDetails?.status === 'PICKED_UP' && (
+                <PickedUpModal
+                    isModalOpen={isModalOpen}
+                    handlePickup={handleInTrasit}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={returnDetails.status}

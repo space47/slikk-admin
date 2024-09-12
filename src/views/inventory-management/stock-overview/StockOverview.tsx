@@ -21,6 +21,7 @@ import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { TfiExchangeVertical } from 'react-icons/tfi'
+import { FaSync } from 'react-icons/fa'
 
 interface LastUpdatedBy {
     name: string
@@ -280,7 +281,7 @@ const StockOverview = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Update Table',
+                header: 'Update Row',
                 accessorKey: 'id',
                 cell: ({ getValue, row }) => (
                     <button
@@ -291,9 +292,9 @@ const StockOverview = () => {
                                 row.original.location,
                             )
                         }
-                        className="px-4 py-2 bg-none text-4xl rounded font-bold"
+                        className="px-4 py-2 bg-none text-2xl rounded font-bold"
                     >
-                        <TfiExchangeVertical />
+                        <FaSync />
                     </button>
                 ),
             },

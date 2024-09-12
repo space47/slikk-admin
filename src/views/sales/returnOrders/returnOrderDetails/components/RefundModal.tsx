@@ -30,6 +30,38 @@ const cancelButtonStyles = {
     },
 }
 
+type props0 = {
+    isModalOpen: boolean
+    handlePickupGenerate: () => void
+    handleClose: () => void
+    modalContent?: string
+    status: string
+}
+
+export const PickedUpGenerateModal: React.FC<props0> = ({
+    isModalOpen,
+    handlePickupGenerate,
+    handleClose,
+    modalContent,
+    status,
+}) => {
+    return (
+        <Modal
+            {...modalStyles}
+            okText={status === 'PICKUP_GENERATE' ? 'Pick_up Generate' : 'OK'}
+            cancelText={status === 'cancel' ? 'Cancel' : 'Close'}
+            okButtonProps={okButtonStyles}
+            cancelButtonProps={cancelButtonStyles}
+            open={isModalOpen}
+            onOk={handlePickupGenerate}
+            onCancel={handleClose}
+        >
+            <p className="text-lg mb-4">{modalContent}</p>
+            <h1 className="text-2xl font-semibold">Set Your PickUp</h1>
+        </Modal>
+    )
+}
+
 type props1 = {
     isModalOpen: boolean
     handlePickup: () => void
@@ -57,7 +89,7 @@ export const PickedUpModal: React.FC<props1> = ({
             onCancel={handleClose}
         >
             <p className="text-lg mb-4">{modalContent}</p>
-            <h1 className="text-2xl font-semibold">Set Your PickUp</h1>
+            <h1 className="text-2xl font-semibold">Your Item is Picked Up</h1>
         </Modal>
     )
 }
