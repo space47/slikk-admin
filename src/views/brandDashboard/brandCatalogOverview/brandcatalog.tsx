@@ -16,6 +16,7 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
+import moment from 'moment'
 
 type ProductVariant = {
     name: string
@@ -81,10 +82,10 @@ const BrandCatalog = () => {
         try {
             setShowSpinner(true)
             const response = await axiosInstance.get(
-                `search/product?dashboard=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`,
+                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`,
             )
-            const data = response.data.results
-            const total = response.data.count
+            const data = response.data.data.results
+            const total = response.data.data.count
             setData(data)
             setTotalData(total)
             setShowSpinner(false)
@@ -141,8 +142,6 @@ const BrandCatalog = () => {
     const handleActionClick = (id: any) => {
         console.log('OK', id)
     }
-
-    console.log('LENGTGH', data.length)
 
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
@@ -261,12 +260,14 @@ const BrandCatalog = () => {
         setPage(page)
     }
 
+    const date = new Date()
+
     const onSelectChange = (value: number) => {
         setPageSize(Number(value))
     }
     const handleDownload = async () => {
         try {
-            const downloadUrl = `search/product?download=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`
+            const downloadUrl = `merchant/products?download=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
@@ -275,7 +276,7 @@ const BrandCatalog = () => {
             )
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = 'Product.csv'
+            link.download = `${selectedCompany.name}_Catalog-${moment(date).format('YYYY-MM-DD')}.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
