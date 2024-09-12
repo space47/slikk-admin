@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import {
@@ -17,18 +17,13 @@ import Select from '@/components/ui/Select'
 import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
 import type { OrderItem } from './commontypes'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Dropdown } from '@/components/ui'
+import { Button, Dropdown } from '@/components/ui'
 import { ORDER_STATUS } from './commontypes'
 import { IoMdDownload } from 'react-icons/io'
-import { FaLocationDot } from 'react-icons/fa6'
 import { FaMapMarkedAlt } from 'react-icons/fa'
-import { RiEBike2Fill } from 'react-icons/ri'
-import MapComponent from '@/common/mapLocation'
-import MultipleMap from '@/common/multipleMap'
+import FilterDialogOrder from './filterDialog/FilterDialog'
+import { CiFilter } from 'react-icons/ci'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 interface Order {
     invoice_id: string
@@ -70,9 +65,18 @@ interface DropdownStatus {
     name: string[]
 }
 
+const SEARCHOPTIONS = [
+    { label: 'INVOICE', value: 'invoice' },
+    { label: 'MOBILE', value: 'mobile' },
+]
+
 const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<
+        Record<string, string>
+    >(SEARCHOPTIONS[0])
+    const [searchInput, setSearchInput] = useState<string>('')
     const [mobileFilter, setMobileFilter] = useState('')
     const [pageSize, setPageSize] = useState(10)
     const [page, setPage] = useState(1)
@@ -84,6 +88,7 @@ const OrderList = () => {
         value: [],
         name: [],
     })
+    const [showFilter, setShowFilter] = useState(false)
 
     const fetchOrders = async (
         page: number,
@@ -100,18 +105,14 @@ const OrderList = () => {
 
             let response
 
-            if (globalFilter) {
+            if (currentSelectedPage.value === 'invoice' && searchInput) {
                 response = await axiosInstance.get(
-                    `/merchant/orders?invoice_id=${globalFilter}${status}`,
+                    `/merchant/orders?invoice_id=${searchInput}${status}&p=${page}&page_size=${pageSize}`,
                 )
-            } else if (mobileFilter) {
+            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
                 response = await axiosInstance.get(
-                    `/merchant/orders?mobile=${mobileFilter}${status}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/orders?mobile=${searchInput}${status}&p=${page}&page_size=${pageSize}`,
                 )
-
-                const totalOrders = response.data?.data.count
-                setPageSize(totalOrders)
-                setPage(1)
             } else {
                 response = await axiosInstance.get(
                     `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
@@ -130,13 +131,7 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, mobileFilter, globalFilter])
-
-    useEffect(() => {
-        if (!mobileFilter) {
-            setPageSize(10)
-        }
-    }, [mobileFilter])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput])
 
     const columns = useMemo(
         () => [
@@ -239,10 +234,10 @@ const OrderList = () => {
 
             let searwiseDownload = ''
 
-            if (globalFilter) {
-                searwiseDownload = `&invoice_id=${globalFilter}`
-            } else if (mobileFilter) {
-                searwiseDownload = `&mobile=${mobileFilter}`
+            if (currentSelectedPage.value === 'invoice' && searchInput) {
+                searwiseDownload = `&invoice_id=${searchInput}`
+            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
+                searwiseDownload = `&mobile=${searchInput}`
             }
 
             const downloadUrl = `merchant/orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}`
@@ -291,157 +286,105 @@ const OrderList = () => {
             setTo(moment().format('YYYY-MM-DD'))
         }
     }
+    const handleSelect = (value: any) => {
+        const selected = SEARCHOPTIONS.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
+    }
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value)
+    }
 
     const handleDropdownSelect = (selectedValue: string) => {
-        setDropdownStatus((prevStatus) => {
-            const isSelected = prevStatus.value.includes(selectedValue)
-
-            const updatedValue = isSelected
-                ? prevStatus.value.filter((val) => val !== selectedValue)
-                : [...prevStatus.value, selectedValue]
-
-            const updatedName = isSelected
-                ? prevStatus.name.filter(
-                      (name) =>
-                          name !==
-                          ORDER_STATUS.find(
-                              (item) => item.value === selectedValue,
-                          )?.name,
-                  )
-                : [
-                      ...prevStatus.name,
-                      ORDER_STATUS.find((item) => item.value === selectedValue)
-                          ?.name || '',
-                  ]
-
-            return {
-                value: updatedValue,
-                name: updatedName,
-            }
-        })
+        if (dropdownStatus.value.includes(selectedValue)) {
+            setDropdownStatus((prevState) => ({
+                ...prevState,
+                value: prevState.value.filter((item) => item !== selectedValue),
+            }))
+        } else {
+            setDropdownStatus((prevState) => ({
+                ...prevState,
+                value: [...prevState.value, selectedValue],
+            }))
+        }
     }
+
     console.log(
         'ssssssswddwdwdw',
         orders.map((item) => item.longitude),
     )
 
+    const handleShowFilter = useCallback(() => {
+        setShowFilter(true)
+    }, [setShowFilter])
+
+    const handleFilterClose = useCallback(() => {
+        setShowFilter(false)
+    }, [setShowFilter])
+
     return (
         <div className="p-4">
             <div className="overflow-x-auto">
-                <div className="flex flex-col lg:flex-row justify-between mb-6 items-center xl:gap-14">
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        <div className="mb-4 lg:mb-0">
-                            <div className="text-sm md:text-base">
-                                SEARCH BY INVOICE_ID
-                            </div>
+                <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-4 md:flex-col sm:flex-col">
+                    <div className="flex gap-1 xl:gap-2  xl:flex-row  ">
+                        <div className="flex justify-start ">
                             <input
-                                type="text"
-                                placeholder="Search here"
-                                value={globalFilter}
-                                onChange={(e) =>
-                                    setGlobalFilter(e.target.value)
-                                }
-                                className="p-2 border rounded mt-1 w-full"
+                                type="search"
+                                name="search"
+                                id=""
+                                placeholder="search SKU for product"
+                                value={searchInput}
+                                className="xl:w-[250px] rounded-[10px] w-[130px]"
+                                onChange={handleSearch}
                             />
                         </div>
-
-                        <div className="mb-4 lg:mb-0">
-                            <div className="text-sm md:text-base">
-                                SEARCH BY MOBILE
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Search through mobile"
-                                value={mobileFilter}
-                                onChange={(e) =>
-                                    setMobileFilter(e.target.value)
+                        <div className="bg-gray-200  xl:font-bold xl:text-lg text-sm w-[100px] xl:w-auto">
+                            <Dropdown
+                                className=" text-xl text-black bg-gray-200 font-bold "
+                                title={
+                                    currentSelectedPage?.value
+                                        ? currentSelectedPage.label
+                                        : 'SELECT'
                                 }
-                                className="p-2 border rounded mt-1 w-full"
-                            />
+                                onSelect={handleSelect}
+                            >
+                                {SEARCHOPTIONS?.map((item, key) => {
+                                    return (
+                                        <DropdownItem
+                                            key={key}
+                                            eventKey={item.value}
+                                        >
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    )
+                                })}
+                            </Dropdown>
                         </div>
                     </div>
+                    {/* From here */}
 
-                    <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mt-4 lg:mt-0">
-                        <div className="flex gap-2 items-center xl:flex-col ">
-                            <label htmlFor="" className="font-semibold">
-                                SELECT STATUS
-                            </label>
-                            <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
-                                <Dropdown
-                                    className="w-full px-1 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                                    title={
-                                        dropdownStatus.name.length > 0
-                                            ? dropdownStatus.name.join(', ')
-                                            : 'Select Status'
-                                    }
-                                    onSelect={(eventKey) =>
-                                        handleDropdownSelect(eventKey as string)
-                                    }
-                                >
-                                    <div className="max-h-60 overflow-y-auto">
-                                        {ORDER_STATUS?.map((item, key) => (
-                                            <DropdownItem
-                                                key={key}
-                                                eventKey={item.value}
-                                                className={`px-2 py-2 text-black hover:bg-gray-100 cursor-pointer ${
-                                                    dropdownStatus.value.includes(
-                                                        item.value,
-                                                    )
-                                                        ? 'bg-gray-200'
-                                                        : ''
-                                                }`}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={dropdownStatus.value.includes(
-                                                        item.value,
-                                                    )}
-                                                    onChange={() =>
-                                                        handleDropdownSelect(
-                                                            item.value,
-                                                        )
-                                                    }
-                                                    className="mr-2"
-                                                />
-                                                <span>{item.name}</span>
-                                            </DropdownItem>
-                                        ))}
-                                    </div>
-                                </Dropdown>
-                            </div>
-                        </div>
+                    {/* To here */}
 
-                        <div className="flex flex-col lg:flex-row gap-6">
-                            <div>
-                                <div className="mb-1 font-semibold text-xs md:text-sm">
-                                    FROM DATE:
-                                </div>
-                                <DatePicker
-                                    inputPrefix={
-                                        <HiOutlineCalendar className="text-base md:text-lg" />
-                                    }
-                                    defaultValue={new Date()}
-                                    value={new Date(from)}
-                                    onChange={handleFromChange}
-                                    className="w-[240px]"
-                                />
-                            </div>
-                            <div>
-                                <div className="mb-1 font-semibold text-xs md:text-sm">
-                                    TO DATE:
-                                </div>
-                                <DatePicker
-                                    inputSuffix={
-                                        <TbCalendarStats className="text-base md:text-xl" />
-                                    }
-                                    defaultValue={new Date()}
-                                    value={moment(to).toDate()}
-                                    onChange={handleToChange}
-                                    minDate={moment(from).toDate()}
-                                    className="w-[240px]"
-                                />
-                            </div>
-                        </div>
+                    <div>
+                        <Button
+                            variant="new"
+                            size="sm"
+                            onClick={handleShowFilter}
+                            className="hidden xl:flex gap-2"
+                        >
+                            <CiFilter className="text-xl font-extrabold" />{' '}
+                            Filter
+                        </Button>
+
+                        <Button
+                            variant="default"
+                            size="sm"
+                            onClick={handleShowFilter}
+                            className="flex xl:hidden"
+                        >
+                            <CiFilter className="text-xl font-extrabold" />
+                        </Button>
                     </div>
                 </div>
                 <br />
@@ -526,6 +469,18 @@ const OrderList = () => {
                     </div>
                 </div>
             </div>
+            {showFilter && (
+                <FilterDialogOrder
+                    showFilter={showFilter}
+                    handleFilterClose={handleFilterClose}
+                    dropdownStatus={dropdownStatus}
+                    handleDropdownSelect={handleDropdownSelect}
+                    handleFromChange={handleFromChange}
+                    handleToChange={handleToChange}
+                    from={from}
+                    to={to}
+                />
+            )}
         </div>
     )
 }

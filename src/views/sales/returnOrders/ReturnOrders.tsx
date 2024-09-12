@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+
 import {
     useReactTable,
     getCoreRowModel,
@@ -9,7 +9,6 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     flexRender,
-    useGlobalFilter,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
@@ -17,15 +16,14 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Dropdown } from '@/components/ui'
+import { Button, Dropdown } from '@/components/ui'
 import { RETURN_ORDERS } from '@/views/category-management/orderlist/commontypes'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdDownload } from 'react-icons/io'
 import { notification } from 'antd'
+import { CiFilter } from 'react-icons/ci'
+import FilterReturnOrder from './filter/FilterReturnOrder'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 interface ReturnOrderItem {
     order_item: number
@@ -57,10 +55,20 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
+const SEARCHOPTIONS = [
+    { label: 'RETURN_ID', value: 'return_order_id' },
+    { label: 'INVOICE', value: 'invoice_id' },
+]
+
 const OrderList = () => {
     const [orders, setOrders] = useState<ReturnOrder[]>([])
-    const [globalFilter, setGlobalFilter] = useState('')
     const [pageSize, setPageSize] = useState(10)
+    const [globalFilter, setGlobalFilter] = useState('')
+    const [invoiceFilter, setInvoiceFilter] = useState('')
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<
+        Record<string, string>
+    >(SEARCHOPTIONS[0])
+    const [searchInput, setSearchInput] = useState<string>('')
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
@@ -69,6 +77,7 @@ const OrderList = () => {
     const [dropdownStatus, setDropdownStatus] = useState<
         Record<string, string>
     >(RETURN_ORDERS[0])
+    const [showFilter, setShowFilter] = useState(false)
 
     const fetchOrders = async (
         page: number,
@@ -84,9 +93,19 @@ const OrderList = () => {
                     : `&status=${dropdownStatus?.value}`
 
             let response
-            if (globalFilter) {
+            if (
+                currentSelectedPage.value === 'return_order_id' &&
+                searchInput
+            ) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?return_order_id=${globalFilter}${status}`,
+                    `/merchant/return_orders?return_order_id=${searchInput}${status}`,
+                )
+            } else if (
+                currentSelectedPage.value === 'invoice_id' &&
+                searchInput
+            ) {
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?invoice_id=${invoiceFilter}${status}&p=${page}&page_size=${pageSize}`,
                 )
             } else {
                 response = await axioisInstance.get(
@@ -106,7 +125,7 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, globalFilter])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput])
 
     const columns = useMemo(
         () => [
@@ -223,10 +242,6 @@ const OrderList = () => {
         [],
     )
 
-    const handleOrderClick = (orderId: string) => {
-        navigate(`/app/orders/${orderId}`)
-    }
-
     const table = useReactTable({
         data: orders,
         columns,
@@ -240,7 +255,7 @@ const OrderList = () => {
             },
             globalFilter,
         },
-        onGlobalFilterChange: setGlobalFilter,
+        onGlobalFilterChange: setInvoiceFilter,
         globalFilterFn: fuzzyFilter,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -260,6 +275,15 @@ const OrderList = () => {
 
         console.log('sssssssssssssssssssss', page)
         // setPageSize(pageSize)
+    }
+    const handleSelect = (value: any) => {
+        const selected = SEARCHOPTIONS.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
+    }
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value)
     }
 
     const onSelectChange = (value = 0) => {
@@ -300,13 +324,21 @@ const OrderList = () => {
 
             let searwiseDownload = ''
 
-            if (globalFilter) {
-                searwiseDownload = `&return_order_id=${globalFilter}`
+            if (
+                currentSelectedPage.value === 'return_order_id' &&
+                searchInput
+            ) {
+                searwiseDownload = `&return_order_id=${searchInput}`
+            } else if (
+                currentSelectedPage.value === 'invoice_id' &&
+                searchInput
+            ) {
+                searwiseDownload = `&invoice_id=${searchInput}`
             }
 
             const downloadUrl = `merchant/return_orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}`
 
-            const response = await axiosInstance.get(downloadUrl, {
+            const response = await axioisInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
 
@@ -328,71 +360,71 @@ const OrderList = () => {
         }
     }
 
+    const handleShowFilter = useCallback(() => {
+        setShowFilter(true)
+    }, [setShowFilter])
+
+    const handleFilterClose = useCallback(() => {
+        setShowFilter(false)
+    }, [setShowFilter])
+
     return (
         <div className="overflow-x-auto">
-            <div className="flex flex-col lg:flex-row lg:justify-between mb-10 items-center gap-4">
-                <div className="w-full lg:w-auto mb-4 lg:mb-0">
-                    <input
-                        type="text"
-                        placeholder="Search Return Id here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="w-full p-2 border rounded lg:w-auto"
-                    />
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-4 items-center justify-between w-full lg:w-auto">
-                    <div className="relative w-full md:w-1/2 lg:w-auto bg-gray-100 items-center flex justify-center">
+            <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4">
+                <div className="flex gap-2">
+                    <div className="flex justify-start ">
+                        <input
+                            type="search"
+                            name="search"
+                            id=""
+                            placeholder="search here"
+                            value={searchInput}
+                            className=" xl:w-[250px] rounded-[10px] w-[130px]"
+                            onChange={handleSearch}
+                        />
+                    </div>
+                    <div className="bg-gray-200  xl:font-bold xl:text-lg text-sm ">
                         <Dropdown
-                            className="w-full px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                            title={dropdownStatus.name}
-                            onSelect={handleDropdownSelect}
+                            className=" text-xl text-black bg-gray-200 font-bold "
+                            title={
+                                currentSelectedPage?.value
+                                    ? currentSelectedPage.label
+                                    : 'SELECT'
+                            }
+                            onSelect={handleSelect}
                         >
-                            <div className="max-h-60 overflow-y-auto">
-                                {RETURN_ORDERS?.map((item: any, key: any) => {
-                                    return (
-                                        <DropdownItem
-                                            key={key}
-                                            eventKey={item.value}
-                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                        >
-                                            <span>{item.name}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </div>
+                            {SEARCHOPTIONS?.map((item, key) => {
+                                return (
+                                    <DropdownItem
+                                        key={key}
+                                        eventKey={item.value}
+                                    >
+                                        <span>{item.label}</span>
+                                    </DropdownItem>
+                                )
+                            })}
                         </Dropdown>
                     </div>
+                </div>
 
-                    <div className="flex flex-col md:flex-row gap-4 lg:gap-5">
-                        <div>
-                            <div className="mb-1 font-semibold text-sm text-center md:text-left">
-                                FROM DATE:
-                            </div>
-                            <DatePicker
-                                inputPrefix={
-                                    <HiOutlineCalendar className="text-lg" />
-                                }
-                                defaultValue={new Date()}
-                                value={new Date(from)}
-                                onChange={handleFromChange}
-                            />
-                        </div>
-                        <div>
-                            <div className="mb-1 font-semibold text-sm text-center md:text-left">
-                                TO DATE:
-                            </div>
-                            <DatePicker
-                                inputSuffix={
-                                    <TbCalendarStats className="text-xl" />
-                                }
-                                defaultValue={new Date()}
-                                value={new Date(to)}
-                                onChange={handleToChange}
-                                minDate={moment(from).toDate()}
-                            />
-                        </div>
-                    </div>
+                <div>
+                    <Button
+                        variant="new"
+                        size="sm"
+                        onClick={handleShowFilter}
+                        className="hidden xl:flex gap-2"
+                    >
+                        <CiFilter className="text-xl font-extrabold" /> Filter
+                    </Button>
+
+                    <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleShowFilter}
+                        className="flex xl:hidden"
+                    >
+                        <CiFilter className="text-xl font-extrabold" />
+                    </Button>
                 </div>
             </div>
 
@@ -469,6 +501,18 @@ const OrderList = () => {
                     </div>
                 </div>
             </div>
+            {showFilter && (
+                <FilterReturnOrder
+                    showFilter={showFilter}
+                    handleFilterClose={handleFilterClose}
+                    dropdownStatus={dropdownStatus}
+                    handleDropdownSelect={handleDropdownSelect}
+                    handleFromChange={handleFromChange}
+                    handleToChange={handleToChange}
+                    from={from}
+                    to={to}
+                />
+            )}
         </div>
     )
 }
