@@ -66,7 +66,7 @@ type WebType = {
     sub_header_config_icon_Array: File[]
     sub_header_config_image_Array: File[]
     is_section_clickable: boolean
-    section_filters: string
+    section_filters: string[]
 }
 
 type modalProps = {
@@ -1065,35 +1065,28 @@ const PageModal: React.FC<modalProps> = ({
                                                 field,
                                                 form,
                                             }: FieldProps<any>) => {
-                                                console.log(
-                                                    'Field Value Selected',
-                                                )
-                                                console.log('FIELDS', field)
-                                                const selectedTags = field.value
-                                                    ? field.value.map(
-                                                          (tag: any) => {
-                                                              const matchedOption =
-                                                                  filters.filters.find(
-                                                                      (
-                                                                          option,
-                                                                      ) =>
-                                                                          option.value ===
-                                                                          tag,
+                                                // Ensure field.value is an array
+                                                const selectedTags =
+                                                    Array.isArray(field.value)
+                                                        ? field.value.map(
+                                                              (tag: any) => {
+                                                                  const matchedOption =
+                                                                      filters.filters.find(
+                                                                          (
+                                                                              option,
+                                                                          ) =>
+                                                                              option.value ===
+                                                                              tag,
+                                                                      )
+                                                                  return (
+                                                                      matchedOption || {
+                                                                          value: tag,
+                                                                          label: tag,
+                                                                      }
                                                                   )
-                                                              return (
-                                                                  matchedOption || {
-                                                                      value: tag,
-                                                                      label: tag,
-                                                                  }
-                                                              )
-                                                          },
-                                                      )
-                                                    : []
-
-                                                console.log(
-                                                    'Finsished selectedTags',
-                                                    selectedTags,
-                                                )
+                                                              },
+                                                          )
+                                                        : []
 
                                                 return (
                                                     <Select
@@ -1102,9 +1095,7 @@ const PageModal: React.FC<modalProps> = ({
                                                         options={
                                                             filters.filters
                                                         }
-                                                        value={
-                                                            selectedTags || []
-                                                        }
+                                                        value={selectedTags}
                                                         getOptionLabel={(
                                                             option,
                                                         ) => option.label}
