@@ -19,6 +19,7 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
+import { IoMdDownload } from 'react-icons/io'
 
 interface LastUpdatedBy {
     name: string
@@ -292,6 +293,26 @@ const BrandStock = () => {
         return moment(date).add(1, 'days').format('YYYY-MM-DD')
     }
 
+    const handleDownload = async () => {
+        try {
+            const downloadUrl = `inventory?download=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`
+            const response = await axiosInstance.get(downloadUrl, {
+                responseType: 'blob',
+            })
+            const urlToBeDownloaded = window.URL.createObjectURL(
+                new Blob([response.data]),
+            )
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = 'Product.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <div className="overflow-x-auto p-4">
             <div className="upper flex flex-col md:flex-row justify-between mb-5 items-start md:items-center">
@@ -305,7 +326,7 @@ const BrandStock = () => {
                     />
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-5 w-full md:w-auto">
+                {/* <div className="flex flex-col md:flex-row gap-5 w-full md:w-auto">
                     <div className="w-full md:w-auto">
                         <div className="mb-1 font-semibold text-sm">
                             FROM DATE:
@@ -335,7 +356,14 @@ const BrandStock = () => {
                             className="w-full md:w-auto"
                         />
                     </div>
-                </div>
+                </div> */}
+                <button
+                    className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex "
+                    onClick={handleDownload}
+                >
+                    <IoMdDownload className="text-xl" />
+                    Export
+                </button>
             </div>
             <Table className="w-full">
                 <THead>
