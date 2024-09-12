@@ -293,6 +293,9 @@ const BrandStock = () => {
         return moment(date).add(1, 'days').format('YYYY-MM-DD')
     }
 
+    const date = new Date()
+    console.log('DAAAAATE', moment(date).format('YYYY-MM-DD'))
+
     const handleDownload = async () => {
         try {
             const downloadUrl = `inventory?download=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`
@@ -304,7 +307,7 @@ const BrandStock = () => {
             )
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = 'Product.csv'
+            link.download = `${selectedCompany.name}_Stock-${moment(date).format('YYYY-MM-DD')}.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)

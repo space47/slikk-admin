@@ -89,7 +89,7 @@ export const PickedUpModal: React.FC<props1> = ({
             onCancel={handleClose}
         >
             <p className="text-lg mb-4">{modalContent}</p>
-            <h1 className="text-2xl font-semibold">Your Item is Picked Up</h1>
+            <h1 className="text-2xl font-semibold">Create Pickup Generate</h1>
         </Modal>
     )
 }
