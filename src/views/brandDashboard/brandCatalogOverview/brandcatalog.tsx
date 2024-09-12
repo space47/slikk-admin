@@ -14,6 +14,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { Spinner } from '@/components/ui'
+import { IoMdDownload } from 'react-icons/io'
 
 type ProductVariant = {
     name: string
@@ -71,11 +73,13 @@ const BrandCatalog = () => {
         (store) => store.company.currCompany,
     )
     const [filterInput, setFilterInput] = useState('')
+    const [showSpinner, setShowSpinner] = useState(false)
 
     console.log('ssssssssssssss', selectedCompany)
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
+            setShowSpinner(true)
             const response = await axiosInstance.get(
                 `search/product?dashboard=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`,
             )
@@ -83,8 +87,10 @@ const BrandCatalog = () => {
             const total = response.data.count
             setData(data)
             setTotalData(total)
+            setShowSpinner(false)
         } catch (error) {
             console.error(error)
+            setShowSpinner(false)
         }
     }
 
@@ -258,69 +264,114 @@ const BrandCatalog = () => {
     const onSelectChange = (value: number) => {
         setPageSize(Number(value))
     }
+    const handleDownload = async () => {
+        try {
+            const downloadUrl = `search/product?download=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`
+            const response = await axiosInstance.get(downloadUrl, {
+                responseType: 'blob',
+            })
+            const urlToBeDownloaded = window.URL.createObjectURL(
+                new Blob([response.data]),
+            )
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = 'Product.csv'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="p-2 border rounded"
-                />
-            </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-            <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
-                        options={pageSizeOptions}
-                        onChange={(option) =>
-                            onSelectChange(option?.value || 0)
-                        }
-                    />
+            {showSpinner ? (
+                <div className="flex justify-center items-center h-screen">
+                    <Spinner size="40px" />
                 </div>
-            </div>
+            ) : (
+                <>
+                    <div className="flex justify-between">
+                        <div className="mb-4">
+                            <input
+                                type="text"
+                                placeholder="Search here"
+                                value={globalFilter}
+                                onChange={(e) =>
+                                    setGlobalFilter(e.target.value)
+                                }
+                                className="p-2 border rounded"
+                            />
+                        </div>
+                        <div>
+                            <button
+                                className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex "
+                                onClick={handleDownload}
+                            >
+                                <IoMdDownload className="text-xl" />
+                                Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <Table>
+                        <THead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <Tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <Th
+                                            key={header.id}
+                                            colSpan={header.colSpan}
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext(),
+                                            )}
+                                        </Th>
+                                    ))}
+                                </Tr>
+                            ))}
+                        </THead>
+                        <TBody>
+                            {table.getRowModel().rows.map((row) => (
+                                <Tr key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <Td key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext(),
+                                            )}
+                                        </Td>
+                                    ))}
+                                </Tr>
+                            ))}
+                        </TBody>
+                    </Table>
+
+                    <div className="flex items-center justify-between mt-4">
+                        <Pagination
+                            pageSize={pageSize}
+                            currentPage={page}
+                            total={totalData}
+                            onChange={onPaginationChange}
+                        />
+                        <div style={{ minWidth: 130 }}>
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find(
+                                    (option) => option.value === pageSize,
+                                )}
+                                options={pageSizeOptions}
+                                onChange={(option) =>
+                                    onSelectChange(option?.value || 0)
+                                }
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     )
 }
