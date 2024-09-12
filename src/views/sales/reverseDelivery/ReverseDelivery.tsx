@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     useReactTable,
@@ -31,6 +31,8 @@ import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiEBike2Fill } from 'react-icons/ri'
 import { ReturnOrder } from '../returnOrders/ReturnOrders'
+import FilterReturnOrder from '../returnOrders/filter/FilterReturnOrder'
+import { CiFilter } from 'react-icons/ci'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -42,15 +44,23 @@ const pageSizeOptions = [
 ]
 
 const LOGISTIC_PARTNER = [
-    { value: 'porter', label: 'PORTER' },
     { value: 'shiprocket', label: 'SHIPROCKET' },
     { value: 'shadowfax', label: 'SHADOWFAX' },
     { value: 'slikk', label: 'SLIKK' },
+]
+const SEARCHOPTIONS = [
+    { label: 'RETURN ID', value: 'return_order_id' },
+    { label: 'INVOICE', value: 'invoice_id' },
+    { label: 'AWB', value: 'awb' },
 ]
 
 const ReverseDelivery = () => {
     const [orders, setOrders] = useState<ReturnOrder[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<
+        Record<string, string>
+    >(SEARCHOPTIONS[0])
+    const [searchInput, setSearchInput] = useState<string>('')
     const [pageSize, setPageSize] = useState(10)
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
@@ -60,6 +70,8 @@ const ReverseDelivery = () => {
     const [dropdownStatus, setDropdownStatus] = useState<
         Record<string, string>
     >(RETURN_ORDERS[0])
+
+    const [showFilter, setShowFilter] = useState(false)
 
     const fetchOrders = async (
         page: number,
@@ -75,9 +87,23 @@ const ReverseDelivery = () => {
                     : `&status=${dropdownStatus?.value}`
 
             let response
-            if (globalFilter) {
+            if (
+                currentSelectedPage.value === 'return_order_id' &&
+                searchInput
+            ) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?return_order_id=${globalFilter}${status}`,
+                    `/merchant/return_orders?return_order_id=${searchInput}${status}`,
+                )
+            } else if (
+                currentSelectedPage.value === 'invoice_id' &&
+                searchInput
+            ) {
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?invoice_id=${searchInput}${status}`,
+                )
+            } else if (currentSelectedPage.value === 'awb' && searchInput) {
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?awb=${searchInput}${status}`,
                 )
             } else {
                 response = await axioisInstance.get(
@@ -97,7 +123,7 @@ const ReverseDelivery = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, globalFilter])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput])
 
     const [partner, setPartner] = useState<{
         [key: string]: { value: string; label: string }
@@ -106,8 +132,6 @@ const ReverseDelivery = () => {
         'Data for Table',
         orders?.map((item) => item),
     )
-
-    console.log('FILTERS', globalFilter)
 
     const columns = [
         {
@@ -229,7 +253,7 @@ const ReverseDelivery = () => {
                                 <DropdownItem
                                     key={key}
                                     eventKey={item.value}
-                                    className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                    className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer z-50"
                                 >
                                     <span>{item.label}</span>
                                 </DropdownItem>
@@ -334,6 +358,15 @@ const ReverseDelivery = () => {
                 : moment().format('YYYY-MM-DD'),
         )
     }
+    const handleSelect = (value: any) => {
+        const selected = SEARCHOPTIONS.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
+    }
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value)
+    }
 
     const handlePartnerSelect = (selectedValue: any, row: any) => {
         console.log('VALUE', selectedValue, row)
@@ -390,90 +423,72 @@ const ReverseDelivery = () => {
         }
     }
 
+    const handleShowFilter = useCallback(() => {
+        setShowFilter(true)
+    }, [setShowFilter])
+
+    const handleFilterClose = useCallback(() => {
+        setShowFilter(false)
+    }, [setShowFilter])
+
     console.log('ssssssswddwdwdw', dropdownStatus)
     return (
         <div className="overflow-x-auto">
-            <div className="flex flex-col lg:flex-row lg:justify-between mb-10 items-center gap-4">
-                <div className="flex flex-col lg:flex-row gap-6">
-                    <div className="mb-4 lg:mb-0">
-                        <div className="text-sm md:text-base">
-                            SEARCH BY INVOICE_ID
-                        </div>
+            <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4">
+                <div className="flex gap-2">
+                    <div className="flex justify-start ">
                         <input
-                            type="text"
-                            placeholder="Search here"
-                            value={globalFilter}
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                            className="p-2 border rounded mt-1 w-full"
+                            type="search"
+                            name="search"
+                            id=""
+                            placeholder="search SKU for product"
+                            value={searchInput}
+                            className="xl:w-[250px] rounded-[10px] w-[130px]"
+                            onChange={handleSearch}
                         />
                     </div>
-
-                    {/* <div className="mb-4 lg:mb-0">
-                        <div className="text-sm md:text-base">
-                            SEARCH BY MOBILE
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Search through mobile"
-                            value={mobileFilter}
-                            onChange={(e) =>
-                                dispatch(setMobileFilter(e.target.value))
-                            }
-                            className="p-2 border rounded mt-1 w-full"
-                        />
-                    </div> */}
-                </div>
-
-                <div className="flex flex-col lg:flex-row gap-4 lg:gap-10 items-center justify-between w-full lg:w-auto">
-                    <div className="relative w-full lg:w-auto bg-gray-100 flex justify-center">
+                    <div className="bg-gray-200  xl:font-bold xl:text-lg text-sm  ">
                         <Dropdown
-                            className="w-full lg:w-50 px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                            title={dropdownStatus.name}
-                            onSelect={handleDropdownSelect}
+                            className=" text-xl text-black bg-gray-200 font-bold "
+                            title={
+                                currentSelectedPage?.value
+                                    ? currentSelectedPage.label
+                                    : 'SELECT'
+                            }
+                            onSelect={handleSelect}
                         >
-                            <div className="max-h-60 overflow-y-auto">
-                                {ORDER_STATUS?.map((item, key) => (
+                            {SEARCHOPTIONS?.map((item, key) => {
+                                return (
                                     <DropdownItem
                                         key={key}
                                         eventKey={item.value}
-                                        className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
                                     >
-                                        <span>{item.name}</span>
+                                        <span>{item.label}</span>
                                     </DropdownItem>
-                                ))}
-                            </div>
+                                )
+                            })}
                         </Dropdown>
                     </div>
+                </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 lg:gap-5">
-                        <div>
-                            <div className="mb-1 font-semibold text-sm text-center sm:text-left">
-                                FROM DATE:
-                            </div>
-                            <DatePicker
-                                inputPrefix={
-                                    <HiOutlineCalendar className="text-lg" />
-                                }
-                                defaultValue={new Date()}
-                                value={new Date(from)}
-                                onChange={handleFromChange}
-                            />
-                        </div>
-                        <div>
-                            <div className="mb-1 font-semibold text-sm text-center sm:text-left">
-                                TO DATE:
-                            </div>
-                            <DatePicker
-                                inputSuffix={
-                                    <TbCalendarStats className="text-xl" />
-                                }
-                                defaultValue={new Date()}
-                                value={moment(to).subtract(1, 'days').toDate()}
-                                onChange={handleToChange}
-                                minDate={moment(from).toDate()}
-                            />
-                        </div>
-                    </div>
+                <div>
+                    <Button
+                        variant="new"
+                        size="sm"
+                        onClick={handleShowFilter}
+                        className="hidden xl:flex gap-2"
+                    >
+                        <CiFilter className="text-xl font-extrabold" /> Filter
+                    </Button>
+
+                    <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleShowFilter}
+                        className="flex xl:hidden"
+                    >
+                        <CiFilter className="text-xl font-extrabold" />
+                    </Button>
                 </div>
             </div>
 
@@ -541,6 +556,18 @@ const ReverseDelivery = () => {
                     />
                 </div>
             </div>
+            {showFilter && (
+                <FilterReturnOrder
+                    showFilter={showFilter}
+                    handleFilterClose={handleFilterClose}
+                    dropdownStatus={dropdownStatus}
+                    handleDropdownSelect={handleDropdownSelect}
+                    handleFromChange={handleFromChange}
+                    handleToChange={handleToChange}
+                    from={from}
+                    to={to}
+                />
+            )}
         </div>
     )
 }

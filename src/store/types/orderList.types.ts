@@ -187,9 +187,9 @@ export interface OrderState {
     loading: boolean
     message: string
     orderCount: number
-    dropdownStatus: DropdownStatus
-    globalFilter: string
-    mobileFilter: string
+    dropdownStatus: DropdownStatus[]
+    searchInput: string
+    currentSelectedPage: any
     pageSize: number
     page: number
     from: string

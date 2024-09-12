@@ -13,6 +13,7 @@ import Upload from '@/components/ui/Upload'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CreatePostTable from './CreatePostTable'
+import Spinner from '@/components/ui/Spinner'
 
 type ProductTable = {
     sku: string
@@ -65,19 +66,19 @@ const initialValue: Post = {
     longitude: '',
     thumbnail: '',
     thumbnail_array: [],
-    mobile: ''
+    mobile: '',
 }
 
 const SegmentOptions = () => {
     return ['video', 'image'].map((option) => ({
         label: option,
-        value: option
+        value: option,
     }))
 }
 
 const DROPDOWNARRAY = [
     { label: 'Name', value: 'name' },
-    { label: 'SKU', value: 'sku' }
+    { label: 'SKU', value: 'sku' },
 ]
 
 const CreatePost = () => {
@@ -89,6 +90,7 @@ const CreatePost = () => {
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState<string[]>([])
+    const [submitLoader, setSubmitLoader] = useState(false)
 
     const handleSelect = (value: any) => {
         const selected = DROPDOWNARRAY.find((item) => item.value === value)
@@ -121,7 +123,7 @@ const CreatePost = () => {
             'video/webm',
             'video/avchd',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]
         const MAX_FILE_SIZE = 50000000000000
 
@@ -155,7 +157,7 @@ const CreatePost = () => {
                 const qname =
                     currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
                 const response = await axioisInstance.get(
-                    `/search/product?dashboard=true&${qname}=${searchInput}`
+                    `/search/product?dashboard=true&${qname}=${searchInput}`,
                 )
                 const data = response.data.results
                 setTableData(data)
@@ -188,6 +190,7 @@ const CreatePost = () => {
         //     })
         //     return
         // }
+        setSubmitLoader(true)
 
         try {
             console.log('Checking formdata')
@@ -213,25 +216,30 @@ const CreatePost = () => {
             formData.append('mobile', values.mobile)
             console.log('Finished checking formdata')
             console.log('Starting API call')
-            const response = await axioisInstance.post('merchant/userpost', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            console.log(response)
+            const response = await axioisInstance.post(
+                'merchant/userpost',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                },
+            )
+            setSubmitLoader(false)
             notification.success({
                 message: 'Success',
                 description:
-                    response?.data?.message || 'POST created successfully'
+                    response?.data?.message || 'POST created successfully',
             })
             navigate('/app/uploadPost')
             console.log('Ending API call')
         } catch (error: any) {
             console.error('Error submitting form:', error)
+            setSubmitLoader(false)
             notification.error({
                 message: 'Failure',
                 description:
-                    error?.response?.data?.message || 'POST not created'
+                    error?.response?.data?.message || 'POST not created',
             })
         }
     }
@@ -281,13 +289,13 @@ const CreatePost = () => {
                                                 value={SegmentOptions().find(
                                                     (option) =>
                                                         option.value ===
-                                                        field.value
+                                                        field.value,
                                                 )}
                                                 options={SegmentOptions()}
                                                 onChange={(option) =>
                                                     form.setFieldValue(
                                                         'type',
-                                                        option?.value
+                                                        option?.value,
                                                     )
                                                 }
                                             />
@@ -306,7 +314,7 @@ const CreatePost = () => {
                                     >
                                         <Field name="file_array">
                                             {({
-                                                form
+                                                form,
                                             }: FieldProps<Product>) => (
                                                 <>
                                                     <Upload
@@ -320,13 +328,13 @@ const CreatePost = () => {
                                                         onChange={(files) =>
                                                             form.setFieldValue(
                                                                 'file_array',
-                                                                files
+                                                                files,
                                                             )
                                                         }
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'file_array',
-                                                                files
+                                                                files,
                                                             )
                                                         }
                                                     />
@@ -347,7 +355,7 @@ const CreatePost = () => {
                                     >
                                         <Field name="thumbnail_array">
                                             {({
-                                                form
+                                                form,
                                             }: FieldProps<Product>) => (
                                                 <>
                                                     <Upload
@@ -361,13 +369,13 @@ const CreatePost = () => {
                                                         onChange={(files) =>
                                                             form.setFieldValue(
                                                                 'thumbnail_array',
-                                                                files
+                                                                files,
                                                             )
                                                         }
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
                                                                 'thumbnail_array',
-                                                                files
+                                                                files,
                                                             )
                                                         }
                                                         // uploadButtonText="Add Files"
@@ -436,7 +444,7 @@ const CreatePost = () => {
                                             setProductData(e.target.value)
                                             setFieldValue(
                                                 'products',
-                                                e.target.value
+                                                e.target.value,
                                             )
                                         }}
                                         placeholder="Enter product barcode"
@@ -445,21 +453,28 @@ const CreatePost = () => {
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
-                                <Button
-                                    type="reset"
-                                    className="mr-2 bg-gray-600"
-                                    onClick={() => resetForm()}
-                                >
-                                    Reset
-                                </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    className=" text-white"
-                                >
-                                    Submit
-                                </Button>
+                                {submitLoader ? (
+                                    <Spinner className="mr-4" size="50px" />
+                                ) : (
+                                    <>
+                                        <Button
+                                            type="reset"
+                                            className="mr-2 bg-gray-600"
+                                            onClick={() => resetForm()}
+                                        >
+                                            Reset
+                                        </Button>
+                                        <Button
+                                            variant="solid"
+                                            type="submit"
+                                            className=" text-white"
+                                        >
+                                            Submit
+                                        </Button>
+                                    </>
+                                )}
                             </FormContainer>
+                            <div className="flex justify-end items-center mt-6"></div>
                         </FormContainer>
                     </Form>
                 )}

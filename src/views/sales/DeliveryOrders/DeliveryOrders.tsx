@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
     useReactTable,
@@ -21,8 +21,8 @@ import {
 import {
     fetchOrders,
     setDropdownStatus,
-    setGlobalFilter,
-    setMobileFilter,
+    setCurrentSelectedPage,
+    setSearchInput,
     setPageSize,
     setPage,
     setFrom,
@@ -39,6 +39,9 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiEBike2Fill } from 'react-icons/ri'
+import { CiFilter } from 'react-icons/ci'
+import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
+import FilterForwardDelivery from './filter/FilterForwardDelivery'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -56,6 +59,12 @@ const LOGISTIC_PARTNER = [
     { value: 'slikk', label: 'SLIKK' },
 ]
 
+const SEARCHOPTIONS = [
+    { label: 'INVOICE', value: 'invoice' },
+    { label: 'MOBILE', value: 'mobile' },
+    { label: 'AWB', value: 'awb' },
+]
+
 const DeliveryOrders = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
@@ -65,19 +74,21 @@ const DeliveryOrders = () => {
         orderCount,
         page,
         pageSize,
-        globalFilter,
+        searchInput,
         from,
-        mobileFilter,
+        currentSelectedPage,
         to,
         dropdownStatus,
     } = useAppSelector<OrderState>((state) => state.order)
 
     useEffect(() => {
         dispatch(fetchOrders())
-    }, [dispatch, page, pageSize, from, to, dropdownStatus, globalFilter])
-    useEffect(() => {
-        dispatch(fetchOrders())
-    }, [dispatch, page, pageSize, from, to, dropdownStatus, mobileFilter])
+    }, [dispatch, page, pageSize, from, to, dropdownStatus, searchInput])
+    // useEffect(() => {
+    //     dispatch(fetchOrders())
+    // }, [dispatch, page, pageSize, from, to, dropdownStatus, mobileFilter])
+
+    const [showFilter, setShowFilter] = useState(false)
 
     const [partner, setPartner] = useState<{
         [key: string]: { value: string; label: string }
@@ -255,6 +266,16 @@ const DeliveryOrders = () => {
         }
     }
 
+    const handleSelect = (value: any) => {
+        const selected = SEARCHOPTIONS.find((item) => item.value === value)
+        if (selected) {
+            dispatch(setCurrentSelectedPage(selected))
+        }
+    }
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(setSearchInput(e.target.value))
+    }
+
     const handleInvoiceClick = (invoiceId: string) => {
         navigate(`/app/orders/${invoiceId}`)
     }
@@ -309,7 +330,7 @@ const DeliveryOrders = () => {
         )
     }
 
-    console.log('PPPPPPPPPP', partner)
+    console.log('Input', searchInput)
 
     const handleCreateTask = async (
         partner: any,
@@ -345,91 +366,71 @@ const DeliveryOrders = () => {
     }
 
     console.log('ssssssswddwdwdw', dropdownStatus)
+    const handleShowFilter = useCallback(() => {
+        setShowFilter(true)
+    }, [setShowFilter])
+
+    const handleFilterClose = useCallback(() => {
+        setShowFilter(false)
+    }, [setShowFilter])
+
     return (
         <div className="overflow-x-auto">
-            <div className="flex flex-col lg:flex-row lg:justify-between mb-10 items-center gap-4">
-                <div className="flex flex-col lg:flex-row gap-6">
-                    <div className="mb-4 lg:mb-0">
-                        <div className="text-sm md:text-base">
-                            SEARCH BY INVOICE_ID
-                        </div>
+            <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4 md:flex-col">
+                <div className="flex gap-2">
+                    <div className="flex justify-start ">
                         <input
-                            type="text"
-                            placeholder="Search here"
-                            value={globalFilter}
-                            onChange={(e) =>
-                                dispatch(setGlobalFilter(e.target.value))
-                            }
-                            className="p-2 border rounded mt-1 w-full"
+                            type="search"
+                            name="search"
+                            id=""
+                            placeholder="search SKU for product"
+                            value={searchInput}
+                            className="xl:w-[250px] rounded-[10px] w-[130px]"
+                            onChange={handleSearch}
                         />
                     </div>
-
-                    <div className="mb-4 lg:mb-0">
-                        <div className="text-sm md:text-base">
-                            SEARCH BY MOBILE
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Search through mobile"
-                            value={mobileFilter}
-                            onChange={(e) =>
-                                dispatch(setMobileFilter(e.target.value))
-                            }
-                            className="p-2 border rounded mt-1 w-full"
-                        />
-                    </div>
-                </div>
-
-                <div className="flex flex-col lg:flex-row gap-4 lg:gap-10 items-center justify-between w-full lg:w-auto">
-                    <div className="relative w-full lg:w-auto bg-gray-100 flex justify-center">
+                    <div className="bg-gray-200  xl:font-bold xl:text-lg text-sm  ">
                         <Dropdown
-                            className="w-full lg:w-50 px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                            title={dropdownStatus.name}
-                            onSelect={handleDropdownSelect}
+                            className=" text-xl text-black bg-gray-200 font-bold "
+                            title={
+                                currentSelectedPage?.value
+                                    ? currentSelectedPage.label
+                                    : 'SELECT'
+                            }
+                            onSelect={handleSelect}
                         >
-                            <div className="max-h-60 overflow-y-auto">
-                                {ORDER_STATUS?.map((item, key) => (
+                            {SEARCHOPTIONS?.map((item, key) => {
+                                return (
                                     <DropdownItem
                                         key={key}
                                         eventKey={item.value}
-                                        className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
                                     >
-                                        <span>{item.name}</span>
+                                        <span>{item.label}</span>
                                     </DropdownItem>
-                                ))}
-                            </div>
+                                )
+                            })}
                         </Dropdown>
                     </div>
+                </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 lg:gap-5">
-                        <div>
-                            <div className="mb-1 font-semibold text-sm text-center sm:text-left">
-                                FROM DATE:
-                            </div>
-                            <DatePicker
-                                inputPrefix={
-                                    <HiOutlineCalendar className="text-lg" />
-                                }
-                                defaultValue={new Date()}
-                                value={new Date(from)}
-                                onChange={handleFromChange}
-                            />
-                        </div>
-                        <div>
-                            <div className="mb-1 font-semibold text-sm text-center sm:text-left">
-                                TO DATE:
-                            </div>
-                            <DatePicker
-                                inputSuffix={
-                                    <TbCalendarStats className="text-xl" />
-                                }
-                                defaultValue={new Date()}
-                                value={moment(to).subtract(1, 'days').toDate()}
-                                onChange={handleToChange}
-                                minDate={moment(from).toDate()}
-                            />
-                        </div>
-                    </div>
+                <div>
+                    <Button
+                        variant="new"
+                        size="sm"
+                        onClick={handleShowFilter}
+                        className="hidden xl:flex gap-2"
+                    >
+                        <CiFilter className="text-xl font-extrabold" /> Filter
+                    </Button>
+
+                    <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleShowFilter}
+                        className="flex xl:hidden"
+                    >
+                        <CiFilter className="text-xl font-extrabold" />
+                    </Button>
                 </div>
             </div>
 
@@ -499,6 +500,18 @@ const DeliveryOrders = () => {
                     />
                 </div>
             </div>
+            {showFilter && (
+                <FilterForwardDelivery
+                    showFilter={showFilter}
+                    handleFilterClose={handleFilterClose}
+                    dropdownStatus={dropdownStatus}
+                    handleDropdownSelect={handleDropdownSelect}
+                    handleFromChange={handleFromChange}
+                    handleToChange={handleToChange}
+                    from={from}
+                    to={to}
+                />
+            )}
         </div>
     )
 }
