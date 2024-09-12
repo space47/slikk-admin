@@ -261,7 +261,7 @@ const PageModal: React.FC<modalProps> = ({
 
     const handleSubmit = async (row: any) => {
         try {
-            console.log('handleSubmit called')
+            console.log('handleSubmit called', row.data_type.filters)
             const imageUpload = await handleimage(row.background_image_array)
             const mobileimageUpload = await handleimage(
                 row.mobile_background_array,

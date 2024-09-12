@@ -155,6 +155,8 @@ const StockOverview = () => {
         filter(page, pageSize, globalFilter)
     }, [page, pageSize, globalFilter, searchType])
 
+    console.log('TYYYPe', searchType)
+
     const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
             {
@@ -414,7 +416,9 @@ const StockOverview = () => {
             )
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = 'Product.csv'
+            link.download = searchType
+                ? `${searchType}-stockOverView.csv`
+                : `All-StockOverview.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)

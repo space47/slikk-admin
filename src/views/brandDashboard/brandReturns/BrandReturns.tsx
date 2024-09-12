@@ -20,6 +20,7 @@ import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import { FaDownload } from 'react-icons/fa'
+import { Spinner } from '@/components/ui'
 
 interface Product {
     name: string
@@ -65,6 +66,7 @@ const BrandReturns = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
         (store) => store.company.currCompany,
     )
+    const [showSpinner, setShowSpinner] = useState(false)
 
     const fetchData = async (
         page: number,
@@ -73,6 +75,7 @@ const BrandReturns = () => {
         to: string,
     ) => {
         try {
+            setShowSpinner(true)
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
                 `merchant/return_order_items?company_id=${selectedCompany.id}&brand=true&from=${from}&to=${To_Date}`,
@@ -81,8 +84,10 @@ const BrandReturns = () => {
             const total = response.data.data.count
             setData(data)
             setTotalData(total)
+            setShowSpinner(false)
         } catch (error) {
             console.error(error)
+            setShowSpinner(false)
         }
     }
 
@@ -229,110 +234,129 @@ const BrandReturns = () => {
     }
 
     return (
-        <div className="overflow-x-auto">
-            <div className="upper flex justify-between mb-5 items-center ">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
-                    />
-                </div>
+        <>
+            {showSpinner ? (
+                <>
+                    <div className="flex justify-center items-center h-screen">
+                        <Spinner size="40px" />
+                    </div>
+                </>
+            ) : (
+                <div className="overflow-x-auto">
+                    <div className="upper flex justify-between mb-5 items-center ">
+                        <div className="mb-4">
+                            <input
+                                type="text"
+                                placeholder="Search here"
+                                value={globalFilter}
+                                onChange={(e) =>
+                                    setGlobalFilter(e.target.value)
+                                }
+                                className="p-2 border rounded"
+                            />
+                        </div>
 
-                <div className="flex gap-5 items-center">
-                    <div>
-                        <div className="flex items-end justify-end mb-2">
-                            <button
-                                className="bg-none text-black px-5 py-3  "
-                                onClick={handleDownload}
-                            >
-                                <FaDownload className="text-2xl hover:text-3xl" />
-                            </button>{' '}
-                            <br />
-                            <br />
+                        <div className="flex gap-5 items-center">
+                            <div>
+                                <div className="mb-1 font-semibold text-sm">
+                                    FROM DATE:
+                                </div>
+                                <DatePicker
+                                    inputPrefix={
+                                        <HiOutlineCalendar className="text-lg" />
+                                    }
+                                    defaultValue={new Date()}
+                                    value={new Date(from)}
+                                    onChange={handleFromChange}
+                                />
+                            </div>
+                            <div>
+                                <div className="mb-1 font-semibold text-sm">
+                                    TO DATE:
+                                </div>
+                                <DatePicker
+                                    inputSuffix={
+                                        <TbCalendarStats className="text-xl" />
+                                    }
+                                    defaultValue={new Date()}
+                                    value={new Date(to)}
+                                    onChange={handleToChange}
+                                    minDate={moment(from)
+                                        .add(1, 'day')
+                                        .toDate()}
+                                />
+                            </div>
+                            <div>
+                                <div className="flex items-end justify-end ">
+                                    <button
+                                        className="bg-none text-black px-5 py-3  "
+                                        onClick={handleDownload}
+                                    >
+                                        <FaDownload className="text-3xl " />
+                                    </button>{' '}
+                                    <br />
+                                    <br />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            FROM DATE:
-                        </div>
-                        <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
+                    <Table>
+                        <THead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <Tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <Th
+                                            key={header.id}
+                                            colSpan={header.colSpan}
+                                        >
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext(),
+                                            )}
+                                        </Th>
+                                    ))}
+                                </Tr>
+                            ))}
+                        </THead>
+                        <TBody>
+                            {table.getRowModel().rows.map((row) => (
+                                <Tr key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <Td key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext(),
+                                            )}
+                                        </Td>
+                                    ))}
+                                </Tr>
+                            ))}
+                        </TBody>
+                    </Table>
+                    <div className="flex items-center justify-between mt-4">
+                        <Pagination
+                            pageSize={pageSize}
+                            currentPage={page}
+                            total={totalData}
+                            onChange={onPaginationChange}
                         />
-                    </div>
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            TO DATE:
+                        <div style={{ minWidth: 130 }}>
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find(
+                                    (option) => option.value === pageSize,
+                                )}
+                                options={pageSizeOptions}
+                                onChange={(option) =>
+                                    onSelectChange(option?.value)
+                                }
+                            />
                         </div>
-                        <DatePicker
-                            inputSuffix={
-                                <TbCalendarStats className="text-xl" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(to)}
-                            onChange={handleToChange}
-                            minDate={moment(from).add(1, 'day').toDate()}
-                        />
                     </div>
                 </div>
-            </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-            <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
-                        options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
-                    />
-                </div>
-            </div>
-        </div>
+            )}
+        </>
     )
 }
 

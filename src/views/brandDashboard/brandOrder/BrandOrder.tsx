@@ -355,61 +355,80 @@ const BrandOrder = () => {
     }
     return (
         <div className="overflow-x-auto">
-            <div className="upper flex justify-between mb-5 items-center ">
-                <div className="w-1/2 flex flex-col gap-3">
-                    <div className="grid grid-cols-4 w-full gap-2 items-center">
-                        <Select
-                            isMulti
-                            options={divisionArray}
-                            getOptionLabel={(option) => option.name}
-                            getOptionValue={(option) => option.id.toString()}
-                            onChange={(newVal, actionMeta) => {
-                                const selectedValues = newVal
-                                    .map((val) => val.name)
-                                    .join(',')
-                                handleMultiSelect('division', selectedValues)
-                            }}
-                        />
-                        <Select
-                            isMulti
-                            options={categoryArray}
-                            getOptionLabel={(option) => option.name}
-                            getOptionValue={(option) => option.id.toString()}
-                            onChange={(newVal, actionMeta) => {
-                                const selectedValues = newVal
-                                    .map((val) => val.name)
-                                    .join(',')
-                                handleMultiSelect('category', selectedValues)
-                            }}
-                        />
-
-                        <Select
-                            isMulti
-                            options={subCategoryArray}
-                            getOptionLabel={(option) => option.name}
-                            getOptionValue={(option) => option.id.toString()}
-                            onChange={(newVal, actionMeta) => {
-                                const selectedValues = newVal
-                                    .map((val) => val.name)
-                                    .join(',')
-                                handleMultiSelect(
-                                    'sub_category',
-                                    selectedValues,
-                                )
-                            }}
-                        />
+            <div className="upper flex flex-col lg:flex-row justify-between mb-5 items-start lg:items-center gap-5">
+                <div className="w-full lg:w-1/2 flex flex-col gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-2 items-center">
+                        <div className="flex flex-col gap-1">
+                            <div className="font-semibold">Division</div>
+                            <Select
+                                isMulti
+                                options={divisionArray}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) =>
+                                    option.id.toString()
+                                }
+                                onChange={(newVal, actionMeta) => {
+                                    const selectedValues = newVal
+                                        .map((val) => val.name)
+                                        .join(',')
+                                    handleMultiSelect(
+                                        'division',
+                                        selectedValues,
+                                    )
+                                }}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            <div className="font-semibold">Category</div>
+                            <Select
+                                isMulti
+                                options={categoryArray}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) =>
+                                    option.id.toString()
+                                }
+                                onChange={(newVal, actionMeta) => {
+                                    const selectedValues = newVal
+                                        .map((val) => val.name)
+                                        .join(',')
+                                    handleMultiSelect(
+                                        'category',
+                                        selectedValues,
+                                    )
+                                }}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-1">
+                            <div className="font-semibold">Sub_Category</div>
+                            <Select
+                                isMulti
+                                options={subCategoryArray}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) =>
+                                    option.id.toString()
+                                }
+                                onChange={(newVal, actionMeta) => {
+                                    const selectedValues = newVal
+                                        .map((val) => val.name)
+                                        .join(',')
+                                    handleMultiSelect(
+                                        'sub_category',
+                                        selectedValues,
+                                    )
+                                }}
+                            />
+                        </div>
                         <Button
                             type="primary"
-                            className="w-1/2 h-[40px]"
+                            className="w-full md:w-1/2 lg:w-1/2 h-[40px] lg:mt-5"
                             onClick={handleApply}
                         >
-                            {' '}
                             APPLY
                         </Button>
                     </div>
                 </div>
 
-                <div className="flex gap-5 items-center">
+                <div className="flex flex-col md:flex-row gap-5 items-start lg:items-center">
                     <div>
                         <div className="mb-1 font-semibold text-sm">
                             FROM DATE: {showLastSevenDays && '(Last 7 Days)'}
@@ -438,38 +457,36 @@ const BrandOrder = () => {
                         />
                     </div>
                     <div>
-                        <div className="flex items-end justify-end xl:mt-5">
+                        <div className="flex items-end justify-end">
                             <button
-                                className="bg-none text-black px-5 py-3  "
+                                className="bg-none text-black px-5 py-3"
                                 onClick={handleDownload}
                             >
                                 <FaDownload className="text-3xl" />
-                            </button>{' '}
-                            <br />
-                            <br />
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div className="flex flex-col gap-2 justify-center mb-6">
                 <div className="total">
-                    <span className="font-bold">TOTAL AMOUNT:</span>:
-                    <span className=" italic">{data?.total_amount}</span>
+                    <span className="font-bold">TOTAL AMOUNT:</span>
+                    <span className="italic">{data?.total_amount}</span>
                 </div>
                 <div className="total">
                     <span className="font-bold">TOTAL QUANTITY :</span>
-                    <span className=" italic">{data?.total_quantity}</span>
+                    <span className="italic">{data?.total_quantity}</span>
                 </div>
             </div>
 
-            <div className="mb-10 flex gap-10 justify-center ">
+            <div className="mb-10 flex flex-col lg:flex-row gap-10 justify-center">
                 <BrandOrderGraph
                     data={datewisedetails.map((item) => ({
                         dateKey: item.key,
                         total_amount: item.value.total_amount,
                     }))}
                 />
-
                 <BrandQuantityGraph
                     data={datewisedetails.map((item) => ({
                         dateKey: item.key,
@@ -508,14 +525,15 @@ const BrandOrder = () => {
                     ))}
                 </TBody>
             </Table>
-            <div className="flex items-center justify-between mt-4">
+
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
                 <Pagination
                     pageSize={pageSize}
                     currentPage={page}
                     total={skuWiseDetails && skuWiseDetails.length}
                     onChange={onPaginationChange}
                 />
-                <div style={{ minWidth: 130 }}>
+                <div className="mt-3 sm:mt-0" style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
