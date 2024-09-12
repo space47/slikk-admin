@@ -10,10 +10,6 @@ import { Modal, notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import {
-    CustomModal1,
-    CustomModal2,
-    CustomModal3,
-    CustomModal4,
     DeliveredModal,
     InTransitModal,
     OutForDeliveryModal,
@@ -23,14 +19,14 @@ import {
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 
-type LOGS = {
-    data: any
-}
+// type LOGS = {
+//     data: any
+// }
 
-type Event = {
-    timestamp: string
-    status: string
-}
+// type Event = {
+//     timestamp: string
+//     status: string
+// }
 
 const RefundActivity = () => {
     const returnOrder = useAppSelector<ReturnOrderState>(
@@ -73,9 +69,9 @@ const RefundActivity = () => {
             case 'APPROVED':
             case 'ACCEPTED':
                 return {
-                    buttonText: 'CREATE RETURN PICKUP',
+                    buttonText: 'CREATE REVERSE PICKUP',
                 }
-            case 'PICKUP_GENERATED':
+            case 'PICKUP_CREATED':
                 return {
                     buttonText: 'OUT FOR PICKUP',
                 }
@@ -140,18 +136,29 @@ const RefundActivity = () => {
         if (triggerPickedUpGenerate) {
             const sendApiRequest = async () => {
                 try {
-                    const body = {
+                    let body = {
                         action,
+                        re_create: 'no',
                     }
 
                     const response = await axiosInstance.patch(
                         `merchant/return_order/${returnDetails?.return_order_id}`,
                         body,
                     )
+
+                    // if (response.status === 400) {
+                    //     body.re_create = 'yes'
+                    //     await axiosInstance.patch(
+                    //         `merchant/return_order/${returnDetails?.return_order_id}`,
+                    //         body,
+                    //     )
+                    // }
+
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerPickedUpGenerate(false)
+
                     notification.success({
                         message: 'Success',
                         description:
@@ -164,14 +171,45 @@ const RefundActivity = () => {
                         error.response?.data?.message ||
                         'There was an error updating the order status. Please try again.'
 
-                    notification.error({
-                        message: 'Error',
-                        description: errorMessage,
-                    })
+                    if (error.response?.status === 400) {
+                        try {
+                            const bodyWithReCreate = {
+                                action,
+                                re_create: 'yes',
+                            }
+                            const retryResponse = await axiosInstance.patch(
+                                `merchant/return_order/${returnDetails?.return_order_id}`,
+                                bodyWithReCreate,
+                            )
+
+                            navigate(0)
+                            console.log(retryResponse.data)
+                            notification.success({
+                                message: 'Success',
+                                description:
+                                    retryResponse?.data?.message ||
+                                    'Rider status updated successfully.',
+                            })
+                        } catch (retryError: any) {
+                            console.error(retryError)
+                            notification.error({
+                                message: 'Error',
+                                description:
+                                    retryError.response?.data?.message ||
+                                    'Failed to update rider status with re_create.',
+                            })
+                        }
+                    } else {
+                        notification.error({
+                            message: 'Error',
+                            description: errorMessage,
+                        })
+                    }
                 } finally {
                     setTriggerPickedUpGenerate(false)
                 }
             }
+
             sendApiRequest()
         }
     }, [triggerPickedUpGenerate, navigate])
@@ -520,17 +558,18 @@ const RefundActivity = () => {
                 </Button>
             )}
 
-            {returnDetails?.status === 'APPROVED' && (
-                <PickedUpModal
-                    isModalOpen={isModalOpen}
-                    handlePickup={handlePICKUPGenerate}
-                    handleClose={handleClose}
-                    modalContent={modalContent}
-                    status={returnDetails?.status || ''}
-                />
-            )}
+            {returnDetails?.status === 'APPROVED' ||
+                ('ACCEPTED' && (
+                    <PickedUpModal
+                        isModalOpen={isModalOpen}
+                        handlePickup={handlePICKUPGenerate}
+                        handleClose={handleClose}
+                        modalContent={modalContent}
+                        status={returnDetails?.status || ''}
+                    />
+                ))}
 
-            {returnDetails?.status === 'PICKED_UP_GENERATE' && (
+            {returnDetails?.status === 'PICKUP_CREATED' && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
                     handleoutForDelivery={handleOutForPickup}

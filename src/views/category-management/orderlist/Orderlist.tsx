@@ -20,7 +20,7 @@ import type { OrderItem } from './commontypes'
 import { Button, Dropdown } from '@/components/ui'
 import { ORDER_STATUS } from './commontypes'
 import { IoMdDownload } from 'react-icons/io'
-import { FaMapMarkedAlt } from 'react-icons/fa'
+import { FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -383,7 +383,7 @@ const OrderList = () => {
                             onClick={handleShowFilter}
                             className="flex xl:hidden"
                         >
-                            <CiFilter className="text-xl font-extrabold" />
+                            <FaFilter className="text-xl font-extrabold" />
                         </Button>
                     </div>
                 </div>
