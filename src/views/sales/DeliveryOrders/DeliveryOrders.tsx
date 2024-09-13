@@ -138,12 +138,17 @@ const DeliveryOrders = () => {
                 const { awb_code } = row.original || {}
                 const { delivery_type } = row.original || {}
 
+                console.log('SSSDSDSDD', delivery_type)
+
                 let trackingUrl
 
-                if (partner === 'shadowfax' && delivery_type === 'STANDARD') {
+                if (
+                    (partner === 'Shadowfax' || partner === 'shadowfax') &&
+                    delivery_type === 'STANDARD'
+                ) {
                     trackingUrl = `https://tracker.shadowfax.in/#/awb/${awb_code}`
                 } else if (
-                    partner === 'shiprocket' &&
+                    (partner === 'Shiprocket' || partner === 'shiprocket') &&
                     delivery_type === 'EXPRESS'
                 ) {
                     trackingUrl = `https://shiprocket.co/tracking/${awb_code}`
