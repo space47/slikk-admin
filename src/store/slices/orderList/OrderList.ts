@@ -15,6 +15,7 @@ const initialState: OrderState = {
     message: '',
     orderCount: 0,
     dropdownStatus: { value: 'ALL', name: 'ALL' },
+    deliveryType: { value: '', label: '' },
     searchInput: '',
     currentSelectedPage: {},
     pageSize: 10,
@@ -36,6 +37,7 @@ export const fetchOrders = createAsyncThunk(
                 dropdownStatus,
                 searchInput,
                 currentSelectedPage,
+                deliveryType,
             } = state.order
 
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -46,21 +48,27 @@ export const fetchOrders = createAsyncThunk(
 
             let response
 
+            let deliveryStatus = ''
+
+            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+                deliveryStatus = `&delivery_type=${deliveryType?.value}`
+            }
+
             if (currentSelectedPage.value === 'invoice' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?invoice_id=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/orders?invoice_id=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else if (currentSelectedPage.value === 'mobile' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?mobile=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/orders?mobile=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else if (currentSelectedPage.value === 'awb' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?awb=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/orders?awb=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else if (!searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${statusQuery}`,
+                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${statusQuery}${deliveryStatus}`,
                 )
             } else {
                 notification.error({
@@ -84,6 +92,9 @@ export const orderSlice = createSlice({
     reducers: {
         setDropdownStatus(state, action) {
             state.dropdownStatus = action.payload
+        },
+        setDeliveryType(state, action) {
+            state.deliveryType = action.payload
         },
         setCurrentSelectedPage(state, action) {
             state.currentSelectedPage = action.payload
@@ -130,6 +141,7 @@ export const {
     setPage,
     setFrom,
     setTo,
+    setDeliveryType,
 } = orderSlice.actions
 
 export default orderSlice.reducer

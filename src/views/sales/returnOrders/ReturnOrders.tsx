@@ -24,6 +24,7 @@ import { notification } from 'antd'
 import { CiFilter } from 'react-icons/ci'
 import FilterReturnOrder from './filter/FilterReturnOrder'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { DropdownStatus } from '@/store/types/orderList.types'
 
 interface ReturnOrderItem {
     order_item: number
@@ -32,6 +33,11 @@ interface ReturnOrderItem {
     return_reason: string
     create_date: string
     update_date: string
+}
+
+interface ReturnDropdownStatus {
+    value: string[]
+    name: string[]
 }
 
 export interface ReturnOrder {
@@ -60,6 +66,12 @@ const SEARCHOPTIONS = [
     { label: 'INVOICE', value: 'invoice_id' },
 ]
 
+export const DELEIVERYRETRUNOPTIONS = [
+    { label: 'User_Initiated', value: 'USER_INITIATED' },
+    { label: 'Dashboard_Cancelled', value: 'DASHBOARD_CANCELLED' },
+    { label: 'Try&Buy', value: 'TRY_AND_BUY' },
+]
+
 const OrderList = () => {
     const [orders, setOrders] = useState<ReturnOrder[]>([])
     const [pageSize, setPageSize] = useState(10)
@@ -68,15 +80,20 @@ const OrderList = () => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<
         Record<string, string>
     >(SEARCHOPTIONS[0])
+    const [deliveryType, setDeliveryType] = useState<{
+        label: string
+        value: string
+    } | null>(null)
     const [searchInput, setSearchInput] = useState<string>('')
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
-    const [dropdownStatus, setDropdownStatus] = useState<
-        Record<string, string>
-    >(RETURN_ORDERS[0])
+    const [dropdownStatus, setDropdownStatus] = useState<ReturnDropdownStatus>({
+        value: [],
+        name: [],
+    })
     const [showFilter, setShowFilter] = useState(false)
 
     const fetchOrders = async (
@@ -88,28 +105,34 @@ const OrderList = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
-                dropdownStatus?.value === 'ALL'
+                dropdownStatus?.value.length === 0
                     ? ''
                     : `&status=${dropdownStatus?.value}`
 
             let response
+            let deliveryStatus = ''
+
+            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+                deliveryStatus = `&return_type=${deliveryType?.value}`
+            }
+
             if (
                 currentSelectedPage.value === 'return_order_id' &&
                 searchInput
             ) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?return_order_id=${searchInput}${status}`,
+                    `/merchant/return_orders?return_order_id=${searchInput}${status}${deliveryStatus}`,
                 )
             } else if (
                 currentSelectedPage.value === 'invoice_id' &&
                 searchInput
             ) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?invoice_id=${invoiceFilter}${status}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/return_orders?invoice_id=${invoiceFilter}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
+                    `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}`,
                 )
             }
 
@@ -125,7 +148,7 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, searchInput])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType])
 
     const columns = useMemo(
         () => [
@@ -265,16 +288,8 @@ const OrderList = () => {
         pageCount: Math.ceil(orderCount ?? 0 / pageSize),
     })
 
-    const handleRemoveClick = (return_order_id: string) => {
-        // navigate(`/app/orders/${invoiceId}`)
-        navigate(`/app/returnOrders/${return_order_id}`)
-    }
-
     const onPaginationChange = (page: number) => {
         setPage(page)
-
-        console.log('sssssssssssssssssssss', page)
-        // setPageSize(pageSize)
     }
     const handleSelect = (value: any) => {
         const selected = SEARCHOPTIONS.find((item) => item.value === value)
@@ -306,13 +321,29 @@ const OrderList = () => {
         }
     }
 
-    const handleDropdownSelect = (a: any) => {
-        setDropdownStatus({
-            value: a,
-            name: RETURN_ORDERS.find((item) => item.value == a)?.name || '',
-        })
+    const handleDropdownSelect = (selectedValue: string) => {
+        if (dropdownStatus.value.includes(selectedValue)) {
+            setDropdownStatus((prevState) => ({
+                ...prevState,
+                value: prevState.value.filter((item) => item !== selectedValue),
+            }))
+        } else {
+            setDropdownStatus((prevState) => ({
+                ...prevState,
+                value: [...prevState.value, selectedValue],
+            }))
+        }
     }
-    console.log('ssssssswddwdwdw', dropdownStatus)
+
+    const handleDeliverySelect = (selectedValue: string) => {
+        const selectedOption = DELEIVERYRETRUNOPTIONS.find(
+            (option) => option.value === selectedValue,
+        )
+
+        if (selectedOption) {
+            setDeliveryType(selectedOption)
+        }
+    }
 
     const handleDownload = async () => {
         try {
@@ -511,6 +542,8 @@ const OrderList = () => {
                     handleToChange={handleToChange}
                     from={from}
                     to={to}
+                    deliveryType={deliveryType}
+                    handleDeliveryType={handleDeliverySelect}
                 />
             )}
         </div>
