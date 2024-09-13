@@ -317,9 +317,9 @@ const BrandStock = () => {
     }
 
     return (
-        <div className="overflow-x-auto p-4">
-            <div className="upper flex flex-col md:flex-row justify-between mb-5 items-start md:items-center">
-                <div className="mb-4 w-full md:w-auto">
+        <div className="overflow-x-auto">
+            <div className="upper flex flex-col md:flex-row justify-between mb-4 items-start md:items-center">
+                <div className="w-full md:w-auto">
                     <input
                         type="text"
                         placeholder="Search here"

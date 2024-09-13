@@ -56,7 +56,7 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const BrandReturns = () => {
+const Returns = () => {
     const [data, setData] = useState<OrderItem[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
@@ -79,7 +79,7 @@ const BrandReturns = () => {
             setShowSpinner(true)
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `merchant/return_order_items?company_id=${selectedCompany.id}&brand=true&from=${from}&to=${To_Date}`,
+                `merchant/return_order_items?from=${from}&to=${To_Date}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -362,4 +362,4 @@ const BrandReturns = () => {
     )
 }
 
-export default BrandReturns
+export default Returns

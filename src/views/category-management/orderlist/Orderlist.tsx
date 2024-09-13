@@ -384,26 +384,42 @@ const OrderList = () => {
                     {/* From here */}
 
                     {/* To here */}
+                    <div className="flex gap-4">
+                        <div className="flex flex-col md:flex-row items-end justify-end mb-4">
+                            <button
+                                className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1"
+                                onClick={handleDownload}
+                            >
+                                <IoMdDownload className="text-xl md:text-xl" />
+                                Export
+                            </button>
+                            <button
+                                className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden"
+                                onClick={handleDownload}
+                            >
+                                <IoMdDownload className="text-xl md:text-xl" />
+                            </button>
+                        </div>
+                        <div>
+                            <Button
+                                variant="new"
+                                size="sm"
+                                onClick={handleShowFilter}
+                                className="hidden xl:flex gap-2"
+                            >
+                                <CiFilter className="text-xl font-extrabold" />{' '}
+                                Filter
+                            </Button>
 
-                    <div>
-                        <Button
-                            variant="new"
-                            size="sm"
-                            onClick={handleShowFilter}
-                            className="hidden xl:flex gap-2"
-                        >
-                            <CiFilter className="text-xl font-extrabold" />{' '}
-                            Filter
-                        </Button>
-
-                        <Button
-                            variant="default"
-                            size="sm"
-                            onClick={handleShowFilter}
-                            className="flex xl:hidden"
-                        >
-                            <FaFilter className="text-xl font-extrabold" />
-                        </Button>
+                            <Button
+                                variant="default"
+                                size="sm"
+                                onClick={handleShowFilter}
+                                className="flex xl:hidden"
+                            >
+                                <FaFilter className="text-xl font-extrabold" />
+                            </Button>
+                        </div>
                     </div>
                 </div>
                 <br />
@@ -476,15 +492,6 @@ const OrderList = () => {
                             onChange={(option) => onSelectChange(option?.value)}
                             className="w-full"
                         />
-
-                        <div className="flex flex-col md:flex-row items-end justify-end mb-4">
-                            <button
-                                className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2"
-                                onClick={handleDownload}
-                            >
-                                <IoMdDownload className="text-xl md:text-xl" />
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
