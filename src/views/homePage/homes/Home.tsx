@@ -136,27 +136,79 @@ const Home = () => {
 
     return (
         <div className="flex flex-col gap-6 p-4">
-            <div className="flex flex-wrap gap-5 justify-end">
-                <div className="w-full sm:w-auto">
-                    <div className="mb-1 font-semibold text-sm">FROM:</div>
-                    <DatePicker
-                        inputPrefix={<HiOutlineCalendar className="text-lg" />}
-                        defaultValue={new Date()}
-                        value={new Date(from)}
-                        onChange={handleFromChange}
-                        className=" shadow-lg border-none bg-none"
-                    />
+            {/* Upar ka dabba */}
+
+            <div className="flex flex-col xl:flex-row  xl:justify-between  mb-4 gap-5 ">
+                <div>
+                    <h5>Search By</h5>
+                    <div className="flex flex-col xl:flex-row gap-4 xl:justify-center">
+                        <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
+                            <input
+                                type="text"
+                                name="customer"
+                                value={inputValues.customer}
+                                onChange={handleInputChange}
+                                placeholder="Customer Number"
+                                className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2"
+                            />
+                            <button
+                                onClick={() =>
+                                    handleCustomerFunction(inputValues.customer)
+                                }
+                                className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                            >
+                                <FaSearch />
+                            </button>
+                        </div>
+                        <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
+                            <input
+                                type="text"
+                                name="invoice_id"
+                                value={inputValues.invoice_id}
+                                onChange={handleInputChange}
+                                placeholder="Invoice ID"
+                                className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2"
+                            />
+                            <button
+                                onClick={() =>
+                                    handleInvoiceFunction(
+                                        inputValues.invoice_id,
+                                    )
+                                }
+                                className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                            >
+                                <FaSearch />
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div className="w-full sm:w-auto">
-                    <div className="mb-1 font-semibold text-sm">TO:</div>
-                    <DatePicker
-                        inputSuffix={<TbCalendarStats className="text-xl" />}
-                        defaultValue={new Date()}
-                        value={moment(to).toDate()}
-                        onChange={handleToChange}
-                        minDate={moment(from).add(1, 'day').toDate()}
-                        className="shadow-lg "
-                    />
+
+                <div className="flex flex-wrap gap-5 justify-end xl:mt-4">
+                    <div className="w-full sm:w-auto">
+                        <div className="mb-1 font-semibold text-sm">FROM:</div>
+                        <DatePicker
+                            inputPrefix={
+                                <HiOutlineCalendar className="text-lg" />
+                            }
+                            defaultValue={new Date()}
+                            value={new Date(from)}
+                            onChange={handleFromChange}
+                            className=" shadow-lg w-auto"
+                        />
+                    </div>
+                    <div className="w-full sm:w-auto">
+                        <div className="mb-1 font-semibold text-sm">TO:</div>
+                        <DatePicker
+                            inputPrefix={
+                                <TbCalendarStats className="text-xl" />
+                            }
+                            defaultValue={new Date()}
+                            value={moment(to).toDate()}
+                            onChange={handleToChange}
+                            minDate={moment(from).add(1, 'day').toDate()}
+                            className="shadow-lg w-auto"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -255,48 +307,6 @@ const Home = () => {
                         onClick={handleShowFullScreen}
                     >
                         <MdOutlineFullscreen className="text-xl" />
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <h5>Search By</h5>
-                <div className="flex flex-col xl:flex-row gap-4 mt-5 xl:justify-center">
-                    <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
-                        <input
-                            type="text"
-                            name="customer"
-                            value={inputValues.customer}
-                            onChange={handleInputChange}
-                            placeholder="Customer Number"
-                            className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2"
-                        />
-                        <button
-                            onClick={() =>
-                                handleCustomerFunction(inputValues.customer)
-                            }
-                            className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                        >
-                            <FaSearch />
-                        </button>
-                    </div>
-                    <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
-                        <input
-                            type="text"
-                            name="invoice_id"
-                            value={inputValues.invoice_id}
-                            onChange={handleInputChange}
-                            placeholder="Invoice ID"
-                            className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2"
-                        />
-                        <button
-                            onClick={() =>
-                                handleInvoiceFunction(inputValues.invoice_id)
-                            }
-                            className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                        >
-                            <FaSearch />
-                        </button>
                     </div>
                 </div>
             </div>

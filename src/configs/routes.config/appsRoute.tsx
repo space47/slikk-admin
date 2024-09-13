@@ -1008,11 +1008,17 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'appsAnalytics.overview',
-        path: `${APP_PREFIX_PATH}/analytics/overview`,
+        key: 'appsAnalytics.orders',
+        path: `${APP_PREFIX_PATH}/analytics/orders`,
         component: lazy(
             () => import('@/views/analytics/overview/AnalyticsOverview'),
         ),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAnalytics.returns',
+        path: `${APP_PREFIX_PATH}/analytics/returns`,
+        component: lazy(() => import('@/views/analytics/returns/Returns')),
         authority: [ADMIN, USER],
     },
 ]

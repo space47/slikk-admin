@@ -66,13 +66,13 @@ const RefundActivity = () => {
 
     const getButtonAndModalContent = (status: string) => {
         switch (status) {
-            case 'CANCELLED':
-            case 'APPROVED':
-            case 'ACCEPTED':
+            // case 'CANCELLED':
+            // case 'APPROVED':
+            case '':
                 return {
                     buttonText: 'CREATE REVERSE PICKUP',
                 }
-            case 'PICKUP_CREATED':
+            case 'REVERSE_PICKUP_CREATED':
                 return {
                     buttonText: 'OUT FOR PICKUP',
                 }
@@ -108,7 +108,7 @@ const RefundActivity = () => {
     }
 
     const { buttonText, modalContent: content } = getButtonAndModalContent(
-        returnDetails?.status || '',
+        returnDetails?.log?.[returnDetails.log.length - 1]?.status || '',
     )
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,7 +153,6 @@ const RefundActivity = () => {
                     //     )
                     // }
 
-                    navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerPickedUpGenerate(false)
@@ -164,6 +163,7 @@ const RefundActivity = () => {
                             response?.data?.message ||
                             'Rider status updated successfully.',
                     })
+                    navigate(0)
                 } catch (error: any) {
                     console.error(error)
                     const errorMessage =
@@ -181,7 +181,6 @@ const RefundActivity = () => {
                                 bodyWithReCreate,
                             )
 
-                            navigate(0)
                             console.log(retryResponse.data)
                             notification.success({
                                 message: 'Success',
@@ -189,6 +188,7 @@ const RefundActivity = () => {
                                     retryResponse?.data?.message ||
                                     'Rider status updated successfully.',
                             })
+                            navigate(0)
                         } catch (retryError: any) {
                             console.error(retryError)
                             notification.error({
@@ -512,12 +512,12 @@ const RefundActivity = () => {
         console.log('okkk')
     }
 
-    //
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
             <Timeline className="mb-5">
-                {returnDetails?.status === '' ? (
+                {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
+                '' ? (
                     ''
                 ) : returnDetails?.log.length === 0 &&
                   returnDetails?.status === 'CANCELLED' ? (
@@ -557,18 +557,18 @@ const RefundActivity = () => {
                 </Button>
             )}
 
-            {returnDetails?.status === 'APPROVED' ||
-                ('ACCEPTED' && (
-                    <PickedUpModal
-                        isModalOpen={isModalOpen}
-                        handlePickup={handlePICKUPGenerate}
-                        handleClose={handleClose}
-                        modalContent={modalContent}
-                        status={returnDetails?.status || ''}
-                    />
-                ))}
+            {returnDetails?.log.length === 0 && (
+                <PickedUpModal
+                    isModalOpen={isModalOpen}
+                    handlePickup={handlePICKUPGenerate}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={returnDetails?.status || ''}
+                />
+            )}
 
-            {returnDetails?.status === 'PICKUP_CREATED' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
+                'REVERSE_PICKUP_CREATED' && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
                     handleoutForDelivery={handleOutForPickup}
@@ -578,17 +578,19 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.status === 'OUT_FOR_PICKUP' && (
-                <InTransitModal
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
+                'OUT_FOR_PICKUP' && (
+                <PickedUpModal
                     isModalOpen={isModalOpen}
-                    handleInTransit={handlePickedUp}
+                    handlePickup={handlePickedUp}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={returnDetails.status}
                 />
             )}
 
-            {returnDetails?.status === 'PICKED_UP' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
+                'PICKED_UP' && (
                 <PickedUpModal
                     isModalOpen={isModalOpen}
                     handlePickup={handleInTrasit}
@@ -598,8 +600,10 @@ const RefundActivity = () => {
                 />
             )}
 
-            {(returnDetails?.status === 'IN_TRANSIT' ||
-                returnDetails?.status === 'SHIPPED') && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
+                'IN_TRANSIT' ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
+                    'SHIPPED') && (
                 <OutForDeliveryModal
                     isModalOpen={isModalOpen}
                     handleOutForDelivery={hanldeOutForDelivery}
@@ -608,7 +612,8 @@ const RefundActivity = () => {
                     status={returnDetails.status}
                 />
             )}
-            {returnDetails?.status === 'OUT_FOR_DELIVERY' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
+                'OUT_FOR_DELIVERY' && (
                 <DeliveredModal
                     isModalOpen={isModalOpen}
                     handleDelivered={handleDelivered}
@@ -618,7 +623,8 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.status === 'DELIVERED' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
+                'DELIVERED' && (
                 <Modal
                     open={isModalOpen}
                     onOk={hanldeComplete}

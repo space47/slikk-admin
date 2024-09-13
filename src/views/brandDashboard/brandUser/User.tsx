@@ -219,24 +219,24 @@ const Seller = () => {
 
     return (
         <div>
-            <div className="flex items-end justify-end mb-2">
-                <button
-                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleUser}
-                >
-                    ADD NEW USER
-                </button>{' '}
-                <br />
-                <br />
-            </div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="p-2 border rounded"
-                />
+            <div className="flex justify-between mb-4 items-center">
+                <div className="">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border rounded"
+                    />
+                </div>
+                <div className="flex items-end">
+                    <button
+                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                        onClick={handleUser}
+                    >
+                        ADD NEW USER
+                    </button>{' '}
+                </div>
             </div>
             <Table>
                 <THead>

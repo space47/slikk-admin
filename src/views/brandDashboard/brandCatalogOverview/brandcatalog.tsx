@@ -293,8 +293,8 @@ const BrandCatalog = () => {
                 </div>
             ) : (
                 <>
-                    <div className="flex justify-between">
-                        <div className="mb-4">
+                    <div className="flex justify-between mb-4">
+                        <div className="">
                             <input
                                 type="text"
                                 placeholder="Search here"
