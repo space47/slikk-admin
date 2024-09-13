@@ -352,13 +352,13 @@ const OrderList = () => {
                                 type="search"
                                 name="search"
                                 id=""
-                                placeholder="search SKU for product"
+                                placeholder="search here"
                                 value={searchInput}
                                 className="xl:w-[250px] rounded-[10px] w-[130px]"
                                 onChange={handleSearch}
                             />
                         </div>
-                        <div className="bg-gray-200  xl:font-bold xl:text-lg text-sm w-[100px] xl:w-auto">
+                        <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md">
                             <Dropdown
                                 className=" text-xl text-black bg-gray-200 font-bold "
                                 title={
