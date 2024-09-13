@@ -30,11 +30,19 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiEBike2Fill } from 'react-icons/ri'
-import { ReturnOrder } from '../returnOrders/ReturnOrders'
+import {
+    DELEIVERYRETRUNOPTIONS,
+    ReturnOrder,
+} from '../returnOrders/ReturnOrders'
 import FilterReturnOrder from '../returnOrders/filter/FilterReturnOrder'
 import { CiFilter } from 'react-icons/ci'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
+
+interface ReturnDropdownStatus {
+    value: string[]
+    name: string[]
+}
 
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
@@ -60,6 +68,10 @@ const ReverseDelivery = () => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<
         Record<string, string>
     >(SEARCHOPTIONS[0])
+    const [deliveryType, setDeliveryType] = useState<{
+        label: string
+        value: string
+    } | null>(null)
     const [searchInput, setSearchInput] = useState<string>('')
     const [pageSize, setPageSize] = useState(10)
     const [page, setPage] = useState(1)
@@ -67,9 +79,10 @@ const ReverseDelivery = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
-    const [dropdownStatus, setDropdownStatus] = useState<
-        Record<string, string>
-    >(RETURN_ORDERS[0])
+    const [dropdownStatus, setDropdownStatus] = useState<ReturnDropdownStatus>({
+        value: [],
+        name: [],
+    })
 
     const [showFilter, setShowFilter] = useState(false)
 
@@ -82,32 +95,39 @@ const ReverseDelivery = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
-                dropdownStatus?.value === 'ALL'
+                dropdownStatus?.value.length === 0
                     ? ''
                     : `&status=${dropdownStatus?.value}`
 
             let response
+
+            let deliveryStatus = ''
+
+            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+                deliveryStatus = `&return_type=${deliveryType?.value}`
+            }
+
             if (
                 currentSelectedPage.value === 'return_order_id' &&
                 searchInput
             ) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?return_order_id=${searchInput}${status}`,
+                    `/merchant/return_orders?return_order_id=${searchInput}${status}${deliveryStatus}`,
                 )
             } else if (
                 currentSelectedPage.value === 'invoice_id' &&
                 searchInput
             ) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?invoice_id=${searchInput}${status}`,
+                    `/merchant/return_orders?invoice_id=${searchInput}${status}${deliveryStatus}`,
                 )
             } else if (currentSelectedPage.value === 'awb' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?awb=${searchInput}${status}`,
+                    `/merchant/return_orders?awb=${searchInput}${status}${deliveryStatus}`,
                 )
             } else {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
+                    `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}`,
                 )
             }
 
@@ -123,7 +143,7 @@ const ReverseDelivery = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, searchInput])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType])
 
     const [partner, setPartner] = useState<{
         [key: string]: { value: string; label: string }
@@ -380,14 +400,19 @@ const ReverseDelivery = () => {
         }))
     }
 
-    const handleDropdownSelect = (a: any) => {
-        console.log('Values', a)
-        setDropdownStatus({
-            value: a,
-            name: RETURN_ORDERS.find((item) => item.value == a)?.name || '',
-        })
+    const handleDropdownSelect = (selectedValue: string) => {
+        if (dropdownStatus.value.includes(selectedValue)) {
+            setDropdownStatus((prevState) => ({
+                ...prevState,
+                value: prevState.value.filter((item) => item !== selectedValue),
+            }))
+        } else {
+            setDropdownStatus((prevState) => ({
+                ...prevState,
+                value: [...prevState.value, selectedValue],
+            }))
+        }
     }
-
     console.log('PPPPPPPPPP', partner)
 
     const handleCreateTask = async (
@@ -420,6 +445,15 @@ const ReverseDelivery = () => {
                 message: 'Failure',
                 description: 'Failed to create Task',
             })
+        }
+    }
+    const handleDeliverySelect = (selectedValue: string) => {
+        const selectedOption = DELEIVERYRETRUNOPTIONS.find(
+            (option) => option.value === selectedValue,
+        )
+
+        if (selectedOption) {
+            setDeliveryType(selectedOption)
         }
     }
 
@@ -566,6 +600,8 @@ const ReverseDelivery = () => {
                     handleToChange={handleToChange}
                     from={from}
                     to={to}
+                    deliveryType={deliveryType}
+                    handleDeliveryType={handleDeliverySelect}
                 />
             )}
         </div>

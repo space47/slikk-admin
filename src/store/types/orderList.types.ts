@@ -182,6 +182,11 @@ export interface DropdownStatus {
     name: string
 }
 
+export interface DeliveryType {
+    label: string
+    value: string
+}
+
 export interface OrderState {
     orders: Order[]
     loading: boolean
@@ -190,6 +195,7 @@ export interface OrderState {
     dropdownStatus: DropdownStatus[]
     searchInput: string
     currentSelectedPage: any
+    deliveryType: DeliveryType
     pageSize: number
     page: number
     from: string

@@ -70,12 +70,22 @@ const SEARCHOPTIONS = [
     { label: 'MOBILE', value: 'mobile' },
 ]
 
+export const DELEIVERYOPTIONS = [
+    { label: 'Express', value: 'EXPRESS' },
+    { label: 'Standard', value: 'STANDARD' },
+    { label: 'Try&Buy', value: 'TRY_AND_BUY' },
+]
+
 const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<
         Record<string, string>
     >(SEARCHOPTIONS[0])
+    const [deliveryType, setDeliveryType] = useState<{
+        label: string
+        value: string
+    } | null>(null)
     const [searchInput, setSearchInput] = useState<string>('')
     const [mobileFilter, setMobileFilter] = useState('')
     const [pageSize, setPageSize] = useState(10)
@@ -99,23 +109,28 @@ const OrderList = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
-                dropdownStatus?.value.length === 0
+                dropdownStatus?.value?.length === 0
                     ? ''
                     : `&status=${dropdownStatus?.value}`
 
             let response
+            let deliveryStatus = ''
+
+            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+                deliveryStatus = `&delivery_type=${deliveryType?.value}`
+            }
 
             if (currentSelectedPage.value === 'invoice' && searchInput) {
                 response = await axiosInstance.get(
-                    `/merchant/orders?invoice_id=${searchInput}${status}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/orders?invoice_id=${searchInput}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else if (currentSelectedPage.value === 'mobile' && searchInput) {
                 response = await axiosInstance.get(
-                    `/merchant/orders?mobile=${searchInput}${status}&p=${page}&page_size=${pageSize}`,
+                    `/merchant/orders?mobile=${searchInput}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else {
                 response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}`,
+                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}`,
                 )
             }
 
@@ -131,7 +146,7 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, searchInput])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType])
 
     const columns = useMemo(
         () => [
@@ -219,9 +234,6 @@ const OrderList = () => {
         pageCount: Math.ceil(orderCount ?? 0 / pageSize),
     })
 
-    const handleInvoiceClick = (invoiceId: string) => {
-        navigate(`/app/orders/${invoiceId}`)
-    }
     console.log('STATUS', dropdownStatus.value.length)
 
     const handleDownload = async () => {
@@ -262,11 +274,8 @@ const OrderList = () => {
 
     const onPaginationChange = (page: number) => {
         setPage(page)
-
-        console.log('sssssssssssssssssssss', page)
-        // setPageSize(pageSize)
     }
-
+    console.log('DeliveryType', deliveryType?.value)
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
     }
@@ -294,6 +303,16 @@ const OrderList = () => {
     }
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
+    }
+
+    const handleDeliverySelect = (selectedValue: string) => {
+        const selectedOption = DELEIVERYOPTIONS.find(
+            (option) => option.value === selectedValue,
+        )
+
+        if (selectedOption) {
+            setDeliveryType(selectedOption)
+        }
     }
 
     const handleDropdownSelect = (selectedValue: string) => {
@@ -479,6 +498,8 @@ const OrderList = () => {
                     handleToChange={handleToChange}
                     from={from}
                     to={to}
+                    deliveryType={deliveryType}
+                    handleDeliverySelect={handleDeliverySelect}
                 />
             )}
         </div>

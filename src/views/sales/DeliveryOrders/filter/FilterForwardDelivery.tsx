@@ -13,10 +13,8 @@ import { Button, Dropdown } from '@/components/ui'
 // import { FaMapMarkedAlt } from 'react-icons/fa'
 // import { RiEBike2Fill } from 'react-icons/ri'
 import moment from 'moment'
-import {
-    ORDER_STATUS,
-    RETURN_ORDERS,
-} from '@/views/category-management/orderlist/commontypes'
+import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
+import { DELEIVERYOPTIONS } from '@/views/category-management/orderlist/Orderlist'
 
 type OrderFilterProps = {
     showFilter: any
@@ -27,6 +25,8 @@ type OrderFilterProps = {
     from: any
     to: any
     handleToChange: any
+    deliveryType: any
+    handleDeliverySelect: any
 }
 
 const FilterForwardDelivery = ({
@@ -38,6 +38,8 @@ const FilterForwardDelivery = ({
     from,
     to,
     handleToChange,
+    deliveryType,
+    handleDeliverySelect,
 }: OrderFilterProps) => {
     return (
         <div>
@@ -99,6 +101,32 @@ const FilterForwardDelivery = ({
                                 })}
                             </div>
                         </Dropdown>
+                    </div>
+
+                    <div className="flex justify-center flex-col gap-2">
+                        <div className="font-bold">SET DELIVERY TYPE</div>
+                        <div className="bg-gray-100 w-auto text-xl">
+                            <Dropdown
+                                className="w-auto px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                                title={
+                                    deliveryType?.label ||
+                                    'Select delivery type'
+                                }
+                                onSelect={handleDeliverySelect}
+                            >
+                                <div className="max-h-60 overflow-y-auto">
+                                    {DELEIVERYOPTIONS?.map((item, index) => (
+                                        <DropdownItem
+                                            key={index}
+                                            eventKey={item.value}
+                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                        >
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                            </Dropdown>
+                        </div>
                     </div>
                 </div>
             </Drawer>
