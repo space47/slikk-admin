@@ -86,7 +86,16 @@ const DeliveryOrders = () => {
 
     useEffect(() => {
         dispatch(fetchOrders())
-    }, [dispatch, page, pageSize, from, to, dropdownStatus, searchInput])
+    }, [
+        dispatch,
+        page,
+        pageSize,
+        from,
+        to,
+        dropdownStatus,
+        searchInput,
+        deliveryType,
+    ])
     // useEffect(() => {
     //     dispatch(fetchOrders())
     // }, [dispatch, page, pageSize, from, to, dropdownStatus, mobileFilter])
@@ -125,27 +134,30 @@ const DeliveryOrders = () => {
             header: 'Tracking Url',
             accessorKey: 'logistic.tracking_url',
             cell: ({ getValue, row }) => {
-                const url = getValue()
-                return url ? (
-                    row.original?.logistic?.partner === 'shadowfax' &&
-                    row.original.delivery_type === 'STANDARD' ? (
-                        <a
-                            href={`https://tracker.shadowfax.in/#/awb/${row.original.awb_code}`}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            <div className="flex justify-center">
-                                <RiEBike2Fill className="text-xl" />
-                            </div>
-                        </a>
-                    ) : (
-                        <a href={url} target="_blank" rel="noreferrer">
-                            <div className="flex justify-center">
-                                <RiEBike2Fill className="text-xl" />
-                            </div>
-                        </a>
-                    )
-                ) : null
+                const { partner } = row.original?.logistic || {}
+                const { awb_code } = row.original || {}
+                const { delivery_type } = row.original || {}
+
+                let trackingUrl
+
+                if (partner === 'shadowfax' && delivery_type === 'STANDARD') {
+                    trackingUrl = `https://tracker.shadowfax.in/#/awb/${awb_code}`
+                } else if (
+                    partner === 'shiprocket' &&
+                    delivery_type === 'EXPRESS'
+                ) {
+                    trackingUrl = `https://shiprocket.co/tracking/${awb_code}`
+                } else {
+                    trackingUrl = getValue()
+                }
+
+                return (
+                    <a href={trackingUrl} target="_blank" rel="noreferrer">
+                        <div className="flex justify-center">
+                            <RiEBike2Fill className="text-xl" />
+                        </div>
+                    </a>
+                )
             },
         },
 
@@ -414,7 +426,7 @@ const DeliveryOrders = () => {
                             onChange={handleSearch}
                         />
                     </div>
-                    <div className="bg-gray-200  xl:font-bold xl:text-lg text-sm  ">
+                    <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md ">
                         <Dropdown
                             className=" text-xl text-black bg-gray-200 font-bold "
                             title={

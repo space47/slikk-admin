@@ -21,6 +21,7 @@ import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import { FaDownload } from 'react-icons/fa'
 import { Spinner } from '@/components/ui'
+import { IoMdDownload } from 'react-icons/io'
 
 interface Product {
     name: string
@@ -167,7 +168,7 @@ const BrandReturns = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `merchant/return_order_items?company_id=${selectedCompany.id}&brand=true&from=${from}&to=${To_Date}&download=true`,
+                `merchant/return_order_items?company_id=${selectedCompany.id}&brand_data=true&from=${from}&to=${To_Date}&download=true`,
                 {
                     responseType: 'blob',
                 },
@@ -289,10 +290,11 @@ const BrandReturns = () => {
                             <div>
                                 <div className="flex items-end justify-end ">
                                     <button
-                                        className="bg-none text-black px-5 py-3  "
+                                        className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mt-6 "
                                         onClick={handleDownload}
                                     >
-                                        <FaDownload className="text-3xl " />
+                                        <IoMdDownload className="text-xl" />
+                                        Export
                                     </button>{' '}
                                     <br />
                                     <br />

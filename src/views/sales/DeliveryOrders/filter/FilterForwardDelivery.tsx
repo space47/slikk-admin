@@ -83,7 +83,7 @@ const FilterForwardDelivery = ({
                     <div className="font-bold text-xl">Select Status</div>
                     <div className="relative w-full md:w-1/2 lg:w-auto bg-gray-100 items-center flex justify-center">
                         <Dropdown
-                            className="w-full px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                            className="w-full px-4 py-2 text-base  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
                             title={dropdownStatus.name}
                             onSelect={handleDropdownSelect}
                         >
@@ -105,9 +105,9 @@ const FilterForwardDelivery = ({
 
                     <div className="flex justify-center flex-col gap-2">
                         <div className="font-bold">SET DELIVERY TYPE</div>
-                        <div className="bg-gray-100 w-auto text-xl">
+                        <div className="bg-gray-100 w-auto">
                             <Dropdown
-                                className="w-auto px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                                className="w-auto px-4 py-2 text-base  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
                                 title={
                                     deliveryType?.label ||
                                     'Select delivery type'

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
+import { Button } from '@/components/ui'
 
 import {
     useReactTable,
@@ -23,8 +24,10 @@ import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import BrandOrderGraph from './brandOrderGraph/BrandOrderGraph'
 import BrandQuantityGraph from './brandOrderGraph/BrandQuantityGraph'
-import { FaDownload } from 'react-icons/fa'
-import { Button } from 'antd'
+import { FaDownload, FaFilter } from 'react-icons/fa'
+
+import BrandOrderDrawer from './brandOrderDrawer/BrandOrderDrawer'
+import { IoMdDownload } from 'react-icons/io'
 
 type SKU_DETAILS = {
     name: string
@@ -96,6 +99,8 @@ const BrandOrder = () => {
     const [categoryList, setCategoryList] = useState('')
     const [subCategoryList, setSubCategoryList] = useState('')
     const [typeFetch, setTypeFetch] = useState('')
+
+    const [showDrawer, setShowDrawer] = useState(false)
 
     const fetchData = async (
         // page: number,
@@ -243,12 +248,10 @@ const BrandOrder = () => {
         [],
     )
 
-    console.log('LENGTH', skuWiseDetails.length)
-
     const handleDownload = async () => {
         try {
             const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}&download=true`,
+                `/merchant/sales?from=${from}&to=${to}&brand_data=true&&company_id=${selectedCompany.id}&${typeFetch}&download=true`,
                 {
                     responseType: 'blob',
                 },
@@ -324,6 +327,14 @@ const BrandOrder = () => {
         }
     }
 
+    const handleDrawer = () => {
+        setShowDrawer(true)
+    }
+
+    const handleCloseDrawer = () => {
+        setShowDrawer(false)
+    }
+
     const handleMultiSelect = (fieldName: string, selectedValues: string) => {
         if (fieldName === 'division') {
             setDivisionList(selectedValues)
@@ -351,81 +362,20 @@ const BrandOrder = () => {
         }
 
         setTypeFetch(query)
-        console.log('Query:', query)
+        setShowDrawer(false)
     }
     return (
         <div className="overflow-x-auto">
-            <div className="upper flex flex-col lg:flex-row justify-between mb-5 items-start lg:items-center gap-5">
+            <div className="flex flex-col lg:flex-row justify-between mb-5 items-start gap-5">
                 <div className="w-full lg:w-1/2 flex flex-col gap-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 w-full gap-2 items-center">
-                        <div className="flex flex-col gap-1">
-                            <div className="font-semibold">Division</div>
-                            <Select
-                                isMulti
-                                options={divisionArray}
-                                getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) =>
-                                    option.id.toString()
-                                }
-                                onChange={(newVal, actionMeta) => {
-                                    const selectedValues = newVal
-                                        .map((val) => val.name)
-                                        .join(',')
-                                    handleMultiSelect(
-                                        'division',
-                                        selectedValues,
-                                    )
-                                }}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <div className="font-semibold">Category</div>
-                            <Select
-                                isMulti
-                                options={categoryArray}
-                                getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) =>
-                                    option.id.toString()
-                                }
-                                onChange={(newVal, actionMeta) => {
-                                    const selectedValues = newVal
-                                        .map((val) => val.name)
-                                        .join(',')
-                                    handleMultiSelect(
-                                        'category',
-                                        selectedValues,
-                                    )
-                                }}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <div className="font-semibold">Sub_Category</div>
-                            <Select
-                                isMulti
-                                options={subCategoryArray}
-                                getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) =>
-                                    option.id.toString()
-                                }
-                                onChange={(newVal, actionMeta) => {
-                                    const selectedValues = newVal
-                                        .map((val) => val.name)
-                                        .join(',')
-                                    handleMultiSelect(
-                                        'sub_category',
-                                        selectedValues,
-                                    )
-                                }}
-                            />
-                        </div>
-                        <Button
-                            type="primary"
-                            className="w-full md:w-1/2 lg:w-1/2 h-[40px] lg:mt-5"
-                            onClick={handleApply}
-                        >
-                            APPLY
-                        </Button>
-                    </div>
+                    <Button
+                        variant="new"
+                        onClick={handleDrawer}
+                        className="xl:w-1/3 w-auto flex gap-3"
+                    >
+                        {' '}
+                        <FaFilter className="text-xl" /> CATEGORY FILTER
+                    </Button>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-5 items-start lg:items-center">
@@ -459,10 +409,11 @@ const BrandOrder = () => {
                     <div>
                         <div className="flex items-end justify-end">
                             <button
-                                className="bg-none text-black px-5 py-3"
+                                className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 "
                                 onClick={handleDownload}
                             >
-                                <FaDownload className="text-3xl" />
+                                <IoMdDownload className="text-xl" />
+                                Export
                             </button>
                         </div>
                     </div>
@@ -545,6 +496,17 @@ const BrandOrder = () => {
                     />
                 </div>
             </div>
+            {showDrawer && (
+                <BrandOrderDrawer
+                    divisionArray={divisionArray}
+                    categoryArray={categoryArray}
+                    showDrawer={showDrawer}
+                    subCategoryArray={subCategoryArray}
+                    handleApply={handleApply}
+                    handleCloseDrawer={handleCloseDrawer}
+                    handleMultiSelect={handleMultiSelect}
+                />
+            )}
         </div>
     )
 }

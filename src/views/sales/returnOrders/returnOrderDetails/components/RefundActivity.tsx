@@ -66,6 +66,7 @@ const RefundActivity = () => {
 
     const getButtonAndModalContent = (status: string) => {
         switch (status) {
+            case 'CANCELLED':
             case 'APPROVED':
             case 'ACCEPTED':
                 return {
@@ -96,10 +97,7 @@ const RefundActivity = () => {
                 return {
                     buttonText: 'COMPLETE RETURN', // isme ek naya modal banaunga with the inputs and and send it to the body
                 }
-            case 'CANCELLED':
-                return {
-                    buttonText: '',
-                }
+
             default:
                 return {
                     buttonText: '',
