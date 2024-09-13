@@ -88,7 +88,7 @@ const FilterDialogOrder = ({
                             SELECT STATUS
                         </label>
                         <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
-                            <div className="w-full px-1 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+                            <div className="w-full px-1 py-2 text-sm  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm">
                                 <div className="h-auto overflow-y-auto">
                                     {ORDER_STATUS?.map((item, key) => (
                                         <div
@@ -125,9 +125,9 @@ const FilterDialogOrder = ({
 
                     <div className="flex justify-center flex-col gap-2">
                         <div className="font-bold">SET DELIVERY TYPE</div>
-                        <div className="bg-gray-100 w-auto text-xl">
+                        <div className="bg-gray-100 w-auto">
                             <Dropdown
-                                className="w-auto px-4 py-2 text-base lg:text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                                className="w-auto px-4 py-2 text-base  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
                                 title={
                                     deliveryType?.label ||
                                     'Select delivery type'
@@ -148,6 +148,8 @@ const FilterDialogOrder = ({
                             </Dropdown>
                         </div>
                     </div>
+                    <br />
+                    <br />
                 </div>
             </Drawer>
         </div>

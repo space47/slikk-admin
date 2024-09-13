@@ -414,7 +414,7 @@ const OrderList = () => {
                             onChange={handleSearch}
                         />
                     </div>
-                    <div className="bg-gray-200  xl:font-bold xl:text-lg text-sm ">
+                    <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md">
                         <Dropdown
                             className=" text-xl text-black bg-gray-200 font-bold "
                             title={
