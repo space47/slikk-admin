@@ -598,7 +598,8 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.status === 'IN_TRANSIT' && (
+            {(returnDetails?.status === 'IN_TRANSIT' ||
+                returnDetails?.status === 'SHIPPED') && (
                 <OutForDeliveryModal
                     isModalOpen={isModalOpen}
                     handleOutForDelivery={hanldeOutForDelivery}

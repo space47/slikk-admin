@@ -144,7 +144,11 @@ export const InTransitModal: React.FC<props3> = ({
     return (
         <Modal
             {...modalStyles}
-            okText={status === 'IN_TRANSIT' ? 'Transit' : 'OK'}
+            okText={
+                status === 'IN_TRANSIT' || status === 'SHIPPED'
+                    ? 'Transit'
+                    : 'OK'
+            }
             cancelText={status === 'cancel' ? 'Cancel' : 'Close'}
             okButtonProps={okButtonStyles}
             cancelButtonProps={cancelButtonStyles}
