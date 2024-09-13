@@ -475,7 +475,7 @@ const ReverseDelivery = () => {
                             type="search"
                             name="search"
                             id=""
-                            placeholder="search SKU for product"
+                            placeholder="search here"
                             value={searchInput}
                             className="xl:w-[250px] rounded-[10px] w-[130px]"
                             onChange={handleSearch}

@@ -37,6 +37,9 @@ const BrandInfo = () => {
             label: 'Alternate Mobile',
             value: sellerDetails.alternate_contact_number,
         },
+    ]
+
+    const chargesArray = [
         { label: 'Segment', value: sellerDetails.segment },
         {
             label: 'Revenue Share Percent',
@@ -59,6 +62,7 @@ const BrandInfo = () => {
             value: sellerDetails.removal_fee_per_sku,
         },
     ]
+
     const pocDetailsArray = [
         { label: 'POC Name', value: sellerDetails.poc },
         { label: 'POC Email', value: sellerDetails.poc_email },
@@ -78,7 +82,7 @@ const BrandInfo = () => {
     return (
         <div className="p-6 bg-white rounded-xl shadow-lg space-y-10 text-lg">
             <div>
-                <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
+                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
                     Seller Details
                 </h2>
                 <div className="flex flex-wrap gap-12 font-semibold">
@@ -94,8 +98,16 @@ const BrandInfo = () => {
                             </div>
                         ))}
                     </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
+                    Charges & Margins
+                </h2>
+                <div className="flex flex-wrap gap-12 font-semibold">
                     <div className="space-y-3">
-                        {sellerDetailsArray.slice(7).map((detail, index) => (
+                        {chargesArray.map((detail, index) => (
                             <div key={index} className="flex flex-row gap-4">
                                 <strong className="font-medium text-gray-700">
                                     {detail.label}:
@@ -110,7 +122,7 @@ const BrandInfo = () => {
             </div>
 
             <div>
-                <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
+                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
                     POC Details
                 </h2>
                 <div className="grid grid-cols-2 gap-6 font-semibold">
@@ -130,7 +142,7 @@ const BrandInfo = () => {
             </div>
 
             <div>
-                <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
+                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
                     Bank Details
                 </h2>
                 <div className="flex flex-wrap gap-12 font-semibold">

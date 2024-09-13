@@ -366,8 +366,8 @@ const BrandOrder = () => {
     }
     return (
         <div className="overflow-x-auto">
-            <div className="flex flex-col lg:flex-row justify-between mb-5 items-start gap-5">
-                <div className="w-full lg:w-1/2 flex flex-col gap-3">
+            <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
+                <div className="w-full lg:w-1/2 flex flex-col  ">
                     <Button
                         variant="new"
                         onClick={handleDrawer}
@@ -378,7 +378,7 @@ const BrandOrder = () => {
                     </Button>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-5 items-start lg:items-center">
+                <div className="flex flex-col md:flex-row gap-5 items-start lg:items-end">
                     <div>
                         <div className="mb-1 font-semibold text-sm">
                             FROM DATE: {showLastSevenDays && '(Last 7 Days)'}

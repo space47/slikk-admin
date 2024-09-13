@@ -14,7 +14,7 @@ interface drawerProps {
     handleMultiSelect: any
 }
 
-const BrandOrderDrawer = ({
+const AnalyticsOrderDrawer = ({
     showDrawer,
     handleCloseDrawer,
     handleApply,
@@ -103,4 +103,4 @@ const BrandOrderDrawer = ({
     )
 }
 
-export default BrandOrderDrawer
+export default AnalyticsOrderDrawer
