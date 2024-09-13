@@ -84,7 +84,6 @@ export const ORDER_STATUS = [
 ]
 
 export const RETURN_ORDERS = [
-    { name: 'ALL', value: 'ALL' },
     { name: 'CANCELLED', value: 'CANCELLED' },
     { name: 'APPROVED', value: 'APPROVED' },
     { name: 'ACCEPTED', value: 'ACCEPTED' },

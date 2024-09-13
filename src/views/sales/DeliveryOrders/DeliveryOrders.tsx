@@ -27,6 +27,7 @@ import {
     setPage,
     setFrom,
     setTo,
+    setDeliveryType,
 } from '@/store/slices/orderList/OrderList'
 import { OrderState } from '@/store/types/orderList.types'
 import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
@@ -42,6 +43,7 @@ import { RiEBike2Fill } from 'react-icons/ri'
 import { CiFilter } from 'react-icons/ci'
 import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
+import { DELEIVERYOPTIONS } from '@/views/category-management/orderlist/Orderlist'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -75,6 +77,7 @@ const DeliveryOrders = () => {
         page,
         pageSize,
         searchInput,
+        deliveryType,
         from,
         currentSelectedPage,
         to,
@@ -121,17 +124,31 @@ const DeliveryOrders = () => {
         {
             header: 'Tracking Url',
             accessorKey: 'logistic.tracking_url',
-            cell: ({ getValue }) => {
+            cell: ({ getValue, row }) => {
                 const url = getValue()
                 return url ? (
-                    <a href={url} target="_blank" rel="noreferrer">
-                        <div className="flex justify-center">
-                            <RiEBike2Fill className="text-xl" />
-                        </div>
-                    </a>
+                    row.original?.logistic?.partner === 'shadowfax' &&
+                    row.original.delivery_type === 'STANDARD' ? (
+                        <a
+                            href={`https://tracker.shadowfax.in/#/awb/${row.original.awb_code}`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <div className="flex justify-center">
+                                <RiEBike2Fill className="text-xl" />
+                            </div>
+                        </a>
+                    ) : (
+                        <a href={url} target="_blank" rel="noreferrer">
+                            <div className="flex justify-center">
+                                <RiEBike2Fill className="text-xl" />
+                            </div>
+                        </a>
+                    )
                 ) : null
             },
         },
+
         { header: 'Delivery Type', accessorKey: 'delivery_type' },
         { header: 'STATUS', accessorKey: 'status' },
         { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
@@ -330,7 +347,15 @@ const DeliveryOrders = () => {
         )
     }
 
-    console.log('Input', searchInput)
+    const handleDeliverySelect = (selectedValue: any) => {
+        const selectedOption = DELEIVERYOPTIONS.find(
+            (option) => option.value === selectedValue,
+        )
+
+        if (selectedOption) {
+            dispatch(setDeliveryType(selectedOption))
+        }
+    }
 
     const handleCreateTask = async (
         partner: any,
@@ -510,6 +535,8 @@ const DeliveryOrders = () => {
                     handleToChange={handleToChange}
                     from={from}
                     to={to}
+                    deliveryType={deliveryType}
+                    handleDeliverySelect={handleDeliverySelect}
                 />
             )}
         </div>
