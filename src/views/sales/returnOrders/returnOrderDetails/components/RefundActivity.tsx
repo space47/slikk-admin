@@ -78,12 +78,13 @@ const RefundActivity = () => {
                 }
             case 'OUT_FOR_PICKUP':
                 return {
-                    buttonText: 'PICK UP',
+                    buttonText: 'PICKED UP',
                 }
             case 'PICKED_UP':
                 return {
                     buttonText: 'IN TRANSIT',
                 }
+            case 'SHIPPED':
             case 'IN_TRANSIT':
                 return {
                     buttonText: 'OUT_FOR_DELIVERY',
