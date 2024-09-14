@@ -71,6 +71,7 @@ const Uploader = () => {
             'video/wmv',
             'video/webm',
             'video/avchd',
+            'video/MP4',
         ]
         const MAX_FILE_SIZE = 9000000000000000
 
@@ -328,7 +329,7 @@ const Uploader = () => {
                                                         }
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
-                                                                'images',
+                                                                'Video',
                                                                 files,
                                                             )
                                                         }
