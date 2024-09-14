@@ -3,6 +3,8 @@ import { useState } from 'react'
 import Button from '@/components/ui/Button'
 import Drawer from '@/components/ui/Drawer'
 import Select from '@/components/ui/Select'
+import { Formik, Form, Field } from 'formik'
+import { FormContainer } from '@/components/ui'
 
 interface drawerProps {
     showDrawer: any
@@ -12,6 +14,14 @@ interface drawerProps {
     categoryArray: any
     subCategoryArray: any
     handleMultiSelect: any
+    handleResetFilters: any
+    division: any
+    category: any
+    sub_category: any
+    setDivisionList: any
+    setCategoryList: any
+    setSubCategoryList: any
+    setTypeFetch: any
 }
 
 const AnalyticsOrderDrawer = ({
@@ -22,82 +32,162 @@ const AnalyticsOrderDrawer = ({
     categoryArray,
     subCategoryArray,
     handleMultiSelect,
+    handleResetFilters,
+    division,
+    category,
+    sub_category,
+    setDivisionList,
+    setCategoryList,
+    setSubCategoryList,
+    setTypeFetch,
 }: drawerProps) => {
-    const Footer = (
-        <div className="text-right w-full">
-            <Button size="sm" variant="solid" onClick={() => handleApply()}>
-                APPLY
-            </Button>
-        </div>
-    )
+    const [initialValues, setInitialValues] = useState({
+        division: division,
+        category: category,
+        sub_category: sub_category,
+    })
+    // const Footer = (
+    //     <div className="text-right w-full">
+    //         <Button
+    //             size="sm"
+    //             variant="default"
+    //             onClick={() => handleResetFilters()}
+    //         >
+    //             Reset
+    //         </Button>
+    //         <Button size="sm" variant="solid" onClick={() => handleApply()}>
+    //             APPLY
+    //         </Button>
+    //     </div>
+    // )
+
+    const handleFilterEmpty = (resetForm: any) => {
+        resetForm({
+            values: {
+                division: [],
+                category: [],
+                sub_category: [],
+            },
+        })
+
+        setDivisionList([])
+        setCategoryList([])
+        setSubCategoryList([])
+        setTypeFetch('')
+    }
 
     return (
         <div>
             <Drawer
                 title=""
                 isOpen={showDrawer}
-                footer={Footer}
                 onClose={handleCloseDrawer}
                 onRequestClose={handleCloseDrawer}
                 lockScroll={false}
             >
-                <div className="flex flex-col gap-10 w-full items-center">
-                    <div className="flex flex-col gap-1 w-full max-w-md">
-                        <div className="font-semibold">Division</div>
-                        <Select
-                            className="w-full"
-                            isMulti
-                            options={divisionArray}
-                            getOptionLabel={(option: any) => option.name}
-                            getOptionValue={(option) => option.id.toString()}
-                            onChange={(newVal) => {
-                                const selectedValues = newVal
-                                    .map((val) => val.name)
-                                    .join(',')
-                                handleMultiSelect('division', selectedValues)
-                            }}
-                        />
-                    </div>
-                    <div className="flex flex-col gap-1 w-full max-w-md">
-                        <div className="font-semibold">Category</div>
-                        <Select
-                            className="w-full"
-                            isMulti
-                            options={categoryArray}
-                            getOptionLabel={(option: any) => option.name}
-                            getOptionValue={(option: any) =>
-                                option.id.toString()
-                            }
-                            onChange={(newVal) => {
-                                const selectedValues = newVal
-                                    .map((val) => val.name)
-                                    .join(',')
-                                handleMultiSelect('category', selectedValues)
-                            }}
-                        />
-                    </div>
-                    <div className="flex flex-col gap-1 w-full max-w-md">
-                        <div className="font-semibold">Sub_Category</div>
-                        <Select
-                            className="w-full"
-                            isMulti
-                            options={subCategoryArray}
-                            getOptionLabel={(option: any) => option.name}
-                            getOptionValue={(option: any) =>
-                                option.id.toString()
-                            }
-                            onChange={(newVal) => {
-                                const selectedValues = newVal
-                                    .map((val: any) => val.name)
-                                    .join(',')
-                                handleMultiSelect(
-                                    'sub_category',
-                                    selectedValues,
-                                )
-                            }}
-                        />
-                    </div>
-                </div>
+                <Formik initialValues={initialValues} onSubmit={handleApply}>
+                    {({ setFieldValue, values, resetForm }) => (
+                        <Form className="flex flex-col gap-10 w-full items-center">
+                            {/* Division */}
+                            <div className="flex flex-col gap-1 w-full max-w-md">
+                                <div className="font-semibold">Division</div>
+                                <Select
+                                    className="w-full"
+                                    isMulti
+                                    options={divisionArray}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) =>
+                                        option.id.toString()
+                                    }
+                                    value={values.division}
+                                    onChange={(newVal) => {
+                                        const selectedValues = newVal || []
+                                        setFieldValue(
+                                            'division',
+                                            selectedValues,
+                                        )
+                                        handleMultiSelect(
+                                            'division',
+                                            selectedValues,
+                                        )
+                                    }}
+                                />
+                            </div>
+
+                            {/* Category */}
+                            <div className="flex flex-col gap-1 w-full max-w-md">
+                                <div className="font-semibold">Category</div>
+                                <Select
+                                    className="w-full"
+                                    isMulti
+                                    options={categoryArray}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) =>
+                                        option.id.toString()
+                                    }
+                                    value={values.category}
+                                    onChange={(newVal) => {
+                                        const selectedValues = newVal || []
+                                        setFieldValue(
+                                            'category',
+                                            selectedValues,
+                                        )
+                                        handleMultiSelect(
+                                            'category',
+                                            selectedValues,
+                                        )
+                                    }}
+                                />
+                            </div>
+
+                            {/* Sub Category */}
+                            <div className="flex flex-col gap-1 w-full max-w-md">
+                                <div className="font-semibold">
+                                    Sub Category
+                                </div>
+                                <Select
+                                    className="w-full"
+                                    isMulti
+                                    options={subCategoryArray}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) =>
+                                        option.id.toString()
+                                    }
+                                    value={values.sub_category}
+                                    onChange={(newVal) => {
+                                        const selectedValues = newVal || []
+                                        setFieldValue(
+                                            'sub_category',
+                                            selectedValues,
+                                        )
+                                        handleMultiSelect(
+                                            'sub_category',
+                                            selectedValues,
+                                        )
+                                    }}
+                                />
+                            </div>
+                            <FormContainer className="flex gap-5 justify-end ">
+                                <Button
+                                    type="reset"
+                                    variant="default"
+                                    className="mt-4 p-2 rounded"
+                                    onClick={() => handleFilterEmpty(resetForm)}
+                                >
+                                    Reset
+                                </Button>
+
+                                <Button
+                                    type="submit"
+                                    variant="new"
+                                    className="mt-4 bg-blue-500 text-white p-2 rounded"
+                                >
+                                    APPLY
+                                </Button>
+                            </FormContainer>
+                        </Form>
+                    )}
+                </Formik>
             </Drawer>
         </div>
     )

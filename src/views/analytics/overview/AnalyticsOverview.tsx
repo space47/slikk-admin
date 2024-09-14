@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -24,7 +25,6 @@ import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import AnalyticsOrderGraph from './analyticsOrderGraph/AnalyticsOrderGraph'
 import AnalyticsQuantityGraph from './analyticsOrderGraph/AnalyticsQuantityGraph'
-
 import { FaDownload, FaFilter } from 'react-icons/fa'
 
 import AnalyticsOrderDrawer from './analyticsOrderDrawer/AnalyticsOrderDrawer'
@@ -70,7 +70,7 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const AnalyticsOverview = () => {
+const Anal = () => {
     const [data, setData] = useState<SalesData>()
 
     const [page, setPage] = useState(1)
@@ -96,9 +96,9 @@ const AnalyticsOverview = () => {
     const [categoryArray, setCategoryArray] = useState([])
     const [subCategoryArray, setSubCategoryArray] = useState([])
 
-    const [divisionList, setDivisionList] = useState<string>('')
-    const [categoryList, setCategoryList] = useState('')
-    const [subCategoryList, setSubCategoryList] = useState('')
+    const [divisionList, setDivisionList] = useState<string[]>([])
+    const [categoryList, setCategoryList] = useState([])
+    const [subCategoryList, setSubCategoryList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
 
     const [showDrawer, setShowDrawer] = useState(false)
@@ -114,7 +114,7 @@ const AnalyticsOverview = () => {
             setDatewisedetails([])
 
             const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&${typeFetch}`,
+                `/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}`,
             )
             const data = response.data
 
@@ -147,7 +147,6 @@ const AnalyticsOverview = () => {
             setDivisionArray(div)
             setCategoryArray(cat)
             setSubCategoryArray(sub)
-            console.log('tttttttttttttt', skuData)
 
             const skuDetailsArray = skuData
                 ? Object.entries(skuData).map(([key, value]) => ({
@@ -252,7 +251,7 @@ const AnalyticsOverview = () => {
     const handleDownload = async () => {
         try {
             const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&${typeFetch}&download=true`,
+                `/merchant/sales?from=${from}&to=${to}&brand_data=true&&company_id=${selectedCompany.id}&${typeFetch}&download=true`,
                 {
                     responseType: 'blob',
                 },
@@ -336,7 +335,7 @@ const AnalyticsOverview = () => {
         setShowDrawer(false)
     }
 
-    const handleMultiSelect = (fieldName: string, selectedValues: string) => {
+    const handleMultiSelect = (fieldName: string, selectedValues: any) => {
         if (fieldName === 'division') {
             setDivisionList(selectedValues)
         } else if (fieldName === 'category') {
@@ -348,23 +347,43 @@ const AnalyticsOverview = () => {
     const handleApply = () => {
         let query = ''
 
-        if (divisionList) {
-            query += `division=${divisionList}`
+        if (divisionList.length > 0) {
+            const divisionIds = divisionList
+                .map((item: any) => item.id)
+                .join(',')
+            query += `division=${divisionIds}`
         }
 
-        if (categoryList) {
+        if (categoryList.length > 0) {
+            const categoryIds = categoryList
+                .map((item: any) => item.id)
+                .join(',')
             if (query) query += '&'
-            query += `category=${categoryList}`
+            query += `category=${categoryIds}`
         }
 
-        if (subCategoryList) {
+        if (subCategoryList.length > 0) {
+            const subCategoryIds = subCategoryList
+                .map((item: any) => item.id)
+                .join(',')
             if (query) query += '&'
-            query += `subcategory=${subCategoryList}`
+            query += `subcategory=${subCategoryIds}`
         }
 
         setTypeFetch(query)
         setShowDrawer(false)
     }
+
+    console.log('QUERY', typeFetch)
+
+    const handleResetFilters = (resetForm: any) => {
+        resetForm()
+        // setDivisionList([])
+        // setCategoryList([])
+        // setSubCategoryList([])
+        // setShowDrawer(false)
+    }
+
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
@@ -506,10 +525,18 @@ const AnalyticsOverview = () => {
                     handleApply={handleApply}
                     handleCloseDrawer={handleCloseDrawer}
                     handleMultiSelect={handleMultiSelect}
+                    handleResetFilters={handleResetFilters}
+                    division={divisionList}
+                    category={categoryList}
+                    sub_category={subCategoryList}
+                    setSubCategoryList={setSubCategoryList}
+                    setCategoryList={setCategoryList}
+                    setDivisionList={setDivisionList}
+                    setTypeFetch={setTypeFetch}
                 />
             )}
         </div>
     )
 }
 
-export default AnalyticsOverview
+export default Anal
