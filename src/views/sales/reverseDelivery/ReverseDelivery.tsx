@@ -123,7 +123,7 @@ const ReverseDelivery = () => {
                 )
             } else if (currentSelectedPage.value === 'awb' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?awb=${searchInput}${status}${deliveryStatus}`,
+                    `/merchant/return_orders?awb=${searchInput.toLocaleUpperCase()}${status}${deliveryStatus}`,
                 )
             } else {
                 response = await axioisInstance.get(
