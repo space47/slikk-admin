@@ -64,7 +64,7 @@ export const fetchOrders = createAsyncThunk(
                 )
             } else if (currentSelectedPage.value === 'awb' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?awb=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
+                    `/merchant/orders?awb=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else if (!searchInput) {
                 response = await axioisInstance.get(

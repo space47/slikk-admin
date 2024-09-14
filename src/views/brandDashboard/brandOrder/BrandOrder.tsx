@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -95,9 +96,9 @@ const BrandOrder = () => {
     const [categoryArray, setCategoryArray] = useState([])
     const [subCategoryArray, setSubCategoryArray] = useState([])
 
-    const [divisionList, setDivisionList] = useState<string>('')
-    const [categoryList, setCategoryList] = useState('')
-    const [subCategoryList, setSubCategoryList] = useState('')
+    const [divisionList, setDivisionList] = useState<string[]>([])
+    const [categoryList, setCategoryList] = useState([])
+    const [subCategoryList, setSubCategoryList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
 
     const [showDrawer, setShowDrawer] = useState(false)
@@ -146,7 +147,6 @@ const BrandOrder = () => {
             setDivisionArray(div)
             setCategoryArray(cat)
             setSubCategoryArray(sub)
-            console.log('tttttttttttttt', skuData)
 
             const skuDetailsArray = skuData
                 ? Object.entries(skuData).map(([key, value]) => ({
@@ -335,7 +335,7 @@ const BrandOrder = () => {
         setShowDrawer(false)
     }
 
-    const handleMultiSelect = (fieldName: string, selectedValues: string) => {
+    const handleMultiSelect = (fieldName: string, selectedValues: any) => {
         if (fieldName === 'division') {
             setDivisionList(selectedValues)
         } else if (fieldName === 'category') {
@@ -347,23 +347,41 @@ const BrandOrder = () => {
     const handleApply = () => {
         let query = ''
 
-        if (divisionList) {
-            query += `division=${divisionList}`
+        if (divisionList.length > 0) {
+            const divisionIds = divisionList
+                .map((item: any) => item.id)
+                .join(',')
+            query += `division=${divisionIds}`
         }
 
-        if (categoryList) {
+        if (categoryList.length > 0) {
+            const categoryIds = categoryList
+                .map((item: any) => item.id)
+                .join(',')
             if (query) query += '&'
-            query += `category=${categoryList}`
+            query += `category=${categoryIds}`
         }
 
-        if (subCategoryList) {
+        if (subCategoryList.length > 0) {
+            const subCategoryIds = subCategoryList
+                .map((item: any) => item.id)
+                .join(',')
             if (query) query += '&'
-            query += `subcategory=${subCategoryList}`
+            query += `subcategory=${subCategoryIds}`
         }
 
         setTypeFetch(query)
         setShowDrawer(false)
     }
+
+    console.log('QUERY', typeFetch)
+
+    const handleResetFilters = () => {
+        setDivisionList([])
+        setCategoryList([])
+        setSubCategoryList([])
+    }
+
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
@@ -505,6 +523,10 @@ const BrandOrder = () => {
                     handleApply={handleApply}
                     handleCloseDrawer={handleCloseDrawer}
                     handleMultiSelect={handleMultiSelect}
+                    handleResetFilters={handleResetFilters}
+                    division={divisionList}
+                    category={categoryList}
+                    sub_category={subCategoryList}
                 />
             )}
         </div>
