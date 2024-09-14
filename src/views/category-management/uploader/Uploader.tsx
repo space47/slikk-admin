@@ -323,13 +323,13 @@ const Uploader = () => {
                                                         fileList={values.video}
                                                         onChange={(files) =>
                                                             form.setFieldValue(
-                                                                'Video',
+                                                                'video',
                                                                 files,
                                                             )
                                                         }
                                                         onFileRemove={(files) =>
                                                             form.setFieldValue(
-                                                                'Video',
+                                                                'video',
                                                                 files,
                                                             )
                                                         }
