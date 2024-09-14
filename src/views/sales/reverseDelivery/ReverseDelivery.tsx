@@ -112,18 +112,18 @@ const ReverseDelivery = () => {
                 searchInput
             ) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?return_order_id=${searchInput}${status}${deliveryStatus}`,
+                    `/merchant/return_orders?return_order_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`,
                 )
             } else if (
                 currentSelectedPage.value === 'invoice_id' &&
                 searchInput
             ) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?invoice_id=${searchInput}${status}${deliveryStatus}`,
+                    `/merchant/return_orders?invoice_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`,
                 )
             } else if (currentSelectedPage.value === 'awb' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/return_orders?awb=${searchInput.toLocaleUpperCase()}${status}${deliveryStatus}`,
+                    `/merchant/return_orders?awb=${searchInput.toUpperCase()}${status}${deliveryStatus}`,
                 )
             } else {
                 response = await axioisInstance.get(
@@ -285,7 +285,7 @@ const ReverseDelivery = () => {
         },
         {
             header: 'Assigned Logistic',
-            accessorKey: 'return_order_delivery[0].partner',
+            accessorKey: 'return_order_delivery',
             cell: ({
                 row,
                 getValue,
@@ -298,8 +298,10 @@ const ReverseDelivery = () => {
                     onClick={() =>
                         handleCreateTask(
                             partner[row.id],
-                            getValue(),
-                            row.original.order,
+                            row.original.return_order_delivery
+                                .map((item) => item.partner)
+                                .join(','),
+                            row.original.return_order_id,
                         )
                     }
                 >
@@ -354,10 +356,6 @@ const ReverseDelivery = () => {
     const handleInvoiceClick = (invoiceId: string) => {
         navigate(`/app/returnOrders/${invoiceId}`)
     }
-
-    // const handleRemove = (return_id: any) => {
-    //     navigate(`/app/returnOrders/${return_id}`)
-    // }
 
     const onPaginationChange = (page: number) => {
         setPage(page)
@@ -424,13 +422,13 @@ const ReverseDelivery = () => {
 
         try {
             const body = {
-                action: 'PACKED',
+                action: 'create_reverse_pickup',
                 delivery_partner: partner?.value
                     ? partner?.value
                     : logistic_partner,
             }
             const response = await axioisInstance.patch(
-                `/merchant/order/${order_id}`,
+                `/merchant/return_order/${order_id}`,
                 body,
             )
 

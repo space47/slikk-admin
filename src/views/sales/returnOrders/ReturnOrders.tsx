@@ -110,32 +110,27 @@ const OrderList = () => {
                     ? ''
                     : `&status=${dropdownStatus?.value}`
 
-            let response
             let deliveryStatus = ''
 
             if (deliveryType?.value && deliveryType?.value !== 'undefined') {
                 deliveryStatus = `&return_type=${deliveryType?.value}`
             }
-
+            let searwiseDownload = ''
             if (
                 currentSelectedPage.value === 'return_order_id' &&
                 searchInput
             ) {
-                response = await axioisInstance.get(
-                    `/merchant/return_orders?return_order_id=${searchInput}${status}${deliveryStatus}`,
-                )
+                searwiseDownload = `&return_order_id=${searchInput.toUpperCase()}`
             } else if (
                 currentSelectedPage.value === 'invoice_id' &&
                 searchInput
             ) {
-                response = await axioisInstance.get(
-                    `/merchant/return_orders?invoice_id=${invoiceFilter}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
-                )
-            } else {
-                response = await axioisInstance.get(
-                    `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}`,
-                )
+                searwiseDownload = `&invoice_id=${searchInput.toUpperCase()}`
             }
+
+            const returnUrl = `merchant/return_orders?${searwiseDownload}${status}&from=${from}&to=${To_Date}&${deliveryStatus}`
+
+            const response = await axioisInstance.get(returnUrl)
 
             const ordersData = response?.data?.data.results
             const orderCount = response?.data?.data.count
@@ -350,7 +345,7 @@ const OrderList = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status =
-                dropdownStatus?.value === 'ALL'
+                dropdownStatus?.value.length === 0
                     ? ''
                     : `&status=${dropdownStatus?.value}`
 
@@ -360,12 +355,12 @@ const OrderList = () => {
                 currentSelectedPage.value === 'return_order_id' &&
                 searchInput
             ) {
-                searwiseDownload = `&return_order_id=${searchInput}`
+                searwiseDownload = `&return_order_id=${searchInput.toUpperCase()}`
             } else if (
                 currentSelectedPage.value === 'invoice_id' &&
                 searchInput
             ) {
-                searwiseDownload = `&invoice_id=${searchInput}`
+                searwiseDownload = `&invoice_id=${searchInput.toUpperCase()}`
             }
 
             const downloadUrl = `merchant/return_orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}`

@@ -10,22 +10,24 @@ const initialState: COUPON_STATE = {
     message: '',
     globalFilter: '',
     pageSize: 10,
-    page: 1
+    page: 1,
 }
 
 export const fetchCoupons = createAsyncThunk(
     'coupons/fetchCoupons',
     async () => {
         try {
-            const response = await axioisInstance.get(`merchant/coupon`)
+            const response = await axioisInstance.get(
+                `merchant/coupon?coupon_type=COUPON`,
+            )
 
             return {
-                coupons: response.data.data
+                coupons: response.data.data,
             }
         } catch (error) {
             console.log('error')
         }
-    }
+    },
 )
 
 export const fetchCouponsEdit = createAsyncThunk(
@@ -35,12 +37,12 @@ export const fetchCouponsEdit = createAsyncThunk(
             const response = await axioisInstance.get(`merchant/coupon`)
 
             return {
-                couponsEdit: response.data.data
+                couponsEdit: response.data.data,
             }
         } catch (error) {
             console.log('error')
         }
-    }
+    },
 )
 
 export const couponSlice = createSlice({
@@ -73,7 +75,7 @@ export const couponSlice = createSlice({
                     (state.message =
                         action.error.message || 'Failed to fetch coupons Lists')
             })
-    }
+    },
 })
 
 export default couponSlice.reducer
