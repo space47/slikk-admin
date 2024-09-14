@@ -532,6 +532,7 @@ const BrandOrder = () => {
                     setSubCategoryList={setSubCategoryList}
                     setCategoryList={setCategoryList}
                     setDivisionList={setDivisionList}
+                    setTypeFetch={setTypeFetch}
                 />
             )}
         </div>
