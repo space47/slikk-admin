@@ -168,7 +168,7 @@ const Returns = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `merchant/return_order_items?company_id=${selectedCompany.id}&brand_data=true&from=${from}&to=${To_Date}&download=true`,
+                `merchant/return_order_items?from=${from}&to=${To_Date}&download=true`,
                 {
                     responseType: 'blob',
                 },

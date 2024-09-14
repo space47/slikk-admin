@@ -9,7 +9,7 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    flexRender
+    flexRender,
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -59,7 +59,7 @@ const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
     { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' }
+    { value: 100, label: '100 / page' },
 ]
 
 const PaginationTable = () => {
@@ -71,19 +71,19 @@ const PaginationTable = () => {
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany
+        (store) => store.company.currCompany,
     )
 
     const fetchData = async (
         page: number,
         pageSize: number,
         from: string,
-        to: string
+        to: string,
     ) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}` // &company_id
+                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}`, // &company_id
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -135,19 +135,19 @@ const PaginationTable = () => {
                         onClick={() =>
                             handleGRNClick(
                                 row.original.grn_number,
-                                row.original.company
+                                row.original.company,
                             )
                         }
                         className="cursor-pointer bg-gray-200 px-3 py-3 rounded-md text-black font-semibold"
                     >
                         {row.original.grn_number}
                     </div>
-                )
+                ),
             },
             {
                 header: 'Document Number',
                 accessorKey: 'document_number',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Create Date',
@@ -156,7 +156,7 @@ const PaginationTable = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Document url',
@@ -168,48 +168,48 @@ const PaginationTable = () => {
                     >
                         {info.getValue() as string}
                     </div>
-                )
+                ),
             },
             {
                 header: 'Document Date',
                 accessorKey: 'document_date',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
 
             {
                 header: 'Images',
                 accessorKey: 'images',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Updated By',
                 accessorKey: 'last_updated_by.name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Received At',
                 accessorKey: 'received_address',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Received By',
                 accessorKey: 'received_by.name',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Slikk Owned',
                 accessorKey: 'slikk_owned',
-                cell: (info) => getowner(info.getValue())
+                cell: (info) => getowner(info.getValue()),
             },
             {
                 header: 'Total QTY',
                 accessorKey: 'total_quantity',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Total SKU',
                 accessorKey: 'total_sku',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Updated On',
@@ -218,7 +218,7 @@ const PaginationTable = () => {
                     <span>
                         {moment(getValue() as string).format('YYYY-MM-DD')}
                     </span>
-                )
+                ),
             },
             {
                 header: 'Edit',
@@ -232,10 +232,10 @@ const PaginationTable = () => {
                     >
                         <FaEdit className="text-xl" />
                     </button>
-                )
-            }
+                ),
+            },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
@@ -249,13 +249,13 @@ const PaginationTable = () => {
         state: {
             pagination: {
                 pageIndex: page - 1,
-                pageSize: pageSize
-            }
+                pageSize: pageSize,
+            },
         },
         onPaginationChange: ({ pageIndex, pageSize }) => {
             setPage(pageIndex + 1) // React Table uses zero-based index
             setPageSize(pageSize)
-        }
+        },
     })
 
     const onPaginationChange = (page: number) => {
@@ -290,7 +290,7 @@ const PaginationTable = () => {
     return (
         <div>
             <div className=" flex gap-6 justify-end mb-5">
-                <div className="flex gap-5">
+                {/* <div className="flex gap-5">
                     <div>
                         <div className="mb-1 font-semibold text-sm">
                             FROM DATE:
@@ -318,7 +318,7 @@ const PaginationTable = () => {
                             minDate={moment(from).add(1, 'day').toDate()}
                         />
                     </div>
-                </div>
+                </div> */}
                 <div className="flex items-end justify-end">
                     <button
                         className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
@@ -338,7 +338,7 @@ const PaginationTable = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {flexRender(
                                         header.column.columnDef.header,
-                                        header.getContext()
+                                        header.getContext(),
                                     )}
                                 </Th>
                             ))}
@@ -352,7 +352,7 @@ const PaginationTable = () => {
                                 <Td key={cell.id}>
                                     {flexRender(
                                         cell.column.columnDef.cell,
-                                        cell.getContext()
+                                        cell.getContext(),
                                     )}
                                 </Td>
                             ))}
@@ -372,7 +372,7 @@ const PaginationTable = () => {
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find(
-                            (option) => option.value === pageSize
+                            (option) => option.value === pageSize,
                         )}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
