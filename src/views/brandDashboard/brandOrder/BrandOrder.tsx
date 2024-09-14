@@ -376,10 +376,12 @@ const BrandOrder = () => {
 
     console.log('QUERY', typeFetch)
 
-    const handleResetFilters = () => {
-        setDivisionList([])
-        setCategoryList([])
-        setSubCategoryList([])
+    const handleResetFilters = (resetForm: any) => {
+        resetForm()
+        // setDivisionList([])
+        // setCategoryList([])
+        // setSubCategoryList([])
+        // setShowDrawer(false)
     }
 
     return (
@@ -527,6 +529,9 @@ const BrandOrder = () => {
                     division={divisionList}
                     category={categoryList}
                     sub_category={subCategoryList}
+                    setSubCategoryList={setSubCategoryList}
+                    setCategoryList={setCategoryList}
+                    setDivisionList={setDivisionList}
                 />
             )}
         </div>

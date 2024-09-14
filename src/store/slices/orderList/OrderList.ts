@@ -56,11 +56,11 @@ export const fetchOrders = createAsyncThunk(
 
             if (currentSelectedPage.value === 'invoice' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?invoice_id=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
+                    `/merchant/orders?invoice_id=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else if (currentSelectedPage.value === 'mobile' && searchInput) {
                 response = await axioisInstance.get(
-                    `/merchant/orders?mobile=${searchInput}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
+                    `/merchant/orders?mobile=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
                 )
             } else if (currentSelectedPage.value === 'awb' && searchInput) {
                 response = await axioisInstance.get(

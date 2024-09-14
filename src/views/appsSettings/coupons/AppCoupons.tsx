@@ -96,7 +96,7 @@ const AppCoupons = () => {
         { header: 'Frequency', accessor: 'frequency' },
         // { header: 'Frequency Config', accessor: 'freq_config' },
         { header: 'Coupon Discount Type', accessor: 'coupon_discount_type' },
-        { header: 'User', accessor: 'user' },
+
         {
             header: 'Edit',
             accessor: 'coupon_discount_type',
