@@ -21,6 +21,7 @@ interface drawerProps {
     setDivisionList: any
     setCategoryList: any
     setSubCategoryList: any
+    setTypeFetch: any
 }
 
 const BrandOrderDrawer = ({
@@ -38,6 +39,7 @@ const BrandOrderDrawer = ({
     setDivisionList,
     setCategoryList,
     setSubCategoryList,
+    setTypeFetch,
 }: drawerProps) => {
     const [initialValues, setInitialValues] = useState({
         division: division,
@@ -60,19 +62,18 @@ const BrandOrderDrawer = ({
     // )
 
     const handleFilterEmpty = (resetForm: any) => {
-        // This ensures that Formik's values are reset properly
         resetForm({
             values: {
-                division: [], // Resetting division to an empty array
-                category: [], // Resetting category to an empty array
-                sub_category: [], // Resetting sub-category to an empty array
+                division: [],
+                category: [],
+                sub_category: [],
             },
         })
 
-        // Optionally, reset the external lists if needed
         setDivisionList([])
         setCategoryList([])
         setSubCategoryList([])
+        setTypeFetch('')
     }
 
     return (
