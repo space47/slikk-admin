@@ -218,11 +218,6 @@ const InwardDetails = () => {
                         <div className="mt-5 flex flex-col">
                             {/* TABLE..................................................... */}
 
-                            <QCtable
-                                data={data.grn_quality_check}
-                                totalData={data.grn_quality_check.length}
-                            />
-
                             <div className="flex justify-end mt-5 text-xl mr-7">
                                 <button
                                     onClick={() =>
@@ -236,6 +231,10 @@ const InwardDetails = () => {
                                     </div>{' '}
                                 </button>
                             </div>
+                            <QCtable
+                                data={data.grn_quality_check}
+                                totalData={data.grn_quality_check.length}
+                            />
                         </div>
                         {showSyncModal && (
                             <Modal
