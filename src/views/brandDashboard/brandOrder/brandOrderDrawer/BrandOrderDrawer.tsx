@@ -18,6 +18,9 @@ interface drawerProps {
     division: any
     category: any
     sub_category: any
+    setDivisionList: any
+    setCategoryList: any
+    setSubCategoryList: any
 }
 
 const BrandOrderDrawer = ({
@@ -32,21 +35,45 @@ const BrandOrderDrawer = ({
     division,
     category,
     sub_category,
+    setDivisionList,
+    setCategoryList,
+    setSubCategoryList,
 }: drawerProps) => {
-    const Footer = (
-        <div className="text-right w-full">
-            <Button
-                size="sm"
-                variant="default"
-                onClick={() => handleResetFilters()}
-            >
-                Reset
-            </Button>
-            <Button size="sm" variant="solid" onClick={() => handleApply()}>
-                APPLY
-            </Button>
-        </div>
-    )
+    const [initialValues, setInitialValues] = useState({
+        division: division,
+        category: category,
+        sub_category: sub_category,
+    })
+    // const Footer = (
+    //     <div className="text-right w-full">
+    //         <Button
+    //             size="sm"
+    //             variant="default"
+    //             onClick={() => handleResetFilters()}
+    //         >
+    //             Reset
+    //         </Button>
+    //         <Button size="sm" variant="solid" onClick={() => handleApply()}>
+    //             APPLY
+    //         </Button>
+    //     </div>
+    // )
+
+    const handleFilterEmpty = (resetForm: any) => {
+        // This ensures that Formik's values are reset properly
+        resetForm({
+            values: {
+                division: [], // Resetting division to an empty array
+                category: [], // Resetting category to an empty array
+                sub_category: [], // Resetting sub-category to an empty array
+            },
+        })
+
+        // Optionally, reset the external lists if needed
+        setDivisionList([])
+        setCategoryList([])
+        setSubCategoryList([])
+    }
 
     return (
         <div>
@@ -57,14 +84,7 @@ const BrandOrderDrawer = ({
                 onRequestClose={handleCloseDrawer}
                 lockScroll={false}
             >
-                <Formik
-                    initialValues={{
-                        division: division,
-                        category: category,
-                        sub_category: sub_category,
-                    }}
-                    onSubmit={handleApply}
-                >
+                <Formik initialValues={initialValues} onSubmit={handleApply}>
                     {({ setFieldValue, values, resetForm }) => (
                         <Form className="flex flex-col gap-10 w-full items-center">
                             {/* Division */}
@@ -151,7 +171,7 @@ const BrandOrderDrawer = ({
                                     type="reset"
                                     variant="default"
                                     className="mt-4 p-2 rounded"
-                                    onClick={() => handleResetFilters()}
+                                    onClick={() => handleFilterEmpty(resetForm)}
                                 >
                                     Reset
                                 </Button>
