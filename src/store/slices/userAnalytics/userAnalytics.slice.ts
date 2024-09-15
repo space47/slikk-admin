@@ -12,6 +12,8 @@ const initialState: USERANALYTICS_TYPE = {
     to: moment().format('YYYY-MM-DD'),
     loading: false,
     message: '',
+    page: 1,
+    page_size: 10,
 }
 
 export const fetchUserAnalytics = createAsyncThunk(
@@ -19,12 +21,12 @@ export const fetchUserAnalytics = createAsyncThunk(
     async (_, { getState, rejectWithValue }) => {
         try {
             const state = getState() as { userAnalytics: USERANALYTICS_TYPE }
-            const { from, to } = state.userAnalytics
+            const { from, to, page, page_size } = state.userAnalytics
 
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
             const response = await axiosInstance.get(
-                `merchant/analytic/user?type=login&from=${from}&to=${To_Date}&is_verified=True`,
+                `merchant/analytic/user?type=login&from=${from}&to=${To_Date}&is_verified=True&p=${page}&page_size=${page_size}`,
             )
 
             return {
@@ -47,6 +49,12 @@ export const userAnalyticsSlice = createSlice({
         },
         setTo(state, action) {
             state.to = action.payload
+        },
+        setPage(state, action) {
+            state.page = action.payload
+        },
+        setPage_size(state, action) {
+            state.page_size = action.payload
         },
     },
     extraReducers: (builder) => {
@@ -71,6 +79,7 @@ export const userAnalyticsSlice = createSlice({
     },
 })
 
-export const { setFrom, setTo } = userAnalyticsSlice.actions
+export const { setFrom, setTo, setPage, setPage_size } =
+    userAnalyticsSlice.actions
 
 export default userAnalyticsSlice.reducer
