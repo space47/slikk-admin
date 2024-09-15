@@ -1,38 +1,39 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import moment from 'moment'
 import { USERANALYTICS_TYPE } from '@/store/types/userAnalytics.types'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const initialState: USERANALYTICS_TYPE = {
     status: '',
     total_logged_in: 0,
     total_otp_verified: 0,
     data: {},
-    from: '',
-    to: '',
+    from: moment().format('YYYY-MM-DD'),
+    to: moment().format('YYYY-MM-DD'),
     loading: false,
     message: '',
 }
 
 export const fetchUserAnalytics = createAsyncThunk(
     'userAnalytics/fetchUserAnalytics',
-    async (_, { getState }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
-            const state = getState() as { userData: USERANALYTICS_TYPE }
-            const { from, to } = state.userData
+            const state = getState() as { userAnalytics: USERANALYTICS_TYPE }
+            const { from, to } = state.userAnalytics
 
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
-            const response = await axioisInstance.get(
-                `merchant/analytic/user?type=login&from=2024-08-2&to=2024-8-30&is_verified=True`,
+            const response = await axiosInstance.get(
+                `merchant/analytic/user?type=login&from=${from}&to=${To_Date}&is_verified=True`,
             )
 
             return {
-                userResponse: response?.data,
-                userData: response?.data?.data?.results,
+                userData: response.data,
             }
-        } catch (error) {
-            console.log('error', error)
+        } catch (error: any) {
+            return rejectWithValue(
+                error.response?.data || 'Failed to fetch data',
+            )
         }
     },
 )
@@ -52,15 +53,20 @@ export const userAnalyticsSlice = createSlice({
         builder
             .addCase(fetchUserAnalytics.pending, (state) => {
                 state.loading = true
+                state.message = ''
             })
             .addCase(fetchUserAnalytics.fulfilled, (state, action) => {
-                ;(state.loading = false),
-                    (state.data = action.payload?.userData)
+                state.loading = false
+                state.data = action.payload.userData.data
+                state.total_logged_in =
+                    action.payload.userData.total_logged_in || 0
+                state.total_otp_verified =
+                    action.payload.userData.total_otp_verified || 0
             })
             .addCase(fetchUserAnalytics.rejected, (state, action) => {
-                ;(state.loading = false),
-                    (state.message =
-                        action.error.message || 'Failed to fetch Order Lists')
+                state.loading = false
+                state.message =
+                    (action.payload as string) || 'Failed to fetch data'
             })
     },
 })
