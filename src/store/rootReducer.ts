@@ -18,6 +18,7 @@ import orderListReducer from './slices/orderList/OrderList'
 import { ReturnOrderState } from './types/returnDetails.types'
 import couponReducer from './slices/couponSlice/couponSlice'
 import returnOverallDetailsReducer from './slices/returnOverallDetails/returnOverallDetails'
+import userAnalyticsReducer from './slices/userAnalytics/userAnalytics.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -51,6 +52,7 @@ const staticReducers = {
     order: orderListReducer,
     coupon: couponReducer,
     retrunOverallOrders: returnOverallDetailsReducer,
+    userAnalytics: userAnalyticsReducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
 
