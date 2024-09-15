@@ -15,7 +15,7 @@ export type USERANALYTICS_TYPE = {
     status: string
     total_logged_in: number
     total_otp_verified: number
-    data: ResponseData
+    data: ResponseData | null
     from: string
     to: string
     loading: boolean
