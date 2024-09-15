@@ -83,10 +83,10 @@ function DebouncedInput({
 
     return (
         <div className="main">
-            <div className="text-xl font-bold mt-5">QUALITY CHECKLIST</div>
-            <div className="flex justify-end">
+            <div className="text-xl font-bold mt-5 mb-4">QUALITY CHECKLIST</div>
+            <div className="flex justify-start mb-6">
                 <div className="flex items-center mb-4">
-                    <span className="mr-2">Search:</span>
+                    <span className="mr-2"></span>
                     <Input
                         {...props}
                         value={value}

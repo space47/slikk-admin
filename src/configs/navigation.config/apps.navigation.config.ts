@@ -540,6 +540,17 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsAnalytics.userAnalytics',
+                        path: `${APP_PREFIX_PATH}/analytics/userAnalytics`,
+                        title: 'Users',
+                        translateKey: 'nav.appsAnalytics.userAnalytics',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+
                     // {
                     //     key: 'appsAnalytics.riderTracking',
                     //     path: `${APP_PREFIX_PATH}/tryAndBuy/riderTracking`,
