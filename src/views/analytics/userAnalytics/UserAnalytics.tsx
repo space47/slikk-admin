@@ -11,6 +11,8 @@ import {
     fetchUserAnalytics,
     setFrom,
     setTo,
+    setPage,
+    setPage_size,
 } from '@/store/slices/userAnalytics/userAnalytics.slice'
 import moment from 'moment'
 import DatePicker from '@/components/ui/DatePicker'
@@ -18,20 +20,28 @@ import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import { FaCheckCircle, FaUsers } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@/store'
+import { Pagination } from '@/components/ui'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const UserAnalyticsTable = () => {
     const dispatch = useAppDispatch()
-    const { data, loading, from, to, total_logged_in, total_otp_verified } =
-        useAppSelector(
-            (state: { userAnalytics: USERANALYTICS_TYPE }) =>
-                state.userAnalytics,
-        )
+    const {
+        data,
+        loading,
+        from,
+        to,
+        total_logged_in,
+        total_otp_verified,
+        page,
+        page_size,
+    } = useAppSelector(
+        (state: { userAnalytics: USERANALYTICS_TYPE }) => state.userAnalytics,
+    )
 
     useEffect(() => {
         dispatch(fetchUserAnalytics())
-    }, [dispatch, from, to])
+    }, [dispatch, from, to, page, page_size])
 
     const columns = useMemo(
         () => [
@@ -75,6 +85,12 @@ const UserAnalyticsTable = () => {
             ),
         )
     }
+
+    const onPaginationChange = (page: number) => {
+        dispatch(setPage(page))
+    }
+
+    console.log('PAGES', page, page_size)
 
     return (
         <div className="p-4 md:p-6 lg:p-8">
@@ -155,6 +171,12 @@ const UserAnalyticsTable = () => {
                     </TBody>
                 </Table>
             </div>
+            <Pagination
+                pageSize={page_size}
+                currentPage={page}
+                total={data?.count}
+                onChange={onPaginationChange}
+            />
         </div>
     )
 }

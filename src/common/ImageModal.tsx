@@ -39,7 +39,7 @@ const ImageMODAL = ({ dialogIsOpen, setIsOpen, image }: ImageProps) => {
                                         />
                                     </div>
                                 </SplideSlide>
-                            ) : null
+                            ) : null,
                         )}
                     </Splide>
                 ) : (

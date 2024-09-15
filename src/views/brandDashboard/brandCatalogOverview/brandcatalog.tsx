@@ -17,6 +17,7 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import moment from 'moment'
+import ImageMODAL from '@/common/ImageModal'
 
 type ProductVariant = {
     name: string
@@ -75,6 +76,8 @@ const BrandCatalog = () => {
     )
     const [filterInput, setFilterInput] = useState('')
     const [showSpinner, setShowSpinner] = useState(false)
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState([])
 
     console.log('ssssssssssssss', selectedCompany)
 
@@ -168,11 +171,12 @@ const BrandCatalog = () => {
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: (info) => (
+                cell: ({ getValue, row }) => (
                     <img
-                        src={getFirstImageUrl(info.getValue() as string)}
+                        src={getValue().split(',')[0]}
                         alt="Image"
-                        className="w-24 h-20 object-cover"
+                        className="w-24 h-20 object-cover cursor-pointer"
+                        onClick={() => handleOpenModal(row.original.image)}
                     />
                 ),
             },
@@ -233,6 +237,12 @@ const BrandCatalog = () => {
         ],
         [],
     )
+
+    const handleOpenModal = (img: any) => {
+        console.log('sdsds', img)
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
 
     const table = useReactTable({
         data,
@@ -371,6 +381,16 @@ const BrandCatalog = () => {
                             />
                         </div>
                     </div>
+                    {showImageModal && (
+                        <ImageMODAL
+                            dialogIsOpen={showImageModal}
+                            setIsOpen={setShowImageModal}
+                            image={
+                                particularRowImage &&
+                                particularRowImage?.split(',')
+                            }
+                        />
+                    )}
                 </>
             )}
         </div>
