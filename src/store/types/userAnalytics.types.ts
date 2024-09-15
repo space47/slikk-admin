@@ -20,4 +20,6 @@ export type USERANALYTICS_TYPE = {
     to: string
     loading: boolean
     message: string
+    page: any
+    page_size: any
 }

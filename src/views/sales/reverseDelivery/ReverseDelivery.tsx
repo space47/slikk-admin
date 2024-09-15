@@ -524,7 +524,7 @@ const ReverseDelivery = () => {
                 </div>
             </div>
 
-            <Table>
+            <Table className="scrollbar-hide">
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>

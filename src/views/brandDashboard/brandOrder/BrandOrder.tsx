@@ -26,7 +26,7 @@ import { TbCalendarStats } from 'react-icons/tb'
 import BrandOrderGraph from './brandOrderGraph/BrandOrderGraph'
 import BrandQuantityGraph from './brandOrderGraph/BrandQuantityGraph'
 import { FaDownload, FaFilter } from 'react-icons/fa'
-
+import ImageMODAL from '@/common/ImageModal'
 import BrandOrderDrawer from './brandOrderDrawer/BrandOrderDrawer'
 import { IoMdDownload } from 'react-icons/io'
 
@@ -84,6 +84,8 @@ const BrandOrder = () => {
     )
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const [showLastSevenDays, setShowLastSevenDays] = useState(true)
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState([])
 
     const [skuWiseDetails, setSkuWiseDetails] = useState<
         Array<{ key: string; value: SKU_DETAILS }>
@@ -232,21 +234,26 @@ const BrandOrder = () => {
             {
                 header: 'Image',
                 accessorKey: 'value.image',
-                cell: (info) => {
-                    const imageUrl = (info.getValue() as string).split(',')[0]
-                    return (
-                        <img
-                            src={imageUrl}
-                            alt="Product Image"
-                            width={50}
-                            height={50}
-                        />
-                    )
-                },
+                cell: ({ getValue, row }) => (
+                    <img
+                        src={getValue().split(',')[0]}
+                        alt="Image"
+                        className="w-24 h-20 object-cover cursor-pointer"
+                        onClick={() =>
+                            handleOpenModal(row.original.value.image)
+                        }
+                    />
+                ),
             },
         ],
         [],
     )
+
+    const handleOpenModal = (img: any) => {
+        console.log('sdsds', img)
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
 
     const handleDownload = async () => {
         try {
@@ -387,14 +394,14 @@ const BrandOrder = () => {
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
-                <div className="w-full lg:w-1/2 flex flex-col  ">
+                <div className="w-auto lg:w-1/2 flex flex-col  ">
                     <Button
                         variant="new"
                         onClick={handleDrawer}
-                        className="xl:w-1/3 w-auto flex gap-3"
+                        className="xl:w-1/2 w-auto flex gap-3 items-center justify-center"
                     >
                         {' '}
-                        <FaFilter className="text-xl" /> CATEGORY FILTER
+                        <FaFilter className="text-lg" /> <p>CATEGORY FILTER</p>
                     </Button>
                 </div>
 
@@ -533,6 +540,14 @@ const BrandOrder = () => {
                     setCategoryList={setCategoryList}
                     setDivisionList={setDivisionList}
                     setTypeFetch={setTypeFetch}
+                />
+            )}
+
+            {showImageModal && (
+                <ImageMODAL
+                    dialogIsOpen={showImageModal}
+                    setIsOpen={setShowImageModal}
+                    image={particularRowImage && particularRowImage?.split(',')}
                 />
             )}
         </div>
