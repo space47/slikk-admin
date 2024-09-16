@@ -114,7 +114,7 @@ const Anal = () => {
             setDatewisedetails([])
 
             const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}`,
+                `/merchant/sales?from=${from}&to=${to}&${typeFetch}`,
             )
             const data = response.data
 
@@ -251,7 +251,7 @@ const Anal = () => {
     const handleDownload = async () => {
         try {
             const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&brand_data=true&&company_id=${selectedCompany.id}&${typeFetch}&download=true`,
+                `/merchant/sales?from=${from}&to=${to}&${typeFetch}&download=true`,
                 {
                     responseType: 'blob',
                 },
