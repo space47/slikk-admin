@@ -1,27 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import {
-    Table,
-    Pagination,
-    Select,
-    DatePicker,
-    Dropdown,
-} from '@/components/ui'
-import {
-    ORDER_STATUS,
-    RETURN_ORDERS,
-} from '@/views/category-management/orderlist/commontypes'
+import { Table, Pagination, Select, DatePicker, Dropdown } from '@/components/ui'
+import { ORDER_STATUS, RETURN_ORDERS } from '@/views/category-management/orderlist/commontypes'
 import type { FilterFn } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import { TbCalendarStats } from 'react-icons/tb'
@@ -30,10 +14,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiEBike2Fill } from 'react-icons/ri'
-import {
-    DELEIVERYRETRUNOPTIONS,
-    ReturnOrder,
-} from '../returnOrders/ReturnOrders'
+import { DELEIVERYRETRUNOPTIONS, ReturnOrder } from '../returnOrders/ReturnOrders'
 import FilterReturnOrder from '../returnOrders/filter/FilterReturnOrder'
 import { CiFilter } from 'react-icons/ci'
 
@@ -65,9 +46,7 @@ const SEARCHOPTIONS = [
 const ReverseDelivery = () => {
     const [orders, setOrders] = useState<ReturnOrder[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<
-        Record<string, string>
-    >(SEARCHOPTIONS[0])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [deliveryType, setDeliveryType] = useState<{
         label: string
         value: string
@@ -86,18 +65,10 @@ const ReverseDelivery = () => {
 
     const [showFilter, setShowFilter] = useState(false)
 
-    const fetchOrders = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status =
-                dropdownStatus?.value.length === 0
-                    ? ''
-                    : `&status=${dropdownStatus?.value}`
+            const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
 
             let response
 
@@ -107,24 +78,12 @@ const ReverseDelivery = () => {
                 deliveryStatus = `&return_type=${deliveryType?.value}`
             }
 
-            if (
-                currentSelectedPage.value === 'return_order_id' &&
-                searchInput
-            ) {
-                response = await axioisInstance.get(
-                    `/merchant/return_orders?return_order_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`,
-                )
-            } else if (
-                currentSelectedPage.value === 'invoice_id' &&
-                searchInput
-            ) {
-                response = await axioisInstance.get(
-                    `/merchant/return_orders?invoice_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`,
-                )
+            if (currentSelectedPage.value === 'return_order_id' && searchInput) {
+                response = await axioisInstance.get(`/merchant/return_orders?return_order_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`)
+            } else if (currentSelectedPage.value === 'invoice_id' && searchInput) {
+                response = await axioisInstance.get(`/merchant/return_orders?invoice_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`)
             } else if (currentSelectedPage.value === 'awb' && searchInput) {
-                response = await axioisInstance.get(
-                    `/merchant/return_orders?awb=${searchInput.toUpperCase()}${status}${deliveryStatus}`,
-                )
+                response = await axioisInstance.get(`/merchant/return_orders?awb=${searchInput.toUpperCase()}${status}${deliveryStatus}`)
             } else {
                 response = await axioisInstance.get(
                     `/merchant/return_orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}`,
@@ -192,75 +151,41 @@ const ReverseDelivery = () => {
         {
             header: 'Runner Name',
             accessorKey: 'return_order_delivery',
-            cell: ({ row }: { row: { original: ReturnOrder } }) => (
-                <span>
-                    {row.original.return_order_delivery[0]?.runner_name || ''}
-                </span>
-            ),
+            cell: ({ row }: { row: { original: ReturnOrder } }) => <span>{row.original.return_order_delivery[0]?.runner_name || ''}</span>,
         },
         {
             header: 'Runner Number',
             accessorKey: 'return_order_delivery',
-            cell: ({ row }: { row: { original: ReturnOrder } }) => (
-                <span>
-                    {row.original.return_order_delivery[0]
-                        ?.runner_phone_number || ''}
-                </span>
-            ),
+            cell: ({ row }: { row: { original: ReturnOrder } }) => <span>{row.original.return_order_delivery[0]?.runner_phone_number || ''}</span>,
         },
         {
             header: 'Pickup Time',
             accessorKey: 'return_order_delivery',
             cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                const deliveryCreatedLog =
-                    row.original.return_order_delivery[0]?.log?.find(
-                        (logEntry: any) =>
-                            logEntry.status === 'DELIVERY_CREATED',
-                    )
+                const deliveryCreatedLog = row.original.return_order_delivery[0]?.log?.find((logEntry: any) => logEntry.status === 'DELIVERY_CREATED')
 
-                return deliveryCreatedLog ? (
-                    <div>
-                        {moment(deliveryCreatedLog.timestamp).format(
-                            'YYYY-MM-DD hh:mm:ss a',
-                        )}
-                    </div>
-                ) : null
+                return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
             },
         },
         {
             header: 'Drop Time',
             accessorKey: 'return_order_delivery',
             cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                const deliveryCreatedLog =
-                    row.original.return_order_delivery[0]?.log?.find(
-                        (logEntry: any) => logEntry.status === 'DELIVERED',
-                    )
+                const deliveryCreatedLog = row.original.return_order_delivery[0]?.log?.find((logEntry: any) => logEntry.status === 'DELIVERED')
 
-                return deliveryCreatedLog ? (
-                    <div>
-                        {moment(deliveryCreatedLog.timestamp).format(
-                            'YYYY-MM-DD hh:mm:ss a',
-                        )}
-                    </div>
-                ) : null
+                return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
             },
         },
         {
             header: 'AWB Code',
             accessorKey: 'return_order_delivery',
-            cell: ({ row }: { row: { original: ReturnOrder } }) => (
-                <span>
-                    {row.original.return_order_delivery[0]?.awb_code || ''}
-                </span>
-            ),
+            cell: ({ row }: { row: { original: ReturnOrder } }) => <span>{row.original.return_order_delivery[0]?.awb_code || ''}</span>,
         },
         {
             header: 'Partner',
             accessorKey: 'return_order_delivery[0].partner',
             cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                const selectedPartner =
-                    partner[row.id]?.label ||
-                    row.original.return_order_delivery[0]?.partner
+                const selectedPartner = partner[row.id]?.label || row.original.return_order_delivery[0]?.partner
 
                 return (
                     <Dropdown
@@ -270,11 +195,7 @@ const ReverseDelivery = () => {
                     >
                         <div className="max-h-60 overflow-y-auto">
                             {LOGISTIC_PARTNER.map((item, key) => (
-                                <DropdownItem
-                                    key={key}
-                                    eventKey={item.value}
-                                    className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer z-50"
-                                >
+                                <DropdownItem key={key} eventKey={item.value} className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer z-50">
                                     <span>{item.label}</span>
                                 </DropdownItem>
                             ))}
@@ -286,21 +207,13 @@ const ReverseDelivery = () => {
         {
             header: 'Assigned Logistic',
             accessorKey: 'return_order_delivery',
-            cell: ({
-                row,
-                getValue,
-            }: {
-                row: { original: ReturnOrder }
-                getValue: () => string
-            }) => (
+            cell: ({ row, getValue }: { row: { original: ReturnOrder }; getValue: () => string }) => (
                 <Button
                     size="sm"
                     onClick={() =>
                         handleCreateTask(
                             partner[row.id],
-                            row.original.return_order_delivery
-                                .map((item) => item.partner)
-                                .join(','),
+                            row.original.return_order_delivery.map((item) => item.partner).join(','),
                             row.original.return_order_id,
                         )
                     }
@@ -313,10 +226,7 @@ const ReverseDelivery = () => {
             header: 'Cancel Task',
             accessorKey: 'order',
             cell: ({ row }: { row: { original: ReturnOrder } }) => (
-                <Button
-                    size="sm"
-                    onClick={() => handleCancelTask(row.original.order)}
-                >
+                <Button size="sm" onClick={() => handleCancelTask(row.original.order)}>
                     Cancel Task
                 </Button>
             ),
@@ -339,7 +249,7 @@ const ReverseDelivery = () => {
         console.log('Id', invoce_id)
 
         try {
-            await axioisInstance.patch(`logistic/cancel/order/${invoce_id}`)
+            await axioisInstance.patch(`logistic/cancel/return_orders/${invoce_id}`)
             notification.success({
                 message: 'success',
                 description: 'Order successfully cancelled',
@@ -362,19 +272,11 @@ const ReverseDelivery = () => {
     }
 
     const handleFromChange = (date: Date | null) => {
-        setFrom(
-            date
-                ? moment(date).format('YYYY-MM-DD')
-                : moment().format('YYYY-MM-DD'),
-        )
+        setFrom(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
     }
 
     const handleToChange = (date: Date | null) => {
-        setTo(
-            date
-                ? moment(date).format('YYYY-MM-DD')
-                : moment().format('YYYY-MM-DD'),
-        )
+        setTo(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
     }
     const handleSelect = (value: any) => {
         const selected = SEARCHOPTIONS.find((item) => item.value === value)
@@ -388,9 +290,7 @@ const ReverseDelivery = () => {
 
     const handlePartnerSelect = (selectedValue: any, row: any) => {
         console.log('VALUE', selectedValue, row)
-        const selectedLabel =
-            LOGISTIC_PARTNER.find((item) => item.value === selectedValue)
-                ?.label || ''
+        const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
 
         setPartner((prev) => ({
             ...prev,
@@ -413,29 +313,19 @@ const ReverseDelivery = () => {
     }
     console.log('PPPPPPPPPP', partner)
 
-    const handleCreateTask = async (
-        partner: any,
-        logistic_partner: any,
-        order_id: any,
-    ) => {
+    const handleCreateTask = async (partner: any, logistic_partner: any, order_id: any) => {
         console.log('TASK', partner?.label, order_id, logistic_partner)
 
         try {
             const body = {
                 action: 'create_reverse_pickup',
-                delivery_partner: partner?.value
-                    ? partner?.value
-                    : logistic_partner,
+                delivery_partner: partner?.value ? partner?.value : logistic_partner,
             }
-            const response = await axioisInstance.patch(
-                `/merchant/return_order/${order_id}`,
-                body,
-            )
+            const response = await axioisInstance.patch(`/merchant/return_order/${order_id}`, body)
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Created Task Successfully',
+                description: response?.data?.message || 'Created Task Successfully',
             })
         } catch (error) {
             console.error(error)
@@ -446,9 +336,7 @@ const ReverseDelivery = () => {
         }
     }
     const handleDeliverySelect = (selectedValue: string) => {
-        const selectedOption = DELEIVERYRETRUNOPTIONS.find(
-            (option) => option.value === selectedValue,
-        )
+        const selectedOption = DELEIVERYRETRUNOPTIONS.find((option) => option.value === selectedValue)
 
         if (selectedOption) {
             setDeliveryType(selectedOption)
@@ -482,19 +370,12 @@ const ReverseDelivery = () => {
                     <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md">
                         <Dropdown
                             className=" text-xl text-black bg-gray-200 font-bold "
-                            title={
-                                currentSelectedPage?.value
-                                    ? currentSelectedPage.label
-                                    : 'SELECT'
-                            }
+                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
                             onSelect={handleSelect}
                         >
                             {SEARCHOPTIONS?.map((item, key) => {
                                 return (
-                                    <DropdownItem
-                                        key={key}
-                                        eventKey={item.value}
-                                    >
+                                    <DropdownItem key={key} eventKey={item.value}>
                                         <span>{item.label}</span>
                                     </DropdownItem>
                                 )
@@ -504,21 +385,11 @@ const ReverseDelivery = () => {
                 </div>
 
                 <div>
-                    <Button
-                        variant="new"
-                        size="sm"
-                        onClick={handleShowFilter}
-                        className="hidden xl:flex gap-2"
-                    >
+                    <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
                         <CiFilter className="text-xl font-extrabold" /> Filter
                     </Button>
 
-                    <Button
-                        variant="default"
-                        size="sm"
-                        onClick={handleShowFilter}
-                        className="flex xl:hidden"
-                    >
+                    <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
                         <CiFilter className="text-xl font-extrabold" />
                     </Button>
                 </div>
@@ -532,20 +403,11 @@ const ReverseDelivery = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {header.isPlaceholder ? null : (
                                         <div
-                                            className={
-                                                header.column.getCanSort()
-                                                    ? 'cursor-pointer select-none'
-                                                    : ''
-                                            }
+                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
-                                            <Sorter
-                                                sort={header.column.getIsSorted()}
-                                            />
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                            <Sorter sort={header.column.getIsSorted()} />
                                         </div>
                                     )}
                                 </Th>
@@ -557,12 +419,7 @@ const ReverseDelivery = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
@@ -570,18 +427,11 @@ const ReverseDelivery = () => {
             </Table>
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={orderCount}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
                 <div className="w-full sm:w-auto min-w-[130px]">
                     <Select
                         size="sm"
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => setPageSize(option?.value)}
                         className="w-full flex justify-end"
