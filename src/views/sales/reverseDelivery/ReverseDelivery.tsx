@@ -247,10 +247,13 @@ const ReverseDelivery = () => {
 
     const handleCancelTask = async (return_order_id: any) => {
         try {
-            await axioisInstance.patch(`/merchant/logistic/returnorder/${return_order_id}`)
+            const body = {
+                action: 'cancel',
+            }
+            await axioisInstance.patch(`/merchant/logistic/returnorder/${return_order_id}`, body)
             notification.success({
                 message: 'success',
-                description: 'Order successfully cancelled',
+                description: 'Return Order successfully cancelled',
             })
         } catch (error) {
             console.log(error)
