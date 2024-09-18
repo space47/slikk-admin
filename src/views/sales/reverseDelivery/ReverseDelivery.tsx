@@ -5,11 +5,8 @@ import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowMo
 import moment from 'moment'
 import Button from '@/components/ui/Button'
 import { Table, Pagination, Select, DatePicker, Dropdown } from '@/components/ui'
-import { ORDER_STATUS, RETURN_ORDERS } from '@/views/category-management/orderlist/commontypes'
 import type { FilterFn } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
-import { TbCalendarStats } from 'react-icons/tb'
-import { HiOutlineCalendar } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -45,7 +42,6 @@ const SEARCHOPTIONS = [
 
 const ReverseDelivery = () => {
     const [orders, setOrders] = useState<ReturnOrder[]>([])
-    const [globalFilter, setGlobalFilter] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [deliveryType, setDeliveryType] = useState<{
         label: string
@@ -312,56 +308,27 @@ const ReverseDelivery = () => {
             }))
         }
     }
-    console.log('PPPPPPPPPP', partner)
 
     const handleCreateTask = async (partner: any, logistic_partner: any, return_order_id: any) => {
         try {
-            let body = {
+            const body = {
                 action: 'create_reverse_pickup',
-                re_create: 'no',
+                re_create: 'yes',
             }
 
             const response = await axioisInstance.patch(`merchant/return_order/${return_order_id}`, body)
 
-            if (response.status === 400) {
-                body.re_create = 'yes'
-                await axioisInstance.patch(`merchant/return_order/${return_order_id}`, body)
-            }
-
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Rider status updated successfully.',
+                description: response?.data?.message || 'Updated successfully.',
             })
         } catch (error: any) {
             console.error(error)
-            const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-
-            if (error.response?.status === 400) {
-                try {
-                    const bodyWithReCreate = {
-                        action: 'create_reverse_pickup',
-                        re_create: 'yes',
-                    }
-                    const retryResponse = await axioisInstance.patch(`merchant/return_order/${return_order_id}`, bodyWithReCreate)
-
-                    console.log(retryResponse.data)
-                    notification.success({
-                        message: 'Success',
-                        description: retryResponse?.data?.message || 'Rider status updated successfully.',
-                    })
-                } catch (retryError: any) {
-                    console.error(retryError)
-                    notification.error({
-                        message: 'Error',
-                        description: retryError.response?.data?.message || 'Failed to update rider status with re_create.',
-                    })
-                }
-            } else {
-                notification.error({
-                    message: 'Error',
-                    description: errorMessage,
-                })
-            }
+            const errorMessage = error.response?.data?.message || 'There was an error updating the return order status. Please try again.'
+            notification.error({
+                message: 'Error',
+                description: errorMessage,
+            })
         }
     }
     const handleDeliverySelect = (selectedValue: string) => {
