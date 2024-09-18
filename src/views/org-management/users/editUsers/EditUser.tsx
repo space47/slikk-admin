@@ -40,11 +40,16 @@ const BrandUserEdit = () => {
     const [selectedGroups, setSelectedGroups] = useState<number[]>([])
     const [addedGroups, setAddedGroups] = useState([])
 
+    // for company
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+    const [selectedCompany, setSelectedCompany] = useState<number[]>([])
+    const [addedCompany, setAddedCompany] = useState<{ id: number; name: string }[]>([])
+
     const { mobile } = useParams()
 
     const navigate = useNavigate()
 
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const selectedCurrentCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const fetchData = async () => {
         try {
@@ -155,6 +160,31 @@ const BrandUserEdit = () => {
         setAddedGroups((prevAdded) => prevAdded?.filter((perm) => perm.id !== id))
     }
 
+    // comapny................................................................
+
+    const handleCompanySelect = (id: number) => {
+        setSelectedCompany((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id]))
+    }
+    const handleAddCompany = () => {
+        const alreadyAdded = selectedCompany.filter((permId) => addedCompany.some((added) => added.id === permId))
+
+        if (alreadyAdded.length > 0) {
+            notification.warning({
+                message: 'Warning',
+                description: 'Company already added',
+            })
+        }
+
+        const selected = companyList?.filter((perm) => selectedCompany.includes(perm.id) && !addedCompany.some((added) => added.id === perm.id))
+
+        setAddedCompany((prevAdded) => [...prevAdded, ...selected])
+        setSelectedCompany([])
+    }
+
+    const handleRemoveCompany = (id: number) => {
+        setAddedCompany((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
+    }
+
     const initialValue: FormModel = {
         first_name: '',
         last_name: '',
@@ -189,6 +219,18 @@ const BrandUserEdit = () => {
 
                             <div className="text-xl font-bold">USER PERMISSIONS</div>
                             <br />
+
+                            <FormContainer className="">
+                                <CardComponent
+                                    label="Company"
+                                    selectedValue={selectedCompany}
+                                    getValue={companyList}
+                                    handleSelect={handleCompanySelect}
+                                    addedValue={addedCompany}
+                                    handleAdd={handleAddCompany}
+                                    handleRemove={handleRemoveCompany}
+                                />
+                            </FormContainer>
 
                             <FormContainer className="">
                                 <CardComponent
