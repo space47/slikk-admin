@@ -226,7 +226,7 @@ const ReverseDelivery = () => {
             header: 'Cancel Task',
             accessorKey: 'order',
             cell: ({ row }: { row: { original: ReturnOrder } }) => (
-                <Button size="sm" onClick={() => handleCancelTask(row.original.order)}>
+                <Button size="sm" onClick={() => handleCancelTask(row.original.return_order_id)}>
                     Cancel Task
                 </Button>
             ),
@@ -245,11 +245,9 @@ const ReverseDelivery = () => {
         globalFilterFn: fuzzyFilter,
     })
 
-    const handleCancelTask = async (invoce_id: any) => {
-        console.log('Id', invoce_id)
-
+    const handleCancelTask = async (return_order_id: any) => {
         try {
-            await axioisInstance.patch(`logistic/cancel/return_orders/${invoce_id}`)
+            await axioisInstance.patch(`/merchant/logistic/returnorder/${return_order_id}`)
             notification.success({
                 message: 'success',
                 description: 'Order successfully cancelled',
@@ -313,26 +311,54 @@ const ReverseDelivery = () => {
     }
     console.log('PPPPPPPPPP', partner)
 
-    const handleCreateTask = async (partner: any, logistic_partner: any, order_id: any) => {
-        console.log('TASK', partner?.label, order_id, logistic_partner)
-
+    const handleCreateTask = async (partner: any, logistic_partner: any, return_order_id: any) => {
         try {
-            const body = {
+            let body = {
                 action: 'create_reverse_pickup',
-                delivery_partner: partner?.value ? partner?.value : logistic_partner,
+                re_create: 'no',
             }
-            const response = await axioisInstance.patch(`/merchant/return_order/${order_id}`, body)
+
+            const response = await axioisInstance.patch(`merchant/return_order/${return_order_id}`, body)
+
+            if (response.status === 400) {
+                body.re_create = 'yes'
+                await axioisInstance.patch(`merchant/return_order/${return_order_id}`, body)
+            }
 
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Created Task Successfully',
+                description: response?.data?.message || 'Rider status updated successfully.',
             })
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            notification.error({
-                message: 'Failure',
-                description: 'Failed to create Task',
-            })
+            const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
+
+            if (error.response?.status === 400) {
+                try {
+                    const bodyWithReCreate = {
+                        action: 'create_reverse_pickup',
+                        re_create: 'yes',
+                    }
+                    const retryResponse = await axioisInstance.patch(`merchant/return_order/${return_order_id}`, bodyWithReCreate)
+
+                    console.log(retryResponse.data)
+                    notification.success({
+                        message: 'Success',
+                        description: retryResponse?.data?.message || 'Rider status updated successfully.',
+                    })
+                } catch (retryError: any) {
+                    console.error(retryError)
+                    notification.error({
+                        message: 'Error',
+                        description: retryError.response?.data?.message || 'Failed to update rider status with re_create.',
+                    })
+                }
+            } else {
+                notification.error({
+                    message: 'Error',
+                    description: errorMessage,
+                })
+            }
         }
     }
     const handleDeliverySelect = (selectedValue: string) => {

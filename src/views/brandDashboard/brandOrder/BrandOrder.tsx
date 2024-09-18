@@ -76,23 +76,15 @@ const BrandOrder = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
-    const [from, setFrom] = useState(
-        moment().subtract(6, 'days').format('YYYY-MM-DD'),
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const [from, setFrom] = useState(moment().subtract(6, 'days').format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const [showLastSevenDays, setShowLastSevenDays] = useState(true)
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState([])
 
-    const [skuWiseDetails, setSkuWiseDetails] = useState<
-        Array<{ key: string; value: SKU_DETAILS }>
-    >([])
-    const [datewisedetails, setDatewisedetails] = useState<
-        Array<{ key: string; value: DATA_WISE_SALES }>
-    >([])
+    const [skuWiseDetails, setSkuWiseDetails] = useState<Array<{ key: string; value: SKU_DETAILS }>>([])
+    const [datewisedetails, setDatewisedetails] = useState<Array<{ key: string; value: DATA_WISE_SALES }>>([])
 
     const [divisionArray, setDivisionArray] = useState([])
     const [categoryArray, setCategoryArray] = useState([])
@@ -115,9 +107,7 @@ const BrandOrder = () => {
             setSkuWiseDetails([])
             setDatewisedetails([])
 
-            const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}`,
-            )
+            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}`)
             const data = response.data
 
             setData(data)
@@ -159,12 +149,10 @@ const BrandOrder = () => {
 
             setSkuWiseDetails(skuDetailsArray)
 
-            const dateWIseDetailArray = Object.entries(dateWiseData).map(
-                ([key, value]) => ({
-                    key,
-                    value,
-                }),
-            )
+            const dateWIseDetailArray = Object.entries(dateWiseData).map(([key, value]) => ({
+                key,
+                value,
+            }))
 
             console.log('dddddddddd', dateWIseDetailArray)
             setDatewisedetails(dateWIseDetailArray)
@@ -180,9 +168,7 @@ const BrandOrder = () => {
     console.log('SKU Details:', skuWiseDetails)
     console.log('adteeeeeeeee', datewisedetails)
 
-    const columns = useMemo<
-        ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]
-    >(
+    const columns = useMemo<ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]>(
         () => [
             {
                 header: 'SKU',
@@ -239,9 +225,7 @@ const BrandOrder = () => {
                         src={getValue().split(',')[0]}
                         alt="Image"
                         className="w-24 h-20 object-cover cursor-pointer"
-                        onClick={() =>
-                            handleOpenModal(row.original.value.image)
-                        }
+                        onClick={() => handleOpenModal(row.original.value.image)}
                     />
                 ),
             },
@@ -264,9 +248,7 @@ const BrandOrder = () => {
                 },
             )
 
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = `${selectedCompany.name}(${from} to ${to}).csv`
@@ -278,10 +260,7 @@ const BrandOrder = () => {
         }
     }
 
-    const paginatedData = skuWiseDetails.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
-    )
+    const paginatedData = skuWiseDetails.slice((page - 1) * pageSize, page * pageSize)
 
     const table = useReactTable({
         data: paginatedData,
@@ -299,10 +278,7 @@ const BrandOrder = () => {
             globalFilter,
         },
         onPaginationChange: (updater: Updater<PaginationState>) => {
-            const newPagination =
-                typeof updater === 'function'
-                    ? updater({ pageIndex: page - 1, pageSize })
-                    : updater
+            const newPagination = typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize }) : updater
 
             setPage(newPagination.pageIndex + 1)
             setPageSize(newPagination.pageSize)
@@ -355,24 +331,18 @@ const BrandOrder = () => {
         let query = ''
 
         if (divisionList.length > 0) {
-            const divisionIds = divisionList
-                .map((item: any) => item.id)
-                .join(',')
+            const divisionIds = divisionList.map((item: any) => item.id).join(',')
             query += `division=${divisionIds}`
         }
 
         if (categoryList.length > 0) {
-            const categoryIds = categoryList
-                .map((item: any) => item.id)
-                .join(',')
+            const categoryIds = categoryList.map((item: any) => item.id).join(',')
             if (query) query += '&'
             query += `category=${categoryIds}`
         }
 
         if (subCategoryList.length > 0) {
-            const subCategoryIds = subCategoryList
-                .map((item: any) => item.id)
-                .join(',')
+            const subCategoryIds = subCategoryList.map((item: any) => item.id).join(',')
             if (query) query += '&'
             query += `subcategory=${subCategoryIds}`
         }
@@ -395,11 +365,7 @@ const BrandOrder = () => {
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
                 <div className="w-auto lg:w-1/2 flex flex-col  ">
-                    <Button
-                        variant="new"
-                        onClick={handleDrawer}
-                        className="xl:w-1/2 w-auto flex gap-3 items-center justify-center"
-                    >
+                    <Button variant="new" onClick={handleDrawer} className="xl:w-1/2 w-auto flex gap-3 items-center justify-center">
                         {' '}
                         <FaFilter className="text-lg" /> <p>CATEGORY FILTER</p>
                     </Button>
@@ -407,26 +373,18 @@ const BrandOrder = () => {
 
                 <div className="flex flex-col md:flex-row gap-5 items-start lg:items-end">
                     <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            FROM DATE: {showLastSevenDays && '(Last 7 Days)'}
-                        </div>
+                        <div className="mb-1 font-semibold text-sm">FROM DATE: {showLastSevenDays && '(Last 7 Days)'}</div>
                         <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
+                            inputPrefix={<HiOutlineCalendar className="text-lg" />}
                             defaultValue={new Date()}
                             value={new Date(from)}
                             onChange={handleFromChange}
                         />
                     </div>
                     <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            TO DATE:
-                        </div>
+                        <div className="mb-1 font-semibold text-sm">TO DATE:</div>
                         <DatePicker
-                            inputSuffix={
-                                <TbCalendarStats className="text-xl" />
-                            }
+                            inputSuffix={<TbCalendarStats className="text-xl" />}
                             defaultValue={new Date()}
                             value={new Date(to)}
                             onChange={handleToChange}
@@ -435,10 +393,7 @@ const BrandOrder = () => {
                     </div>
                     <div>
                         <div className="flex items-end justify-end">
-                            <button
-                                className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 "
-                                onClick={handleDownload}
-                            >
+                            <button className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 " onClick={handleDownload}>
                                 <IoMdDownload className="text-xl" />
                                 Export
                             </button>
@@ -448,7 +403,7 @@ const BrandOrder = () => {
             </div>
 
             <div className="flex flex-col gap-2 justify-center mb-6">
-                <div className="total">
+                <div className="Total">
                     <span className="font-bold">TOTAL AMOUNT:</span>
                     <span className="italic">{data?.total_amount}</span>
                 </div>
@@ -479,10 +434,7 @@ const BrandOrder = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -492,12 +444,7 @@ const BrandOrder = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
@@ -505,19 +452,12 @@ const BrandOrder = () => {
             </Table>
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={skuWiseDetails && skuWiseDetails.length}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={skuWiseDetails && skuWiseDetails.length} onChange={onPaginationChange} />
                 <div className="mt-3 sm:mt-0" style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
