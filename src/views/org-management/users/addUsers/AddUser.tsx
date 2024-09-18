@@ -454,8 +454,8 @@ const AddUser = () => {
                             <div className="text-xl font-semibold">USER PERMISSIONS</div>
                             <br />
 
-                            <FormContainer className="">
-                                <FormContainer className="flex justify-between">
+                            <div className="">
+                                <div className="flex justify-between">
                                     {/* All Permissions */}
                                     <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
                                         <div className="sticky top-0 z-10 bg-white">
@@ -525,8 +525,8 @@ const AddUser = () => {
                                             ))}
                                         </div>
                                     </Card>
-                                </FormContainer>
-                            </FormContainer>
+                                </div>
+                            </div>
 
                             <FormItem className="mt-10 ">
                                 <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
