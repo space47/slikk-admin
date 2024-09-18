@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState, useRef } from 'react'
 import Table from '@/components/ui/Table'
-import {
-    flexRender,
-    getCoreRowModel,
-    useReactTable
-} from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { DragDropContext, Draggable } from 'react-beautiful-dnd'
 import { MdDragIndicator } from 'react-icons/md'
 
@@ -56,9 +52,7 @@ type WebType = {
 
 const PageSettings = () => {
     const [data, setData] = useState<WebType[]>([])
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<
-        Record<string, string>
-    >(BANNER_PAGE_NAME[0])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(BANNER_PAGE_NAME[0])
     const [yesModal, setYesModal] = useState(false)
     const [particularRow, setParticularRow] = useState()
     const formikRef = useRef<FormikProps<any>>(null)
@@ -152,9 +146,7 @@ const PageSettings = () => {
     }
 
     const newRowData = (data: any) => {
-        setData((prev) =>
-            prev.map((item) => (item === particularRow ? data : item))
-        )
+        setData((prev) => prev.map((item) => (item === particularRow ? data : item)))
         console.log('object------------', data)
     }
     const handleRemoveButton = (row: WebType) => {
@@ -175,166 +167,118 @@ const PageSettings = () => {
                     <span {...(props as any).dragHandleProps}>
                         <MdDragIndicator />
                     </span>
-                )
+                ),
             },
             {
                 header: 'Section Heading',
                 accessorKey: 'section_heading',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Component Type',
                 accessorKey: 'component_type',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Background Image',
                 accessorKey: 'background_image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue()}
-                        alt=""
-                        className=" object-contain bg-black"
-                    />
-                )
+                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Mobile Background Image',
                 accessorKey: 'mobile_background_image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue()}
-                        alt=""
-                        className=" object-contain bg-black"
-                    />
-                )
+                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Header Icon',
                 accessorKey: 'header_config.icon',
-                cell: (info) => (
-                    <img
-                        src={info.getValue()}
-                        alt=""
-                        className=" object-contain bg-black"
-                    />
-                )
+                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Header Text',
                 accessorKey: 'header_config.text',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Header Image',
                 accessorKey: 'header_config.image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue()}
-                        alt=""
-                        className=" object-contain bg-black"
-                    />
-                )
+                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Header Style',
                 accessorKey: 'header_config.style',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Header Position',
                 accessorKey: 'header_config.position',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Footer Icon',
                 accessorKey: 'footer_config.icon',
-                cell: (info) => (
-                    <img
-                        src={info.getValue()}
-                        alt=""
-                        className=" object-contain bg-black"
-                    />
-                )
+                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Footer Text',
                 accessorKey: 'footer_config.text',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Footer Image',
                 accessorKey: 'footer_config.image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue() as string}
-                        alt=""
-                        className=" object-contain bg-black"
-                    />
-                )
+                cell: (info) => <img src={info.getValue() as string} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Footer Style',
                 accessorKey: 'footer_config.style',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
 
             {
                 header: 'Footer Position',
                 accessorKey: 'footer_config.position',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Sub Header Icon',
                 accessorKey: 'sub_header_config.icon',
-                cell: (info) => (
-                    <img
-                        src={info.getValue()}
-                        alt=""
-                        className=" object-contain bg-black"
-                    />
-                )
+                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Sub Header Text',
                 accessorKey: 'sub_header_config.text',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Sub Header Image',
                 accessorKey: 'sub_header_config.image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue()}
-                        alt=""
-                        className=" object-contain bg-black"
-                    />
-                )
+                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Sub Header Style',
                 accessorKey: 'sub_header_config.style',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Sub Header Position',
                 accessorKey: 'sub_header_config.position',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Data Type',
                 accessorKey: 'data_type.type',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Section',
                 accessorKey: 'is_section_clickable',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No')
+                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
             {
                 header: 'Section Filter',
                 accessorKey: 'section_filters',
-                cell: (info) => info.getValue()
+                cell: (info) => info.getValue(),
             },
             {
                 header: 'Data Type Values',
@@ -349,47 +293,41 @@ const PageSettings = () => {
                             {key}-{value}
                         </div>
                     )
-                }
+                },
             },
             {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() => handleActionClick(row.original)}
-                        className="border-none bg-none"
-                    >
+                    <button onClick={() => handleActionClick(row.original)} className="border-none bg-none">
                         <FaEdit className="text-xl" />
                     </button>
-                )
+                ),
             },
             {
                 header: 'Delete',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() => handleRemoveButton(row.original)}
-                        className="border-none bg-none"
-                    >
+                    <button onClick={() => handleRemoveButton(row.original)} className="border-none bg-none">
                         <FaTrash className="text-xl text-red-500" />
                     </button>
-                )
-            }
+                ),
+            },
         ],
-        []
+        [],
     )
 
     const table = useReactTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel()
+        getCoreRowModel: getCoreRowModel(),
     })
 
     const handleSelect = (a: any, b: any) => {
         console.log('data.....................', a, b)
         setCurrentSelectedPage({
             value: a,
-            name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || ''
+            name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || '',
         })
     }
 
@@ -398,7 +336,7 @@ const PageSettings = () => {
             const { mobile_background_array, ...allData } = item
             acc[index + 1] = {
                 ...allData,
-                mobile_background_image: item.mobile_background_image || ''
+                mobile_background_image: item.mobile_background_image || '',
             }
             return acc
         }, {})
@@ -408,8 +346,8 @@ const PageSettings = () => {
         const body = {
             page_name: `${currentSelectedPage.value}`,
             value: {
-                Web: webData
-            }
+                Web: webData,
+            },
         }
 
         console.log('boooooooooooooooo', body)
@@ -418,14 +356,13 @@ const PageSettings = () => {
             const response = await axioisInstance.post(`page/config`, body)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Page Updated successfully'
+                description: response?.data?.message || 'Page Updated successfully',
             })
         } catch (error) {
             console.log(error)
             notification.error({
                 message: 'Failure',
-                description: 'Page Failure'
+                description: 'Page Failure',
             })
         }
     }
@@ -436,17 +373,10 @@ const PageSettings = () => {
             <div className=" flex justify-between">
                 <div className="buttons flex gap-3 mb-7 ">
                     <div className="drop border  bg-gray-200 text-black text-lg font-semibold ">
-                        <Dropdown
-                            className=" text-xl text-black "
-                            title={currentSelectedPage.name}
-                            onSelect={handleSelect}
-                        >
+                        <Dropdown className=" text-xl text-black " title={currentSelectedPage.name} onSelect={handleSelect}>
                             {BANNER_PAGE_NAME?.map((item, key) => {
                                 return (
-                                    <DropdownItem
-                                        key={key}
-                                        eventKey={item.value}
-                                    >
+                                    <DropdownItem key={key} eventKey={item.value}>
                                         <span>{item.name}</span>
                                     </DropdownItem>
                                 )
@@ -459,11 +389,7 @@ const PageSettings = () => {
                 </div>
 
                 <div className="add">
-                    <Button
-                        variant="new"
-                        size="md"
-                        onClick={handleAddPageClick}
-                    >
+                    <Button variant="new" size="md" onClick={handleAddPageClick}>
                         ADD PAGE SETTINGS
                     </Button>
                 </div>
@@ -503,14 +429,8 @@ const PageSettings = () => {
                             <Tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <Th
-                                            key={header.id}
-                                            colSpan={header.colSpan}
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
+                                        <Th key={header.id} colSpan={header.colSpan}>
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
                                         </Th>
                                     )
                                 })}
@@ -521,51 +441,23 @@ const PageSettings = () => {
                 <DragDropContext onDragEnd={handleDragEnd}>
                     <StrictModeDroppable droppableId="table-body">
                         {(provided) => (
-                            <TBody
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                            >
+                            <TBody ref={provided.innerRef} {...provided.droppableProps}>
                                 {table.getRowModel().rows.map((row) => {
                                     return (
-                                        <Draggable
-                                            key={row.id}
-                                            draggableId={row.id}
-                                            index={row.index}
-                                        >
+                                        <Draggable key={row.id} draggableId={row.id} index={row.index}>
                                             {(provided, snapshot) => {
-                                                const { style } =
-                                                    provided.draggableProps
+                                                const { style } = provided.draggableProps
                                                 return (
                                                     <Tr
                                                         ref={provided.innerRef}
-                                                        className={
-                                                            snapshot.isDragging
-                                                                ? 'table'
-                                                                : ''
-                                                        }
+                                                        className={snapshot.isDragging ? 'table' : ''}
                                                         style={style}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
                                                     >
-                                                        {row
-                                                            .getVisibleCells()
-                                                            .map((cell) => {
-                                                                return (
-                                                                    <Td
-                                                                        key={
-                                                                            cell.id
-                                                                        }
-                                                                    >
-                                                                        {flexRender(
-                                                                            cell
-                                                                                .column
-                                                                                .columnDef
-                                                                                .cell,
-                                                                            cell.getContext()
-                                                                        )}
-                                                                    </Td>
-                                                                )
-                                                            })}
+                                                        {row.getVisibleCells().map((cell) => {
+                                                            return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                                        })}
                                                     </Tr>
                                                 )
                                             }}

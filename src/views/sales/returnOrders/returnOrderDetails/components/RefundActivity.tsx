@@ -9,13 +9,7 @@ import React, { useState, useEffect } from 'react'
 import { Modal, notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import {
-    DeliveredModal,
-    InTransitModal,
-    OutForDeliveryModal,
-    OutforDeliveryModal,
-    PickedUpModal,
-} from './RefundModal'
+import { DeliveredModal, InTransitModal, OutForDeliveryModal, OutforDeliveryModal, PickedUpModal } from './RefundModal'
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 
@@ -29,27 +23,21 @@ import { ReturnOrderState } from '@/store/types/returnDetails.types'
 // }
 
 const RefundActivity = () => {
-    const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders,
-    )
+    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const returnDetails = returnOrder?.returnOrders
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [action, setAction] = useState('')
 
     // State for the status
 
-    const [triggerPickUpCreated, setTriggerPickupCreated] =
-        useState<boolean>(false)
-    const [triggerOutForPickup, setTriggerOutForPickup] =
-        useState<boolean>(false)
+    const [triggerPickUpCreated, setTriggerPickupCreated] = useState<boolean>(false)
+    const [triggerOutForPickup, setTriggerOutForPickup] = useState<boolean>(false)
     const [triggerPickedUp, setTriggerPickedUp] = useState<boolean>(false)
     const [triggerIntransit, setTriggerIntransit] = useState<boolean>(false)
-    const [triggerOutForDelivery, setTriggerOutForDelivery] =
-        useState<boolean>(false)
+    const [triggerOutForDelivery, setTriggerOutForDelivery] = useState<boolean>(false)
     const [triggerDelivered, setTriggerDelivered] = useState<boolean>(false)
     const [triggerCancelled, setTriggerCancelled] = useState<boolean>(false)
-    const [triggerPickedUpGenerate, setTriggerPickedUpGenerate] =
-        useState<boolean>(false)
+    const [triggerPickedUpGenerate, setTriggerPickedUpGenerate] = useState<boolean>(false)
     const [triggerComplete, setTriggerComplete] = useState<boolean>(false)
     const [valueInsideModal, setValueInsideModal] = useState({
         refundAmount: '',
@@ -107,9 +95,7 @@ const RefundActivity = () => {
         }
     }
 
-    const { buttonText, modalContent: content } = getButtonAndModalContent(
-        returnDetails?.log?.[returnDetails.log.length - 1]?.status || '',
-    )
+    const { buttonText, modalContent: content } = getButtonAndModalContent(returnDetails?.log?.[returnDetails.log.length - 1]?.status || '')
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -140,18 +126,12 @@ const RefundActivity = () => {
                         re_create: 'no',
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/return_order/${returnDetails?.return_order_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
 
-                    // if (response.status === 400) {
-                    //     body.re_create = 'yes'
-                    //     await axiosInstance.patch(
-                    //         `merchant/return_order/${returnDetails?.return_order_id}`,
-                    //         body,
-                    //     )
-                    // }
+                    if (response.status === 400) {
+                        body.re_create = 'yes'
+                        await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
+                    }
 
                     console.log(response.data)
                     setIsModalOpen(false)
@@ -159,16 +139,12 @@ const RefundActivity = () => {
 
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                     navigate(0)
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     if (error.response?.status === 400) {
                         try {
@@ -184,18 +160,14 @@ const RefundActivity = () => {
                             console.log(retryResponse.data)
                             notification.success({
                                 message: 'Success',
-                                description:
-                                    retryResponse?.data?.message ||
-                                    'Rider status updated successfully.',
+                                description: retryResponse?.data?.message || 'Rider status updated successfully.',
                             })
                             navigate(0)
                         } catch (retryError: any) {
                             console.error(retryError)
                             notification.error({
                                 message: 'Error',
-                                description:
-                                    retryError.response?.data?.message ||
-                                    'Failed to update rider status with re_create.',
+                                description: retryError.response?.data?.message || 'Failed to update rider status with re_create.',
                             })
                         }
                     } else {
@@ -228,26 +200,19 @@ const RefundActivity = () => {
                         action,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/return_order/${returnDetails?.return_order_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
 
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerOutForPickup(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                     navigate(0)
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -280,26 +245,19 @@ const RefundActivity = () => {
                         action,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/return_order/${returnDetails?.return_order_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
 
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerPickedUp(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                     navigate(0)
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -327,26 +285,19 @@ const RefundActivity = () => {
                         action,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/return_order/${returnDetails?.return_order_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
 
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerIntransit(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                     navigate(0)
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -375,26 +326,19 @@ const RefundActivity = () => {
                         action,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/return_order/${returnDetails?.return_order_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
 
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerOutForDelivery(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                     navigate(0)
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -423,26 +367,19 @@ const RefundActivity = () => {
                         action,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/return_order/${returnDetails?.return_order_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
 
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerDelivered(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                     navigate(0)
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -473,26 +410,19 @@ const RefundActivity = () => {
                         return_amount: valueInsideModal.refundAmount,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/return_order/${returnDetails?.return_order_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
 
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerComplete(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                     navigate(0)
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -516,11 +446,9 @@ const RefundActivity = () => {
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
             <Timeline className="mb-5">
-                {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
-                '' ? (
+                {returnDetails?.log?.[returnDetails.log.length - 1]?.status === '' ? (
                     ''
-                ) : returnDetails?.log.length === 0 &&
-                  returnDetails?.status === 'CANCELLED' ? (
+                ) : returnDetails?.log.length === 0 && returnDetails?.status === 'CANCELLED' ? (
                     <div>Order cancelled</div>
                 ) : (
                     returnDetails?.log.map((activity, i) => (
@@ -528,24 +456,12 @@ const RefundActivity = () => {
                             key={activity.status + i}
                             media={
                                 <div className="flex mt-1.5">
-                                    <Badge
-                                        innerClass={classNames(
-                                            activity.timestamp
-                                                ? 'bg-emerald-500'
-                                                : 'bg-blue-500',
-                                        )}
-                                    />
+                                    <Badge innerClass={classNames(activity.timestamp ? 'bg-emerald-500' : 'bg-blue-500')} />
                                 </div>
                             }
                         >
-                            <div className="font-bold text-md">
-                                {activity.status}
-                            </div>
-                            <div>
-                                {moment(activity.timestamp).format(
-                                    'DD:MM:YYYY hh:mm a',
-                                )}
-                            </div>
+                            <div className="font-bold text-md">{activity.status}</div>
+                            <div>{moment(activity.timestamp).format('DD:MM:YYYY hh:mm a')}</div>
                         </Timeline.Item>
                     ))
                 )}
@@ -567,8 +483,7 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
-                'REVERSE_PICKUP_CREATED' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
                     handleoutForDelivery={handleOutForPickup}
@@ -578,8 +493,7 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
-                'OUT_FOR_PICKUP' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'OUT_FOR_PICKUP' && (
                 <PickedUpModal
                     isModalOpen={isModalOpen}
                     handlePickup={handlePickedUp}
@@ -589,8 +503,7 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
-                'PICKED_UP' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP' && (
                 <PickedUpModal
                     isModalOpen={isModalOpen}
                     handlePickup={handleInTrasit}
@@ -600,10 +513,8 @@ const RefundActivity = () => {
                 />
             )}
 
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
-                'IN_TRANSIT' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
-                    'SHIPPED') && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'IN_TRANSIT' ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'SHIPPED') && (
                 <OutForDeliveryModal
                     isModalOpen={isModalOpen}
                     handleOutForDelivery={hanldeOutForDelivery}
@@ -612,8 +523,7 @@ const RefundActivity = () => {
                     status={returnDetails.status}
                 />
             )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
-                'OUT_FOR_DELIVERY' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'OUT_FOR_DELIVERY' && (
                 <DeliveredModal
                     isModalOpen={isModalOpen}
                     handleDelivered={handleDelivered}
@@ -623,16 +533,9 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status ===
-                'DELIVERED' && (
-                <Modal
-                    open={isModalOpen}
-                    onOk={hanldeComplete}
-                    onCancel={handleClose}
-                >
-                    <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">
-                        INPUTS
-                    </div>
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' && (
+                <Modal open={isModalOpen} onOk={hanldeComplete} onCancel={handleClose}>
+                    <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">INPUTS</div>
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
                         <input
                             type="text"

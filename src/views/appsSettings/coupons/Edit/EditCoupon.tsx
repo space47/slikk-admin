@@ -12,7 +12,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 
 const CouponsType = () => {
-    return ['FLATT_OFF', 'PERCENT_OFF', 'MONEY_OFF'].map((segment) => ({
+    return ['PERCENT_OFF', 'MONEY_OFF'].map((segment) => ({
         label: segment,
         value: segment,
     }))
@@ -33,7 +33,7 @@ const AddCoupons = () => {
         imageArray: [],
         image: null,
         type: '',
-        value: '',
+        value: null,
         min_cart_value: '',
         max_count: '',
         maximum_price: '',
@@ -44,14 +44,15 @@ const AddCoupons = () => {
         coupon_used_count: '',
         frequency: null,
         coupon_discount_type: '',
-        user: '',
+        user: [],
     }
 
     const handleSubmit = async (values: COUPONDATA) => {
-        const formData = {
-            ...values,
-            type: values.type,
-        }
+        console.log('ARRAY', values.imageArray)
+        const { imageArray, ...formData } = values
+
+        formData.image = imageArray.map((file: File) => file.name).join(',')
+        formData.user = values.user.split(',')
 
         try {
             const response = await axioisInstance.post(

@@ -12,7 +12,7 @@ import { notification } from 'antd'
 import Upload from '@/components/ui/Upload'
 
 const CouponsType = () => {
-    return ['FLAT_OFF', 'PERCENT_OFF', 'MONEY_OFF'].map((coupon) => ({
+    return ['PERCENT_OFF', 'MONEY_OFF'].map((coupon) => ({
         label: coupon,
         value: coupon,
     }))
@@ -100,14 +100,10 @@ const AddCoupons = () => {
         formData.user = values.user.split(',')
 
         try {
-            const response = await axioisInstance.post(
-                `/merchant/coupon`,
-                formData,
-            )
+            const response = await axioisInstance.post(`/merchant/coupon`, formData)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Coupon created Successfully',
+                description: response?.data?.message || 'Coupon created Successfully',
             })
         } catch (error) {
             console.log(error)
@@ -132,40 +128,19 @@ const AddCoupons = () => {
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {COUPON_FORM.slice(0, 5).map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
 
-                                <FormItem
-                                    label="Coupon Type"
-                                    className="col-span-1 w-full"
-                                >
+                                <FormItem label="Coupon Type" className="col-span-1 w-full">
                                     <Field name="type">
                                         {({ field }: FieldProps) => (
                                             <Select
                                                 {...field}
-                                                value={CouponsType().find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value,
-                                                )}
+                                                value={CouponsType().find((option) => option.value === field.value)}
                                                 options={CouponsType()}
-                                                onChange={(option) =>
-                                                    setFieldValue(
-                                                        'type',
-                                                        option?.value,
-                                                    )
-                                                }
+                                                onChange={(option) => setFieldValue('type', option?.value)}
                                             />
                                         )}
                                     </Field>
@@ -173,51 +148,27 @@ const AddCoupons = () => {
 
                                 {/* Frequency */}
 
-                                <FormItem
-                                    label="Frequency"
-                                    className="col-span-1 w-full"
-                                >
+                                <FormItem label="Frequency" className="col-span-1 w-full">
                                     <Field name="frequency">
                                         {({ field }: FieldProps) => (
                                             <Select
                                                 {...field}
-                                                value={FrequencyType().find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value,
-                                                )}
+                                                value={FrequencyType().find((option) => option.value === field.value)}
                                                 options={FrequencyType()}
-                                                onChange={(option) =>
-                                                    setFieldValue(
-                                                        'frequency',
-                                                        option?.value,
-                                                    )
-                                                }
+                                                onChange={(option) => setFieldValue('frequency', option?.value)}
                                             />
                                         )}
                                     </Field>
                                 </FormItem>
                                 {/* DIscount TYpe */}
-                                <FormItem
-                                    label="Coupon Discount Type"
-                                    className="col-span-1 w-full"
-                                >
+                                <FormItem label="Coupon Discount Type" className="col-span-1 w-full">
                                     <Field name="coupon_discount_type">
                                         {({ field }: FieldProps) => (
                                             <Select
                                                 {...field}
-                                                value={DiscountType().find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value,
-                                                )}
+                                                value={DiscountType().find((option) => option.value === field.value)}
                                                 options={DiscountType()}
-                                                onChange={(option) =>
-                                                    setFieldValue(
-                                                        'coupon_discount_type',
-                                                        option?.value,
-                                                    )
-                                                }
+                                                onChange={(option) => setFieldValue('coupon_discount_type', option?.value)}
                                             />
                                         )}
                                     </Field>
@@ -230,38 +181,17 @@ const AddCoupons = () => {
                                     <FormContainer className=" mt-5 w-full ">
                                         {/* DIV */}
 
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="imageArray">
-                                                {({
-                                                    form,
-                                                }: FieldProps<any>) => (
+                                                {({ form }: FieldProps<any>) => (
                                                     <>
                                                         <Upload
                                                             className="flex justify-center"
                                                             multiple
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.imageArray
-                                                            }
-                                                            onChange={(files) =>
-                                                                form.setFieldValue(
-                                                                    'imageArray',
-                                                                    files,
-                                                                )
-                                                            }
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'imageArray',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.imageArray}
+                                                            onChange={(files) => form.setFieldValue('imageArray', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('imageArray', files)}
                                                         />
                                                     </>
                                                 )}
@@ -277,44 +207,22 @@ const AddCoupons = () => {
                                         errorMessage={errors.image}
                                         className="col-span-1 w-[80%]"
                                     >
-                                        <Field
-                                            type="text"
-                                            name="image"
-                                            placeholder="Enter ImageUrl or Upload Image file"
-                                            component={Input}
-                                        />
+                                        <Field type="text" name="image" placeholder="Enter ImageUrl or Upload Image file" component={Input} />
                                     </FormItem>
                                 </FormContainer>
 
                                 {COUPON_FORM.slice(5, 20).map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
-                                <Button
-                                    type="reset"
-                                    className="mr-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    className="bg-blue-500 text-white"
-                                >
+                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
                                     Submit
                                 </Button>
                             </FormContainer>

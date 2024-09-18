@@ -16,29 +16,24 @@ const initialState: USERANALYTICS_TYPE = {
     page_size: 10,
 }
 
-export const fetchUserAnalytics = createAsyncThunk(
-    'userAnalytics/fetchUserAnalytics',
-    async (_, { getState, rejectWithValue }) => {
-        try {
-            const state = getState() as { userAnalytics: USERANALYTICS_TYPE }
-            const { from, to, page, page_size } = state.userAnalytics
+export const fetchUserAnalytics = createAsyncThunk('userAnalytics/fetchUserAnalytics', async (_, { getState, rejectWithValue }) => {
+    try {
+        const state = getState() as { userAnalytics: USERANALYTICS_TYPE }
+        const { from, to, page, page_size } = state.userAnalytics
 
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+        const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
-            const response = await axiosInstance.get(
-                `merchant/analytic/user?type=login&from=${from}&to=${To_Date}&is_verified=True&p=${page}&page_size=${page_size}`,
-            )
+        const response = await axiosInstance.get(
+            `merchant/analytic/user?type=login&from=${from}&to=${To_Date}&is_verified=True&p=${page}&page_size=${page_size}`,
+        )
 
-            return {
-                userData: response.data,
-            }
-        } catch (error: any) {
-            return rejectWithValue(
-                error.response?.data || 'Failed to fetch data',
-            )
+        return {
+            userData: response.data,
         }
-    },
-)
+    } catch (error: any) {
+        return rejectWithValue(error.response?.data || 'Failed to fetch data')
+    }
+})
 
 export const userAnalyticsSlice = createSlice({
     name: 'userAnalytics',
@@ -66,20 +61,16 @@ export const userAnalyticsSlice = createSlice({
             .addCase(fetchUserAnalytics.fulfilled, (state, action) => {
                 state.loading = false
                 state.data = action.payload.userData.data
-                state.total_logged_in =
-                    action.payload.userData.total_logged_in || 0
-                state.total_otp_verified =
-                    action.payload.userData.total_otp_verified || 0
+                state.total_logged_in = action.payload.userData.total_logged_in || 0
+                state.total_otp_verified = action.payload.userData.total_otp_verified || 0
             })
             .addCase(fetchUserAnalytics.rejected, (state, action) => {
                 state.loading = false
-                state.message =
-                    (action.payload as string) || 'Failed to fetch data'
+                state.message = (action.payload as string) || 'Failed to fetch data'
             })
     },
 })
 
-export const { setFrom, setTo, setPage, setPage_size } =
-    userAnalyticsSlice.actions
+export const { setFrom, setTo, setPage, setPage_size } = userAnalyticsSlice.actions
 
 export default userAnalyticsSlice.reducer

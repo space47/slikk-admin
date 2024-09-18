@@ -37,10 +37,10 @@ const BrandInfo = () => {
             label: 'Alternate Mobile',
             value: sellerDetails.alternate_contact_number,
         },
+        { label: 'Segment', value: sellerDetails.segment },
     ]
 
     const chargesArray = [
-        { label: 'Segment', value: sellerDetails.segment },
         {
             label: 'Revenue Share Percent',
             value: `${sellerDetails.revenue_share}%`,
