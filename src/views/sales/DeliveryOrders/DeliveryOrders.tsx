@@ -11,13 +11,7 @@ import {
 } from '@tanstack/react-table'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import {
-    Table,
-    Pagination,
-    Select,
-    DatePicker,
-    Dropdown,
-} from '@/components/ui'
+import { Table, Pagination, Select, DatePicker, Dropdown } from '@/components/ui'
 import {
     fetchOrders,
     setDropdownStatus,
@@ -28,13 +22,12 @@ import {
     setFrom,
     setTo,
     setDeliveryType,
+    setPaymentType,
 } from '@/store/slices/orderList/OrderList'
 import { OrderState } from '@/store/types/orderList.types'
 import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
 import type { FilterFn } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
-import { TbCalendarStats } from 'react-icons/tb'
-import { HiOutlineCalendar } from 'react-icons/hi'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { notification } from 'antd'
@@ -43,7 +36,7 @@ import { RiEBike2Fill } from 'react-icons/ri'
 import { CiFilter } from 'react-icons/ci'
 import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
-import { DELEIVERYOPTIONS } from '@/views/category-management/orderlist/Orderlist'
+import { DELEIVERYOPTIONS, PAYMENTOPTIONS } from '@/views/category-management/orderlist/Orderlist'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -71,31 +64,12 @@ const DeliveryOrders = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
-    const {
-        orders,
-        orderCount,
-        page,
-        pageSize,
-        searchInput,
-        deliveryType,
-        from,
-        currentSelectedPage,
-        to,
-        dropdownStatus,
-    } = useAppSelector<OrderState>((state) => state.order)
+    const { orders, orderCount, page, pageSize, searchInput, deliveryType, from, currentSelectedPage, to, dropdownStatus, paymentType } =
+        useAppSelector<OrderState>((state) => state.order)
 
     useEffect(() => {
         dispatch(fetchOrders())
-    }, [
-        dispatch,
-        page,
-        pageSize,
-        from,
-        to,
-        dropdownStatus,
-        searchInput,
-        deliveryType,
-    ])
+    }, [dispatch, page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
     // useEffect(() => {
     //     dispatch(fetchOrders())
     // }, [dispatch, page, pageSize, from, to, dropdownStatus, mobileFilter])
@@ -142,15 +116,9 @@ const DeliveryOrders = () => {
 
                 let trackingUrl
 
-                if (
-                    (partner === 'Shadowfax' || partner === 'shadowfax') &&
-                    delivery_type === 'STANDARD'
-                ) {
+                if ((partner === 'Shadowfax' || partner === 'shadowfax') && delivery_type === 'STANDARD') {
                     trackingUrl = `https://tracker.shadowfax.in/#/awb/${awb_code}`
-                } else if (
-                    (partner === 'Shiprocket' || partner === 'shiprocket') &&
-                    delivery_type === 'EXPRESS'
-                ) {
+                } else if ((partner === 'Shiprocket' || partner === 'shiprocket') && delivery_type === 'EXPRESS') {
                     trackingUrl = `https://shiprocket.co/tracking/${awb_code}`
                 } else {
                     trackingUrl = getValue()
@@ -178,17 +146,9 @@ const DeliveryOrders = () => {
             header: 'Pickup Time',
             accessorKey: 'log',
             cell: ({ row }: any) => {
-                const deliveryCreatedLog = row.original.log.find(
-                    (logEntry: any) => logEntry.status === 'DELIVERY_CREATED',
-                )
+                const deliveryCreatedLog = row.original.log.find((logEntry: any) => logEntry.status === 'DELIVERY_CREATED')
 
-                return deliveryCreatedLog ? (
-                    <div>
-                        {moment(deliveryCreatedLog.timestamp).format(
-                            'YYYY-MM-DD hh:mm:ss a',
-                        )}
-                    </div>
-                ) : null
+                return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
             },
         },
 
@@ -196,17 +156,9 @@ const DeliveryOrders = () => {
             header: 'Drop Time',
             accessorKey: 'log',
             cell: ({ row }: any) => {
-                const deliveryCreatedLog = row.original.log.find(
-                    (logEntry: any) => logEntry.status === 'DELIVERED',
-                )
+                const deliveryCreatedLog = row.original.log.find((logEntry: any) => logEntry.status === 'DELIVERED')
 
-                return deliveryCreatedLog ? (
-                    <div>
-                        {moment(deliveryCreatedLog.timestamp).format(
-                            'YYYY-MM-DD hh:mm:ss a',
-                        )}
-                    </div>
-                ) : null
+                return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
             },
         },
         { header: 'AWB Code', accessorKey: 'logistic.awb_code' },
@@ -214,8 +166,7 @@ const DeliveryOrders = () => {
             header: 'Partner',
             accessorKey: 'logistic.partner',
             cell: ({ row }: any) => {
-                const selectedPartner =
-                    partner[row.id]?.label || row.original?.logistic?.partner
+                const selectedPartner = partner[row.id]?.label || row.original?.logistic?.partner
 
                 return (
                     <Dropdown
@@ -242,16 +193,7 @@ const DeliveryOrders = () => {
             header: 'Assigned Logistic',
             accessorKey: 'logistic.partner',
             cell: ({ row, getValue }: any) => (
-                <Button
-                    size="sm"
-                    onClick={() =>
-                        handleCreateTask(
-                            partner[row.id],
-                            getValue(),
-                            row.original.invoice_id,
-                        )
-                    }
-                >
+                <Button size="sm" onClick={() => handleCreateTask(partner[row.id], getValue(), row.original.invoice_id)}>
                     Create Task
                 </Button>
             ),
@@ -260,10 +202,7 @@ const DeliveryOrders = () => {
             header: 'Cancel Task',
             accessorKey: 'id',
             cell: ({ row, getValue }: any) => (
-                <Button
-                    size="sm"
-                    onClick={() => handleCancelTask(row.original.invoice_id)}
-                >
+                <Button size="sm" onClick={() => handleCancelTask(row.original.invoice_id)}>
                     Cancel Task
                 </Button>
             ),
@@ -323,30 +262,16 @@ const DeliveryOrders = () => {
     }
 
     const handleFromChange = (date: Date | null) => {
-        dispatch(
-            setFrom(
-                date
-                    ? moment(date).format('YYYY-MM-DD')
-                    : moment().format('YYYY-MM-DD'),
-            ),
-        )
+        dispatch(setFrom(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
     }
 
     const handleToChange = (date: Date | null) => {
-        dispatch(
-            setTo(
-                date
-                    ? moment(date).format('YYYY-MM-DD')
-                    : moment().format('YYYY-MM-DD'),
-            ),
-        )
+        dispatch(setTo(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
     }
 
     const handlePartnerSelect = (selectedValue: any, row: any) => {
         console.log('VALUE', selectedValue, row)
-        const selectedLabel =
-            LOGISTIC_PARTNER.find((item) => item.value === selectedValue)
-                ?.label || ''
+        const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
 
         setPartner((prev) => ({
             ...prev,
@@ -365,38 +290,34 @@ const DeliveryOrders = () => {
     }
 
     const handleDeliverySelect = (selectedValue: any) => {
-        const selectedOption = DELEIVERYOPTIONS.find(
-            (option) => option.value === selectedValue,
-        )
+        const selectedOption = DELEIVERYOPTIONS.find((option) => option.value === selectedValue)
 
         if (selectedOption) {
             dispatch(setDeliveryType(selectedOption))
         }
     }
 
-    const handleCreateTask = async (
-        partner: any,
-        logistic_partner: any,
-        order_id: any,
-    ) => {
+    const handlePaymentSelect = (selectedValue: any) => {
+        const selectedOption = PAYMENTOPTIONS.find((option) => option.value === selectedValue)
+
+        if (selectedOption) {
+            dispatch(setPaymentType(selectedOption))
+        }
+    }
+
+    const handleCreateTask = async (partner: any, logistic_partner: any, order_id: any) => {
         console.log('TASK', partner?.label, order_id, logistic_partner)
 
         try {
             const body = {
                 action: 'PACKED',
-                delivery_partner: partner?.value
-                    ? partner?.value
-                    : logistic_partner,
+                delivery_partner: partner?.value ? partner?.value : logistic_partner,
             }
-            const response = await axioisInstance.patch(
-                `/merchant/order/${order_id}`,
-                body,
-            )
+            const response = await axioisInstance.patch(`/merchant/order/${order_id}`, body)
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Created Task Successfully',
+                description: response?.data?.message || 'Created Task Successfully',
             })
         } catch (error) {
             console.error(error)
@@ -434,19 +355,12 @@ const DeliveryOrders = () => {
                     <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md ">
                         <Dropdown
                             className=" text-xl text-black bg-gray-200 font-bold "
-                            title={
-                                currentSelectedPage?.value
-                                    ? currentSelectedPage.label
-                                    : 'SELECT'
-                            }
+                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
                             onSelect={handleSelect}
                         >
                             {SEARCHOPTIONS?.map((item, key) => {
                                 return (
-                                    <DropdownItem
-                                        key={key}
-                                        eventKey={item.value}
-                                    >
+                                    <DropdownItem key={key} eventKey={item.value}>
                                         <span>{item.label}</span>
                                     </DropdownItem>
                                 )
@@ -456,21 +370,11 @@ const DeliveryOrders = () => {
                 </div>
 
                 <div>
-                    <Button
-                        variant="new"
-                        size="sm"
-                        onClick={handleShowFilter}
-                        className="hidden xl:flex gap-2"
-                    >
+                    <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
                         <CiFilter className="text-xl font-extrabold" /> Filter
                     </Button>
 
-                    <Button
-                        variant="default"
-                        size="sm"
-                        onClick={handleShowFilter}
-                        className="flex xl:hidden"
-                    >
+                    <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
                         <CiFilter className="text-xl font-extrabold" />
                     </Button>
                 </div>
@@ -484,20 +388,11 @@ const DeliveryOrders = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {header.isPlaceholder ? null : (
                                         <div
-                                            className={
-                                                header.column.getCanSort()
-                                                    ? 'cursor-pointer select-none'
-                                                    : ''
-                                            }
+                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
-                                            <Sorter
-                                                sort={header.column.getIsSorted()}
-                                            />
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                            <Sorter sort={header.column.getIsSorted()} />
                                         </div>
                                     )}
                                 </Th>
@@ -509,12 +404,7 @@ const DeliveryOrders = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
@@ -522,22 +412,13 @@ const DeliveryOrders = () => {
             </Table>
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={orderCount}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
                 <div className="w-full sm:w-auto min-w-[130px]">
                     <Select
                         size="sm"
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) =>
-                            dispatch(setPageSize(option?.value))
-                        }
+                        onChange={(option) => dispatch(setPageSize(option?.value))}
                         className="w-full flex justify-end"
                     />
                 </div>
@@ -554,6 +435,8 @@ const DeliveryOrders = () => {
                     to={to}
                     deliveryType={deliveryType}
                     handleDeliverySelect={handleDeliverySelect}
+                    paymentType={paymentType}
+                    handlePaymentType={handlePaymentSelect}
                 />
             )}
         </div>

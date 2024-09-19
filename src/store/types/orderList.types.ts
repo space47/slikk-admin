@@ -182,7 +182,7 @@ export interface DropdownStatus {
     name: string
 }
 
-export interface DeliveryType {
+export interface OPTIONType {
     label: string
     value: string
 }
@@ -195,7 +195,8 @@ export interface OrderState {
     dropdownStatus: DropdownStatus[]
     searchInput: string
     currentSelectedPage: any
-    deliveryType: DeliveryType
+    deliveryType: OPTIONType
+    paymentType: OPTIONType
     pageSize: number
     page: number
     from: string
