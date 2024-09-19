@@ -79,41 +79,64 @@ const AddCoupons = () => {
         image: null,
         type: '',
         value: null,
-        min_cart_value: '',
-        max_count: '',
-        maximum_price: '',
+        min_cart_value: null,
+        max_count: null,
+        maximum_price: null,
         valid_from: '',
         valid_to: '',
         description: '',
-        max_count_per_user: '',
-        coupon_used_count: '',
+        max_count_per_user: null,
+        coupon_used_count: null,
         frequency: null,
         coupon_discount_type: '',
         user: [],
     }
 
     const handleSubmit = async (values: COUPONDATA) => {
-        console.log('ARRAY', values.imageArray)
-        const { imageArray, ...formData } = values
-
-        formData.image = imageArray.map((file: File) => file.name).join(',')
-        formData.user = values.user.split(',')
-
         try {
-            const response = await axioisInstance.post(`/merchant/coupon`, formData)
+            const formData = new FormData()
+
+            if (values.imageArray && values.imageArray.length > 0) {
+                formData.append('image', values.imageArray[0])
+            }
+
+            const userArray = Array.isArray(values.user) ? values.user : values.user.split(',').map((mobile) => mobile.trim())
+
+            formData.append('code', values.code)
+            formData.append('type', values.type)
+            formData.append('value', values.value?.toString() || '')
+            formData.append('min_cart_value', values.min_cart_value?.toString() || '')
+            formData.append('max_count', values.max_count?.toString() || '')
+            formData.append('maximum_price', values.maximum_price?.toString() || '')
+            formData.append('valid_from', values.valid_from)
+            formData.append('valid_to', values.valid_to)
+            formData.append('description', values.description)
+            formData.append('max_count_per_user', values.max_count_per_user?.toString() || '')
+            formData.append('coupon_used_count', values.coupon_used_count?.toString() || '')
+
+            if (userArray.length > 0) {
+                formData.append('user', userArray)
+            }
+
+            console.log('ARRAY of USERS', values.user)
+
+            console.log('Form data before API call:', formData)
+
+            const response = await axioisInstance.post('/merchant/coupon', formData)
+
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Coupon created Successfully',
+                description: response?.data?.message || 'Coupon created successfully',
             })
         } catch (error) {
-            console.log(error)
+            console.error('Error during submission:', error)
+
             notification.error({
                 message: 'Failure',
                 description: 'Failed to create Coupon',
             })
         }
     }
-
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">COUPON EDIT</h3>
@@ -207,7 +230,12 @@ const AddCoupons = () => {
                                         errorMessage={errors.image}
                                         className="col-span-1 w-[80%]"
                                     >
-                                        <Field type="text" name="image" placeholder="Enter ImageUrl or Upload Image file" component={Input} />
+                                        <Field
+                                            type="text"
+                                            name="image"
+                                            placeholder="Enter ImageUrl or Upload Image file"
+                                            component={Input}
+                                        />
                                     </FormItem>
                                 </FormContainer>
 

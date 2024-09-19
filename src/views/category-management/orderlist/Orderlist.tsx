@@ -76,13 +76,21 @@ export const DELEIVERYOPTIONS = [
     { label: 'Try&Buy', value: 'TRY_AND_BUY' },
 ]
 
+export const PAYMENTOPTIONS = [
+    { label: 'COD', value: 'COD' },
+    { label: 'ONLINE', value: 'ONLINE' },
+    { label: 'POD', value: 'POD' },
+]
+
 const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<
-        Record<string, string>
-    >(SEARCHOPTIONS[0])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [deliveryType, setDeliveryType] = useState<{
+        label: string
+        value: string
+    } | null>(null)
+    const [paymentType, setPaymentType] = useState<{
         label: string
         value: string
     } | null>(null)
@@ -100,37 +108,34 @@ const OrderList = () => {
     })
     const [showFilter, setShowFilter] = useState(false)
 
-    const fetchOrders = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status =
-                dropdownStatus?.value?.length === 0
-                    ? ''
-                    : `&status=${dropdownStatus?.value}`
+            const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
 
             let response
             let deliveryStatus = ''
+            let paymentStatus = ''
 
             if (deliveryType?.value && deliveryType?.value !== 'undefined') {
                 deliveryStatus = `&delivery_type=${deliveryType?.value}`
             }
 
+            if (paymentType?.value && paymentType?.value !== 'undefined') {
+                paymentStatus = `&payment_mode=${paymentType?.value}`
+            }
+
             if (currentSelectedPage.value === 'invoice' && searchInput) {
                 response = await axiosInstance.get(
-                    `/merchant/orders?invoice_id=${searchInput}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
+                    `/merchant/orders?invoice_id=${searchInput}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
                 )
             } else if (currentSelectedPage.value === 'mobile' && searchInput) {
                 response = await axiosInstance.get(
-                    `/merchant/orders?mobile=${searchInput}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
+                    `/merchant/orders?mobile=${searchInput}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
                 )
             } else {
                 response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}`,
+                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
                 )
             }
 
@@ -146,7 +151,7 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     const columns = useMemo(
         () => [
@@ -170,11 +175,7 @@ const OrderList = () => {
             {
                 header: 'Order Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span className="">
-                        {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             { header: 'Mobile Number', accessorKey: 'user.mobile' },
             { header: 'Customer Name', accessorKey: 'user.name' },
@@ -201,11 +202,7 @@ const OrderList = () => {
             {
                 header: 'Last Update',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
         ],
         [],
@@ -239,10 +236,18 @@ const OrderList = () => {
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status =
-                dropdownStatus?.value.length === 0
-                    ? ''
-                    : `&status=${dropdownStatus?.value}`
+            const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+
+            let deliveryStatus = ''
+            let paymentStatus = ''
+
+            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+                deliveryStatus = `&delivery_type=${deliveryType?.value}`
+            }
+
+            if (paymentType?.value && paymentType?.value !== 'undefined') {
+                paymentStatus = `&payment_mode=${paymentType?.value}`
+            }
 
             let searwiseDownload = ''
 
@@ -252,15 +257,13 @@ const OrderList = () => {
                 searwiseDownload = `&mobile=${searchInput}`
             }
 
-            const downloadUrl = `merchant/orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}`
+            const downloadUrl = `merchant/orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}${deliveryStatus}${paymentStatus}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
 
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = 'OrderDetails.csv'
@@ -306,12 +309,18 @@ const OrderList = () => {
     }
 
     const handleDeliverySelect = (selectedValue: string) => {
-        const selectedOption = DELEIVERYOPTIONS.find(
-            (option) => option.value === selectedValue,
-        )
+        const selectedOption = DELEIVERYOPTIONS.find((option) => option.value === selectedValue)
 
         if (selectedOption) {
             setDeliveryType(selectedOption)
+        }
+    }
+
+    const handlePaymentSelect = (selectedValue: string) => {
+        const selectedOption = PAYMENTOPTIONS.find((option) => option.value === selectedValue)
+
+        if (selectedOption) {
+            setPaymentType(selectedOption)
         }
     }
 
@@ -361,19 +370,12 @@ const OrderList = () => {
                         <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md">
                             <Dropdown
                                 className=" text-xl text-black bg-gray-200 font-bold "
-                                title={
-                                    currentSelectedPage?.value
-                                        ? currentSelectedPage.label
-                                        : 'SELECT'
-                                }
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
                                 onSelect={handleSelect}
                             >
                                 {SEARCHOPTIONS?.map((item, key) => {
                                     return (
-                                        <DropdownItem
-                                            key={key}
-                                            eventKey={item.value}
-                                        >
+                                        <DropdownItem key={key} eventKey={item.value}>
                                             <span>{item.label}</span>
                                         </DropdownItem>
                                     )
@@ -401,22 +403,11 @@ const OrderList = () => {
                             </button>
                         </div>
                         <div>
-                            <Button
-                                variant="new"
-                                size="sm"
-                                onClick={handleShowFilter}
-                                className="hidden xl:flex gap-2"
-                            >
-                                <CiFilter className="text-xl font-extrabold" />{' '}
-                                Filter
+                            <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
+                                <CiFilter className="text-xl font-extrabold" /> Filter
                             </Button>
 
-                            <Button
-                                variant="default"
-                                size="sm"
-                                onClick={handleShowFilter}
-                                className="flex xl:hidden"
-                            >
+                            <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
                                 <FaFilter className="text-xl font-extrabold" />
                             </Button>
                         </div>
@@ -429,27 +420,14 @@ const OrderList = () => {
                         {table.getHeaderGroups().map((headerGroup) => (
                             <Tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
+                                    <Th key={header.id} colSpan={header.colSpan}>
                                         {header.isPlaceholder ? null : (
                                             <div
-                                                className={
-                                                    header.column.getCanSort()
-                                                        ? 'cursor-pointer select-none'
-                                                        : ''
-                                                }
+                                                className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
                                                 onClick={header.column.getToggleSortingHandler()}
                                             >
-                                                {flexRender(
-                                                    header.column.columnDef
-                                                        .header,
-                                                    header.getContext(),
-                                                )}
-                                                <Sorter
-                                                    sort={header.column.getIsSorted()}
-                                                />
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                <Sorter sort={header.column.getIsSorted()} />
                                             </div>
                                         )}
                                     </Th>
@@ -461,12 +439,7 @@ const OrderList = () => {
                         {table.getRowModel().rows.map((row) => (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
-                                    <Td key={cell.id}>
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext(),
-                                        )}
-                                    </Td>
+                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 ))}
                             </Tr>
                         ))}
@@ -485,9 +458,7 @@ const OrderList = () => {
                         <Select
                             size="sm"
                             isSearchable={true}
-                            value={pageSizeOptions.find(
-                                (option) => option.value === pageSize,
-                            )}
+                            value={pageSizeOptions.find((option) => option.value === pageSize)}
                             options={pageSizeOptions}
                             onChange={(option) => onSelectChange(option?.value)}
                             className="w-full"
@@ -507,6 +478,8 @@ const OrderList = () => {
                     to={to}
                     deliveryType={deliveryType}
                     handleDeliverySelect={handleDeliverySelect}
+                    paymentType={paymentType}
+                    handlePaymentSelect={handlePaymentSelect}
                 />
             )}
         </div>

@@ -67,15 +67,7 @@ const EditProduct = () => {
     const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
-        const allowedFileType = [
-            'video/mp4',
-            'video/mov',
-            'video/flv',
-            'video/avi',
-            'video/wmv',
-            'video/webm',
-            'video/avchd',
-        ]
+        const allowedFileType = ['video/mp4', 'video/mov', 'video/flv', 'video/avi', 'video/wmv', 'video/webm', 'video/avchd']
         const MAX_FILE_SIZE = 9000000000000000
 
         if (fileList.length >= MAX_UPLOAD) {
@@ -107,13 +99,9 @@ const EditProduct = () => {
 
             console.log('user Objeccct....', userData.image)
 
-            const colorList = userData.color_code_link
-                ? userData.color_code_link.split(',')
-                : []
+            const colorList = userData.color_code_link ? userData.color_code_link.split(',') : []
             const imageList = userData.image.split(',')
-            const videoList = userData.video_link
-                ? userData.video_link.split(',')
-                : []
+            const videoList = userData.video_link ? userData.video_link.split(',') : []
 
             console.log('object...........', imageList)
 
@@ -206,39 +194,25 @@ const EditProduct = () => {
     }
 
     useEffect(() => {
-        console.log(
-            'cccccsss',
-            allImage,
-            initialValue.images,
-            initialValue.image,
-        )
+        console.log('cccccsss', allImage, initialValue.images, initialValue.image)
     }, [initialValue])
 
     console.log('SIZE', initialValue.trend)
     console.log('PRODUCTDSATA', initialValue.fabric)
 
-    const handleRemoveImage = (
-        e: React.MouseEvent<HTMLButtonElement>,
-        index: number,
-    ) => {
+    const handleRemoveImage = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault()
 
         const updatedImages = allImage.filter((_, i) => i !== index)
         setAllImage(updatedImages)
     }
-    const handleRemoveVideo = (
-        e: React.MouseEvent<HTMLButtonElement>,
-        index: number,
-    ) => {
+    const handleRemoveVideo = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault()
         const updatedVideo = allVideo.filter((_, i) => i !== index)
         setAllVideo(updatedVideo)
     }
 
-    const handleRemoveColor = (
-        e: React.MouseEvent<HTMLButtonElement>,
-        index: number,
-    ) => {
+    const handleRemoveColor = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault()
         const updatedColor = allColor.filter((_, i) => i !== index)
         setAllColor(updatedColor)
@@ -274,16 +248,14 @@ const EditProduct = () => {
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -317,16 +289,14 @@ const EditProduct = () => {
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Video uploaded successfully',
+                description: response?.data?.message || 'Video uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Video Not uploaded',
+                description: error?.response?.data?.message || 'Video Not uploaded',
             })
             return 'Error'
         }
@@ -380,24 +350,19 @@ const EditProduct = () => {
         console.log('FORMDATA', formData)
 
         try {
-            const response = await axioisInstance.patch(
-                `product/${barcode}`,
-                formData,
-            )
+            const response = await axioisInstance.patch(`product/${barcode}`, formData)
 
             console.log(response)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Product Edited Successfully',
+                description: response?.data?.message || 'Product Edited Successfully',
             })
             navigate('/app/catalog/products')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Product not Updated ',
+                description: error?.response?.data?.message || 'Product not Updated ',
             })
         }
     }
@@ -410,8 +375,7 @@ const EditProduct = () => {
     return (
         <div>
             <h3 className="mb-5 text-neutral-900">
-                EDIT PRODUCT{' '}
-                <span className="font-light text-md">#{barcode}</span>
+                EDIT PRODUCT <span className="font-light text-md">#{barcode}</span>
             </h3>
             <Formik
                 enableReinitialize
@@ -424,17 +388,8 @@ const EditProduct = () => {
                         <FormContainer>
                             <div className="grid grid-cols-2 gap-4">
                                 {PRODUCT_EDIT_COMMON?.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
 
@@ -445,34 +400,14 @@ const EditProduct = () => {
 
                                         <div className="overflow-x-scroll w-[350px] scrollbar-hide flex justify-center">
                                             <div className="image w-[80%] min-h-[100px] h-auto mt-5 flex gap-3 items-center">
-                                                {allImage &&
-                                                allImage.length > 0 ? (
+                                                {allImage && allImage.length > 0 ? (
                                                     allImage?.map(
                                                         (img, index) =>
                                                             img && (
-                                                                <div
-                                                                    key={index}
-                                                                    className="flex flex-col gap-3"
-                                                                >
-                                                                    <img
-                                                                        src={
-                                                                            img
-                                                                        }
-                                                                        alt="img"
-                                                                        className="w-[100px]"
-                                                                    />
+                                                                <div key={index} className="flex flex-col gap-3">
+                                                                    <img src={img} alt="img" className="w-[100px]" />
 
-                                                                    <button
-                                                                        className=" mb-5"
-                                                                        onClick={(
-                                                                            e,
-                                                                        ) =>
-                                                                            handleRemoveImage(
-                                                                                e,
-                                                                                index,
-                                                                            )
-                                                                        }
-                                                                    >
+                                                                    <button className=" mb-5" onClick={(e) => handleRemoveImage(e, index)}>
                                                                         <MdCancel className="text-red-500 bg-none text-lg" />
                                                                     </button>
                                                                 </div>
@@ -484,38 +419,17 @@ const EditProduct = () => {
                                             </div>
                                         </div>
 
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="image">
-                                                {({
-                                                    form,
-                                                }: FieldProps<Product>) => (
+                                                {({ form }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
                                                             multiple
                                                             className="flex justify-center"
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.images
-                                                            }
-                                                            onChange={(files) =>
-                                                                form.setFieldValue(
-                                                                    'images',
-                                                                    files,
-                                                                )
-                                                            }
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'images',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.images}
+                                                            onChange={(files) => form.setFieldValue('images', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('images', files)}
                                                         />
                                                     </>
                                                 )}
@@ -547,78 +461,39 @@ const EditProduct = () => {
                                     <FormContainer className=" mt-5 ">
                                         <div className=" overflow-x-scroll w-[350px] scrollbar-hide flex justify-center">
                                             <div className=" image w-[20%] h-[20%] mt-5 flex gap-3 items-center  ">
-                                                {allColor &&
-                                                allColor.length > 0 ? (
-                                                    allColor?.map(
-                                                        (img, index) =>
-                                                            img ? (
-                                                                <div
-                                                                    key={index}
-                                                                    className="flex flex-col gap-3"
-                                                                >
-                                                                    <img
-                                                                        src={
-                                                                            img
-                                                                        }
-                                                                        alt="img"
-                                                                        className="rounded-xl"
-                                                                    />
+                                                {allColor && allColor.length > 0 ? (
+                                                    allColor?.map((img, index) =>
+                                                        img ? (
+                                                            <div key={index} className="flex flex-col gap-3">
+                                                                <img src={img} alt="img" className="rounded-xl" />
 
-                                                                    <button
-                                                                        className=" text-sm mb-5"
-                                                                        onClick={(
-                                                                            e,
-                                                                        ) =>
-                                                                            handleRemoveColor(
-                                                                                e,
-                                                                                index,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <MdCancel className="text-red-500 bg-none text-lg" />
-                                                                    </button>
-                                                                </div>
-                                                            ) : (
-                                                                ''
-                                                            ),
+                                                                <button
+                                                                    className=" text-sm mb-5"
+                                                                    onClick={(e) => handleRemoveColor(e, index)}
+                                                                >
+                                                                    <MdCancel className="text-red-500 bg-none text-lg" />
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            ''
+                                                        ),
                                                     )
                                                 ) : (
                                                     <p>No image</p>
                                                 )}
                                             </div>
                                         </div>
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="color_code">
-                                                {({
-                                                    form,
-                                                }: FieldProps<Product>) => (
+                                                {({ form }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
                                                             multiple
                                                             className="flex justify-center"
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.color_code
-                                                            }
-                                                            onChange={(files) =>
-                                                                form.setFieldValue(
-                                                                    'color_code',
-                                                                    files,
-                                                                )
-                                                            }
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'color_code',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.color_code}
+                                                            onChange={(files) => form.setFieldValue('color_code', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('color_code', files)}
                                                             // uploadButtonText="Add Files"
                                                         />
                                                     </>
@@ -629,10 +504,7 @@ const EditProduct = () => {
                                         <br />
                                         <br />
                                     </FormContainer>
-                                    <FormItem
-                                        label=""
-                                        className="col-span-1 w-[80%]"
-                                    >
+                                    <FormItem label="" className="col-span-1 w-[80%]">
                                         <Field
                                             type="text"
                                             name="color_code_link"
@@ -649,20 +521,9 @@ const EditProduct = () => {
                                     <FormContainer className=" mt-5 ">
                                         <div className=" overflow-x-scroll w-[350px] ">
                                             <div className=" image w-[10%] h-[20%] mt-5 flex gap-3 items-center  ">
-                                                {allVideo &&
-                                                allVideo.length > 0 ? (
-                                                    allVideo?.map(
-                                                        (img, index) =>
-                                                            img ? (
-                                                                <img
-                                                                    key={index}
-                                                                    src={img}
-                                                                    alt="img"
-                                                                    className="rounded-xl"
-                                                                />
-                                                            ) : (
-                                                                ''
-                                                            ),
+                                                {allVideo && allVideo.length > 0 ? (
+                                                    allVideo?.map((img, index) =>
+                                                        img ? <img key={index} src={img} alt="img" className="rounded-xl" /> : '',
                                                     )
                                                 ) : (
                                                     <p>No image</p>
@@ -671,41 +532,19 @@ const EditProduct = () => {
                                         </div>
                                         <FormItem
                                             label=""
-                                            invalid={Boolean(
-                                                errors.video && touched.video,
-                                            )}
-                                            errorMessage={
-                                                errors.video as string
-                                            }
+                                            invalid={Boolean(errors.video && touched.video)}
+                                            errorMessage={errors.video as string}
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="video_link">
-                                                {({
-                                                    form,
-                                                }: FieldProps<Product>) => (
+                                                {({ form }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
                                                             multiple
-                                                            beforeUpload={
-                                                                beforeVideoUpload
-                                                            }
-                                                            fileList={
-                                                                values.video
-                                                            }
-                                                            onChange={(files) =>
-                                                                form.setFieldValue(
-                                                                    'Video',
-                                                                    files,
-                                                                )
-                                                            }
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'images',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            beforeUpload={beforeVideoUpload}
+                                                            fileList={values.video}
+                                                            onChange={(files) => form.setFieldValue('Video', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('images', files)}
                                                         />
                                                     </>
                                                 )}
@@ -717,10 +556,7 @@ const EditProduct = () => {
                                     </FormContainer>
                                     <FormItem
                                         label=""
-                                        invalid={
-                                            errors.video_link &&
-                                            touched.video_link
-                                        }
+                                        invalid={errors.video_link && touched.video_link}
                                         errorMessage={errors.video_link}
                                         className="col-span-1 w-[80%]"
                                     >
@@ -733,11 +569,7 @@ const EditProduct = () => {
                                     </FormItem>
                                 </FormContainer>
                                 {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
+                                    <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field
                                             type={item.type}
                                             name={item.name}
@@ -749,18 +581,10 @@ const EditProduct = () => {
                             </div>
 
                             <FormContainer className="flex justify-end mt-5">
-                                <Button
-                                    type="reset"
-                                    className="mr-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    className="bg-blue-500 text-white"
-                                >
+                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
                                     Submit
                                 </Button>
                             </FormContainer>

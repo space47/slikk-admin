@@ -6,17 +6,17 @@ export interface COUPONDATA {
     image: string | null
     type: string
     value: number | null
-    min_cart_value: string
-    max_count: string
-    maximum_price: string
+    min_cart_value: number | null
+    max_count: number | null
+    maximum_price: number | null
     valid_from: string
     valid_to: string
     description: string
-    max_count_per_user: string
-    coupon_used_count: string
+    max_count_per_user: number | null
+    coupon_used_count: number | null
     frequency: number | null
     // freq_config: string
-    coupon_discount_type: string
+    coupon_discount_type: string | null
     user: any[]
 }
 
@@ -31,9 +31,5 @@ export interface COUPON_STATE {
 }
 
 export const getAllDivisionRequest = 'getAllDivisionRequest'
-export const getAllDivisionSuccess = createAction<COUPON_STATE>(
-    'getAllDivisionSuccess',
-)
-export const getAllDivisionFailure = createAction<COUPON_STATE>(
-    'getAllDivisionFailure',
-)
+export const getAllDivisionSuccess = createAction<COUPON_STATE>('getAllDivisionSuccess')
+export const getAllDivisionFailure = createAction<COUPON_STATE>('getAllDivisionFailure')

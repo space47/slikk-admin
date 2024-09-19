@@ -13,38 +13,28 @@ const initialState: COUPON_STATE = {
     page: 1,
 }
 
-export const fetchCoupons = createAsyncThunk(
-    'coupons/fetchCoupons',
-    async () => {
-        try {
-            const response = await axioisInstance.get(
-                `merchant/coupon?coupon_type=COUPON`,
-            )
+export const fetchCoupons = createAsyncThunk('coupons/fetchCoupons', async () => {
+    try {
+        const response = await axioisInstance.get(`merchant/coupon?coupon_type=COUPON`)
 
-            return {
-                coupons: response.data.data,
-            }
-        } catch (error) {
-            console.log('error')
+        return {
+            coupons: response.data.data,
         }
-    },
-)
-
-export const fetchCouponsEdit = createAsyncThunk(
-    'coupons/fetchCoupons/Edit',
-    async () => {
-        try {
-            const response = await axioisInstance.get(`merchant/coupon`)
-
-            return {
-                couponsEdit: response.data.data,
-            }
-        } catch (error) {
-            console.log('error')
+    } catch (error) {
+        console.log('error')
+    }
+})
+export const fetchCouponsEdit = createAsyncThunk('coupons/fetchCoupons/Edit', async (code: string) => {
+    try {
+        const response = await axioisInstance.get(`merchant/coupon?coupon_code=${code}`)
+        return {
+            couponsEdit: response.data.data,
         }
-    },
-)
-
+    } catch (error) {
+        console.error('Error fetching coupon:', error)
+        throw error
+    }
+})
 export const couponSlice = createSlice({
     name: 'Coupons',
     initialState,
@@ -55,25 +45,19 @@ export const couponSlice = createSlice({
                 state.loading = true
             })
             .addCase(fetchCoupons.fulfilled, (state, action) => {
-                ;(state.loading = false),
-                    (state.coupons = action.payload?.coupons)
+                ;(state.loading = false), (state.coupons = action.payload?.coupons)
             })
             .addCase(fetchCoupons.rejected, (state, action) => {
-                ;(state.loading = false),
-                    (state.message =
-                        action.error.message || 'Failed to fetch Coupons Lists')
+                ;(state.loading = false), (state.message = action.error.message || 'Failed to fetch Coupons Lists')
             })
             .addCase(fetchCouponsEdit.pending, (state) => {
                 state.loading = true
             })
             .addCase(fetchCouponsEdit.fulfilled, (state, action) => {
-                ;(state.loading = false),
-                    (state.coupons = action.payload?.couponsEdit)
+                ;(state.loading = false), (state.couponsEdit = action.payload?.couponsEdit)
             })
             .addCase(fetchCouponsEdit.rejected, (state, action) => {
-                ;(state.loading = false),
-                    (state.message =
-                        action.error.message || 'Failed to fetch coupons Lists')
+                ;(state.loading = false), (state.message = action.error.message || 'Failed to fetch coupons Lists')
             })
     },
 })

@@ -48,23 +48,13 @@ const AppCoupons = () => {
     console.log('CURRENT STATE', loading)
 
     const filteredData = coupons.filter((item) =>
-        Object.values(item).some((val) =>
-            val
-                ? val
-                      .toString()
-                      .toLowerCase()
-                      .includes(globalFilter.toLowerCase())
-                : false,
-        ),
+        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
 
     const navigate = useNavigate()
 
     // Paginate filtered data
-    const paginatedData = filteredData.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
-    )
+    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
     const columns = [
@@ -72,8 +62,7 @@ const AppCoupons = () => {
         {
             header: 'Image',
             accessor: 'image',
-            format: (value) =>
-                value ? <img src={value} alt="coupon" width="50" /> : 'N/A',
+            format: (value) => (value ? <img src={value} alt="coupon" width="50" /> : 'N/A'),
         },
         { header: 'Type', accessor: 'type' },
         { header: 'Value', accessor: 'value' },
@@ -99,16 +88,14 @@ const AppCoupons = () => {
 
         {
             header: 'Edit',
-            accessor: 'coupon_discount_type',
-            format: (value, row) => (
-                <Button onClick={() => handleActionClick(value)}>EDIT</Button>
-            ),
+            accessor: 'code',
+            format: (value, row) => <Button onClick={() => handleActionClick(value)}>EDIT</Button>,
         },
     ]
 
-    const handleActionClick = (coupon_type: string) => {
-        console.log('clicked', coupon_type)
-        navigate(`/app/appSettings/coupons/${coupon_type}`)
+    const handleActionClick = (coupon_code: string) => {
+        console.log('clicked', coupon_code)
+        navigate(`/app/appSettings/coupons/${coupon_code}`)
     }
 
     const handleCoupons = () => {
@@ -131,10 +118,7 @@ const AppCoupons = () => {
                             onChange={(e) => setGlobalFilter(e.target.value)}
                             className="p-2 border rounded"
                         />
-                        <button
-                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                            onClick={handleCoupons}
-                        >
+                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleCoupons}>
                             Add Coupons
                         </button>
                     </div>
@@ -151,11 +135,7 @@ const AppCoupons = () => {
                             {paginatedData.map((row) => (
                                 <Tr key={row.code}>
                                     {columns.map((col) => (
-                                        <Td key={col.accessor}>
-                                            {col.format
-                                                ? col.format(row[col.accessor])
-                                                : row[col.accessor]}
-                                        </Td>
+                                        <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
                                     ))}
                                 </Tr>
                             ))}
@@ -163,22 +143,14 @@ const AppCoupons = () => {
                     </Table>
 
                     <div className="flex items-center justify-between mt-4">
-                        <Pagination
-                            currentPage={page}
-                            total={totalPages}
-                            onChange={(page) => setPage(page)}
-                        />
+                        <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
                         <div className="min-w-[130px]">
                             <Select<Option>
                                 size="sm"
                                 isSearchable={false}
-                                value={pageSizeOptions.find(
-                                    (option) => option.value === pageSize,
-                                )}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
-                                onChange={(option) =>
-                                    setPageSize(Number(option?.value))
-                                }
+                                onChange={(option) => setPageSize(Number(option?.value))}
                             />
                         </div>
                     </div>
