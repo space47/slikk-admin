@@ -15,6 +15,7 @@ export interface COUPONDATA {
     max_count_per_user: number | null
     coupon_used_count: number | null
     frequency: number | null
+    user_add_action: string
     // freq_config: string
     coupon_discount_type: string | null
     user: any[]

@@ -18,6 +18,7 @@ import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import CancelModal from './components/CancelModal'
 import { FaMapMarkedAlt } from 'react-icons/fa'
+import { notification } from 'antd'
 // import { string } from 'yup'
 
 type RETURNORDER = {
@@ -117,9 +118,7 @@ const OrderDetails = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axioisInstance.get(
-                    `merchant/order/${invoice_id}`,
-                )
+                const response = await axioisInstance.get(`merchant/order/${invoice_id}`)
 
                 const ordersData = response.data?.data || []
                 setLoading(false)
@@ -143,10 +142,17 @@ const OrderDetails = () => {
         setShowCancelModal(false)
     }
 
-    console.log(
-        'RETRUNORDER',
-        data?.return_order.map((item) => item.return_order_id).join(','),
-    )
+    const handlemarkAsPaid = async () => {
+        try {
+            const response = await axioisInstance.post(`/user/order/${invoice_id}/payment/status`)
+
+            notification.success({
+                message: response.data.message || 'Successfully markded as Paid',
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <Container className="p-4 xl:px-10">
@@ -158,18 +164,12 @@ const OrderDetails = () => {
                                 <div className="flex flex-col md:flex-row items-center mb-4 xl:justify-between justify-center w-full">
                                     <h3 className="text-3xl font-bold text-gray-800 text-center md:text-left">
                                         <span>Order</span>
-                                        <span className="ml-2 text-gray-600">
-                                            #{data.invoice_id}
-                                        </span>
+                                        <span className="ml-2 text-gray-600">#{data.invoice_id}</span>
                                     </h3>
                                 </div>
                                 <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
                                     <HiOutlineCalendar className="text-2xl" />
-                                    <span className="ml-2">
-                                        {moment(data.create_date).format(
-                                            'MM/DD/YYYY hh:mm:ss a',
-                                        )}
-                                    </span>
+                                    <span className="ml-2">{moment(data.create_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
                                 </span>
                             </div>
                             <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
@@ -182,9 +182,7 @@ const OrderDetails = () => {
                                     </button>
                                 ) : data.status !== 'DECLINED' &&
                                   data.status !== 'CANCELLED' &&
-                                  ['PENDING', 'ACCEPTED', 'PACKED'].includes(
-                                      data.status,
-                                  ) ? (
+                                  ['PENDING', 'ACCEPTED', 'PACKED'].includes(data.status) ? (
                                     <button
                                         className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                         onClick={handleCancelOrder}
@@ -195,21 +193,17 @@ const OrderDetails = () => {
 
                                 {data.return_order.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">
-                                        <span className="text-gray-700">
-                                            Return Orders:
-                                        </span>
+                                        <span className="text-gray-700">Return Orders:</span>
                                         <div className="flex flex-wrap gap-2">
-                                            {data.return_order.map(
-                                                (item, key) => (
-                                                    <a
-                                                        href={`/app/returnOrders/${item.return_order_id}`}
-                                                        key={key}
-                                                        className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
-                                                    >
-                                                        {item.return_order_id}
-                                                    </a>
-                                                ),
-                                            )}
+                                            {data.return_order.map((item, key) => (
+                                                <a
+                                                    href={`/app/returnOrders/${item.return_order_id}`}
+                                                    key={key}
+                                                    className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                                                >
+                                                    {item.return_order_id}
+                                                </a>
+                                            ))}
                                         </div>
                                     </div>
                                 )}
@@ -225,9 +219,7 @@ const OrderDetails = () => {
                                     <div className="bg-white shadow-lg p-6 rounded-lg">
                                         <CustomerInfo
                                             user={data.user}
-                                            billing_address={
-                                                data.billing_address
-                                            }
+                                            billing_address={data.billing_address}
                                             store={data.store}
                                             location_url={data.location_url}
                                         />
@@ -235,9 +227,7 @@ const OrderDetails = () => {
                                     <div className="bg-white shadow-lg p-6 rounded-lg">
                                         <ShippingInfo
                                             data={data.logistic}
-                                            logistic_partner={
-                                                data.logistic?.partner
-                                            }
+                                            logistic_partner={data.logistic?.partner}
                                             delivery_type={data.delivery_type}
                                         />
                                     </div>
@@ -247,15 +237,10 @@ const OrderDetails = () => {
                                             tax={data.tax}
                                             delivery={data.delivery}
                                             amount={data.amount}
-                                            coupon_discount={
-                                                data.coupon_discount
-                                            }
-                                            loyalty_discount={
-                                                data.loyalty_discount
-                                            }
-                                            points_discount={
-                                                data.points_discount
-                                            }
+                                            coupon_discount={data.coupon_discount}
+                                            loyalty_discount={data.loyalty_discount}
+                                            points_discount={data.points_discount}
+                                            handleMarkAsPaid={handlemarkAsPaid}
                                         />
                                     </div>
                                 </div>
@@ -301,9 +286,7 @@ const OrderDetails = () => {
                         alt="No order found!"
                         className="w-64"
                     />
-                    <h3 className="mt-8 text-center text-xl font-medium text-gray-700">
-                        No order found!
-                    </h3>
+                    <h3 className="mt-8 text-center text-xl font-medium text-gray-700">No order found!</h3>
                 </div>
             )}
         </Container>
