@@ -13,59 +13,38 @@ const appsRoute: Routes = [
     {
         key: 'apps.homePage',
         path: `${APP_PREFIX_PATH}/homePage/fullMap`,
-        component: lazy(
-            () => import('@/views/homePage/fullMapComponent/FullMap'),
-        ),
+        component: lazy(() => import('@/views/homePage/fullMapComponent/FullMap')),
         authority: [ADMIN, USER],
     },
     {
         key: 'apps.homePage',
         path: `${APP_PREFIX_PATH}/customerAnalytics/:mobile`,
-        component: lazy(
-            () => import('@/views/homePage/homes/CustomerAnalytics'),
-        ),
+        component: lazy(() => import('@/views/homePage/homes/CustomerAnalytics')),
         authority: [ADMIN, USER],
     },
     //slikk nav category
     {
         key: 'appsCategory.productNew',
         path: `${APP_PREFIX_PATH}/category/division-new`,
-        component: lazy(
-            () => import('@/views/category-management/division/DivisionNew'),
-        ),
+        component: lazy(() => import('@/views/category-management/division/DivisionNew')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.division',
         path: `${APP_PREFIX_PATH}/category/division`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/division/divisiontable/DivisionTable'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/division/divisiontable/DivisionTable')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.division',
         path: `${APP_PREFIX_PATH}/category/division/:id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/division/divisiontable/DivisionEdit'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/division/divisiontable/DivisionEdit')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.division',
         path: `${APP_PREFIX_PATH}/category/division/addNew`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/division/divisiontable/DivisionNew'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/division/divisiontable/DivisionNew')),
         authority: [ADMIN, USER],
     },
 
@@ -73,34 +52,19 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.category',
         path: `${APP_PREFIX_PATH}/category/category`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/category/categoryTable/CategoryTable'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/category/categoryTable/CategoryTable')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.category',
         path: `${APP_PREFIX_PATH}/category/category/:id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/category/categoryTable/CategoryEdit'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/category/categoryTable/CategoryEdit')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.category',
         path: `${APP_PREFIX_PATH}/category/category/add`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/category/categoryTable/CategoryAdd'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/category/categoryTable/CategoryAdd')),
         authority: [ADMIN, USER],
     },
 
@@ -109,12 +73,7 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory/:id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/subCategory/subEdit/SubEdit'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/subCategory/subEdit/SubEdit')),
         authority: [ADMIN, USER],
     },
 
@@ -122,20 +81,13 @@ const appsRoute: Routes = [
     {
         key: 'appsOrderManagement.orderList',
         path: `${APP_PREFIX_PATH}/orders`,
-        component: lazy(
-            () => import('@/views/category-management/orderlist/Orderlist'),
-        ),
+        component: lazy(() => import('@/views/category-management/orderlist/Orderlist')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsOrderManagement.orderList',
         path: `${APP_PREFIX_PATH}/orders/completed`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/orderlist/statusWisedetails/StatusOrderList'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/orderlist/statusWisedetails/StatusOrderList')),
         authority: [ADMIN, USER],
     },
     {
@@ -147,36 +99,25 @@ const appsRoute: Routes = [
     {
         key: 'appsOrderManagement.returnOrderList',
         path: `${APP_PREFIX_PATH}/returnOrders`,
-        component: lazy(
-            () => import('@/views/sales/returnOrders/ReturnOrders'),
-        ),
+        component: lazy(() => import('@/views/sales/returnOrders/ReturnOrders')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsOrderManagement.returnOrderList',
         path: `${APP_PREFIX_PATH}/returnOrders/:return_order_id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/sales/returnOrders/returnOrderDetails/ReturnOrderDetails'
-                ),
-        ),
+        component: lazy(() => import('@/views/sales/returnOrders/returnOrderDetails/ReturnOrderDetails')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsOrderManagement.deliveryOrders',
         path: `${APP_PREFIX_PATH}/deliveryOrders`,
-        component: lazy(
-            () => import('@/views/sales/DeliveryOrders/DeliveryOrders'),
-        ),
+        component: lazy(() => import('@/views/sales/DeliveryOrders/DeliveryOrders')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsOrderManagement.reverseDelivery',
         path: `${APP_PREFIX_PATH}/reverseDelivery`,
-        component: lazy(
-            () => import('@/views/sales/reverseDelivery/ReverseDelivery'),
-        ),
+        component: lazy(() => import('@/views/sales/reverseDelivery/ReverseDelivery')),
         authority: [ADMIN, USER],
     },
 
@@ -193,18 +134,13 @@ const appsRoute: Routes = [
     {
         key: 'appsOrgManagement.sellers',
         path: `${APP_PREFIX_PATH}/sellers/addnew`,
-        component: lazy(
-            () => import('@/views/org-management/sellers/addSeller/AddSeller'),
-        ),
+        component: lazy(() => import('@/views/org-management/sellers/addSeller/AddSeller')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsOrgManagement.sellers',
         path: `${APP_PREFIX_PATH}/sellers/:id`,
-        component: lazy(
-            () =>
-                import('@/views/org-management/sellers/editSeller/EditSeller'),
-        ),
+        component: lazy(() => import('@/views/org-management/sellers/editSeller/EditSeller')),
         authority: [ADMIN, USER],
     },
     {
@@ -216,17 +152,13 @@ const appsRoute: Routes = [
     {
         key: 'appsOrgManagement.stores',
         path: `${APP_PREFIX_PATH}/stores/addNew`,
-        component: lazy(
-            () => import('@/views/org-management/stores/addStore/AddStore'),
-        ), //p2
+        component: lazy(() => import('@/views/org-management/stores/addStore/AddStore')), //p2
         authority: [ADMIN, USER],
     },
     {
         key: 'appsOrgManagement.stores',
         path: `${APP_PREFIX_PATH}/stores/:id`,
-        component: lazy(
-            () => import('@/views/org-management/stores/editStore/EditStore'),
-        ), //p2
+        component: lazy(() => import('@/views/org-management/stores/editStore/EditStore')), //p2
         authority: [ADMIN, USER],
     },
     {
@@ -238,17 +170,13 @@ const appsRoute: Routes = [
     {
         key: 'appsOrgManagement.users',
         path: `${APP_PREFIX_PATH}/users/addNew`,
-        component: lazy(
-            () => import('@/views/org-management/users/addUsers/AddUser'),
-        ), //p3
+        component: lazy(() => import('@/views/org-management/users/addUsers/AddUser')), //p3
         authority: [ADMIN, USER],
     },
     {
         key: 'appsOrgManagement.users',
         path: `${APP_PREFIX_PATH}/users/edit/:mobile`,
-        component: lazy(
-            () => import('@/views/org-management/users/editUsers/EditUser'),
-        ), //p3
+        component: lazy(() => import('@/views/org-management/users/editUsers/EditUser')), //p3
         authority: [ADMIN, USER],
     },
 
@@ -263,63 +191,43 @@ const appsRoute: Routes = [
     {
         key: 'appsVendorManagement.sales',
         path: `${APP_PREFIX_PATH}/vendor/sales`,
-        component: lazy(
-            () => import('@/views/brandDashboard/salesOverview/SalesOverView'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/salesOverview/SalesOverView')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.brandInfo',
         path: `${APP_PREFIX_PATH}/vendor/details`,
-        component: lazy(
-            () => import('@/views/brandDashboard/brandInfo/BrandInfo'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandInfo/BrandInfo')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.brandAccounting',
         path: `${APP_PREFIX_PATH}/vendor/accounts`,
-        component: lazy(
-            () => import('@/views/brandDashboard/brandAccount/brandAccounting'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandAccount/brandAccounting')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.users',
         path: `${APP_PREFIX_PATH}/vendor/users/addNew`,
-        component: lazy(
-            () => import('@/views/brandDashboard/brandUser/userAdd/UserAdd'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandUser/userAdd/UserAdd')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.users',
         path: `${APP_PREFIX_PATH}/vendor/users/:mobile`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/brandDashboard/brandUser/branUserEdit/BrandUserEdit'
-                ),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandUser/branUserEdit/BrandUserEdit')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.productFeedback',
         path: `${APP_PREFIX_PATH}/category/productFeedback`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/productFeedback/ProductFeedback'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/productFeedback/ProductFeedback')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.uploader',
         path: `${APP_PREFIX_PATH}/category/uploader`,
-        component: lazy(
-            () => import('@/views/category-management/uploader/Uploader'),
-        ),
+        component: lazy(() => import('@/views/category-management/uploader/Uploader')),
         authority: [ADMIN, USER],
     },
 
@@ -327,76 +235,52 @@ const appsRoute: Routes = [
     {
         key: 'appsVendorManagement.catalog',
         path: `${APP_PREFIX_PATH}/vendor/catalog`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/brandDashboard/brandCatalogOverview/brandcatalog'
-                ),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandCatalogOverview/brandcatalog')),
         authority: [ADMIN, USER],
     },
 
     {
         key: 'appsVendorManagement.stockOverview',
         path: `${APP_PREFIX_PATH}/vendor/stock`,
-        component: lazy(
-            () =>
-                import('@/views/brandDashboard/brandStockOverview/BrandStock'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandStockOverview/BrandStock')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.returns',
         path: `${APP_PREFIX_PATH}/vendor/returns`,
-        component: lazy(
-            () => import('@/views/brandDashboard/brandReturns/BrandReturns'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandReturns/BrandReturns')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.orders',
         path: `${APP_PREFIX_PATH}/vendor/orders`, //orders
-        component: lazy(
-            () => import('@/views/brandDashboard/brandOrder/BrandOrder'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandOrder/BrandOrder')),
         authority: [ADMIN, USER],
     },
     // ......................................
     {
         key: 'appsVendorManagement.catalog',
         path: `${APP_PREFIX_PATH}/vendor/catalog`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/brandDashboard/brandCatalogOverview/brandcatalog'
-                ),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandCatalogOverview/brandcatalog')),
         authority: [ADMIN, USER],
     },
 
     {
         key: 'appsVendorManagement.stockOverview',
         path: `${APP_PREFIX_PATH}/vendor/stock`,
-        component: lazy(
-            () =>
-                import('@/views/brandDashboard/brandStockOverview/BrandStock'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandStockOverview/BrandStock')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.returns',
         path: `${APP_PREFIX_PATH}/vendor/returns`,
-        component: lazy(
-            () => import('@/views/brandDashboard/brandReturns/BrandReturns'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandReturns/BrandReturns')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsVendorManagement.orders',
         path: `${APP_PREFIX_PATH}/vendor/orders`, //orders
-        component: lazy(
-            () => import('@/views/brandDashboard/brandOrder/BrandOrder'),
-        ),
+        component: lazy(() => import('@/views/brandDashboard/brandOrder/BrandOrder')),
         authority: [ADMIN, USER],
     },
 
@@ -404,181 +288,122 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.uploadCatalog',
         path: `${APP_PREFIX_PATH}/catalog/upload`,
-        component: lazy(
-            () => import('@/views/category-management/catalog/BulkUpload'),
-        ),
+        component: lazy(() => import('@/views/category-management/catalog/BulkUpload')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.products',
         path: `${APP_PREFIX_PATH}/catalog/products`,
-        component: lazy(
-            () => import('@/views/category-management/catalog/Products'),
-        ),
+        component: lazy(() => import('@/views/category-management/catalog/Products')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.products',
         path: `${APP_PREFIX_PATH}/catalog/products/addNew`,
-        component: lazy(
-            () => import('@/views/category-management/catalog/Addnew'),
-        ),
+        component: lazy(() => import('@/views/category-management/catalog/Addnew')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.products',
         path: `${APP_PREFIX_PATH}/catalog/products/:barcode`,
-        component: lazy(
-            () => import('@/views/category-management/catalog/EditProduct'),
-        ),
+        component: lazy(() => import('@/views/category-management/catalog/EditProduct')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory`,
-        component: lazy(
-            () => import('@/views/category-management/subCategory/Subcategory'),
-        ),
+        component: lazy(() => import('@/views/category-management/subCategory/Subcategory')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.productType',
         path: `${APP_PREFIX_PATH}/category/productType/:id`,
-        component: lazy(
-            () => import('@/views/category-management/productType/ProductEdit'),
-        ),
+        component: lazy(() => import('@/views/category-management/productType/ProductEdit')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.productType',
         path: `${APP_PREFIX_PATH}/category/productType/addNew`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/category-management/productType/ProductTypeNew'
-                ),
-        ),
+        component: lazy(() => import('@/views/category-management/productType/ProductTypeNew')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.subCategory',
         path: `${APP_PREFIX_PATH}/category/subCategory/addNew`,
-        component: lazy(
-            () =>
-                import('@/views/category-management/subCategory/subNew/SubNew'),
-        ),
+        component: lazy(() => import('@/views/category-management/subCategory/subNew/SubNew')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.productType',
         path: `${APP_PREFIX_PATH}/category/productType`,
-        component: lazy(
-            () => import('@/views/category-management/productType/ProductType'),
-        ),
+        component: lazy(() => import('@/views/category-management/productType/ProductType')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.brand',
         path: `${APP_PREFIX_PATH}/category/brand`,
-        component: lazy(
-            () => import('@/views/category-management/brand/Brand'),
-        ),
+        component: lazy(() => import('@/views/category-management/brand/Brand')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsCategory.brand',
         path: `${APP_PREFIX_PATH}/category/brand/:id`,
-        component: lazy(
-            () => import('@/views/category-management/brand/BrandEdit'),
-        ),
+        component: lazy(() => import('@/views/category-management/brand/BrandEdit')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.inwards',
         path: `${APP_PREFIX_PATH}/goods/received`,
-        component: lazy(
-            () => import('@/views/inventory-management/inward/inward'),
-        ),
+        component: lazy(() => import('@/views/inventory-management/inward/inward')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.inwards',
         path: `${APP_PREFIX_PATH}/goods/received/form`,
-        component: lazy(
-            () => import('@/views/inventory-management/inward/inwardNew'),
-        ),
+        component: lazy(() => import('@/views/inventory-management/inward/inwardNew')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.inwards',
         path: `${APP_PREFIX_PATH}/goods/received/edit/:grn`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/inventory-management/inward/inwardEdit/InwardEdit'
-                ),
-        ),
+        component: lazy(() => import('@/views/inventory-management/inward/inwardEdit/InwardEdit')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.inwards',
         path: `${APP_PREFIX_PATH}/goods/received/sync/:id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/inventory-management/inward/inwardSync/InwardSync'
-                ),
-        ),
+        component: lazy(() => import('@/views/inventory-management/inward/inwardSync/InwardSync')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.inwardsDetails',
         path: `${APP_PREFIX_PATH}/goods/received/:company/:document_number`,
-        component: lazy(
-            () => import('@/views/inventory-management/inward/inwardDetails'),
-        ),
+        component: lazy(() => import('@/views/inventory-management/inward/inwardDetails')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.quality_check',
         path: `${APP_PREFIX_PATH}/goods/qualitycheck`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/inventory-management/quality-check/QCbulkupload'
-                ),
-        ),
+        component: lazy(() => import('@/views/inventory-management/quality-check/QCbulkupload')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.quality_checkList',
         path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/inventory-management/qualityCheckList/QCListTable'
-                ),
-        ),
+        component: lazy(() => import('@/views/inventory-management/qualityCheckList/QCListTable')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.stock_overview',
         path: `${APP_PREFIX_PATH}/stockOverview`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/inventory-management/stock-overview/StockOverview'
-                ),
-        ),
+        component: lazy(() => import('@/views/inventory-management/stock-overview/StockOverview')),
         authority: [ADMIN, USER],
     },
 
     {
         key: 'appsCategory.categoryNew',
         path: `${APP_PREFIX_PATH}/category/category-new`,
-        component: lazy(
-            () => import('@/views/category-management/category/CategoryNew'),
-        ),
+        component: lazy(() => import('@/views/category-management/category/CategoryNew')),
         authority: [ADMIN, USER],
         meta: {
             header: 'Add New Category',
@@ -587,9 +412,7 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.category',
         path: `${APP_PREFIX_PATH}/category/category`,
-        component: lazy(
-            () => import('@/views/category-management/category/CategoryList'),
-        ),
+        component: lazy(() => import('@/views/category-management/category/CategoryList')),
         authority: [ADMIN, USER],
         meta: {
             header: 'Add New Category',
@@ -599,9 +422,7 @@ const appsRoute: Routes = [
     {
         key: 'appsCategory.category',
         path: `${APP_PREFIX_PATH}/category/Uploader`,
-        component: lazy(
-            () => import('@/views/category-management/uploader/Uploader'),
-        ),
+        component: lazy(() => import('@/views/category-management/uploader/Uploader')),
         authority: [ADMIN, USER],
         meta: {
             header: 'Add New Category',
@@ -618,52 +439,32 @@ const appsRoute: Routes = [
     {
         key: 'appscreatorPost.postApproval',
         path: `${APP_PREFIX_PATH}/postApproval/pending/:id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/creatorPost/pending/pendingDetails/PendingDetails'
-                ),
-        ),
+        component: lazy(() => import('@/views/creatorPost/pending/pendingDetails/PendingDetails')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appscreatorPost.postApproval',
         path: `${APP_PREFIX_PATH}/postApproval/approved/:id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/creatorPost/accepted/acceptedDetails/AcceptedDetails'
-                ),
-        ),
+        component: lazy(() => import('@/views/creatorPost/accepted/acceptedDetails/AcceptedDetails')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appscreatorPost.postApproval',
         path: `${APP_PREFIX_PATH}/postApproval/reject/:id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/creatorPost/rejected/rejectDetails/RejectDetails'
-                ),
-        ),
+        component: lazy(() => import('@/views/creatorPost/rejected/rejectDetails/RejectDetails')),
         authority: [ADMIN, USER],
     },
 
     {
         key: 'appscreatorPost.uploadPost',
         path: `${APP_PREFIX_PATH}/uploadPost`,
-        component: lazy(
-            () => import('@/views/creatorPost/uploadPost/UploadPost'),
-        ),
+        component: lazy(() => import('@/views/creatorPost/uploadPost/UploadPost')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appscreatorPost.uploadPost',
         path: `${APP_PREFIX_PATH}/uploadPost/createPost`,
-        component: lazy(
-            () =>
-                import('@/views/creatorPost/uploadPost/createPost/CreatePost'),
-        ),
+        component: lazy(() => import('@/views/creatorPost/uploadPost/createPost/CreatePost')),
         authority: [ADMIN, USER],
     },
 
@@ -839,12 +640,7 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
         meta: {
             header: 'Manage Articles',
-            extraHeader: lazy(
-                () =>
-                    import(
-                        '@/views/knowledge-base/ManageArticles/components/PanelHeader'
-                    ),
-            ),
+            extraHeader: lazy(() => import('@/views/knowledge-base/ManageArticles/components/PanelHeader')),
             headerContainer: true,
         },
     },
@@ -888,41 +684,31 @@ const appsRoute: Routes = [
     {
         key: 'appsAppSettings.coupons',
         path: `${APP_PREFIX_PATH}/appSettings/coupons`,
-        component: lazy(
-            () => import('@/views/appsSettings/coupons/AppCoupons'),
-        ),
+        component: lazy(() => import('@/views/appsSettings/coupons/AppCoupons')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsAppSettings.coupons',
         path: `${APP_PREFIX_PATH}/appSettings/coupons/addNew`,
-        component: lazy(
-            () => import('@/views/appsSettings/coupons/Add/AddCoupons'),
-        ),
+        component: lazy(() => import('@/views/appsSettings/coupons/Add/AddCoupons')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsAppSettings.coupons',
-        path: `${APP_PREFIX_PATH}/appSettings/coupons/:coupon_type`,
-        component: lazy(
-            () => import('@/views/appsSettings/coupons/Edit/EditCoupon'),
-        ),
+        path: `${APP_PREFIX_PATH}/appSettings/coupons/:coupon_code`,
+        component: lazy(() => import('@/views/appsSettings/coupons/Edit/EditCoupon')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsAppSettings.banners',
         path: `${APP_PREFIX_PATH}/appSettings/banners`,
-        component: lazy(
-            () => import('@/views/appsSettings/banners/AppBanners'),
-        ),
+        component: lazy(() => import('@/views/appsSettings/banners/AppBanners')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsAppSettings.banners',
         path: `${APP_PREFIX_PATH}/appSettings/banners/addNew`,
-        component: lazy(
-            () => import('@/views/appsSettings/banners/addBanners/AddBanners'),
-        ),
+        component: lazy(() => import('@/views/appsSettings/banners/addBanners/AddBanners')),
         authority: [ADMIN, USER],
         meta: {
             layout: 'simple',
@@ -932,29 +718,20 @@ const appsRoute: Routes = [
     {
         key: 'appsAppSettings.banners',
         path: `${APP_PREFIX_PATH}/appSettings/banners/newBanner`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/appsSettings/banners/addBanners/addComponents/NewBanner'
-                ),
-        ),
+        component: lazy(() => import('@/views/appsSettings/banners/addBanners/addComponents/NewBanner')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsAppSettings.banners',
         path: `${APP_PREFIX_PATH}/appSettings/banners/:id`,
-        component: lazy(
-            () => import('@/views/appsSettings/banners/editBanner/EditBanner'),
-        ),
+        component: lazy(() => import('@/views/appsSettings/banners/editBanner/EditBanner')),
         authority: [ADMIN, USER],
     },
 
     {
         key: 'appsAppSettings.pageSettings',
         path: `${APP_PREFIX_PATH}/appSettings/pageSettings`,
-        component: lazy(
-            () => import('@/views/appsSettings/pageSettings/PageSettings'),
-        ),
+        component: lazy(() => import('@/views/appsSettings/pageSettings/PageSettings')),
         authority: [ADMIN, USER],
     },
 
@@ -968,9 +745,7 @@ const appsRoute: Routes = [
     {
         key: 'appsAppSettings.seoSettings',
         path: `${APP_PREFIX_PATH}/appSettings/seoSettings`,
-        component: lazy(
-            () => import('@/views/appsSettings/seoSettings/SeoSettings'),
-        ),
+        component: lazy(() => import('@/views/appsSettings/seoSettings/SeoSettings')),
         authority: [ADMIN, USER],
     },
 
@@ -978,18 +753,14 @@ const appsRoute: Routes = [
     {
         key: 'appstryAndBuy.taskTracking',
         path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking`,
-        component: lazy(
-            () => import('@/views/slikkLogistics/taskTracking/TaskTracking'),
-        ),
+        component: lazy(() => import('@/views/slikkLogistics/taskTracking/TaskTracking')),
         authority: [ADMIN, USER],
     },
 
     {
         key: 'appstryAndBuy.riderTracking',
         path: `${APP_PREFIX_PATH}/tryAndBuy/riderTracking`,
-        component: lazy(
-            () => import('@/views/slikkLogistics/riderTracking/RiderTracking'),
-        ),
+        component: lazy(() => import('@/views/slikkLogistics/riderTracking/RiderTracking')),
         authority: [ADMIN, USER],
         // meta: {
         //     layout: 'simple',
@@ -999,20 +770,13 @@ const appsRoute: Routes = [
     {
         key: 'appstryAndBuy.riderTracking',
         path: `${APP_PREFIX_PATH}/tryAndBuy/riderTracking/:task_id`,
-        component: lazy(
-            () =>
-                import(
-                    '@/views/slikkLogistics/riderTracking/riderDetails/RiderDetails'
-                ),
-        ),
+        component: lazy(() => import('@/views/slikkLogistics/riderTracking/riderDetails/RiderDetails')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsAnalytics.orders',
         path: `${APP_PREFIX_PATH}/analytics/orders`,
-        component: lazy(
-            () => import('@/views/analytics/overview/AnalyticsOverview'),
-        ),
+        component: lazy(() => import('@/views/analytics/overview/AnalyticsOverview')),
         authority: [ADMIN, USER],
     },
     {
@@ -1024,9 +788,7 @@ const appsRoute: Routes = [
     {
         key: 'appsAnalytics.userAnalytics',
         path: `${APP_PREFIX_PATH}/analytics/userAnalytics`,
-        component: lazy(
-            () => import('@/views/analytics/userAnalytics/UserAnalytics'),
-        ),
+        component: lazy(() => import('@/views/analytics/userAnalytics/UserAnalytics')),
         authority: [ADMIN, USER],
     },
 ]

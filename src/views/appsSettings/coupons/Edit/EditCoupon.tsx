@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { fetchCoupons } from '@/store/slices/couponSlice/couponSlice'
+import { fetchCoupons, fetchCouponsEdit } from '@/store/slices/couponSlice/couponSlice'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
 import { FormItem, FormContainer } from '@/components/ui/Form'
@@ -10,6 +10,8 @@ import { Field, Form, Formik, FieldProps } from 'formik'
 import { COUPON_FORM } from './EditCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import { useParams } from 'react-router-dom'
+import { Upload } from '@/components/ui'
 
 const CouponsType = () => {
     return ['PERCENT_OFF', 'MONEY_OFF'].map((segment) => ({
@@ -19,53 +21,109 @@ const CouponsType = () => {
 }
 
 const AddCoupons = () => {
-    const { coupons } = useAppSelector<COUPON_STATE>((state) => state.coupon)
+    const { couponsEdit } = useAppSelector<COUPON_STATE>((state) => state.coupon)
     const dispatch = useAppDispatch()
+    const { coupon_code } = useParams()
+
+    console.log('COUDE PARAMS', coupon_code)
 
     useEffect(() => {
-        dispatch(fetchCoupons())
-    }, [])
+        dispatch(fetchCouponsEdit(coupon_code ?? ''))
+    }, [coupon_code, dispatch])
 
-    console.log('COUPONDATA', coupons)
+    const beforeUpload = (file: FileList | null, fileList: File[]) => {
+        let valid: string | boolean = true
+
+        const allowedFileType = [
+            'application/pdf',
+            'image/jpeg',
+            'image/jpg',
+            'image/webp',
+            'image/png',
+            'text/csv',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]
+        const MAX_FILE_SIZE = 500000000000
+        const MAX_UPLOAD = 5000000000000
+
+        if (fileList.length >= MAX_UPLOAD) {
+            return `You can only upload ${MAX_UPLOAD} file(s)`
+        }
+
+        if (file) {
+            for (const f of file) {
+                if (!allowedFileType.includes(f.type)) {
+                    valid = 'Please upload a valid file format'
+                }
+
+                if (f.size >= MAX_FILE_SIZE) {
+                    valid = 'Upload image cannot more then 500kb!'
+                }
+            }
+        }
+
+        return valid
+    }
 
     const initialValue: COUPONDATA = {
-        code: '',
+        code: couponsEdit?.code || '',
         imageArray: [],
-        image: null,
-        type: '',
-        value: null,
-        min_cart_value: '',
-        max_count: '',
-        maximum_price: '',
-        valid_from: '',
-        valid_to: '',
-        description: '',
-        max_count_per_user: '',
-        coupon_used_count: '',
-        frequency: null,
-        coupon_discount_type: '',
-        user: [],
+        image: couponsEdit?.image || '',
+        type: couponsEdit?.type || '',
+        value: couponsEdit?.value || null,
+        min_cart_value: couponsEdit?.min_cart_value || null,
+        max_count: couponsEdit?.max_count || null,
+        maximum_price: couponsEdit?.maximum_price || null,
+        valid_from: couponsEdit?.valid_from || '',
+        valid_to: couponsEdit?.valid_to || '',
+        description: couponsEdit?.description || '',
+        max_count_per_user: couponsEdit?.max_count_per_user || null,
+        coupon_used_count: couponsEdit?.coupon_used_count || null,
+        frequency: couponsEdit?.frequency || null,
+        coupon_discount_type: couponsEdit?.coupon_discount_type || '',
+        user: couponsEdit?.user.map((item) => item.mobile) || [],
     }
 
     const handleSubmit = async (values: COUPONDATA) => {
-        console.log('ARRAY', values.imageArray)
-        const { imageArray, ...formData } = values
-
-        formData.image = imageArray.map((file: File) => file.name).join(',')
-        formData.user = values.user.split(',')
-
         try {
-            const response = await axioisInstance.post(
-                `/merchant/coupon`,
-                formData,
-            )
+            const formData = new FormData()
+
+            if (values.imageArray && values.imageArray.length > 0) {
+                formData.append('image', values.imageArray[0])
+            }
+
+            const userArray = Array.isArray(values.user) ? values.user : values.user.split(',').map((mobile) => mobile.trim())
+
+            formData.append('code', values.code)
+            formData.append('type', values.type)
+            formData.append('value', values.value?.toString() || '')
+            formData.append('min_cart_value', values.min_cart_value?.toString() || '')
+            formData.append('max_count', values.max_count?.toString() || '')
+            formData.append('maximum_price', values.maximum_price?.toString() || '')
+            formData.append('valid_from', values.valid_from)
+            formData.append('valid_to', values.valid_to)
+            formData.append('description', values.description)
+            formData.append('max_count_per_user', values.max_count_per_user?.toString() || '')
+            formData.append('coupon_used_count', values.coupon_used_count?.toString() || '')
+
+            if (userArray.length > 0) {
+                formData.append('user', userArray)
+            }
+
+            console.log('ARRAY of USERS', values.user)
+
+            console.log('Form data before API call:', formData)
+
+            const response = await axioisInstance.patch('/merchant/coupon', formData)
+
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Coupon created Successfully',
+                description: response?.data?.message || 'Coupon created successfully',
             })
         } catch (error) {
-            console.log(error)
+            console.error('Error during submission:', error)
+
             notification.error({
                 message: 'Failure',
                 description: 'Failed to create Coupon',
@@ -87,74 +145,80 @@ const AddCoupons = () => {
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {COUPON_FORM.slice(0, 5).map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
 
-                                <FormItem
-                                    label="Coupon Type"
-                                    className="col-span-1 w-full"
-                                >
+                                <FormItem label="Type" className="col-span-1 w-full">
                                     <Field name="type">
-                                        {({ field }: FieldProps) => (
-                                            <Select
-                                                {...field}
-                                                value={CouponsType().find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value,
-                                                )}
-                                                options={CouponsType()}
-                                                onChange={(option) =>
-                                                    setFieldValue(
-                                                        'type',
-                                                        option?.value,
-                                                    )
-                                                }
-                                            />
-                                        )}
+                                        {({ field, form }: FieldProps) => {
+                                            console.log('VALUE', field.value)
+
+                                            return (
+                                                <Select
+                                                    {...field}
+                                                    value={CouponsType().find((option) => option.value === field.value)}
+                                                    options={CouponsType()}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                />
+                                            )
+                                        }}
                                     </Field>
                                 </FormItem>
 
-                                {COUPON_FORM.slice(5, 20).map((item, key) => (
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
+                                    Image
+                                    <FormContainer className=" mt-5 w-full ">
+                                        {/* DIV */}
+
+                                        <FormItem label="" className="grid grid-rows-2">
+                                            <Field name="imageArray">
+                                                {({ form }: FieldProps) => (
+                                                    <>
+                                                        <Upload
+                                                            multiple
+                                                            className="flex justify-center"
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.imageArray}
+                                                            onChange={(files) => form.setFieldValue('imageArray', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('imageArray', files)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+
+                                        <br />
+                                        <br />
+                                    </FormContainer>
                                     <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
+                                        label=""
+                                        invalid={errors.image && touched.image}
+                                        errorMessage={errors.image}
+                                        className="col-span-1 w-[80%]"
                                     >
                                         <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
+                                            type="text"
+                                            name="image"
+                                            placeholder="Enter ImageUrl or Upload Image file"
                                             component={Input}
                                         />
+                                    </FormItem>
+                                </FormContainer>
+
+                                {COUPON_FORM.slice(5, 20).map((item, key) => (
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
-                                <Button
-                                    type="reset"
-                                    className="mr-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    className="bg-blue-500 text-white"
-                                >
+                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
                                     Submit
                                 </Button>
                             </FormContainer>

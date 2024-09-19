@@ -16,6 +16,7 @@ const initialState: OrderState = {
     orderCount: 0,
     dropdownStatus: { value: 'ALL', name: 'ALL' },
     deliveryType: { value: '', label: '' },
+    paymentType: { value: '', label: '' },
     searchInput: '',
     currentSelectedPage: {},
     pageSize: 10,
@@ -24,67 +25,57 @@ const initialState: OrderState = {
     to: moment().add(1, 'days').format('YYYY-MM-DD'),
 }
 
-export const fetchOrders = createAsyncThunk(
-    'orders/fetchOrders',
-    async (_, { getState }) => {
-        try {
-            const state = getState() as { order: OrderState }
-            const {
-                page,
-                pageSize,
-                from,
-                to,
-                dropdownStatus,
-                searchInput,
-                currentSelectedPage,
-                deliveryType,
-            } = state.order
+export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (_, { getState }) => {
+    try {
+        const state = getState() as { order: OrderState }
+        const { page, pageSize, from, to, dropdownStatus, searchInput, currentSelectedPage, deliveryType, paymentType } = state.order
 
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const statusQuery =
-                dropdownStatus.value === 'ALL'
-                    ? ''
-                    : `&status=${dropdownStatus.value}`
+        const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+        const statusQuery = dropdownStatus.value === 'ALL' ? '' : `&status=${dropdownStatus.value}`
 
-            let response
+        let response
 
-            let deliveryStatus = ''
+        let deliveryStatus = ''
 
-            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
-                deliveryStatus = `&delivery_type=${deliveryType?.value}`
-            }
-
-            if (currentSelectedPage.value === 'invoice' && searchInput) {
-                response = await axioisInstance.get(
-                    `/merchant/orders?invoice_id=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
-                )
-            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
-                response = await axioisInstance.get(
-                    `/merchant/orders?mobile=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
-                )
-            } else if (currentSelectedPage.value === 'awb' && searchInput) {
-                response = await axioisInstance.get(
-                    `/merchant/orders?awb=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}`,
-                )
-            } else if (!searchInput) {
-                response = await axioisInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${statusQuery}${deliveryStatus}`,
-                )
-            } else {
-                notification.error({
-                    message: 'NO DATA',
-                })
-            }
-
-            return {
-                orders: response?.data?.data.results,
-                orderCount: response?.data?.data.count,
-            }
-        } catch (error) {
-            console.log('error', error)
+        if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+            deliveryStatus = `&delivery_type=${deliveryType?.value}`
         }
-    },
-)
+        let paymentStatus = ''
+
+        if (paymentType?.value && paymentType?.value !== 'undefined') {
+            paymentStatus = `&payment_mode=${paymentType?.value}`
+        }
+
+        if (currentSelectedPage.value === 'invoice' && searchInput) {
+            response = await axioisInstance.get(
+                `/merchant/orders?invoice_id=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
+            )
+        } else if (currentSelectedPage.value === 'mobile' && searchInput) {
+            response = await axioisInstance.get(
+                `/merchant/orders?mobile=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
+            )
+        } else if (currentSelectedPage.value === 'awb' && searchInput) {
+            response = await axioisInstance.get(
+                `/merchant/orders?awb=${searchInput.toUpperCase()}${statusQuery}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
+            )
+        } else if (!searchInput) {
+            response = await axioisInstance.get(
+                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${statusQuery}${deliveryStatus}${paymentStatus}`,
+            )
+        } else {
+            notification.error({
+                message: 'NO DATA',
+            })
+        }
+
+        return {
+            orders: response?.data?.data.results,
+            orderCount: response?.data?.data.count,
+        }
+    } catch (error) {
+        console.log('error', error)
+    }
+})
 
 export const orderSlice = createSlice({
     name: 'order',
@@ -95,6 +86,9 @@ export const orderSlice = createSlice({
         },
         setDeliveryType(state, action) {
             state.deliveryType = action.payload
+        },
+        setPaymentType(state, action) {
+            state.paymentType = action.payload
         },
         setCurrentSelectedPage(state, action) {
             state.currentSelectedPage = action.payload
@@ -121,14 +115,11 @@ export const orderSlice = createSlice({
                 state.loading = true
             })
             .addCase(fetchOrders.fulfilled, (state, action) => {
-                ;(state.loading = false),
-                    (state.orders = action.payload?.orders)
+                ;(state.loading = false), (state.orders = action.payload?.orders)
                 state.orderCount = action.payload?.orderCount
             })
             .addCase(fetchOrders.rejected, (state, action) => {
-                ;(state.loading = false),
-                    (state.message =
-                        action.error.message || 'Failed to fetch Order Lists')
+                ;(state.loading = false), (state.message = action.error.message || 'Failed to fetch Order Lists')
             })
     },
 })
@@ -142,6 +133,7 @@ export const {
     setFrom,
     setTo,
     setDeliveryType,
+    setPaymentType,
 } = orderSlice.actions
 
 export default orderSlice.reducer

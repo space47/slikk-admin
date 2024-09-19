@@ -15,6 +15,8 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { USER_EDIT_FROM } from './UserEditForm'
 import CardComponent from './cardComponents/CardComponent'
+import CardAnother from './cardComponents/CardAnother'
+import { Spinner } from '@/components/ui'
 
 type FormModel = {
     first_name: string
@@ -23,6 +25,7 @@ type FormModel = {
     email: string
     business_email: string
     permissions: []
+    company: []
 }
 
 interface permission {
@@ -37,19 +40,38 @@ const BrandUserEdit = () => {
     const [addedPermissions, setAddedPermissions] = useState<permission[]>([])
     // for Groups.............
     const [getGroups, setGetGroups] = useState([])
-    const [selectedGroups, setSelectedGroups] = useState<number[]>([])
+    const [selectedGroups, setSelectedGroups] = useState<any[]>([])
     const [addedGroups, setAddedGroups] = useState([])
 
     // for company
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [selectedCompany, setSelectedCompany] = useState<number[]>([])
-    const [addedCompany, setAddedCompany] = useState<{ id: number; name: string }[]>([])
+    const [addedCompany, setAddedCompany] = useState([])
+    const [loadingEdit, setLoadingEdit] = useState(false)
 
     const { mobile } = useParams()
 
     const navigate = useNavigate()
 
     const selectedCurrentCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+
+    const fetchUserData = async () => {
+        try {
+            setLoadingEdit(true)
+            const response = await axioisInstance.get(`/company/1/users?mobile=${mobile}`)
+            const usersInfo = response.data.data
+
+            setUserData(usersInfo)
+            setAddedCompany(userData?.company?.map((item) => item.name))
+            setLoadingEdit(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchUserData()
+    }, [])
 
     const fetchData = async () => {
         try {
@@ -77,7 +99,6 @@ const BrandUserEdit = () => {
 
             const user = response.data
             const userPermissions = response.data.user_permissions
-            setUserData(user)
             setAddedPermissions(userPermissions) // For right side card
         } catch (error) {
             console.log(error)
@@ -106,11 +127,13 @@ const BrandUserEdit = () => {
         fetchDataRightGroup()
     }, [])
 
-    console.log('DATAS', getGroups)
+    console.log('DATAS', addedCompany)
 
     // permissions.................................................................
     const handlePermissionSelect = (id: number) => {
-        setSelectedPermissions((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id]))
+        setSelectedPermissions((prevSelected) =>
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
+        )
     }
     const handleAddPermissions = () => {
         const alreadyAdded = selectedPermissions.filter((permId) => addedPermissions.some((added) => added.id === permId))
@@ -137,138 +160,198 @@ const BrandUserEdit = () => {
     //.........................................................................................................................
     // Groups..................................................................
 
-    const handleGroupSelect = (id: number) => {
-        setSelectedGroups((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id]))
+    const handleGroupSelect = (id: any) => {
+        setSelectedGroups((prevSelected) =>
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
+        )
     }
 
     const handleAddGroup = () => {
-        const alreadyAdded = selectedGroups.filter((permId) => addedGroups.some((added) => added === permId))
+        const alreadyAdded = selectedGroups.filter((permName) => addedGroups.some((added) => added === permName))
 
         if (alreadyAdded.length > 0) {
             notification.warning({
                 message: 'Warning',
                 description: 'Group already added',
             })
+            return
         }
-        const selected = getGroups?.filter((perm) => selectedGroups.includes(perm.id) && !addedGroups.some((added) => added === perm.id))
 
-        setAddedGroups((prevAdded) => [...prevAdded, ...selected])
+        const selected = getGroups?.filter(
+            (group) => selectedGroups.includes(group.name) && !addedGroups.some((added) => added === group.name),
+        )
+
+        const selectedNames = selected.map((group) => group.name)
+
+        setAddedGroups((prevAdded) => [...prevAdded, ...selectedNames])
+
         setSelectedGroups([])
     }
 
-    const handleRemoveGroups = (id: number) => {
-        setAddedGroups((prevAdded) => prevAdded?.filter((perm) => perm.id !== id))
+    const handleRemoveGroups = (id: any) => {
+        setAddedGroups((prevAdded) => prevAdded?.filter((perm) => perm !== id))
     }
 
     // comapny................................................................
 
     const handleCompanySelect = (id: number) => {
-        setSelectedCompany((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id]))
+        setSelectedCompany(
+            (prevSelected) =>
+                prevSelected.includes(id)
+                    ? prevSelected.filter((permId) => permId !== id) // If already selected, remove it
+                    : [...prevSelected, id], // Otherwise, add it
+        )
     }
+
+    console.log('SELECTED COMPANY', selectedCompany)
+
     const handleAddCompany = () => {
-        const alreadyAdded = selectedCompany.filter((permId) => addedCompany.some((added) => added.id === permId))
+        const alreadyAdded = selectedCompany.filter((companyId) => addedCompany?.some((added) => added === companyId))
 
         if (alreadyAdded.length > 0) {
             notification.warning({
                 message: 'Warning',
-                description: 'Company already added',
+                description: 'One or more companies are already added.',
             })
+            return
         }
 
-        const selected = companyList?.filter((perm) => selectedCompany.includes(perm.id) && !addedCompany.some((added) => added.id === perm.id))
+        const selected = companyList?.filter(
+            (company) => selectedCompany.includes(company.name) && !addedCompany?.some((added) => added === company.name),
+        )
 
-        setAddedCompany((prevAdded) => [...prevAdded, ...selected])
-        setSelectedCompany([])
+        const selectedNames = selected.map((company) => company.name)
+        console.log('SELECTED NAMES', selectedNames)
+
+        setAddedCompany((prevAdded) => [...prevAdded, ...selectedNames])
+        setSelectedCompany([]) // Clear the selected company list after adding
     }
 
     const handleRemoveCompany = (id: number) => {
-        setAddedCompany((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
+        setAddedCompany((prevAdded) => prevAdded.filter((company) => company !== id))
     }
 
     const initialValue: FormModel = {
-        first_name: '',
-        last_name: '',
-        mobile: '',
-        email: '',
-        business_email: '',
+        first_name: userData?.first_name || '',
+        last_name: userData?.last_name || '',
+        mobile: userData?.mobile || '',
+        email: userData?.email || '',
+        business_email: userData?.business_email || '',
         permissions: [],
+        company: [],
     }
+    console.log(
+        'usermainDtaa',
+        getGroups.map((item) => item),
+    )
+    console.log(
+        'dataokok',
+        addedGroups.map((item) => item),
+    )
 
-    const handleSubmit = async (values: FormModel) => {} //................................................................
+    console.log('ITEMS', addedGroups, addedPermissions, addedCompany)
 
+    const handleSubmit = async (values: any) => {
+        const groupIds = addedGroups.map((item) => item)
+        const permissionIds = addedPermissions.map((item) => item.id)
+        const company_ids = addedCompany ? addedCompany.map((item) => item) : []
+        const bodyData = {
+            ...values,
+            company_ids: `${company_ids.join(',')}`,
+            group_id: `${groupIds.join(',')}`,
+            permission_id: `${permissionIds.join(',')}`,
+        }
+        console.log('body', bodyData)
+        try {
+            const response = await axioisInstance.patch(
+                `company/users/${mobile}`, //-companyid
+                bodyData,
+            )
+            console.log('response of add users', response)
+            navigate('/app/users')
+        } catch (error) {
+            console.log(error)
+        }
+    }
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-full" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
-                        <div className="text-xl mb-10 font-bold">EDIT USER DETAILS</div>
-                        <FormContainer>
-                            {/* Form Fields */}
-                            <FormContainer className="grid grid-cols-2 gap-8">
-                                {USER_EDIT_FROM.map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.className}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
+            {loadingEdit ? (
+                <>
+                    <Spinner size={40} className="items-center flex justify-center h-screen" />
+                </>
+            ) : (
+                <Formik
+                    enableReinitialize
+                    initialValues={initialValue}
+                    // validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ values, touched, errors, resetForm }) => (
+                        <Form className="w-full" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
+                            <div className="text-xl mb-10 font-bold">EDIT USER DETAILS</div>
+                            <FormContainer>
+                                {/* Form Fields */}
+                                <FormContainer className="grid grid-cols-2 gap-8">
+                                    {USER_EDIT_FROM.map((item, key) => (
+                                        <FormItem key={key} label={item.label} className={item.className}>
+                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        </FormItem>
+                                    ))}
+                                </FormContainer>
+
+                                <div className="text-xl font-bold">USER PERMISSIONS</div>
+                                <br />
+
+                                <FormContainer className="">
+                                    <CardAnother
+                                        label="Company"
+                                        selectedValue={selectedCompany}
+                                        getValue={companyList}
+                                        handleSelect={handleCompanySelect}
+                                        addedValue={addedCompany}
+                                        handleAdd={handleAddCompany}
+                                        handleRemove={handleRemoveCompany}
+                                    />
+                                </FormContainer>
+
+                                <FormContainer className="">
+                                    <CardAnother
+                                        label="Groups"
+                                        selectedValue={selectedGroups}
+                                        getValue={getGroups}
+                                        handleSelect={handleGroupSelect}
+                                        addedValue={addedGroups}
+                                        handleAdd={handleAddGroup}
+                                        handleRemove={handleRemoveGroups}
+                                    />
+                                </FormContainer>
+
+                                <FormContainer className="">
+                                    <CardComponent
+                                        label="Permissions"
+                                        selectedValue={selectedPermissions}
+                                        getValue={getPermission}
+                                        handleSelect={handlePermissionSelect}
+                                        addedValue={addedPermissions}
+                                        handleAdd={handleAddPermissions}
+                                        handleRemove={handleRemovePermissions}
+                                    />
+                                </FormContainer>
+
+                                {/* Submit & Reset Buttons */}
+                                <FormItem className="mt-10 flex justify-center gap-4">
+                                    <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
+                                        Reset
+                                    </Button>
+                                    <Button variant="new" type="submit">
+                                        Submit
+                                    </Button>
+                                </FormItem>
                             </FormContainer>
-
-                            <div className="text-xl font-bold">USER PERMISSIONS</div>
-                            <br />
-
-                            <FormContainer className="">
-                                <CardComponent
-                                    label="Company"
-                                    selectedValue={selectedCompany}
-                                    getValue={companyList}
-                                    handleSelect={handleCompanySelect}
-                                    addedValue={addedCompany}
-                                    handleAdd={handleAddCompany}
-                                    handleRemove={handleRemoveCompany}
-                                />
-                            </FormContainer>
-
-                            <FormContainer className="">
-                                <CardComponent
-                                    label="Groups"
-                                    selectedValue={selectedGroups}
-                                    getValue={getGroups}
-                                    handleSelect={handleGroupSelect}
-                                    addedValue={addedGroups}
-                                    handleAdd={handleAddGroup}
-                                    handleRemove={handleRemoveGroups}
-                                />
-                            </FormContainer>
-
-                            <FormContainer className="">
-                                <CardComponent
-                                    label="Permissions"
-                                    selectedValue={selectedPermissions}
-                                    getValue={getPermission}
-                                    handleSelect={handlePermissionSelect}
-                                    addedValue={addedPermissions}
-                                    handleAdd={handleAddPermissions}
-                                    handleRemove={handleRemovePermissions}
-                                />
-                            </FormContainer>
-
-                            {/* Submit & Reset Buttons */}
-                            <FormItem className="mt-10 flex justify-center gap-4">
-                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="new" type="submit">
-                                    Submit
-                                </Button>
-                            </FormItem>
-                        </FormContainer>
-                    </Form>
-                )}
-            </Formik>
+                        </Form>
+                    )}
+                </Formik>
+            )}
         </div>
     )
 }

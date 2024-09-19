@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table'
+import {
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    flexRender,
+} from '@tanstack/react-table'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
 import { Table, Pagination, Select, DatePicker, Dropdown } from '@/components/ui'
@@ -75,9 +82,13 @@ const ReverseDelivery = () => {
             }
 
             if (currentSelectedPage.value === 'return_order_id' && searchInput) {
-                response = await axioisInstance.get(`/merchant/return_orders?return_order_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`)
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?return_order_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`,
+                )
             } else if (currentSelectedPage.value === 'invoice_id' && searchInput) {
-                response = await axioisInstance.get(`/merchant/return_orders?invoice_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`)
+                response = await axioisInstance.get(
+                    `/merchant/return_orders?invoice_id=${searchInput.toUpperCase()}${status}${deliveryStatus}`,
+                )
             } else if (currentSelectedPage.value === 'awb' && searchInput) {
                 response = await axioisInstance.get(`/merchant/return_orders?awb=${searchInput.toUpperCase()}${status}${deliveryStatus}`)
             } else {
@@ -142,7 +153,7 @@ const ReverseDelivery = () => {
                 ) : null
             },
         },
-        { header: 'Delivery Type', accessorKey: 'return_type' },
+        { header: 'Return Type', accessorKey: 'return_type' },
         { header: 'STATUS', accessorKey: 'status' },
         {
             header: 'Runner Name',
@@ -152,13 +163,17 @@ const ReverseDelivery = () => {
         {
             header: 'Runner Number',
             accessorKey: 'return_order_delivery',
-            cell: ({ row }: { row: { original: ReturnOrder } }) => <span>{row.original.return_order_delivery[0]?.runner_phone_number || ''}</span>,
+            cell: ({ row }: { row: { original: ReturnOrder } }) => (
+                <span>{row.original.return_order_delivery[0]?.runner_phone_number || ''}</span>
+            ),
         },
         {
             header: 'Pickup Time',
             accessorKey: 'return_order_delivery',
             cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                const deliveryCreatedLog = row.original.return_order_delivery[0]?.log?.find((logEntry: any) => logEntry.status === 'DELIVERY_CREATED')
+                const deliveryCreatedLog = row.original.return_order_delivery[0]?.log?.find(
+                    (logEntry: any) => logEntry.status === 'DELIVERY_CREATED',
+                )
 
                 return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
             },
@@ -167,7 +182,9 @@ const ReverseDelivery = () => {
             header: 'Drop Time',
             accessorKey: 'return_order_delivery',
             cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                const deliveryCreatedLog = row.original.return_order_delivery[0]?.log?.find((logEntry: any) => logEntry.status === 'DELIVERED')
+                const deliveryCreatedLog = row.original.return_order_delivery[0]?.log?.find(
+                    (logEntry: any) => logEntry.status === 'DELIVERED',
+                )
 
                 return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
             },
@@ -191,7 +208,11 @@ const ReverseDelivery = () => {
                     >
                         <div className="max-h-60 overflow-y-auto">
                             {LOGISTIC_PARTNER.map((item, key) => (
-                                <DropdownItem key={key} eventKey={item.value} className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer z-50">
+                                <DropdownItem
+                                    key={key}
+                                    eventKey={item.value}
+                                    className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer z-50"
+                                >
                                     <span>{item.label}</span>
                                 </DropdownItem>
                             ))}
