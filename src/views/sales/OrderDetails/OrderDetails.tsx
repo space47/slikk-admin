@@ -13,7 +13,7 @@ import CustomerInfo from './components/CustomerInfo'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import isEmpty from 'lodash/isEmpty'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import CancelModal from './components/CancelModal'
@@ -112,6 +112,7 @@ const OrderDetails = () => {
     const [data, setData] = useState<SalesOrderDetailsResponse>()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
+    const navigate = useNavigate()
 
     const { invoice_id } = useParams()
 
@@ -149,6 +150,7 @@ const OrderDetails = () => {
             notification.success({
                 message: response.data.message || 'Successfully markded as Paid',
             })
+            navigate(0)
         } catch (error) {
             console.log(error)
         }
