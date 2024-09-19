@@ -33,6 +33,11 @@ interface permission {
     name: string
 }
 
+interface Groups {
+    id: number
+    name: string
+}
+
 const BrandUserEdit = () => {
     const [userData, setUserData] = useState<FormModel>()
     const [getPermission, setGetPermission] = useState<permission[]>()
@@ -40,13 +45,13 @@ const BrandUserEdit = () => {
     const [addedPermissions, setAddedPermissions] = useState<permission[]>([])
     // for Groups.............
     const [getGroups, setGetGroups] = useState([])
-    const [selectedGroups, setSelectedGroups] = useState<any[]>([])
-    const [addedGroups, setAddedGroups] = useState([])
+    const [selectedGroups, setSelectedGroups] = useState<number[]>([])
+    const [addedGroups, setAddedGroups] = useState<Groups[]>([])
 
     // for company
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [selectedCompany, setSelectedCompany] = useState<number[]>([])
-    const [addedCompany, setAddedCompany] = useState([])
+    const [addedCompany, setAddedCompany] = useState<{ id: number; name: string }[]>([])
     const [loadingEdit, setLoadingEdit] = useState(false)
 
     const { mobile } = useParams()
@@ -62,10 +67,17 @@ const BrandUserEdit = () => {
             const usersInfo = response.data.data
 
             setUserData(usersInfo)
-            setAddedCompany(userData?.company?.map((item) => item.name))
+            // Map through the user's companies to get their name and id
+            setAddedCompany(
+                usersInfo?.company?.map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                })),
+            )
             setLoadingEdit(false)
         } catch (error) {
             console.log(error)
+            setLoadingEdit(false)
         }
     }
 
@@ -160,75 +172,58 @@ const BrandUserEdit = () => {
     //.........................................................................................................................
     // Groups..................................................................
 
-    const handleGroupSelect = (id: any) => {
+    const handleGroupSelect = (id: number) => {
         setSelectedGroups((prevSelected) =>
             prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
         )
     }
-
     const handleAddGroup = () => {
-        const alreadyAdded = selectedGroups.filter((permName) => addedGroups.some((added) => added === permName))
+        const alreadyAdded = selectedGroups.filter((permId) => addedGroups.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
             notification.warning({
                 message: 'Warning',
-                description: 'Group already added',
+                description: 'Permission already added',
             })
-            return
         }
 
-        const selected = getGroups?.filter(
-            (group) => selectedGroups.includes(group.name) && !addedGroups.some((added) => added === group.name),
-        )
+        const selected = getGroups?.filter((perm) => selectedGroups.includes(perm.id) && !addedGroups.some((added) => added.id === perm.id))
 
-        const selectedNames = selected.map((group) => group.name)
-
-        setAddedGroups((prevAdded) => [...prevAdded, ...selectedNames])
-
+        setAddedGroups((prevAdded) => [...prevAdded, ...selected])
         setSelectedGroups([])
     }
 
-    const handleRemoveGroups = (id: any) => {
-        setAddedGroups((prevAdded) => prevAdded?.filter((perm) => perm !== id))
+    const handleRemoveGroups = (id: number) => {
+        setAddedGroups((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
 
     // comapny................................................................
 
     const handleCompanySelect = (id: number) => {
-        setSelectedCompany(
-            (prevSelected) =>
-                prevSelected.includes(id)
-                    ? prevSelected.filter((permId) => permId !== id) // If already selected, remove it
-                    : [...prevSelected, id], // Otherwise, add it
+        setSelectedCompany((prevSelected) =>
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
         )
     }
-
-    console.log('SELECTED COMPANY', selectedCompany)
-
     const handleAddCompany = () => {
-        const alreadyAdded = selectedCompany.filter((companyId) => addedCompany?.some((added) => added === companyId))
+        const alreadyAdded = selectedCompany.filter((permId) => addedCompany.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
             notification.warning({
                 message: 'Warning',
-                description: 'One or more companies are already added.',
+                description: 'Company already added',
             })
-            return
         }
 
         const selected = companyList?.filter(
-            (company) => selectedCompany.includes(company.name) && !addedCompany?.some((added) => added === company.name),
+            (perm) => selectedCompany.includes(perm.id) && !addedCompany.some((added) => added.id === perm.id),
         )
 
-        const selectedNames = selected.map((company) => company.name)
-        console.log('SELECTED NAMES', selectedNames)
-
-        setAddedCompany((prevAdded) => [...prevAdded, ...selectedNames])
-        setSelectedCompany([]) // Clear the selected company list after adding
+        setAddedCompany((prevAdded) => [...prevAdded, ...selected])
+        setSelectedCompany([])
     }
 
     const handleRemoveCompany = (id: number) => {
-        setAddedCompany((prevAdded) => prevAdded.filter((company) => company !== id))
+        setAddedCompany((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
 
     const initialValue: FormModel = {
@@ -252,9 +247,9 @@ const BrandUserEdit = () => {
     console.log('ITEMS', addedGroups, addedPermissions, addedCompany)
 
     const handleSubmit = async (values: any) => {
-        const groupIds = addedGroups.map((item) => item)
+        const groupIds = addedGroups.map((item) => item.id)
         const permissionIds = addedPermissions.map((item) => item.id)
-        const company_ids = addedCompany ? addedCompany.map((item) => item) : []
+        const company_ids = addedCompany ? addedCompany.map((item) => item.id) : []
         const bodyData = {
             ...values,
             company_ids: `${company_ids.join(',')}`,
@@ -303,7 +298,7 @@ const BrandUserEdit = () => {
                                 <br />
 
                                 <FormContainer className="">
-                                    <CardAnother
+                                    <CardComponent
                                         label="Company"
                                         selectedValue={selectedCompany}
                                         getValue={companyList}
@@ -313,9 +308,10 @@ const BrandUserEdit = () => {
                                         handleRemove={handleRemoveCompany}
                                     />
                                 </FormContainer>
+                                <br />
 
                                 <FormContainer className="">
-                                    <CardAnother
+                                    <CardComponent
                                         label="Groups"
                                         selectedValue={selectedGroups}
                                         getValue={getGroups}
@@ -325,6 +321,7 @@ const BrandUserEdit = () => {
                                         handleRemove={handleRemoveGroups}
                                     />
                                 </FormContainer>
+                                <br />
 
                                 <FormContainer className="">
                                     <CardComponent

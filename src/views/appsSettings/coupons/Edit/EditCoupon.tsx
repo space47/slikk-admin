@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { fetchCoupons, fetchCouponsEdit } from '@/store/slices/couponSlice/couponSlice'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
@@ -14,13 +14,20 @@ import { useParams } from 'react-router-dom'
 import { Upload } from '@/components/ui'
 
 const CouponsType = () => {
-    return ['PERCENT_OFF', 'MONEY_OFF'].map((segment) => ({
+    return ['PERCENT_OFF', 'FLATT_OFF', 'DELIVERY_DISCOUNT'].map((segment) => ({
         label: segment,
         value: segment,
     }))
 }
 
+const ACTIONARRAY = [
+    { name: 'Add', value: 'add' },
+    { name: 'Remove', value: 'remove' },
+    { name: 'Replace', value: 'replace' },
+]
+
 const AddCoupons = () => {
+    const [userAction, setUserAction] = useState('add')
     const { couponsEdit } = useAppSelector<COUPON_STATE>((state) => state.coupon)
     const dispatch = useAppDispatch()
     const { coupon_code } = useParams()
@@ -83,7 +90,10 @@ const AddCoupons = () => {
         frequency: couponsEdit?.frequency || null,
         coupon_discount_type: couponsEdit?.coupon_discount_type || '',
         user: couponsEdit?.user.map((item) => item.mobile) || [],
+        user_add_action: userAction,
     }
+
+    console.log('ACTION', userAction)
 
     const handleSubmit = async (values: COUPONDATA) => {
         try {
@@ -106,12 +116,12 @@ const AddCoupons = () => {
             formData.append('description', values.description)
             formData.append('max_count_per_user', values.max_count_per_user?.toString() || '')
             formData.append('coupon_used_count', values.coupon_used_count?.toString() || '')
+            //user_add_action..................by defaulyt=attach
+            formData.append('user_add_action', userAction)
 
             if (userArray.length > 0) {
-                formData.append('user', userArray)
+                formData.append('users', userArray)
             }
-
-            console.log('ARRAY of USERS', values.user)
 
             console.log('Form data before API call:', formData)
 
@@ -135,7 +145,6 @@ const AddCoupons = () => {
         <div>
             <h3 className="mb-5 from-neutral-900">COUPON EDIT</h3>
             <Formik
-                enableReinitialize
                 initialValues={initialValue}
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
@@ -212,6 +221,19 @@ const AddCoupons = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+
+                                <Select
+                                    className="xl:w-1/2 mt-7 w-full"
+                                    options={ACTIONARRAY}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) => option.value}
+                                    value={ACTIONARRAY.find((option) => option.value === userAction)}
+                                    onChange={(selectedOption) => {
+                                        const newValue = selectedOption?.value
+                                        setUserAction(newValue)
+                                        setFieldValue('user_add_action', newValue)
+                                    }}
+                                />
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
