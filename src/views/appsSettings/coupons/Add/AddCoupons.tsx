@@ -89,6 +89,7 @@ const AddCoupons = () => {
         coupon_used_count: null,
         frequency: null,
         coupon_discount_type: '',
+        user_add_action: '',
         user: [],
     }
 
@@ -115,7 +116,7 @@ const AddCoupons = () => {
             formData.append('coupon_used_count', values.coupon_used_count?.toString() || '')
 
             if (userArray.length > 0) {
-                formData.append('user', userArray)
+                formData.append('users', userArray)
             }
 
             console.log('ARRAY of USERS', values.user)

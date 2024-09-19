@@ -7,6 +7,7 @@ import { notification } from 'antd'
 const SEARCHOPTIONS = [
     { label: 'INVOICE', value: 'invoice' },
     { label: 'MOBILE', value: 'mobile' },
+    { label: 'AWB', value: 'awb' },
 ]
 
 const initialState: OrderState = {
@@ -18,7 +19,7 @@ const initialState: OrderState = {
     deliveryType: { value: '', label: '' },
     paymentType: { value: '', label: '' },
     searchInput: '',
-    currentSelectedPage: {},
+    currentSelectedPage: SEARCHOPTIONS[0],
     pageSize: 10,
     page: 1,
     from: moment().format('YYYY-MM-DD'),
