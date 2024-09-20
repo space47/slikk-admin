@@ -50,10 +50,10 @@ const SEARCHOPTIONS = [
 const ReverseDelivery = () => {
     const [orders, setOrders] = useState<ReturnOrder[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
-    const [deliveryType, setDeliveryType] = useState<{
-        label: string
-        value: string
-    } | null>(null)
+    const [deliveryType, setDeliveryType] = useState<ReturnDropdownStatus>({
+        value: [],
+        name: [],
+    })
     const [searchInput, setSearchInput] = useState<string>('')
     const [pageSize, setPageSize] = useState(10)
     const [page, setPage] = useState(1)
@@ -353,10 +353,16 @@ const ReverseDelivery = () => {
         }
     }
     const handleDeliverySelect = (selectedValue: string) => {
-        const selectedOption = DELEIVERYRETRUNOPTIONS.find((option) => option.value === selectedValue)
-
-        if (selectedOption) {
-            setDeliveryType(selectedOption)
+        if (deliveryType.value.includes(selectedValue)) {
+            setDeliveryType((prevState) => ({
+                ...prevState,
+                value: prevState.value.filter((item) => item !== selectedValue),
+            }))
+        } else {
+            setDeliveryType((prevState) => ({
+                ...prevState,
+                value: [...prevState.value, selectedValue],
+            }))
         }
     }
 

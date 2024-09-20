@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
 import Drawer from '@/components/ui/Drawer'
-import type { MouseEvent } from 'react'
 import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Button, Dropdown } from '@/components/ui'
 
 // import { IoMdDownload } from 'react-icons/io'
 // import { FaLocationDot } from 'react-icons/fa6'
@@ -28,115 +25,142 @@ type OrderFilterProps = {
     deliveryType: any
     handleDeliverySelect: any
     paymentType: any
-    handlePaymentType: any
+    handlePaymentSelect: any
 }
 
 const FilterForwardDelivery = ({
     showFilter,
     handleFilterClose,
-    dropdownStatus,
+    dropdownStatus = { value: [] }, // default value
     handleDropdownSelect,
     handleFromChange,
     from,
     to,
     handleToChange,
-    deliveryType,
+    deliveryType = { value: [] }, // default value
     handleDeliverySelect,
-    paymentType,
-    handlePaymentType,
+    paymentType = { value: [] }, // default value
+    handlePaymentSelect,
 }: OrderFilterProps) => {
     return (
         <div>
-            <Drawer title="" isOpen={showFilter} onClose={handleFilterClose} onRequestClose={handleFilterClose} lockScroll={false}>
-                <div className="flex flex-col  gap-7 items-start justify-start w-full lg:w-auto">
-                    <div className="flex flex-col  gap-4 lg:gap-5">
+            <Drawer
+                title=""
+                isOpen={showFilter}
+                onClose={handleFilterClose}
+                onRequestClose={handleFilterClose}
+                lockScroll={false}
+                className="xl:mx-0 mx-8"
+            >
+                <div className="flex flex-col gap-6 items-start justify-start mt-4 lg:mt-0 xl:mx-0 mx-10">
+                    {/* Date Pickers */}
+                    <div className="flex flex-col justify-start gap-6">
                         <div>
-                            <div className="mb-1 font-semibold text-sm text-center md:text-left">FROM DATE:</div>
+                            <div className="mb-1 font-semibold text-xs md:text-sm">FROM DATE:</div>
                             <DatePicker
-                                inputPrefix={<HiOutlineCalendar className="text-lg" />}
+                                inputPrefix={<HiOutlineCalendar className="text-base md:text-lg" />}
                                 defaultValue={new Date()}
                                 value={new Date(from)}
                                 onChange={handleFromChange}
+                                className="w-[240px]"
                             />
                         </div>
                         <div>
-                            <div className="mb-1 font-semibold text-sm text-center md:text-left">TO DATE:</div>
+                            <div className="mb-1 font-semibold text-xs md:text-sm">TO DATE:</div>
                             <DatePicker
-                                inputSuffix={<TbCalendarStats className="text-xl" />}
+                                inputSuffix={<TbCalendarStats className="text-base md:text-xl" />}
                                 defaultValue={new Date()}
-                                value={new Date(to)}
+                                value={moment(to).toDate()}
                                 onChange={handleToChange}
                                 minDate={moment(from).toDate()}
+                                className="w-[240px]"
                             />
                         </div>
                     </div>
-                    <div className="font-bold text-xl">Select Status</div>
-                    <div className="relative w-full md:w-1/2 lg:w-auto bg-gray-100 items-center flex justify-center">
-                        <Dropdown
-                            className="w-full px-4 py-2 text-base  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                            title={dropdownStatus.name}
-                            onSelect={handleDropdownSelect}
-                        >
-                            <div className="max-h-60 overflow-y-auto">
-                                {ORDER_STATUS?.map((item: any, key: any) => {
-                                    return (
-                                        <DropdownItem
-                                            key={key}
-                                            eventKey={item.value}
-                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                        >
-                                            <span>{item.name}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </div>
-                        </Dropdown>
-                    </div>
 
-                    <div className="flex gap-5">
-                        <div className="flex justify-center flex-col gap-2">
-                            <div className="font-bold">SET DELIVERY TYPE</div>
-                            <div className="bg-gray-100 w-auto">
-                                <Dropdown
-                                    className="w-auto px-4 py-2 text-base  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                                    title={deliveryType?.label || 'Delivery_type'}
-                                    onSelect={handleDeliverySelect}
-                                >
-                                    <div className="max-h-60 overflow-y-auto">
-                                        {DELEIVERYOPTIONS?.map((item, index) => (
-                                            <DropdownItem
-                                                key={index}
-                                                eventKey={item.value}
-                                                className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                            >
-                                                <span>{item.label}</span>
-                                            </DropdownItem>
-                                        ))}
-                                    </div>
-                                </Dropdown>
+                    {/* Status Selection */}
+                    <div className="flex gap-2 items-center flex-col">
+                        <label htmlFor="" className="font-semibold">
+                            SELECT STATUS
+                        </label>
+                        <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
+                            <div className="w-full px-1 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+                                <div className="h-auto overflow-y-auto">
+                                    {ORDER_STATUS?.map((item, key) => (
+                                        <div
+                                            key={key}
+                                            className={`flex items-center px-2 py-2 text-black hover:bg-gray-100 cursor-pointer ${
+                                                dropdownStatus.value?.includes(item.value) ? 'bg-gray-200' : ''
+                                            }`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={dropdownStatus.value?.includes(item.value)}
+                                                onChange={() => handleDropdownSelect(item.value)}
+                                                className="mr-2"
+                                            />
+                                            <span>{item.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="flex justify-center flex-col gap-2">
-                            <div className="font-bold">SET PAYMENT TYPE</div>
-                            <div className="bg-gray-100 w-auto">
-                                <Dropdown
-                                    className="w-auto px-4 py-2 text-base  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                                    title={paymentType?.label || 'Payment_type'}
-                                    onSelect={handlePaymentType}
-                                >
-                                    <div className="max-h-60 overflow-y-auto">
-                                        {PAYMENTOPTIONS?.map((item, index) => (
-                                            <DropdownItem
-                                                key={index}
-                                                eventKey={item.value}
-                                                className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                            >
-                                                <span>{item.label}</span>
-                                            </DropdownItem>
-                                        ))}
-                                    </div>
-                                </Dropdown>
+                    {/* Delivery Type Selection */}
+                    <div className="flex flex-col mb-6">
+                        <label htmlFor="" className="font-semibold text-lg mb-2">
+                            SELECT DELIVERY TYPE
+                        </label>
+                        <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
+                            <div className="w-full px-1 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+                                <div className="h-auto overflow-y-auto max-h-80">
+                                    {DELEIVERYOPTIONS?.map((item, key) => (
+                                        <div
+                                            key={key}
+                                            className={`flex items-center px-2 py-2 text-black hover:bg-gray-100 cursor-pointer ${
+                                                deliveryType.value?.includes(item.value) ? 'bg-gray-200' : ''
+                                            }`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={deliveryType.value?.includes(item.value)}
+                                                onChange={() => handleDeliverySelect(item.value)}
+                                                className="mr-2"
+                                            />
+                                            <span>{item.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Payment Type Selection */}
+                    <div className="flex flex-col">
+                        <label htmlFor="" className="font-semibold text-lg mb-2">
+                            SELECT PAYMENT TYPE
+                        </label>
+                        <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
+                            <div className="w-full px-1 py-2 text-sm text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+                                <div className="h-auto overflow-y-auto max-h-80">
+                                    {PAYMENTOPTIONS?.map((item, key) => (
+                                        <div
+                                            key={key}
+                                            className={`flex items-center px-2 py-2 text-black hover:bg-gray-100 cursor-pointer ${
+                                                paymentType.value?.includes(item.value) ? 'bg-gray-200' : ''
+                                            }`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={paymentType.value?.includes(item.value)}
+                                                onChange={() => handlePaymentSelect(item.value)}
+                                                className="mr-2"
+                                            />
+                                            <span>{item.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

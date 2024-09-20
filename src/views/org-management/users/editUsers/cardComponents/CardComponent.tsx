@@ -19,13 +19,13 @@ const CardComponent = ({ label, getValue, selectedValue, handleSelect, handleAdd
             {/* All Permissions */}
             <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                 <div className="sticky top-0 z-10 bg-white">
-                    <div className="mb-3 bg-white">
+                    {/* <div className="mb-3 bg-white">
                         <input
                             type="text"
                             className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
                             placeholder="Search Permissions"
                         />
-                    </div>
+                    </div> */}
                     <label htmlFor="All Permissions" className="font-bold bg-white">
                         ALL {label}
                     </label>
@@ -52,13 +52,13 @@ const CardComponent = ({ label, getValue, selectedValue, handleSelect, handleAdd
             {/* Added Permissions */}
             <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                 <div className="sticky top-0 z-10 bg-white">
-                    <div className="mb-3 bg-white">
+                    {/* <div className="mb-3 bg-white">
                         <input
                             type="text"
                             className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
                             placeholder="Search Permissions"
                         />
-                    </div>
+                    </div> */}
                     <label htmlFor="Added Permissions" className="font-bold bg-white">
                         Added {label}
                     </label>
