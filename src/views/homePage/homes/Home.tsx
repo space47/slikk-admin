@@ -35,9 +35,7 @@ const Home = () => {
     const fetchHome = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const response = await axiosInstance.get(
-                `/merchant/analytics/order?from=${from}&to=${To_Date}`,
-            )
+            const response = await axiosInstance.get(`/merchant/analytics/order?from=${from}&to=${To_Date}`)
             const data: SalesData = response.data.data
             setHomeData(data)
         } catch (error) {
@@ -47,9 +45,7 @@ const Home = () => {
 
     const fetchOrderForLocation = async () => {
         try {
-            const response = await axiosInstance.get(
-                `/merchant/orders?location_data=true`,
-            )
+            const response = await axiosInstance.get(`/merchant/orders?location_data=true`)
 
             const ordersData = response.data?.data
             setOrders(ordersData)
@@ -76,14 +72,9 @@ const Home = () => {
         (homeData?.cancelled?.total_amount || 0) -
         (homeData?.declined?.total_amount || 0)
 
-    const netReturn =
-        (homeData?.returned?.count || 0) +
-        (homeData?.cancelled?.count || 0) +
-        (homeData?.declined?.count || 0)
+    const netReturn = (homeData?.returned?.count || 0) + (homeData?.cancelled?.count || 0) + (homeData?.declined?.count || 0)
     const netReturnSales =
-        (homeData?.returned?.total_amount || 0) +
-        (homeData?.cancelled?.total_amount || 0) +
-        (homeData?.declined?.total_amount || 0)
+        (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
 
     const handleFromChange = (date: Date | null) => {
         if (date) {
@@ -152,9 +143,7 @@ const Home = () => {
                                 className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2"
                             />
                             <button
-                                onClick={() =>
-                                    handleCustomerFunction(inputValues.customer)
-                                }
+                                onClick={() => handleCustomerFunction(inputValues.customer)}
                                 className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                             >
                                 <FaSearch />
@@ -170,11 +159,7 @@ const Home = () => {
                                 className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2"
                             />
                             <button
-                                onClick={() =>
-                                    handleInvoiceFunction(
-                                        inputValues.invoice_id,
-                                    )
-                                }
+                                onClick={() => handleInvoiceFunction(inputValues.invoice_id)}
                                 className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                             >
                                 <FaSearch />
@@ -187,9 +172,7 @@ const Home = () => {
                     <div className="w-full sm:w-auto">
                         <div className="mb-1 font-semibold text-sm">FROM:</div>
                         <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
+                            inputPrefix={<HiOutlineCalendar className="text-lg" />}
                             defaultValue={new Date()}
                             value={new Date(from)}
                             onChange={handleFromChange}
@@ -199,9 +182,7 @@ const Home = () => {
                     <div className="w-full sm:w-auto">
                         <div className="mb-1 font-semibold text-sm">TO:</div>
                         <DatePicker
-                            inputPrefix={
-                                <TbCalendarStats className="text-xl" />
-                            }
+                            inputPrefix={<TbCalendarStats className="text-xl" />}
                             defaultValue={new Date()}
                             value={moment(to).toDate()}
                             onChange={handleToChange}
@@ -213,18 +194,13 @@ const Home = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 xl:mx-10">
-                <Card
-                    className="shadow-lg cursor-pointer"
-                    onClick={handleReceived}
-                >
+                <Card className="shadow-lg cursor-pointer" onClick={handleReceived}>
                     <div className="flex justify-between items-center">
                         <div>
                             <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold">
-                                Received Orders
-                            </h2>
+                            <h2 className="text-xl font-semibold">Received Orders</h2>
                             <p>Count: {homeData?.received.count}</p>
                             <p>
                                 Total Amount: Rs.
@@ -233,18 +209,13 @@ const Home = () => {
                         </div>
                     </div>
                 </Card>
-                <Card
-                    className="shadow-lg cursor-pointer"
-                    onClick={handleCompleted}
-                >
+                <Card className="shadow-lg cursor-pointer" onClick={handleCompleted}>
                     <div className="flex justify-between items-center">
                         <div>
                             <GrCompliance className="text-4xl mx-4 text-green-500" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold">
-                                Completed Orders
-                            </h2>
+                            <h2 className="text-xl font-semibold">Completed Orders</h2>
                             <p>Count: {homeData?.completed.count}</p>
                             <p>
                                 Total Amount: Rs.
@@ -253,22 +224,15 @@ const Home = () => {
                         </div>
                     </div>
                 </Card>
-                <Card
-                    className="shadow-lg cursor-pointer"
-                    onClick={handleReturned}
-                >
+                <Card className="shadow-lg cursor-pointer" onClick={handleReturned}>
                     <div className="flex justify-between items-center">
                         <div>
                             <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold">
-                                Returned Orders
-                            </h2>
+                            <h2 className="text-xl font-semibold">Returned Orders</h2>
                             <p>Count: {netReturn}</p>
-                            <p>
-                                Total Amount: Rs. {netReturnSales?.toFixed(2)}
-                            </p>
+                            <p>Total Amount: Rs. {netReturnSales?.toFixed(2)}</p>
                         </div>
                     </div>
                 </Card>
@@ -288,24 +252,17 @@ const Home = () => {
             {/* CHART */}
 
             <div className="mt-5 w-[350px] xl:w-full">
-                {homeData?.brand_wise_sale && (
-                    <BrandDataChart brandData={homeData?.brand_wise_sale} />
-                )}
+                {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} />}
             </div>
 
             <div className="flex justify-center items-start my-10 z-10">
                 <div className="w-full xl:w-3/4">
                     <MultipleMap
                         latitudes={orders.map((item) => item.latitude || [])}
-                        longitudes={orders?.map(
-                            (item) => item?.longitude || [],
-                        )}
+                        longitudes={orders?.map((item) => item?.longitude || [])}
                         amount={orders?.map((item) => item?.amount || [])}
                     />
-                    <div
-                        className="flex justify-start items-start cursor-pointer"
-                        onClick={handleShowFullScreen}
-                    >
+                    <div className="flex justify-start items-start cursor-pointer" onClick={handleShowFullScreen}>
                         <MdOutlineFullscreen className="text-xl" />
                     </div>
                 </div>

@@ -1,24 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
+import { FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
 // import Select from '@/components/ui/Select'
-import { Field, Form, Formik, FieldProps } from 'formik'
+import { Form, Formik } from 'formik'
 import { useState } from 'react'
 import { notification } from 'antd'
-import { useNavigate } from 'react-router-dom'
-
-import Upload from '@/components/ui/Upload'
-import Product from '@/views/category-management/catalog/CommonType'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { INITIALVALUES } from '../catalog/ProductCommon'
 import { AiOutlineCopy } from 'react-icons/ai'
 import Spinner from '@/components/ui/Spinner'
+import UploaderComponent from './UploaderComponent/UploaderComponent'
 
 const Uploader = () => {
     const [finalImage, setFinalImage] = useState('')
     const [finalVideo, setFinalVideo] = useState('')
     const [finalColorLink, setFinalColorLink] = useState('')
+    const [finalSizeChart, setFinalSizeChart] = useState('')
+
     const [showLoading, setShowLoading] = useState(false)
 
     const MAX_UPLOAD = 100
@@ -63,16 +61,7 @@ const Uploader = () => {
     const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
-        const allowedFileType = [
-            'video/mp4',
-            'video/mov',
-            'video/flv',
-            'video/avi',
-            'video/wmv',
-            'video/webm',
-            'video/avchd',
-            'video/MP4',
-        ]
+        const allowedFileType = ['video/mp4', 'video/mov', 'video/flv', 'video/avi', 'video/wmv', 'video/webm', 'video/avchd', 'video/MP4']
         const MAX_FILE_SIZE = 9000000000000000
 
         if (fileList.length >= MAX_UPLOAD) {
@@ -116,8 +105,7 @@ const Uploader = () => {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -145,8 +133,7 @@ const Uploader = () => {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Video Not uploaded',
+                description: error?.response?.data?.message || 'Video Not uploaded',
             })
             return 'Error'
         }
@@ -171,18 +158,21 @@ const Uploader = () => {
         const imageUpload = await handleImageCheck(values.images)
         const colorlink = await handleImageCheck(values.color_code)
         const videoUpload = await handleVideoCheck(values.video)
+        const sizeChartUpload = await handleImageCheck(values.sizeChartArray)
 
         const imageShow = fileShow(imageUpload, values.image)
         const colorCodeShow = fileShow(colorlink, values.color_code_link)
         const videoShow = fileShow(videoUpload, values.video_link)
+        const sizeChartShow = fileShow(sizeChartUpload, values.sizeChart)
 
         setFinalImage(imageShow)
         setFinalColorLink(colorCodeShow)
         setFinalVideo(videoShow)
+        setFinalSizeChart(sizeChartShow)
         setShowLoading(false)
     }
 
-    const handleCopy = (file) => {
+    const handleCopy = (file: any) => {
         navigator.clipboard.writeText(file)
         notification.success({
             message: 'Copied',
@@ -193,6 +183,7 @@ const Uploader = () => {
         setFinalImage('')
         setFinalVideo('')
         setFinalColorLink('')
+        setFinalSizeChart('')
     }
 
     return (
@@ -203,160 +194,50 @@ const Uploader = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm, setFieldValue }) => (
+                {({ values, resetForm }) => (
                     <Form className="w-2/3">
                         <FormContainer>
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden ">
-                                Image
-                                <FormContainer className=" mt-5 w-full ">
-                                    {/* DIV */}
+                            <UploaderComponent
+                                name="image"
+                                label="IMAGE"
+                                fieldname="images"
+                                fileList={values.images}
+                                beforeFileUpload={beforeUpload}
+                            />
 
-                                    <FormItem
-                                        label=""
-                                        className="grid grid-rows-2"
-                                    >
-                                        <Field name="image">
-                                            {({
-                                                form,
-                                            }: FieldProps<Product>) => (
-                                                <>
-                                                    <Upload
-                                                        className="flex justify-center"
-                                                        multiple
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
-                                                        fileList={values.images}
-                                                        onChange={(files) =>
-                                                            form.setFieldValue(
-                                                                'images',
-                                                                files,
-                                                            )
-                                                        }
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'images',
-                                                                files,
-                                                            )
-                                                        }
-                                                    />
-                                                </>
-                                            )}
-                                        </Field>
-                                    </FormItem>
-
-                                    <br />
-                                    <br />
-                                </FormContainer>
-                            </FormContainer>
+                            <UploaderComponent
+                                name="sizeChart"
+                                label="SIZE CHART"
+                                fieldname="sizeChartArray"
+                                fileList={values.sizeChartArray}
+                                beforeFileUpload={beforeUpload}
+                            />
 
                             {/* .............................................................. */}
 
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden">
-                                Color Code Thumbnail
-                                <FormContainer className=" mt-5 ">
-                                    <FormItem
-                                        label=""
-                                        className="grid grid-rows-2"
-                                    >
-                                        <Field name="color_code">
-                                            {({
-                                                form,
-                                            }: FieldProps<Product>) => (
-                                                <>
-                                                    <Upload
-                                                        className="flex justify-center"
-                                                        multiple
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
-                                                        fileList={
-                                                            values.color_code
-                                                        }
-                                                        onChange={(files) =>
-                                                            form.setFieldValue(
-                                                                'color_code',
-                                                                files,
-                                                            )
-                                                        }
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'color_code',
-                                                                files,
-                                                            )
-                                                        }
-                                                        // uploadButtonText="Add Files"
-                                                    />
-                                                </>
-                                            )}
-                                        </Field>
-                                    </FormItem>
-
-                                    <br />
-                                    <br />
-                                </FormContainer>
-                            </FormContainer>
+                            <UploaderComponent
+                                name="color_code"
+                                label="COLOR CODE THUMBNAIL"
+                                fieldname="color_code"
+                                fileList={values.color_code}
+                                beforeFileUpload={beforeUpload}
+                            />
 
                             {/* .......................video........................................ */}
 
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
-                                Video
-                                <FormContainer className=" mt-5 ">
-                                    <FormItem
-                                        label=""
-                                        invalid={Boolean(
-                                            errors.video && touched.video,
-                                        )}
-                                        errorMessage={errors.video as string}
-                                        className="grid grid-rows-2"
-                                    >
-                                        <Field name="video_link">
-                                            {({
-                                                form,
-                                            }: FieldProps<Product>) => (
-                                                <>
-                                                    <Upload
-                                                        multiple
-                                                        beforeUpload={
-                                                            beforeVideoUpload
-                                                        }
-                                                        fileList={values.video}
-                                                        onChange={(files) =>
-                                                            form.setFieldValue(
-                                                                'video',
-                                                                files,
-                                                            )
-                                                        }
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'video',
-                                                                files,
-                                                            )
-                                                        }
-                                                    />
-                                                </>
-                                            )}
-                                        </Field>
-                                    </FormItem>
-
-                                    <br />
-                                    <br />
-                                </FormContainer>
-                            </FormContainer>
+                            <UploaderComponent
+                                name="video_link"
+                                label="VIDEO"
+                                fieldname="video"
+                                fileList={values.video}
+                                beforeFileUpload={beforeVideoUpload}
+                            />
 
                             <FormContainer className="flex justify-end mt-5">
-                                <Button
-                                    type="reset"
-                                    className="mr-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    className="bg-blue-500 text-white"
-                                >
+                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
                                     Generate
                                 </Button>
                             </FormContainer>
@@ -375,10 +256,7 @@ const Uploader = () => {
                         <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
                             <p className="truncate">{finalImage}</p>
                         </div>
-                        <AiOutlineCopy
-                            className="text-gray-500 cursor-pointer text-xl"
-                            onClick={() => handleCopy(finalImage)}
-                        />
+                        <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(finalImage)} />
                     </div>
                 )}
             </div>
@@ -390,10 +268,18 @@ const Uploader = () => {
                         <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
                             <p className="truncate">{finalColorLink}</p>
                         </div>
-                        <AiOutlineCopy
-                            className="text-gray-500 cursor-pointer text-xl"
-                            onClick={() => handleCopy(finalColorLink)}
-                        />
+                        <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(finalColorLink)} />
+                    </div>
+                )}
+            </div>
+            <div className="flex flex-col mt-5">
+                {finalSizeChart && !showLoading && (
+                    <div className="flex gap-2 items-center">
+                        <p className="text-lg font-bold">SIZE CHART:</p>
+                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
+                            <p className="truncate">{finalSizeChart}</p>
+                        </div>
+                        <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(finalSizeChart)} />
                     </div>
                 )}
             </div>
@@ -405,20 +291,13 @@ const Uploader = () => {
                         <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl ">
                             <p className="truncate">{finalVideo}</p>
                         </div>
-                        <AiOutlineCopy
-                            className="text-gray-500 cursor-pointer text-xl"
-                            onClick={() => handleCopy(finalVideo)}
-                        />
+                        <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(finalVideo)} />
                     </div>
                 )}
             </div>
             {finalImage || finalColorLink || finalVideo ? (
                 <div className="">
-                    <Button
-                        variant="default"
-                        size="sm"
-                        onClick={handleDataReset}
-                    >
+                    <Button variant="default" size="sm" onClick={handleDataReset}>
                         Reset Data
                     </Button>
                 </div>
