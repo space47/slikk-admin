@@ -205,14 +205,6 @@ const Uploader = () => {
                                 beforeFileUpload={beforeUpload}
                             />
 
-                            <UploaderComponent
-                                name="sizeChart"
-                                label="SIZE CHART"
-                                fieldname="sizeChartArray"
-                                fileList={values.sizeChartArray}
-                                beforeFileUpload={beforeUpload}
-                            />
-
                             {/* .............................................................. */}
 
                             <UploaderComponent
@@ -220,6 +212,14 @@ const Uploader = () => {
                                 label="COLOR CODE THUMBNAIL"
                                 fieldname="color_code"
                                 fileList={values.color_code}
+                                beforeFileUpload={beforeUpload}
+                            />
+
+                            <UploaderComponent
+                                name="sizeChart"
+                                label="SIZE CHART"
+                                fieldname="sizeChartArray"
+                                fileList={values.sizeChartArray}
                                 beforeFileUpload={beforeUpload}
                             />
 
