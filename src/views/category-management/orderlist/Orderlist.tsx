@@ -86,14 +86,14 @@ const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
-    const [deliveryType, setDeliveryType] = useState<{
-        label: string
-        value: string
-    } | null>(null)
-    const [paymentType, setPaymentType] = useState<{
-        label: string
-        value: string
-    } | null>(null)
+    const [deliveryType, setDeliveryType] = useState<DropdownStatus>({
+        value: [],
+        name: [],
+    })
+    const [paymentType, setPaymentType] = useState<DropdownStatus>({
+        value: [],
+        name: [],
+    })
     const [searchInput, setSearchInput] = useState<string>('')
     const [mobileFilter, setMobileFilter] = useState('')
     const [pageSize, setPageSize] = useState(10)
@@ -117,11 +117,11 @@ const OrderList = () => {
             let deliveryStatus = ''
             let paymentStatus = ''
 
-            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+            if (deliveryType?.value && deliveryType?.value?.length > 0) {
                 deliveryStatus = `&delivery_type=${deliveryType?.value}`
             }
 
-            if (paymentType?.value && paymentType?.value !== 'undefined') {
+            if (paymentType?.value && paymentType?.value.length > 0) {
                 paymentStatus = `&payment_mode=${paymentType?.value}`
             }
 
@@ -231,8 +231,6 @@ const OrderList = () => {
         pageCount: Math.ceil(orderCount ?? 0 / pageSize),
     })
 
-    console.log('STATUS', dropdownStatus.value.length)
-
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -241,11 +239,11 @@ const OrderList = () => {
             let deliveryStatus = ''
             let paymentStatus = ''
 
-            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+            if (deliveryType?.value && deliveryType?.value.length > 0) {
                 deliveryStatus = `&delivery_type=${deliveryType?.value}`
             }
 
-            if (paymentType?.value && paymentType?.value !== 'undefined') {
+            if (paymentType?.value && paymentType?.value.length > 0) {
                 paymentStatus = `&payment_mode=${paymentType?.value}`
             }
 
@@ -309,18 +307,30 @@ const OrderList = () => {
     }
 
     const handleDeliverySelect = (selectedValue: string) => {
-        const selectedOption = DELEIVERYOPTIONS.find((option) => option.value === selectedValue)
-
-        if (selectedOption) {
-            setDeliveryType(selectedOption)
+        if (deliveryType.value.includes(selectedValue)) {
+            setDeliveryType((prevState) => ({
+                ...prevState,
+                value: prevState.value.filter((item) => item !== selectedValue),
+            }))
+        } else {
+            setDeliveryType((prevState) => ({
+                ...prevState,
+                value: [...prevState.value, selectedValue],
+            }))
         }
     }
 
     const handlePaymentSelect = (selectedValue: string) => {
-        const selectedOption = PAYMENTOPTIONS.find((option) => option.value === selectedValue)
-
-        if (selectedOption) {
-            setPaymentType(selectedOption)
+        if (paymentType.value.includes(selectedValue)) {
+            setPaymentType((prevState) => ({
+                ...prevState,
+                value: prevState.value.filter((item) => item !== selectedValue),
+            }))
+        } else {
+            setPaymentType((prevState) => ({
+                ...prevState,
+                value: [...prevState.value, selectedValue],
+            }))
         }
     }
 
@@ -337,11 +347,6 @@ const OrderList = () => {
             }))
         }
     }
-
-    console.log(
-        'ssssssswddwdwdw',
-        orders.map((item) => item.longitude),
-    )
 
     const handleShowFilter = useCallback(() => {
         setShowFilter(true)

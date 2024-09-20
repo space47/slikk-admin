@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import moment from 'moment'
-import { OrderState, Order } from '@/store/types/orderList.types'
+import { OrderState } from '@/store/types/orderList.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 
@@ -15,9 +15,18 @@ const initialState: OrderState = {
     loading: false,
     message: '',
     orderCount: 0,
-    dropdownStatus: { value: 'ALL', name: 'ALL' },
-    deliveryType: { value: '', label: '' },
-    paymentType: { value: '', label: '' },
+    dropdownStatus: {
+        value: [],
+        name: [],
+    },
+    deliveryType: {
+        value: [],
+        name: [],
+    },
+    paymentType: {
+        value: [],
+        name: [],
+    },
     searchInput: '',
     currentSelectedPage: SEARCHOPTIONS[0],
     pageSize: 10,
@@ -25,25 +34,24 @@ const initialState: OrderState = {
     from: moment().format('YYYY-MM-DD'),
     to: moment().add(1, 'days').format('YYYY-MM-DD'),
 }
-
 export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (_, { getState }) => {
     try {
         const state = getState() as { order: OrderState }
         const { page, pageSize, from, to, dropdownStatus, searchInput, currentSelectedPage, deliveryType, paymentType } = state.order
 
         const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-        const statusQuery = dropdownStatus.value === 'ALL' ? '' : `&status=${dropdownStatus.value}`
+        const statusQuery = dropdownStatus.value.length === 0 ? '' : `&status=${dropdownStatus.value}`
 
         let response
 
         let deliveryStatus = ''
 
-        if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+        if (deliveryType?.value && deliveryType?.value.length > 0) {
             deliveryStatus = `&delivery_type=${deliveryType?.value}`
         }
         let paymentStatus = ''
 
-        if (paymentType?.value && paymentType?.value !== 'undefined') {
+        if (paymentType?.value && paymentType?.value.length > 0) {
             paymentStatus = `&payment_mode=${paymentType?.value}`
         }
 

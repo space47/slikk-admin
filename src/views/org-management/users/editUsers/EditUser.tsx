@@ -244,8 +244,6 @@ const BrandUserEdit = () => {
         addedGroups.map((item) => item),
     )
 
-    console.log('ITEMS', addedGroups, addedPermissions, addedCompany)
-
     const handleSubmit = async (values: any) => {
         const groupIds = addedGroups.map((item) => item.id)
         const permissionIds = addedPermissions.map((item) => item.id)
@@ -259,7 +257,7 @@ const BrandUserEdit = () => {
         console.log('body', bodyData)
         try {
             const response = await axioisInstance.patch(
-                `company/users/${mobile}`, //-companyid
+                `company/user/${mobile}`, //-companyid
                 bodyData,
             )
             console.log('response of add users', response)

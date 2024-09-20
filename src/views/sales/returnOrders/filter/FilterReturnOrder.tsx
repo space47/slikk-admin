@@ -94,26 +94,31 @@ const FilterReturnOrder = ({
                         </div>
                     </div>
 
-                    <div className="flex justify-center flex-col gap-2">
-                        <div className="font-bold">SET RETURN TYPE</div>
-                        <div className="bg-gray-100 w-auto ">
-                            <Dropdown
-                                className="w-auto px-4 py-2 text-base  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                                title={deliveryType?.label || 'Return type'}
-                                onSelect={handleDeliveryType}
-                            >
-                                <div className="max-h-60 overflow-y-auto">
-                                    {DELEIVERYRETRUNOPTIONS?.map((item, index) => (
-                                        <DropdownItem
-                                            key={index}
-                                            eventKey={item.value}
-                                            className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                    <div className="flex flex-col mb-6">
+                        <label htmlFor="" className="font-semibold text-lg mb-2">
+                            SELECT RETURN TYPE
+                        </label>
+                        <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
+                            <div className="w-full px-1 py-2 text-sm  text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm">
+                                <div className="h-auto overflow-y-auto max-h-80">
+                                    {DELEIVERYRETRUNOPTIONS?.map((item, key) => (
+                                        <div
+                                            key={key}
+                                            className={`flex items-center px-2 py-2 text-black hover:bg-gray-100 cursor-pointer ${
+                                                deliveryType?.value?.includes(item.value) ? 'bg-gray-200' : ''
+                                            }`}
                                         >
+                                            <input
+                                                type="checkbox"
+                                                checked={deliveryType?.value?.includes(item.value)}
+                                                onChange={() => handleDeliveryType(item.value)}
+                                                className="mr-2"
+                                            />
                                             <span>{item.label}</span>
-                                        </DropdownItem>
+                                        </div>
                                     ))}
                                 </div>
-                            </Dropdown>
+                            </div>
                         </div>
                     </div>
                 </div>

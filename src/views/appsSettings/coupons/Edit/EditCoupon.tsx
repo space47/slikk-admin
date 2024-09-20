@@ -229,7 +229,7 @@ const AddCoupons = () => {
                                     getOptionValue={(option) => option.value}
                                     value={ACTIONARRAY.find((option) => option.value === userAction)}
                                     onChange={(selectedOption) => {
-                                        const newValue = selectedOption?.value
+                                        const newValue: string = selectedOption?.value || ''
                                         setUserAction(newValue)
                                         setFieldValue('user_add_action', newValue)
                                     }}

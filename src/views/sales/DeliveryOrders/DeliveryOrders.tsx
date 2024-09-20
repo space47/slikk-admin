@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import { Table, Pagination, Select, DatePicker, Dropdown } from '@/components/ui'
+import { Table, Pagination, Select, Dropdown } from '@/components/ui'
 import {
     fetchOrders,
     setDropdownStatus,
@@ -25,7 +25,6 @@ import {
     setPaymentType,
 } from '@/store/slices/orderList/OrderList'
 import { OrderState } from '@/store/types/orderList.types'
-import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
 import type { FilterFn } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -36,7 +35,6 @@ import { RiEBike2Fill } from 'react-icons/ri'
 import { CiFilter } from 'react-icons/ci'
 import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
-import { DELEIVERYOPTIONS, PAYMENTOPTIONS } from '@/views/category-management/orderlist/Orderlist'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -70,19 +68,12 @@ const DeliveryOrders = () => {
     useEffect(() => {
         dispatch(fetchOrders())
     }, [dispatch, page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
-    // useEffect(() => {
-    //     dispatch(fetchOrders())
-    // }, [dispatch, page, pageSize, from, to, dropdownStatus, mobileFilter])
 
     const [showFilter, setShowFilter] = useState(false)
 
     const [partner, setPartner] = useState<{
         [key: string]: { value: string; label: string }
     }>({})
-    console.log(
-        'Data for Table',
-        orders?.map((item) => item),
-    )
 
     const columns = [
         {
@@ -253,10 +244,6 @@ const DeliveryOrders = () => {
         navigate(`/app/orders/${invoiceId}`)
     }
 
-    const handleRemove = (return_id: any) => {
-        navigate(`/app/returnOrders/${return_id}`)
-    }
-
     const onPaginationChange = (page: number) => {
         dispatch(setPage(page))
     }
@@ -279,35 +266,36 @@ const DeliveryOrders = () => {
         }))
     }
 
-    const handleDropdownSelect = (a: any) => {
-        console.log('Values', a)
-        dispatch(
-            setDropdownStatus({
-                value: a,
-                name: ORDER_STATUS.find((item) => item.value == a)?.name || '',
-            }),
-        )
+    const handleDropdownSelect = (selectedValue: string) => {
+        const currentValues = dropdownStatus?.value ?? []
+
+        const updatedValues = currentValues.includes(selectedValue)
+            ? currentValues.filter((item) => item !== selectedValue)
+            : [...currentValues, selectedValue]
+
+        dispatch(setDropdownStatus({ ...dropdownStatus, value: updatedValues }))
     }
 
-    const handleDeliverySelect = (selectedValue: any) => {
-        const selectedOption = DELEIVERYOPTIONS.find((option) => option.value === selectedValue)
+    const handleDeliverySelect = (selectedValue: string) => {
+        const currentValues = deliveryType?.value ?? []
 
-        if (selectedOption) {
-            dispatch(setDeliveryType(selectedOption))
-        }
+        const updatedValues = currentValues.includes(selectedValue)
+            ? currentValues.filter((item) => item !== selectedValue)
+            : [...currentValues, selectedValue]
+
+        dispatch(setDeliveryType({ ...deliveryType, value: updatedValues }))
     }
 
-    const handlePaymentSelect = (selectedValue: any) => {
-        const selectedOption = PAYMENTOPTIONS.find((option) => option.value === selectedValue)
+    const handlePaymentSelect = (selectedValue: string) => {
+        const currentValues = paymentType?.value ?? []
 
-        if (selectedOption) {
-            dispatch(setPaymentType(selectedOption))
-        }
+        const updatedValues = currentValues.includes(selectedValue)
+            ? currentValues.filter((item) => item !== selectedValue)
+            : [...currentValues, selectedValue]
+
+        dispatch(setPaymentType({ ...paymentType, value: updatedValues }))
     }
-
     const handleCreateTask = async (partner: any, logistic_partner: any, order_id: any) => {
-        console.log('TASK', partner?.label, order_id, logistic_partner)
-
         try {
             const body = {
                 action: 'PACKED',
@@ -328,7 +316,6 @@ const DeliveryOrders = () => {
         }
     }
 
-    console.log('ssssssswddwdwdw', dropdownStatus)
     const handleShowFilter = useCallback(() => {
         setShowFilter(true)
     }, [setShowFilter])
@@ -436,7 +423,7 @@ const DeliveryOrders = () => {
                     deliveryType={deliveryType}
                     handleDeliverySelect={handleDeliverySelect}
                     paymentType={paymentType}
-                    handlePaymentType={handlePaymentSelect}
+                    handlePaymentSelect={handlePaymentSelect}
                 />
             )}
         </div>
