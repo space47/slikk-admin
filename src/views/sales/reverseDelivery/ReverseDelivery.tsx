@@ -77,7 +77,7 @@ const ReverseDelivery = () => {
 
             let deliveryStatus = ''
 
-            if (deliveryType?.value && deliveryType?.value !== 'undefined') {
+            if (deliveryType?.value && deliveryType?.value.length > 0) {
                 deliveryStatus = `&return_type=${deliveryType?.value}`
             }
 
@@ -114,10 +114,7 @@ const ReverseDelivery = () => {
     const [partner, setPartner] = useState<{
         [key: string]: { value: string; label: string }
     }>({})
-    console.log(
-        'Data for Table',
-        orders?.map((item) => item),
-    )
+    console.log('PARTNER', partner)
 
     const columns = [
         {
@@ -335,7 +332,10 @@ const ReverseDelivery = () => {
             const body = {
                 action: 'create_reverse_pickup',
                 re_create: 'yes',
+                delivery_partner: partner?.value ? partner?.value : logistic_partner,
             }
+
+            console.log('BODY', body)
 
             const response = await axioisInstance.patch(`merchant/return_order/${return_order_id}`, body)
 
