@@ -106,10 +106,10 @@ const OrderList = () => {
             const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
 
             let deliveryStatus = ''
-
             if (deliveryType?.value && deliveryType?.value.length > 0) {
                 deliveryStatus = `&return_type=${deliveryType?.value}`
             }
+
             let searwiseDownload = ''
             if (currentSelectedPage.value === 'return_order_id' && searchInput) {
                 searwiseDownload = `&return_order_id=${searchInput.toUpperCase()}`
@@ -117,7 +117,9 @@ const OrderList = () => {
                 searwiseDownload = `&invoice_id=${searchInput.toUpperCase()}`
             }
 
-            const returnUrl = `merchant/return_orders?${searwiseDownload}${status}&from=${from}&to=${To_Date}&${deliveryStatus}`
+            const fromToParams = searchInput ? '' : `&from=${from}&to=${To_Date}`
+
+            const returnUrl = `merchant/return_orders?${searwiseDownload}${status}${fromToParams}${deliveryStatus}`
 
             const response = await axioisInstance.get(returnUrl)
 
