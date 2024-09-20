@@ -62,7 +62,7 @@ const initialValue: FormModel = {
     segment: '',
     settlement_days: 0,
     update_date: '',
-    warehouse_charge_per_sku: 0
+    warehouse_charge_per_sku: 0,
 }
 
 // const validationSchema = Yup.object().shape({
@@ -93,12 +93,10 @@ const initialValue: FormModel = {
 // })
 
 const SegmentOptions = () => {
-    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor'].map(
-        (segment) => ({
-            label: segment,
-            value: segment
-        })
-    )
+    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor'].map((segment) => ({
+        label: segment,
+        value: segment,
+    }))
 }
 
 const AddSeller = () => {
@@ -123,30 +121,26 @@ const AddSeller = () => {
         // }
 
         const formData = {
-            ...values
+            ...values,
+            handling_charges_per_order: Number(values.handling_charges_per_order),
         }
 
         console.log('formData', formData)
 
         try {
-            const response = await axioisInstance.post(
-                'merchant/company',
-                formData
-            )
+            const response = await axioisInstance.post('merchant/company', formData)
 
             console.log(response)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Seller created Successfully'
+                description: response?.data?.message || 'Seller created Successfully',
             })
             navigate('/app/sellers')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Seller not created'
+                description: error?.response?.data?.message || 'Seller not created',
             })
         }
     }
@@ -165,17 +159,8 @@ const AddSeller = () => {
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {SELLING_FORM.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
 
@@ -190,80 +175,40 @@ const AddSeller = () => {
                                         {({ field }: FieldProps) => (
                                             <Select
                                                 {...field}
-                                                value={SegmentOptions().find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value
-                                                )}
+                                                value={SegmentOptions().find((option) => option.value === field.value)}
                                                 options={SegmentOptions()}
-                                                onChange={(option) =>
-                                                    setFieldValue(
-                                                        'segment',
-                                                        option?.value
-                                                    )
-                                                }
+                                                onChange={(option) => setFieldValue('segment', option?.value)}
                                             />
                                         )}
                                     </Field>
                                 </FormItem>
                             </FormContainer>
 
-                            <h5 className="mb-5 from-neutral-900">
-                                POC Details
-                            </h5>
+                            <h5 className="mb-5 from-neutral-900">POC Details</h5>
                             <FormContainer className="grid grid-cols-2 gap-10 ">
                                 {POC_FORM.map((item, key) => (
-                                    <FormItem
-                                        asterisk
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem asterisk key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
                             </FormContainer>
 
                             {/* ------------------------------------------------------------------------------------------------ */}
 
-                            <h5 className="mb-5 from-neutral-900">
-                                Account Details
-                            </h5>
+                            <h5 className="mb-5 from-neutral-900">Account Details</h5>
                             <FormContainer className="grid grid-cols-2 gap-10 ">
                                 {ACCOUNT_FORM.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
-                                <Button
-                                    type="reset"
-                                    className="mr-2 bg-gray-600"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    className=" text-white"
-                                >
+                                <Button variant="solid" type="submit" className=" text-white">
                                     Submit
                                 </Button>
                             </FormContainer>
