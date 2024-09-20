@@ -67,7 +67,7 @@ export const SELLING_FORM = [
     {
         label: 'Handling Charges Per SKU',
         classname: 'col-span-1 w-full',
-        type: 'text',
+        type: 'number',
         name: 'handling_charges_per_order',
         placeholder: 'Confirm your Charges',
         component: { Input },
