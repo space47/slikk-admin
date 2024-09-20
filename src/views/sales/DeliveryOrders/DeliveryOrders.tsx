@@ -267,13 +267,12 @@ const DeliveryOrders = () => {
     }
 
     const handleDropdownSelect = (selectedValue: string) => {
-        const currentValues = dropdownStatus?.value ?? []
+        const currentValue = dropdownStatus?.value ? dropdownStatus.value : []
+        const updatedValue = currentValue.includes(selectedValue)
+            ? currentValue.filter((item) => item !== selectedValue)
+            : [...currentValue, selectedValue]
 
-        const updatedValues = currentValues.includes(selectedValue)
-            ? currentValues.filter((item) => item !== selectedValue)
-            : [...currentValues, selectedValue]
-
-        dispatch(setDropdownStatus({ ...dropdownStatus, value: updatedValues }))
+        dispatch(setDropdownStatus({ ...dropdownStatus, value: updatedValue }))
     }
 
     const handleDeliverySelect = (selectedValue: string) => {
