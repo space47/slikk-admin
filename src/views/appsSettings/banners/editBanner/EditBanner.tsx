@@ -180,6 +180,11 @@ const EditBanner = () => {
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
+            // notification.error({
+            //     message: 'Failure',
+            //     description:
+            //         error?.response?.data?.message || 'File Not uploaded',
+            // })
             return 'Error'
         }
     }
@@ -221,20 +226,7 @@ const EditBanner = () => {
             sectiioBgWebUpload = await handleimage(values.section_background_web_array)
         }
 
-        let updatedTags = values.tags
-        if (values.tags_input !== initialValue.tags_input) {
-            const tagsFromInput = values.tags_input.split(',')
-            const currentTagsSet = new Set(values.tags)
-            const inputTagsSet = new Set(tagsFromInput)
-
-            updatedTags = updatedTags.filter((tag) => inputTagsSet.has(tag))
-
-            tagsFromInput.forEach((tag) => {
-                if (!currentTagsSet.has(tag)) {
-                    updatedTags.push(tag)
-                }
-            })
-        }
+        console.log('tags', values)
 
         const formData = {
             ...values,
@@ -250,7 +242,7 @@ const EditBanner = () => {
             sub_category: values.sub_category.map((item) => item.name).join(','),
             product_type: values.product_type.map((item) => item.name).join(','),
             brand: values.brand.map((item) => item.name).join(','),
-            tags: updatedTags,
+            tags: values.tags_input.split(',').map((item) => item.trim()),
         }
 
         try {
@@ -386,7 +378,7 @@ const EditBanner = () => {
 
                                 <FormContainer>
                                     <FormItem asterisk label="Filter Tags" className="col-span-1 w-full">
-                                        <Field name="tags">
+                                        <Field name="quick_filter_tags">
                                             {({ field, form }: FieldProps<any>) => {
                                                 const selectedTags = field.value.map((tag: any) => {
                                                     const matchedOption = filters.filters.find((option) => option.value === tag)
