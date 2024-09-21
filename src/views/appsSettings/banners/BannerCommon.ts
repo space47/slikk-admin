@@ -2,7 +2,7 @@ type BRANDTYPES = {
     image: string
     name: string
     title: string
-    id:number
+    id: number
 }
 
 type DIVTYPES = {
@@ -51,4 +51,5 @@ export interface BANNERMODEL {
     min_price: number
     barcodes: string
     redirection_url: string | null
+    tags_input: string
 }

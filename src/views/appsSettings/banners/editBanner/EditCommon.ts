@@ -88,7 +88,7 @@ export const BANNER_FIELDS_TYPE = [
         label: 'Tags',
         classname: 'col-span-1 w-full',
         type: 'text',
-        name: 'tags',
+        name: 'tags_input',
         placeholder: 'Place your Tags',
         component: { Input },
         status: 'tags',
