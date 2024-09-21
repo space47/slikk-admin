@@ -15,6 +15,7 @@ const LOGISTIC_PARTNER = [
     { value: 'shiprocket', label: 'SHIPROCKET' },
     { value: 'shadowfax', label: 'SHADOWFAX' },
     { value: 'slikk', label: 'SLIKK' },
+    { value: 'pidge', label: 'PIDGE' },
 ]
 
 type Event = {
@@ -52,14 +53,7 @@ type ActivityProps = {
     logistic: LOGISTIC
 }
 
-const Activity = ({
-    data = [],
-    status,
-    product = [],
-    payment,
-    invoice_id,
-    logistic,
-}: ActivityProps) => {
+const Activity = ({ data = [], status, product = [], payment, invoice_id, logistic }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const [fulfilledQuantities, setFulfilledQuantities] = useState<{
@@ -70,8 +64,7 @@ const Activity = ({
     const [triggerApiCall, setTriggerApiCall] = useState<boolean>(false)
     const [triggerpackCall, setTriggerpackCall] = useState<boolean>(false)
     const [triggerShipCall, setTriggerShipCall] = useState<boolean>(false)
-    const [triggerDeliveryCall, setTriggerDeliveryCall] =
-        useState<boolean>(false)
+    const [triggerDeliveryCall, setTriggerDeliveryCall] = useState<boolean>(false)
     const [cancelCall, setCancelCall] = useState<boolean>(false)
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{
@@ -117,10 +110,7 @@ const Activity = ({
                         data,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/order/${invoice_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
 
                     console.log(response.data)
                     setIsModalOpen(false)
@@ -138,9 +128,7 @@ const Activity = ({
     // CANCEL.........................................................................................................
 
     const handleReject = () => {
-        const hasFulfilledQty = Object.values(fulfilledQuantities).some(
-            (item) => item > 0,
-        )
+        const hasFulfilledQty = Object.values(fulfilledQuantities).some((item) => item > 0)
 
         if (hasFulfilledQty) {
             setTimeout(() => {
@@ -160,20 +148,14 @@ const Activity = ({
         if (cancelCall) {
             const sendApiRequest = async () => {
                 try {
-                    const data = Object.entries(fulfilledQuantities).reduce(
-                        (acc) => acc,
-                        {} as { [key: number]: number },
-                    )
+                    const data = Object.entries(fulfilledQuantities).reduce((acc) => acc, {} as { [key: number]: number })
 
                     const body = {
                         action,
                         data,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/order/${invoice_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
 
                     console.log(response.data)
                     setIsModalOpen(false)
@@ -206,25 +188,18 @@ const Activity = ({
 
                     console.log('BEFORE DELIVERY', partner?.value)
 
-                    const response = await axiosInstance.patch(
-                        `merchant/order/${invoice_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerpackCall(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Order status updated successfully.',
+                        description: response?.data?.message || 'Order status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -253,25 +228,18 @@ const Activity = ({
                         action,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/order/${invoice_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerShipCall(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Order status updated successfully.',
+                        description: response?.data?.message || 'Order status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -302,25 +270,18 @@ const Activity = ({
                         action,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `merchant/order/${invoice_id}`,
-                        body,
-                    )
+                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerDeliveryCall(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Order status updated successfully.',
+                        description: response?.data?.message || 'Order status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -338,9 +299,7 @@ const Activity = ({
 
     const handlePartnerSelect = (selectedValue: any) => {
         console.log('VALUE', selectedValue)
-        const selectedLabel =
-            LOGISTIC_PARTNER.find((item) => item.value === selectedValue)
-                ?.label || ''
+        const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
 
         setPartner({ value: selectedValue, label: selectedLabel })
     }
@@ -385,8 +344,7 @@ const Activity = ({
 
     console.log('Paaaaaaaart', partner?.value)
 
-    const { buttonText, modalContent: content } =
-        getButtonAndModalContent(status)
+    const { buttonText, modalContent: content } = getButtonAndModalContent(status)
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -401,24 +359,12 @@ const Activity = ({
                             key={activity.status + i}
                             media={
                                 <div className="flex mt-1.5">
-                                    <Badge
-                                        innerClass={classNames(
-                                            activity.timestamp
-                                                ? 'bg-emerald-500'
-                                                : 'bg-blue-500',
-                                        )}
-                                    />
+                                    <Badge innerClass={classNames(activity.timestamp ? 'bg-emerald-500' : 'bg-blue-500')} />
                                 </div>
                             }
                         >
-                            <div className="font-bold text-md">
-                                {activity.status}
-                            </div>
-                            <div>
-                                {moment(activity.timestamp).format(
-                                    'DD:MM:YYYY hh:mm',
-                                )}
-                            </div>
+                            <div className="font-bold text-md">{activity.status}</div>
+                            <div>{moment(activity.timestamp).format('DD:MM:YYYY hh:mm')}</div>
                         </Timeline.Item>
                     ))
                 )}
