@@ -21,6 +21,7 @@ import { RiEBike2Fill } from 'react-icons/ri'
 import { DELEIVERYRETRUNOPTIONS, ReturnOrder } from '../returnOrders/ReturnOrders'
 import FilterReturnOrder from '../returnOrders/filter/FilterReturnOrder'
 import { CiFilter } from 'react-icons/ci'
+import { MdAssignmentTurnedIn, MdCancel } from 'react-icons/md'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -220,11 +221,10 @@ const ReverseDelivery = () => {
             },
         },
         {
-            header: 'Assigned Logistic',
+            header: 'CREATE TASK',
             accessorKey: 'return_order_delivery',
             cell: ({ row, getValue }: { row: { original: ReturnOrder }; getValue: () => string }) => (
-                <Button
-                    size="sm"
+                <button
                     onClick={() =>
                         handleCreateTask(
                             partner[row.id],
@@ -233,17 +233,17 @@ const ReverseDelivery = () => {
                         )
                     }
                 >
-                    Create Task
-                </Button>
+                    <MdAssignmentTurnedIn className="border-none bg-none text-2xl flex justify-center items-center text-green-600" />
+                </button>
             ),
         },
         {
             header: 'Cancel Task',
             accessorKey: 'order',
             cell: ({ row }: { row: { original: ReturnOrder } }) => (
-                <Button size="sm" onClick={() => handleCancelTask(row.original.return_order_id)}>
-                    Cancel Task
-                </Button>
+                <button onClick={() => handleCancelTask(row.original.return_order_id)}>
+                    <MdCancel className="border-none bg-none text-2xl flex justify-center items-center text-red-600" />
+                </button>
             ),
         },
     ]

@@ -35,6 +35,7 @@ import { RiEBike2Fill } from 'react-icons/ri'
 import { CiFilter } from 'react-icons/ci'
 import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
+import { MdAssignmentTurnedIn, MdCancel } from 'react-icons/md'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -182,21 +183,21 @@ const DeliveryOrders = () => {
             },
         },
         {
-            header: 'Assigned Logistic',
+            header: 'CREATE TASk',
             accessorKey: 'logistic.partner',
             cell: ({ row, getValue }: any) => (
-                <Button size="sm" onClick={() => handleCreateTask(partner[row.id], getValue(), row.original.invoice_id)}>
-                    Create Task
-                </Button>
+                <button onClick={() => handleCreateTask(partner[row.id], getValue(), row.original.invoice_id)}>
+                    <MdAssignmentTurnedIn className="border-none bg-none text-2xl flex justify-center items-center text-green-600" />
+                </button>
             ),
         },
         {
             header: 'Cancel Task',
             accessorKey: 'id',
             cell: ({ row, getValue }: any) => (
-                <Button size="sm" onClick={() => handleCancelTask(row.original.invoice_id)}>
-                    Cancel Task
-                </Button>
+                <button onClick={() => handleCancelTask(row.original.invoice_id)}>
+                    <MdCancel className="border-none bg-none text-2xl flex justify-center items-center text-red-600" />
+                </button>
             ),
         },
     ]
