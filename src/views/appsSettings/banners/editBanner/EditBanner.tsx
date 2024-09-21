@@ -25,6 +25,8 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { MdCancel } from 'react-icons/md'
+import ImageComponent from './component/ImageComponent'
+import SectionsComponent from './component/SectionsComponent'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -35,12 +37,8 @@ const EditBanner = () => {
     const navigate = useNavigate()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
-    const subCategory = useAppSelector<SUBCATEGORY_STATE>(
-        (state) => state.subCategory,
-    )
-    const product_type = useAppSelector<PRODUCTTYPE_STATE>(
-        (state) => state.product_type,
-    )
+    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
@@ -103,16 +101,8 @@ const EditBanner = () => {
             setBannerData(data)
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
-            setSectionBGweb(
-                data.section_background_web
-                    ? [data.section_background_web]
-                    : [],
-            )
-            setSectionBGmobile(
-                data.section_background_mobile
-                    ? [data.section_background_mobile]
-                    : [],
-            )
+            setSectionBGweb(data.section_background_web ? [data.section_background_web] : [])
+            setSectionBGmobile(data.section_background_mobile ? [data.section_background_mobile] : [])
         } catch (error) {
             console.log(error)
         }
@@ -156,6 +146,7 @@ const EditBanner = () => {
         min_price: bannerData?.min_price || 0,
         barcodes: bannerData?.barcodes || '',
         redirection_url: bannerData?.redirection_url || null,
+        tags_input: bannerData?.tags.join(',') || '',
     }
 
     console.log(
@@ -184,17 +175,11 @@ const EditBanner = () => {
             console.log(newData)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
-            // notification.error({
-            //     message: 'Failure',
-            //     description:
-            //         error?.response?.data?.message || 'File Not uploaded',
-            // })
             return 'Error'
         }
     }
@@ -230,17 +215,26 @@ const EditBanner = () => {
             mobileImageUpload = await handleimage(values.image_mobile_array)
         }
         if (values.section_background_mobile_array.length > 0) {
-            sectionBgMobileUpload = await handleimage(
-                values.section_background_mobile_array,
-            )
+            sectionBgMobileUpload = await handleimage(values.section_background_mobile_array)
         }
         if (values.section_background_web_array.length > 0) {
-            sectiioBgWebUpload = await handleimage(
-                values.section_background_web_array,
-            )
+            sectiioBgWebUpload = await handleimage(values.section_background_web_array)
         }
 
-        console.log('tags', values)
+        let updatedTags = values.tags
+        if (values.tags_input !== initialValue.tags_input) {
+            const tagsFromInput = values.tags_input.split(',')
+            const currentTagsSet = new Set(values.tags)
+            const inputTagsSet = new Set(tagsFromInput)
+
+            updatedTags = updatedTags.filter((tag) => inputTagsSet.has(tag))
+
+            tagsFromInput.forEach((tag) => {
+                if (!currentTagsSet.has(tag)) {
+                    updatedTags.push(tag)
+                }
+            })
+        }
 
         const formData = {
             ...values,
@@ -253,13 +247,10 @@ const EditBanner = () => {
             image_mobile_array: null,
             division: values.division.map((item) => item.name).join(','),
             category: values.category.map((item) => item.name).join(','),
-            sub_category: values.sub_category
-                .map((item) => item.name)
-                .join(','),
-            product_type: values.product_type
-                .map((item) => item.name)
-                .join(','),
+            sub_category: values.sub_category.map((item) => item.name).join(','),
+            product_type: values.product_type.map((item) => item.name).join(','),
             brand: values.brand.map((item) => item.name).join(','),
+            tags: updatedTags,
         }
 
         try {
@@ -267,16 +258,14 @@ const EditBanner = () => {
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Banner Edited Successfully',
+                description: response?.data?.message || 'Banner Edited Successfully',
             })
 
             // navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Banner not Edited',
+                description: error?.response?.data?.message || 'Banner not Edited',
             })
         }
     }
@@ -284,652 +273,142 @@ const EditBanner = () => {
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">Edit Banner</h3>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => (
-                    <Form
-                        className="w-2/3"
-                        onKeyDown={(e: any) =>
-                            e.key === 'Enter' && e.preventDefault()
-                        }
-                    >
+                    <Form className="w-2/3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {BANNER_FIELDS_TYPE.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
                             </FormContainer>
                             {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex flex-col items-center justify-center rounded-xl mb-4">
-                                <div className="mt-5">
-                                    <div className="flex gap-2">
-                                        {mobileImagview &&
-                                        mobileImagview.length > 0 ? (
-                                            mobileImagview.map((img, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex flex-col"
-                                                >
-                                                    <img
-                                                        src={img}
-                                                        alt={`image-${index}`}
-                                                        className="rounded-sm w-[50px] h-[50px]"
-                                                    />
-
-                                                    <button
-                                                        onClick={() =>
-                                                            handleImageRemove(
-                                                                index,
-                                                                'mobile',
-                                                            )
-                                                        }
-                                                        className="flex justify-center"
-                                                    >
-                                                        <MdCancel className="text-red-500 bg-none text-lg" />
-                                                    </button>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>No image</p>
-                                        )}
-
-                                        <div></div>
-                                    </div>
-                                    <FormItem label="" className="mt-4">
-                                        <Field name="image_mobile_array">
-                                            {({ form }: FieldProps<any>) => (
-                                                <Upload
-                                                    multiple
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={
-                                                        values.image_mobile_array
-                                                    }
-                                                    onChange={(files) =>
-                                                        form.setFieldValue(
-                                                            'image_mobile_array',
-                                                            files,
-                                                        )
-                                                    }
-                                                    onFileRemove={(files) =>
-                                                        form.setFieldValue(
-                                                            'image_mobile_array',
-                                                            files,
-                                                        )
-                                                    }
-                                                />
-                                            )}
-                                        </Field>
-                                    </FormItem>
-                                </div>
-                            </FormContainer>
+                            <ImageComponent
+                                imageView={mobileImagview}
+                                imageremove="mobile"
+                                handleImageRemove={handleImageRemove}
+                                name="image_mobile_array"
+                                beforeUpload={beforeUpload}
+                                fileList={values.image_mobile_array}
+                            />
 
                             {/* 2nd image */}
 
                             <div>Web Image</div>
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex flex-col items-center justify-center rounded-xl mb-4">
-                                <div className="mt-5">
-                                    <div className="flex gap-2">
-                                        {webImagview &&
-                                        webImagview.length > 0 ? (
-                                            webImagview.map((img, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex flex-col"
-                                                >
-                                                    <img
-                                                        src={img}
-                                                        alt={`image-${index}`}
-                                                        className="rounded-sm w-[50px] h-[50px]"
-                                                    />
-                                                    <button
-                                                        onClick={() =>
-                                                            handleImageRemove(
-                                                                index,
-                                                                'web',
-                                                            )
-                                                        }
-                                                        className="flex justify-center"
-                                                    >
-                                                        <MdCancel className="text-red-500 bg-none text-lg" />
-                                                    </button>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>No image</p>
-                                        )}
-                                    </div>
-                                    <FormItem label="" className="mt-4">
-                                        <Field name="image_web_array">
-                                            {({ form }: FieldProps<any>) => (
-                                                <Upload
-                                                    multiple
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={
-                                                        values.image_web_array
-                                                    }
-                                                    onChange={(files) =>
-                                                        form.setFieldValue(
-                                                            'image_web_array',
-                                                            files,
-                                                        )
-                                                    }
-                                                    onFileRemove={(files) =>
-                                                        form.setFieldValue(
-                                                            'image_web_array',
-                                                            files,
-                                                        )
-                                                    }
-                                                />
-                                            )}
-                                        </Field>
-                                    </FormItem>
-                                </div>
-                            </FormContainer>
+                            <ImageComponent
+                                imageView={webImagview}
+                                imageremove="web"
+                                handleImageRemove={handleImageRemove}
+                                name="image_web_array"
+                                beforeUpload={beforeUpload}
+                                fileList={values.image_web_array}
+                            />
                             {/* ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, */}
 
                             <div>Section BG Web</div>
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex flex-col items-center justify-center rounded-xl mb-4">
-                                <div className="mt-5">
-                                    <div className="flex gap-2">
-                                        {sectionBGweb &&
-                                        sectionBGweb.length > 0 ? (
-                                            sectionBGweb.map((img, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="flex flex-col"
-                                                >
-                                                    <img
-                                                        src={img}
-                                                        alt={`image-${index}`}
-                                                        className="rounded-sm w-[50px] h-[50px]"
-                                                    />
-                                                    <button
-                                                        onClick={() =>
-                                                            handleImageRemove(
-                                                                index,
-                                                                'SecWeb',
-                                                            )
-                                                        }
-                                                        className="text-red-600 font-bold"
-                                                    >
-                                                        X
-                                                    </button>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p>No image</p>
-                                        )}
-                                    </div>
-                                    <FormItem label="" className="mt-4">
-                                        <Field name="section_background_web_array">
-                                            {({ form }: FieldProps<any>) => (
-                                                <Upload
-                                                    multiple
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={
-                                                        values.section_background_web_array
-                                                    }
-                                                    onChange={(files) =>
-                                                        form.setFieldValue(
-                                                            'section_background_web_array',
-                                                            files,
-                                                        )
-                                                    }
-                                                    onFileRemove={(files) =>
-                                                        form.setFieldValue(
-                                                            'section_background_web_array',
-                                                            files,
-                                                        )
-                                                    }
-                                                />
-                                            )}
-                                        </Field>
-                                    </FormItem>
-                                </div>
-                            </FormContainer>
+                            <ImageComponent
+                                imageView={sectionBGweb}
+                                imageremove="SecWeb"
+                                handleImageRemove={handleImageRemove}
+                                name="section_background_web_array"
+                                beforeUpload={beforeUpload}
+                                fileList={values.section_background_web_array}
+                            />
 
                             {/* MOBILE................................... */}
 
                             <div>Section BG Mobile</div>
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex flex-col items-center justify-center rounded-xl mb-4">
-                                <div className="mt-5">
-                                    <div className="flex gap-2">
-                                        {sectionBGmobile &&
-                                        sectionBGmobile.length > 0 ? (
-                                            sectionBGmobile.map(
-                                                (img, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex flex-col"
-                                                    >
-                                                        <img
-                                                            src={img}
-                                                            alt={`image-${index}`}
-                                                            className="rounded-sm w-[50px] h-[50px]"
-                                                        />
-                                                        <button
-                                                            onClick={() =>
-                                                                handleImageRemove(
-                                                                    index,
-                                                                    'SecMob',
-                                                                )
-                                                            }
-                                                            className=""
-                                                        >
-                                                            <MdCancel className="text-red-500 bg-none text-lg" />
-                                                        </button>
-                                                    </div>
-                                                ),
-                                            )
-                                        ) : (
-                                            <p>No image</p>
-                                        )}
-                                    </div>
-                                    <FormItem label="" className="mt-4">
-                                        <Field name="section_background_mobile_array">
-                                            {({ form }: FieldProps<any>) => (
-                                                <Upload
-                                                    multiple
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={
-                                                        values.section_background_mobile_array
-                                                    }
-                                                    onChange={(files) =>
-                                                        form.setFieldValue(
-                                                            'section_background_mobile_array',
-                                                            files,
-                                                        )
-                                                    }
-                                                    onFileRemove={(files) =>
-                                                        form.setFieldValue(
-                                                            'section_background_mobile_array',
-                                                            files,
-                                                        )
-                                                    }
-                                                />
-                                            )}
-                                        </Field>
-                                    </FormItem>
-                                </div>
-                            </FormContainer>
+                            <ImageComponent
+                                imageView={sectionBGmobile}
+                                imageremove="SecMob"
+                                handleImageRemove={handleImageRemove}
+                                name="section_background_mobile_array"
+                                beforeUpload={beforeUpload}
+                                fileList={values.section_background_mobile_array}
+                            />
 
                             {/* ...................................................................... */}
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="division"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="division">
-                                            {({ field }: FieldProps<any>) => {
-                                                console.log('FIELD', field)
-                                                const fieldValue =
-                                                    Array.isArray(field.value)
-                                                        ? field.value
-                                                        : []
-
-                                                console.log(
-                                                    'MAIN',
-                                                    initialValue.division.map(
-                                                        (item) => item.name,
-                                                    ),
-                                                )
-
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.division.filter(
-                                                            (option) =>
-                                                                fieldValue.some(
-                                                                    (item) =>
-                                                                        item.name ===
-                                                                        option.name,
-                                                                ),
-                                                        )}
-                                                        options={
-                                                            divisions.divisions
-                                                        }
-                                                        getOptionLabel={(
-                                                            option,
-                                                        ) => option.name}
-                                                        getOptionValue={(
-                                                            option,
-                                                        ) =>
-                                                            option.id.toString()
-                                                        }
-                                                        onChange={(
-                                                            newVal,
-                                                            actionMeta,
-                                                        ) => {
-                                                            console.log(
-                                                                newVal,
-                                                                actionMeta,
-                                                            )
-                                                            setFieldValue(
-                                                                'division',
-                                                                newVal
-                                                                    ? newVal
-                                                                    : [],
-                                                            )
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
+                                <SectionsComponent
+                                    name="division"
+                                    label="Division"
+                                    defaultValue={initialValue.division}
+                                    setFieldValue={setFieldValue}
+                                    options={divisions.divisions}
+                                    fieldValues="division"
+                                />
 
                                 {/* CATEGORY...................................... */}
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="Category"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="category">
-                                            {({ field }: FieldProps<any>) => {
-                                                const fieldValue =
-                                                    Array.isArray(field.value)
-                                                        ? field.value
-                                                        : []
-
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.category.filter(
-                                                            (option) =>
-                                                                fieldValue.some(
-                                                                    (item) =>
-                                                                        item.name ===
-                                                                        option.name,
-                                                                ),
-                                                        )}
-                                                        options={
-                                                            category.categories
-                                                        }
-                                                        getOptionLabel={(
-                                                            option,
-                                                        ) => option.name}
-                                                        getOptionValue={(
-                                                            option,
-                                                        ) =>
-                                                            option.id.toString()
-                                                        }
-                                                        onChange={(
-                                                            newVal,
-                                                            actionMeta,
-                                                        ) => {
-                                                            console.log(
-                                                                newVal,
-                                                                actionMeta,
-                                                            )
-                                                            setFieldValue(
-                                                                'category',
-                                                                newVal
-                                                                    ? newVal
-                                                                    : [],
-                                                            )
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
+                                <SectionsComponent
+                                    name="category"
+                                    label="Category"
+                                    defaultValue={initialValue.category}
+                                    setFieldValue={setFieldValue}
+                                    options={category.categories}
+                                    fieldValues="category"
+                                />
 
                                 {/* SUB CATEGORY................................................. */}
 
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="sub_category"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="sub_category">
-                                            {({ field }: FieldProps<any>) => {
-                                                const fieldValue =
-                                                    Array.isArray(field.value)
-                                                        ? field.value
-                                                        : []
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.sub_category.filter(
-                                                            (option) =>
-                                                                fieldValue.some(
-                                                                    (item) =>
-                                                                        item.name ===
-                                                                        option.name,
-                                                                ),
-                                                        )}
-                                                        options={
-                                                            subCategory.subcategories
-                                                        }
-                                                        getOptionLabel={(
-                                                            option,
-                                                        ) => option.name}
-                                                        getOptionValue={(
-                                                            option,
-                                                        ) =>
-                                                            option.id.toString()
-                                                        }
-                                                        onChange={(
-                                                            newVal,
-                                                            actionMeta,
-                                                        ) => {
-                                                            console.log(
-                                                                newVal,
-                                                                actionMeta,
-                                                            )
-                                                            setFieldValue(
-                                                                'sub_category',
-                                                                newVal
-                                                                    ? newVal
-                                                                    : [],
-                                                            )
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
+                                <SectionsComponent
+                                    name="sub_category"
+                                    label="Sub Category"
+                                    defaultValue={initialValue.sub_category}
+                                    setFieldValue={setFieldValue}
+                                    options={subCategory.subcategories}
+                                    fieldValues="sub_category"
+                                />
 
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="product_type"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="product_type">
-                                            {({ field }: FieldProps<any>) => {
-                                                const fieldValue =
-                                                    Array.isArray(field.value)
-                                                        ? field.value
-                                                        : []
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.product_type.filter(
-                                                            (option) =>
-                                                                fieldValue.some(
-                                                                    (item) =>
-                                                                        item.name ===
-                                                                        option.name,
-                                                                ),
-                                                        )}
-                                                        options={
-                                                            product_type.product_types
-                                                        }
-                                                        getOptionLabel={(
-                                                            option,
-                                                        ) => option.name}
-                                                        getOptionValue={(
-                                                            option,
-                                                        ) =>
-                                                            option.id.toString()
-                                                        }
-                                                        onChange={(
-                                                            newVal,
-                                                            actionMeta,
-                                                        ) => {
-                                                            console.log(
-                                                                newVal,
-                                                                actionMeta,
-                                                            )
-                                                            setFieldValue(
-                                                                'product_type',
-                                                                newVal
-                                                                    ? newVal
-                                                                    : [],
-                                                            )
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
+                                <SectionsComponent
+                                    name="product_type"
+                                    label="Product Type"
+                                    defaultValue={initialValue.product_type}
+                                    setFieldValue={setFieldValue}
+                                    options={product_type.product_types}
+                                    fieldValues="product_type"
+                                />
 
                                 {/* BRAND   */}
 
-                                <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="BRAND"
-                                        className="col-span-1 w-full"
-                                    >
-                                        <Field name="brand">
-                                            {({ field }: FieldProps<any>) => {
-                                                const fieldValue =
-                                                    Array.isArray(field.value)
-                                                        ? field.value
-                                                        : []
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.brand.filter(
-                                                            (option) =>
-                                                                fieldValue.some(
-                                                                    (item) =>
-                                                                        item.name ===
-                                                                        option.name,
-                                                                ),
-                                                        )}
-                                                        options={brands.brands}
-                                                        getOptionLabel={(
-                                                            option,
-                                                        ) => option.name}
-                                                        getOptionValue={(
-                                                            option,
-                                                        ) =>
-                                                            option.id.toString()
-                                                        }
-                                                        onChange={(
-                                                            newVal,
-                                                            actionMeta,
-                                                        ) => {
-                                                            console.log(
-                                                                newVal,
-                                                                actionMeta,
-                                                            )
-                                                            setFieldValue(
-                                                                'brand',
-                                                                newVal
-                                                                    ? newVal
-                                                                    : [],
-                                                            )
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
+                                <SectionsComponent
+                                    name="brand"
+                                    label="Brand"
+                                    defaultValue={initialValue.brand}
+                                    setFieldValue={setFieldValue}
+                                    options={brands.brands}
+                                    fieldValues="brand"
+                                />
 
                                 {/* Tags */}
 
                                 <FormContainer>
-                                    <FormItem
-                                        asterisk
-                                        label="Filter Tags"
-                                        className="col-span-1 w-full"
-                                    >
+                                    <FormItem asterisk label="Filter Tags" className="col-span-1 w-full">
                                         <Field name="tags">
-                                            {({
-                                                field,
-                                                form,
-                                            }: FieldProps<any>) => {
-                                                const selectedTags =
-                                                    field.value.map(
-                                                        (tag: any) => {
-                                                            const matchedOption =
-                                                                filters.filters.find(
-                                                                    (option) =>
-                                                                        option.value ===
-                                                                        tag,
-                                                                )
-                                                            return (
-                                                                matchedOption || {
-                                                                    value: tag,
-                                                                    label: tag,
-                                                                }
-                                                            )
-                                                        },
+                                            {({ field, form }: FieldProps<any>) => {
+                                                const selectedTags = field.value.map((tag: any) => {
+                                                    const matchedOption = filters.filters.find((option) => option.value === tag)
+                                                    return (
+                                                        matchedOption || {
+                                                            value: tag,
+                                                            label: tag,
+                                                        }
                                                     )
+                                                })
 
                                                 return (
                                                     <Select
                                                         isMulti
                                                         placeholder="Select Filter Tags"
-                                                        options={
-                                                            filters.filters
-                                                        }
+                                                        options={filters.filters}
                                                         value={selectedTags}
-                                                        getOptionLabel={(
-                                                            option,
-                                                        ) => option.label}
-                                                        getOptionValue={(
-                                                            option,
-                                                        ) => option.value}
-                                                        onChange={(
-                                                            newVal,
-                                                            actionMeta,
-                                                        ) => {
-                                                            const newValues =
-                                                                newVal
-                                                                    ? newVal.map(
-                                                                          (
-                                                                              val,
-                                                                          ) =>
-                                                                              val.value,
-                                                                      )
-                                                                    : []
-                                                            form.setFieldValue(
-                                                                field.name,
-                                                                newValues,
-                                                            )
+                                                        getOptionLabel={(option) => option.label}
+                                                        getOptionValue={(option) => option.value}
+                                                        onChange={(newVal, actionMeta) => {
+                                                            const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                            form.setFieldValue(field.name, newValues)
                                                         }}
                                                     />
                                                 )
