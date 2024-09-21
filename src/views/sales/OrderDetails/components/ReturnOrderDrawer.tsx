@@ -54,18 +54,11 @@ const returnReasons = [
     },
 ]
 
-const ReturnOrderDrawer = ({
-    isOpen,
-    setIsOpen,
-    product,
-    invoice_id,
-}: ReturnOrderProps) => {
+const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrderProps) => {
     const [returnQuantities, setReturnQuantities] = useState<{
         [key: string]: number
     }>({})
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<
-        Record<string, { value: string; label: string }>
-    >({})
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, { value: string; label: string }>>({})
     const navigate = useNavigate()
 
     const onDrawerClose = useCallback(() => {
@@ -80,34 +73,19 @@ const ReturnOrderDrawer = ({
         }))
     }, [])
 
-    const handleSelect = useCallback(
-        (productId: number, reasonValue: string) => {
-            setCurrentSelectedPage((prev) => ({
-                ...prev,
-                [productId]: {
-                    value: reasonValue,
-                    label:
-                        returnReasons.find((p) => p.value === reasonValue)
-                            ?.label || '',
-                },
-            }))
-        },
-        [],
-    )
+    const handleSelect = useCallback((productId: number, reasonValue: string) => {
+        setCurrentSelectedPage((prev) => ({
+            ...prev,
+            [productId]: {
+                value: reasonValue,
+                label: returnReasons.find((p) => p.value === reasonValue)?.label || '',
+            },
+        }))
+    }, [])
 
     const handleReturnClick = async () => {
-        const returnReasonMap = Object.fromEntries(
-            Object.entries(currentSelectedPage).map(([id, { value }]) => [
-                id,
-                value,
-            ]),
-        )
-        const returnQtyMap = Object.fromEntries(
-            Object.entries(returnQuantities).map(([id, quantity]) => [
-                id,
-                quantity,
-            ]),
-        )
+        const returnReasonMap = Object.fromEntries(Object.entries(currentSelectedPage).map(([id, { value }]) => [id, value]))
+        const returnQtyMap = Object.fromEntries(Object.entries(returnQuantities).map(([id, quantity]) => [id, quantity]))
 
         const body = {
             return_reason: returnReasonMap,
@@ -115,15 +93,11 @@ const ReturnOrderDrawer = ({
         }
 
         try {
-            const response = await axioisInstance.post(
-                `merchant/returnorder/create/${invoice_id}`,
-                body,
-            )
+            const response = await axioisInstance.post(`merchant/returnorder/create/${invoice_id}`, body)
 
             notification.success({
                 message: 'SUCCESS',
-                description:
-                    response.data.message || 'Order successfully Returned',
+                description: response.data.message || 'Order successfully Returned',
             })
             navigate(0)
         } catch (error) {
@@ -148,94 +122,44 @@ const ReturnOrderDrawer = ({
                 {product && product.length > 0 && (
                     <div>
                         {product.map((pdts) => (
-                            <div
-                                key={pdts.id}
-                                className="mb-8 overflow-x-scroll scrollbar-hide"
-                            >
+                            <div key={pdts.id} className="mb-8 overflow-x-scroll scrollbar-hide">
                                 <div className="overflow-x-scroll scrollbar-hide xl:scrollbar-default">
                                     <table className="w-full text-left border-t mb-4">
                                         <thead>
                                             <tr className="bg-gray-100">
-                                                <th className="px-2 sm:px-4 py-2 font-semibold">
-                                                    SKU
-                                                </th>
-                                                <th className="px-2 sm:px-4 py-2 font-semibold">
-                                                    PRODUCT IMAGE
-                                                </th>
-                                                <th className="px-2 sm:px-4 py-2 font-semibold">
-                                                    PRODUCT NAME
-                                                </th>
-                                                <th className="px-2 sm:px-4 py-2 font-semibold">
-                                                    ORDERED QTY
-                                                </th>
-                                                <th className="px-2 sm:px-4 py-2 font-semibold">
-                                                    FULFILLED QTY
-                                                </th>
-                                                <th className="px-2 sm:px-4 py-2 font-semibold">
-                                                    RETURN QTY
-                                                </th>
-                                                <th className="px-2 sm:px-4 py-2 font-semibold">
-                                                    RETURN REASON
-                                                </th>
+                                                <th className="px-2 sm:px-4 py-2 font-semibold text-center w-1/5">SKU</th>
+                                                <th className="px-2 sm:px-4 py-2 font-semibold text-center w-1/5">PRODUCT IMAGE</th>
+                                                <th className="px-2 sm:px-4 py-2 font-semibold text-left w-2/5">PRODUCT NAME</th>
+                                                <th className="px-2 sm:px-4 py-2 font-semibold text-center w-1/5">ORDERED QTY</th>
+                                                <th className="px-2 sm:px-4 py-2 font-semibold text-center w-1/5">FULFILLED QTY</th>
+                                                <th className="px-2 sm:px-4 py-2 font-semibold text-center w-1/5">RETURN QTY</th>
+                                                <th className="px-2 sm:px-4 py-2 font-semibold text-center w-1/5">RETURN REASON</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody className="table-fixed">
                                             <tr className="border-t hover:bg-gray-50">
-                                                <td className="px-2 sm:px-4 py-2">
-                                                    {pdts.sku}
-                                                </td>
-                                                <td className="px-2 sm:px-4 py-2">
+                                                <td className="px-2 sm:px-4 py-2 w-1/5 text-center">{pdts.sku}</td>
+                                                <td className="px-2 sm:px-4 py-2 w-1/5 text-center">
                                                     <img
-                                                        src={
-                                                            pdts.image.split(
-                                                                ',',
-                                                            )[0]
-                                                        }
+                                                        src={pdts.image.split(',')[0]}
                                                         alt={pdts.name}
                                                         className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded"
                                                     />
                                                 </td>
-                                                <td className="px-2 sm:px-4 py-2">
-                                                    {pdts.name}
-                                                </td>
-                                                <td className="px-2 sm:px-4 py-2">
-                                                    {pdts.quantity}
-                                                </td>
-                                                <td className="px-2 sm:px-4 py-2">
-                                                    {pdts.fulfilled_quantity}
-                                                </td>
-                                                <td className="px-2 sm:px-4 py-2">
-                                                    {pdts.returnable_quantity >
-                                                    0 ? (
+                                                <td className="px-2 sm:px-4 py-2 w-2/5 text-left">{pdts.name}</td>
+                                                <td className="px-2 sm:px-4 py-2 w-1/5 text-center">{pdts.quantity}</td>
+                                                <td className="px-2 sm:px-4 py-2 w-1/5 text-center">{pdts.fulfilled_quantity}</td>
+                                                <td className="px-2 sm:px-4 py-2 w-1/5 text-center">
+                                                    {pdts.returnable_quantity > 0 ? (
                                                         <Select
-                                                            value={
-                                                                returnQuantities[
-                                                                    pdts.id
-                                                                ] || 0
-                                                            }
+                                                            value={returnQuantities[pdts.id] || 0}
                                                             className="w-full"
-                                                            onChange={(value) =>
-                                                                handleSelectChange(
-                                                                    pdts.id,
-                                                                    value,
-                                                                )
-                                                            }
+                                                            onChange={(value) => handleSelectChange(pdts.id, value)}
                                                         >
                                                             {Array.from(
-                                                                {
-                                                                    length:
-                                                                        parseInt(
-                                                                            pdts.returnable_quantity.toString(),
-                                                                            10,
-                                                                        ) + 1,
-                                                                },
+                                                                { length: parseInt(pdts.returnable_quantity.toString(), 10) + 1 },
                                                                 (_, i) => (
-                                                                    <Option
-                                                                        key={i}
-                                                                        value={
-                                                                            i
-                                                                        }
-                                                                    >
+                                                                    <Option key={i} value={i}>
                                                                         {i}
                                                                     </Option>
                                                                 ),
@@ -245,39 +169,17 @@ const ReturnOrderDrawer = ({
                                                         'NOT RETURNABLE'
                                                     )}
                                                 </td>
-
-                                                <td className="px-2 sm:px-4 py-2">
+                                                <td className="px-2 sm:px-4 py-2 w-1/5 text-center">
                                                     <Dropdown
                                                         className="text-black w-full"
-                                                        title={
-                                                            currentSelectedPage[
-                                                                pdts.id
-                                                            ]?.value ||
-                                                            'RETURN REASONS'
-                                                        }
-                                                        onSelect={(value) =>
-                                                            handleSelect(
-                                                                pdts.id,
-                                                                value,
-                                                            )
-                                                        }
+                                                        title={currentSelectedPage[pdts.id]?.value || 'RETURN REASONS'}
+                                                        onSelect={(value) => handleSelect(pdts.id, value)}
                                                     >
-                                                        {returnReasons?.map(
-                                                            (item, key) => (
-                                                                <DropdownItem
-                                                                    key={key}
-                                                                    eventKey={
-                                                                        item.value
-                                                                    }
-                                                                >
-                                                                    <span>
-                                                                        {
-                                                                            item.value
-                                                                        }
-                                                                    </span>
-                                                                </DropdownItem>
-                                                            ),
-                                                        )}
+                                                        {returnReasons?.map((item, key) => (
+                                                            <DropdownItem key={key} eventKey={item.value}>
+                                                                <span>{item.value}</span>
+                                                            </DropdownItem>
+                                                        ))}
                                                     </Dropdown>
                                                 </td>
                                             </tr>
@@ -287,10 +189,7 @@ const ReturnOrderDrawer = ({
                                 {currentSelectedPage[pdts.id]?.label && (
                                     <div className="mb-10">
                                         <p className="text-lg font-medium text-gray-800 mt-4 pl-2 sm:pl-6">
-                                            <span className="font-semibold">
-                                                Return Reason:
-                                            </span>{' '}
-                                            {currentSelectedPage[pdts.id].label}
+                                            <span className="font-semibold">Return Reason:</span> {currentSelectedPage[pdts.id].label}
                                         </p>
                                     </div>
                                 )}
@@ -299,10 +198,7 @@ const ReturnOrderDrawer = ({
                     </div>
                 )}
                 <div className="flex justify-end">
-                    <button
-                        className="bg-red-500 px-4 py-2 text-white rounded-lg"
-                        onClick={handleReturnClick}
-                    >
+                    <button className="bg-red-500 px-4 py-2 text-white rounded-lg" onClick={handleReturnClick}>
                         Return
                     </button>
                 </div>
