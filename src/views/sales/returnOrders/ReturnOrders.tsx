@@ -119,7 +119,7 @@ const OrderList = () => {
 
             const fromToParams = searchInput ? '' : `&from=${from}&to=${To_Date}`
 
-            const returnUrl = `merchant/return_orders?${searwiseDownload}${status}${fromToParams}${deliveryStatus}`
+            const returnUrl = `merchant/return_orders?${searwiseDownload}${status}${fromToParams}${deliveryStatus}&p=${page}&page_size=${pageSize}`
 
             const response = await axioisInstance.get(returnUrl)
 

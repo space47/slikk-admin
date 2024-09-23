@@ -119,11 +119,11 @@ export interface ReturnOrderOverallState {
     page: number
     from: string
     to: string
+    searchInput: string
+    currentSelectedPage: any
+    deliveryType: any
 }
 
-export const getAllReturnOrdersOverallRequest =
-    'getAllReturnOrdersOverallRequest'
-export const getAllReturnOrdersOverallSuccess =
-    createAction<ReturnOrderOverall>('getAllReturnOrdersOverallSuccess')
-export const getAllReturnOrdersOverallFailure =
-    createAction<ReturnOrderOverall>('getAllReturnOrdersOverallFailure')
+export const getAllReturnOrdersOverallRequest = 'getAllReturnOrdersOverallRequest'
+export const getAllReturnOrdersOverallSuccess = createAction<ReturnOrderOverall>('getAllReturnOrdersOverallSuccess')
+export const getAllReturnOrdersOverallFailure = createAction<ReturnOrderOverall>('getAllReturnOrdersOverallFailure')
