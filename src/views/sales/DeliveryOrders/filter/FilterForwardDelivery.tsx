@@ -79,8 +79,8 @@ const FilterForwardDelivery = ({
                     </div>
 
                     {/* Status Selection */}
-                    <div className="flex gap-2 items-center flex-col">
-                        <label htmlFor="" className="font-semibold">
+                    <div className="flex flex-col">
+                        <label htmlFor="" className="font-semibold text-lg mb-2">
                             SELECT STATUS
                         </label>
                         <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
