@@ -87,4 +87,7 @@ export const RETURN_ORDERS = [
     { name: 'CANCELLED', value: 'CANCELLED' },
     { name: 'APPROVED', value: 'APPROVED' },
     { name: 'ACCEPTED', value: 'ACCEPTED' },
+    { name: 'SHIPPED', value: 'SHIPPED' },
+    { name: 'OUT_FOR_DELIVERY', value: 'OUT_FOR_DELIVERY' },
+    { name: 'COMPLETED', value: 'COMPLETED' },
 ]
