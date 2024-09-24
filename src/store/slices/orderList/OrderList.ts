@@ -32,7 +32,7 @@ const initialState: OrderState = {
     pageSize: 10,
     page: 1,
     from: moment().format('YYYY-MM-DD'),
-    to: moment().add(1, 'days').format('YYYY-MM-DD'),
+    to: moment().format('YYYY-MM-DD'),
 }
 export const fetchOrders = createAsyncThunk('orders/fetchOrders', async (_, { getState }) => {
     try {

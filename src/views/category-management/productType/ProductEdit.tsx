@@ -12,6 +12,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
+import { RichTextEditor } from '@/components/shared'
 
 type FormModel = {
     id: number
@@ -182,16 +183,14 @@ const ProductEdit = () => {
             setImageView(newData)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -200,22 +199,18 @@ const ProductEdit = () => {
     const handleSubmit = async (values: FormModel) => {
         const formData = {
             ...values,
+            footer: values.footer,
             images: values.image,
         }
 
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.patch(
-                'product-type',
-                formData,
-            )
+            const response = await axioisInstance.patch('product-type', formData)
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message ||
-                    'Product Type Changed Successfully',
+                description: response?.data?.message || 'Product Type Changed Successfully',
             })
             navigate('/app/category/productType')
         } catch (error: any) {
@@ -276,8 +271,7 @@ const ProductEdit = () => {
                                         name="name"
                                         component={Input}
                                         onKeyDown={(e) => {
-                                            e.key === 'Enter' &&
-                                                e.preventDefault()
+                                            e.key === 'Enter' && e.preventDefault()
                                         }}
                                     />
                                 </FormItem>
@@ -285,10 +279,7 @@ const ProductEdit = () => {
                                 <FormItem
                                     asterisk
                                     label="Sub-Category Name"
-                                    invalid={
-                                        errors.sub_category_name &&
-                                        touched.sub_category_name
-                                    }
+                                    invalid={errors.sub_category_name && touched.sub_category_name}
                                     errorMessage={errors.sub_category_name}
                                     className="col-span-1 w-1/2"
                                 >
@@ -298,20 +289,10 @@ const ProductEdit = () => {
                                                 field={field}
                                                 form={form}
                                                 options={options}
-                                                value={options.find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value,
-                                                )}
-                                                onChange={(option) =>
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        option?.value,
-                                                    )
-                                                }
+                                                value={options.find((option) => option.value === field.value)}
+                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                                 onKeyDown={(e) => {
-                                                    e.key === 'Enter' &&
-                                                        e.preventDefault()
+                                                    e.key === 'Enter' && e.preventDefault()
                                                 }}
                                             />
                                         )}
@@ -334,8 +315,7 @@ const ProductEdit = () => {
                                         name="title"
                                         component={Input}
                                         onKeyDown={(e) => {
-                                            e.key === 'Enter' &&
-                                                e.preventDefault()
+                                            e.key === 'Enter' && e.preventDefault()
                                         }}
                                     />
                                 </FormItem>
@@ -343,10 +323,7 @@ const ProductEdit = () => {
                                 <FormItem
                                     asterisk
                                     label="Description"
-                                    invalid={
-                                        errors.description &&
-                                        touched.description
-                                    }
+                                    invalid={errors.description && touched.description}
                                     errorMessage={errors.description}
                                     className="col-span-1 w-1/2"
                                 >
@@ -355,8 +332,7 @@ const ProductEdit = () => {
                                         name="description"
                                         component={Input}
                                         onKeyDown={(e) => {
-                                            e.key === 'Enter' &&
-                                                e.preventDefault()
+                                            e.key === 'Enter' && e.preventDefault()
                                         }}
                                     />
                                 </FormItem>
@@ -367,14 +343,7 @@ const ProductEdit = () => {
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <div className=" image w-[10%] h-[20%] mt-5  ">
                                     {imagview && imagview.length > 0 ? (
-                                        imagview.map((img, index) => (
-                                            <img
-                                                key={index}
-                                                src={img}
-                                                alt="img"
-                                                className="rounded-xl"
-                                            />
-                                        ))
+                                        imagview.map((img, index) => <img key={index} src={img} alt="img" className="rounded-xl" />)
                                     ) : (
                                         <p>No image</p>
                                     )}
@@ -382,45 +351,24 @@ const ProductEdit = () => {
                                 <FormContainer className="mt-5">
                                     <FormItem
                                         label="ADD NEW IMAGE"
-                                        invalid={Boolean(
-                                            errors.image && touched.image,
-                                        )}
+                                        invalid={Boolean(errors.image && touched.image)}
                                         errorMessage={errors.image as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="image">
-                                            {({
-                                                form,
-                                            }: FieldProps<FormModel>) => (
+                                            {({ form }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
+                                                        beforeUpload={beforeUpload}
                                                         fileList={values.images}
-                                                        onChange={async (
-                                                            files,
-                                                        ) => {
-                                                            const uploadedImage =
-                                                                await handleFileupload(
-                                                                    files,
-                                                                )
+                                                        onChange={async (files) => {
+                                                            const uploadedImage = await handleFileupload(files)
                                                             {
-                                                                form.setFieldValue(
-                                                                    'image',
-                                                                    uploadedImage,
-                                                                )
-                                                                setImageView([
-                                                                    uploadedImage,
-                                                                ])
+                                                                form.setFieldValue('image', uploadedImage)
+                                                                setImageView([uploadedImage])
                                                             }
                                                         }}
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'image',
-                                                                files,
-                                                            )
-                                                        }
+                                                        onFileRemove={(files) => form.setFieldValue('image', files)}
                                                         showList={false}
                                                     />
                                                 </>
@@ -436,17 +384,16 @@ const ProductEdit = () => {
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     label="Footer"
+                                    labelClass="!justify-start"
                                     invalid={errors.footer && touched.footer}
                                     errorMessage={errors.footer}
                                     className="col-span-1 w-full"
                                 >
-                                    <textarea
-                                        name="footer"
-                                        value={footer}
-                                        onChange={handleFooterChange}
-                                        id=""
-                                        className="w-full border border-gray-200 rounded-lg items-center h-[200px] p-2"
-                                    ></textarea>
+                                    <Field name="footer">
+                                        {({ field, form }: FieldProps) => (
+                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                        )}
+                                    </Field>
                                 </FormItem>
                             </FormContainer>
 
@@ -456,10 +403,7 @@ const ProductEdit = () => {
                                 <FormItem
                                     asterisk
                                     label="Quick Filter Tag"
-                                    invalid={
-                                        errors.quick_filter_tags &&
-                                        touched.quick_filter_tags
-                                    }
+                                    invalid={errors.quick_filter_tags && touched.quick_filter_tags}
                                     errorMessage={errors.quick_filter_tags}
                                     className="col-span-1 w-1/2"
                                 >
@@ -468,8 +412,7 @@ const ProductEdit = () => {
                                         name="quick_filter_tags"
                                         component={Input}
                                         onKeyDown={(e) => {
-                                            e.key === 'Enter' &&
-                                                e.preventDefault()
+                                            e.key === 'Enter' && e.preventDefault()
                                         }}
                                     />
                                 </FormItem>
@@ -477,9 +420,7 @@ const ProductEdit = () => {
                                 <FormItem
                                     asterisk
                                     label="position"
-                                    invalid={
-                                        errors.position && touched.position
-                                    }
+                                    invalid={errors.position && touched.position}
                                     errorMessage={errors.position}
                                     className="col-span-1 w-1/2"
                                 >
@@ -488,8 +429,7 @@ const ProductEdit = () => {
                                         name="position"
                                         component={Input}
                                         onKeyDown={(e) => {
-                                            e.key === 'Enter' &&
-                                                e.preventDefault()
+                                            e.key === 'Enter' && e.preventDefault()
                                         }}
                                     />
                                 </FormItem>
@@ -520,20 +460,10 @@ const ProductEdit = () => {
                                                     field={field}
                                                     form={form}
                                                     options={genderOptions}
-                                                    value={genderOptions.find(
-                                                        (option) =>
-                                                            option.value ===
-                                                            field.value,
-                                                    )}
-                                                    onChange={(option) =>
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            option?.value,
-                                                        )
-                                                    }
+                                                    value={genderOptions.find((option) => option.value === field.value)}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                                     onKeyDown={(e) => {
-                                                        e.key === 'Enter' &&
-                                                            e.preventDefault()
+                                                        e.key === 'Enter' && e.preventDefault()
                                                     }}
                                                 />
                                             )
@@ -543,10 +473,7 @@ const ProductEdit = () => {
                             </FormContainer>
 
                             {/* Select boxes */}
-                            <FormItem
-                                label="ACTIVE"
-                                invalid={errors.is_active && touched.is_active}
-                            >
+                            <FormItem label="ACTIVE" invalid={errors.is_active && touched.is_active}>
                                 <Field
                                     name="is_active"
                                     component={Checkbox}
@@ -558,13 +485,7 @@ const ProductEdit = () => {
                                 </Field>
                             </FormItem>
 
-                            <FormItem
-                                label="TRY_&_BUY"
-                                invalid={
-                                    errors.is_try_and_buy &&
-                                    touched.is_try_and_buy
-                                }
-                            >
+                            <FormItem label="TRY_&_BUY" invalid={errors.is_try_and_buy && touched.is_try_and_buy}>
                                 <Field
                                     name="is_try_and_buy"
                                     component={Checkbox}
@@ -579,11 +500,7 @@ const ProductEdit = () => {
                             {/* Handle Submit */}
 
                             <FormItem>
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button variant="solid" type="submit">

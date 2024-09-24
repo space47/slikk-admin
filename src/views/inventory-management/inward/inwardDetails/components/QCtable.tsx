@@ -10,24 +10,23 @@ import {
     flexRender,
 } from '@tanstack/react-table'
 import { rankItem } from '@tanstack/match-sorter-utils'
-import type {
-    ColumnDef,
-    FilterFn,
-    ColumnFiltersState,
-} from '@tanstack/react-table'
+import type { ColumnDef, FilterFn, ColumnFiltersState } from '@tanstack/react-table'
 import type { InputHTMLAttributes } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 
-interface DebouncedInputProps
-    extends Omit<
-        InputHTMLAttributes<HTMLInputElement>,
-        'onChange' | 'size' | 'prefix'
-    > {
+interface DebouncedInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'prefix'> {
     value: string | number
     onChange: (value: string | number) => void
     debounce?: number
 }
+
+const pageSizeOptions = [
+    { value: 10, label: '10 / page' },
+    { value: 25, label: '25 / page' },
+    { value: 50, label: '50 / page' },
+    { value: 100, label: '100 / page' },
+]
 
 type grn_quality_check = {
     batch_number: string
@@ -61,12 +60,7 @@ type qctable = {
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
-function DebouncedInput({
-    value: initialValue,
-    onChange,
-    debounce = 500,
-    ...props
-}: DebouncedInputProps) {
+function DebouncedInput({ value: initialValue, onChange, debounce = 500, ...props }: DebouncedInputProps) {
     const [value, setValue] = useState(initialValue)
 
     useEffect(() => {
@@ -87,11 +81,7 @@ function DebouncedInput({
             <div className="flex justify-start mb-6">
                 <div className="flex items-center mb-4">
                     <span className="mr-2"></span>
-                    <Input
-                        {...props}
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                    />
+                    <Input {...props} value={value} onChange={(e) => setValue(e.target.value)} />
                 </div>
             </div>
         </div>
@@ -112,6 +102,10 @@ const QCtable = ({ data = [], totalData }: qctable) => {
     const [paginatedData, setPaginatedData] = useState<grn_quality_check[]>([])
 
     console.log('sssssssssssss', data, totalData)
+
+    const onSelectChange = (value = 0) => {
+        setPageSize(Number(value))
+    }
 
     const columns = useMemo<ColumnDef<grn_quality_check>[]>(
         () => [
@@ -163,13 +157,7 @@ const QCtable = ({ data = [], totalData }: qctable) => {
             {
                 header: 'Images',
                 accessorKey: 'images',
-                cell: (info) => (
-                    <img
-                        src={info.getValue() as string}
-                        alt="Image"
-                        style={{ width: '50px', height: '50px' }}
-                    />
-                ),
+                cell: (info) => <img src={info.getValue() as string} alt="Image" style={{ width: '50px', height: '50px' }} />,
             },
             {
                 header: 'Update Date',
@@ -219,10 +207,6 @@ const QCtable = ({ data = [], totalData }: qctable) => {
         pageCount: Math.ceil(totalData / pageSize),
     })
 
-    console.log('srrrrrrrrrrrr', paginatedData)
-    console.log('sssrrtrtrtrt', page)
-    console.log('rrrrrrrrr', pageSize)
-
     return (
         <>
             <DebouncedInput
@@ -241,21 +225,12 @@ const QCtable = ({ data = [], totalData }: qctable) => {
                                     {header.isPlaceholder ? null : (
                                         <div
                                             {...{
-                                                className:
-                                                    header.column.getCanSort()
-                                                        ? 'cursor-pointer select-none'
-                                                        : '',
-                                                onClick:
-                                                    header.column.getToggleSortingHandler(),
+                                                className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
+                                                onClick: header.column.getToggleSortingHandler(),
                                             }}
                                         >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
-                                            <Sorter
-                                                sort={header.column.getIsSorted()}
-                                            />
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                            <Sorter sort={header.column.getIsSorted()} />
                                         </div>
                                     )}
                                 </Th>
@@ -267,24 +242,25 @@ const QCtable = ({ data = [], totalData }: qctable) => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
 
-            <Pagination
-                pageSize={pageSize}
-                currentPage={page}
-                total={totalData}
-                onChange={onPaginationChange}
-            />
+            <div className="flex xl:justify-between xl:flex-row flex-col gap-3 justify-center items-center mt-3 ">
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
+
+                <Select
+                    size="sm"
+                    isSearchable={true}
+                    value={pageSizeOptions.find((option) => option.value === pageSize)}
+                    options={pageSizeOptions}
+                    onChange={(option) => onSelectChange(option?.value)}
+                    className="xl:w-[10%] w-[50%]"
+                />
+            </div>
         </>
     )
 }
