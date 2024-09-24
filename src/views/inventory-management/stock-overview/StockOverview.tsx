@@ -4,13 +4,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
@@ -89,8 +83,7 @@ const StockOverview = () => {
     }>({})
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState([])
-    const [currentSelectedPage, setCurrentSelectedPage] =
-        useState<Record<string, string>>()
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchType, setSearchType] = useState<string>('')
 
     const fetchData = async (page: number, pageSize: number) => {
@@ -112,11 +105,7 @@ const StockOverview = () => {
         }
     }
 
-    const filter = async (
-        page: number,
-        pageSize: number,
-        filter: string = '',
-    ) => {
+    const filter = async (page: number, pageSize: number, filter: string = '') => {
         try {
             let type = ''
             if (currentSelectedPage?.label && searchType) {
@@ -125,16 +114,12 @@ const StockOverview = () => {
 
             let searchInputType = `&sku=${filter}`
             setFilterInput(searchInputType)
-            let response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`,
-            )
+            let response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`)
 
             if (response?.data?.data?.results?.length === 0) {
                 searchInputType = `&name=${filter}`
                 setFilterInput(searchInputType)
-                response = await axiosInstance.get(
-                    `inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`,
-                )
+                response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`)
             }
 
             const data = response.data.data.results
@@ -177,9 +162,7 @@ const StockOverview = () => {
                         src={getValue().split(',')[0]}
                         alt="Image"
                         className="w-24 h-20 object-cover cursor-pointer"
-                        onClick={() =>
-                            handleOpenModal(row.original.product.image)
-                        }
+                        onClick={() => handleOpenModal(row.original.product.image)}
                     />
                 ),
             },
@@ -193,17 +176,8 @@ const StockOverview = () => {
                 accessorKey: 'location',
                 cell: ({ row }) => {
                     const stockId = row.original.id
-                    const location =
-                        updatedLocation[stockId] ?? row.original.location
-                    return (
-                        <input
-                            type="text"
-                            value={location}
-                            onChange={(e) =>
-                                handleLocationChange(stockId, e.target.value)
-                            }
-                        />
-                    )
+                    const location = updatedLocation[stockId] ?? row.original.location
+                    return <input type="text" value={location} onChange={(e) => handleLocationChange(stockId, e.target.value)} />
                 },
             },
             {
@@ -227,19 +201,13 @@ const StockOverview = () => {
                 accessorKey: 'quantity',
                 cell: ({ row }) => {
                     const stockId = row.original.id
-                    const quantity =
-                        updatedQuantities[stockId] ?? row.original.quantity
+                    const quantity = updatedQuantities[stockId] ?? row.original.quantity
                     return (
                         <input
                             className="w-[100px]"
                             type="number"
                             value={quantity}
-                            onChange={(e) =>
-                                handleQuantityChange(
-                                    stockId,
-                                    Number(e.target.value),
-                                )
-                            }
+                            onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
                         />
                     )
                 },
@@ -257,20 +225,12 @@ const StockOverview = () => {
             {
                 header: 'Created',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'Updated',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'GRN number',
@@ -287,13 +247,7 @@ const StockOverview = () => {
                 accessorKey: 'id',
                 cell: ({ getValue, row }) => (
                     <button
-                        onClick={() =>
-                            handleUpdate(
-                                row.original.id,
-                                row.original.quantity,
-                                row.original.location,
-                            )
-                        }
+                        onClick={() => handleUpdate(row.original.id, row.original.quantity, row.original.location)}
                         className="px-4 py-2 bg-none text-2xl rounded font-bold"
                     >
                         <FaSync />
@@ -333,14 +287,9 @@ const StockOverview = () => {
         }))
     }
 
-    const handleUpdate = async (
-        id: any,
-        originalQuantity: any,
-        originalLocation: any,
-    ) => {
+    const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
         const location = updatedLocation[id] ?? null
-        const quantity =
-            updatedQuantities[id] >= 0 ? updatedQuantities[id] : null
+        const quantity = updatedQuantities[id] >= 0 ? updatedQuantities[id] : null
 
         console.log('Quantity', quantity)
 
@@ -411,14 +360,10 @@ const StockOverview = () => {
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = searchType
-                ? `${searchType}-stockOverView.csv`
-                : `All-StockOverview.csv`
+            link.download = searchType ? `${searchType}-stockOverView.csv` : `All-StockOverview.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -430,6 +375,12 @@ const StockOverview = () => {
     return (
         <div className="overflow-x-auto p-4">
             <div className="upper flex flex-col md:flex-row justify-between mb-5 items-center">
+                <button
+                    className="xl:hidden bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mb-4 justify-end items-end"
+                    onClick={handleDownload}
+                >
+                    <IoMdDownload className="text-xl" />
+                </button>
                 <div className="mb-4 w-full md:w-auto">
                     <input
                         type="text"
@@ -439,29 +390,37 @@ const StockOverview = () => {
                         className="p-2 border rounded shadow-md w-full md:w-auto"
                     />
                 </div>
-                <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
-                    <input
-                        type="text"
-                        placeholder="Enter brand/category"
-                        value={searchType}
-                        onChange={handleSearchType}
-                        className="p-2 border rounded shadow-md w-full md:w-auto"
-                    />
-                    <Dropdown
-                        className="text-xl text-black w-full md:w-auto"
-                        title={
-                            currentSelectedPage?.value
-                                ? currentSelectedPage.label
-                                : 'SELECT'
-                        }
-                        onSelect={handleSelect}
-                    >
-                        {DROPDOWNARRAY?.map((item, key) => (
-                            <DropdownItem key={key} eventKey={item.value}>
-                                <span>{item.label}</span>
-                            </DropdownItem>
-                        ))}
-                    </Dropdown>
+                <div className="flex flex-col gap-2 xl:flex-row items-center xl:items-baseline ">
+                    <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
+                        <input
+                            type="text"
+                            placeholder="Enter brand/category"
+                            value={searchType}
+                            onChange={handleSearchType}
+                            className="p-2 border rounded shadow-md w-full md:w-auto"
+                        />
+                        <Dropdown
+                            className="text-xl text-black w-full md:w-auto "
+                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                            onSelect={handleSelect}
+                        >
+                            {DROPDOWNARRAY?.map((item, key) => (
+                                <DropdownItem key={key} eventKey={item.value}>
+                                    <span>{item.label}</span>
+                                </DropdownItem>
+                            ))}
+                        </Dropdown>
+                    </div>
+
+                    <div>
+                        <button
+                            className="hidden xl:flex bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg  "
+                            onClick={handleDownload}
+                        >
+                            <IoMdDownload className="text-xl" />
+                            Export
+                        </button>
+                    </div>
                 </div>
             </div>
             <Table className="w-full">
@@ -470,10 +429,7 @@ const StockOverview = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -483,12 +439,7 @@ const StockOverview = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
@@ -506,19 +457,14 @@ const StockOverview = () => {
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                         className="w-1/2 md:w-auto"
                     />
-                    <button
-                        className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg "
-                        onClick={handleDownload}
-                    >
+                    {/* <button className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg " onClick={handleDownload}>
                         <IoMdDownload className="text-xl" />
-                    </button>
+                    </button> */}
                 </div>
             </div>
             {showImageModal && (
