@@ -154,7 +154,6 @@ const BrandOrder = () => {
                 value,
             }))
 
-            console.log('dddddddddd', dateWIseDetailArray)
             setDatewisedetails(dateWIseDetailArray)
         } catch (error) {
             console.error(error)
@@ -164,9 +163,6 @@ const BrandOrder = () => {
     useEffect(() => {
         fetchData(from, to)
     }, [page, pageSize, selectedCompany.id, from, to, typeFetch])
-
-    console.log('SKU Details:', skuWiseDetails)
-    console.log('adteeeeeeeee', datewisedetails)
 
     const columns = useMemo<ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]>(
         () => [
@@ -393,7 +389,10 @@ const BrandOrder = () => {
                     </div>
                     <div>
                         <div className="flex items-end justify-end">
-                            <button className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 " onClick={handleDownload}>
+                            <button
+                                className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 "
+                                onClick={handleDownload}
+                            >
                                 <IoMdDownload className="text-xl" />
                                 Export
                             </button>
@@ -452,7 +451,12 @@ const BrandOrder = () => {
             </Table>
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={skuWiseDetails && skuWiseDetails.length} onChange={onPaginationChange} />
+                <Pagination
+                    pageSize={pageSize}
+                    currentPage={page}
+                    total={skuWiseDetails && skuWiseDetails.length}
+                    onChange={onPaginationChange}
+                />
                 <div className="mt-3 sm:mt-0" style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"

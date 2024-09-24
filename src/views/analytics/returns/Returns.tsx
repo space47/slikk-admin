@@ -258,7 +258,7 @@ const Returns = () => {
                                     defaultValue={new Date()}
                                     value={new Date(to)}
                                     onChange={handleToChange}
-                                    minDate={moment(from).add(1, 'day').toDate()}
+                                    minDate={moment(from).toDate()}
                                 />
                             </div>
                             <div>

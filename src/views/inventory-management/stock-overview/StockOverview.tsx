@@ -16,6 +16,15 @@ import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { TfiExchangeVertical } from 'react-icons/tfi'
 import { FaSync } from 'react-icons/fa'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { CATEGORY_STATE } from '@/store/types/category.types'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
+import { BRAND_STATE } from '@/store/types/brand.types'
+import { getAllBrandsAPI } from '@/store/action/brand.action'
+import StockOverviewFilter from './stockOverviewComponents/StockOverviewFilter'
 
 interface LastUpdatedBy {
     name: string
@@ -86,15 +95,20 @@ const StockOverview = () => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchType, setSearchType] = useState<string>('')
 
+    // FOR THE LISTS
+    const [divisionList, setDivisionList] = useState<string[]>([])
+    const [categoryList, setCategoryList] = useState([])
+    const [subCategoryList, setSubCategoryList] = useState([])
+    const [productTypeList, setProductTypeList] = useState([])
+    const [brandList, setBrandList] = useState([])
+    const [typeFetch, setTypeFetch] = useState('')
+
+    const [showDrawer, setShowDrawer] = useState(false)
+
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            let type = ''
-            if (currentSelectedPage?.label && searchType) {
-                type = `&${currentSelectedPage.value}=${searchType}`
-            }
-
             const response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}${type}`, // /rowId(patch)...........body me quantity: {numberic value}, //location : text
+                `inventory?p=${page}&page_size=${pageSize}&${typeFetch}`, // /rowId(patch)...........body me quantity: {numberic value}, //location : text
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -107,19 +121,14 @@ const StockOverview = () => {
 
     const filter = async (page: number, pageSize: number, filter: string = '') => {
         try {
-            let type = ''
-            if (currentSelectedPage?.label && searchType) {
-                type = `&${currentSelectedPage.value}=${searchType}`
-            }
-
             let searchInputType = `&sku=${filter}`
             setFilterInput(searchInputType)
-            let response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`)
+            let response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`)
 
             if (response?.data?.data?.results?.length === 0) {
                 searchInputType = `&name=${filter}`
                 setFilterInput(searchInputType)
-                response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}${type}${searchInputType}`)
+                response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`)
             }
 
             const data = response.data.data.results
@@ -134,13 +143,11 @@ const StockOverview = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, currentSelectedPage, searchType])
+    }, [page, pageSize, currentSelectedPage, searchType, typeFetch])
 
     useEffect(() => {
         filter(page, pageSize, globalFilter)
     }, [page, pageSize, globalFilter, searchType])
-
-    console.log('TYYYPe', searchType)
 
     const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
@@ -257,18 +264,8 @@ const StockOverview = () => {
         ],
         [updatedQuantities, updatedLocation],
     )
-    const handleSelect = (value: any) => {
-        const selected = DROPDOWNARRAY.find((item) => item.value === value)
-        if (selected) {
-            setCurrentSelectedPage(selected)
-        }
-    }
-    const handleSearchType = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchType(event.target.value)
-    }
 
     const handleOpenModal = (img: any) => {
-        console.log('sdsds', img)
         setParticularROwImage(img)
         setShowImageModal(true)
     }
@@ -286,6 +283,66 @@ const StockOverview = () => {
             [id]: newLocation,
         }))
     }
+
+    // Filters.................
+
+    const hanldeFilter = () => {
+        setShowDrawer(true)
+    }
+
+    const handleCloseDrawer = () => {
+        setShowDrawer(false)
+    }
+
+    const handleMultiSelect = (fieldName: string, selectedValues: any) => {
+        if (fieldName === 'division') {
+            setDivisionList(selectedValues)
+        } else if (fieldName === 'category') {
+            setCategoryList(selectedValues)
+        } else if (fieldName === 'sub_category') {
+            setSubCategoryList(selectedValues)
+        } else if (fieldName === 'product_type') {
+            setProductTypeList(selectedValues)
+        } else if (fieldName === 'brand') {
+            setBrandList(selectedValues)
+        }
+    }
+
+    const handleApply = () => {
+        let query = ''
+
+        if (divisionList.length > 0) {
+            const divisionIds = divisionList.map((item: any) => item).join(',')
+            query += `division=${divisionIds}`
+        }
+
+        if (categoryList.length > 0) {
+            const categoryIds = categoryList.map((item: any) => item).join(',')
+            if (query) query += '&'
+            query += `category=${categoryIds}`
+        }
+
+        if (subCategoryList.length > 0) {
+            const subCategoryIds = subCategoryList.map((item: any) => item).join(',')
+            if (query) query += '&'
+            query += `sub_category=${subCategoryIds}`
+        }
+        if (productTypeList.length > 0) {
+            const productTypeIds = productTypeList.map((item: any) => item).join(',')
+            if (query) query += '&'
+            query += `Product_type=${productTypeIds}`
+        }
+        if (brandList.length > 0) {
+            const brandIds = brandList.map((item: any) => item).join(',')
+            if (query) query += '&'
+            query += `brand=${brandIds}`
+        }
+
+        setTypeFetch(query)
+        setShowDrawer(false)
+    }
+
+    //...........................
 
     const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
         const location = updatedLocation[id] ?? null
@@ -310,8 +367,6 @@ const StockOverview = () => {
             console.error(error)
         }
     }
-
-    console.log('UPPPPPPPPP', updatedQuantities, updatedLocation)
 
     const table = useReactTable({
         data,
@@ -345,18 +400,13 @@ const StockOverview = () => {
 
     const handleDownload = async () => {
         try {
-            let type = ''
-            if (currentSelectedPage?.label && searchType) {
-                type = `&${currentSelectedPage.value}=${searchType}`
-            }
-
             let filterParam = ''
             if (filterInput.includes('&name=')) {
                 filterParam = `&name=${globalFilter}`
             } else if (filterInput.includes('&sku=')) {
                 filterParam = `&sku=${globalFilter}`
             }
-            const downloadUrl = `inventory?download=true${type}${filterParam}`
+            const downloadUrl = `inventory?download=true&${typeFetch}${filterParam}`
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
@@ -390,31 +440,16 @@ const StockOverview = () => {
                         className="p-2 border rounded shadow-md w-full md:w-auto"
                     />
                 </div>
-                <div className="flex flex-col gap-2 xl:flex-row items-center xl:items-baseline ">
+                <div className="flex flex-col gap-7 xl:flex-row items-center xl:items-baseline ">
                     <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
-                        <input
-                            type="text"
-                            placeholder="Enter brand/category"
-                            value={searchType}
-                            onChange={handleSearchType}
-                            className="p-2 border rounded shadow-md w-full md:w-auto"
-                        />
-                        <Dropdown
-                            className="text-xl text-black w-full md:w-auto "
-                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                            onSelect={handleSelect}
-                        >
-                            {DROPDOWNARRAY?.map((item, key) => (
-                                <DropdownItem key={key} eventKey={item.value}>
-                                    <span>{item.label}</span>
-                                </DropdownItem>
-                            ))}
-                        </Dropdown>
+                        <Button variant="new" onClick={hanldeFilter}>
+                            Category Filter
+                        </Button>
                     </div>
 
                     <div>
                         <button
-                            className="hidden xl:flex bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg  "
+                            className="hidden xl:flex bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg items-center "
                             onClick={handleDownload}
                         >
                             <IoMdDownload className="text-xl" />
@@ -472,6 +507,20 @@ const StockOverview = () => {
                     dialogIsOpen={showImageModal}
                     setIsOpen={setShowImageModal}
                     image={particularRowImage && particularRowImage?.split(',')}
+                />
+            )}
+
+            {showDrawer && (
+                <StockOverviewFilter
+                    showDrawer={showDrawer}
+                    handleCloseDrawer={handleCloseDrawer}
+                    handleMultiSelect={handleMultiSelect}
+                    handleApply={handleApply}
+                    subCategoryList={subCategoryList}
+                    divisionList={divisionList}
+                    categroyList={categoryList}
+                    brandList={brandList}
+                    productTypeList={productTypeList}
                 />
             )}
         </div>

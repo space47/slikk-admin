@@ -38,6 +38,8 @@ const AddCoupons = () => {
         dispatch(fetchCouponsEdit(coupon_code ?? ''))
     }, [coupon_code, dispatch])
 
+    console.log('couponsEdit', couponsEdit)
+
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
@@ -73,7 +75,9 @@ const AddCoupons = () => {
         return valid
     }
 
-    const initialValue: COUPONDATA = {
+    console.log('PPOPOL', couponsEdit?.code)
+
+    const initialValue = {
         code: couponsEdit?.code || '',
         imageArray: [],
         image: couponsEdit?.image || '',
