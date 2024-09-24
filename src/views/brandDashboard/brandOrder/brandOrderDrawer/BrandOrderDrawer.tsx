@@ -78,13 +78,7 @@ const BrandOrderDrawer = ({
 
     return (
         <div>
-            <Drawer
-                title=""
-                isOpen={showDrawer}
-                onClose={handleCloseDrawer}
-                onRequestClose={handleCloseDrawer}
-                lockScroll={false}
-            >
+            <Drawer title="" isOpen={showDrawer} onClose={handleCloseDrawer} onRequestClose={handleCloseDrawer} lockScroll={false}>
                 <Formik initialValues={initialValues} onSubmit={handleApply}>
                     {({ setFieldValue, values, resetForm }) => (
                         <Form className="flex flex-col gap-10 w-full items-center">
@@ -96,20 +90,12 @@ const BrandOrderDrawer = ({
                                     isMulti
                                     options={divisionArray}
                                     getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) =>
-                                        option.id.toString()
-                                    }
+                                    getOptionValue={(option) => option.id.toString()}
                                     value={values.division}
                                     onChange={(newVal) => {
                                         const selectedValues = newVal || []
-                                        setFieldValue(
-                                            'division',
-                                            selectedValues,
-                                        )
-                                        handleMultiSelect(
-                                            'division',
-                                            selectedValues,
-                                        )
+                                        setFieldValue('division', selectedValues)
+                                        handleMultiSelect('division', selectedValues)
                                     }}
                                 />
                             </div>
@@ -122,48 +108,31 @@ const BrandOrderDrawer = ({
                                     isMulti
                                     options={categoryArray}
                                     getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) =>
-                                        option.id.toString()
-                                    }
+                                    getOptionValue={(option) => option.id.toString()}
                                     value={values.category}
                                     onChange={(newVal) => {
                                         const selectedValues = newVal || []
-                                        setFieldValue(
-                                            'category',
-                                            selectedValues,
-                                        )
-                                        handleMultiSelect(
-                                            'category',
-                                            selectedValues,
-                                        )
+                                        setFieldValue('category', selectedValues)
+                                        handleMultiSelect('category', selectedValues)
                                     }}
                                 />
                             </div>
 
                             {/* Sub Category */}
                             <div className="flex flex-col gap-1 w-full max-w-md">
-                                <div className="font-semibold">
-                                    Sub Category
-                                </div>
+                                <div className="font-semibold">Sub Category</div>
                                 <Select
                                     className="w-full"
                                     isMulti
                                     options={subCategoryArray}
                                     getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) =>
-                                        option.id.toString()
-                                    }
+                                    getOptionValue={(option) => option.id.toString()}
                                     value={values.sub_category}
                                     onChange={(newVal) => {
                                         const selectedValues = newVal || []
-                                        setFieldValue(
-                                            'sub_category',
-                                            selectedValues,
-                                        )
-                                        handleMultiSelect(
-                                            'sub_category',
-                                            selectedValues,
-                                        )
+                                        console.log('Selected', selectedValues)
+                                        setFieldValue('sub_category', selectedValues)
+                                        handleMultiSelect('sub_category', selectedValues)
                                     }}
                                 />
                             </div>
@@ -177,11 +146,7 @@ const BrandOrderDrawer = ({
                                     Reset
                                 </Button>
 
-                                <Button
-                                    type="submit"
-                                    variant="new"
-                                    className="mt-4 bg-blue-500 text-white p-2 rounded"
-                                >
+                                <Button type="submit" variant="new" className="mt-4 bg-blue-500 text-white p-2 rounded">
                                     APPLY
                                 </Button>
                             </FormContainer>
