@@ -24,6 +24,7 @@ import { useNavigate } from 'react-router-dom'
 import Infor from '@/components/template/VerticalMenuContent/Infor'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { RichTextEditor } from '@/components/shared'
 
 type FormModel = {
     select: string
@@ -67,7 +68,7 @@ const initialValue: FormModel = {
     total_quantity: null,
     document: '',
     images: '',
-    image: []
+    image: [],
 }
 
 // const validationSchema = Yup.object().shape({
@@ -98,9 +99,7 @@ const MixedFormControl = () => {
     const [imagview, setImageView] = useState<string>('')
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const navigate = useNavigate()
 
@@ -117,7 +116,7 @@ const MixedFormControl = () => {
             'image/png',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -149,31 +148,25 @@ const MixedFormControl = () => {
         formData.append('file_type', 'grn')
         try {
             console.log(formData.get('file'))
-            const response = await axios.post(
-                'fileupload/dashboard',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-            )
+            const response = await axios.post('fileupload/dashboard', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             console.log(response)
             const newData = response.data.url
             setDatas(newData)
             setShowData(true)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'File uploaded successfully'
+                description: response?.data?.message || 'File uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded'
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -189,15 +182,11 @@ const MixedFormControl = () => {
 
         try {
             console.log(formData.get('file'))
-            const response = await axioisInstance.post(
-                'fileupload/dashboard',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-            )
+            const response = await axioisInstance.post('fileupload/dashboard', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             console.log(response)
             const newData = response.data.url
             setImageView(newData)
@@ -205,16 +194,14 @@ const MixedFormControl = () => {
             setShowImage(true)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully'
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded'
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -255,31 +242,27 @@ const MixedFormControl = () => {
         const formData = {
             ...values,
             company: selectedCompany.id,
+
             document: docsShow,
-            images: imageShow
+            images: imageShow,
         }
 
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.post(
-                'goods/received',
-                formData
-            )
+            const response = await axioisInstance.post('goods/received', formData)
 
             console.log(response)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'GRN created Successfully'
+                description: response?.data?.message || 'GRN created Successfully',
             })
             navigate('/app/goods/received')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'GRN not created '
+                description: error?.response?.data?.message || 'GRN not created ',
             })
         }
     }
@@ -300,48 +283,28 @@ const MixedFormControl = () => {
                                 <FormItem
                                     asterisk
                                     label="Document Number"
-                                    invalid={
-                                        errors.document_number &&
-                                        touched.document_number
-                                    }
+                                    invalid={errors.document_number && touched.document_number}
                                     errorMessage={errors.document_number}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="document_number"
-                                        placeholder="Place your Document Number"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="document_number" placeholder="Place your Document Number" component={Input} />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Date"
-                                    invalid={
-                                        errors.document_date &&
-                                        touched.document_date
-                                    }
+                                    invalid={errors.document_date && touched.document_date}
                                     errorMessage={errors.document_date}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        name="document_date"
-                                        placeholder="Date"
-                                    >
-                                        {({
-                                            field,
-                                            form
-                                        }: FieldProps<FormModel>) => (
+                                    <Field name="document_date" placeholder="Date">
+                                        {({ field, form }: FieldProps<FormModel>) => (
                                             <DatePicker
                                                 field={field}
                                                 form={form}
                                                 value={values.document_date}
                                                 onChange={(date) => {
                                                     console.log(field.name)
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        date
-                                                    )
+                                                    form.setFieldValue(field.name, date)
                                                 }}
                                             />
                                         )}
@@ -350,142 +313,78 @@ const MixedFormControl = () => {
                             </FormContainer>
                             {/* Second line/////////////////////////////////////////////////////////// */}
 
-                            <FormItem
-                                asterisk
-                                label="Supplier Address"
-                                invalid={
-                                    errors.origin_address &&
-                                    touched.origin_address
-                                }
-                                errorMessage={errors.origin_address}
-                                className="col-span-1 w-full"
-                            >
-                                <Field
-                                    type="text"
-                                    name="origin_address"
-                                    placeholder="Supplier Address"
-                                    component={Input}
-                                    style={{ height: '100px' }}
-                                />
-                            </FormItem>
-                            <FormItem
-                                asterisk
-                                label="Receiver Address"
-                                invalid={
-                                    errors.received_address &&
-                                    touched.received_address
-                                }
-                                errorMessage={errors.received_address}
-                                className="col-span-1 w-full"
-                            >
-                                <Field
-                                    type="text"
-                                    name="received_address"
-                                    placeholder="Receiver Address"
-                                    component={Input}
-                                    style={{ height: '100px' }}
-                                />
-                            </FormItem>
-
+                            <FormContainer>
+                                <FormItem label="Supplier Address" labelClass="!justify-start" className="col-span-1 w-full">
+                                    <Field name="origin_address">
+                                        {({ field, form }: FieldProps) => (
+                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                            </FormContainer>
+                            <FormContainer>
+                                <FormItem label="Receiver Address" labelClass="!justify-start" className="col-span-1 w-full">
+                                    <Field name="received_address">
+                                        {({ field, form }: FieldProps) => (
+                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                            </FormContainer>
                             {/* fffffffffffffffffffffffffffffffffffffff */}
 
                             <FormContainer className="flex flex-row gap-3 ">
                                 <FormItem
                                     asterisk
                                     label="Received By"
-                                    invalid={
-                                        errors.received_by &&
-                                        touched.received_by
-                                    }
+                                    invalid={errors.received_by && touched.received_by}
                                     errorMessage={errors.received_by}
                                     className="col-span-1 w-1/3"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="received_by"
-                                        placeholder="Enter your Mobile Number"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="received_by" placeholder="Enter your Mobile Number" component={Input} />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Total SKUs"
-                                    invalid={
-                                        errors.total_sku && touched.total_sku
-                                    }
+                                    invalid={errors.total_sku && touched.total_sku}
                                     errorMessage={errors.total_sku}
                                     className="col-span-1 w-1/3"
                                 >
-                                    <Field
-                                        type="number"
-                                        name="total_sku"
-                                        placeholder="Enter total Skus"
-                                        component={Input}
-                                    />
+                                    <Field type="number" name="total_sku" placeholder="Enter total Skus" component={Input} />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Total Quantity"
-                                    invalid={
-                                        errors.total_quantity &&
-                                        touched.total_quantity
-                                    }
+                                    invalid={errors.total_quantity && touched.total_quantity}
                                     errorMessage={errors.total_quantity}
                                     className="col-span-1 w-1/3"
                                 >
-                                    <Field
-                                        type="number"
-                                        name="total_quantity"
-                                        placeholder="Enter total items received"
-                                        component={Input}
-                                    />
+                                    <Field type="number" name="total_quantity" placeholder="Enter total items received" component={Input} />
                                 </FormItem>
                             </FormContainer>
 
                             {/* ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo */}
 
-                            <div className="font-bold mb-3">
-                                Upload Supporting Document
-                            </div>
+                            <div className="font-bold mb-3">Upload Supporting Document</div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <FormContainer className=" mt-5 ">
                                     <FormItem
                                         label=""
-                                        invalid={Boolean(
-                                            errors.document && touched.document
-                                        )}
+                                        invalid={Boolean(errors.document && touched.document)}
                                         errorMessage={errors.document as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="document">
-                                            {({
-                                                field,
-                                                form
-                                            }: FieldProps<FormModel>) => (
+                                            {({ field, form }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
+                                                        beforeUpload={beforeUpload}
                                                         fileList={values.files} // uploadedd the file
                                                         onChange={(files) => {
-                                                            console.log(
-                                                                'OnchangeFiles',
-                                                                files,
-                                                                field.name,
-                                                                values.files
-                                                            )
-                                                            form.setFieldValue(
-                                                                'files',
-                                                                files
-                                                            )
+                                                            console.log('OnchangeFiles', files, field.name, values.files)
+                                                            form.setFieldValue('files', files)
                                                         }}
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'files',
-                                                                files
-                                                            )
-                                                        }
+                                                        onFileRemove={(files) => form.setFieldValue('files', files)}
                                                         // uploadButtonText="Add Files"
                                                     />
                                                 </>
@@ -500,10 +399,7 @@ const MixedFormControl = () => {
                                     <br />
                                 </FormContainer>
 
-                                <FormItem
-                                    label=""
-                                    className="col-span-1 w-[80%]"
-                                >
+                                <FormItem label="" className="col-span-1 w-[80%]">
                                     <Field
                                         type="text"
                                         name="document"
@@ -518,42 +414,24 @@ const MixedFormControl = () => {
                             </div> */}
 
                             {/* ...............................IMAGES.......................................... */}
-                            <div className="font-bold mb-3 mt-8">
-                                Upload Supporting Image
-                            </div>
+                            <div className="font-bold mb-3 mt-8">Upload Supporting Image</div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <FormContainer className=" mt-5 ">
                                     <FormItem
                                         label=""
-                                        invalid={Boolean(
-                                            errors.files && touched.files
-                                        )}
+                                        invalid={Boolean(errors.files && touched.files)}
                                         errorMessage={errors.files as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="images">
-                                            {({
-                                                form
-                                            }: FieldProps<FormModel>) => (
+                                            {({ form }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
                                                         multiple
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
+                                                        beforeUpload={beforeUpload}
                                                         fileList={values.image}
-                                                        onChange={(files) =>
-                                                            form.setFieldValue(
-                                                                'image',
-                                                                files
-                                                            )
-                                                        }
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'image',
-                                                                files
-                                                            )
-                                                        }
+                                                        onChange={(files) => form.setFieldValue('image', files)}
+                                                        onFileRemove={(files) => form.setFieldValue('image', files)}
                                                         // uploadButtonText="Add Files"
                                                     />
                                                 </>
@@ -575,12 +453,7 @@ const MixedFormControl = () => {
                                     errorMessage={errors.images}
                                     className="col-span-1 w-[80%]"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="images"
-                                        placeholder="Enter ImageUrl or Upload Image file"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="images" placeholder="Enter ImageUrl or Upload Image file" component={Input} />
                                 </FormItem>
                             </FormContainer>
 
@@ -594,9 +467,7 @@ const MixedFormControl = () => {
 
                             <FormItem
                                 label="SLIKK OWNED"
-                                invalid={
-                                    errors.slikk_owned && touched.slikk_owned
-                                }
+                                invalid={errors.slikk_owned && touched.slikk_owned}
                                 // errorMessage={errors.singleCheckbox}
                             >
                                 <Field name="slikk_owned" component={Checkbox}>
@@ -605,11 +476,7 @@ const MixedFormControl = () => {
                             </FormItem>
 
                             <FormItem>
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button

@@ -76,21 +76,13 @@ const Anal = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
-    const [from, setFrom] = useState(
-        moment().subtract(6, 'days').format('YYYY-MM-DD'),
-    )
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const [from, setFrom] = useState(moment().subtract(6, 'days').format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showLastSevenDays, setShowLastSevenDays] = useState(true)
 
-    const [skuWiseDetails, setSkuWiseDetails] = useState<
-        Array<{ key: string; value: SKU_DETAILS }>
-    >([])
-    const [datewisedetails, setDatewisedetails] = useState<
-        Array<{ key: string; value: DATA_WISE_SALES }>
-    >([])
+    const [skuWiseDetails, setSkuWiseDetails] = useState<Array<{ key: string; value: SKU_DETAILS }>>([])
+    const [datewisedetails, setDatewisedetails] = useState<Array<{ key: string; value: DATA_WISE_SALES }>>([])
 
     const [divisionArray, setDivisionArray] = useState([])
     const [categoryArray, setCategoryArray] = useState([])
@@ -113,9 +105,7 @@ const Anal = () => {
             setSkuWiseDetails([])
             setDatewisedetails([])
 
-            const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&${typeFetch}`,
-            )
+            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}`)
             const data = response.data
 
             setData(data)
@@ -157,12 +147,10 @@ const Anal = () => {
 
             setSkuWiseDetails(skuDetailsArray)
 
-            const dateWIseDetailArray = Object.entries(dateWiseData).map(
-                ([key, value]) => ({
-                    key,
-                    value,
-                }),
-            )
+            const dateWIseDetailArray = Object.entries(dateWiseData).map(([key, value]) => ({
+                key,
+                value,
+            }))
 
             console.log('dddddddddd', dateWIseDetailArray)
             setDatewisedetails(dateWIseDetailArray)
@@ -178,9 +166,7 @@ const Anal = () => {
     console.log('SKU Details:', skuWiseDetails)
     console.log('adteeeeeeeee', datewisedetails)
 
-    const columns = useMemo<
-        ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]
-    >(
+    const columns = useMemo<ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]>(
         () => [
             {
                 header: 'SKU',
@@ -234,14 +220,7 @@ const Anal = () => {
                 accessorKey: 'value.image',
                 cell: (info) => {
                     const imageUrl = (info.getValue() as string).split(',')[0]
-                    return (
-                        <img
-                            src={imageUrl}
-                            alt="Product Image"
-                            width={50}
-                            height={50}
-                        />
-                    )
+                    return <img src={imageUrl} alt="Product Image" width={50} height={50} />
                 },
             },
         ],
@@ -250,16 +229,11 @@ const Anal = () => {
 
     const handleDownload = async () => {
         try {
-            const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&${typeFetch}&download=true`,
-                {
-                    responseType: 'blob',
-                },
-            )
+            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}&download=true`, {
+                responseType: 'blob',
+            })
 
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = `${selectedCompany.name}(${from} to ${to}).csv`
@@ -271,10 +245,7 @@ const Anal = () => {
         }
     }
 
-    const paginatedData = skuWiseDetails.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
-    )
+    const paginatedData = skuWiseDetails.slice((page - 1) * pageSize, page * pageSize)
 
     const table = useReactTable({
         data: paginatedData,
@@ -292,10 +263,7 @@ const Anal = () => {
             globalFilter,
         },
         onPaginationChange: (updater: Updater<PaginationState>) => {
-            const newPagination =
-                typeof updater === 'function'
-                    ? updater({ pageIndex: page - 1, pageSize })
-                    : updater
+            const newPagination = typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize }) : updater
 
             setPage(newPagination.pageIndex + 1)
             setPageSize(newPagination.pageSize)
@@ -348,24 +316,18 @@ const Anal = () => {
         let query = ''
 
         if (divisionList.length > 0) {
-            const divisionIds = divisionList
-                .map((item: any) => item.id)
-                .join(',')
+            const divisionIds = divisionList.map((item: any) => item.id).join(',')
             query += `division=${divisionIds}`
         }
 
         if (categoryList.length > 0) {
-            const categoryIds = categoryList
-                .map((item: any) => item.id)
-                .join(',')
+            const categoryIds = categoryList.map((item: any) => item.id).join(',')
             if (query) query += '&'
             query += `category=${categoryIds}`
         }
 
         if (subCategoryList.length > 0) {
-            const subCategoryIds = subCategoryList
-                .map((item: any) => item.id)
-                .join(',')
+            const subCategoryIds = subCategoryList.map((item: any) => item.id).join(',')
             if (query) query += '&'
             query += `subcategory=${subCategoryIds}`
         }
@@ -388,11 +350,7 @@ const Anal = () => {
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
                 <div className="w-full lg:w-1/2 flex flex-col  ">
-                    <Button
-                        variant="new"
-                        onClick={handleDrawer}
-                        className="xl:w-1/3 w-auto flex gap-3"
-                    >
+                    <Button variant="new" onClick={handleDrawer} className="xl:w-1/3 w-auto flex gap-3">
                         {' '}
                         <FaFilter className="text-xl" /> CATEGORY FILTER
                     </Button>
@@ -400,26 +358,18 @@ const Anal = () => {
 
                 <div className="flex flex-col md:flex-row gap-5 items-start lg:items-end">
                     <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            FROM DATE: {showLastSevenDays && '(Last 7 Days)'}
-                        </div>
+                        <div className="mb-1 font-semibold text-sm">FROM DATE: {showLastSevenDays && '(Last 7 Days)'}</div>
                         <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
+                            inputPrefix={<HiOutlineCalendar className="text-lg" />}
                             defaultValue={new Date()}
                             value={new Date(from)}
                             onChange={handleFromChange}
                         />
                     </div>
                     <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            TO DATE:
-                        </div>
+                        <div className="mb-1 font-semibold text-sm">TO DATE:</div>
                         <DatePicker
-                            inputSuffix={
-                                <TbCalendarStats className="text-xl" />
-                            }
+                            inputSuffix={<TbCalendarStats className="text-xl" />}
                             defaultValue={new Date()}
                             value={new Date(to)}
                             onChange={handleToChange}
@@ -472,10 +422,7 @@ const Anal = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -485,12 +432,7 @@ const Anal = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
@@ -508,9 +450,7 @@ const Anal = () => {
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />

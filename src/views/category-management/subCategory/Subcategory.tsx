@@ -71,21 +71,11 @@ const Subcategory = () => {
 
     // Apply global filter
     const filteredData = data.filter((item) =>
-        Object.values(item).some((val) =>
-            val
-                ? val
-                      .toString()
-                      .toLowerCase()
-                      .includes(globalFilter.toLowerCase())
-                : false,
-        ),
+        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
 
     // Paginate filtered data
-    const paginatedData = filteredData.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
-    )
+    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
     const columns = [
@@ -100,11 +90,22 @@ const Subcategory = () => {
         {
             header: 'Image',
             accessor: 'image',
-            format: (value: any) => (
-                <img src={value} alt="product" width="50" />
-            ),
+            format: (value: any) => <img src={value} alt="product" width="50" />,
         },
-        { header: 'Footer', accessor: 'footer' },
+        {
+            header: 'Footer',
+            accessorKey: 'footer',
+            cell: (info) => {
+                return (
+                    <div className="w-[200px] h-[70px] overflow-hidden">
+                        <div
+                            className="text-ellipsis whitespace-wrap line-clamp-3 overflow-hidden"
+                            dangerouslySetInnerHTML={{ __html: info.getValue() as string }}
+                        />
+                    </div>
+                )
+            },
+        },
         { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
         { header: 'Position', accessor: 'position' },
         { header: 'Gender', accessor: 'gender' },
@@ -128,10 +129,7 @@ const Subcategory = () => {
             header: 'Edit',
             accessor: 'id',
             format: (value: any) => (
-                <button
-                    onClick={() => handleActionClick(value)}
-                    className="border-none bg-none"
-                >
+                <button onClick={() => handleActionClick(value)} className="border-none bg-none">
                     <FaEdit className="text-xl text-blue-600" />
                 </button>
             ),
@@ -140,10 +138,7 @@ const Subcategory = () => {
             header: 'Delete',
             accessor: 'id',
             format: (value) => (
-                <button
-                    onClick={() => handleDeleteClick(value)}
-                    className="border-none bg-none"
-                >
+                <button onClick={() => handleDeleteClick(value)} className="border-none bg-none">
                     <FaTrash className="text-xl text-red-600" />
                 </button>
             ),
@@ -198,10 +193,7 @@ const Subcategory = () => {
                     />
                 </div>
                 <div className="flex items-end justify-end mb-4">
-                    <button
-                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                        onClick={handleSeller}
-                    >
+                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
                         ADD NEW SUB_CATEGORY
                     </button>{' '}
                     <br />
@@ -220,33 +212,21 @@ const Subcategory = () => {
                     {paginatedData.map((row) => (
                         <Tr key={row.id}>
                             {columns.map((col) => (
-                                <Td key={col.accessor}>
-                                    {col.format
-                                        ? col.format(row[col.accessor])
-                                        : row[col.accessor]}
-                                </Td>
+                                <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    currentPage={page}
-                    total={totalPages}
-                    onChange={(page) => setPage(page)}
-                />
+                <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) =>
-                            setPageSize(Number(option?.value))
-                        }
+                        onChange={(option) => setPageSize(Number(option?.value))}
                     />
                 </div>
             </div>
@@ -262,8 +242,7 @@ const Subcategory = () => {
                     }}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
-                        ARE YOU SURE YOU WANT TO DELETE !!
+                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
                     </div>
                 </Modal>
             )}

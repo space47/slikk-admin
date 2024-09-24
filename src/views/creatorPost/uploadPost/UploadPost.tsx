@@ -3,16 +3,11 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Button } from '@/components/ui'
 
 interface Product {
     barcode: string
@@ -83,9 +78,7 @@ const UploadPost = () => {
 
     const fetchData = async (page = 1, pageSize = 10, filter: string = '') => {
         try {
-            const response = await axiosInstance.get(
-                `userposts/approval?status=APPROVED&p=${page}&page_size=${pageSize}&name=${filter}`,
-            )
+            const response = await axiosInstance.get(`userposts/approval?status=APPROVED&p=${page}&page_size=${pageSize}&name=${filter}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setTableData(data)
@@ -112,12 +105,7 @@ const UploadPost = () => {
                 cell: ({ row, getValue }) => (
                     <div
                         className="cursor-pointer bg-gray-300 px-4 py-1 rounded-xl text-gray-500 font-semibold"
-                        onClick={() =>
-                            handlePostClick(
-                                row.original.id,
-                                getValue() as string,
-                            )
-                        }
+                        onClick={() => handlePostClick(row.original.id, getValue() as string)}
                     >
                         {getValue() as string}
                     </div>
@@ -141,9 +129,7 @@ const UploadPost = () => {
             {
                 header: 'Thumbnail',
                 accessorKey: 'thumbnail_url',
-                cell: (info) => (
-                    <img src={info.getValue() as string} alt="Thumbnail" />
-                ),
+                cell: (info) => <img src={info.getValue() as string} alt="Thumbnail" />,
             },
             {
                 header: 'Likes Count',
@@ -173,14 +159,12 @@ const UploadPost = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: (info) =>
-                    new Date(info.getValue() as string).toLocaleDateString(),
+                cell: (info) => new Date(info.getValue() as string).toLocaleDateString(),
             },
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: (info) =>
-                    new Date(info.getValue() as string).toLocaleDateString(),
+                cell: (info) => new Date(info.getValue() as string).toLocaleDateString(),
             },
             {
                 header: 'Approval Status',
@@ -241,12 +225,9 @@ const UploadPost = () => {
                 </div>
 
                 <div>
-                    <button
-                        className="bg-gray-800 text-white px-4 py-2"
-                        onClick={handleCreatePost}
-                    >
+                    <Button className="bg-gray-800 text-white px-4 py-2" onClick={handleCreatePost} variant="new">
                         Create Post
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -258,17 +239,10 @@ const UploadPost = () => {
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {header.isPlaceholder ? null : (
                                         <div
-                                            className={
-                                                header.column.getCanSort()
-                                                    ? 'cursor-pointer select-none'
-                                                    : ''
-                                            }
+                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
                                         </div>
                                     )}
                                 </Th>
@@ -280,31 +254,19 @@ const UploadPost = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                         className="flex justify-end"

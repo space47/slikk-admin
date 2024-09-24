@@ -63,24 +63,15 @@ const Returns = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [showSpinner, setShowSpinner] = useState(false)
 
-    const fetchData = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchData = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             setShowSpinner(true)
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const response = await axiosInstance.get(
-                `merchant/return_order_items?from=${from}&to=${To_Date}`,
-            )
+            const response = await axiosInstance.get(`merchant/return_order_items?from=${from}&to=${To_Date}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -167,16 +158,11 @@ const Returns = () => {
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const response = await axiosInstance.get(
-                `merchant/return_order_items?from=${from}&to=${To_Date}&download=true`,
-                {
-                    responseType: 'blob',
-                },
-            )
+            const response = await axiosInstance.get(`merchant/return_order_items?from=${from}&to=${To_Date}&download=true`, {
+                responseType: 'blob',
+            })
 
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = `${selectedCompany.name}(${from}-${to}).csv`
@@ -250,41 +236,29 @@ const Returns = () => {
                                 type="text"
                                 placeholder="Search here"
                                 value={globalFilter}
-                                onChange={(e) =>
-                                    setGlobalFilter(e.target.value)
-                                }
+                                onChange={(e) => setGlobalFilter(e.target.value)}
                                 className="p-2 border rounded"
                             />
                         </div>
 
                         <div className="flex gap-5 items-end ">
                             <div>
-                                <div className="mb-1 font-semibold text-sm">
-                                    FROM DATE:
-                                </div>
+                                <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
                                 <DatePicker
-                                    inputPrefix={
-                                        <HiOutlineCalendar className="text-lg" />
-                                    }
+                                    inputPrefix={<HiOutlineCalendar className="text-lg" />}
                                     defaultValue={new Date()}
                                     value={new Date(from)}
                                     onChange={handleFromChange}
                                 />
                             </div>
                             <div>
-                                <div className="mb-1 font-semibold text-sm">
-                                    TO DATE:
-                                </div>
+                                <div className="mb-1 font-semibold text-sm">TO DATE:</div>
                                 <DatePicker
-                                    inputSuffix={
-                                        <TbCalendarStats className="text-xl" />
-                                    }
+                                    inputSuffix={<TbCalendarStats className="text-xl" />}
                                     defaultValue={new Date()}
                                     value={new Date(to)}
                                     onChange={handleToChange}
-                                    minDate={moment(from)
-                                        .add(1, 'day')
-                                        .toDate()}
+                                    minDate={moment(from).add(1, 'day').toDate()}
                                 />
                             </div>
                             <div>
@@ -307,14 +281,8 @@ const Returns = () => {
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <Tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
-                                        <Th
-                                            key={header.id}
-                                            colSpan={header.colSpan}
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
+                                        <Th key={header.id} colSpan={header.colSpan}>
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
                                         </Th>
                                     ))}
                                 </Tr>
@@ -324,35 +292,21 @@ const Returns = () => {
                             {table.getRowModel().rows.map((row) => (
                                 <Tr key={row.id}>
                                     {row.getVisibleCells().map((cell) => (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </Td>
+                                        <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                     ))}
                                 </Tr>
                             ))}
                         </TBody>
                     </Table>
                     <div className="flex items-center justify-between mt-4">
-                        <Pagination
-                            pageSize={pageSize}
-                            currentPage={page}
-                            total={totalData}
-                            onChange={onPaginationChange}
-                        />
+                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                         <div style={{ minWidth: 130 }}>
                             <Select<Option>
                                 size="sm"
                                 isSearchable={false}
-                                value={pageSizeOptions.find(
-                                    (option) => option.value === pageSize,
-                                )}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
-                                onChange={(option) =>
-                                    onSelectChange(option?.value)
-                                }
+                                onChange={(option) => onSelectChange(option?.value)}
                             />
                         </div>
                     </div>
