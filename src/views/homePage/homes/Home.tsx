@@ -186,7 +186,7 @@ const Home = () => {
                             defaultValue={new Date()}
                             value={moment(to).toDate()}
                             onChange={handleToChange}
-                            minDate={moment(from).add(1, 'day').toDate()}
+                            minDate={moment(from).toDate()}
                             className="shadow-lg w-auto"
                         />
                     </div>

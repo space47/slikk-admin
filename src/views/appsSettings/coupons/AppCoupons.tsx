@@ -88,8 +88,11 @@ const AppCoupons = () => {
 
         {
             header: 'Edit',
-            accessor: 'code',
-            format: (value, row) => <Button onClick={() => handleActionClick(value)}>EDIT</Button>,
+            accessor: 'code', // Ensure that 'code' exists in your data
+            format: (value) => {
+                console.log('Row data:', value) // Check if row.original contains 'code'
+                return <Button onClick={() => handleActionClick(value)}>EDIT</Button>
+            },
         },
     ]
 

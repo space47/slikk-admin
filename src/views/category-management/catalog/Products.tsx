@@ -4,13 +4,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
@@ -20,6 +14,7 @@ import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import ImageMODAL from '@/common/ImageModal'
 import { FaEdit } from 'react-icons/fa'
+import StockOverviewFilter from '@/views/inventory-management/stock-overview/stockOverviewComponents/StockOverviewFilter'
 
 type ProductVariant = {
     name: string
@@ -75,24 +70,25 @@ const Products = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const navigate = useNavigate()
-    const [currentSelectedPage, setCurrentSelectedPage] =
-        useState<Record<string, string>>()
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
 
     const [filterInput, setFilterInput] = useState('')
     const [searchType, setSearchType] = useState<string>('')
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState([])
 
+    const [divisionList, setDivisionList] = useState<string[]>([])
+    const [categoryList, setCategoryList] = useState([])
+    const [subCategoryList, setSubCategoryList] = useState([])
+    const [productTypeList, setProductTypeList] = useState([])
+    const [brandList, setBrandList] = useState([])
+    const [typeFetch, setTypeFetch] = useState('')
+
+    const [showDrawer, setShowDrawer] = useState(false)
+
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            let type = ''
-            if (currentSelectedPage?.label && searchType) {
-                type = `&${currentSelectedPage.value}=${searchType}`
-            }
-
-            const response = await axiosInstance.get(
-                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}${type}`,
-            )
+            const response = await axiosInstance.get(`merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}`)
 
             const data = response.data.data.results
             const total = response.data.data.count
@@ -104,28 +100,19 @@ const Products = () => {
         }
     }
 
-    const filter = async (
-        page: number,
-        pageSize: number,
-        filter: string = '',
-    ) => {
+    const filter = async (page: number, pageSize: number, filter: string = '') => {
         try {
-            let type = ''
-            if (currentSelectedPage?.label && searchType) {
-                type = `&${currentSelectedPage.value}=${searchType}`
-            }
-
             let searchInputType = `&sku=${filter}`
             setFilterInput(searchInputType)
             let response = await axiosInstance.get(
-                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}${type}${searchInputType}`,
+                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
             )
 
             if (response.data.data.results.length === 0) {
                 searchInputType = `&name=${filter}`
                 setFilterInput(searchInputType)
                 response = await axiosInstance.get(
-                    `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}${type}${searchInputType}`,
+                    `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
                 )
             }
 
@@ -141,7 +128,7 @@ const Products = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, currentSelectedPage, searchType])
+    }, [page, pageSize, typeFetch, searchType])
 
     useEffect(() => {
         filter(page, pageSize, globalFilter)
@@ -151,6 +138,62 @@ const Products = () => {
 
     const handleActionClick = (barcode: any) => {
         navigate(`/app/catalog/products/${barcode}`)
+    }
+
+    const hanldeFilter = () => {
+        setShowDrawer(true)
+    }
+
+    const handleCloseDrawer = () => {
+        setShowDrawer(false)
+    }
+
+    const handleMultiSelect = (fieldName: string, selectedValues: any) => {
+        if (fieldName === 'division') {
+            setDivisionList(selectedValues)
+        } else if (fieldName === 'category') {
+            setCategoryList(selectedValues)
+        } else if (fieldName === 'sub_category') {
+            setSubCategoryList(selectedValues)
+        } else if (fieldName === 'product_type') {
+            setProductTypeList(selectedValues)
+        } else if (fieldName === 'brand') {
+            setBrandList(selectedValues)
+        }
+    }
+
+    const handleApply = () => {
+        let query = ''
+
+        if (divisionList.length > 0) {
+            const divisionIds = divisionList.map((item: any) => item).join(',')
+            query += `division=${divisionIds}`
+        }
+
+        if (categoryList.length > 0) {
+            const categoryIds = categoryList.map((item: any) => item).join(',')
+            if (query) query += '&'
+            query += `category=${categoryIds}`
+        }
+
+        if (subCategoryList.length > 0) {
+            const subCategoryIds = subCategoryList.map((item: any) => item).join(',')
+            if (query) query += '&'
+            query += `sub_category=${subCategoryIds}`
+        }
+        if (productTypeList.length > 0) {
+            const productTypeIds = productTypeList.map((item: any) => item).join(',')
+            if (query) query += '&'
+            query += `Product_type=${productTypeIds}`
+        }
+        if (brandList.length > 0) {
+            const brandIds = brandList.map((item: any) => item).join(',')
+            if (query) query += '&'
+            query += `brand=${brandIds}`
+        }
+
+        setTypeFetch(query)
+        setShowDrawer(false)
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
@@ -237,10 +280,7 @@ const Products = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() => handleActionClick(row.original.barcode)}
-                        className="border-none bg-none"
-                    >
+                    <button onClick={() => handleActionClick(row.original.barcode)} className="border-none bg-none">
                         <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
@@ -288,11 +328,6 @@ const Products = () => {
 
     const handleDownload = async () => {
         try {
-            let type = ''
-            if (currentSelectedPage?.label && searchType) {
-                type = `&${currentSelectedPage.value}=${searchType}`
-            }
-
             let filterParam = ''
             if (filterInput.includes('&name=')) {
                 filterParam = `&name=${globalFilter}`
@@ -300,15 +335,13 @@ const Products = () => {
                 filterParam = `&sku=${globalFilter}`
             }
 
-            const downloadUrl = `merchant/products?download=true${type}${filterParam}`
+            const downloadUrl = `merchant/products?download=true&${typeFetch}${filterParam}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
 
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = 'Product.csv'
@@ -347,40 +380,16 @@ const Products = () => {
                     />
                 </div>
                 {/*  */}
-                <div className="drop border  bg-gray-200 text-black text-lg font-semibold flex gap-5 w-[100px] mb-6 ">
-                    <input
-                        type="text"
-                        placeholder="Search Type here"
-                        value={searchType}
-                        onChange={handleSearchType}
-                        className="p-2 border rounded"
-                    />
-                    <Dropdown
-                        className=" text-xl text-black "
-                        title={
-                            currentSelectedPage?.value
-                                ? currentSelectedPage.label
-                                : 'SELECT'
-                        }
-                        onSelect={handleSelect}
-                    >
-                        {DROPDOWNARRAY?.map((item, key) => {
-                            return (
-                                <DropdownItem key={key} eventKey={item.value}>
-                                    <span>{item.label}</span>
-                                </DropdownItem>
-                            )
-                        })}
-                    </Dropdown>
+                <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
+                    <Button variant="new" onClick={hanldeFilter}>
+                        Category Filter
+                    </Button>
                 </div>
 
                 <div className="flex gap-3 items-center justify-center">
                     <div>
                         <div className="flex items-end justify-end mb-2">
-                            <button
-                                className="bg-gray-100 text-black px-5 py-3  hover:bg-gray-200 rounded-lg"
-                                onClick={handleDownload}
-                            >
+                            <button className="bg-gray-100 text-black px-5 py-3  hover:bg-gray-200 rounded-lg" onClick={handleDownload}>
                                 <IoMdDownload className="text-3xl" />
                             </button>{' '}
                             <br />
@@ -389,10 +398,7 @@ const Products = () => {
                     </div>
 
                     <div className="flex items-end justify-end mb-2">
-                        <button
-                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                            onClick={handleProduct}
-                        >
+                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleProduct}>
                             ADD NEW PRODUCT
                         </button>{' '}
                         <br />
@@ -406,10 +412,7 @@ const Products = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -419,31 +422,19 @@ const Products = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
@@ -454,6 +445,19 @@ const Products = () => {
                     dialogIsOpen={showImageModal}
                     setIsOpen={setShowImageModal}
                     image={particularRowImage && particularRowImage?.split(',')}
+                />
+            )}
+            {showDrawer && (
+                <StockOverviewFilter
+                    showDrawer={showDrawer}
+                    handleCloseDrawer={handleCloseDrawer}
+                    handleMultiSelect={handleMultiSelect}
+                    handleApply={handleApply}
+                    subCategoryList={subCategoryList}
+                    divisionList={divisionList}
+                    categroyList={categoryList}
+                    brandList={brandList}
+                    productTypeList={productTypeList}
                 />
             )}
         </div>
