@@ -156,6 +156,22 @@ const OrderDetails = () => {
         }
     }
 
+    const handlePODAction = async () => {
+        try {
+            const body = {
+                action: 'MARK_POD_COMPLETE',
+            }
+            const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
+
+            notification.success({
+                message: response.data.message || 'POD COMPLETED SUCCESSFULLY',
+            })
+            navigate(0)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <Container className="p-4 xl:px-10">
             <Loading loading={loading}>
@@ -243,6 +259,8 @@ const OrderDetails = () => {
                                             loyalty_discount={data.loyalty_discount}
                                             points_discount={data.points_discount}
                                             handleMarkAsPaid={handlemarkAsPaid}
+                                            status={data.status}
+                                            handlePODAction={handlePODAction}
                                         />
                                     </div>
                                 </div>

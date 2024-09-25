@@ -70,6 +70,7 @@ const StockOverviewFilter = ({
     })
 
     const handleFilterEmpty = (resetForm: any) => {
+        // Clear the form values
         resetForm({
             values: {
                 division: [],
@@ -80,6 +81,7 @@ const StockOverviewFilter = ({
             },
         })
 
+        // Clear the external state
         setDivisionList([])
         setCategoryList([])
         setSubCategoryList([])
@@ -232,14 +234,14 @@ const StockOverviewFilter = ({
                             </Field>
 
                             <FormContainer className="flex gap-5 justify-end ">
-                                {/* <Button
+                                <Button
                                     type="reset"
                                     variant="default"
                                     className="mt-4 p-2 rounded"
                                     onClick={() => handleFilterEmpty(resetForm)}
                                 >
                                     Reset
-                                </Button> */}
+                                </Button>
 
                                 <Button type="submit" variant="new" className="mt-4 bg-blue-500 text-white p-2 rounded">
                                     APPLY
