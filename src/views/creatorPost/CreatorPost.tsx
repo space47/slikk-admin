@@ -66,16 +66,9 @@ const CreatorPost = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
 
-    const fetchData = async (
-        status: string,
-        page = 1,
-        pageSize = 10,
-        filter: string = '',
-    ) => {
+    const fetchData = async (status: string, page = 1, pageSize = 10, filter: string = '') => {
         try {
-            const response = await axiosInstance.get(
-                `userposts/approval?status=${status}&p=${page}&page_size=${pageSize}&name=${filter}`,
-            )
+            const response = await axiosInstance.get(`userposts/approval?status=${status}&p=${page}&page_size=${pageSize}&name=${filter}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setTableData(data)
@@ -107,13 +100,13 @@ const CreatorPost = () => {
         <div>
             <Tabs defaultValue="tab1" onChange={handleChange}>
                 <TabList>
-                    <TabNav value="tab1" icon={<MdOutlinePendingActions />}>
+                    <TabNav value="tab1" icon={<MdOutlinePendingActions className="text-blue-600" />}>
                         PENDING
                     </TabNav>
-                    <TabNav value="tab2" icon={<FaCheck />}>
+                    <TabNav value="tab2" icon={<FaCheck className="text-green-500" />}>
                         Approved
                     </TabNav>
-                    <TabNav value="tab3" icon={<RxCross1 />}>
+                    <TabNav value="tab3" icon={<RxCross1 className="text-red-500 font-bold" />}>
                         Reject
                     </TabNav>
                 </TabList>

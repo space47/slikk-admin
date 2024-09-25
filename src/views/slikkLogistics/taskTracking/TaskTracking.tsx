@@ -35,9 +35,7 @@ const TaskTracking = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(
-                'logistic/slikk/task?page_size=25',
-            )
+            const response = await axiosInstance.get('logistic/slikk/task?page_size=25')
             const data = response.data.data.results
             const total = response.data.data.count
 
@@ -53,20 +51,10 @@ const TaskTracking = () => {
     }, [])
 
     const filteredData = data.filter((item) =>
-        Object.values(item).some((val) =>
-            val
-                ? val
-                      .toString()
-                      .toLowerCase()
-                      .includes(globalFilter.toLowerCase())
-                : false,
-        ),
+        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
 
-    const paginatedData = filteredData.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
-    )
+    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(totalData / pageSize)
 
     // const navigate = useNavigate()
@@ -94,58 +82,43 @@ const TaskTracking = () => {
         {
             header: 'Runner Mobile',
             accessor: 'runner_detail.mobile',
-            format: (_: any, row: TaskDetails) =>
-                row.runner_detail?.mobile || '',
+            format: (_: any, row: TaskDetails) => row.runner_detail?.mobile || '',
         },
         {
             header: 'Runner Photo',
             accessor: 'runner_detail.photo',
             format: (_: any, row: TaskDetails) =>
-                row.runner_detail?.photo ? (
-                    <img
-                        src={row.runner_detail.photo}
-                        alt="runner"
-                        width="50"
-                    />
-                ) : (
-                    ''
-                ),
+                row.runner_detail?.photo ? <img src={row.runner_detail.photo} alt="runner" width="50" /> : '',
         },
         {
             header: 'Pickup Name',
             accessor: 'pickup_details.name',
-            format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.name || '',
+            format: (_: any, row: TaskDetails) => row.pickup_details?.name || '',
         },
         {
             header: 'Pickup Address',
             accessor: 'pickup_details.address',
-            format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.address || '',
+            format: (_: any, row: TaskDetails) => row.pickup_details?.address || '',
         },
         {
             header: 'Pickup Landmark',
             accessor: 'pickup_details.landmark',
-            format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.landmark || '',
+            format: (_: any, row: TaskDetails) => row.pickup_details?.landmark || '',
         },
         {
             header: 'Pickup Latitude',
             accessor: 'pickup_details.latitude',
-            format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.latitude || '',
+            format: (_: any, row: TaskDetails) => row.pickup_details?.latitude || '',
         },
         {
             header: 'Pickup Longitude',
             accessor: 'pickup_details.longitude',
-            format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.longitude || '',
+            format: (_: any, row: TaskDetails) => row.pickup_details?.longitude || '',
         },
         {
             header: 'Pickup Contact Number',
             accessor: 'pickup_details.contact_number',
-            format: (_: any, row: TaskDetails) =>
-                row.pickup_details?.contact_number || '',
+            format: (_: any, row: TaskDetails) => row.pickup_details?.contact_number || '',
         },
         {
             header: 'Drop Name',
@@ -155,72 +128,57 @@ const TaskTracking = () => {
         {
             header: 'Drop Address',
             accessor: 'drop_details.address',
-            format: (_: any, row: TaskDetails) =>
-                row.drop_details?.address || '',
+            format: (_: any, row: TaskDetails) => row.drop_details?.address || '',
         },
         {
             header: 'Drop Landmark',
             accessor: 'drop_details.landmark',
-            format: (_: any, row: TaskDetails) =>
-                row.drop_details?.landmark || '',
+            format: (_: any, row: TaskDetails) => row.drop_details?.landmark || '',
         },
         {
             header: 'Drop Latitude',
             accessor: 'drop_details.latitude',
-            format: (_: any, row: TaskDetails) =>
-                row.drop_details?.latitude || '',
+            format: (_: any, row: TaskDetails) => row.drop_details?.latitude || '',
         },
         {
             header: 'Drop Longitude',
             accessor: 'drop_details.longitude',
-            format: (_: any, row: TaskDetails) =>
-                row.drop_details?.longitude || '',
+            format: (_: any, row: TaskDetails) => row.drop_details?.longitude || '',
         },
         {
             header: 'Drop Contact Number',
             accessor: 'drop_details.contact_number',
-            format: (_: any, row: TaskDetails) =>
-                row.drop_details?.contact_number || '',
+            format: (_: any, row: TaskDetails) => row.drop_details?.contact_number || '',
         },
         {
             header: 'User Credits Key',
             accessor: 'user_details.credits_key',
-            format: (_: any, row: TaskDetails) =>
-                row.user_details?.credits_key || '',
+            format: (_: any, row: TaskDetails) => row.user_details?.credits_key || '',
         },
         {
             header: 'User Contact Number',
             accessor: 'user_details.contact_number',
-            format: (_: any, row: TaskDetails) =>
-                row.user_details?.contact_number || '',
+            format: (_: any, row: TaskDetails) => row.user_details?.contact_number || '',
         },
         {
             header: 'Order ID',
             accessor: 'client_order_details.order_id',
-            format: (_: any, row: TaskDetails) =>
-                row.client_order_details?.order_id || '',
+            format: (_: any, row: TaskDetails) => row.client_order_details?.order_id || '',
         },
         {
             header: 'Is Prepaid',
             accessor: 'client_order_details.is_prepaid',
-            format: (_: any, row: TaskDetails) =>
-                row.client_order_details?.is_prepaid ? 'Yes' : 'No',
+            format: (_: any, row: TaskDetails) => (row.client_order_details?.is_prepaid ? 'Yes' : 'No'),
         },
         {
             header: 'Cash to be Collected',
             accessor: 'client_order_details.cash_to_be_collected',
-            format: (_: any, row: TaskDetails) =>
-                row.client_order_details?.cash_to_be_collected || '',
+            format: (_: any, row: TaskDetails) => row.client_order_details?.cash_to_be_collected || '',
         },
         {
             header: 'Delivery Charge from Customer',
-            accessor:
-                'client_order_details.delivery_charge_to_be_collected_from_customer',
-            format: (_: any, row: TaskDetails) =>
-                row.client_order_details
-                    ?.delivery_charge_to_be_collected_from_customer
-                    ? 'Yes'
-                    : 'No',
+            accessor: 'client_order_details.delivery_charge_to_be_collected_from_customer',
+            format: (_: any, row: TaskDetails) => (row.client_order_details?.delivery_charge_to_be_collected_from_customer ? 'Yes' : 'No'),
         },
         {
             header: 'Client Order ID',
@@ -232,11 +190,8 @@ const TaskTracking = () => {
             accessor: 'task_id',
             format: (value: any, row: TaskDetails) =>
                 row.status == 'CREATED' && (
-                    <button
-                        onClick={() => handleAssignClick(row.task_id)}
-                        className="bg-none border-none"
-                    >
-                        <MdAssignment className="text-3xl" />
+                    <button onClick={() => handleAssignClick(row.task_id)} className="bg-none border-none">
+                        <MdAssignment className="text-3xl text-yellow-500" />
                     </button>
                 ),
         },
@@ -275,31 +230,18 @@ const TaskTracking = () => {
                     {paginatedData.map((row) => (
                         <Tr key={row.task_id}>
                             {columns.map((column, index) => (
-                                <Td key={index}>
-                                    {column.format
-                                        ? column.format(
-                                              row[column.accessor],
-                                              row,
-                                          )
-                                        : row[column.accessor] || ''}
-                                </Td>
+                                <Td key={index}>{column.format ? column.format(row[column.accessor], row) : row[column.accessor] || ''}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="mt-4 flex justify-between items-center">
-                <Pagination
-                    currentPage={page}
-                    total={totalPages}
-                    onChange={(newPage: any) => setPage(newPage)}
-                />
+                <Pagination currentPage={page} total={totalPages} onChange={(newPage: any) => setPage(newPage)} />
                 <Select<Option>
                     size="sm"
                     isSearchable={false}
-                    value={pageSizeOptions.find(
-                        (option) => option.value === pageSize,
-                    )}
+                    value={pageSizeOptions.find((option) => option.value === pageSize)}
                     options={pageSizeOptions}
                     onChange={(option) => setPageSize(Number(option?.value))}
                 />
