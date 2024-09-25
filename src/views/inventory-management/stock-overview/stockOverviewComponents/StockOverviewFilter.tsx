@@ -22,6 +22,12 @@ interface PROPS {
     productTypeList: any
     brandList: any
     subCategoryList: any
+    setDivisionList: any
+    setCategoryList: any
+    setSubCategoryList: any
+    setProductTypeList: any
+    setBrandList: any
+    setTypeFetch: any
 }
 
 const StockOverviewFilter = ({
@@ -34,6 +40,12 @@ const StockOverviewFilter = ({
     productTypeList,
     brandList,
     subCategoryList,
+    setDivisionList,
+    setCategoryList,
+    setSubCategoryList,
+    setTypeFetch,
+    setBrandList,
+    setProductTypeList,
 }: PROPS) => {
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
@@ -47,6 +59,8 @@ const StockOverviewFilter = ({
         // dispatch(getAllFiltersAPI())
     }, [])
 
+    console.log('LIST', divisionList)
+
     const [initialValues, setInitialValues] = useState({
         division: divisionList,
         category: categroyList,
@@ -54,6 +68,25 @@ const StockOverviewFilter = ({
         product_type: productTypeList,
         brand: brandList,
     })
+
+    const handleFilterEmpty = (resetForm: any) => {
+        resetForm({
+            values: {
+                division: [],
+                category: [],
+                sub_category: [],
+                product_type: [],
+                brand: [],
+            },
+        })
+
+        setDivisionList([])
+        setCategoryList([])
+        setSubCategoryList([])
+        setProductTypeList([])
+        setBrandList([])
+        setTypeFetch('')
+    }
 
     return (
         <div>
@@ -65,6 +98,7 @@ const StockOverviewFilter = ({
                             <Field name="division">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
+                                    console.log('DIVISION FIELD', fieldValue)
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                             <div className="font-semibold">Division</div>
@@ -75,7 +109,7 @@ const StockOverviewFilter = ({
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
                                                 defaultValue={divisions.divisions.filter((option) =>
-                                                    fieldValue.some((item) => item.name === option.name),
+                                                    fieldValue.some((item) => item === option.name),
                                                 )}
                                                 onChange={(newVal) => {
                                                     const selectedValues = newVal.map((item) => item.name) || []
@@ -92,6 +126,7 @@ const StockOverviewFilter = ({
                             <Field name="category">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
+                                    console.log('DATATAMAIN', category.categories)
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                             <div className="font-semibold">Category</div>
@@ -102,7 +137,7 @@ const StockOverviewFilter = ({
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
                                                 defaultValue={category.categories.filter((option) =>
-                                                    fieldValue.some((item) => item.name === option.name),
+                                                    fieldValue.some((item) => item === option.name),
                                                 )}
                                                 onChange={(newVal) => {
                                                     const selectedValues = newVal.map((item) => item.name) || []
@@ -129,7 +164,7 @@ const StockOverviewFilter = ({
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
                                                 defaultValue={subCategory.subcategories.filter((option) =>
-                                                    fieldValue.some((item) => item.name === option.name),
+                                                    fieldValue.some((item) => item === option.name),
                                                 )}
                                                 onChange={(newVal) => {
                                                     const selectedValues = newVal.map((item) => item.name) || []
@@ -155,7 +190,7 @@ const StockOverviewFilter = ({
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
                                                 defaultValue={product_type.product_types.filter((option) =>
-                                                    fieldValue.some((item) => item.name === option.name),
+                                                    fieldValue.some((item) => item === option.name),
                                                 )}
                                                 onChange={(newVal) => {
                                                     const selectedValues = newVal.map((item) => item.name) || []
@@ -183,7 +218,7 @@ const StockOverviewFilter = ({
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
                                                 defaultValue={brands.brands.filter((option) =>
-                                                    fieldValue.some((item) => item.name === option.name),
+                                                    fieldValue.some((item) => item === option.name),
                                                 )}
                                                 onChange={(newVal) => {
                                                     const selectedValues = newVal.map((item) => item.name) || []
@@ -197,14 +232,14 @@ const StockOverviewFilter = ({
                             </Field>
 
                             <FormContainer className="flex gap-5 justify-end ">
-                                <Button
+                                {/* <Button
                                     type="reset"
                                     variant="default"
                                     className="mt-4 p-2 rounded"
-                                    // onClick={() => handleFilterEmpty(resetForm)}
+                                    onClick={() => handleFilterEmpty(resetForm)}
                                 >
                                     Reset
-                                </Button>
+                                </Button> */}
 
                                 <Button type="submit" variant="new" className="mt-4 bg-blue-500 text-white p-2 rounded">
                                     APPLY
