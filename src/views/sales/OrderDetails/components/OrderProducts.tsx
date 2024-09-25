@@ -1,12 +1,7 @@
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 import Avatar from '@/components/ui/Avatar'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
@@ -54,38 +49,37 @@ const ProductColumn = ({ row }: { row: Product }) => {
         setParticularROwImage(img)
         setShowImageModal(true)
     }
-    console.log(
-        'BRRRRRRRRRRRADN',
-        `https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`,
-    )
 
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
             <div className="flex flex-col items-center gap-1">
                 <img
                     src={row.image.split(',')[0]}
-                    className=" xl:mt-3 w-[100px] h-[120px] cursor-pointer"
+                    className=" xl:mt-3 w-[200px] h-[120px] cursor-pointer"
                     onClick={() => handleImageView(row.image)}
                 />
-                <div className="cursor-pointer text-blue-500 hover:underline">
+                {/* <div className="cursor-pointer text-blue-500 hover:underline">
                     <a
                         href={`https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`}
                     >
                         Redirect
                     </a>
-                </div>
+                </div> */}
             </div>
             <div className="ltr:ml-2 rtl:mr-2">
                 <div className="mb-2 text-[18px] font-bold ">
                     Brand Name:
-                    <h4 className="font-light text-[16px] flex-wrap">
-                        {row.brand}
-                    </h4>
+                    <h4 className="font-light text-[16px] flex-wrap">{row.brand}</h4>
                 </div>
                 <div className="mb-2 text-[18px] font-bold ">
                     Product Name:
                     <h4 className="font-light text-[16px] flex-wrap">
-                        {row.name}
+                        <a
+                            href={`https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`}
+                            className="hover:text-blue-500 hover:underline"
+                        >
+                            {row.name}
+                        </a>
                     </h4>
                 </div>
                 {/* skv */}
@@ -103,14 +97,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
 }
 
 const PriceAmount = ({ amount }: { amount: number }) => {
-    return (
-        <NumericFormat
-            displayType="text"
-            value={(Math.round(amount * 100) / 100).toFixed(2)}
-            prefix={'Rs.'}
-            thousandSeparator={true}
-        />
-    )
+    return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
 const columns = [
@@ -146,11 +133,7 @@ const columns = [
             console.log('MRP', row?.mrp)
             console.log('SP', row?.sp)
 
-            const percentageCalculation = Math.round(
-                ((parseFloat(row.mrp) - parseFloat(row.sp)) /
-                    parseFloat(row.mrp)) *
-                    100,
-            )
+            const percentageCalculation = Math.round(((parseFloat(row.mrp) - parseFloat(row.sp)) / parseFloat(row.mrp)) * 100)
 
             return percentageCalculation > 0 ? (
                 <div className="w-[200px] overflow-ellipsis flex flex-col">
@@ -196,14 +179,8 @@ const OrderProducts = ({ data = [] }: OrderProductsProps) => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext(),
-                                        )}
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
                                     </Th>
                                 )
                             })}
@@ -215,14 +192,7 @@ const OrderProducts = ({ data = [] }: OrderProductsProps) => {
                         return (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </Td>
-                                    )
+                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 })}
                             </Tr>
                         )
