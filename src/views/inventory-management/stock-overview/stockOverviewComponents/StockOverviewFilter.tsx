@@ -70,6 +70,7 @@ const StockOverviewFilter = ({
     })
 
     const handleFilterEmpty = (resetForm: any) => {
+        // Clear the form values
         resetForm({
             values: {
                 division: [],
@@ -80,6 +81,7 @@ const StockOverviewFilter = ({
             },
         })
 
+        // Clear the external state
         setDivisionList([])
         setCategoryList([])
         setSubCategoryList([])

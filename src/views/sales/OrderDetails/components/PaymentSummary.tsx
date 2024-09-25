@@ -22,6 +22,8 @@ type PaymentSummaryProps = {
     loyalty_discount: string
     points_discount: string
     handleMarkAsPaid: any
+    status: string
+    handlePODAction: any
 }
 
 const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
@@ -59,22 +61,29 @@ const PaymentSummary = ({
     loyalty_discount,
     points_discount,
     handleMarkAsPaid,
+    status,
+    handlePODAction,
 }: PaymentSummaryProps) => {
     return (
         <Card className="mb-4">
             <div className="flex justify-between">
                 <h5 className="mb-4">Payment Summary</h5>
                 <div>
-                    {data?.status === 'PAID' ? (
-                        <p className="bg-gray-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg">
-                            {data?.status}
-                        </p>
+                    {data?.status === 'PAID' || data?.status === 'POD_PAID' ? (
+                        <p className="bg-gray-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg">PAID</p>
+                    ) : data?.status === 'POD_CREATED' && data.mode === 'POD' && status === 'COMPLETED' ? (
+                        <button
+                            className="bg-green-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg"
+                            onClick={handlePODAction}
+                        >
+                            Mark Pod Paid
+                        </button>
                     ) : (
                         <button
                             className="bg-blue-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg"
                             onClick={handleMarkAsPaid}
                         >
-                            Mark as Paid
+                            Check Payment Status
                         </button>
                     )}
                 </div>
