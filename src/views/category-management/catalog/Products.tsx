@@ -13,7 +13,7 @@ import { DROPDOWNARRAY } from './CommonType'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import ImageMODAL from '@/common/ImageModal'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaFilter } from 'react-icons/fa'
 import StockOverviewFilter from '@/views/inventory-management/stock-overview/stockOverviewComponents/StockOverviewFilter'
 
 type ProductVariant = {
@@ -369,43 +369,55 @@ const Products = () => {
 
     return (
         <div>
-            <div className="flex justify-between mb-2">
-                <div className="mb-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-center xl:justify-between mb-4 gap-4">
+                <div className="w-full md:w-1/3 flex justify-between gap-3">
                     <input
                         type="text"
                         placeholder="Search here"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
+                        className="p-2 w-full md:w-[70%] border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                </div>
-                {/*  */}
-                <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
-                    <Button variant="new" onClick={hanldeFilter}>
-                        Category Filter
-                    </Button>
+                    <button
+                        className="bg-gray-100 text-black px-4 py-2 flex items-center gap-2 xl:hidden hover:bg-gray-200 rounded-lg"
+                        onClick={handleDownload}
+                    >
+                        <IoMdDownload className="text-xl" />
+                    </button>
                 </div>
 
-                <div className="flex gap-3 items-center justify-center">
-                    <div>
-                        <div className="flex items-end justify-end mb-2">
-                            <button className="bg-gray-100 text-black px-5 py-3  hover:bg-gray-200 rounded-lg" onClick={handleDownload}>
-                                <IoMdDownload className="text-3xl" />
-                            </button>{' '}
-                            <br />
-                            <br />
-                        </div>
+                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                    <div className="flex gap-3">
+                        <button
+                            className="bg-gray-100 text-black px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-gray-200 rounded-lg"
+                            onClick={handleDownload}
+                        >
+                            <IoMdDownload className="text-xl" /> Export
+                        </button>
+
+                        <Button
+                            variant="new"
+                            onClick={hanldeFilter}
+                            className=" text-white px-4 py-2 hidden items-center gap-2 xl:flex rounded-lg "
+                        >
+                            <FaFilter className="text-md" /> Filter
+                        </Button>
                     </div>
 
-                    <div className="flex items-end justify-end mb-2">
-                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleProduct}>
+                    <div className="flex gap-3 w-full justify-between md:w-auto">
+                        <Button variant="new" onClick={hanldeFilter} className=" text-white flex items-center gap-2 xl:hidden rounded-lg ">
+                            <FaFilter className="text-md" />
+                        </Button>
+                        <button
+                            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-700 w-full md:w-auto text-center"
+                            onClick={handleProduct}
+                        >
                             ADD NEW PRODUCT
-                        </button>{' '}
-                        <br />
-                        <br />
+                        </button>
                     </div>
                 </div>
             </div>
+
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -458,6 +470,12 @@ const Products = () => {
                     categroyList={categoryList}
                     brandList={brandList}
                     productTypeList={productTypeList}
+                    setBrandList={setBrandList}
+                    setCategoryList={setCategoryList}
+                    setDivisionList={setDivisionList}
+                    setProductTypeList={setProductTypeList}
+                    setSubCategoryList={setSubCategoryList}
+                    setTypeFetch={setTypeFetch}
                 />
             )}
         </div>

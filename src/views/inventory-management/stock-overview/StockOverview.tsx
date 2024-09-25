@@ -521,6 +521,12 @@ const StockOverview = () => {
                     categroyList={categoryList}
                     brandList={brandList}
                     productTypeList={productTypeList}
+                    setBrandList={setBrandList}
+                    setCategoryList={setCategoryList}
+                    setDivisionList={setDivisionList}
+                    setProductTypeList={setProductTypeList}
+                    setSubCategoryList={setSubCategoryList}
+                    setTypeFetch={setTypeFetch}
                 />
             )}
         </div>
