@@ -130,9 +130,9 @@ const Home = () => {
             {/* Upar ka dabba */}
 
             <div className="flex flex-col xl:flex-row  xl:justify-between  mb-4 gap-5 ">
-                <div>
-                    <h5>Search By</h5>
-                    <div className="flex flex-col xl:flex-row gap-4 xl:justify-center">
+                <div className="w-full xl:w-[50%]">
+                    <h5 className="font-sans">Search By</h5>
+                    <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
                         <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[400px] bg-white shadow-md">
                             <input
                                 type="text"
@@ -169,7 +169,7 @@ const Home = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-5 justify-end xl:mt-4">
-                    <div className="w-full xl:w-1/3 sm:w-auto">
+                    <div className="w-full xl:w-[40%] sm:w-auto">
                         <div className="mb-1 font-semibold text-sm">FROM:</div>
                         <DatePicker
                             inputPrefix={<HiOutlineCalendar className="text-lg" />}
@@ -179,7 +179,7 @@ const Home = () => {
                             className=" shadow-lg w-auto"
                         />
                     </div>
-                    <div className="w-full xl:w-1/3 sm:w-auto">
+                    <div className="w-full xl:w-[40%] sm:w-auto">
                         <div className="mb-1 font-semibold text-sm">TO:</div>
                         <DatePicker
                             inputPrefix={<TbCalendarStats className="text-xl" />}

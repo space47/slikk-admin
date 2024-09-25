@@ -300,7 +300,7 @@ const PageSettings = () => {
                 accessorKey: '',
                 cell: ({ row }) => (
                     <button onClick={() => handleActionClick(row.original)} className="border-none bg-none">
-                        <FaEdit className="text-xl" />
+                        <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
             },
@@ -456,7 +456,11 @@ const PageSettings = () => {
                                                         {...provided.dragHandleProps}
                                                     >
                                                         {row.getVisibleCells().map((cell) => {
-                                                            return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                                            return (
+                                                                <Td key={cell.id}>
+                                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                                </Td>
+                                                            )
                                                         })}
                                                     </Tr>
                                                 )

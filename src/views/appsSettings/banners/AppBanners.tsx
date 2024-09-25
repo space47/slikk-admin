@@ -46,15 +46,9 @@ const AppBanners = () => {
 
     const navigate = useNavigate()
 
-    const fetchData = async (
-        page: number,
-        pageSize: number,
-        filter: string,
-    ) => {
+    const fetchData = async (page: number, pageSize: number, filter: string) => {
         try {
-            const response = await axiosInstance.get(
-                `/banners?p=${page}&page_size=${pageSize}&filter=${filter}`,
-            )
+            const response = await axiosInstance.get(`/banners?p=${page}&page_size=${pageSize}&filter=${filter}`)
             const data = response.data.data.results
 
             const total = response.data.data.count
@@ -87,59 +81,36 @@ const AppBanners = () => {
             {
                 header: 'Brand Name',
                 accessorKey: 'brand.name',
-                cell: (info: any) =>
-                    info.row.original.brand.map((item: any, key: number) => (
-                        <div key={key}>{item.name}</div>
-                    )),
+                cell: (info: any) => info.row.original.brand.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
             {
                 header: 'DIVISION Name',
                 accessorKey: 'division.name',
-                cell: (info: any) =>
-                    info.row.original.division.map((item: any, key: number) => (
-                        <div key={key}>{item.name}</div>
-                    )),
+                cell: (info: any) => info.row.original.division.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
 
             {
                 header: 'Category Name',
                 accessorKey: 'category.name',
-                cell: (info) =>
-                    info.row.original.category.map((item: any, key: number) => (
-                        <div key={key}>{item.name}</div>
-                    )),
+                cell: (info) => info.row.original.category.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
 
             {
                 header: 'Sub Category Name',
                 accessorKey: 'sub_category',
-                cell: (info: any) =>
-                    info.row.original.sub_category.map(
-                        (item: any, key: number) => (
-                            <div key={key}>{item.name}</div>
-                        ),
-                    ),
+                cell: (info: any) => info.row.original.sub_category.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
             {
                 header: 'Product Type Name',
                 accessorKey: 'product_type',
-                cell: (info: any) =>
-                    info.row.original.product_type.map(
-                        (item: any, key: number) => (
-                            <div key={key}>{item.name}</div>
-                        ),
-                    ),
+                cell: (info: any) => info.row.original.product_type.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
             {
                 header: 'Image (WEB)',
                 accessorKey: 'image_web',
                 cell: (info) =>
                     info.getValue() ? (
-                        <img
-                            src={info.getValue().split(',')[0]}
-                            alt=""
-                            className=" object-contain w-[100px] h-[100xp] "
-                        />
+                        <img src={info.getValue().split(',')[0]} alt="" className=" object-contain w-[100px] h-[100xp] " />
                     ) : (
                         ''
                     ),
@@ -148,15 +119,7 @@ const AppBanners = () => {
                 header: 'Image (Mobile)',
                 accessorKey: 'image_mobile',
                 cell: (info) =>
-                    info.getValue() ? (
-                        <img
-                            src={info.getValue().split(',')[0]}
-                            alt=""
-                            className=" object-contain w-[100px]  "
-                        />
-                    ) : (
-                        ''
-                    ),
+                    info.getValue() ? <img src={info.getValue().split(',')[0]} alt="" className=" object-contain w-[100px]  " /> : '',
             },
 
             { header: 'Offers', accessorKey: 'offers' },
@@ -165,16 +128,12 @@ const AppBanners = () => {
             {
                 header: 'From Date',
                 accessorKey: 'from_date',
-                cell: ({ getValue }) => (
-                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'To Date',
                 accessorKey: 'to_date',
-                cell: ({ getValue }) => (
-                    <span>{moment(getValue()).format('YYYY-MM-DD')}</span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD')}</span>,
             },
             { header: 'Upto Off', accessorKey: 'uptoff' },
             // {
@@ -192,13 +151,7 @@ const AppBanners = () => {
                     const imageUrl = getValue() as string
                     console.log('SECTION URL:', imageUrl)
 
-                    return (
-                        <img
-                            src={imageUrl}
-                            alt="Image"
-                            style={{ width: '100px', height: 'auto' }}
-                        />
-                    )
+                    return <img src={imageUrl} alt="Image" style={{ width: '100px', height: 'auto' }} />
                 },
             },
             {
@@ -218,10 +171,7 @@ const AppBanners = () => {
                 accessorKey: 'redirection_url',
                 cell: ({ row }) => (
                     <div className="w-[180px] text-overflow:ellipsis">
-                        <a href={row.original.redirection_url}>
-                            {' '}
-                            {row.original.redirection_url}
-                        </a>
+                        <a href={row.original.redirection_url}> {row.original.redirection_url}</a>
                     </div>
                 ),
             },
@@ -229,11 +179,8 @@ const AppBanners = () => {
                 header: 'Edit',
                 accessorKey: 'id',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() => handleActionClick(row.original.id)}
-                        className="border-none bg-none"
-                    >
-                        <FaEdit className="text-xl" />
+                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
+                        <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
             },
@@ -241,10 +188,7 @@ const AppBanners = () => {
                 header: 'Delete',
                 accessorKey: 'id',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() => handleDeleteClick(row.original.id)}
-                        className="border-none bg-none"
-                    >
+                    <button onClick={() => handleDeleteClick(row.original.id)} className="border-none bg-none">
                         <FaTrash className="text-xl text-red-500" />
                     </button>
                 ),
@@ -313,9 +257,7 @@ const AppBanners = () => {
             })
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message ||
-                    'User has benn Successfully deleted',
+                description: response?.data?.message || 'User has benn Successfully deleted',
             })
         } catch (error) {
             console.log(error)
@@ -342,10 +284,7 @@ const AppBanners = () => {
                 </div>
                 <div className="flex gap-3 items-center justify-center">
                     <div className="flex items-end justify-end mb-2">
-                        <button
-                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                            onClick={handleBanner}
-                        >
+                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleBanner}>
                             ADD NEW BANNER
                         </button>
                     </div>
@@ -357,10 +296,7 @@ const AppBanners = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -370,31 +306,19 @@ const AppBanners = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={(page) => setPage(page)}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
@@ -412,9 +336,7 @@ const AppBanners = () => {
                     }}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
-                        ARE YOU SURE YOU WANT TO DELETE THE BANNER Id:{' '}
-                        {bannerid} !!
+                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE THE BANNER Id: {bannerid} !!
                     </div>
                 </Modal>
             )}

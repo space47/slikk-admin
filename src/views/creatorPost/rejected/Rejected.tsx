@@ -87,16 +87,7 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const Rejected: React.FC<PendingProps> = ({
-    data,
-    totalData,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    globalFilter,
-    setGlobalFilter,
-}) => {
+const Rejected: React.FC<PendingProps> = ({ data, totalData, page, setPage, pageSize, setPageSize, globalFilter, setGlobalFilter }) => {
     const navigate = useNavigate()
 
     const handlePostClick = (id: number, post_id: string, owner: any) => {
@@ -116,13 +107,7 @@ const Rejected: React.FC<PendingProps> = ({
                 cell: ({ row, getValue }) => (
                     <div
                         className="cursor-pointer bg-gray-300 px-4 py-1 rounded-xl text-gray-500 font-semibold"
-                        onClick={() =>
-                            handlePostClick(
-                                row.original.id,
-                                getValue() as string,
-                                row.original.owner
-                            )
-                        }
+                        onClick={() => handlePostClick(row.original.id, getValue() as string, row.original.owner)}
                     >
                         {getValue() as string}
                     </div>
@@ -147,9 +132,7 @@ const Rejected: React.FC<PendingProps> = ({
             {
                 header: 'Thumbnail',
                 accessorKey: 'thumbnail_url',
-                cell: (info) => (
-                    <img src={info.getValue() as string} alt="Thumbnail" />
-                ),
+                cell: (info) => <img src={info.getValue() as string} alt="Thumbnail" />,
             },
             // Counts..................................................................................................
             {
@@ -182,15 +165,13 @@ const Rejected: React.FC<PendingProps> = ({
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: (info) =>
-                    new Date(info.getValue() as string).toLocaleDateString(),
+                cell: (info) => new Date(info.getValue() as string).toLocaleDateString(),
             },
 
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: (info) =>
-                    new Date(info.getValue() as string).toLocaleDateString(),
+                cell: (info) => new Date(info.getValue() as string).toLocaleDateString(),
             },
             {
                 header: 'Approval Status',
@@ -222,10 +203,7 @@ const Rejected: React.FC<PendingProps> = ({
             globalFilter,
         },
         onPaginationChange: (updater: Updater<PaginationState>) => {
-            const newPagination =
-                typeof updater === 'function'
-                    ? updater({ pageIndex: page - 1, pageSize })
-                    : updater
+            const newPagination = typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize }) : updater
 
             setPage(newPagination.pageIndex + 1) // Adjust for zero-based index
             setPageSize(newPagination.pageSize)
@@ -246,7 +224,7 @@ const Rejected: React.FC<PendingProps> = ({
             <div className="mb-4">
                 <input
                     type="text"
-                    placeholder="Search here"
+                    placeholder="Search bt post_Id"
                     value={globalFilter}
                     onChange={(e) => setGlobalFilter(e.target.value)}
                     className="p-2 border rounded"
@@ -258,10 +236,7 @@ const Rejected: React.FC<PendingProps> = ({
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -271,31 +246,19 @@ const Rejected: React.FC<PendingProps> = ({
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
