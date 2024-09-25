@@ -44,7 +44,5 @@ module.exports = {
                 noSortAlphabetically: true,
             },
         ],
-
-        'no-console': process.env.VITE_BACKEND_URI === 'https://dev-api.slikk.club/' ? 'off' : 'error',
     },
 }
