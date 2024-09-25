@@ -49,23 +49,26 @@ const ProductColumn = ({ row }: { row: Product }) => {
         setParticularROwImage(img)
         setShowImageModal(true)
     }
+    console.log(
+        'BRRRRRRRRRRRADN',
+        `https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`,
+    )
 
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
-            <div className="flex flex-col items-center gap-1">
-                <img
-                    src={row.image.split(',')[0]}
-                    className=" xl:mt-3 w-[200px] h-[120px] cursor-pointer"
-                    onClick={() => handleImageView(row.image)}
-                />
-                {/* <div className="cursor-pointer text-blue-500 hover:underline">
+            <img
+                src={row.image.split(',')[0]}
+                className=" xl:mt-3 w-[100px] h-[120px] cursor-pointer"
+                onClick={() => handleImageView(row.image)}
+            />
+            {/* <div className="cursor-pointer text-blue-500 hover:underline">
                     <a
                         href={`https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`}
                     >
                         Redirect
                     </a>
                 </div> */}
-            </div>
+
             <div className="ltr:ml-2 rtl:mr-2">
                 <div className="mb-2 text-[18px] font-bold ">
                     Brand Name:
