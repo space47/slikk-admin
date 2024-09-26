@@ -144,6 +144,7 @@ const OrderDetails = () => {
     }
 
     const handlemarkAsPaid = async () => {
+        console.log('MARK CLICKED')
         try {
             const response = await axioisInstance.post(`/user/order/${invoice_id}/payment/status`)
 
@@ -157,6 +158,7 @@ const OrderDetails = () => {
     }
 
     const handlePODAction = async () => {
+        console.log('POD CLICKED')
         try {
             const body = {
                 action: 'MARK_POD_COMPLETE',
@@ -171,18 +173,6 @@ const OrderDetails = () => {
             console.log(error)
         }
     }
-
-    // IMPORTANT..........................................
-
-    const createDate = moment(data?.create_date)
-
-    // Get the current date and time using moment
-    const currentDate = moment()
-
-    // Calculate the difference in seconds
-    const differenceInSeconds = currentDate.diff(createDate, 'seconds')
-
-    console.log(`Difference in seconds: ${differenceInSeconds} seconds`)
 
     return (
         <Container className="p-4 xl:px-10">
@@ -212,7 +202,7 @@ const OrderDetails = () => {
                                     </button>
                                 ) : data.status !== 'DECLINED' &&
                                   data.status !== 'CANCELLED' &&
-                                  ['PENDING', 'ACCEPTED', 'PACKED'].includes(data.status) ? (
+                                  ['PENDING', 'ACCEPTED', 'PACKED', 'OUT_FOR_DELIVERY'].includes(data.status) ? (
                                     <button
                                         className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                         onClick={handleCancelOrder}

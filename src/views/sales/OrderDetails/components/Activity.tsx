@@ -37,6 +37,7 @@ export type Product = {
     sku: string
     name: string
     id: number
+    brand: string
 }
 
 type LOGISTIC = {

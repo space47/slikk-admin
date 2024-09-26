@@ -66,7 +66,7 @@ const PaymentSummary = ({
 }: PaymentSummaryProps) => {
     return (
         <Card className="mb-4">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center xl:items-baseline">
                 <h5 className="mb-4">Payment Summary</h5>
                 <div>
                     {data?.status === 'PAID' || data?.status === 'POD_PAID' ? (
@@ -80,7 +80,7 @@ const PaymentSummary = ({
                         </button>
                     ) : (
                         <button
-                            className="bg-blue-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg"
+                            className="bg-blue-500 xl:px-5 px-1 xl:rounded-[22px] rounded-[10px] flex items-center justify-center text-white xl:text-lg text-[13px]"
                             onClick={handleMarkAsPaid}
                         >
                             Check Payment Status
@@ -95,7 +95,7 @@ const PaymentSummary = ({
                 <PaymentType label="Mode" value={data?.mode} />
                 {/* <PaymentType label="Delivery Charge" value={delivery} /> */}
                 <div className="flex justify-between mb-2">
-                    Delivery Charge <span className="font-semibold">Rs.{delivery}</span>
+                    Delivery Charge <span className="font-semibold ">Rs.{delivery}</span>
                 </div>
                 {coupon_discount !== '0.00' && (
                     <div className="flex justify-between mb-2">
