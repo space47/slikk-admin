@@ -43,7 +43,7 @@ export const CustomModal: React.FC<Props> = ({
             okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'PACKED'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
-            className="custom-modal"
+            className="custom-modal overflow-scroll scrollbar-hide"
             okButtonProps={{
                 className: 'font-bold',
                 style: {
@@ -75,47 +75,51 @@ export const CustomModal: React.FC<Props> = ({
                 </h1>
             </div>
             {product && product.length > 0 && (
-                <table className="w-full text-left border-t">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="px-4 py-2 font-semibold">SKU</th>
-                            <th className="px-4 py-2 font-semibold">PRODUCT IMAGE</th>
-                            <th className="px-4 py-2 font-semibold">PRODUCT NAME</th>
-                            <th className="px-4 py-2 font-semibold">ORDERED QTY</th>
-                            <th className="px-4 py-2 font-semibold">FULFILLED QTY</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {product.map((pdts) => (
-                            <tr key={pdts.id} className="border-t hover:bg-gray-50">
-                                <td className="px-4 py-2">{pdts.sku}</td>
-                                <td className="px-4 py-2">
-                                    <img src={pdts.image.split(',')[0]} alt="" className="w-20 h-20 object-cover rounded" />
-                                </td>
-                                <td className="px-4 py-2">{pdts.name}</td>
-                                <td className="px-4 py-2">{pdts.quantity}</td>
-                                <td className="px-4 py-2">
-                                    <Select
-                                        value={fulfilledQuantities[pdts.id] || 0}
-                                        className="w-full"
-                                        onChange={(value: any) => handleSelectChange(pdts.id, value)}
-                                    >
-                                        {Array.from(
-                                            {
-                                                length: parseInt(pdts.quantity, 10) + 1,
-                                            },
-                                            (_, i) => (
-                                                <Option key={i} value={i.toString()}>
-                                                    {i}
-                                                </Option>
-                                            ),
-                                        )}
-                                    </Select>
-                                </td>
+                <div className="overflow-x-auto scrollbar-hide">
+                    {' '}
+                    {/* Add this wrapper */}
+                    <table className="w-full text-left border-t">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="px-4 py-2 font-semibold">SKU</th>
+                                <th className="px-4 py-2 font-semibold">PRODUCT IMAGE</th>
+                                <th className="px-4 py-2 font-semibold">PRODUCT NAME</th>
+                                <th className="px-4 py-2 font-semibold">ORDERED QTY</th>
+                                <th className="px-4 py-2 font-semibold">FULFILLED QTY</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {product.map((pdts) => (
+                                <tr key={pdts.id} className="border-t hover:bg-gray-50">
+                                    <td className="px-4 py-2">{pdts.sku}</td>
+                                    <td className="px-4 py-2">
+                                        <img src={pdts.image.split(',')[0]} alt="" className="w-20 h-20 object-cover rounded" />
+                                    </td>
+                                    <td className="px-4 py-2">{pdts.name}</td>
+                                    <td className="px-4 py-2">{pdts.quantity}</td>
+                                    <td className="px-4 py-2">
+                                        <Select
+                                            value={fulfilledQuantities[pdts.id] || 0}
+                                            className="w-full"
+                                            onChange={(value: any) => handleSelectChange(pdts.id, value)}
+                                        >
+                                            {Array.from(
+                                                {
+                                                    length: parseInt(pdts.quantity, 10) + 1,
+                                                },
+                                                (_, i) => (
+                                                    <Option key={i} value={i.toString()}>
+                                                        {i}
+                                                    </Option>
+                                                ),
+                                            )}
+                                        </Select>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
             {errorMessage && <div className="text-red-500 mt-4 text-center">{errorMessage}</div>}
         </Modal>
