@@ -20,10 +20,12 @@ import type { OrderItem } from './commontypes'
 import { Button, Dropdown } from '@/components/ui'
 import { ORDER_STATUS } from './commontypes'
 import { IoMdDownload } from 'react-icons/io'
-import { FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
+import { FaExclamationCircle, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import NotificationSound from '@/common/orderNotification'
+import { playNotificationSound } from '@/common/noticication'
 
 interface Order {
     invoice_id: string
@@ -107,6 +109,7 @@ const OrderList = () => {
         name: [],
     })
     const [showFilter, setShowFilter] = useState(false)
+    const [soundEnabled, setSoundEnabled] = useState(false)
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
@@ -126,13 +129,9 @@ const OrderList = () => {
             }
 
             if (currentSelectedPage.value === 'invoice' && searchInput) {
-                response = await axiosInstance.get(
-                    `/merchant/orders?invoice_id=${searchInput}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
-                )
+                response = await axiosInstance.get(`/merchant/orders?invoice_id=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
             } else if (currentSelectedPage.value === 'mobile' && searchInput) {
-                response = await axiosInstance.get(
-                    `/merchant/orders?mobile=${searchInput}${status}&p=${page}&page_size=${pageSize}${deliveryStatus}${paymentStatus}`,
-                )
+                response = await axiosInstance.get(`/merchant/orders?mobile=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
             } else {
                 response = await axiosInstance.get(
                     `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
@@ -151,6 +150,12 @@ const OrderList = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
+
+        const interval = setInterval(() => {
+            fetchOrders(page, pageSize, from, to)
+        }, 60000)
+
+        return () => clearInterval(interval)
     }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     const columns = useMemo(
@@ -158,20 +163,38 @@ const OrderList = () => {
             {
                 header: 'Invoice Id',
                 accessorKey: 'invoice_id',
-                cell: ({ getValue }) => {
+                cell: ({ getValue, row }) => {
+                    const createDate = moment(row.original.create_date)
+                    const currentDate = moment()
+                    const differenceInSeconds = currentDate.diff(createDate, 'seconds')
+
+                    console.log('DIFFTIME', differenceInSeconds)
+                    console.log('CURRENTSTATUS', row.original.status)
+
+                    if (row.original.status === 'PENDING' && differenceInSeconds > 60) {
+                        setSoundEnabled(true)
+                    }
+
                     return (
-                        <a
-                            href={`/app/orders/${getValue()}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                            // onClick={() => handleInvoiceClick(getValue() as string)}
-                        >
-                            {getValue()}
-                        </a>
+                        <div className="flex items-center gap-3">
+                            <a
+                                href={`/app/orders/${getValue()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                            >
+                                {getValue()}
+                            </a>
+                            {row.original.status === 'PENDING' && differenceInSeconds > 60 && (
+                                <div className="flex items-center justify-center mt-2">
+                                    <FaExclamationCircle className="text-red-600 text-xl" />
+                                </div>
+                            )}
+                        </div>
                     )
                 },
             },
+
             {
                 header: 'Order Date',
                 accessorKey: 'create_date',
@@ -207,6 +230,16 @@ const OrderList = () => {
         ],
         [],
     )
+
+    useEffect(() => {
+        const simulateOrderReceived = () => {
+            setSoundEnabled(true)
+            setTimeout(() => setSoundEnabled(false), 10000)
+        }
+
+        const orderTimeoutId = setTimeout(simulateOrderReceived, 2000)
+        return () => clearTimeout(orderTimeoutId)
+    }, [])
 
     const table = useReactTable({
         data: orders,
@@ -276,7 +309,7 @@ const OrderList = () => {
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
-    console.log('DeliveryType', deliveryType?.value)
+
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
     }
@@ -355,6 +388,13 @@ const OrderList = () => {
     const handleFilterClose = useCallback(() => {
         setShowFilter(false)
     }, [setShowFilter])
+
+    // useEffect(() => {
+    //     if (soundEnabled) {
+    //         playNotificationSound()
+    //         console.log('RINGING')
+    //     }
+    // }, [soundEnabled])
 
     return (
         <div className="p-4">
@@ -486,6 +526,8 @@ const OrderList = () => {
                     handlePaymentSelect={handlePaymentSelect}
                 />
             )}
+
+            {soundEnabled && <NotificationSound shouldPlay={soundEnabled} />}
         </div>
     )
 }

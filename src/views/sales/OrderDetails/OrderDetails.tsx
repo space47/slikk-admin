@@ -172,6 +172,18 @@ const OrderDetails = () => {
         }
     }
 
+    // IMPORTANT..........................................
+
+    const createDate = moment(data?.create_date)
+
+    // Get the current date and time using moment
+    const currentDate = moment()
+
+    // Calculate the difference in seconds
+    const differenceInSeconds = currentDate.diff(createDate, 'seconds')
+
+    console.log(`Difference in seconds: ${differenceInSeconds} seconds`)
+
     return (
         <Container className="p-4 xl:px-10">
             <Loading loading={loading}>
