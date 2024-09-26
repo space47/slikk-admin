@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import {
@@ -25,7 +25,6 @@ import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import NotificationSound from '@/common/orderNotification'
-import { playNotificationSound } from '@/common/noticication'
 
 interface Order {
     invoice_id: string
@@ -111,6 +110,8 @@ const OrderList = () => {
     const [showFilter, setShowFilter] = useState(false)
     const [soundEnabled, setSoundEnabled] = useState(false)
 
+    const previousOrders = useRef<Order[]>([])
+
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -141,6 +142,18 @@ const OrderList = () => {
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
 
+            if (previousOrders.current.length > 0) {
+                const newOrderExists = ordersData.some(
+                    (newOrder) => !previousOrders.current.some((oldOrder) => oldOrder.invoice_id === newOrder.invoice_id),
+                )
+
+                if (newOrderExists) {
+                    setSoundEnabled(true)
+                }
+            }
+
+            previousOrders.current = ordersData
+
             setOrders(ordersData)
             setOrderCount(orderCount)
         } catch (error) {
@@ -153,67 +166,16 @@ const OrderList = () => {
 
         const interval = setInterval(() => {
             fetchOrders(page, pageSize, from, to)
-        }, 60000)
+        }, 30000)
 
         return () => clearInterval(interval)
     }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     useEffect(() => {
-        let previousOrders: Order[] = []
-
-        const checkForNewOrders = async () => {
-            try {
-                const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-                const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
-
-                let response
-                let deliveryStatus = ''
-                let paymentStatus = ''
-
-                if (deliveryType?.value && deliveryType?.value?.length > 0) {
-                    deliveryStatus = `&delivery_type=${deliveryType?.value}`
-                }
-
-                if (paymentType?.value && paymentType?.value.length > 0) {
-                    paymentStatus = `&payment_mode=${paymentType?.value}`
-                }
-
-                if (currentSelectedPage.value === 'invoice' && searchInput) {
-                    response = await axiosInstance.get(
-                        `/merchant/orders?invoice_id=${searchInput}${status}${deliveryStatus}${paymentStatus}`,
-                    )
-                } else if (currentSelectedPage.value === 'mobile' && searchInput) {
-                    response = await axiosInstance.get(`/merchant/orders?mobile=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-                } else {
-                    response = await axiosInstance.get(
-                        `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
-                    )
-                }
-
-                const newOrders = response.data?.data.results
-                setOrders(newOrders)
-                setOrderCount(orderCount)
-
-                const newPendingOrder = newOrders.find(
-                    (order) => order.status === 'PENDING' && !previousOrders.some((prevOrder) => prevOrder.invoice_id === order.invoice_id),
-                )
-
-                if (newPendingOrder) {
-                    setSoundEnabled(true)
-                }
-
-                previousOrders = newOrders
-            } catch (error) {
-                console.error(error)
-            }
+        if (soundEnabled) {
+            setTimeout(() => setSoundEnabled(false), 2000)
         }
-
-        const interval = setInterval(() => {
-            checkForNewOrders()
-        }, 60000)
-
-        return () => clearInterval(interval)
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
+    }, [soundEnabled])
 
     const columns = useMemo(
         () => [
@@ -227,10 +189,6 @@ const OrderList = () => {
 
                     console.log('DIFFTIME', differenceInSeconds)
                     console.log('CURRENTSTATUS', row.original.status)
-
-                    if (row.original.status === 'PENDING' && createDate === currentDate) {
-                        setSoundEnabled(true)
-                    }
 
                     return (
                         <div className="flex items-center gap-3">
@@ -287,10 +245,6 @@ const OrderList = () => {
         ],
         [],
     )
-
-    const handleSoundEnd = () => {
-        setSoundEnabled(false) // Reset soundEnabled after sound playback
-    }
 
     const table = useReactTable({
         data: orders,
