@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { Modal, Select } from 'antd'
 import { Product } from './Activity'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown } from '@/components/ui'
+import { FaRupeeSign } from 'react-icons/fa'
 
 const { Option } = Select
 
@@ -66,61 +68,60 @@ export const CustomModal: React.FC<Props> = ({
             onCancel={handleCancel}
         >
             <p className="text-lg font-semibold mb-4">{modalContent}</p>
-            <div className="flex flex-col gap-2 mb-4">
-                <h1 className="text-[20px] font-semibold">
-                    Invoice Id: <span className="font-normal">{invoice_id}</span>
-                </h1>
-                <h1 className="text-[16px] font-semibold">
-                    Total Amount: <span className="font-normal">Rs.{payment?.amount}</span>
-                </h1>
+            <div className="flex flex-col gap-4 mb-6 p-4 bg-white shadow-md rounded-lg">
+                <div className="flex items-center text-[20px] font-semibold gap-2">
+                    <span>Invoice Id:</span>
+                    <span className="text-white bg-red-600 flex items-center justify-center px-2  rounded-[10px] font-semibold cursor-pointer">
+                        {invoice_id}
+                    </span>
+                </div>
+                <div className="flex gap-2 items-center text-[16px] font-semibold">
+                    <span>Total Amount:</span>
+                    <div className="flex items-center">
+                        <FaRupeeSign className="text-green-600 " />
+                        <span className="font-normal text-gray-700">{payment?.amount}</span>
+                    </div>
+                </div>
             </div>
             {product && product.length > 0 && (
-                <div className="overflow-x-auto scrollbar-hide">
-                    {' '}
-                    {/* Add this wrapper */}
-                    <table className="w-full text-left border-t">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="px-4 py-2 font-semibold">SKU</th>
-                                <th className="px-4 py-2 font-semibold">PRODUCT IMAGE</th>
-                                <th className="px-4 py-2 font-semibold">PRODUCT NAME</th>
-                                <th className="px-4 py-2 font-semibold">ORDERED QTY</th>
-                                <th className="px-4 py-2 font-semibold">FULFILLED QTY</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {product.map((pdts) => (
-                                <tr key={pdts.id} className="border-t hover:bg-gray-50">
-                                    <td className="px-4 py-2">{pdts.sku}</td>
-                                    <td className="px-4 py-2">
-                                        <img src={pdts.image.split(',')[0]} alt="" className="w-20 h-20 object-cover rounded" />
-                                    </td>
-                                    <td className="px-4 py-2">{pdts.name}</td>
-                                    <td className="px-4 py-2">{pdts.quantity}</td>
-                                    <td className="px-4 py-2">
-                                        <Select
-                                            value={fulfilledQuantities[pdts.id] || 0}
-                                            className="w-full"
-                                            onChange={(value: any) => handleSelectChange(pdts.id, value)}
-                                        >
-                                            {Array.from(
-                                                {
-                                                    length: parseInt(pdts.quantity, 10) + 1,
-                                                },
-                                                (_, i) => (
+                <div className="grid grid-cols-1 gap-4">
+                    {product.map((pdts) => (
+                        <div
+                            key={pdts.id}
+                            className="flex items-center p-6 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12"
+                        >
+                            <div className="flex-shrink-0">
+                                <img src={pdts.image.split(',')[0]} alt={pdts.name} className="w-28 xl:w-44 h-52 object-cover rounded-lg" />
+                            </div>
+                            <div className="ml-6 w-full">
+                                <div className="font-semibold text-md xl:text-2xl">{pdts.brand}</div>
+                                <div className="font-semibold text-md text-gray-500 xl:text-2xl w-[100px] xl:w-full">{pdts.name}</div>
+                                <div className="text-gray-900 mb-3 xl:text-lg w-[100px] xl:w-full">{pdts.sku}</div>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col xl:flex-row xl:gap-6 xl:items-center gap-2">
+                                        <div className="text-lg xl:text-xl">Qty: {pdts.quantity}</div>
+                                        <div className="text-lg xl:text-xl flex items-center">
+                                            Fulfilled Qty:
+                                            <Select
+                                                value={fulfilledQuantities[pdts.id] || 0}
+                                                className="ml-3 mt-2 xl:mt-0 w-16 h-7"
+                                                onChange={(value: any) => handleSelectChange(pdts.id, value)}
+                                            >
+                                                {Array.from({ length: parseInt(pdts.quantity, 10) + 1 }, (_, i) => (
                                                     <Option key={i} value={i.toString()}>
                                                         {i}
                                                     </Option>
-                                                ),
-                                            )}
-                                        </Select>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                                ))}
+                                            </Select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
+
             {errorMessage && <div className="text-red-500 mt-4 text-center">{errorMessage}</div>}
         </Modal>
     )
