@@ -204,22 +204,30 @@ const OrderList = () => {
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
 
-        const interval = setInterval(() => {
-            fetchOrders(page, pageSize, from, to)
-        }, 30000)
+        const noFilters = !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
 
-        return () => clearInterval(interval)
+        if (noFilters) {
+            const interval = setInterval(() => {
+                fetchOrders(page, pageSize, from, to)
+            }, 30000)
+
+            return () => clearInterval(interval)
+        }
     }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     useEffect(() => {
         checkingNewOrders(page, pageSize, from, to)
 
-        const interval = setInterval(() => {
-            checkingNewOrders(page, pageSize, from, to)
-        }, 30000)
+        const noFilters = !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
 
-        return () => clearInterval(interval)
-    }, [previousOrders])
+        if (noFilters) {
+            const interval = setInterval(() => {
+                checkingNewOrders(page, pageSize, from, to)
+            }, 30000)
+
+            return () => clearInterval(interval)
+        }
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     useEffect(() => {
         if (soundEnabled) {
@@ -450,13 +458,6 @@ const OrderList = () => {
     const handleFilterClose = useCallback(() => {
         setShowFilter(false)
     }, [setShowFilter])
-
-    // useEffect(() => {
-    //     if (soundEnabled) {
-    //         playNotificationSound()
-    //         console.log('RINGING')
-    //     }
-    // }, [soundEnabled])
 
     return (
         <div className="p-4">
