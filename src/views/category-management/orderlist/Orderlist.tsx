@@ -142,6 +142,43 @@ const OrderList = () => {
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
 
+            setOrders(ordersData)
+            setOrderCount(orderCount)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const checkingNewOrders = async (page: number, pageSize: number, from: string, to: string) => {
+        try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+
+            let response
+            let deliveryStatus = ''
+            let paymentStatus = ''
+
+            if (deliveryType?.value && deliveryType?.value?.length > 0) {
+                deliveryStatus = `&delivery_type=${deliveryType?.value}`
+            }
+
+            if (paymentType?.value && paymentType?.value.length > 0) {
+                paymentStatus = `&payment_mode=${paymentType?.value}`
+            }
+
+            if (currentSelectedPage.value === 'invoice' && searchInput) {
+                response = await axiosInstance.get(`/merchant/orders?invoice_id=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
+            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
+                response = await axiosInstance.get(`/merchant/orders?mobile=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
+            } else {
+                response = await axiosInstance.get(
+                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
+                )
+            }
+
+            const ordersData = response.data?.data.results
+            const orderCount = response.data?.data.count
+
             if (previousOrders.current.length > 0) {
                 const newOrderExists = ordersData.some(
                     (newOrder) => !previousOrders.current.some((oldOrder) => oldOrder.invoice_id === newOrder.invoice_id),
@@ -152,6 +189,7 @@ const OrderList = () => {
                 }
             }
 
+            // Update previous orders only after the comparison
             previousOrders.current = ordersData
 
             setOrders(ordersData)
@@ -172,10 +210,50 @@ const OrderList = () => {
     }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     useEffect(() => {
+        checkingNewOrders(page, pageSize, from, to)
+
+        const interval = setInterval(() => {
+            checkingNewOrders(page, pageSize, from, to)
+        }, 30000)
+
+        return () => clearInterval(interval)
+    }, [previousOrders])
+
+    useEffect(() => {
         if (soundEnabled) {
-            setTimeout(() => setSoundEnabled(false), 2000)
+            // Play the notification sound and reset `soundEnabled`
+            setTimeout(() => setSoundEnabled(false), 2000) // Reset after playing
         }
     }, [soundEnabled])
+
+    // useEffect(() => {
+    //     let previousOrders: Order[] = []
+    //     console.log('GETTING', orders)
+
+    //     const checkForNewOrders = async () => {
+    //         try {
+    //             const newPendingOrder = orders.find(
+    //                 (order) => !previousOrders.some((prevOrder) => prevOrder.invoice_id === order.invoice_id),
+    //             )
+    //             console.log('NEW PENDING', newPendingOrder)
+
+    //             if (newPendingOrder) {
+    //                 setSoundEnabled(true)
+    //                 console.log('now ringing')
+    //                 previousOrders = orders
+    //             }
+
+    //         } catch (error) {
+    //             console.error(error)
+    //         }
+    //     }
+
+    //     const interval = setInterval(() => {
+    //         checkForNewOrders()
+    //     }, 30000)
+
+    //     return () => clearInterval(interval)
+    // }, [orders])
 
     const columns = useMemo(
         () => [
