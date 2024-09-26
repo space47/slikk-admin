@@ -25,6 +25,7 @@ import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import NotificationSound from '@/common/orderNotification'
+import PendingNotification from '@/common/pendingNotification'
 
 interface Order {
     invoice_id: string
@@ -109,6 +110,7 @@ const OrderList = () => {
     })
     const [showFilter, setShowFilter] = useState(false)
     const [soundEnabled, setSoundEnabled] = useState(false)
+    const [pendingSound, setPendingSound] = useState(false)
 
     const previousOrders = useRef<Order[]>([])
 
@@ -222,38 +224,9 @@ const OrderList = () => {
     useEffect(() => {
         if (soundEnabled) {
             // Play the notification sound and reset `soundEnabled`
-            setTimeout(() => setSoundEnabled(false), 2000) // Reset after playing
+            setTimeout(() => setSoundEnabled(false), 5000) // Reset after playing
         }
     }, [soundEnabled])
-
-    // useEffect(() => {
-    //     let previousOrders: Order[] = []
-    //     console.log('GETTING', orders)
-
-    //     const checkForNewOrders = async () => {
-    //         try {
-    //             const newPendingOrder = orders.find(
-    //                 (order) => !previousOrders.some((prevOrder) => prevOrder.invoice_id === order.invoice_id),
-    //             )
-    //             console.log('NEW PENDING', newPendingOrder)
-
-    //             if (newPendingOrder) {
-    //                 setSoundEnabled(true)
-    //                 console.log('now ringing')
-    //                 previousOrders = orders
-    //             }
-
-    //         } catch (error) {
-    //             console.error(error)
-    //         }
-    //     }
-
-    //     const interval = setInterval(() => {
-    //         checkForNewOrders()
-    //     }, 30000)
-
-    //     return () => clearInterval(interval)
-    // }, [orders])
 
     const columns = useMemo(
         () => [
@@ -267,6 +240,12 @@ const OrderList = () => {
 
                     console.log('DIFFTIME', differenceInSeconds)
                     console.log('CURRENTSTATUS', row.original.status)
+
+                    if (row.original.status === 'PENDING' && differenceInSeconds > 60) {
+                        setPendingSound(true)
+                    } else {
+                        setPendingSound(false)
+                    }
 
                     return (
                         <div className="flex items-center gap-3">
@@ -611,6 +590,7 @@ const OrderList = () => {
             )}
 
             {soundEnabled && <NotificationSound shouldPlay={soundEnabled} />}
+            {pendingSound && <PendingNotification shouldPlay={pendingSound} />}
         </div>
     )
 }
