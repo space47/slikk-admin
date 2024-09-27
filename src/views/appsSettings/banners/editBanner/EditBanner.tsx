@@ -262,6 +262,17 @@ const EditBanner = () => {
         }
     }
 
+    console.log('DIVVVIU', divisions.divisions)
+
+    console.log(
+        'TREEDATA',
+        divisions.divisions.map((item) => item.categories.map((item) => item.name)),
+    )
+
+    const [filteredCategories, setFilteredCategories] = useState([])
+    const [filteredSubCategories, setFilteredSubCategories] = useState([])
+    const [filteredProductTypes, setFilteredProductTypes] = useState([])
+
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">Edit Banner</h3>
@@ -324,44 +335,157 @@ const EditBanner = () => {
 
                             {/* ...................................................................... */}
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                <SectionsComponent
+                                {/* <SectionsComponent
                                     name="division"
                                     label="Division"
                                     defaultValue={initialValue.division}
                                     setFieldValue={setFieldValue}
                                     options={divisions.divisions}
                                     fieldValues="division"
-                                />
+                                /> */}
 
-                                {/* CATEGORY...................................... */}
-                                <SectionsComponent
-                                    name="category"
-                                    label="Category"
-                                    defaultValue={initialValue.category}
-                                    setFieldValue={setFieldValue}
-                                    options={category.categories}
-                                    fieldValues="category"
-                                />
+                                <FormContainer>
+                                    <FormItem asterisk label="Division" className="col-span-1 w-full">
+                                        <Field name="division">
+                                            {({ field }: FieldProps<any>) => {
+                                                const fieldValue = Array.isArray(field.value) ? field.value : []
 
-                                {/* SUB CATEGORY................................................. */}
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.division.filter((option) =>
+                                                            fieldValue.some((item) => item.name === option.name),
+                                                        )}
+                                                        options={divisions.divisions}
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id.toString()}
+                                                        onChange={(newVal) => {
+                                                            setFieldValue('division', newVal ? newVal : [])
 
-                                <SectionsComponent
-                                    name="sub_category"
-                                    label="Sub Category"
-                                    defaultValue={initialValue.sub_category}
-                                    setFieldValue={setFieldValue}
-                                    options={subCategory.subcategories}
-                                    fieldValues="sub_category"
-                                />
+                                                            // Get selected division's categories
+                                                            const selectedDivision = newVal
+                                                                ? newVal.map((division) => division.categories).flat()
+                                                                : []
 
-                                <SectionsComponent
-                                    name="product_type"
-                                    label="Product Type"
-                                    defaultValue={initialValue.product_type}
-                                    setFieldValue={setFieldValue}
-                                    options={product_type.product_types}
-                                    fieldValues="product_type"
-                                />
+                                                            // Reset category, sub-category, and product type fields
+                                                            setFieldValue('category', [])
+                                                            setFieldValue('sub_category', [])
+                                                            setFieldValue('product_type', [])
+
+                                                            // Update the filtered categories
+                                                            setFilteredCategories(selectedDivision)
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+
+                                {/* CATEGORY ...................................... */}
+                                <FormContainer>
+                                    <FormItem asterisk label="Category" className="col-span-1 w-full">
+                                        <Field name="category">
+                                            {({ field }: FieldProps<any>) => {
+                                                const fieldValue = Array.isArray(field.value) ? field.value : []
+
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.category.filter((option) =>
+                                                            fieldValue.some((item) => item.name === option.name),
+                                                        )}
+                                                        options={filteredCategories} // Use the filtered categories here
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id.toString()}
+                                                        onChange={(newVal) => {
+                                                            setFieldValue('category', newVal ? newVal : [])
+
+                                                            // Get selected categories' sub-categories
+                                                            const selectedSubCategories = newVal
+                                                                ? newVal.map((category) => category.sub_categories).flat()
+                                                                : []
+
+                                                            // Reset sub-category and product type fields
+                                                            setFieldValue('sub_category', [])
+                                                            setFieldValue('product_type', [])
+
+                                                            // Update the filtered sub-categories
+                                                            setFilteredSubCategories(selectedSubCategories)
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+
+                                {/* SUB-CATEGORY ...................................... */}
+                                <FormContainer>
+                                    <FormItem asterisk label="Sub-Category" className="col-span-1 w-full">
+                                        <Field name="sub_category">
+                                            {({ field }: FieldProps<any>) => {
+                                                const fieldValue = Array.isArray(field.value) ? field.value : []
+
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.sub_category.filter((option) =>
+                                                            fieldValue.some((item) => item.name === option.name),
+                                                        )}
+                                                        options={filteredSubCategories} // Use the filtered sub-categories here
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id.toString()}
+                                                        onChange={(newVal) => {
+                                                            setFieldValue('sub_category', newVal ? newVal : [])
+
+                                                            // Get selected sub-categories' product types
+                                                            const selectedProductTypes = newVal
+                                                                ? newVal.map((sub_category) => sub_category.product_types).flat()
+                                                                : []
+
+                                                            // Reset product type field
+                                                            setFieldValue('product_type', [])
+
+                                                            // Update the filtered product types
+                                                            setFilteredProductTypes(selectedProductTypes)
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+
+                                {/* PRODUCT TYPE ...................................... */}
+                                <FormContainer>
+                                    <FormItem asterisk label="Product Type" className="col-span-1 w-full">
+                                        <Field name="product_type">
+                                            {({ field }: FieldProps<any>) => {
+                                                const fieldValue = Array.isArray(field.value) ? field.value : []
+
+                                                return (
+                                                    <Select
+                                                        isMulti
+                                                        field={field}
+                                                        defaultValue={initialValue.product_type.filter((option) =>
+                                                            fieldValue.some((item) => item.name === option.name),
+                                                        )}
+                                                        options={filteredProductTypes} // Use the filtered product types here
+                                                        getOptionLabel={(option) => option.name}
+                                                        getOptionValue={(option) => option.id.toString()}
+                                                        onChange={(newVal) => {
+                                                            setFieldValue('product_type', newVal ? newVal : [])
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
 
                                 {/* BRAND   */}
 
