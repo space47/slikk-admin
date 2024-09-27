@@ -14,27 +14,15 @@ import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { notification } from 'antd'
 
-function AddBannerStep3({
-    selectedPage,
-    selectedSectionData,
-    setCurrentStep,
-    completeBannerFormData,
-    setCompleteBannerFormData
-}: any) {
-    const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(
-        completeBannerFormData
-    )
+function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
+    const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
 
     useEffect(() => {
         console.log(bannerForm)
     }, [bannerForm])
 
     const handleInputChange = (index: any, field: any, value: any) => {
-        setBannerFormData((prev) =>
-            prev.map((form, idx) =>
-                idx === index ? { ...form, [field]: value } : form
-            )
-        )
+        setBannerFormData((prev) => prev.map((form, idx) => (idx === index ? { ...form, [field]: value } : form)))
     }
 
     const handlePreviewClicked = () => {
@@ -50,8 +38,7 @@ function AddBannerStep3({
             setCurrentStep(4)
         } else {
             notification.error({
-                message:
-                    'Please check Banner form data to_date, from_date or name'
+                message: 'Please check Banner form data to_date, from_date or name',
             })
         }
     }
@@ -61,30 +48,19 @@ function AddBannerStep3({
             <div className="flex flex-col gap-y-3 w-full">
                 {bannerForm.map((_, key) => {
                     return (
-                        <div
-                            key={key}
-                            className=" w-full border my-4 shadow-md relative min-h-[100px]"
-                        >
+                        <div key={key} className=" w-full border my-4 shadow-md relative min-h-[100px]">
                             <SingleBannerFormComp
                                 bannerForm={bannerForm}
                                 setBannerForm={setBannerFormData}
                                 index={key}
-                                handleInputChange={(
-                                    field: string,
-                                    value: any
-                                ) => handleInputChange(key, field, value)}
+                                handleInputChange={(field: string, value: any) => handleInputChange(key, field, value)}
                             />
 
                             <div className="absolute top-5 right-5">
                                 <FaWindowClose
                                     color="red"
                                     onClick={() => {
-                                        setBannerFormData(
-                                            bannerForm.filter(
-                                                (banner, ind) =>
-                                                    banner.id != _.id
-                                            )
-                                        )
+                                        setBannerFormData(bannerForm.filter((banner, ind) => banner.id != _.id))
                                     }}
                                 />
                             </div>
@@ -94,16 +70,7 @@ function AddBannerStep3({
             </div>
 
             <div className="w-fit self-center flex flex-row space-x-3">
-                <Button
-                    variant="new"
-                    size="sm"
-                    onClick={() =>
-                        setBannerFormData([
-                            ...bannerForm,
-                            { id: Date.now(), is_clickable: true }
-                        ])
-                    }
-                >
+                <Button variant="new" size="sm" onClick={() => setBannerFormData([...bannerForm, { id: Date.now(), is_clickable: true }])}>
                     +Add Banner Tile
                 </Button>
                 <Button variant="new" size="sm" onClick={handlePreviewClicked}>
@@ -116,22 +83,16 @@ function AddBannerStep3({
 
 export default AddBannerStep3
 
-const SingleBannerFormComp = ({
-    bannerForm,
-    setBannerForm,
-    index,
-    handleInputChange
-}: any) => {
+const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange }: any) => {
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
-    const subCategory = useAppSelector<SUBCATEGORY_STATE>(
-        (state) => state.subCategory
-    )
-    const product_type = useAppSelector<PRODUCTTYPE_STATE>(
-        (state) => state.product_type
-    )
+    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const [filteredCategories, setFilteredCategories] = useState([])
+    const [filteredSubCategories, setFilteredSubCategories] = useState([])
+    const [filteredProductTypes, setFilteredProductTypes] = useState([])
 
     console.log('Fillfillters', filters)
     console.log('BBBrand', brands)
@@ -148,13 +109,13 @@ const SingleBannerFormComp = ({
             tempBannerForm[index] = {
                 ...bannerForm[index],
                 [key]: value,
-                image_web: URL.createObjectURL(value)
+                image_web: URL.createObjectURL(value),
             }
         } else if (key == 'image_mobile_file') {
             tempBannerForm[index] = {
                 ...bannerForm[index],
                 [key]: value,
-                image_mobile: URL.createObjectURL(value)
+                image_mobile: URL.createObjectURL(value),
             }
         } else {
             tempBannerForm[index] = { ...bannerForm[index], [key]: value }
@@ -173,50 +134,27 @@ const SingleBannerFormComp = ({
         <div className="flex flex-row flex-wrap gap-x-5 gap-y-2 p-4">
             <div className="flex flex-col gap-y-2 items-center justify-center">
                 <span>Select Banner Web Image</span>
-                <Upload
-                    uploadLimit={1}
-                    onChange={(file, _) =>
-                        handleSetDataInForm('image_web_file', file[0])
-                    }
-                />
+                <Upload uploadLimit={1} onChange={(file, _) => handleSetDataInForm('image_web_file', file[0])} />
             </div>
             <div className="flex flex-col gap-y-2 items-center justify-center">
                 <span>Select Banner Mobile Image</span>
-                <Upload
-                    uploadLimit={1}
-                    onChange={(file, _) =>
-                        handleSetDataInForm('image_mobile_file', file[0])
-                    }
-                />
+                <Upload uploadLimit={1} onChange={(file, _) => handleSetDataInForm('image_mobile_file', file[0])} />
             </div>
 
             <form className="p-4 flex flex-row gap-3 flex-wrap">
                 {Object.keys(ADD_BANNER_BASIC_FIELDS).map((field, ind) => (
-                    <div
-                        className="flex flex-row space-x-2 items-center"
-                        key={ind}
-                    >
+                    <div className="flex flex-row space-x-2 items-center" key={ind}>
                         {ADD_BANNER_BASIC_FIELDS[field].type == 'checkbox' && (
-                            <span className="font-bold">
-                                {ADD_BANNER_BASIC_FIELDS[field].placeHolder}
-                            </span>
+                            <span className="font-bold">{ADD_BANNER_BASIC_FIELDS[field].placeHolder}</span>
                         )}
                         <input
                             name={field}
                             className="border p-2 rounded-xl"
                             type={ADD_BANNER_BASIC_FIELDS[field].type}
-                            placeholder={
-                                ADD_BANNER_BASIC_FIELDS[field].placeHolder
-                            }
+                            placeholder={ADD_BANNER_BASIC_FIELDS[field].placeHolder}
                             onChange={handleChange}
-                            defaultValue={
-                                bannerForm[index][field] ||
-                                ADD_BANNER_BASIC_FIELDS[field].defVal
-                            }
-                            defaultChecked={
-                                bannerForm[index][field] ||
-                                ADD_BANNER_BASIC_FIELDS[field].defVal
-                            }
+                            defaultValue={bannerForm[index][field] || ADD_BANNER_BASIC_FIELDS[field].defVal}
+                            defaultChecked={bannerForm[index][field] || ADD_BANNER_BASIC_FIELDS[field].defVal}
                         />
                     </div>
                 ))}
@@ -230,54 +168,71 @@ const SingleBannerFormComp = ({
                 getOptionValue={(option) => option.id.toString()}
                 onChange={(newVal, actionMeta) => {
                     console.log(newVal, actionMeta)
-                    handleMultiSelect(
-                        'division',
-                        newVal?.map((val) => val.name)?.join(',')
-                    )
+
+                    const selectedCategories = newVal ? newVal.map((division) => division.categories).flat() : []
+
+                    handleMultiSelect('category', '')
+                    handleMultiSelect('sub_category', '')
+                    handleMultiSelect('product_type', '')
+
+                    setFilteredCategories(selectedCategories)
+
+                    handleMultiSelect('division', newVal?.map((val) => val.name)?.join(','))
                 }}
             />
+
             <Select
                 isMulti
                 defaultValue={bannerForm[index]['category'] || []}
-                options={category.categories}
+                options={filteredCategories}
                 getOptionLabel={(option) => option.name}
                 getOptionValue={(option) => option.id.toString()}
                 onChange={(newVal, actionMeta) => {
                     console.log(newVal, actionMeta)
-                    handleMultiSelect(
-                        'category',
-                        newVal?.map((val) => val.name)?.join(',')
-                    )
+
+                    const selectedSubCategories = newVal ? newVal.map((category) => category.sub_categories).flat() : []
+
+                    handleMultiSelect('sub_category', '')
+                    handleMultiSelect('product_type', '')
+
+                    setFilteredSubCategories(selectedSubCategories)
+
+                    handleMultiSelect('category', newVal?.map((val) => val.name)?.join(','))
                 }}
             />
+
             <Select
                 isMulti
                 defaultValue={bannerForm[index]['sub_category'] || []}
-                options={subCategory.subcategories}
+                options={filteredSubCategories}
                 getOptionLabel={(option) => option.name}
                 getOptionValue={(option) => option.id.toString()}
                 onChange={(newVal, actionMeta) => {
                     console.log(newVal, actionMeta)
-                    handleMultiSelect(
-                        'sub_category',
-                        newVal?.map((val) => val.name)?.join(',')
-                    )
+
+                    const selectedProductTypes = newVal ? newVal.map((subCategory) => subCategory.product_types).flat() : []
+
+                    handleMultiSelect('product_type', '')
+
+                    setFilteredProductTypes(selectedProductTypes)
+
+                    handleMultiSelect('sub_category', newVal?.map((val) => val.name)?.join(','))
                 }}
             />
+
             <Select
                 isMulti
                 defaultValue={bannerForm[index]['product_type'] || []}
-                options={product_type.product_types}
+                options={filteredProductTypes}
                 getOptionLabel={(option) => option.name}
                 getOptionValue={(option) => option.id.toString()}
                 onChange={(newVal, actionMeta) => {
                     console.log(newVal, actionMeta)
-                    handleMultiSelect(
-                        'product_type',
-                        newVal?.map((val) => val.name)?.join(',')
-                    )
+
+                    handleMultiSelect('product_type', newVal?.map((val) => val.name)?.join(','))
                 }}
             />
+
             <Select
                 isMulti
                 defaultValue={bannerForm[index]['brand'] || []}
@@ -286,10 +241,7 @@ const SingleBannerFormComp = ({
                 getOptionValue={(option) => option.id.toString()}
                 onChange={(newVal, actionMeta) => {
                     console.log(newVal, actionMeta)
-                    handleMultiSelect(
-                        'brand',
-                        newVal?.map((val) => val.name)?.join(',')
-                    )
+                    handleMultiSelect('brand', newVal?.map((val) => val.name)?.join(','))
                 }}
             />
 
@@ -302,7 +254,7 @@ const SingleBannerFormComp = ({
                     console.log(newVal, actionMeta)
                     handleMultiSelect(
                         'quick_filter_tags',
-                        newVal?.map((val) => val.value)
+                        newVal?.map((val) => val.value),
                     )
                 }}
             />
@@ -316,7 +268,7 @@ const SingleBannerFormComp = ({
                     console.log(newVal, actionMeta)
                     handleMultiSelect(
                         'tags',
-                        newVal?.map((val) => val.value)
+                        newVal?.map((val) => val.value),
                     )
                 }}
             />
