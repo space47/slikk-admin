@@ -177,7 +177,8 @@ const OrderList = () => {
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
 
-        const noFilters = !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
+        const noFilters =
+            page === 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
 
         if (noFilters) {
             const interval = setInterval(() => {
@@ -191,7 +192,8 @@ const OrderList = () => {
     useEffect(() => {
         checkingNewOrders(page, pageSize, from, to)
 
-        const noFilters = !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
+        const noFilters =
+            page !== 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
 
         if (noFilters) {
             const interval = setInterval(() => {
