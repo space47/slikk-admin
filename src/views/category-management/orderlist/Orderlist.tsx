@@ -248,12 +248,9 @@ const OrderList = () => {
                     const currentDate = moment()
                     const differenceInSeconds = currentDate.diff(createDate, 'seconds')
 
-                    console.log('DIFFTIME', differenceInSeconds)
-                    console.log('CURRENTSTATUS', row.original.status)
-
-                    if (row.original.status === 'PENDING' && differenceInSeconds > 60) {
+                    if (row.original.status === 'PENDING' && differenceInSeconds > 120) {
                         setPendingSound(true)
-                        setTimeout(() => setPendingSound(false), 5000)
+                        setTimeout(() => setPendingSound(false), 2000)
                     }
 
                     return (
