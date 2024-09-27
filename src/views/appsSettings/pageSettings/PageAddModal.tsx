@@ -90,17 +90,8 @@ const dataType = [
     { name: 'Posts', value: 'posts' },
 ]
 
-const PageAddModal: React.FC<modalProps> = ({
-    isModalOpen,
-    setIsModalOpen,
-    handleOk,
-    handleCancel,
-    formikRef,
-    data,
-    setData,
-}) => {
-    const [currentSelectedPage, setCurrentSelectedPage] =
-        useState<Record<string, string>>()
+const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handleOk, handleCancel, formikRef, data, setData }) => {
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
@@ -109,12 +100,8 @@ const PageAddModal: React.FC<modalProps> = ({
     const MAX_UPLOAD = 10000
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
-    const subCategory = useAppSelector<SUBCATEGORY_STATE>(
-        (state) => state.subCategory,
-    )
-    const product_type = useAppSelector<PRODUCTTYPE_STATE>(
-        (state) => state.product_type,
-    )
+    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     console.log('BBBrand', divisions)
@@ -263,11 +250,8 @@ const PageAddModal: React.FC<modalProps> = ({
     const fetchInput = async () => {
         try {
             if (searchInput) {
-                const qname =
-                    currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
-                const response = await axioisInstance.get(
-                    `/search/product?dashboard=true&${qname}=${searchInput}`,
-                )
+                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
+                const response = await axioisInstance.get(`/search/product?dashboard=true&${qname}=${searchInput}`)
                 const data = response.data.results
                 setTableData(data)
                 console.log(data)
@@ -311,9 +295,7 @@ const PageAddModal: React.FC<modalProps> = ({
                     const newData = response.data.url
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Image uploaded successfully',
+                        description: response?.data?.message || 'Image uploaded successfully',
                     })
                     return newData
                 })
@@ -321,9 +303,7 @@ const PageAddModal: React.FC<modalProps> = ({
                     console.error(error)
                     notification.error({
                         message: 'Upload Failed',
-                        description:
-                            error?.response?.data?.message ||
-                            'Image upload failed',
+                        description: error?.response?.data?.message || 'Image upload failed',
                     })
                     return ''
                 })
@@ -345,17 +325,11 @@ const PageAddModal: React.FC<modalProps> = ({
 
         const mobileImageUpload = await handleimage(row.mobile_background_array)
 
-        const footerImageUpload = await handleimage(
-            row.footer_config_image_Array,
-        )
+        const footerImageUpload = await handleimage(row.footer_config_image_Array)
 
-        const headerImageUpload = await handleimage(
-            row.header_config_image_Array,
-        )
+        const headerImageUpload = await handleimage(row.header_config_image_Array)
 
-        const subHeaderImageUpload = await handleimage(
-            row.sub_header_config_image_Array,
-        )
+        const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
 
         const newRowAdd = {
             ...row,
@@ -363,24 +337,15 @@ const PageAddModal: React.FC<modalProps> = ({
             mobile_background_image: mobileImageUpload,
             footer_config: {
                 ...row.footer_config,
-                image:
-                    row.footer_config_image_Array.length > 0
-                        ? footerImageUpload
-                        : '',
+                image: row.footer_config_image_Array.length > 0 ? footerImageUpload : '',
             },
             header_config: {
                 ...row.header_config,
-                image:
-                    row.header_config_image_Array.length > 0
-                        ? headerImageUpload
-                        : '',
+                image: row.header_config_image_Array.length > 0 ? headerImageUpload : '',
             },
             sub_header_config: {
                 ...row.sub_header_config,
-                image:
-                    row.sub_header_config_image_Array.length > 0
-                        ? subHeaderImageUpload
-                        : '',
+                image: row.sub_header_config_image_Array.length > 0 ? subHeaderImageUpload : '',
             },
             data_type: {
                 ...row.data_type,
@@ -401,14 +366,7 @@ const PageAddModal: React.FC<modalProps> = ({
 
     return (
         <>
-            <Modal
-                title="ADD PAGE SECTION"
-                open={isModalOpen}
-                onOk={handleOk}
-                onCancel={handleCancel}
-                width={1500}
-                okText="Edit"
-            >
+            <Modal title="ADD PAGE SECTION" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={1500} okText="ADD">
                 <Formik
                     enableReinitialize
                     initialValues={initialValue}
@@ -417,57 +375,25 @@ const PageAddModal: React.FC<modalProps> = ({
                     // ONSUBMIT LOGICCCCCCC....................................................................................................
                     onSubmit={handleSubmit}
                 >
-                    {({
-                        values,
-                        touched,
-                        errors,
-                        resetForm,
-                        setFieldValue,
-                    }) => (
+                    {({ values, touched, errors, resetForm, setFieldValue }) => (
                         <Form className="w-full">
                             <FormContainer className="grid grid-cols-2 gap-3">
-                                <FormItem
-                                    asterisk
-                                    label="Section Header"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="section_heading"
-                                        placeholder="Place your Section heading"
-                                        component={Input}
-                                    />
+                                <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="section_heading" placeholder="Place your Section heading" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Component Types"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
+                                <FormItem asterisk label="Component Types" className="col-span-1 w-[60%] h-[80%]">
                                     <Field name="component_type">
                                         {({ field, form }: FieldProps<any>) => {
-                                            const componentOptions =
-                                                COMPONENT_CATEGORY_TYPES
+                                            const componentOptions = COMPONENT_CATEGORY_TYPES
 
                                             return (
                                                 <Select
                                                     field={field}
                                                     form={form}
                                                     options={componentOptions}
-                                                    value={componentOptions.find(
-                                                        (option) =>
-                                                            option.value ===
-                                                            field.value,
-                                                    )}
-                                                    onChange={(option) =>
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            option?.value,
-                                                        )
-                                                    }
-                                                    onKeyDown={(e) =>
-                                                        e.key === 'Enter' &&
-                                                        e.preventDefault()
-                                                    }
+                                                    value={componentOptions.find((option) => option.value === field.value)}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                                                 />
                                             )
                                         }}
@@ -476,51 +402,27 @@ const PageAddModal: React.FC<modalProps> = ({
 
                                 {/* image */}
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">
-                                        Background Image
-                                    </div>
+                                    <div className="font-semibold mb-1">Background Image</div>
 
                                     <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="background_image_array">
-                                                {({
-                                                    field,
-                                                    form,
-                                                }: FieldProps<WebType>) => (
+                                                {({ field, form }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.background_image_array
-                                                            } // uploadedd the file
-                                                            onChange={(
-                                                                files,
-                                                            ) => {
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.background_image_array} // uploadedd the file
+                                                            onChange={(files) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
                                                                     values.background_image_array,
                                                                 )
-                                                                form.setFieldValue(
-                                                                    'background_image_array',
-                                                                    files,
-                                                                )
+                                                                form.setFieldValue('background_image_array', files)
                                                             }}
                                                             className="items-center flex justify-center"
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'background_image_array',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            onFileRemove={(files) => form.setFieldValue('background_image_array', files)}
                                                         />
                                                     </>
                                                 )}
@@ -530,51 +432,27 @@ const PageAddModal: React.FC<modalProps> = ({
                                 </FormContainer>
 
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1 text-md">
-                                        Mobile Background Image
-                                    </div>
+                                    <div className="font-semibold mb-1 text-md">Mobile Background Image</div>
 
                                     <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="mobile_background_array">
-                                                {({
-                                                    field,
-                                                    form,
-                                                }: FieldProps<WebType>) => (
+                                                {({ field, form }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.mobile_background_array
-                                                            } // uploadedd the file
-                                                            onChange={(
-                                                                files,
-                                                            ) => {
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.mobile_background_array} // uploadedd the file
+                                                            onChange={(files) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
                                                                     values.mobile_background_array,
                                                                 )
-                                                                form.setFieldValue(
-                                                                    'mobile_background_array',
-                                                                    files,
-                                                                )
+                                                                form.setFieldValue('mobile_background_array', files)
                                                             }}
                                                             className="flex justify-center"
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'mobile_background_array',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            onFileRemove={(files) => form.setFieldValue('mobile_background_array', files)}
                                                         />
                                                     </>
                                                 )}
@@ -585,78 +463,36 @@ const PageAddModal: React.FC<modalProps> = ({
 
                                 {/* ............Header Config................................................. */}
 
-                                <FormItem
-                                    asterisk
-                                    label="Header Style"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="header_config.style"
-                                        placeholder="Place your header Style"
-                                        component={Input}
-                                    />
+                                <FormItem asterisk label="Header Style" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="header_config.style" placeholder="Place your header Style" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Header Text"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="header_config.text"
-                                        placeholder="Place your header Text"
-                                        component={Input}
-                                    />
+                                <FormItem asterisk label="Header Text" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
 
                                 {/* .................................................................... */}
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">
-                                        Header Image
-                                    </div>
+                                    <div className="font-semibold mb-1">Header Image</div>
 
                                     <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="header_config_image_Array">
-                                                {({
-                                                    field,
-                                                    form,
-                                                }: FieldProps<WebType>) => (
+                                                {({ field, form }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.header_config_image_Array
-                                                            } // uploadedd the file
-                                                            onChange={(
-                                                                files,
-                                                            ) => {
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.header_config_image_Array} // uploadedd the file
+                                                            onChange={(files) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
                                                                     values.header_config_image_Array,
                                                                 )
-                                                                form.setFieldValue(
-                                                                    'header_config_image_Array',
-                                                                    files,
-                                                                )
+                                                                form.setFieldValue('header_config_image_Array', files)
                                                             }}
                                                             className="flex justify-center"
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'header_config_image_Array',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            onFileRemove={(files) => form.setFieldValue('header_config_image_Array', files)}
                                                         />
                                                     </>
                                                 )}
@@ -664,11 +500,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
-                                <FormItem
-                                    asterisk
-                                    label="Header Position"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
+                                <FormItem asterisk label="Header Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
                                         name="header_config.position"
@@ -678,11 +510,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                 </FormItem>
                                 {/* ................................................................................ */}
                                 {/* .......sub_header....................... */}
-                                <FormItem
-                                    asterisk
-                                    label="Sub Header Style"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
+                                <FormItem asterisk label="Sub Header Style" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
                                         name="sub_header_config.style"
@@ -690,11 +518,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Sub Header Text"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
+                                <FormItem asterisk label="Sub Header Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
                                         name="sub_header_config.text"
@@ -704,50 +528,28 @@ const PageAddModal: React.FC<modalProps> = ({
                                 </FormItem>
 
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">
-                                        Sub Header Image
-                                    </div>
+                                    <div className="font-semibold mb-1">Sub Header Image</div>
 
                                     <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="sub_header_config_image_Array">
-                                                {({
-                                                    field,
-                                                    form,
-                                                }: FieldProps<WebType>) => (
+                                                {({ field, form }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.sub_header_config_image_Array
-                                                            } // uploadedd the file
-                                                            onChange={(
-                                                                files,
-                                                            ) => {
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.sub_header_config_image_Array} // uploadedd the file
+                                                            onChange={(files) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
                                                                     values.sub_header_config_image_Array,
                                                                 )
-                                                                form.setFieldValue(
-                                                                    'sub_header_config_image_Array',
-                                                                    files,
-                                                                )
+                                                                form.setFieldValue('sub_header_config_image_Array', files)
                                                             }}
                                                             className="flex justify-center"
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'sub_header_config_image_Array',
-                                                                    files,
-                                                                )
+                                                            onFileRemove={(files) =>
+                                                                form.setFieldValue('sub_header_config_image_Array', files)
                                                             }
                                                         />
                                                     </>
@@ -756,11 +558,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
-                                <FormItem
-                                    asterisk
-                                    label="Sub Header Position"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
+                                <FormItem asterisk label="Sub Header Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
                                         name="sub_header_config.position"
@@ -772,77 +570,35 @@ const PageAddModal: React.FC<modalProps> = ({
 
                                 {/* ............Footer COnfig>>>>>>>>>>>>>>>>>>>>>> */}
 
-                                <FormItem
-                                    asterisk
-                                    label="Footer Style"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="footer_config.style"
-                                        placeholder="Place your header Style"
-                                        component={Input}
-                                    />
+                                <FormItem asterisk label="Footer Style" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="footer_config.style" placeholder="Place your header Style" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Footer Text"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="footer_config.text"
-                                        placeholder="Place your header Text"
-                                        component={Input}
-                                    />
+                                <FormItem asterisk label="Footer Text" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="footer_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
 
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">
-                                        Footer Image
-                                    </div>
+                                    <div className="font-semibold mb-1">Footer Image</div>
 
                                     <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="footer_config_image_Array">
-                                                {({
-                                                    field,
-                                                    form,
-                                                }: FieldProps<WebType>) => (
+                                                {({ field, form }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.footer_config_image_Array
-                                                            } // uploadedd the file
-                                                            onChange={(
-                                                                files,
-                                                            ) => {
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.footer_config_image_Array} // uploadedd the file
+                                                            onChange={(files) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
                                                                     values.footer_config_image_Array,
                                                                 )
-                                                                form.setFieldValue(
-                                                                    'footer_config_image_Array',
-                                                                    files,
-                                                                )
+                                                                form.setFieldValue('footer_config_image_Array', files)
                                                             }}
                                                             className="flex justify-center"
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'footer_config_image_Array',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            onFileRemove={(files) => form.setFieldValue('footer_config_image_Array', files)}
                                                         />
                                                     </>
                                                 )}
@@ -850,11 +606,7 @@ const PageAddModal: React.FC<modalProps> = ({
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
-                                <FormItem
-                                    asterisk
-                                    label="Footer Position"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
+                                <FormItem asterisk label="Footer Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
                                         name="footer_config.position"
@@ -867,40 +619,14 @@ const PageAddModal: React.FC<modalProps> = ({
 
                                 {/* Data Types.......................................... */}
 
-                                <FormItem
-                                    asterisk
-                                    label="Data Type"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.type"
-                                        placeholder="Place your header Style"
-                                        component={Input}
-                                    />
+                                <FormItem asterisk label="Data Type" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="data_type.type" placeholder="Place your header Style" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Filters"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.filters"
-                                        placeholder="Place your header Text"
-                                        component={Input}
-                                    />
+                                <FormItem asterisk label="Filters" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    label="Data Type Key"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.type"
-                                        placeholder="Place your dataType"
-                                        component={Input}
-                                    />
+                                <FormItem label="Data Type Key" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="data_type.type" placeholder="Place your dataType" component={Input} />
                                 </FormItem>
                                 <FormContainer className="flex flex-col gap-4 ">
                                     <div className="text-xl">Barcode</div>
@@ -919,56 +645,30 @@ const PageAddModal: React.FC<modalProps> = ({
                                         <div className="bg-gray-200 rounded-[10px] font-bold text-lg ">
                                             <Dropdown
                                                 className=" text-xl text-black bg-gray-200 font-bold "
-                                                title={
-                                                    currentSelectedPage?.value
-                                                        ? currentSelectedPage.label
-                                                        : 'SELECT'
-                                                }
+                                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
                                                 onSelect={handleSelect}
                                             >
-                                                {DROPDOWNARRAY?.map(
-                                                    (item, key) => {
-                                                        return (
-                                                            <DropdownItem
-                                                                key={key}
-                                                                eventKey={
-                                                                    item.value
-                                                                }
-                                                            >
-                                                                <span>
-                                                                    {item.label}
-                                                                </span>
-                                                            </DropdownItem>
-                                                        )
-                                                    },
-                                                )}
+                                                {DROPDOWNARRAY?.map((item, key) => {
+                                                    return (
+                                                        <DropdownItem key={key} eventKey={item.value}>
+                                                            <span>{item.label}</span>
+                                                        </DropdownItem>
+                                                    )
+                                                })}
                                             </Dropdown>
                                         </div>
                                     </div>
 
-                                    {showTable && searchInput && (
-                                        <CreatePostTable
-                                            data={tableData}
-                                            handleActionClick={
-                                                handleActionClick
-                                            }
-                                        />
-                                    )}
+                                    {showTable && searchInput && <CreatePostTable data={tableData} handleActionClick={handleActionClick} />}
 
-                                    <FormItem
-                                        label="Barcodes"
-                                        className="w-full"
-                                    >
+                                    <FormItem label="Barcodes" className="w-full">
                                         <Field
                                             type="text"
                                             name="data_type.barcodes"
                                             value={productData}
                                             onChange={(e: any) => {
                                                 setProductData(e.target.value)
-                                                setFieldValue(
-                                                    'products',
-                                                    e.target.value,
-                                                )
+                                                setFieldValue('products', e.target.value)
                                             }}
                                             placeholder="Enter product barcode"
                                         />
@@ -985,47 +685,17 @@ const PageAddModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem> */}
-                                <FormItem
-                                    label="Data Type Posts"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.posts"
-                                        placeholder="Place your dataType"
-                                        component={Input}
-                                    />
+                                <FormItem label="Data Type Posts" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="data_type.posts" placeholder="Place your dataType" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    label="Data Type Brands"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.brands"
-                                        placeholder="Place your dataType"
-                                        component={Input}
-                                    />
+                                <FormItem label="Data Type Brands" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="data_type.brands" placeholder="Place your dataType" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    label="Data Type Handles"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.handles"
-                                        placeholder="Place your dataType"
-                                        component={Input}
-                                    />
+                                <FormItem label="Data Type Handles" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="data_type.handles" placeholder="Place your dataType" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    label="Is Section Clickable"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        name="is_section_clickable"
-                                        component={Checkbox}
-                                    />
+                                <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field name="is_section_clickable" component={Checkbox} />
                                 </FormItem>
                                 {/* <FormItem
                                     label="Section Filter"
@@ -1046,40 +716,17 @@ const PageAddModal: React.FC<modalProps> = ({
                                     {/* Filters */}
                                     <FormItem label="Filters">
                                         <Field name="data_type.filters">
-                                            {({
-                                                field,
-                                                form,
-                                            }: FieldProps<any>) => {
+                                            {({ field, form }: FieldProps<any>) => {
                                                 return (
                                                     <Select
                                                         isMulti
                                                         placeholder="Select Filter Tags"
-                                                        options={
-                                                            filters.filters
-                                                        }
-                                                        getOptionLabel={(
-                                                            option,
-                                                        ) => option.label}
-                                                        getOptionValue={(
-                                                            option,
-                                                        ) => option.value}
-                                                        onChange={(
-                                                            newVal,
-                                                            actionMeta,
-                                                        ) => {
-                                                            const newValues =
-                                                                newVal
-                                                                    ? newVal.map(
-                                                                          (
-                                                                              val,
-                                                                          ) =>
-                                                                              val.value,
-                                                                      )
-                                                                    : []
-                                                            form.setFieldValue(
-                                                                field.name,
-                                                                newValues,
-                                                            )
+                                                        options={filters.filters}
+                                                        getOptionLabel={(option) => option.label}
+                                                        getOptionValue={(option) => option.value}
+                                                        onChange={(newVal, actionMeta) => {
+                                                            const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                            form.setFieldValue(field.name, newValues)
                                                         }}
                                                     />
                                                 )

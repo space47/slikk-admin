@@ -69,6 +69,33 @@ export type ordercommon = {
     waybill_no: string
 }
 
+export interface Order {
+    invoice_id: string
+    create_date: string
+    user: {
+        name: string
+        mobile: string
+    }
+    store: {
+        address: string
+        latitude: string
+        longitude: string
+    }
+    rating: number
+    amount: number
+    payment: {
+        mode: string
+        amount: number
+    }
+    order_items: OrderItem[]
+    status: string
+    update_date: string
+    from: string
+    to: string
+    latitude: any
+    longitude: any
+}
+
 export const ORDER_STATUS = [
     { name: 'PENDING', value: 'PENDING' },
     { name: 'ACCEPTED', value: 'ACCEPTED' },
