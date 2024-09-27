@@ -99,6 +99,7 @@ const OrderList = () => {
     const [searchInput, setSearchInput] = useState<string>('')
     const [mobileFilter, setMobileFilter] = useState('')
     const [pageSize, setPageSize] = useState(10)
+
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
@@ -191,7 +192,6 @@ const OrderList = () => {
                 }
             }
 
-            // Update previous orders only after the comparison
             previousOrders.current = ordersData
 
             setOrders(ordersData)
@@ -227,14 +227,16 @@ const OrderList = () => {
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
+    }, [previousOrders])
 
     useEffect(() => {
         if (soundEnabled) {
-            // Play the notification sound and reset `soundEnabled`
-            setTimeout(() => setSoundEnabled(false), 5000) // Reset after playing
+            setTimeout(() => setSoundEnabled(false), 5000)
         }
-    }, [soundEnabled])
+        if (pendingSound) {
+            setTimeout(() => setPendingSound(false), 5000)
+        }
+    }, [soundEnabled, pendingSound])
 
     const columns = useMemo(
         () => [
@@ -251,8 +253,7 @@ const OrderList = () => {
 
                     if (row.original.status === 'PENDING' && differenceInSeconds > 60) {
                         setPendingSound(true)
-                    } else {
-                        setPendingSound(false)
+                        setTimeout(() => setPendingSound(false), 5000)
                     }
 
                     return (
