@@ -93,6 +93,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const [filteredCategories, setFilteredCategories] = useState([])
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
+    const [sortOrder, setSortOrder] = useState('')
 
     console.log('Fillfillters', filters)
     console.log('BBBrand', brands)
@@ -124,12 +125,20 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         setBannerForm(tempBannerForm)
     }
 
-    const handleMultiSelect = (field, val) => {
+    const handleMultiSelect = (field: string, val: any) => {
         console.log(val)
-        const tempBannerForm = bannerForm
-        handleInputChange(field, val)
-    }
+        const tempBannerForm = [...bannerForm]
 
+        if (field === 'tags') {
+            const existingTags = tempBannerForm[index].tags || []
+            const updatedTags = [...new Set([...existingTags, ...val])]
+            tempBannerForm[index] = { ...tempBannerForm[index], tags: updatedTags }
+        } else {
+            tempBannerForm[index] = { ...tempBannerForm[index], [field]: val }
+        }
+
+        setBannerForm(tempBannerForm)
+    }
     return (
         <div className="flex flex-row flex-wrap gap-x-5 gap-y-2 p-4">
             <div className="flex flex-col gap-y-2 items-center justify-center">
@@ -160,118 +169,158 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 ))}
             </form>
 
-            <Select
-                isMulti
-                defaultValue={bannerForm[index]['division'] || []}
-                options={divisions.divisions}
-                getOptionLabel={(option) => option.name}
-                getOptionValue={(option) => option.id.toString()}
-                onChange={(newVal, actionMeta) => {
-                    console.log(newVal, actionMeta)
+            <div className="flex flex-col">
+                <div>Division</div>
+                <Select
+                    isMulti
+                    defaultValue={bannerForm[index]['division'] || []}
+                    options={divisions.divisions}
+                    getOptionLabel={(option) => option.name}
+                    getOptionValue={(option) => option.id.toString()}
+                    onChange={(newVal, actionMeta) => {
+                        console.log(newVal, actionMeta)
 
-                    const selectedCategories = newVal ? newVal.map((division) => division.categories).flat() : []
+                        const selectedCategories = newVal ? newVal.map((division) => division.categories).flat() : []
 
-                    handleMultiSelect('category', '')
-                    handleMultiSelect('sub_category', '')
-                    handleMultiSelect('product_type', '')
+                        handleMultiSelect('category', '')
+                        handleMultiSelect('sub_category', '')
+                        handleMultiSelect('product_type', '')
 
-                    setFilteredCategories(selectedCategories)
+                        setFilteredCategories(selectedCategories)
 
-                    handleMultiSelect('division', newVal?.map((val) => val.name)?.join(','))
-                }}
-            />
+                        handleMultiSelect('division', newVal?.map((val) => val.name)?.join(','))
+                    }}
+                />
+            </div>
 
-            <Select
-                isMulti
-                defaultValue={bannerForm[index]['category'] || []}
-                options={filteredCategories}
-                getOptionLabel={(option) => option.name}
-                getOptionValue={(option) => option.id.toString()}
-                onChange={(newVal, actionMeta) => {
-                    console.log(newVal, actionMeta)
+            <div className="flex flex-col">
+                <div>Category</div>
+                <Select
+                    isMulti
+                    defaultValue={bannerForm[index]['category'] || []}
+                    options={filteredCategories}
+                    getOptionLabel={(option) => option.name}
+                    getOptionValue={(option) => option.id.toString()}
+                    onChange={(newVal, actionMeta) => {
+                        console.log(newVal, actionMeta)
 
-                    const selectedSubCategories = newVal ? newVal.map((category) => category.sub_categories).flat() : []
+                        const selectedSubCategories = newVal ? newVal.map((category) => category.sub_categories).flat() : []
 
-                    handleMultiSelect('sub_category', '')
-                    handleMultiSelect('product_type', '')
+                        handleMultiSelect('sub_category', '')
+                        handleMultiSelect('product_type', '')
 
-                    setFilteredSubCategories(selectedSubCategories)
+                        setFilteredSubCategories(selectedSubCategories)
 
-                    handleMultiSelect('category', newVal?.map((val) => val.name)?.join(','))
-                }}
-            />
+                        handleMultiSelect('category', newVal?.map((val) => val.name)?.join(','))
+                    }}
+                />
+            </div>
 
-            <Select
-                isMulti
-                defaultValue={bannerForm[index]['sub_category'] || []}
-                options={filteredSubCategories}
-                getOptionLabel={(option) => option.name}
-                getOptionValue={(option) => option.id.toString()}
-                onChange={(newVal, actionMeta) => {
-                    console.log(newVal, actionMeta)
+            <div className="flex flex-col">
+                <div>Sub Category</div>
+                <Select
+                    isMulti
+                    defaultValue={bannerForm[index]['sub_category'] || []}
+                    options={filteredSubCategories}
+                    getOptionLabel={(option) => option.name}
+                    getOptionValue={(option) => option.id.toString()}
+                    onChange={(newVal, actionMeta) => {
+                        console.log(newVal, actionMeta)
 
-                    const selectedProductTypes = newVal ? newVal.map((subCategory) => subCategory.product_types).flat() : []
+                        const selectedProductTypes = newVal ? newVal.map((subCategory) => subCategory.product_types).flat() : []
 
-                    handleMultiSelect('product_type', '')
+                        handleMultiSelect('product_type', '')
 
-                    setFilteredProductTypes(selectedProductTypes)
+                        setFilteredProductTypes(selectedProductTypes)
 
-                    handleMultiSelect('sub_category', newVal?.map((val) => val.name)?.join(','))
-                }}
-            />
+                        handleMultiSelect('sub_category', newVal?.map((val) => val.name)?.join(','))
+                    }}
+                />
+            </div>
 
-            <Select
-                isMulti
-                defaultValue={bannerForm[index]['product_type'] || []}
-                options={filteredProductTypes}
-                getOptionLabel={(option) => option.name}
-                getOptionValue={(option) => option.id.toString()}
-                onChange={(newVal, actionMeta) => {
-                    console.log(newVal, actionMeta)
+            <div className="flex flex-col">
+                <div>Product Type</div>
+                <Select
+                    isMulti
+                    defaultValue={bannerForm[index]['product_type'] || []}
+                    options={filteredProductTypes}
+                    getOptionLabel={(option) => option.name}
+                    getOptionValue={(option) => option.id.toString()}
+                    onChange={(newVal, actionMeta) => {
+                        console.log(newVal, actionMeta)
 
-                    handleMultiSelect('product_type', newVal?.map((val) => val.name)?.join(','))
-                }}
-            />
+                        handleMultiSelect('product_type', newVal?.map((val) => val.name)?.join(','))
+                    }}
+                />
+            </div>
 
-            <Select
-                isMulti
-                defaultValue={bannerForm[index]['brand'] || []}
-                options={brands.brands}
-                getOptionLabel={(option) => option.name}
-                getOptionValue={(option) => option.id.toString()}
-                onChange={(newVal, actionMeta) => {
-                    console.log(newVal, actionMeta)
-                    handleMultiSelect('brand', newVal?.map((val) => val.name)?.join(','))
-                }}
-            />
+            <div className="flex flex-col">
+                <div>Brand</div>
+                <Select
+                    isMulti
+                    defaultValue={bannerForm[index]['brand'] || []}
+                    options={brands.brands}
+                    getOptionLabel={(option) => option.name}
+                    getOptionValue={(option) => option.id.toString()}
+                    onChange={(newVal, actionMeta) => {
+                        console.log(newVal, actionMeta)
+                        handleMultiSelect('brand', newVal?.map((val) => val.name)?.join(','))
+                    }}
+                />
+            </div>
 
-            <Select
-                isMulti
-                options={filters.filters}
-                getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.value}
-                onChange={(newVal, actionMeta) => {
-                    console.log(newVal, actionMeta)
-                    handleMultiSelect(
-                        'quick_filter_tags',
-                        newVal?.map((val) => val.value),
-                    )
-                }}
-            />
+            <div className="flex flex-col">
+                <div>Quick Filter Tags</div>
+                <Select
+                    isMulti
+                    options={filters.filters}
+                    getOptionLabel={(option) => option.label}
+                    getOptionValue={(option) => option.value}
+                    onChange={(newVal, actionMeta) => {
+                        console.log(newVal, actionMeta)
+                        handleMultiSelect(
+                            'quick_filter_tags',
+                            newVal?.map((val) => val.value),
+                        )
+                    }}
+                />
+            </div>
 
-            <Select
-                isMulti
-                options={filters.filters}
-                getOptionLabel={(option) => option.label}
-                getOptionValue={(option) => option.value}
-                onChange={(newVal, actionMeta) => {
-                    console.log(newVal, actionMeta)
-                    handleMultiSelect(
-                        'tags',
-                        newVal?.map((val) => val.value),
-                    )
-                }}
-            />
+            <div className="flex flex-col">
+                <div>Tags</div>
+                <Select
+                    isMulti
+                    options={filters.filters}
+                    getOptionLabel={(option) => option.label}
+                    getOptionValue={(option) => option.value}
+                    onChange={(newVal, actionMeta) => {
+                        console.log(newVal, actionMeta)
+                        handleMultiSelect(
+                            'tags',
+                            newVal?.map((val) => val.value),
+                        )
+                    }}
+                />
+            </div>
+
+            <div className="flex flex-col">
+                <div>Sort By</div>
+                <Select
+                    defaultValue={{ value: '', label: 'Sort by' }}
+                    options={[
+                        { value: 'sort_lowtohigh', label: 'Low to High' },
+                        { value: 'sort_hightolow', label: 'High to Low' },
+                        { value: 'sort_discount', label: 'DISCOUNT' },
+                    ]}
+                    getOptionLabel={(option) => option.label}
+                    getOptionValue={(option) => option.value}
+                    onChange={(selectedOption) => {
+                        console.log(selectedOption)
+                        setSortOrder(selectedOption?.value)
+                        handleMultiSelect('tags', [selectedOption?.value])
+                    }}
+                />
+            </div>
         </div>
     )
 }
