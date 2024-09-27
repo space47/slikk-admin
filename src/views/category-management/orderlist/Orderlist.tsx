@@ -16,7 +16,7 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
-import type { OrderItem } from './commontypes'
+import type { Order, OrderItem } from './commontypes'
 import { Button, Dropdown } from '@/components/ui'
 import { ORDER_STATUS } from './commontypes'
 import { IoMdDownload } from 'react-icons/io'
@@ -26,33 +26,6 @@ import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import NotificationSound from '@/common/orderNotification'
 import PendingNotification from '@/common/pendingNotification'
-
-interface Order {
-    invoice_id: string
-    create_date: string
-    user: {
-        name: string
-        mobile: string
-    }
-    store: {
-        address: string
-        latitude: string
-        longitude: string
-    }
-    rating: number
-    amount: number
-    payment: {
-        mode: string
-        amount: number
-    }
-    order_items: OrderItem[]
-    status: string
-    update_date: string
-    from: string
-    to: string
-    latitude: any
-    longitude: any
-}
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 

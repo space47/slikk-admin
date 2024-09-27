@@ -60,9 +60,7 @@ const Brand = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(
-                `brands?dashboard=true&p=${page}&page_size=${pageSize}`,
-            )
+            const response = await axiosInstance.get(`brands?dashboard=true&p=${page}&page_size=${pageSize}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -100,13 +98,7 @@ const Brand = () => {
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: (info) => (
-                    <img
-                        src={info.getValue() as string}
-                        alt="product"
-                        width="50"
-                    />
-                ),
+                cell: (info) => <img src={info.getValue() as string} alt="product" width="50" />,
             },
             {
                 header: 'Top',
@@ -126,7 +118,17 @@ const Brand = () => {
             {
                 header: 'Footer',
                 accessorKey: 'footer',
-                cell: (info) => info.getValue(),
+                cell: (info) => {
+                    console.log('ValueData', info.getValue())
+                    return (
+                        <div className="w-[200px] h-[70px] overflow-hidden">
+                            <div
+                                className="text-ellipsis whitespace-wrap line-clamp-3 overflow-hidden"
+                                dangerouslySetInnerHTML={{ __html: info.getValue() as string }}
+                            />
+                        </div>
+                    )
+                },
             },
             {
                 header: 'Quick Filter Tags',
@@ -141,20 +143,12 @@ const Brand = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'Try and Buy',
@@ -169,11 +163,7 @@ const Brand = () => {
             {
                 header: 'Action',
                 accessorKey: 'id',
-                cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)}>
-                        EDIT
-                    </Button>
-                ),
+                cell: ({ row }) => <Button onClick={() => handleActionClick(row.original.id)}>EDIT</Button>,
             },
         ],
         [],
@@ -242,10 +232,7 @@ const Brand = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -255,31 +242,19 @@ const Brand = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
