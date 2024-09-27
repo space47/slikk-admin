@@ -6,14 +6,10 @@ interface BRANDWISEDATA {
 }
 
 const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
-    const categories = Object.keys(brandData).map(
-        (key) => `${key} (${brandData[key]})`,
-    )
+    const categories = Object.keys(brandData).map((key) => `${key} (${brandData[key]})`)
     const dataValues = Object.values(brandData)
 
     const sum = dataValues.reduce((acc, value) => acc + value, 0)
-
-    console.log('CATE', categories)
 
     const data = [
         {

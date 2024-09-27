@@ -101,12 +101,10 @@ const Home = () => {
     }
 
     const handleCustomerFunction = (inputName: string) => {
-        console.log('CUSTOMER', inputName)
         navigate(`/app/customerAnalytics/${inputName}`)
     }
 
     const handleInvoiceFunction = (inputName: string) => {
-        console.log('INVOICE', inputName)
         navigate(`/app/orders/${inputName}`)
     }
     const handleReceived = () => {
@@ -119,11 +117,6 @@ const Home = () => {
     const handleCompleted = () => {
         navigate(`/app/orders/completed`)
     }
-
-    console.log(
-        'ORDERS',
-        orders.map((item) => item.amount),
-    )
 
     return (
         <div className="flex flex-col gap-6 p-4">
