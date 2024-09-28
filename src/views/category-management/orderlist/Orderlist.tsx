@@ -85,6 +85,7 @@ const OrderList = () => {
     const [showFilter, setShowFilter] = useState(false)
     const [soundEnabled, setSoundEnabled] = useState(false)
     const [pendingSound, setPendingSound] = useState(false)
+    const [filtersActive, setFiltersActive] = useState(false)
 
     const previousOrders = useRef<Order[]>([])
 
@@ -155,18 +156,27 @@ const OrderList = () => {
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
 
-            if (previousOrders.current.length > 0) {
-                const newOrderExists = ordersData.some(
-                    (newOrder) => !previousOrders.current.some((oldOrder) => oldOrder.invoice_id === newOrder.invoice_id),
-                )
+            // Check if any filters are applied
+            const filtersApplied =
+                dropdownStatus?.value.length > 0 || searchInput || deliveryType?.value.length > 0 || paymentType?.value.length > 0
 
-                if (newOrderExists) {
-                    setSoundEnabled(true)
+            if (filtersApplied) {
+                setSoundEnabled(false)
+                setFiltersActive(true)
+            } else {
+                if (!filtersActive && previousOrders.current.length > 0) {
+                    const newOrderExists = ordersData.some(
+                        (newOrder) => !previousOrders.current.some((oldOrder) => oldOrder.invoice_id === newOrder.invoice_id),
+                    )
+
+                    if (newOrderExists) {
+                        setSoundEnabled(true)
+                    }
                 }
+                setFiltersActive(false)
             }
 
             previousOrders.current = ordersData
-
             setOrders(ordersData)
             setOrderCount(orderCount)
         } catch (error) {
@@ -192,16 +202,16 @@ const OrderList = () => {
     useEffect(() => {
         checkingNewOrders(page, pageSize, from, to)
 
-        const noFilters =
-            page === 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
+        // const noFilters =
+        //     page === 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
 
-        if (noFilters) {
-            const interval = setInterval(() => {
-                checkingNewOrders(page, pageSize, from, to)
-            }, 30000)
+        // if (noFilters) {
+        //     const interval = setInterval(() => {
+        //         checkingNewOrders(page, pageSize, from, to)
+        //     }, 30000)
 
-            return () => clearInterval(interval)
-        }
+        //     return () => clearInterval(interval)
+        //}
     }, [previousOrders])
 
     useEffect(() => {
@@ -209,7 +219,7 @@ const OrderList = () => {
             setTimeout(() => setSoundEnabled(false), 5000)
         }
         if (pendingSound) {
-            setTimeout(() => setPendingSound(false), 5000)
+            setTimeout(() => setPendingSound(false), 10000)
         }
     }, [soundEnabled, pendingSound])
 
