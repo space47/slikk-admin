@@ -193,7 +193,7 @@ const OrderList = () => {
         checkingNewOrders(page, pageSize, from, to)
 
         const noFilters =
-            page !== 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
+            page === 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
 
         if (noFilters) {
             const interval = setInterval(() => {
