@@ -791,6 +791,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/analytics/userAnalytics/UserAnalytics')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsAnalytics.remitance',
+        path: `${APP_PREFIX_PATH}/analytics/remitance`,
+        component: lazy(() => import('@/views/analytics/remitance/Remitance')),
+        authority: [ADMIN, USER],
+    },
 ]
 
 export default appsRoute

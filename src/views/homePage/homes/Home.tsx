@@ -115,7 +115,12 @@ const Home = () => {
     }
 
     const handleCompleted = () => {
-        navigate(`/app/orders/completed`)
+        navigate('/app/orders/completed', {
+            state: {
+                var1: from,
+                var2: to,
+            },
+        })
     }
 
     return (

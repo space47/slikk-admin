@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import {
     useReactTable,
@@ -67,6 +67,7 @@ interface DropdownStatus {
 
 const StatusOrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
+    const location = useLocation()
     const [globalFilter, setGlobalFilter] = useState('')
     const [mobileFilter, setMobileFilter] = useState('')
     const [pageSize, setPageSize] = useState(10)
@@ -79,26 +80,17 @@ const StatusOrderList = () => {
         value: [],
         name: [],
     })
+    const { var1, var2 } = location.state || {}
 
-    const fetchOrders = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status =
-                dropdownStatus?.value.length === 0
-                    ? ''
-                    : `&status=${dropdownStatus?.value}`
+            const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
 
             let response
 
             if (globalFilter) {
-                response = await axiosInstance.get(
-                    `/merchant/orders?invoice_id=${globalFilter}&status=COMPLETED`,
-                )
+                response = await axiosInstance.get(`/merchant/orders?invoice_id=${globalFilter}&status=COMPLETED`)
             } else if (mobileFilter) {
                 response = await axiosInstance.get(
                     `/merchant/orders?mobile=${mobileFilter}&status=COMPLETED&p=${page}&page_size=${pageSize}`,
@@ -109,7 +101,7 @@ const StatusOrderList = () => {
                 setPage(1)
             } else {
                 response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}&status=COMPLETED`,
+                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${var1}&to=${var2}&status=COMPLETED`,
                 )
             }
 
@@ -155,11 +147,7 @@ const StatusOrderList = () => {
             {
                 header: 'Order Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span className="">
-                        {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             { header: 'Mobile Number', accessorKey: 'user.mobile' },
             { header: 'Customer Name', accessorKey: 'user.name' },
@@ -185,11 +173,7 @@ const StatusOrderList = () => {
             {
                 header: 'Last Update',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
         ],
         [],
@@ -226,10 +210,7 @@ const StatusOrderList = () => {
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status =
-                dropdownStatus?.value.length === 0
-                    ? ''
-                    : `&status=${dropdownStatus?.value}`
+            const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
 
             let searwiseDownload = ''
 
@@ -239,15 +220,13 @@ const StatusOrderList = () => {
                 searwiseDownload = `&mobile=${mobileFilter}`
             }
 
-            const downloadUrl = `merchant/orders?download=true${searwiseDownload}&status=COMPLETED&from=${from}&to=${To_Date}`
+            const downloadUrl = `merchant/orders?download=true${searwiseDownload}&status=COMPLETED&from=${var1}&to=${var2}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
 
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = 'OrderDetails.csv'
@@ -290,23 +269,11 @@ const StatusOrderList = () => {
         setDropdownStatus((prevStatus) => {
             const isSelected = prevStatus.value.includes(selectedValue)
 
-            const updatedValue = isSelected
-                ? prevStatus.value.filter((val) => val !== selectedValue)
-                : [...prevStatus.value, selectedValue]
+            const updatedValue = isSelected ? prevStatus.value.filter((val) => val !== selectedValue) : [...prevStatus.value, selectedValue]
 
             const updatedName = isSelected
-                ? prevStatus.name.filter(
-                      (name) =>
-                          name !==
-                          ORDER_STATUS.find(
-                              (item) => item.value === selectedValue,
-                          )?.name,
-                  )
-                : [
-                      ...prevStatus.name,
-                      ORDER_STATUS.find((item) => item.value === selectedValue)
-                          ?.name || '',
-                  ]
+                ? prevStatus.name.filter((name) => name !== ORDER_STATUS.find((item) => item.value === selectedValue)?.name)
+                : [...prevStatus.name, ORDER_STATUS.find((item) => item.value === selectedValue)?.name || '']
 
             return {
                 value: updatedValue,
@@ -322,95 +289,34 @@ const StatusOrderList = () => {
                 <div className="flex flex-col lg:flex-row justify-between mb-6 items-center xl:gap-14">
                     <div className="flex flex-col lg:flex-row gap-6">
                         <div className="mb-4 lg:mb-0">
-                            <div className="text-sm md:text-base">
-                                SEARCH BY INVOICE_ID
-                            </div>
+                            <div className="text-sm md:text-base">SEARCH BY INVOICE_ID</div>
                             <input
                                 type="text"
                                 placeholder="Search here"
                                 value={globalFilter}
-                                onChange={(e) =>
-                                    setGlobalFilter(e.target.value)
-                                }
+                                onChange={(e) => setGlobalFilter(e.target.value)}
                                 className="p-2 border rounded mt-1 w-full"
                             />
                         </div>
 
                         <div className="mb-4 lg:mb-0">
-                            <div className="text-sm md:text-base">
-                                SEARCH BY MOBILE
-                            </div>
+                            <div className="text-sm md:text-base">SEARCH BY MOBILE</div>
                             <input
                                 type="text"
                                 placeholder="Search through mobile"
                                 value={mobileFilter}
-                                onChange={(e) =>
-                                    setMobileFilter(e.target.value)
-                                }
+                                onChange={(e) => setMobileFilter(e.target.value)}
                                 className="p-2 border rounded mt-1 w-full"
                             />
                         </div>
                     </div>
 
                     <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mt-4 lg:mt-0">
-                        {/* <div className="flex gap-2 items-center xl:flex-col ">
-                            <label htmlFor="" className="font-semibold">
-                                SELECT STATUS
-                            </label>
-                            <div className="relative w-auto lg:w-auto bg-gray-100 flex justify-center lg:justify-start">
-                                <Dropdown
-                                    className="w-full px-1 py-2 text-sm lg:text-base text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                                    title={
-                                        dropdownStatus.name.length > 0
-                                            ? dropdownStatus.name.join(', ')
-                                            : 'Select Status'
-                                    }
-                                    onSelect={(eventKey) =>
-                                        handleDropdownSelect(eventKey as string)
-                                    }
-                                >
-                                    <div className="max-h-60 overflow-y-auto">
-                                        {ORDER_STATUS?.map((item, key) => (
-                                            <DropdownItem
-                                                key={key}
-                                                eventKey={item.value}
-                                                className={`px-2 py-2 text-black hover:bg-gray-100 cursor-pointer ${
-                                                    dropdownStatus.value.includes(
-                                                        item.value,
-                                                    )
-                                                        ? 'bg-gray-200'
-                                                        : ''
-                                                }`}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={dropdownStatus.value.includes(
-                                                        item.value,
-                                                    )}
-                                                    onChange={() =>
-                                                        handleDropdownSelect(
-                                                            item.value,
-                                                        )
-                                                    }
-                                                    className="mr-2"
-                                                />
-                                                <span>{item.name}</span>
-                                            </DropdownItem>
-                                        ))}
-                                    </div>
-                                </Dropdown>
-                            </div>
-                        </div> */}
-
-                        <div className="flex flex-col lg:flex-row gap-6">
+                        {/* <div className="flex flex-col lg:flex-row gap-6">
                             <div>
-                                <div className="mb-1 font-semibold text-xs md:text-sm">
-                                    FROM DATE:
-                                </div>
+                                <div className="mb-1 font-semibold text-xs md:text-sm">FROM DATE:</div>
                                 <DatePicker
-                                    inputPrefix={
-                                        <HiOutlineCalendar className="text-base md:text-lg" />
-                                    }
+                                    inputPrefix={<HiOutlineCalendar className="text-base md:text-lg" />}
                                     defaultValue={new Date()}
                                     value={new Date(from)}
                                     onChange={handleFromChange}
@@ -418,13 +324,9 @@ const StatusOrderList = () => {
                                 />
                             </div>
                             <div>
-                                <div className="mb-1 font-semibold text-xs md:text-sm">
-                                    TO DATE:
-                                </div>
+                                <div className="mb-1 font-semibold text-xs md:text-sm">TO DATE:</div>
                                 <DatePicker
-                                    inputSuffix={
-                                        <TbCalendarStats className="text-base md:text-xl" />
-                                    }
+                                    inputSuffix={<TbCalendarStats className="text-base md:text-xl" />}
                                     defaultValue={new Date()}
                                     value={moment(to).toDate()}
                                     onChange={handleToChange}
@@ -432,7 +334,7 @@ const StatusOrderList = () => {
                                     className="w-[240px]"
                                 />
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
                 <br />
@@ -442,27 +344,14 @@ const StatusOrderList = () => {
                         {table.getHeaderGroups().map((headerGroup) => (
                             <Tr key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
+                                    <Th key={header.id} colSpan={header.colSpan}>
                                         {header.isPlaceholder ? null : (
                                             <div
-                                                className={
-                                                    header.column.getCanSort()
-                                                        ? 'cursor-pointer select-none'
-                                                        : ''
-                                                }
+                                                className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
                                                 onClick={header.column.getToggleSortingHandler()}
                                             >
-                                                {flexRender(
-                                                    header.column.columnDef
-                                                        .header,
-                                                    header.getContext(),
-                                                )}
-                                                <Sorter
-                                                    sort={header.column.getIsSorted()}
-                                                />
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                <Sorter sort={header.column.getIsSorted()} />
                                             </div>
                                         )}
                                     </Th>
@@ -474,12 +363,7 @@ const StatusOrderList = () => {
                         {table.getRowModel().rows.map((row) => (
                             <Tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
-                                    <Td key={cell.id}>
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext(),
-                                        )}
-                                    </Td>
+                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                 ))}
                             </Tr>
                         ))}
@@ -498,9 +382,7 @@ const StatusOrderList = () => {
                         <Select
                             size="sm"
                             isSearchable={true}
-                            value={pageSizeOptions.find(
-                                (option) => option.value === pageSize,
-                            )}
+                            value={pageSizeOptions.find((option) => option.value === pageSize)}
                             options={pageSizeOptions}
                             onChange={(option) => onSelectChange(option?.value)}
                             className="w-full"
