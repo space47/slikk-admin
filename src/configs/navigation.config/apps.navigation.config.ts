@@ -1,9 +1,5 @@
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
-import {
-    NAV_ITEM_TYPE_TITLE,
-    NAV_ITEM_TYPE_COLLAPSE,
-    NAV_ITEM_TYPE_ITEM,
-} from '@/constants/navigation.constant'
+import { NAV_ITEM_TYPE_TITLE, NAV_ITEM_TYPE_COLLAPSE, NAV_ITEM_TYPE_ITEM } from '@/constants/navigation.constant'
 import { ADMIN, USER } from '@/constants/roles.constant'
 import type { NavigationTree } from '@/@types/navigation'
 
@@ -103,8 +99,7 @@ const appsNavigationConfig: NavigationTree[] = [
                         key: 'appsInventoryManagement.quality_check',
                         path: `${APP_PREFIX_PATH}/goods/qualitycheck`,
                         title: 'Quality Check',
-                        translateKey:
-                            'nav.appsInventoryManagement.quality_check',
+                        translateKey: 'nav.appsInventoryManagement.quality_check',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
@@ -114,8 +109,7 @@ const appsNavigationConfig: NavigationTree[] = [
                         key: 'appsInventoryManagement.quality_checkList',
                         path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
                         title: 'Quality Check List',
-                        translateKey:
-                            'nav.appsInventoryManagement.quality_check',
+                        translateKey: 'nav.appsInventoryManagement.quality_check',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
@@ -125,8 +119,7 @@ const appsNavigationConfig: NavigationTree[] = [
                         key: 'appsInventoryManagement.stock_overview',
                         path: `${APP_PREFIX_PATH}/stockOverview`,
                         title: 'Stock Overview',
-                        translateKey:
-                            'nav.appsInventoryManagement.stock_overview',
+                        translateKey: 'nav.appsInventoryManagement.stock_overview',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
@@ -152,8 +145,7 @@ const appsNavigationConfig: NavigationTree[] = [
                         key: 'appsVendorManagement.businessDetails',
                         path: `${APP_PREFIX_PATH}/vendor/Details`,
                         title: 'Business Details',
-                        translateKey:
-                            'nav.appsVendorManagement.businessDetails',
+                        translateKey: 'nav.appsVendorManagement.businessDetails',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
@@ -545,6 +537,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         path: `${APP_PREFIX_PATH}/analytics/userAnalytics`,
                         title: 'Users',
                         translateKey: 'nav.appsAnalytics.userAnalytics',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsAnalytics.remitance',
+                        path: `${APP_PREFIX_PATH}/analytics/remitance`,
+                        title: 'Remitance',
+                        translateKey: 'nav.appsAnalytics.remitance',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [ADMIN, USER],
