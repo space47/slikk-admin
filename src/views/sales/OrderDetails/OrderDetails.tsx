@@ -17,8 +17,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import CancelModal from './components/CancelModal'
-import { FaMapMarkedAlt } from 'react-icons/fa'
+import { FaArrowCircleDown, FaDownload, FaMapMarkedAlt } from 'react-icons/fa'
 import { notification } from 'antd'
+import { Button } from '@/components/ui'
 // import { string } from 'yup'
 
 type RETURNORDER = {
@@ -174,6 +175,23 @@ const OrderDetails = () => {
         }
     }
 
+    const handleDownload = async () => {
+        try {
+            const response = await axioisInstance.get(`/user/order/invoice/${invoice_id}`)
+            console.log('DOWNLOAD DATA', response.data.data)
+            const downloadablePDF = response.data?.data
+
+            const link = document.createElement('a')
+            link.href = downloadablePDF
+            link.download = `invoice-${invoice_id}.pdf`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <Container className="p-4 xl:px-10">
             <Loading loading={loading}>
@@ -182,10 +200,17 @@ const OrderDetails = () => {
                         <div className="mb-8 flex flex-col justify-center xl:flex-row xl:justify-between">
                             <div className="w-full xl:w-1/2">
                                 <div className="flex flex-col md:flex-row items-center mb-4 xl:justify-between justify-center w-full">
-                                    <h3 className="text-3xl font-bold text-gray-800 text-center md:text-left">
+                                    <div className="text-3xl font-bold text-gray-800 text-center md:text-left flex gap-2">
                                         <span>Order</span>
-                                        <span className="ml-2 text-gray-600">#{data.invoice_id}</span>
-                                    </h3>
+                                        <span className="ml-2 text-gray-600 flex gap-3">
+                                            #{data.invoice_id}{' '}
+                                            <div>
+                                                <button className="bg-none border-none text-md mt-1" onClick={handleDownload}>
+                                                    <FaDownload className="bg-none" />
+                                                </button>
+                                            </div>
+                                        </span>
+                                    </div>
                                 </div>
                                 <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
                                     <HiOutlineCalendar className="text-2xl" />
