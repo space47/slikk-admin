@@ -7,62 +7,25 @@ import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { Avatar } from '@/components/ui'
 
 const ReturnRunnerDetails = () => {
-    const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders,
-    )
-    const returnProducts = returnOrder?.returnOrders?.logistic
+    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
+    const returnProducts = returnOrder?.returnOrders?.return_order_delivery
+
+    const return_Delivery = returnProducts?.map((item) => item.awb_code)
+    console.log('OKOK', return_Delivery)
 
     return (
-        <Card>
+        <Card className="card">
             <h5 className="mb-4">Runner Details</h5>
-            <div className="group flex items-center justify-between">
+            <div className="group flex flex-col gap-2">
                 <div className="flex items-center">
-                    <Avatar
-                        shape="circle"
-                        src={returnProducts?.runner_profile_pic_url}
-                    />
                     <div className="ltr:ml-2 rtl:mr-2">
-                        <span className="text-xl font-bold flex gap-1">
-                            {returnProducts?.runner_name}
-                        </span>
+                        <span className="text-xl font-bold flex gap-1">{returnProducts?.map((item) => item.partner)}</span>
                     </div>
                 </div>
-                <HiExternalLink className="text-xl hidden group-hover:block" />
+                <div className="time">
+                    <span className="font-bold">AWB: {returnProducts?.map((item) => item.awb_code)}</span>
+                </div>
             </div>
-            <hr className="my-5" />
-
-            <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                <span className="font-semibold">
-                    {returnProducts?.runner_phone_number}
-                </span>
-            </IconText>
-
-            <hr className="my-5" />
-
-            {/* .......................................... */}
-            <div className="time">
-                <span>Total time : {returnProducts?.total_time}</span>
-            </div>
-            <div className="time">
-                <span>Distance : {returnProducts?.distance}</span>
-            </div>
-            <div className="time">
-                <span>Pickup : {returnProducts?.eta_pickup}</span>
-            </div>
-            <div className="time">
-                <span>Drop : {returnProducts?.eta_dropoff}</span>
-            </div>
-
-            {/* <hr className="my-5" />
-            <h6 className="mb-4">Shipping Address</h6>
-            <address className="not-italic">
-                
-            </address>
-            <hr className="my-5" />
-            <h6 className="mb-4">Billing address</h6>
-            <address className="not-italic">
-              
-            </address> */}
         </Card>
     )
 }

@@ -333,7 +333,7 @@ const ReverseDelivery = () => {
             const body = {
                 action: 'create_reverse_pickup',
                 re_create: 'yes',
-                delivery_partner: partner?.value ? partner?.value : logistic_partner,
+                logistic_partner: partner?.value ? partner?.value : logistic_partner,
             }
 
             console.log('BODY', body)

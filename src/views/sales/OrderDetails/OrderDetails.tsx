@@ -159,7 +159,6 @@ const OrderDetails = () => {
     }
 
     const handlePODAction = async () => {
-        console.log('POD CLICKED')
         try {
             const body = {
                 action: 'MARK_POD_COMPLETE',
@@ -178,7 +177,7 @@ const OrderDetails = () => {
     const handleDownload = async () => {
         try {
             const response = await axioisInstance.get(`/user/order/invoice/${invoice_id}`)
-            console.log('DOWNLOAD DATA', response.data.data)
+
             const downloadablePDF = response.data?.data
 
             const link = document.createElement('a')
