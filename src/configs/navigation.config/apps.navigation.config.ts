@@ -545,7 +545,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsAnalytics.remitance',
                         path: `${APP_PREFIX_PATH}/analytics/remitance`,
-                        title: 'Remitance',
+                        title: 'Remittance',
                         translateKey: 'nav.appsAnalytics.remitance',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
