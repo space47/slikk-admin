@@ -12,8 +12,9 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const Remitance = () => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
-    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    const [from, setFrom] = useState(moment().subtract(1, 'month').format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [showOneMonthBack, setShoOneMonthBack] = useState(true)
     // const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>({
     //     value: '',
     //     name: '',
@@ -28,6 +29,7 @@ const Remitance = () => {
     const handleFromChange = (date: Date | null) => {
         if (date) {
             setFrom(moment(date).format('YYYY-MM-DD'))
+            setShoOneMonthBack(false)
         } else {
             setFrom(moment().format('YYYY-MM-DD'))
         }
@@ -73,7 +75,9 @@ const Remitance = () => {
                 {/* Date Pickers Section */}
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
                     <div className="flex flex-col">
-                        <label className="mb-2 font-semibold text-sm text-gray-700">From Date:</label>
+                        <label className="mb-2 font-semibold text-sm text-gray-700">
+                            From Date:{showOneMonthBack ? '(Last Month)' : ''}
+                        </label>
                         <DatePicker
                             inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
                             defaultValue={new Date()}
