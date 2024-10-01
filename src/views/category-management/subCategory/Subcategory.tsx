@@ -55,7 +55,8 @@ const Subcategory = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get('sub-category')
+            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
+            const response = await axiosInstance.get(`sub-category?${filtervalue}`)
             const data = response.data.data
             const total = data.length
             setData(data)
@@ -67,7 +68,7 @@ const Subcategory = () => {
 
     useEffect(() => {
         fetchData()
-    }, [])
+    }, [globalFilter])
 
     // Apply global filter
     const filteredData = data.filter((item) =>

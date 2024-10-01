@@ -51,7 +51,8 @@ const DivisionTable = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get('division')
+            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
+            const response = await axiosInstance.get(`division?${filtervalue}`)
             const data = response.data.data
             const total = data.length
             setData(data)
@@ -63,18 +64,11 @@ const DivisionTable = () => {
 
     useEffect(() => {
         fetchData()
-    }, [])
+    }, [globalFilter])
 
     // Apply global filter
     const filteredData = data.filter((item) =>
-        Object.values(item).some((val) =>
-            val
-                ? val
-                      .toString()
-                      .toLowerCase()
-                      .includes(globalFilter.toLowerCase())
-                : false,
-        ),
+        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
 
     const navigate = useNavigate()
@@ -88,10 +82,7 @@ const DivisionTable = () => {
     }
 
     // Paginate filtered data
-    const paginatedData = filteredData.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
-    )
+    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
     const columns = [
@@ -149,10 +140,7 @@ const DivisionTable = () => {
             header: 'Edit',
             accessor: 'id',
             format: (value) => (
-                <button
-                    onClick={() => handleActionClick(value)}
-                    className="border-none bg-none"
-                >
+                <button onClick={() => handleActionClick(value)} className="border-none bg-none">
                     <FaEdit className="text-xl text-blue-600" />
                 </button>
             ),
@@ -161,10 +149,7 @@ const DivisionTable = () => {
             header: 'Delete',
             accessor: 'id',
             format: (value) => (
-                <button
-                    onClick={() => handleDeleteClick(value)}
-                    className="border-none bg-none"
-                >
+                <button onClick={() => handleDeleteClick(value)} className="border-none bg-none">
                     <FaTrash className="text-xl text-red-600" />
                 </button>
             ),
@@ -229,33 +214,21 @@ const DivisionTable = () => {
                     {paginatedData.map((row) => (
                         <Tr key={row.id}>
                             {columns.map((col) => (
-                                <Td key={col.accessor}>
-                                    {col.format
-                                        ? col.format(row[col.accessor])
-                                        : row[col.accessor]}
-                                </Td>
+                                <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    currentPage={page}
-                    total={totalPages}
-                    onChange={(page) => setPage(page)}
-                />
+                <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) =>
-                            setPageSize(Number(option?.value))
-                        }
+                        onChange={(option) => setPageSize(Number(option?.value))}
                     />
                 </div>
             </div>
@@ -272,8 +245,7 @@ const DivisionTable = () => {
                     }}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
-                        ARE YOU SURE YOU WANT TO DELETE !!
+                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
                     </div>
                 </Modal>
             )}
