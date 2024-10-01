@@ -15,6 +15,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
+import { FaEdit } from 'react-icons/fa'
 
 interface Brand {
     id: number
@@ -60,7 +61,8 @@ const Brand = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(`brands?dashboard=true&p=${page}&page_size=${pageSize}`)
+            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
+            const response = await axiosInstance.get(`brands?dashboard=true&p=${page}&page_size=${pageSize}${filtervalue}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -163,7 +165,11 @@ const Brand = () => {
             {
                 header: 'Action',
                 accessorKey: 'id',
-                cell: ({ row }) => <Button onClick={() => handleActionClick(row.original.id)}>EDIT</Button>,
+                cell: ({ row }) => (
+                    <Button onClick={() => handleActionClick(row.original.id)} className="bg-none border-none">
+                        <FaEdit className="text-xl text-blue-600" />
+                    </Button>
+                ),
             },
         ],
         [],
@@ -188,7 +194,7 @@ const Brand = () => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        // onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {

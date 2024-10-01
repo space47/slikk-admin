@@ -3,13 +3,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
@@ -66,9 +60,8 @@ const Seller = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(
-                `merchant/company?p=${page}&page_size=${pageSize}`,
-            )
+            const filterValue = globalFilter ? `&name=${globalFilter}` : ''
+            const response = await axiosInstance.get(`merchant/company?p=${page}&page_size=${pageSize}${filterValue}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -80,7 +73,7 @@ const Seller = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize])
+    }, [page, pageSize, globalFilter])
 
     // const getFirstImageUrl = (images: string) => {
     //     const img = images.split(',')
@@ -170,11 +163,7 @@ const Seller = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             // {
             //     header: 'Damages Per SKU',
@@ -226,11 +215,7 @@ const Seller = () => {
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             // {
             //     header: 'Warehouse Charge Per SKU',
@@ -242,10 +227,7 @@ const Seller = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() => handleActionClick(row.original.id)}
-                        className="border-none bg-none"
-                    >
+                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
                         <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
@@ -273,7 +255,7 @@ const Seller = () => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        // onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -302,10 +284,7 @@ const Seller = () => {
                     />
                 </div>
                 <div className="flex items-end justify-end mb-4">
-                    <button
-                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                        onClick={handleSeller}
-                    >
+                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
                         ADD NEW SELLER
                     </button>{' '}
                 </div>
@@ -316,10 +295,7 @@ const Seller = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -329,31 +305,19 @@ const Seller = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
