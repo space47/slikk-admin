@@ -255,7 +255,7 @@ const StockOverview = () => {
                 cell: ({ getValue, row }) => (
                     <button
                         onClick={() => handleUpdate(row.original.id, row.original.quantity, row.original.location)}
-                        className="px-4 py-2 bg-none text-2xl rounded font-bold"
+                        className="px-4 py-2 bg-none text-2xl rounded font-bold text-green-600"
                     >
                         <FaSync />
                     </button>

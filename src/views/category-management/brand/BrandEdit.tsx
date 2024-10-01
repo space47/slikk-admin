@@ -54,7 +54,7 @@ const BrandEdit = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`brands?id=${id}`)
+            const response = await axioisInstance.get(`brands?id=${id}&dashboard=true`)
             const categoryData = response.data?.data.results[0] || {}
             setCateData(categoryData)
             setImageView(categoryData.image ? [categoryData.image] : [])

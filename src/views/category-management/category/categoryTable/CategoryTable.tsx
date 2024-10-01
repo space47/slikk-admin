@@ -64,7 +64,8 @@ const CategoryTable = () => {
 
     const fetchData = async (filter: string = '') => {
         try {
-            const response = await axiosInstance.get(`category?name=${filter}`)
+            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
+            const response = await axiosInstance.get(`category?${filtervalue}`)
             const data = response.data.data
             setData(data)
         } catch (error) {
@@ -214,7 +215,7 @@ const CategoryTable = () => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
+        // onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {

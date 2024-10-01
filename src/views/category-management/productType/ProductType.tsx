@@ -54,7 +54,8 @@ const ProductType = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get('product-type')
+            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
+            const response = await axiosInstance.get(`product-type?${filtervalue}`)
             const data = response.data.data
             const total = data.length
             setData(data)
@@ -66,7 +67,7 @@ const ProductType = () => {
 
     useEffect(() => {
         fetchData()
-    }, [])
+    }, [globalFilter])
 
     // Apply global filter
     const filteredData = data.filter((item) =>

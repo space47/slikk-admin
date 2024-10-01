@@ -4,13 +4,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -70,16 +64,9 @@ const PaginationTable = () => {
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
 
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
-    const fetchData = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchData = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
@@ -132,12 +119,7 @@ const PaginationTable = () => {
                 accessorKey: 'grn_number',
                 cell: ({ row }) => (
                     <div
-                        onClick={() =>
-                            handleGRNClick(
-                                row.original.grn_number,
-                                row.original.company,
-                            )
-                        }
+                        onClick={() => handleGRNClick(row.original.grn_number, row.original.company)}
                         className="cursor-pointer bg-gray-200 px-3 py-3 rounded-md text-black font-semibold"
                     >
                         {row.original.grn_number}
@@ -152,20 +134,13 @@ const PaginationTable = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'Document url',
                 accessorKey: 'document_url',
                 cell: (info) => (
-                    <div
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleDocumentClick(info.getValue())}
-                    >
+                    <div style={{ cursor: 'pointer' }} onClick={() => handleDocumentClick(info.getValue())}>
                         {info.getValue() as string}
                     </div>
                 ),
@@ -214,23 +189,14 @@ const PaginationTable = () => {
             {
                 header: 'Updated On',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() =>
-                            handleActionClick(row.original.grn_number)
-                        }
-                        className="border-none bg-none"
-                    >
-                        <FaEdit className="text-xl" />
+                    <button onClick={() => handleActionClick(row.original.grn_number)} className="border-none bg-none">
+                        <FaEdit className="text-xl text-blue-500" />
                     </button>
                 ),
             },
@@ -320,10 +286,7 @@ const PaginationTable = () => {
                     </div>
                 </div> */}
                 <div className="flex items-end justify-end">
-                    <button
-                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                        onClick={handleGRN}
-                    >
+                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleGRN}>
                         ADD NEW GRN
                     </button>{' '}
                 </div>
@@ -336,10 +299,7 @@ const PaginationTable = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -349,31 +309,19 @@ const PaginationTable = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
