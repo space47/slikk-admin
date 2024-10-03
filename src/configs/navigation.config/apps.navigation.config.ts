@@ -508,6 +508,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsCommuncication.sendNotification',
+                        path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification`,
+                        title: 'Send Notification',
+                        translateKey: 'nav.appsCommuncication.sendNotification',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                     // {
                     //     key: 'appscreatorPost.uploadPost',
                     //     path: `${APP_PREFIX_PATH}/uploadPost`,

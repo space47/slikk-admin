@@ -324,15 +324,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         }
     }
     const dataTypeArray = [
-        { label: 'banner', value: 'Banner' },
-        { label: 'wishlist', value: 'Wishlist' },
-        { label: 'purchases', value: 'Purchases' },
-        { label: 'searches', value: 'Searches' },
-        { label: 'spotlight', value: 'Spotlight' },
-        { label: 'products', value: 'Products' },
-        { label: 'brands', value: 'Brands' },
-        { label: 'post', value: 'Post' },
-        { label: 'creator', value: 'Creator' },
+        { label: 'banner', value: 'banner' },
+        { label: 'wishlist', value: 'wishlist' },
+        { label: 'purchases', value: 'purchases' },
+        { label: 'searches', value: 'searches' },
+        { label: 'spotlight', value: 'spotlight' },
+        { label: 'products', value: 'products' },
+        { label: 'brands', value: 'brands' },
+        { label: 'post', value: 'post' },
+        { label: 'creator', value: 'creator' },
     ]
 
     const handleSubmit = async (row: any) => {
