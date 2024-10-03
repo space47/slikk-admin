@@ -293,6 +293,7 @@ const PageModal: React.FC<modalProps> = ({
                     grid: row.grid,
                     carousel_autoplay: row.carousel_autoplay,
                     width: row.width,
+                    interval: row.interval,
                     corner_radius: row.corner_radius,
                     border: row.border,
                     border_style: row.border_style,

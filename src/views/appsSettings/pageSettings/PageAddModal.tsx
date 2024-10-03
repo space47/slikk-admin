@@ -376,6 +376,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 width: row.width,
                 corner_radius: row.corner_radius,
                 border: row.border,
+                interval: row.interval,
                 border_style: row.border_style,
                 border_width: row.border_width,
                 border_color: row.border_color,
