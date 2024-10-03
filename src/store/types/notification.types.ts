@@ -20,9 +20,10 @@ export interface NotificationEvent {
 }
 
 export interface NotificationData {
-    notification: NotificationEvent
+    notification: NotificationEvent[]
     loading: boolean
     message: string
     page: number
     pageSize: number
+    count: number
 }

@@ -7,9 +7,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const Policies = () => {
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<
-        Record<string, string>
-    >(CONFIGOPTIONS[0])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(CONFIGOPTIONS[0])
     const [data, setData] = useState()
     const [richTextValue, setRichTextValue] = useState('')
 
@@ -40,22 +38,19 @@ const Policies = () => {
     const handleSelect = (a: any) => {
         setCurrentSelectedPage({
             value: a,
-            name: CONFIGOPTIONS.find((p) => p.value == a)?.label || ''
+            name: CONFIGOPTIONS.find((p) => p.value == a)?.label || '',
         })
     }
-    console.log('VALUE', richTextValue)
+    console.log('VALUE', currentSelectedPage)
 
     const handlePolicySubmit = async () => {
         try {
             const body = {
                 page_name: currentSelectedPage.value,
-                value: richTextValue
+                value: richTextValue,
             }
             console.log('BOOOODY', body)
-            axioisInstance.post(
-                `/page/config?page_name=${currentSelectedPage.value}`,
-                body
-            )
+            axioisInstance.post(`/page/config?page_name=${currentSelectedPage.value}`, body)
         } catch (error) {
             console.log(error)
         }
@@ -66,11 +61,7 @@ const Policies = () => {
     return (
         <div className="flex flex-col gap-10">
             <div className="drop border  bg-gray-200 text-black text-lg font-semibold w-[250px] ">
-                <Dropdown
-                    className=" text-xl text-black "
-                    title={currentSelectedPage.label}
-                    onSelect={handleSelect}
-                >
+                <Dropdown className=" text-xl text-black " title={currentSelectedPage.value} onSelect={handleSelect}>
                     {CONFIGOPTIONS?.map((item, key) => {
                         return (
                             <DropdownItem key={key} eventKey={item.value}>
@@ -82,11 +73,7 @@ const Policies = () => {
             </div>
 
             <div className="w-[90%]">
-                <RichTextEditor
-                    className="h-[400px]"
-                    value={richTextValue}
-                    onChange={(value: string) => setRichTextValue(value)}
-                />
+                <RichTextEditor className="h-[400px]" value={richTextValue} onChange={(value: string) => setRichTextValue(value)} />
             </div>
 
             <div className="mt-10">
@@ -95,13 +82,8 @@ const Policies = () => {
                 </Button>
             </div>
             <div className="flex flex-col gap-6 w-[80%] items-center flex-wrap justify-center mx-12">
-                <span className="text-4xl font-bold flex justify-center">
-                    Preview
-                </span>
-                <div
-                    className="flex flex-col gap-4 justify-center"
-                    dangerouslySetInnerHTML={{ __html: richTextValue }}
-                />
+                <span className="text-4xl font-bold flex justify-center">Preview</span>
+                <div className="flex flex-col gap-4 justify-center" dangerouslySetInnerHTML={{ __html: richTextValue }} />
             </div>
         </div>
     )

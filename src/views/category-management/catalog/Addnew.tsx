@@ -14,11 +14,7 @@ import Upload from '@/components/ui/Upload'
 import Product from '@/views/category-management/catalog/CommonType'
 import { Checkbox } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import {
-    PRODUCT_EDIT_COMMON,
-    PRODUCT_EDIT_COMMON_DOWN,
-    INITIALVALUES,
-} from './ProductCommon'
+import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN, INITIALVALUES } from './ProductCommon'
 
 const AddProduct = () => {
     const [datas, setDatas] = useState()
@@ -69,15 +65,7 @@ const AddProduct = () => {
     const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
-        const allowedFileType = [
-            'video/mp4',
-            'video/mov',
-            'video/flv',
-            'video/avi',
-            'video/wmv',
-            'video/webm',
-            'video/avchd',
-        ]
+        const allowedFileType = ['video/mp4', 'video/mov', 'video/flv', 'video/avi', 'video/wmv', 'video/webm', 'video/avchd']
         const MAX_FILE_SIZE = 9000000000000000
 
         if (fileList.length >= MAX_UPLOAD) {
@@ -122,16 +110,14 @@ const AddProduct = () => {
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -159,16 +145,14 @@ const AddProduct = () => {
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Video uploaded successfully',
+                description: response?.data?.message || 'Video uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Video Not uploaded',
+                description: error?.response?.data?.message || 'Video Not uploaded',
             })
             return 'Error'
         }
@@ -209,16 +193,14 @@ const AddProduct = () => {
             console.log(response)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Product created Successfully',
+                description: response?.data?.message || 'Product created Successfully',
             })
             navigate('/app/catalog/products')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Product not created ',
+                description: error?.response?.data?.message || 'Product not created ',
             })
         }
     }
@@ -242,17 +224,8 @@ const AddProduct = () => {
                         <FormContainer>
                             <div className="grid grid-cols-2 gap-4">
                                 {PRODUCT_EDIT_COMMON.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
 
@@ -261,38 +234,17 @@ const AddProduct = () => {
                                     <FormContainer className=" mt-5 w-full ">
                                         {/* DIV */}
 
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="image">
-                                                {({
-                                                    form,
-                                                }: FieldProps<Product>) => (
+                                                {({ form }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
                                                             className="flex justify-center"
                                                             multiple
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.images
-                                                            }
-                                                            onChange={(files) =>
-                                                                form.setFieldValue(
-                                                                    'images',
-                                                                    files,
-                                                                )
-                                                            }
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'images',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.images}
+                                                            onChange={(files) => form.setFieldValue('images', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('images', files)}
                                                         />
                                                     </>
                                                 )}
@@ -322,38 +274,17 @@ const AddProduct = () => {
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden">
                                     Color Code Thumbnail
                                     <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            className="grid grid-rows-2"
-                                        >
+                                        <FormItem label="" className="grid grid-rows-2">
                                             <Field name="color_code">
-                                                {({
-                                                    form,
-                                                }: FieldProps<Product>) => (
+                                                {({ form }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
                                                             className="flex justify-center"
                                                             multiple
-                                                            beforeUpload={
-                                                                beforeUpload
-                                                            }
-                                                            fileList={
-                                                                values.color_code
-                                                            }
-                                                            onChange={(files) =>
-                                                                form.setFieldValue(
-                                                                    'color_code',
-                                                                    files,
-                                                                )
-                                                            }
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'color_code',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.color_code}
+                                                            onChange={(files) => form.setFieldValue('color_code', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('color_code', files)}
                                                             // uploadButtonText="Add Files"
                                                         />
                                                     </>
@@ -364,10 +295,7 @@ const AddProduct = () => {
                                         <br />
                                         <br />
                                     </FormContainer>
-                                    <FormItem
-                                        label=""
-                                        className="col-span-1 w-[80%]"
-                                    >
+                                    <FormItem label="" className="col-span-1 w-[80%]">
                                         <Field
                                             type="text"
                                             name="color_code_link"
@@ -384,41 +312,19 @@ const AddProduct = () => {
                                     <FormContainer className=" mt-5 ">
                                         <FormItem
                                             label=""
-                                            invalid={Boolean(
-                                                errors.video && touched.video,
-                                            )}
-                                            errorMessage={
-                                                errors.video as string
-                                            }
+                                            invalid={Boolean(errors.video && touched.video)}
+                                            errorMessage={errors.video as string}
                                             className="grid grid-rows-2"
                                         >
                                             <Field name="video_link">
-                                                {({
-                                                    form,
-                                                }: FieldProps<Product>) => (
+                                                {({ form }: FieldProps<Product>) => (
                                                     <>
                                                         <Upload
                                                             multiple
-                                                            beforeUpload={
-                                                                beforeVideoUpload
-                                                            }
-                                                            fileList={
-                                                                values.video
-                                                            }
-                                                            onChange={(files) =>
-                                                                form.setFieldValue(
-                                                                    'Video',
-                                                                    files,
-                                                                )
-                                                            }
-                                                            onFileRemove={(
-                                                                files,
-                                                            ) =>
-                                                                form.setFieldValue(
-                                                                    'images',
-                                                                    files,
-                                                                )
-                                                            }
+                                                            beforeUpload={beforeVideoUpload}
+                                                            fileList={values.video}
+                                                            onChange={(files) => form.setFieldValue('Video', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('images', files)}
                                                         />
                                                     </>
                                                 )}
@@ -430,10 +336,7 @@ const AddProduct = () => {
                                     </FormContainer>
                                     <FormItem
                                         label=""
-                                        invalid={
-                                            errors.video_link &&
-                                            touched.video_link
-                                        }
+                                        invalid={errors.video_link && touched.video_link}
                                         errorMessage={errors.video_link}
                                         className="col-span-1 w-[80%]"
                                     >
@@ -446,11 +349,7 @@ const AddProduct = () => {
                                     </FormItem>
                                 </FormContainer>
                                 {PRODUCT_EDIT_COMMON_DOWN.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
+                                    <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field
                                             type={item.type}
                                             name={item.name}
@@ -462,18 +361,10 @@ const AddProduct = () => {
                             </div>
 
                             <FormContainer className="flex justify-end mt-5">
-                                <Button
-                                    type="reset"
-                                    className="mr-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    className="bg-blue-500 text-white"
-                                >
+                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
                                     Submit
                                 </Button>
                             </FormContainer>

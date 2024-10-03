@@ -43,6 +43,7 @@ export type BANNER_UPLOAD_DATA = {
 }
 
 export const COMPONENT_CATEGORY_TYPES = [
+    { label: 'Generic Component', value: 'Generic' },
     { label: 'Bell C', value: 'Bell C' },
     { label: 'Square', value: 'Square' },
     { label: 'New Drop', value: 'New Drop' },
@@ -67,5 +68,4 @@ export const COMPONENT_CATEGORY_TYPES = [
     { label: 'Banner', value: 'Banner' },
     { label: 'Big Ribbon', value: 'Big Ribbon' },
     { label: 'Short Ribbon', value: 'Short Ribbon' },
-    
 ]
