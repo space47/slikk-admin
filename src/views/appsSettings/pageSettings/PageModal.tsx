@@ -22,6 +22,9 @@ import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
+import { MdCancel } from 'react-icons/md'
+import { borrderStyleArray, genericComponentArray } from './genericComp'
+import { width } from '@mui/system'
 
 interface DataType {
     type: string
@@ -159,6 +162,15 @@ const PageModal: React.FC<modalProps> = ({
         mobile_background_image: particularRow.mobile_background_image,
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
+        grid: particularRow.grid,
+        crousel_autoplay: particularRow.crousel_autoplay,
+        crousel: particularRow.crousel,
+        width: particularRow.width,
+        corner_radius: particularRow.corner_radius,
+        border: particularRow.border,
+        border_style: particularRow.border_style,
+        border_width: particularRow.border_width,
+        border_color: particularRow.border_color,
     })
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -286,18 +298,18 @@ const PageModal: React.FC<modalProps> = ({
     }
 
     console.log('---------------', particularRow)
-    const handleRemoveImage = () => {
-        setInitalValue((prev: any) => ({
-            ...prev,
-            background_image: null,
-        }))
-    }
-
-    const handleRemoveMobileImage = () => {
-        setInitalValue((prev: any) => ({
-            ...prev,
-            mobile_background_image: null,
-        }))
+    const handleRemoveImage = (val: string) => {
+        if (val === 'background_image') {
+            setInitalValue((prev: any) => ({
+                ...prev,
+                background_image: null,
+            }))
+        } else if (val === 'mobile_background_image') {
+            setInitalValue((prev: any) => ({
+                ...prev,
+                mobile_background_image: null,
+            }))
+        }
     }
 
     const getDataType = (data: DataType): { key: string; value: string } => {
@@ -314,11 +326,22 @@ const PageModal: React.FC<modalProps> = ({
     }
 
     const [initialDataType, setInitialDataType] = useState(getDataType(particularRow.data_type).value)
+    const [componentOption, setComponentOptions] = useState(initialValue.component_type)
+    const [borderForm, setBorderForm] = useState(initialValue.border)
 
     const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialDataType(e.target.value)
     }
     console.log('BBBrand', brands)
+    const borderArray = [
+        { label: 'YES', value: 'yes' },
+        { label: 'NO', value: 'no' },
+    ]
+
+    const borderStyleArray = [
+        { label: 'Dotted', value: 'dotted' },
+        { label: 'Solid', value: 'solid' },
+    ]
 
     return (
         <>
@@ -356,6 +379,76 @@ const PageModal: React.FC<modalProps> = ({
                                     </Field>
                                 </FormItem>
 
+                                {componentOption === 'Generic' && (
+                                    <FormContainer>
+                                        <FormContainer className="grid grid-cols-2 gap-10">
+                                            {genericComponentArray.map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-1/2">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input} // Fallback to 'input' if component is not valid
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+
+                                        <FormItem label="Border" className="col-span-1 w-1/4">
+                                            <Field name="border">
+                                                {({ field, form }: FieldProps<any>) => {
+                                                    return (
+                                                        <Select
+                                                            field={field}
+                                                            form={form}
+                                                            options={borderArray}
+                                                            value={borderArray.find((option) => option.value === field.value)}
+                                                            onChange={(option) => {
+                                                                const value = option?.value || '' // Safely handle null/undefined option
+                                                                form.setFieldValue(field.name, value) // Update the form field value
+                                                                setBorderForm(value) // Update border form
+                                                            }}
+                                                        />
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+
+                                        {borderForm === 'yes' && (
+                                            <FormContainer>
+                                                <FormItem label="Border Style" className="col-span-1 w-1/4">
+                                                    <Field name="border_style">
+                                                        {({ field, form }: FieldProps<any>) => {
+                                                            return (
+                                                                <Select
+                                                                    field={field}
+                                                                    form={form}
+                                                                    options={borderStyleArray}
+                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
+                                                                    onChange={(option) => {
+                                                                        const value = option?.value || '' // Safely handle null/undefined option
+                                                                        form.setFieldValue(field.name, value) // Update the form field value
+                                                                    }}
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
+                                                </FormItem>
+                                                {borrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-1/2">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input} // Fallback to 'input' if component is not valid
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormContainer>
+                                )}
+
                                 {/* image */}
 
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
@@ -366,8 +459,8 @@ const PageModal: React.FC<modalProps> = ({
                                                 alt={`Image `}
                                                 className="w-[150px] h-[40px] flex object-contain "
                                             />
-                                            <button className="text-red-500 text-md " onClick={handleRemoveImage}>
-                                                x
+                                            <button className="text-red-500 text-md " onClick={() => handleRemoveImage('background_image')}>
+                                                <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
                                         </div>
                                     ) : (
@@ -401,8 +494,11 @@ const PageModal: React.FC<modalProps> = ({
                                                 alt={`Image `}
                                                 className="w-[100px] h-[40px] flex object-contain "
                                             />
-                                            <button className="text-red-500 text-md " onClick={handleRemoveMobileImage}>
-                                                x
+                                            <button
+                                                className="text-red-500 text-md "
+                                                onClick={() => handleRemoveImage('mobile_background_image')}
+                                            >
+                                                <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
                                         </div>
                                     ) : (
@@ -448,7 +544,7 @@ const PageModal: React.FC<modalProps> = ({
                                                 className="w-[100px] h-[40px] flex object-contain "
                                             />
                                             <button className="text-red-500 text-md " onClick={handleRemoveImage}>
-                                                x
+                                                <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
                                         </div>
                                     )}
@@ -519,7 +615,7 @@ const PageModal: React.FC<modalProps> = ({
                                                 className="w-[100px] h-[40px] flex object-contain "
                                             />
                                             <button className="text-red-500 text-md " onClick={(e: any) => handleRemoveImage(e)}>
-                                                x
+                                                <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
                                         </div>
                                     )}
@@ -580,7 +676,7 @@ const PageModal: React.FC<modalProps> = ({
                                                 className="w-[100px] h-[40px] flex object-contain "
                                             />
                                             <button className="text-red-500 text-md " onClick={(e) => handleRemoveImage(e)}>
-                                                x
+                                                <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
                                         </div>
                                     )}

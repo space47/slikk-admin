@@ -748,6 +748,30 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/appsSettings/seoSettings/SeoSettings')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsAppSettings.seoSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/addNotification`,
+        component: lazy(() => import('@/views/sales/Notification/createNotification/AddNotification')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.notification',
+        path: `${APP_PREFIX_PATH}/appSettings/notification`,
+        component: lazy(() => import('@/views/sales/Notification/getNotification/NotificationTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.groups',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/groups`,
+        component: lazy(() => import('@/views/sales/groupNotification/getGroup/GetGroupNotification')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.groups',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/addGroups`,
+        component: lazy(() => import('@/views/sales/groupNotification/addGroup/AddGroup')),
+        authority: [ADMIN, USER],
+    },
 
     // Tracking
     {

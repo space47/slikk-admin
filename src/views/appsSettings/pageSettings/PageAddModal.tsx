@@ -22,6 +22,7 @@ import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
+import { borrderStyleArray, genericComponentArray } from './genericComp'
 
 interface DataType {
     type: string
@@ -135,6 +136,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         label: item.name,
         value: item.id,
     }))
+    const [componentOption, setComponentOptions] = useState('')
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -358,11 +360,30 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         setSelectedType('')
         setInitalValue('')
         console.log('Section', newRowAdd.section_filters)
-
+        console.log('....', row)
         setIsModalOpen(false)
     }
-    console.log('Setdata', data)
-    console.log('---------------')
+    console.log('compo', componentOption)
+    console.log('----------uooioihot-----', data)
+
+    const [borderForm, setBorderForm] = useState('')
+
+    const cornerRadiusArray = [
+        { label: '1px', value: 1 },
+        { label: '2px', value: 2 },
+        { label: '3px', value: 3 },
+        { label: '4px', value: 4 },
+    ]
+
+    const borderArray = [
+        { label: 'YES', value: 'yes' },
+        { label: 'NO', value: 'no' },
+    ]
+
+    const borderStyleArray = [
+        { label: 'Dotted', value: 'dotted' },
+        { label: 'Solid', value: 'solid' },
+    ]
 
     return (
         <>
@@ -392,15 +413,92 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                     form={form}
                                                     options={componentOptions}
                                                     value={componentOptions.find((option) => option.value === field.value)}
-                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                    onChange={(option) => {
+                                                        const value = option ? option.value : '' // Handle null or undefined options
+                                                        form.setFieldValue(field.name, value) // Update the form field value
+                                                        setComponentOptions(value) // Set the component options
+                                                    }}
                                                     onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                                                 />
                                             )
                                         }}
                                     </Field>
                                 </FormItem>
+                                {/* Generic Fields........................................................ */}
+                                {componentOption === 'Generic' && (
+                                    <FormContainer>
+                                        <FormContainer className="grid grid-cols-2 gap-10">
+                                            {genericComponentArray.map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-1/2">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input} // Fallback to 'input' if component is not valid
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+
+                                        <FormItem label="Border" className="col-span-1 w-1/4">
+                                            <Field name="border">
+                                                {({ field, form }: FieldProps<any>) => {
+                                                    return (
+                                                        <Select
+                                                            field={field}
+                                                            form={form}
+                                                            options={borderArray}
+                                                            value={borderArray.find((option) => option.value === field.value)}
+                                                            onChange={(option) => {
+                                                                const value = option?.value || '' // Safely handle null/undefined option
+                                                                form.setFieldValue(field.name, value) // Update the form field value
+                                                                setBorderForm(value) // Update border form
+                                                            }}
+                                                        />
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+
+                                        {borderForm === 'yes' && (
+                                            <FormContainer>
+                                                <FormItem label="Border Style" className="col-span-1 w-1/4">
+                                                    <Field name="border_style">
+                                                        {({ field, form }: FieldProps<any>) => {
+                                                            return (
+                                                                <Select
+                                                                    field={field}
+                                                                    form={form}
+                                                                    options={borderStyleArray}
+                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
+                                                                    onChange={(option) => {
+                                                                        const value = option?.value || '' // Safely handle null/undefined option
+                                                                        form.setFieldValue(field.name, value) // Update the form field value
+                                                                    }}
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
+                                                </FormItem>
+                                                {borrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-1/2">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input} // Fallback to 'input' if component is not valid
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormContainer>
+                                )}
+
+                                {/* ......................................................................... */}
 
                                 {/* image */}
+
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                                     <div className="font-semibold mb-1">Background Image</div>
 
@@ -469,6 +567,36 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 <FormItem asterisk label="Header Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
+
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                    <div className="font-semibold mb-1">Header Icon Image</div>
+
+                                    <FormContainer className=" mt-5 ">
+                                        <FormItem label="" className="grid grid-rows-2">
+                                            <Field name="headerIcon_image_array">
+                                                {({ field, form }: FieldProps<WebType>) => (
+                                                    <>
+                                                        <Upload
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.background_image_array} // need to updtae
+                                                            onChange={(files) => {
+                                                                console.log(
+                                                                    'OnchangeFiles',
+                                                                    files,
+                                                                    field.name,
+                                                                    values.background_image_array,
+                                                                )
+                                                                form.setFieldValue('headerIcon_image_array', files)
+                                                            }}
+                                                            className="items-center flex justify-center"
+                                                            onFileRemove={(files) => form.setFieldValue('headerIcon_image_array', files)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+                                </FormContainer>
 
                                 {/* .................................................................... */}
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
