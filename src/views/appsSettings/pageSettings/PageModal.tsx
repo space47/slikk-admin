@@ -421,23 +421,17 @@ const PageModal: React.FC<modalProps> = ({
                                         </FormContainer>
 
                                         <FormItem label="Border" className="col-span-1 w-1/4">
-                                            <Field name="border">
-                                                {({ field, form }: FieldProps<any>) => {
-                                                    return (
-                                                        <Select
-                                                            field={field}
-                                                            form={form}
-                                                            options={borderArray}
-                                                            value={borderArray.find((option) => option.value === field.value)}
-                                                            onChange={(option) => {
-                                                                const value = option?.value || '' // Safely handle null/undefined option
-                                                                form.setFieldValue(field.name, value) // Update the form field value
-                                                                setBorderForm(value) // Update border form
-                                                            }}
-                                                        />
-                                                    )
+                                            <Field
+                                                type="checkbox"
+                                                name="border"
+                                                placeholder="Enter border"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('border', isChecked)
+                                                    setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
                                                 }}
-                                            </Field>
+                                            />
                                         </FormItem>
 
                                         {borderForm === 'yes' && (

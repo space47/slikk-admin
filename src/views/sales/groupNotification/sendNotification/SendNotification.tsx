@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -12,11 +12,17 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 // import { NotificationTYPE } from './createNotification.common'
 // import { NotificationARRAY } from './NotificationForms'
 import { RichTextEditor } from '@/components/shared'
-import { sendNotificationType } from './sendNotify.common'
-import { useAppSelector } from '@/store'
+import { SendNotificationARRAY, sendNotificationType } from './sendNotify.common'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
 
-const sendNotification = () => {
+const SendNotification = () => {
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(getAllFiltersAPI())
+    }, [])
     const notificationTypeArray = [
         { value: 'SMS', label: 'sms' },
         { value: 'EMAIL', label: 'email' },
@@ -24,7 +30,13 @@ const sendNotification = () => {
         { value: 'APP', label: 'app' },
     ]
 
-    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const targetPageArray = [
+        { label: 'product', value: 'product/' },
+        { label: 'productListing', value: 'productListing/' },
+        { label: 'wishlist', value: 'wishlist' },
+        { label: 'order', value: 'order/' },
+        { label: 'cart', value: 'cart/' },
+    ]
 
     const initialValue: sendNotificationType = {
         page: '',
@@ -45,11 +57,12 @@ const sendNotification = () => {
         const formData = {
             ...values,
             message: plainTextMessage,
+            filters: values.filters.join(','),
         }
         console.log('FORMDATA', formData)
 
         try {
-            const response = await axioisInstance.post(`/notifications/config`, formData)
+            const response = await axioisInstance.post(`/notification/send`, formData)
             notification.success({
                 message: 'SUCCESS',
                 description: response.data.message || 'Notification has been added',
@@ -75,11 +88,11 @@ const sendNotification = () => {
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {/* {NotificationARRAY.slice(0, 3).map((item, key) => (
+                                {SendNotificationARRAY.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
-                                ))} */}
+                                ))}
 
                                 <FormItem label="Notification Type" className="col-span-1 w-1/2">
                                     <Field name="notification_type">
@@ -90,6 +103,40 @@ const sendNotification = () => {
                                                     form={form}
                                                     options={notificationTypeArray}
                                                     value={notificationTypeArray.find((option) => option.value === field.value)}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
+                                <FormItem label="Filters">
+                                    <Field name="filters">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    isMulti
+                                                    placeholder="Select Filter Tags"
+                                                    options={filters.filters}
+                                                    getOptionLabel={(option) => option.label}
+                                                    getOptionValue={(option) => option.value}
+                                                    onChange={(newVal) => {
+                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                        form.setFieldValue(field.name, newValues)
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
+
+                                <FormItem label="Target Page">
+                                    <Field name="target_page">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    placeholder="Select Target Page"
+                                                    options={targetPageArray}
+                                                    value={targetPageArray.find((option) => option.value === field.value)}
                                                     onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                                 />
                                             )
@@ -121,4 +168,4 @@ const sendNotification = () => {
     )
 }
 
-export default sendNotification
+export default SendNotification

@@ -9,3 +9,41 @@ export interface sendNotificationType {
     notification_type: string
     target_page: string
 }
+
+export const SendNotificationARRAY = [
+    {
+        label: 'Key',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'key',
+        placeholder: 'Place your key',
+    },
+    {
+        label: 'Title',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'title',
+        placeholder: 'Place your Title',
+    },
+    {
+        label: 'Page',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'page',
+        placeholder: 'Place page',
+    },
+    {
+        label: 'Page Title',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'page_title',
+        placeholder: 'Enter Page Title',
+    },
+    {
+        label: 'Users',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'users',
+        placeholder: 'Enter Users',
+    },
+]

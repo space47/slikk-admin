@@ -19,8 +19,8 @@ export const genericComponentArray = [
     {
         label: 'Interval',
         name: 'interval',
-        component: { Checkbox },
-        type: 'text',
+        component: { Input },
+        type: 'number',
         placeholder: 'Enter Interval in secs',
     },
     {
@@ -33,14 +33,14 @@ export const genericComponentArray = [
     {
         label: 'Width',
         name: 'width',
-        type: 'text',
+        type: 'number',
         component: { Input },
         placeholder: 'Enter Width (eg: 0.5, 0.25...etc)',
     },
     {
         label: 'Corner Radius',
         name: 'corner_radius',
-        type: 'text',
+        type: 'number',
         component: { Input },
         placeholder: 'Enter Corner Radius',
     },
@@ -50,7 +50,7 @@ export const borrderStyleArray = [
     {
         label: 'BorderWidth',
         name: 'border_width',
-        type: 'text',
+        type: 'number',
         component: { Input },
         placeholder: 'Enter Width (eg: 1,2)',
     },
