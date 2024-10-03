@@ -20,6 +20,7 @@ import couponReducer from './slices/couponSlice/couponSlice'
 import returnOverallDetailsReducer from './slices/returnOverallDetails/returnOverallDetails'
 import userAnalyticsReducer from './slices/userAnalytics/userAnalytics.slice'
 import remitanceReducer from './slices/remitanceSlice/Remitance.slice'
+import notificationReducer from './slices/notificationSlice/notificationSlice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -55,6 +56,7 @@ const staticReducers = {
     retrunOverallOrders: returnOverallDetailsReducer,
     userAnalytics: userAnalyticsReducer,
     remitance: remitanceReducer,
+    notification: notificationReducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
 

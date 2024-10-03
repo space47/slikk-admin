@@ -107,7 +107,7 @@ const DivisionEdit = () => {
             setDivData(divisionData)
             const transformedOptions = divisionData.map((item: Division) => ({
                 value: item.id,
-                label: item.name
+                label: item.name,
             }))
             setOptions(transformedOptions)
         } catch (error) {
@@ -134,7 +134,7 @@ const DivisionEdit = () => {
             'image/png',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -171,23 +171,21 @@ const DivisionEdit = () => {
         try {
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
             })
             const newData = response.data.url
             setImageView(newData)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully'
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded'
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -197,7 +195,7 @@ const DivisionEdit = () => {
         const formData = {
             ...values,
             footer: values.footer,
-            images: values.image
+            images: values.image,
         }
 
         console.log('formDaata', formData)
@@ -207,15 +205,14 @@ const DivisionEdit = () => {
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Category Changed Successfully'
+                description: response?.data?.message || 'Category Changed Successfully',
             })
             navigate('/app/category/division')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description: error?.response?.data?.message || 'Failed to edit'
+                description: error?.response?.data?.message || 'Failed to edit',
             })
         }
     }
@@ -240,7 +237,7 @@ const DivisionEdit = () => {
         update_date: catedate.update_date,
         is_try_and_buy: catedate.is_try_and_buy,
         last_updated_by: catedate.last_updated_by,
-        images: []
+        images: [],
     }
 
     return (
@@ -263,27 +260,16 @@ const DivisionEdit = () => {
                                     errorMessage={errors.name}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="name"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="name" component={Input} />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Description"
-                                    invalid={
-                                        errors.description &&
-                                        touched.description
-                                    }
+                                    invalid={errors.description && touched.description}
                                     errorMessage={errors.description}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="description"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="description" component={Input} />
                                 </FormItem>
                             </FormContainer>
 
@@ -292,14 +278,7 @@ const DivisionEdit = () => {
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <div className=" image w-[10%] h-[20%] mt-5  ">
                                     {imagview && imagview.length > 0 ? (
-                                        imagview.map((img, index) => (
-                                            <img
-                                                key={index}
-                                                src={img}
-                                                alt="img"
-                                                className="rounded-xl"
-                                            />
-                                        ))
+                                        imagview.map((img, index) => <img key={index} src={img} alt="img" className="rounded-xl" />)
                                     ) : (
                                         <p>No image</p>
                                     )}
@@ -307,46 +286,25 @@ const DivisionEdit = () => {
                                 <FormContainer className="mt-5">
                                     <FormItem
                                         label="ADD NEW IMAGE"
-                                        invalid={Boolean(
-                                            errors.image && touched.image
-                                        )}
+                                        invalid={Boolean(errors.image && touched.image)}
                                         errorMessage={errors.image as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="image">
-                                            {({
-                                                form
-                                            }: FieldProps<FormModel>) => (
+                                            {({ form }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
                                                         showList={false}
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
+                                                        beforeUpload={beforeUpload}
                                                         fileList={values.images}
-                                                        onChange={async (
-                                                            files
-                                                        ) => {
-                                                            const uploadedImage =
-                                                                await handleFileupload(
-                                                                    files
-                                                                )
+                                                        onChange={async (files) => {
+                                                            const uploadedImage = await handleFileupload(files)
                                                             {
-                                                                form.setFieldValue(
-                                                                    'image',
-                                                                    uploadedImage
-                                                                )
-                                                                setImageView([
-                                                                    uploadedImage
-                                                                ])
+                                                                form.setFieldValue('image', uploadedImage)
+                                                                setImageView([uploadedImage])
                                                             }
                                                         }}
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'image',
-                                                                files
-                                                            )
-                                                        }
+                                                        onFileRemove={(files) => form.setFieldValue('image', files)}
                                                     />
                                                 </>
                                             )}
@@ -367,15 +325,7 @@ const DivisionEdit = () => {
                                 >
                                     <Field name="footer">
                                         {({ field, form }: FieldProps) => (
-                                            <RichTextEditor
-                                                value={field.value}
-                                                onChange={(val) =>
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        val
-                                                    )
-                                                }
-                                            />
+                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
                                         )}
                                     </Field>
                                 </FormItem>
@@ -387,10 +337,7 @@ const DivisionEdit = () => {
                                 <FormItem
                                     asterisk
                                     label="Quick Filter Tag"
-                                    invalid={
-                                        errors.quick_filter_tags &&
-                                        touched.quick_filter_tags
-                                    }
+                                    invalid={errors.quick_filter_tags && touched.quick_filter_tags}
                                     errorMessage={errors.quick_filter_tags}
                                     className="col-span-1 w-1/2"
                                 >
@@ -398,27 +345,18 @@ const DivisionEdit = () => {
                                         as="textarea"
                                         name="quick_filter_tags"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
 
                                 <FormItem
                                     asterisk
                                     label="position"
-                                    invalid={
-                                        errors.position && touched.position
-                                    }
+                                    invalid={errors.position && touched.position}
                                     errorMessage={errors.position}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="position"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="position" component={Input} />
                                 </FormItem>
                                 {/* gender */}
 
@@ -434,12 +372,12 @@ const DivisionEdit = () => {
                                             const genderOptions = [
                                                 {
                                                     value: 'Men',
-                                                    label: 'Men'
+                                                    label: 'Men',
                                                 },
                                                 {
                                                     value: 'Women',
-                                                    label: 'Women'
-                                                }
+                                                    label: 'Women',
+                                                },
                                             ]
 
                                             return (
@@ -447,17 +385,8 @@ const DivisionEdit = () => {
                                                     field={field}
                                                     form={form}
                                                     options={genderOptions}
-                                                    value={genderOptions.find(
-                                                        (option) =>
-                                                            option.value ===
-                                                            field.value
-                                                    )}
-                                                    onChange={(option) =>
-                                                        form.setFieldValue(
-                                                            field.name,
-                                                            option?.value
-                                                        )
-                                                    }
+                                                    value={genderOptions.find((option) => option.value === field.value)}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                                 />
                                             )
                                         }}
@@ -478,16 +407,10 @@ const DivisionEdit = () => {
 
                             <FormItem
                                 label="TRY_&_BUY"
-                                invalid={
-                                    errors.is_try_and_buy &&
-                                    touched.is_try_and_buy
-                                }
+                                invalid={errors.is_try_and_buy && touched.is_try_and_buy}
                                 // errorMessage={errors.singleCheckbox}
                             >
-                                <Field
-                                    name="is_try_and_buy"
-                                    component={Checkbox}
-                                >
+                                <Field name="is_try_and_buy" component={Checkbox}>
                                     Try and Buy
                                 </Field>
                             </FormItem>
@@ -495,11 +418,7 @@ const DivisionEdit = () => {
                             {/* Handle Submit........................... */}
 
                             <FormItem>
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button
