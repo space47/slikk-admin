@@ -65,6 +65,7 @@ type WebType = {
     header_config_image_Array: File[]
     sub_header_config_icon_Array: File[]
     sub_header_config_image_Array: File[]
+    headerIcon_image_array: File[]
     is_section_clickable: boolean
     section_filters: string
 }
@@ -222,6 +223,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         header_config_image_Array: [],
         sub_header_config_icon_Array: [],
         sub_header_config_image_Array: [],
+        headerIcon_image_array: [],
         is_section_clickable: false,
         section_filters: '',
     })
@@ -333,6 +335,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
         const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
 
+        const headerIconImageUpload = await handleimage(row.headerIcon_image_array)
+
         const newRowAdd = {
             ...row,
             background_image: imageUpload,
@@ -343,6 +347,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             },
             header_config: {
                 ...row.header_config,
+                icon: row.headerIcon_image_array.length > 0 ? headerIconImageUpload : '',
                 image: row.header_config_image_Array.length > 0 ? headerImageUpload : '',
             },
             sub_header_config: {
@@ -353,6 +358,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...row.data_type,
                 barcodes: productData.join(','),
             },
+
             section_filters: row.data_type.filters,
         }
 
@@ -578,13 +584,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                     <>
                                                         <Upload
                                                             beforeUpload={beforeUpload}
-                                                            fileList={values.background_image_array} // need to updtae
+                                                            fileList={values.headerIcon_image_array} // need to updtae
                                                             onChange={(files) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
-                                                                    values.background_image_array,
+                                                                    values.headerIcon_image_array,
                                                                 )
                                                                 form.setFieldValue('headerIcon_image_array', files)
                                                             }}

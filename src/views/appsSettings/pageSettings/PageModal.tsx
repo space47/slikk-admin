@@ -159,6 +159,7 @@ const PageModal: React.FC<modalProps> = ({
         section_heading: particularRow.section_heading,
         background_image: particularRow.background_image,
         sub_header_config: particularRow.sub_header_config,
+        headerIcon_image: particularRow.headerIcon_image,
         mobile_background_image: particularRow.mobile_background_image,
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
@@ -371,7 +372,11 @@ const PageModal: React.FC<modalProps> = ({
                                                     form={form}
                                                     options={componentOptions}
                                                     value={componentOptions.find((option) => option.value === field.value)}
-                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                    onChange={(option) => {
+                                                        const value = option ? option.value : '' // Handle null or undefined options
+                                                        form.setFieldValue(field.name, value) // Update the form field value
+                                                        setComponentOptions(value) // Set the component options
+                                                    }}
                                                     onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                                                 />
                                             )
@@ -532,6 +537,35 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem asterisk label="Header Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                    <div className="font-semibold mb-1">Header Icon Image</div>
+
+                                    <FormContainer className=" mt-5 ">
+                                        <FormItem label="" className="grid grid-rows-2">
+                                            <Field name="headerIcon_image_array">
+                                                {({ field, form }: FieldProps<WebType>) => (
+                                                    <>
+                                                        <Upload
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.background_image_array} // need to updtae
+                                                            onChange={(files) => {
+                                                                console.log(
+                                                                    'OnchangeFiles',
+                                                                    files,
+                                                                    field.name,
+                                                                    values.background_image_array,
+                                                                )
+                                                                form.setFieldValue('headerIcon_image_array', files)
+                                                            }}
+                                                            className="items-center flex justify-center"
+                                                            onFileRemove={(files) => form.setFieldValue('headerIcon_image_array', files)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+                                </FormContainer>
 
                                 {/* .................................................................... */}
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
