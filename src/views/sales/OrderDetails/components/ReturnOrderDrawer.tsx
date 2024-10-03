@@ -63,11 +63,11 @@ const returnReasons = [
 const returnType = [
     {
         label: 'Try and Buy',
-        value: 'try_and_buy',
+        value: 'TRY_AND_BUY',
     },
     {
-        label: 'Standard',
-        value: 'standard',
+        label: 'DASHBOARD',
+        value: 'DASHBOARD_INITIATIVE',
     },
 ]
 
@@ -76,7 +76,7 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
         [key: string]: number
     }>({})
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, { value: string; label: string }>>({})
-    const [currentReturnType, setCurrentReturnType] = useState<Record<string, { value: string; label: string }>>({})
+    const [currentReturnType, setCurrentReturnType] = useState<string>()
     const navigate = useNavigate()
 
     const onDrawerClose = useCallback(() => {
@@ -101,26 +101,22 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
         }))
     }, [])
 
-    const handleReturnType = useCallback((productId: number, reasonValue: string) => {
-        setCurrentReturnType((prev) => ({
-            ...prev,
-            [productId]: {
-                value: reasonValue,
-                label: returnType.find((p) => p.value === reasonValue)?.label || '',
-            },
-        }))
-    }, [])
+    const handleReturnType = (selectedValue: string) => {
+        setCurrentReturnType(selectedValue)
+    }
+
+    console.log('RETURNTYPE', currentReturnType)
 
     const handleReturnClick = async () => {
         const returnReasonMap = Object.fromEntries(Object.entries(currentSelectedPage).map(([id, { value }]) => [id, value]))
         const returnQtyMap = Object.fromEntries(Object.entries(returnQuantities).map(([id, quantity]) => [id, quantity]))
-        const returnTypeMap = Object.fromEntries(Object.entries(currentReturnType).map(([id, { value }]) => [id, value]))
 
         const body = {
             return_reason: returnReasonMap,
             items: returnQtyMap,
-            return_type: returnTypeMap,
+            return_type: currentReturnType ? currentReturnType : 'DASHBOARD_INITIATIVE',
         }
+        console.log('BODY', body)
 
         try {
             const response = await axioisInstance.post(`merchant/returnorder/create/${invoice_id}`, body)
@@ -228,22 +224,6 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
                                                 </Dropdown>
                                             </div>
                                         </div>
-                                        <div className="font-semibold text-gray-600 text-center sm:text-left sm:col-span-1 items-center">
-                                            Return Type:
-                                            <div className="sm:col-span-1">
-                                                <Dropdown
-                                                    className="text-black w-full border border-gray-300 rounded-lg"
-                                                    title={currentReturnType[pdts.id]?.value || 'RETURN Type'}
-                                                    onSelect={(value) => handleReturnType(pdts.id, value)}
-                                                >
-                                                    {returnType?.map((item, key) => (
-                                                        <DropdownItem key={key} eventKey={item.value}>
-                                                            <span>{item.label}</span>
-                                                        </DropdownItem>
-                                                    ))}
-                                                </Dropdown>
-                                            </div>
-                                        </div>
                                     </div>
 
                                     {/* Return Reason Display */}
@@ -261,7 +241,23 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
                 )}
 
                 {/* Return Button */}
-                <div className="flex justify-end mt-6">
+                <div className="flex justify-end mt-6 gap-10">
+                    <div className="font-semibold text-gray-600 text-center sm:text-left sm:col-span-1 items-center">
+                        RETURN TYPE:
+                        <div className="sm:col-span-1">
+                            <Dropdown
+                                className="text-black w-full border border-gray-300 rounded-lg"
+                                title={currentReturnType || 'Return Type'}
+                                onSelect={(value) => handleReturnType(value)}
+                            >
+                                {returnType?.map((item, key) => (
+                                    <DropdownItem key={key} eventKey={item.value}>
+                                        <span>{item.value}</span>
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
+                    </div>
                     <button
                         className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200"
                         onClick={handleReturnClick}
