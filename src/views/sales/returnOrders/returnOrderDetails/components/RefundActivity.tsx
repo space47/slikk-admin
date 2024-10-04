@@ -60,6 +60,7 @@ const RefundActivity = () => {
                 return {
                     buttonText: 'CREATE REVERSE PICKUP',
                 }
+            case 'PICKUP_CREATED':
             case 'REVERSE_PICKUP_CREATED':
                 return {
                     buttonText: 'OUT FOR PICKUP',
@@ -483,7 +484,8 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
                     handleoutForDelivery={handleOutForPickup}

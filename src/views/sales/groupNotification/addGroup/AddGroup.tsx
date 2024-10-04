@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from 'react'
 
 import { FormItem, FormContainer } from '@/components/ui/Form'
@@ -5,26 +6,26 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
-import * as Yup from 'yup'
-import { useState } from 'react'
-import { message, notification } from 'antd'
-import { useNavigate } from 'react-router-dom'
+// import * as Yup from 'yup'
+// import { useState } from 'react'
+// import { message, notification } from 'antd'
+// import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
-import { RichTextEditor } from '@/components/shared'
-import { groupLocation, orderGroup, userProfileGroup } from './commonTypesGroup/userProfile'
+import { groupLocation, headingGroup, orderGroup, userProfileGroup } from './commonTypesGroup/userProfile'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
+import { notification } from 'antd'
 
 const genderOptions = [
     {
-        value: 'Men',
+        value: 'M',
         label: 'Men',
     },
     {
-        value: 'Women',
-        label: 'Women',
+        value: 'F',
+        label: 'Female',
     },
 ]
 const DeliveryOptions = [
@@ -42,47 +43,123 @@ const AddGroup = () => {
         dispatch(getAllFiltersAPI())
     }, [])
 
-    const handleSubmit = (values: any) => {
+    const handleSubmit = async (values: any) => {
+        console.log('Form values:', values) // Log values to check before proceeding
+        console.log('max', values.gender)
+
         const formData = {
-            user: [
-                {
-                    type: 'registration',
-                    value: {
-                        start: values.registration_start,
-                        end: values.registration_end,
+            name: values.name,
+            user: values.user,
+            rules: {
+                cart: [
+                    {
+                        type: 'cart',
+                        value: {
+                            start_date: values.cart_start,
+                            end_date: values.cart_end,
+                        },
                     },
-                },
-                {
-                    type: 'dob',
-                    value: {
-                        start: values.dob_start,
-                        end: values.dob_end,
+                ],
+                userInfo: [
+                    {
+                        type: 'registration',
+                        value: {
+                            start_date: values.registration_start,
+                            end_date: values.registration_end,
+                        },
                     },
-                },
-                {
-                    type: 'gender',
-                    value: values.gender ? values.gender.split(',') : [],
-                },
-            ],
-            order: {
-                create_date: values.create_date,
-                order_value: values.order_value,
-                life_time_purchase: values.life_time_purchase,
-                order_type_delivery: values.order_type_delivery,
-                order_count: values.order_count,
-            },
-            order_item: {
-                basket_size: values.basket_size,
-                tage_filters: values.filters,
-            },
-            location: {
-                city: values.city,
-                state: values.state,
-                distance: values.distance,
+                    {
+                        type: 'dob',
+                        value: {
+                            start_date: values.dob_start,
+                            end_date: values.dob_end,
+                        },
+                    },
+                    {
+                        type: 'gender',
+                        value: values.gender.join(','),
+                    },
+                ],
+                order: [
+                    {
+                        type: 'order_date',
+                        value: {
+                            start_date: values.start_date,
+                            end_date: values.start_date,
+                        },
+                    },
+                    {
+                        type: 'order_value',
+                        value: {
+                            max_amount: values.max_value,
+                            min_amoun: values.min_value,
+                        },
+                    },
+                    {
+                        type: 'life_time_purchase',
+                        value: {
+                            max_amount: values.max_purchase,
+                            min_amount: values.min_purchase,
+                        },
+                    },
+                    {
+                        type: 'order_count',
+                        value: {
+                            max_order_count: values.max_count,
+                            min_order_count: values.min_count,
+                        },
+                    },
+                    {
+                        type: 'order_delivery_type',
+                        value: values.order_delivery_type.join(','),
+                    },
+                ],
+                order_item: [
+                    {
+                        type: 'basket_size',
+                        value: {
+                            max: values.max_basket_size,
+                            min: values.min_basket_size,
+                        },
+                    },
+                    {
+                        type: 'tag_filters',
+                        value: values.filters,
+                    },
+                ],
+
+                location: [
+                    {
+                        type: 'city',
+                        value: values.city,
+                    },
+                    {
+                        type: 'state',
+                        value: values.state,
+                    },
+                    {
+                        type: 'distance',
+                        value: values.distance,
+                    },
+                ],
             },
         }
 
-        console.log('To be sent to API', formData.user)
+        console.log('To be sent to API', formData)
+        try {
+            const response = await axioisInstance.post(`/notification/groups`, formData)
+            console.log(response.data)
+            notification.success({
+                message: 'success',
+                description: response.data.message || 'Successfully added group',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failure',
+                description: 'Failed to add group',
+            })
+        }
     }
     return (
         <div>
@@ -92,23 +169,42 @@ const AddGroup = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm, setFieldValue }) => (
+                {({ resetForm }) => (
                     <Form className="w-2/3">
                         <FormContainer>
+                            <FormContainer>
+                                <h3>Groups</h3>
+                                <FormContainer className="grid grid-cols-2 gap-6">
+                                    {headingGroup.map((item, key) => (
+                                        <FormItem key={key} label={item.label} className={item.className}>
+                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        </FormItem>
+                                    ))}
+                                </FormContainer>
+                            </FormContainer>
+                            <FormContainer>
+                                <h3>cart:</h3>
+                                <FormContainer>
+                                    <FormContainer className="w-1/2">
+                                        <FormItem label="Cart" className="col-span-1 w-1/2">
+                                            <Field type="date" name="cart_start" component={Input} />
+                                            <Field type="date" name="cart_end" component={Input} />
+                                        </FormItem>
+                                    </FormContainer>
+                                </FormContainer>
+                            </FormContainer>
                             <h3>User:</h3> <br />
                             <div className="grid grid-cols-2 gap-4">
-                                <FormContainer>
-                                    <FormItem label="Registration Date" className="flex gap-2 w-1/2">
-                                        <Field type="date" name="registration_start" component={Input} />
-                                        <Field type="date" name="registration_end" component={Input} />
-                                    </FormItem>
-                                </FormContainer>
-                                <FormContainer>
-                                    <FormItem label="Date of Birth" className="col-span-1 w-1/2">
-                                        <Field type="date" name="dob_start" component={Input} />
-                                        <Field type="date" name="dob_end" component={Input} />
-                                    </FormItem>
-                                </FormContainer>
+                                {userProfileGroup.map((item, key) => {
+                                    return (
+                                        <FormContainer key={key}>
+                                            <FormItem label={item.label} className="col-span-1 w-1/2">
+                                                <Field type={item.type} name={item.start_name} component={Input} />
+                                                <Field type={item.type} name={item.end_name} component={Input} />
+                                            </FormItem>
+                                        </FormContainer>
+                                    )
+                                })}
                                 <FormItem asterisk label="Gender" className="col-span-1 w-1/2">
                                     <Field name="gender">
                                         {({ field, form }: FieldProps<any>) => {
@@ -119,7 +215,11 @@ const AddGroup = () => {
                                                     form={form}
                                                     options={genderOptions}
                                                     value={genderOptions.find((option) => option.value === field.value)}
-                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                    onChange={(newVal) => {
+                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                        form.setFieldValue(field.name, newValues)
+                                                    }}
+                                                    // onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                                 />
                                             )
                                         }}
@@ -131,23 +231,40 @@ const AddGroup = () => {
                         <FormContainer>
                             <h3>Order:</h3> <br />
                             <FormContainer className="grid grid-cols-2 gap-4">
-                                <FormItem className="">
-                                    {orderGroup.map((item, key) => (
-                                        <FormItem key={key} label={item.label}>
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                        </FormItem>
-                                    ))}
-                                </FormItem>
+                                {orderGroup.map((item, key) => {
+                                    return (
+                                        <FormContainer key={key}>
+                                            <FormItem label={item.label} className="col-span-1 w-1/2">
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.start_name}
+                                                    component={Input}
+                                                    placeholder={item.start_placeholder}
+                                                />
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.end_name}
+                                                    component={Input}
+                                                    placeholder={item.min_placeholder}
+                                                />
+                                            </FormItem>
+                                        </FormContainer>
+                                    )
+                                })}
                                 <FormItem asterisk label="Delivery Type" className="col-span-1 w-1/2">
-                                    <Field name="order_type_delivery">
+                                    <Field name="order_delivery_type">
                                         {({ field, form }: FieldProps<any>) => {
                                             return (
                                                 <Select
+                                                    isMulti
                                                     field={field}
                                                     form={form}
                                                     options={DeliveryOptions}
                                                     value={DeliveryOptions.find((option) => option.value === field.value)}
-                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                    onChange={(newVal) => {
+                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                        form.setFieldValue(field.name, newValues)
+                                                    }}
                                                 />
                                             )
                                         }}
@@ -158,11 +275,12 @@ const AddGroup = () => {
                         {/* OrderItem................................ */}
                         <FormContainer className="grid grid-cols-2 gap-10">
                             <h3>Order Item</h3> <br />
-                            <FormItem label="Basket Size">
-                                <Field type="number" name="basket_size" placeholder="Enter Basket Size" component={Input} />
+                            <FormItem label="Basket Size" className="col-span-1 w-1/2">
+                                <Field type="number" name="max_basket_size" placeholder="max" component={Input} />
+                                <Field type="number" name="min_basket_size" placeholder="min" component={Input} />
                             </FormItem>
                             <FormItem label="Filters">
-                                <Field name="filters">
+                                <Field name="tag_filters">
                                     {({ field, form }: FieldProps<any>) => {
                                         return (
                                             <Select

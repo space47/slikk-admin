@@ -494,7 +494,7 @@ const appsNavigationConfig: NavigationTree[] = [
                 path: `${APP_PREFIX_PATH}/communication`,
                 title: 'Communciation',
                 translateKey: 'nav.appsCommuncication.communcication',
-                icon: 'reels',
+                icon: 'communication',
                 type: NAV_ITEM_TYPE_COLLAPSE,
                 authority: [ADMIN, USER],
                 subMenu: [

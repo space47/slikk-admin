@@ -27,11 +27,7 @@ import {
 } from 'react-icons/hi'
 import { BiCategory } from 'react-icons/bi'
 import { LiaUserTagSolid } from 'react-icons/lia'
-import {
-    MdOutlineInventory,
-    MdDisplaySettings,
-    MdBusinessCenter,
-} from 'react-icons/md'
+import { MdOutlineInventory, MdDisplaySettings, MdBusinessCenter, MdMessage } from 'react-icons/md'
 import { CgOrganisation } from 'react-icons/cg'
 import { BsCameraReels } from 'react-icons/bs'
 import { TbTruckDelivery } from 'react-icons/tb'
@@ -59,6 +55,7 @@ const navigationIcon: NavigationIcons = {
     appsettings: <MdDisplaySettings />,
     category: <BiCategory />,
     analytics: <IoAnalyticsSharp />,
+    communication: <MdMessage />,
     inventory: <MdOutlineInventory />,
     brand: <LiaUserTagSolid />,
     crypto: <HiOutlineCurrencyDollar />,
