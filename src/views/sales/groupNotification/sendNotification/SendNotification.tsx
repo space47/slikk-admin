@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
@@ -20,7 +21,6 @@ import { Dialog, Upload } from '@/components/ui'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-    const [userConformation, setUserConformation] = useState(false)
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -67,10 +67,10 @@ const SendNotification = () => {
     }
 
     const notificationTypeArray = [
-        { value: 'SMS', label: 'sms' },
-        { value: 'EMAIL', label: 'email' },
-        { value: 'WHATSAPP', label: 'whatsapp' },
-        { value: 'APP', label: 'app' },
+        { value: 'sms', label: 'sms' },
+        { value: 'email', label: 'email' },
+        { value: 'whatsapp', label: 'whatsapp' },
+        { value: 'app', label: 'app' },
     ]
 
     const targetPageArray = [
@@ -126,68 +126,21 @@ const SendNotification = () => {
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
         const { image_url_array, ...formData } = values
-        const imageUpload = await handleimage(values.image_url_array)
 
-        const data = new FormData()
+        const imageUpload = values.image_url_array.length > 0 ? await handleimage(image_url_array) : values.image_url
 
-        data.append('message', plainTextMessage)
-        data.append('image_url', imageUpload)
-        data.append('page', formData.page)
-        data.append('notification_type', formData.notification_type)
-        data.append('title', formData.title)
-        data.append('target_page', formData.target_page)
-        data.append('key', formData.key)
-        data.append('page_title', formData.page_title)
-        data.append('filters', formData.filters)
-        // if (!formData.users || formData.users.length === 0) {
-        //     setUserConformation(true)
-        //     return
-        // }
-        if (formData.users_all) {
-            data.append('users', '')
+        const data = {
+            ...formData,
+            image_url: imageUpload,
+            filters: values.filters.join(','),
+            message: plainTextMessage,
+        }
+
+        if (values.users_all) {
+            data.users = ''
         } else {
-            data.append('users', formData.users.replace(/\s+/g, ''))
+            data.users = values.users.replace(/\s+/g, '')
         }
-
-        try {
-            const response = await axioisInstance.post(`/notification/send`, data)
-            notification.success({
-                message: 'SUCCESS',
-                description: response.data.message || 'Notification has been added',
-            })
-        } catch (error) {
-            console.log(error)
-            notification.error({
-                message: 'FAILURE',
-                description: 'Failed to create notification',
-            })
-        }
-    }
-
-    const onDialogClose = () => {
-        setUserConformation(false)
-    }
-
-    const handleUserALL = async (values: any) => {
-        const parser = new DOMParser()
-        const htmlDoc = parser.parseFromString(values.message, 'text/html')
-        const plainTextMessage = htmlDoc.body.textContent || ''
-        const { image_url_array, ...formData } = values
-        const imageUpload = await handleimage(values.image_url_array)
-
-        const data = new FormData()
-
-        data.append('message', plainTextMessage)
-        data.append('image_url', imageUpload)
-        data.append('page', formData.page)
-        data.append('notification_type', formData.notification_type)
-        data.append('title', formData.title)
-        data.append('target_page', formData.target_page)
-        data.append('key', formData.key)
-        data.append('page_title', formData.page_title)
-        data.append('filters', formData.filters)
-
-        data.append('users', formData.users)
 
         try {
             const response = await axioisInstance.post(`/notification/send`, data)
@@ -212,7 +165,7 @@ const SendNotification = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm, setFieldValue }) => (
+                {({ values, resetForm }) => (
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
@@ -321,38 +274,6 @@ const SendNotification = () => {
                     </Form>
                 )}
             </Formik>
-            {userConformation && (
-                <>
-                    <Dialog
-                        isOpen={userConformation}
-                        style={{
-                            content: {
-                                marginTop: 250,
-                            },
-                        }}
-                        contentClassName="pb-0 px-0"
-                        onClose={onDialogClose}
-                        onRequestClose={onDialogClose}
-                    >
-                        <div className="flex flex-col gap-2 items-center justify-center">
-                            <span className="flex items-center justify-center text-red-800">
-                                {' '}
-                                No Users Selected! This will send notification to all the registered users
-                            </span>
-                            <span>Do you want to proceed</span>
-                        </div>
-
-                        <div className="text-right px-6 py-3 bg-gray-100 dark:bg-gray-700 rounded-bl-lg rounded-br-lg flex justify-between">
-                            <Button variant="solid" onClick={handleUserALL}>
-                                Sure
-                            </Button>
-                            <Button className="ltr:mr-2 rtl:ml-2" onClick={onDialogClose}>
-                                Cancel
-                            </Button>
-                        </div>
-                    </Dialog>
-                </>
-            )}
         </div>
     )
 }

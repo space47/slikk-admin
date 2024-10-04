@@ -1,3 +1,27 @@
+export const headingGroup = [
+    {
+        label: 'Name',
+        name: 'name',
+        placeholder: 'Enter name',
+        type: 'text',
+        className: 'w-full',
+    },
+    {
+        label: 'User Mobile',
+        name: 'user',
+        placeholder: 'Enter User number',
+        type: 'text',
+        className: 'w-full',
+    },
+    // {
+    //     label: 'Group_Id',
+    //     name: 'group_id',
+    //     placeholder: 'Enter Group Id',
+    //     type: 'text',
+    //     className: 'w-full',
+    // },
+]
+
 export const userProfileGroup = [
     {
         label: 'Registration',
