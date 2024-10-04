@@ -159,7 +159,6 @@ const PageModal: React.FC<modalProps> = ({
         section_heading: particularRow.section_heading,
         background_image: particularRow.background_image,
         sub_header_config: particularRow.sub_header_config,
-        headerIcon_image: particularRow.headerIcon_image,
         mobile_background_image: particularRow.mobile_background_image,
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
@@ -271,7 +270,6 @@ const PageModal: React.FC<modalProps> = ({
 
             const newRow = {
                 ...row,
-
                 background_image: imageUpload ? imageUpload : row.background_image,
                 mobile_background_image: mobileimageUpload ? mobileimageUpload : row.mobile_background_image,
                 footer_config: {
@@ -289,6 +287,18 @@ const PageModal: React.FC<modalProps> = ({
                 data_type: {
                     ...row.data_type,
                     barcodes: productData.join(','),
+                },
+                component_config: {
+                    carousel: row.carousel,
+                    grid: row.grid,
+                    carousel_autoplay: row.carousel_autoplay,
+                    width: Number(row.width),
+                    interval: Number(row.interval),
+                    corner_radius: Number(row.corner_radius),
+                    border: row.border,
+                    border_style: row.border_style,
+                    border_width: Number(row.border_width),
+                    border_color: row.border_color,
                 },
                 section_filters: row.data_type.filters,
             }
@@ -342,6 +352,17 @@ const PageModal: React.FC<modalProps> = ({
     const borderStyleArray = [
         { label: 'Dotted', value: 'dotted' },
         { label: 'Solid', value: 'solid' },
+    ]
+    const dataTypeArray = [
+        { label: 'banner', value: 'banner' },
+        { label: 'wishlist', value: 'wishlist' },
+        { label: 'purchases', value: 'purchases' },
+        { label: 'searches', value: 'searches' },
+        { label: 'spotlight', value: 'spotlight' },
+        { label: 'products', value: 'products' },
+        { label: 'brands', value: 'brands' },
+        { label: 'post', value: 'post' },
+        { label: 'creator', value: 'creator' },
     ]
 
     return (
@@ -400,23 +421,17 @@ const PageModal: React.FC<modalProps> = ({
                                         </FormContainer>
 
                                         <FormItem label="Border" className="col-span-1 w-1/4">
-                                            <Field name="border">
-                                                {({ field, form }: FieldProps<any>) => {
-                                                    return (
-                                                        <Select
-                                                            field={field}
-                                                            form={form}
-                                                            options={borderArray}
-                                                            value={borderArray.find((option) => option.value === field.value)}
-                                                            onChange={(option) => {
-                                                                const value = option?.value || '' // Safely handle null/undefined option
-                                                                form.setFieldValue(field.name, value) // Update the form field value
-                                                                setBorderForm(value) // Update border form
-                                                            }}
-                                                        />
-                                                    )
+                                            <Field
+                                                type="checkbox"
+                                                name="border"
+                                                placeholder="Enter border"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('border', isChecked)
+                                                    setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
                                                 }}
-                                            </Field>
+                                            />
                                         </FormItem>
 
                                         {borderForm === 'yes' && (
@@ -754,14 +769,29 @@ const PageModal: React.FC<modalProps> = ({
                                 {/* Data Types.......................................... */}
 
                                 <FormItem asterisk label="Data Type" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.type" placeholder="Place your header Style" component={Input} />
+                                    <Field name="data_type.type">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    field={field}
+                                                    form={form}
+                                                    options={dataTypeArray}
+                                                    value={dataTypeArray.find((option) => option.value === field.value)}
+                                                    onChange={(option) => {
+                                                        const value = option?.value || '' // Safely handle null/undefined option
+                                                        form.setFieldValue(field.name, value) // Update the form field value
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
                                 </FormItem>
                                 <FormItem asterisk label="Filters" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
-                                <FormItem label="Data Type Key" className="col-span-1 w-[60%] h-[80%]">
+                                {/* <FormItem label="Data Type Key" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="data_type.type" placeholder="Place your dataType" component={Input} />
-                                </FormItem>
+                                </FormItem> */}
                                 <FormContainer className="flex flex-col gap-4 ">
                                     <div className="text-xl">Barcode</div>
                                     <div className="flex gap-10">

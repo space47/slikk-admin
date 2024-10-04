@@ -323,6 +323,17 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             setCurrentSelectedPage(selected)
         }
     }
+    const dataTypeArray = [
+        { label: 'banner', value: 'banner' },
+        { label: 'wishlist', value: 'wishlist' },
+        { label: 'purchases', value: 'purchases' },
+        { label: 'searches', value: 'searches' },
+        { label: 'spotlight', value: 'spotlight' },
+        { label: 'products', value: 'products' },
+        { label: 'brands', value: 'brands' },
+        { label: 'post', value: 'post' },
+        { label: 'creator', value: 'creator' },
+    ]
 
     const handleSubmit = async (row: any) => {
         const imageUpload = await handleimage(row.background_image_array)
@@ -358,7 +369,18 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...row.data_type,
                 barcodes: productData.join(','),
             },
-
+            component_config: {
+                carousel: row.carousel,
+                grid: row.grid,
+                carousel_autoplay: row.carousel_autoplay,
+                width: Number(row.width),
+                corner_radius: Number(row.corner_radius),
+                border: row.border,
+                interval: Number(row.interval),
+                border_style: row.border_style,
+                border_width: Number(row.border_width),
+                border_color: row.border_color,
+            },
             section_filters: row.data_type.filters,
         }
 
@@ -366,11 +388,11 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         setSelectedType('')
         setInitalValue('')
         console.log('Section', newRowAdd.section_filters)
+        console.log('----------uooioihot-----', newRowAdd)
         console.log('....', row)
         setIsModalOpen(false)
     }
     console.log('compo', componentOption)
-    console.log('----------uooioihot-----', data)
 
     const [borderForm, setBorderForm] = useState('')
 
@@ -447,23 +469,17 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                         </FormContainer>
 
                                         <FormItem label="Border" className="col-span-1 w-1/4">
-                                            <Field name="border">
-                                                {({ field, form }: FieldProps<any>) => {
-                                                    return (
-                                                        <Select
-                                                            field={field}
-                                                            form={form}
-                                                            options={borderArray}
-                                                            value={borderArray.find((option) => option.value === field.value)}
-                                                            onChange={(option) => {
-                                                                const value = option?.value || '' // Safely handle null/undefined option
-                                                                form.setFieldValue(field.name, value) // Update the form field value
-                                                                setBorderForm(value) // Update border form
-                                                            }}
-                                                        />
-                                                    )
+                                            <Field
+                                                type="checkbox"
+                                                name="border"
+                                                placeholder="Enter border"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('border', isChecked)
+                                                    setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
                                                 }}
-                                            </Field>
+                                            />
                                         </FormItem>
 
                                         {borderForm === 'yes' && (
@@ -586,12 +602,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                             beforeUpload={beforeUpload}
                                                             fileList={values.headerIcon_image_array} // need to updtae
                                                             onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.headerIcon_image_array,
-                                                                )
+                                                                console.log(values.headerIcon_image_array)
                                                                 form.setFieldValue('headerIcon_image_array', files)
                                                             }}
                                                             className="items-center flex justify-center"
@@ -754,14 +765,28 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 {/* Data Types.......................................... */}
 
                                 <FormItem asterisk label="Data Type" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.type" placeholder="Place your header Style" component={Input} />
+                                    <Field name="data_type.type">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    field={field}
+                                                    form={form}
+                                                    options={dataTypeArray}
+                                                    value={dataTypeArray.find((option) => option.value === field.value)}
+                                                    onChange={(option) => {
+                                                        const value = option?.value || '' // Safely handle null/undefined option
+                                                        form.setFieldValue(field.name, value) // Update the form field value
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
                                 </FormItem>
+
                                 <FormItem asterisk label="Filters" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
-                                <FormItem label="Data Type Key" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.type" placeholder="Place your dataType" component={Input} />
-                                </FormItem>
+
                                 <FormContainer className="flex flex-col gap-4 ">
                                     <div className="text-xl">Barcode</div>
                                     <div className="flex gap-10">
