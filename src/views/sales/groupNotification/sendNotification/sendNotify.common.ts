@@ -42,10 +42,17 @@ export const SendNotificationARRAY = [
         placeholder: 'Enter Page Title',
     },
     {
-        label: 'Users',
+        label: 'Mobile Numbers (Enter comma separated Values)',
         classname: 'col-span-1 w-full',
         type: 'text',
         name: 'users',
+        placeholder: 'Enter Users',
+    },
+    {
+        label: 'Send to all Users',
+        classname: 'col-span-1 w-full',
+        type: 'checkbox',
+        name: 'users_all',
         placeholder: 'Enter Users',
     },
 ]

@@ -16,10 +16,11 @@ import { SendNotificationARRAY, sendNotificationType } from './sendNotify.common
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { Upload } from '@/components/ui'
+import { Dialog, Upload } from '@/components/ui'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const [userConformation, setUserConformation] = useState(false)
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -87,7 +88,7 @@ const SendNotification = () => {
         message: '',
         target_page: '',
         key: '',
-        users: '',
+        users: '9818454888',
         page_title: '',
         filters: '',
         image_url: '',
@@ -138,13 +139,53 @@ const SendNotification = () => {
         data.append('key', formData.key)
         data.append('page_title', formData.page_title)
         data.append('filters', formData.filters)
-        if (!formData.users || formData.users.length === 0) {
-            notification.warning({
-                message: 'WARNING',
-                description: 'Users list is empty. Please add users to send the notification.',
-            })
-            return
+        // if (!formData.users || formData.users.length === 0) {
+        //     setUserConformation(true)
+        //     return
+        // }
+        if (formData.users_all) {
+            data.append('users', '')
+        } else {
+            data.append('users', formData.users.replace(/\s+/g, ''))
         }
+
+        try {
+            const response = await axioisInstance.post(`/notification/send`, data)
+            notification.success({
+                message: 'SUCCESS',
+                description: response.data.message || 'Notification has been added',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'FAILURE',
+                description: 'Failed to create notification',
+            })
+        }
+    }
+
+    const onDialogClose = () => {
+        setUserConformation(false)
+    }
+
+    const handleUserALL = async (values: any) => {
+        const parser = new DOMParser()
+        const htmlDoc = parser.parseFromString(values.message, 'text/html')
+        const plainTextMessage = htmlDoc.body.textContent || ''
+        const { image_url_array, ...formData } = values
+        const imageUpload = await handleimage(values.image_url_array)
+
+        const data = new FormData()
+
+        data.append('message', plainTextMessage)
+        data.append('image_url', imageUpload)
+        data.append('page', formData.page)
+        data.append('notification_type', formData.notification_type)
+        data.append('title', formData.title)
+        data.append('target_page', formData.target_page)
+        data.append('key', formData.key)
+        data.append('page_title', formData.page_title)
+        data.append('filters', formData.filters)
 
         data.append('users', formData.users)
 
@@ -280,6 +321,38 @@ const SendNotification = () => {
                     </Form>
                 )}
             </Formik>
+            {userConformation && (
+                <>
+                    <Dialog
+                        isOpen={userConformation}
+                        style={{
+                            content: {
+                                marginTop: 250,
+                            },
+                        }}
+                        contentClassName="pb-0 px-0"
+                        onClose={onDialogClose}
+                        onRequestClose={onDialogClose}
+                    >
+                        <div className="flex flex-col gap-2 items-center justify-center">
+                            <span className="flex items-center justify-center text-red-800">
+                                {' '}
+                                No Users Selected! This will send notification to all the registered users
+                            </span>
+                            <span>Do you want to proceed</span>
+                        </div>
+
+                        <div className="text-right px-6 py-3 bg-gray-100 dark:bg-gray-700 rounded-bl-lg rounded-br-lg flex justify-between">
+                            <Button variant="solid" onClick={handleUserALL}>
+                                Sure
+                            </Button>
+                            <Button className="ltr:mr-2 rtl:ml-2" onClick={onDialogClose}>
+                                Cancel
+                            </Button>
+                        </div>
+                    </Dialog>
+                </>
+            )}
         </div>
     )
 }
