@@ -8,6 +8,8 @@ export interface sendNotificationType {
     key: string
     notification_type: string
     target_page: string
+    image_url: string
+    image_url_array: File[]
 }
 
 export const SendNotificationARRAY = [

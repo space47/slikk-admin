@@ -16,6 +16,7 @@ import { SendNotificationARRAY, sendNotificationType } from './sendNotify.common
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
+import { Upload } from '@/components/ui'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -23,6 +24,47 @@ const SendNotification = () => {
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
+
+    const MAX_UPLOAD = 100
+
+    const beforeUpload = (file: FileList | null, fileList: File[]) => {
+        let valid: string | boolean = true
+
+        const allowedFileType = [
+            'application/pdf',
+            'image/jpeg',
+            'image/jpg',
+            'image/webp',
+            'image/png',
+            'image/JPEG',
+            'image/JPG',
+            'image/WEBP',
+            'image/PNG',
+            'text/csv',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]
+        const MAX_FILE_SIZE = 5000000
+
+        if (fileList.length >= MAX_UPLOAD) {
+            return `You can only upload ${MAX_UPLOAD} file(s)`
+        }
+
+        if (file) {
+            for (const f of file) {
+                if (!allowedFileType.includes(f.type)) {
+                    valid = 'Please upload a valid file format'
+                }
+
+                if (f.size >= MAX_FILE_SIZE) {
+                    valid = 'Upload image cannot more then 500kb!'
+                }
+            }
+        }
+
+        return valid
+    }
+
     const notificationTypeArray = [
         { value: 'SMS', label: 'sms' },
         { value: 'EMAIL', label: 'email' },
@@ -31,11 +73,11 @@ const SendNotification = () => {
     ]
 
     const targetPageArray = [
-        { label: 'product', value: 'product/' },
-        { label: 'productListing', value: 'productListing/' },
+        { label: 'product', value: 'product' },
+        { label: 'productListing', value: 'productListing' },
         { label: 'wishlist', value: 'wishlist' },
-        { label: 'order', value: 'order/' },
-        { label: 'cart', value: 'cart/' },
+        { label: 'order', value: 'order' },
+        { label: 'cart', value: 'cart' },
     ]
 
     const initialValue: sendNotificationType = {
@@ -48,21 +90,66 @@ const SendNotification = () => {
         users: '',
         page_title: '',
         filters: '',
+        image_url: '',
+        image_url_array: [],
+    }
+
+    const handleimage = async (files: File[]) => {
+        const formData = new FormData()
+
+        files.forEach((file) => {
+            formData.append('file', file)
+        })
+        formData.append('file_type', 'product')
+
+        try {
+            console.log(formData.get('file'))
+            const response = await axioisInstance.post('fileupload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            console.log(response)
+            const newData = response.data.url
+
+            return newData
+        } catch (error: any) {
+            console.error('Error uploading files:', error)
+
+            return 'Error'
+        }
     }
 
     const handleSubmit = async (values: any) => {
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
-        const formData = {
-            ...values,
-            message: plainTextMessage,
-            filters: values.filters.join(','),
+        const { image_url_array, ...formData } = values
+        const imageUpload = await handleimage(values.image_url_array)
+
+        const data = new FormData()
+
+        data.append('message', plainTextMessage)
+        data.append('image_url', imageUpload)
+        data.append('page', formData.page)
+        data.append('notification_type', formData.notification_type)
+        data.append('title', formData.title)
+        data.append('target_page', formData.target_page)
+        data.append('key', formData.key)
+        data.append('page_title', formData.page_title)
+        data.append('filters', formData.filters)
+        if (!formData.users || formData.users.length === 0) {
+            notification.warning({
+                message: 'WARNING',
+                description: 'Users list is empty. Please add users to send the notification.',
+            })
+            return
         }
-        console.log('FORMDATA', formData)
+
+        data.append('users', formData.users)
 
         try {
-            const response = await axioisInstance.post(`/notification/send`, formData)
+            const response = await axioisInstance.post(`/notification/send`, data)
             notification.success({
                 message: 'SUCCESS',
                 description: response.data.message || 'Notification has been added',
@@ -152,6 +239,35 @@ const SendNotification = () => {
                                 )}
                             </Field>
                         </FormItem>
+                        <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden ">
+                            Image
+                            <FormContainer className=" mt-5 w-full ">
+                                {/* DIV */}
+
+                                <FormItem label="" className="grid grid-rows-2">
+                                    <Field name="image">
+                                        {({ form }: FieldProps<any>) => (
+                                            <>
+                                                <Upload
+                                                    className="flex justify-center"
+                                                    multiple
+                                                    beforeUpload={beforeUpload}
+                                                    fileList={values.image_url_array}
+                                                    onChange={(files) => form.setFieldValue('image_url_array', files)}
+                                                    onFileRemove={(files) => form.setFieldValue('image_url_array', files)}
+                                                />
+                                            </>
+                                        )}
+                                    </Field>
+                                </FormItem>
+
+                                <br />
+                                <br />
+                            </FormContainer>
+                            <FormItem label="" className="col-span-1 w-[80%]">
+                                <Field type="text" name="image_url" placeholder="Enter ImageUrl or Upload Image file" component={Input} />
+                            </FormItem>
+                        </FormContainer>
 
                         <FormContainer className="flex justify-end mt-5">
                             <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
