@@ -324,15 +324,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         }
     }
     const dataTypeArray = [
-        { label: 'banner', value: 'Banner' },
-        { label: 'wishlist', value: 'Wishlist' },
-        { label: 'purchases', value: 'Purchases' },
-        { label: 'searches', value: 'Searches' },
-        { label: 'spotlight', value: 'Spotlight' },
-        { label: 'products', value: 'Products' },
-        { label: 'brands', value: 'Brands' },
-        { label: 'post', value: 'Post' },
-        { label: 'creator', value: 'Creator' },
+        { label: 'banner', value: 'banner' },
+        { label: 'wishlist', value: 'wishlist' },
+        { label: 'purchases', value: 'purchases' },
+        { label: 'searches', value: 'searches' },
+        { label: 'spotlight', value: 'spotlight' },
+        { label: 'products', value: 'products' },
+        { label: 'brands', value: 'brands' },
+        { label: 'post', value: 'post' },
+        { label: 'creator', value: 'creator' },
     ]
 
     const handleSubmit = async (row: any) => {
@@ -373,11 +373,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 carousel: row.carousel,
                 grid: row.grid,
                 carousel_autoplay: row.carousel_autoplay,
-                width: row.width,
-                corner_radius: row.corner_radius,
+                width: Number(row.width),
+                corner_radius: Number(row.corner_radius),
                 border: row.border,
+                interval: Number(row.interval),
                 border_style: row.border_style,
-                border_width: row.border_width,
+                border_width: Number(row.border_width),
                 border_color: row.border_color,
             },
             section_filters: row.data_type.filters,
@@ -468,23 +469,17 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                         </FormContainer>
 
                                         <FormItem label="Border" className="col-span-1 w-1/4">
-                                            <Field name="border">
-                                                {({ field, form }: FieldProps<any>) => {
-                                                    return (
-                                                        <Select
-                                                            field={field}
-                                                            form={form}
-                                                            options={borderArray}
-                                                            value={borderArray.find((option) => option.value === field.value)}
-                                                            onChange={(option) => {
-                                                                const value = option?.value || '' // Safely handle null/undefined option
-                                                                form.setFieldValue(field.name, value) // Update the form field value
-                                                                setBorderForm(value) // Update border form
-                                                            }}
-                                                        />
-                                                    )
+                                            <Field
+                                                type="checkbox"
+                                                name="border"
+                                                placeholder="Enter border"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('border', isChecked)
+                                                    setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
                                                 }}
-                                            </Field>
+                                            />
                                         </FormItem>
 
                                         {borderForm === 'yes' && (
