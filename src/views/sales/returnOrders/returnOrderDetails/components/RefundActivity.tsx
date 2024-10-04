@@ -484,7 +484,8 @@ const RefundActivity = () => {
                 />
             )}
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
                     handleoutForDelivery={handleOutForPickup}
