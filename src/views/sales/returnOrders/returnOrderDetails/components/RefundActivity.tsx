@@ -60,6 +60,7 @@ const RefundActivity = () => {
                 return {
                     buttonText: 'CREATE REVERSE PICKUP',
                 }
+            case 'PICKUP_CREATED':
             case 'REVERSE_PICKUP_CREATED':
                 return {
                     buttonText: 'OUT FOR PICKUP',

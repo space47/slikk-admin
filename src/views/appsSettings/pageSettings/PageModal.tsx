@@ -163,8 +163,8 @@ const PageModal: React.FC<modalProps> = ({
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
-        crousel_autoplay: particularRow.crousel_autoplay,
-        crousel: particularRow.crousel,
+        carousel_autoplay: particularRow.carousel_autoplay,
+        carousel: particularRow.carousel,
         width: particularRow.width,
         corner_radius: particularRow.corner_radius,
         border: particularRow.border,
@@ -365,6 +365,8 @@ const PageModal: React.FC<modalProps> = ({
         { label: 'creator', value: 'creator' },
     ]
 
+    console.log('kuhuiuihuhidbvjio', borderForm)
+
     return (
         <>
             <Modal title="EDIT SECTION" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={1500} okText="Edit">
@@ -429,12 +431,12 @@ const PageModal: React.FC<modalProps> = ({
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     const isChecked = e.target.checked
                                                     setFieldValue('border', isChecked)
-                                                    setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
+                                                    setBorderForm(isChecked) // Set borderForm to 'yes' or 'no'
                                                 }}
                                             />
                                         </FormItem>
 
-                                        {borderForm === 'yes' && (
+                                        {borderForm === true && (
                                             <FormContainer>
                                                 <FormItem label="Border Style" className="col-span-1 w-1/4">
                                                     <Field name="border_style">

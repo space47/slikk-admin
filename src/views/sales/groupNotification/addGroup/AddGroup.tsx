@@ -26,6 +26,10 @@ const genderOptions = [
         value: 'Women',
         label: 'Women',
     },
+    {
+        value: 'Others',
+        label: 'Others',
+    },
 ]
 const DeliveryOptions = [
     { label: 'Express', value: 'EXPRESS' },
@@ -97,18 +101,16 @@ const AddGroup = () => {
                         <FormContainer>
                             <h3>User:</h3> <br />
                             <div className="grid grid-cols-2 gap-4">
-                                <FormContainer>
-                                    <FormItem label="Registration Date" className="flex gap-2 w-1/2">
-                                        <Field type="date" name="registration_start" component={Input} />
-                                        <Field type="date" name="registration_end" component={Input} />
-                                    </FormItem>
-                                </FormContainer>
-                                <FormContainer>
-                                    <FormItem label="Date of Birth" className="col-span-1 w-1/2">
-                                        <Field type="date" name="dob_start" component={Input} />
-                                        <Field type="date" name="dob_end" component={Input} />
-                                    </FormItem>
-                                </FormContainer>
+                                {userProfileGroup.map((item, key) => {
+                                    return (
+                                        <FormContainer key={key}>
+                                            <FormItem label={item.label} className="col-span-1 w-1/2">
+                                                <Field type={item.type} name={item.start_name} component={Input} />
+                                                <Field type={item.type} name={item.end_name} component={Input} />
+                                            </FormItem>
+                                        </FormContainer>
+                                    )
+                                })}
                                 <FormItem asterisk label="Gender" className="col-span-1 w-1/2">
                                     <Field name="gender">
                                         {({ field, form }: FieldProps<any>) => {
@@ -131,13 +133,26 @@ const AddGroup = () => {
                         <FormContainer>
                             <h3>Order:</h3> <br />
                             <FormContainer className="grid grid-cols-2 gap-4">
-                                <FormItem className="">
-                                    {orderGroup.map((item, key) => (
-                                        <FormItem key={key} label={item.label}>
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                        </FormItem>
-                                    ))}
-                                </FormItem>
+                                {orderGroup.map((item, key) => {
+                                    return (
+                                        <FormContainer key={key}>
+                                            <FormItem label={item.label} className="col-span-1 w-1/2">
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.start_name}
+                                                    component={Input}
+                                                    placeholder={item.start_placeholder}
+                                                />
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.end_name}
+                                                    component={Input}
+                                                    placeholder={item.min_placeholder}
+                                                />
+                                            </FormItem>
+                                        </FormContainer>
+                                    )
+                                })}
                                 <FormItem asterisk label="Delivery Type" className="col-span-1 w-1/2">
                                     <Field name="order_type_delivery">
                                         {({ field, form }: FieldProps<any>) => {

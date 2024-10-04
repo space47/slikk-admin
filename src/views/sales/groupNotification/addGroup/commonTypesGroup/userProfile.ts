@@ -1,14 +1,16 @@
 export const userProfileGroup = [
     {
         label: 'Registration',
-        name: 'registration_date',
+        start_name: 'registration_start',
+        end_name: 'registration_end',
         placeholder: 'Enter registration Date',
         type: 'Date',
         className: 'w-full',
     },
     {
         label: 'Date of Birth',
-        name: 'dob',
+        start_name: 'dob_start',
+        end_name: 'dob_end',
         placeholder: 'Enter Date of Birth',
         type: 'Date',
         className: 'w-full',
@@ -18,26 +20,35 @@ export const userProfileGroup = [
 export const orderGroup = [
     {
         label: 'Create Date',
-        name: 'create_date',
-        placeholder: 'Enter Create Date',
+        start_name: 'start_date',
+        end_name: 'end_date',
+        start_placeholder: 'start',
+        min_placeholder: 'end',
         type: 'Date',
     },
     {
         label: 'Order Value',
-        name: 'order_value',
-        placeholder: 'Enter order_value',
+
+        start_name: 'max_value',
+        end_name: 'min_value',
+        start_placeholder: 'max',
+        min_placeholder: 'min',
         type: 'number',
     },
     {
         label: 'Life Time Purchase',
-        name: 'life_time_phurchase',
-        placeholder: 'Enter',
+        start_name: 'max_purchase',
+        end_name: 'min_purchase',
+        start_placeholder: 'max',
+        min_placeholder: 'min',
         type: 'text',
     },
     {
         label: 'Order Count',
-        name: 'order_count',
-        placeholder: 'place Order Count',
+        start_name: 'max_count',
+        end_name: 'min_count',
+        start_placeholder: 'max',
+        min_placeholder: 'min',
         type: 'number',
     },
 ]
