@@ -19,6 +19,7 @@ import PageModal from './PageModal'
 import { FormikProps } from 'formik'
 import PageAddModal from './PageAddModal'
 import { FaEdit, FaTrash } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -57,7 +58,7 @@ const PageSettings = () => {
     const [particularRow, setParticularRow] = useState()
     const formikRef = useRef<FormikProps<any>>(null)
     const [addModal, setAddModal] = useState(false)
-
+    const navigate = useNavigate()
     const fetchData = async () => {
         console.log('starting api')
         try {
@@ -358,6 +359,7 @@ const PageSettings = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Page Updated successfully',
             })
+            navigate(0)
         } catch (error) {
             console.log(error)
             notification.error({

@@ -106,7 +106,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-    console.log('BBBrand', divisions)
 
     const categoryOptions = category.categories.map((item) => ({
         label: item.name,
@@ -143,11 +142,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
-
-    console.log('Optioins', brandOptions)
-
-    console.log('Filters', filters)
-    console.log('FilterOptions', filterOptions)
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
@@ -346,7 +340,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
         const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
 
-        const headerIconImageUpload = await handleimage(row.headerIcon_image_array)
+        const headerIconImageUpload = await handleimage(row.header_config_icon_Array)
+
+        console.log('headerIconImage', headerIconImageUpload)
 
         const newRowAdd = {
             ...row,
@@ -358,7 +354,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             },
             header_config: {
                 ...row.header_config,
-                icon: row.headerIcon_image_array.length > 0 ? headerIconImageUpload : '',
+                icon: row.header_config_icon_Array.length > 0 ? headerIconImageUpload : '',
                 image: row.header_config_image_Array.length > 0 ? headerImageUpload : '',
             },
             sub_header_config: {
@@ -371,6 +367,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             },
             component_config: {
                 carousel: row.carousel,
+                carousel_dot: row.carousel_dot,
                 grid: row.grid,
                 carousel_autoplay: row.carousel_autoplay,
                 width: Number(row.width),
@@ -595,18 +592,18 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
                                     <FormContainer className=" mt-5 ">
                                         <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="headerIcon_image_array">
+                                            <Field name="header_config_icon_Array">
                                                 {({ field, form }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
                                                             beforeUpload={beforeUpload}
-                                                            fileList={values.headerIcon_image_array} // need to updtae
+                                                            fileList={values.header_config_icon_Array}
                                                             onChange={(files) => {
-                                                                console.log(values.headerIcon_image_array)
-                                                                form.setFieldValue('headerIcon_image_array', files)
+                                                                console.log('Updated header_config_icon_Array:', files)
+                                                                form.setFieldValue('header_config_icon_Array', files)
                                                             }}
                                                             className="items-center flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('headerIcon_image_array', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('header_config_icon_Array', files)}
                                                         />
                                                     </>
                                                 )}

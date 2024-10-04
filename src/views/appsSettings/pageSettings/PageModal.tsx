@@ -163,8 +163,8 @@ const PageModal: React.FC<modalProps> = ({
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
-        crousel_autoplay: particularRow.crousel_autoplay,
-        crousel: particularRow.crousel,
+        carousel_autoplay: particularRow.carousel_autoplay,
+        carousel: particularRow.carousel,
         width: particularRow.width,
         corner_radius: particularRow.corner_radius,
         border: particularRow.border,
@@ -265,6 +265,7 @@ const PageModal: React.FC<modalProps> = ({
             const footerImageUpload = await handleimage(row.footer_config_image_Array)
             const headerImageUpload = await handleimage(row.header_config_image_Array)
             const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
+            const headerIconUpload = await handleimage(row.header_config_icon_Array)
 
             console.log('New Row below')
 
@@ -278,6 +279,7 @@ const PageModal: React.FC<modalProps> = ({
                 },
                 header_config: {
                     ...row.header_config,
+                    icon: headerIconUpload,
                     image: headerImageUpload,
                 },
                 sub_header_config: {
@@ -290,6 +292,7 @@ const PageModal: React.FC<modalProps> = ({
                 },
                 component_config: {
                     carousel: row.carousel,
+                    carousel_dot: row.carousel_dot,
                     grid: row.grid,
                     carousel_autoplay: row.carousel_autoplay,
                     width: Number(row.width),
@@ -365,6 +368,8 @@ const PageModal: React.FC<modalProps> = ({
         { label: 'creator', value: 'creator' },
     ]
 
+    console.log('kuhuiuihuhidbvjio', borderForm)
+
     return (
         <>
             <Modal title="EDIT SECTION" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={1500} okText="Edit">
@@ -429,12 +434,12 @@ const PageModal: React.FC<modalProps> = ({
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     const isChecked = e.target.checked
                                                     setFieldValue('border', isChecked)
-                                                    setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
+                                                    setBorderForm(isChecked) // Set borderForm to 'yes' or 'no'
                                                 }}
                                             />
                                         </FormItem>
 
-                                        {borderForm === 'yes' && (
+                                        {borderForm === true && (
                                             <FormContainer>
                                                 <FormItem label="Border Style" className="col-span-1 w-1/4">
                                                     <Field name="border_style">
@@ -553,27 +558,45 @@ const PageModal: React.FC<modalProps> = ({
                                     <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
                                 <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Header Icon Image</div>
-
+                                    <div className="font-semibold mb-1">Header Icon</div>
+                                    {particularRow.header_config.icon && (
+                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
+                                            <img
+                                                src={particularRow.header_config.icon}
+                                                alt={`Image `}
+                                                className="w-[100px] h-[40px] flex object-contain "
+                                            />
+                                            <button
+                                                className="text-red-500 text-md "
+                                                onClick={() => handleRemoveImage('header_icon_image')}
+                                            >
+                                                <MdCancel className="text-red-500 bg-none text-lg" />
+                                            </button>
+                                        </div>
+                                    )}
                                     <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="headerIcon_image_array">
+                                        <FormItem
+                                            label=""
+                                            // }
+                                            className="grid grid-rows-2"
+                                        >
+                                            <Field name="header_config_icon_Array">
                                                 {({ field, form }: FieldProps<WebType>) => (
                                                     <>
                                                         <Upload
                                                             beforeUpload={beforeUpload}
-                                                            fileList={values.background_image_array} // need to updtae
+                                                            fileList={values.header_config_icon_Array} // uploadedd the file
                                                             onChange={(files) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
                                                                     files,
                                                                     field.name,
-                                                                    values.background_image_array,
+                                                                    values.header_config_icon_Array,
                                                                 )
-                                                                form.setFieldValue('headerIcon_image_array', files)
+                                                                form.setFieldValue('header_config_icon_Array', files)
                                                             }}
-                                                            className="items-center flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('headerIcon_image_array', files)}
+                                                            className="flex justify-center"
+                                                            onFileRemove={(files) => form.setFieldValue('header_config_icon_Array', files)}
                                                         />
                                                     </>
                                                 )}
@@ -592,7 +615,10 @@ const PageModal: React.FC<modalProps> = ({
                                                 alt={`Image `}
                                                 className="w-[100px] h-[40px] flex object-contain "
                                             />
-                                            <button className="text-red-500 text-md " onClick={handleRemoveImage}>
+                                            <button
+                                                className="text-red-500 text-md "
+                                                onClick={() => handleRemoveImage('header_image_image')}
+                                            >
                                                 <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
                                         </div>
