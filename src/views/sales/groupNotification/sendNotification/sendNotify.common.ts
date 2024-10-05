@@ -14,6 +14,13 @@ export interface sendNotificationType {
 
 export const SendNotificationARRAY = [
     {
+        label: 'Event Name',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'event_name',
+        placeholder: 'Enter Event name',
+    },
+    {
         label: 'Key',
         classname: 'col-span-1 w-full',
         type: 'text',

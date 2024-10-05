@@ -165,6 +165,7 @@ const PageModal: React.FC<modalProps> = ({
         grid: particularRow.grid,
         carousel_autoplay: particularRow.carousel_autoplay,
         carousel: particularRow.carousel,
+        interval: particularRow.interval,
         width: particularRow.width,
         corner_radius: particularRow.corner_radius,
         border: particularRow.border,
@@ -172,6 +173,8 @@ const PageModal: React.FC<modalProps> = ({
         border_width: particularRow.border_width,
         border_color: particularRow.border_color,
     })
+
+    console.log('Interval check', initialValue.interval)
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
         setShowTable(true)
@@ -267,7 +270,7 @@ const PageModal: React.FC<modalProps> = ({
             const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
             const headerIconUpload = await handleimage(row.header_config_icon_Array)
 
-            console.log('New Row below')
+            console.log('New Row below', row.interval)
 
             const newRow = {
                 ...row,
@@ -368,7 +371,29 @@ const PageModal: React.FC<modalProps> = ({
         { label: 'creator', value: 'creator' },
     ]
 
-    console.log('kuhuiuihuhidbvjio', borderForm)
+    const handleRemoveSubImage = (e: any) => {
+        e.preventDefault()
+
+        setParticularRow((prevState: any) => ({
+            ...prevState,
+            sub_header_config: {
+                ...prevState.sub_header_config,
+                image: null,
+            },
+        }))
+    }
+
+    const handleRemoveHeaderIconImage = (e: any) => {
+        e.preventDefault()
+        // Assuming you're updating a state that holds particularRow or sub_header_config
+        setParticularRow((prevState: any) => ({
+            ...prevState,
+            header_config: {
+                ...prevState.header_config,
+                icon: null, // Remove the image by setting it to null
+            },
+        }))
+    }
 
     return (
         <>
@@ -399,9 +424,9 @@ const PageModal: React.FC<modalProps> = ({
                                                     options={componentOptions}
                                                     value={componentOptions.find((option) => option.value === field.value)}
                                                     onChange={(option) => {
-                                                        const value = option ? option.value : '' // Handle null or undefined options
-                                                        form.setFieldValue(field.name, value) // Update the form field value
-                                                        setComponentOptions(value) // Set the component options
+                                                        const value = option ? option.value : ''
+                                                        form.setFieldValue(field.name, value)
+                                                        setComponentOptions(value)
                                                     }}
                                                     onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                                                 />
@@ -568,7 +593,7 @@ const PageModal: React.FC<modalProps> = ({
                                             />
                                             <button
                                                 className="text-red-500 text-md "
-                                                onClick={() => handleRemoveImage('header_icon_image')}
+                                                onClick={() => handleRemoveHeaderIconImage('header_icon_image')}
                                             >
                                                 <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
@@ -617,7 +642,7 @@ const PageModal: React.FC<modalProps> = ({
                                             />
                                             <button
                                                 className="text-red-500 text-md "
-                                                onClick={() => handleRemoveImage('header_image_image')}
+                                                onClick={() => handleRemoveHeaderImage('header_image_image')}
                                             >
                                                 <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
@@ -689,7 +714,7 @@ const PageModal: React.FC<modalProps> = ({
                                                 alt={`Image `}
                                                 className="w-[100px] h-[40px] flex object-contain "
                                             />
-                                            <button className="text-red-500 text-md " onClick={(e: any) => handleRemoveImage(e)}>
+                                            <button className="text-red-500 text-md " onClick={(e: any) => handleRemoveSubImage(e)}>
                                                 <MdCancel className="text-red-500 bg-none text-lg" />
                                             </button>
                                         </div>
