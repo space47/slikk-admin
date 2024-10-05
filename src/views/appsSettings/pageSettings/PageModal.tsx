@@ -25,6 +25,7 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { MdCancel } from 'react-icons/md'
 import { borrderStyleArray, genericComponentArray } from './genericComp'
 import { width } from '@mui/system'
+import PageEditImage from './PageEditImage'
 
 interface DataType {
     type: string
@@ -51,7 +52,7 @@ type ProductTable = {
     brand: string
 }
 
-type WebType = {
+export type WebType = {
     data_type: DataType
     footer_config: Config
     header_config: Config
@@ -374,10 +375,10 @@ const PageModal: React.FC<modalProps> = ({
     const handleRemoveSubImage = (e: any) => {
         e.preventDefault()
 
-        setParticularRow((prevState: any) => ({
-            ...prevState,
+        setInitalValue((prev: any) => ({
+            ...prev,
             sub_header_config: {
-                ...prevState.sub_header_config,
+                ...prev.sub_header_config,
                 image: null,
             },
         }))
@@ -385,12 +386,23 @@ const PageModal: React.FC<modalProps> = ({
 
     const handleRemoveHeaderIconImage = (e: any) => {
         e.preventDefault()
-        // Assuming you're updating a state that holds particularRow or sub_header_config
-        setParticularRow((prevState: any) => ({
-            ...prevState,
+
+        setInitalValue((prev: any) => ({
+            ...prev,
             header_config: {
-                ...prevState.header_config,
-                icon: null, // Remove the image by setting it to null
+                ...prev.header_config,
+                icon: null,
+            },
+        }))
+    }
+    const handleRemoveHeaderImage = (e: any) => {
+        e.preventDefault()
+
+        setInitalValue((prev: any) => ({
+            ...prev,
+            header_config: {
+                ...prev.header_config,
+                image: null,
             },
         }))
     }
@@ -582,102 +594,30 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem asterisk label="Header Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Header Icon</div>
-                                    {particularRow.header_config.icon && (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={particularRow.header_config.icon}
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button
-                                                className="text-red-500 text-md "
-                                                onClick={() => handleRemoveHeaderIconImage('header_icon_image')}
-                                            >
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    )}
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            // }
-                                            className="grid grid-rows-2"
-                                        >
-                                            <Field name="header_config_icon_Array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.header_config_icon_Array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.header_config_icon_Array,
-                                                                )
-                                                                form.setFieldValue('header_config_icon_Array', files)
-                                                            }}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('header_config_icon_Array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
+                                <PageEditImage
+                                    label="Header Icon Image"
+                                    rowName={particularRow.header_config.icon}
+                                    removeName="header_icon_image"
+                                    handleRemoveImage={handleRemoveHeaderIconImage}
+                                    name="header_config_icon_Array"
+                                    beforeUpload={beforeUpload}
+                                    fileList={values.header_config_icon_Array}
+                                    fieldName="header_config_icon_Array"
+                                />
 
                                 {/* .................................................................... */}
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Header Image</div>
-                                    {particularRow.header_config.image && (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={particularRow.header_config.image}
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button
-                                                className="text-red-500 text-md "
-                                                onClick={() => handleRemoveHeaderImage('header_image_image')}
-                                            >
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    )}
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            // }
-                                            className="grid grid-rows-2"
-                                        >
-                                            <Field name="header_config_image_Array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.header_config_image_Array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.header_config_image_Array,
-                                                                )
-                                                                form.setFieldValue('header_config_image_Array', files)
-                                                            }}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('header_config_image_Array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
+                                <PageEditImage
+                                    label="Header Image"
+                                    rowName={particularRow.header_config.image}
+                                    removeName="header_image_image"
+                                    handleRemoveImage={handleRemoveHeaderImage}
+                                    name="header_config_image_Array"
+                                    beforeUpload={beforeUpload}
+                                    fileList={values.header_config_image_Array}
+                                    fieldName="header_config_image_Array"
+                                />
+
+                                {/* ................................................................. */}
                                 <FormItem asterisk label="Header Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
@@ -704,49 +644,16 @@ const PageModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem>
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Sub Header Image</div>
-                                    {particularRow.sub_header_config.image && (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={particularRow.sub_header_config.image}
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button className="text-red-500 text-md " onClick={(e: any) => handleRemoveSubImage(e)}>
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    )}
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="sub_header_config_image_Array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.sub_header_config_image_Array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.sub_header_config_image_Array,
-                                                                )
-                                                                form.setFieldValue('sub_header_config_image_Array', files)
-                                                            }}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) =>
-                                                                form.setFieldValue('sub_header_config_image_Array', files)
-                                                            }
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
+                                <PageEditImage
+                                    label="Sub_Header Image"
+                                    rowName={particularRow.sub_header_config.image}
+                                    removeName="sub_header_image"
+                                    handleRemoveImage={handleRemoveSubImage}
+                                    name="sub_header_config_image_Array"
+                                    beforeUpload={beforeUpload}
+                                    fileList={values.sub_header_config_image_Array}
+                                    fieldName="sub_header_config_image_Array"
+                                />
                                 <FormItem asterisk label="Sub Header Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
@@ -765,47 +672,17 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem asterisk label="Footer Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="footer_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
+                                <PageEditImage
+                                    label="Footer Image"
+                                    rowName={particularRow.footer_config.image}
+                                    removeName="footer_image"
+                                    handleRemoveImage={handleRemoveImage}
+                                    name="footer_config_image_Array"
+                                    beforeUpload={beforeUpload}
+                                    fileList={values.footer_config_image_Array}
+                                    fieldName="footer_config_image_Array"
+                                />
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Footer Image</div>
-                                    {particularRow.footer_config.image && (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={particularRow.footer_config.image}
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button className="text-red-500 text-md " onClick={(e) => handleRemoveImage(e)}>
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    )}
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="footer_config_image_Array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.footer_config_image_Array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.footer_config_image_Array,
-                                                                )
-                                                                form.setFieldValue('footer_config_image_Array', files)
-                                                            }}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('footer_config_image_Array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
                                 <FormItem asterisk label="Footer Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
@@ -840,9 +717,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem asterisk label="Filters" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
-                                {/* <FormItem label="Data Type Key" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.type" placeholder="Place your dataType" component={Input} />
-                                </FormItem> */}
                                 <FormContainer className="flex flex-col gap-4 ">
                                     <div className="text-xl">Barcode</div>
                                     <div className="flex gap-10">
@@ -901,18 +775,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
                                     <Field name="is_section_clickable" component={Checkbox} />
                                 </FormItem>
-                                {/* <FormItem
-                                    label="Section Filter"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.filters"
-                                        placeholder="Place your dataType"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
-
                                 <FormContainer className="grid grid-cols-2 gap-4 w-3/4">
                                     {/* Filters */}
                                     <FormItem label="Filters">

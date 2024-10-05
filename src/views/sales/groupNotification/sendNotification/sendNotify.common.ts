@@ -63,3 +63,34 @@ export const SendNotificationARRAY = [
         placeholder: 'Enter Users',
     },
 ]
+
+export const UtmArray = [
+    {
+        label: 'UTM Medium',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'utm_medium',
+        placeholder: 'Enter medium',
+    },
+    {
+        label: 'UTM Source',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'utm_source',
+        placeholder: 'Enter source',
+    },
+    {
+        label: 'UTM Campaign',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'utm_campaign',
+        placeholder: 'Enter campaign',
+    },
+    {
+        label: 'UTM Tags',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'utm_tags',
+        placeholder: 'Enter tags',
+    },
+]
