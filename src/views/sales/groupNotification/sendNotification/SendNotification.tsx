@@ -13,7 +13,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 // import { NotificationTYPE } from './createNotification.common'
 // import { NotificationARRAY } from './NotificationForms'
 import { RichTextEditor } from '@/components/shared'
-import { SendNotificationARRAY, sendNotificationType } from './sendNotify.common'
+import { SendNotificationARRAY, sendNotificationType, UtmArray } from './sendNotify.common'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
@@ -125,14 +125,19 @@ const SendNotification = () => {
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
-        const { image_url_array, ...formData } = values
-
+        const { image_url_array, utm_medium, utm_source, utm_campaign, utm_tags, ...formData } = values
+        console.log(utm_medium, utm_source, utm_campaign, utm_tags)
         const imageUpload = values.image_url_array.length > 0 ? await handleimage(image_url_array) : values.image_url
+
+        console.log(UtmArray.filter((item) => values[item.name]).map((item) => `${item.name.replace('_', '-')}_${values[item.name]}`))
 
         const data = {
             ...formData,
             image_url: imageUpload,
-            filters: values.filters.join(','),
+            filters: [
+                ...values.filters.map((filter) => filter),
+                ...UtmArray.filter((item) => values[item.name]).map((item) => `${item.name.replace('_', '-')}_${values[item.name]}`),
+            ].join(','),
             message: plainTextMessage,
         }
 
@@ -224,6 +229,11 @@ const SendNotification = () => {
                                         }}
                                     </Field>
                                 </FormItem>
+                                {UtmArray.map((item, key) => (
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                    </FormItem>
+                                ))}
                             </FormContainer>
                         </FormContainer>
                         <FormItem label="Schedular Message" labelClass="!justify-start" className="col-span-1 w-full">

@@ -14,6 +14,13 @@ export interface sendNotificationType {
 
 export const SendNotificationARRAY = [
     {
+        label: 'Event Name',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'event_name',
+        placeholder: 'Enter Event name',
+    },
+    {
         label: 'Key',
         classname: 'col-span-1 w-full',
         type: 'text',
@@ -54,5 +61,36 @@ export const SendNotificationARRAY = [
         type: 'checkbox',
         name: 'users_all',
         placeholder: 'Enter Users',
+    },
+]
+
+export const UtmArray = [
+    {
+        label: 'UTM Medium',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'utm_medium',
+        placeholder: 'Enter medium',
+    },
+    {
+        label: 'UTM Source',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'utm_source',
+        placeholder: 'Enter source',
+    },
+    {
+        label: 'UTM Campaign',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'utm_campaign',
+        placeholder: 'Enter campaign',
+    },
+    {
+        label: 'UTM Tags',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'utm_tags',
+        placeholder: 'Enter tags',
     },
 ]

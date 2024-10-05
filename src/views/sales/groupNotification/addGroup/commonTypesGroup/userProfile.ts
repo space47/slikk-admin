@@ -77,6 +77,33 @@ export const orderGroup = [
     },
 ]
 
+export const LoyaltyArray = [
+    {
+        label: 'Points Available',
+        start_name: 'max_point_available',
+        end_name: 'min_point_available',
+        start_placeholder: 'max',
+        min_placeholder: 'min',
+        type: 'number',
+    },
+    {
+        label: 'Points Earned',
+        start_name: 'max_point_earned',
+        end_name: 'min_point_earned',
+        start_placeholder: 'max',
+        min_placeholder: 'min',
+        type: 'number',
+    },
+    {
+        label: 'Points Available',
+        start_name: 'max_point_redeemed',
+        end_name: 'min_point_redeemed',
+        start_placeholder: 'max',
+        min_placeholder: 'min',
+        type: 'number',
+    },
+]
+
 export const groupLocation = [
     {
         label: 'City',
