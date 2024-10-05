@@ -12,7 +12,7 @@ import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
 // import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
-import { groupLocation, headingGroup, orderGroup, userProfileGroup } from './commonTypesGroup/userProfile'
+import { groupLocation, headingGroup, LoyaltyArray, orderGroup, userProfileGroup } from './commonTypesGroup/userProfile'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
@@ -32,6 +32,12 @@ const DeliveryOptions = [
     { label: 'Express', value: 'EXPRESS' },
     { label: 'Standard', value: 'STANDARD' },
     { label: 'Try&Buy', value: 'TRY_AND_BUY' },
+]
+
+const LoyaltyOptions = [
+    { label: 'Explorer', value: 'Explorer' },
+    { label: 'TRENDSETTER', value: 'Trendsetter' },
+    { label: 'ICON', value: 'Icon' },
 ]
 
 const AddGroup = () => {
@@ -112,6 +118,30 @@ const AddGroup = () => {
                     {
                         type: 'order_delivery_type',
                         value: values.order_delivery_type.join(','),
+                    },
+                ],
+                loyalty: [
+                    { type: 'tier', value: values.loyalty.join(',') },
+                    {
+                        type: 'points available',
+                        value: {
+                            max: values.max_point_available,
+                            min: values.min_point_available,
+                        },
+                    },
+                    {
+                        type: 'points earned',
+                        value: {
+                            max: values.max_point_earned,
+                            min: values.min_point_earned,
+                        },
+                    },
+                    {
+                        type: 'points redeemed',
+                        value: {
+                            max: values.max_point_redeemed,
+                            min: values.min_point_redeemed,
+                        },
                     },
                 ],
                 order_item: [
@@ -300,6 +330,52 @@ const AddGroup = () => {
                             </FormItem>
                         </FormContainer>
                         {/* Location */}
+                        <FormContainer>
+                            <h3>Loyalty:</h3>
+                            <br />
+                            <FormItem asterisk label="Loyalty" className="col-span-1 w-1/2">
+                                <Field name="loyalty">
+                                    {({ field, form }: FieldProps<any>) => {
+                                        return (
+                                            <Select
+                                                isMulti
+                                                field={field}
+                                                form={form}
+                                                options={LoyaltyOptions}
+                                                value={LoyaltyOptions.find((option) => option.value === field.value)}
+                                                onChange={(newVal) => {
+                                                    const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                    form.setFieldValue(field.name, newValues)
+                                                }}
+                                            />
+                                        )
+                                    }}
+                                </Field>
+                            </FormItem>
+                            <FormContainer className="grid grid-cols-2 gap-6">
+                                {LoyaltyArray.map((item, key) => {
+                                    return (
+                                        <FormContainer key={key}>
+                                            <FormItem label={item.label} className="col-span-1 w-1/2">
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.start_name}
+                                                    component={Input}
+                                                    placeholder={item.start_placeholder}
+                                                />
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.end_name}
+                                                    component={Input}
+                                                    placeholder={item.min_placeholder}
+                                                />
+                                            </FormItem>
+                                        </FormContainer>
+                                    )
+                                })}
+                            </FormContainer>
+                        </FormContainer>
+
                         <FormContainer>
                             <h3>Location</h3> <br />
                             <FormContainer className="grid grid-cols-2 gap-10">

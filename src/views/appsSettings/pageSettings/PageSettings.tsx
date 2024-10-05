@@ -98,13 +98,13 @@ const PageSettings = () => {
     }
 
     const getDataType = (data: DataType): { key: string; value: string } => {
-        if (data.barcodes) {
+        if (data?.barcodes) {
             return { key: 'Barcode', value: data.barcodes }
-        } else if (data.posts) {
+        } else if (data?.posts) {
             return { key: 'Posts', value: data.posts }
-        } else if (data.brands) {
+        } else if (data?.brands) {
             return { key: 'Brands', value: data.brands }
-        } else if (data.handles) {
+        } else if (data?.handles) {
             return { key: 'Handles', value: data.handles }
         }
         return { key: '', value: '' }

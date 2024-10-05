@@ -256,6 +256,7 @@ const OrderList = () => {
                 cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             { header: 'Mobile Number', accessorKey: 'user.mobile' },
+            { header: 'Order Count', accessorKey: 'user_order_count' },
             { header: 'Customer Name', accessorKey: 'user.name' },
             { header: 'Delivery Type', accessorKey: 'delivery_type' },
             // { header: 'Store Address', accessorKey: 'store.address' },
