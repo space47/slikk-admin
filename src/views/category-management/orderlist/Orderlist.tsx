@@ -85,6 +85,7 @@ const OrderList = () => {
     const [showFilter, setShowFilter] = useState(false)
     const [soundEnabled, setSoundEnabled] = useState(false)
     const [pendingSound, setPendingSound] = useState(false)
+    const [numberClick, setNumberClick] = useState(false)
 
     const previousOrders = useRef<Order[]>([])
 
@@ -175,10 +176,18 @@ const OrderList = () => {
     }
 
     useEffect(() => {
-        fetchOrders(page, pageSize, from, to)
+        // Check if numberClick is false before fetching orders
+        if (!numberClick) {
+            fetchOrders(page, pageSize, from, to)
+        }
 
         const noFilters =
-            page === 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
+            page === 1 &&
+            !dropdownStatus.value.length &&
+            !searchInput &&
+            !deliveryType.value.length &&
+            !paymentType.value.length &&
+            numberClick === false // Ensure the interval only runs when numberClick is false
 
         if (noFilters) {
             const interval = setInterval(() => {
@@ -188,13 +197,18 @@ const OrderList = () => {
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType, previousOrders])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType, numberClick, previousOrders])
 
     useEffect(() => {
         checkingNewOrders(page, pageSize, from, to)
 
         const noFilters =
-            page !== 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
+            page !== 1 &&
+            !dropdownStatus.value.length &&
+            !searchInput &&
+            !deliveryType.value.length &&
+            !paymentType.value.length &&
+            numberClick === false
 
         if (noFilters) {
             const interval = setInterval(() => {
@@ -213,6 +227,22 @@ const OrderList = () => {
             setTimeout(() => setPendingSound(false), 5000)
         }
     }, [soundEnabled, pendingSound])
+
+    const handleNumberClick = async (number) => {
+        try {
+            const response = await axiosInstance.get(`/merchant/orders?mobile=${number}&page_size=100`)
+
+            const data = response.data.data
+
+            setOrders(data.results)
+            setOrderCount(data.count)
+            setNumberClick(true) // Set numberClick to true to stop interval and fetchOrders
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    console.log('OKONUMBER', numberClick)
 
     const columns = useMemo(
         () => [
@@ -255,7 +285,26 @@ const OrderList = () => {
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
-            { header: 'Mobile Number', accessorKey: 'user.mobile' },
+            {
+                header: 'Mobile Number',
+                accessorKey: 'user.mobile',
+                cell: ({ getValue, row }) => {
+                    const orderCount = row.original.user_order_count
+                    return (
+                        <>
+                            {orderCount > 1 ? (
+                                <div className="text-green-500 cursor-pointer" onClick={() => handleNumberClick(getValue())}>
+                                    {getValue()}
+                                </div>
+                            ) : (
+                                <>
+                                    <div>{getValue()}</div>
+                                </>
+                            )}
+                        </>
+                    )
+                },
+            },
             { header: 'Order Count', accessorKey: 'user_order_count' },
             { header: 'Customer Name', accessorKey: 'user.name' },
             { header: 'Delivery Type', accessorKey: 'delivery_type' },
@@ -531,21 +580,25 @@ const OrderList = () => {
                 </Table>
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">
-                    <Pagination
-                        pageSize={pageSize}
-                        currentPage={page}
-                        total={orderCount}
-                        onChange={onPaginationChange}
-                        className="mb-4 md:mb-0"
-                    />
-                    <div className="min-w-[130px] flex gap-5">
-                        <Select
-                            size="sm"
-                            value={pageSizeOptions.find((option) => option.value === pageSize)}
-                            options={pageSizeOptions}
-                            onChange={(option) => onSelectChange(option?.value)}
-                            className="w-full"
+                    {numberClick !== true && (
+                        <Pagination
+                            pageSize={pageSize}
+                            currentPage={page}
+                            total={orderCount}
+                            onChange={onPaginationChange}
+                            className="mb-4 md:mb-0"
                         />
+                    )}
+                    <div className="min-w-[130px] flex gap-5">
+                        {numberClick !== true && (
+                            <Select
+                                size="sm"
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                options={pageSizeOptions}
+                                onChange={(option) => onSelectChange(option?.value)}
+                                className="w-full"
+                            />
+                        )}
                     </div>
                 </div>
             </div>
