@@ -273,7 +273,7 @@ const Seller = () => {
 
     return (
         <div>
-            <div className="flex justify-between">
+            <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="mb-4">
                     <input
                         type="text"
@@ -283,7 +283,7 @@ const Seller = () => {
                         className="p-2 border rounded"
                     />
                 </div>
-                <div className="flex items-end justify-end mb-4">
+                <div className="flex items-end justify-end mb-4 order-first xl:order-1">
                     <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
                         ADD NEW SELLER
                     </button>{' '}

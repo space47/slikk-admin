@@ -213,7 +213,7 @@ const UploadPost = () => {
 
     return (
         <div className="overflow-x-auto">
-            <div className="flex justify-between mb-10 items-center">
+            <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="mb-4">
                     <input
                         type="text"
@@ -224,7 +224,7 @@ const UploadPost = () => {
                     />
                 </div>
 
-                <div>
+                <div className="flex items-end justify-end mb-4 order-first xl:order-none">
                     <Button className="bg-gray-800 text-white px-4 py-2" onClick={handleCreatePost} variant="new">
                         Create Post
                     </Button>

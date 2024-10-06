@@ -22,6 +22,7 @@ import { DELEIVERYRETRUNOPTIONS, ReturnOrder } from '../returnOrders/ReturnOrder
 import FilterReturnOrder from '../returnOrders/filter/FilterReturnOrder'
 import { CiFilter } from 'react-icons/ci'
 import { MdAssignmentTurnedIn, MdCancel } from 'react-icons/md'
+import { FaFilter } from 'react-icons/fa'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -414,7 +415,7 @@ const ReverseDelivery = () => {
                     </Button>
 
                     <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
-                        <CiFilter className="text-xl font-extrabold" />
+                        <FaFilter className="text-xl font-extrabold" />
                     </Button>
                 </div>
             </div>

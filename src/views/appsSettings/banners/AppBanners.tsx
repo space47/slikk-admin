@@ -272,7 +272,7 @@ const AppBanners = () => {
 
     return (
         <div>
-            <div className="flex justify-between mb-2">
+            <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="mb-4">
                     <input
                         type="text"
@@ -282,7 +282,7 @@ const AppBanners = () => {
                         className="p-2 border rounded"
                     />
                 </div>
-                <div className="flex gap-3 items-center justify-center">
+                <div className="flex gap-3 items-center justify-center order-first xl:order-none">
                     <div className="flex items-end justify-end mb-2">
                         <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleBanner}>
                             ADD NEW BANNER

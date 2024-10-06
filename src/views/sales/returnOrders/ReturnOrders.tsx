@@ -358,7 +358,15 @@ const OrderList = () => {
 
     return (
         <div className="overflow-x-auto">
-            <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4">
+            <div className="flex justify-end">
+                <button
+                    className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden"
+                    onClick={handleDownload}
+                >
+                    <IoMdDownload className="text-xl md:text-xl" />
+                </button>
+            </div>
+            <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
                 <div className="flex gap-2">
                     <div className="flex justify-start ">
                         <input
@@ -396,12 +404,6 @@ const OrderList = () => {
                         >
                             <IoMdDownload className="text-xl md:text-xl" />
                             Export
-                        </button>
-                        <button
-                            className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden"
-                            onClick={handleDownload}
-                        >
-                            <IoMdDownload className="text-xl md:text-xl" />
                         </button>
                     </div>
                     <div>
