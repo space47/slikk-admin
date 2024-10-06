@@ -450,10 +450,56 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     </Field>
                                 </FormItem>
                                 {/* Generic Fields........................................................ */}
-                                {componentOption === 'Generic' && (
-                                    <FormContainer>
-                                        <FormContainer className="grid grid-cols-2 gap-10">
-                                            {genericComponentArray.map((item, key) => (
+
+                                <FormContainer>
+                                    <FormContainer className="grid grid-cols-2 gap-10">
+                                        {genericComponentArray.map((item, key) => (
+                                            <FormItem key={key} label={item.label} className="w-1/2">
+                                                <Field
+                                                    type={item.type}
+                                                    name={item.name}
+                                                    placeholder={item.placeholder}
+                                                    component={Input} // Fallback to 'input' if component is not valid
+                                                />
+                                            </FormItem>
+                                        ))}
+                                    </FormContainer>
+
+                                    <FormItem label="Border" className="col-span-1 w-1/4">
+                                        <Field
+                                            type="checkbox"
+                                            name="border"
+                                            placeholder="Enter border"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('border', isChecked)
+                                                setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
+                                            }}
+                                        />
+                                    </FormItem>
+
+                                    {borderForm === 'yes' && (
+                                        <FormContainer>
+                                            <FormItem label="Border Style" className="col-span-1 w-1/4">
+                                                <Field name="border_style">
+                                                    {({ field, form }: FieldProps<any>) => {
+                                                        return (
+                                                            <Select
+                                                                field={field}
+                                                                form={form}
+                                                                options={borderStyleArray}
+                                                                value={borderStyleArray.find((option) => option.value === field.value)}
+                                                                onChange={(option) => {
+                                                                    const value = option?.value || '' // Safely handle null/undefined option
+                                                                    form.setFieldValue(field.name, value) // Update the form field value
+                                                                }}
+                                                            />
+                                                        )
+                                                    }}
+                                                </Field>
+                                            </FormItem>
+                                            {borrderStyleArray.map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
@@ -464,55 +510,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                 </FormItem>
                                             ))}
                                         </FormContainer>
-
-                                        <FormItem label="Border" className="col-span-1 w-1/4">
-                                            <Field
-                                                type="checkbox"
-                                                name="border"
-                                                placeholder="Enter border"
-                                                component={Input}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    const isChecked = e.target.checked
-                                                    setFieldValue('border', isChecked)
-                                                    setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
-                                                }}
-                                            />
-                                        </FormItem>
-
-                                        {borderForm === 'yes' && (
-                                            <FormContainer>
-                                                <FormItem label="Border Style" className="col-span-1 w-1/4">
-                                                    <Field name="border_style">
-                                                        {({ field, form }: FieldProps<any>) => {
-                                                            return (
-                                                                <Select
-                                                                    field={field}
-                                                                    form={form}
-                                                                    options={borderStyleArray}
-                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
-                                                                    onChange={(option) => {
-                                                                        const value = option?.value || '' // Safely handle null/undefined option
-                                                                        form.setFieldValue(field.name, value) // Update the form field value
-                                                                    }}
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </FormItem>
-                                                {borrderStyleArray.map((item, key) => (
-                                                    <FormItem key={key} label={item.label} className="w-1/2">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item.name}
-                                                            placeholder={item.placeholder}
-                                                            component={Input} // Fallback to 'input' if component is not valid
-                                                        />
-                                                    </FormItem>
-                                                ))}
-                                            </FormContainer>
-                                        )}
-                                    </FormContainer>
-                                )}
+                                    )}
+                                </FormContainer>
 
                                 {/* ......................................................................... */}
 
