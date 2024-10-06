@@ -24,9 +24,11 @@ import DatePicker from '@/components/ui/DatePicker'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import { TbCalendarStats } from 'react-icons/tb'
 import AnalyticsOrderGraph from './analyticsOrderGraph/AnalyticsOrderGraph'
+// import AnalyticsQuantityGraph from './AnalyticsOrderGraph/AnalyticsQuantityGraph'
 import AnalyticsQuantityGraph from './analyticsOrderGraph/AnalyticsQuantityGraph'
 import { FaDownload, FaFilter } from 'react-icons/fa'
-
+import ImageMODAL from '@/common/ImageModal'
+// import AnalyticsQuantityGraph from './AnalyticsQuantityGraph/AnalyticsQuantityGraph'
 import AnalyticsOrderDrawer from './analyticsOrderDrawer/AnalyticsOrderDrawer'
 import { IoMdDownload } from 'react-icons/io'
 
@@ -70,7 +72,7 @@ const pageSizeOptions = [
     { value: 100, label: '100 / page' },
 ]
 
-const Anal = () => {
+const AnalyticsOverview = () => {
     const [data, setData] = useState<SalesData>()
 
     const [page, setPage] = useState(1)
@@ -78,8 +80,10 @@ const Anal = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [from, setFrom] = useState(moment().subtract(6, 'days').format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const [showLastSevenDays, setShowLastSevenDays] = useState(true)
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState([])
 
     const [skuWiseDetails, setSkuWiseDetails] = useState<Array<{ key: string; value: SKU_DETAILS }>>([])
     const [datewisedetails, setDatewisedetails] = useState<Array<{ key: string; value: DATA_WISE_SALES }>>([])
@@ -87,10 +91,12 @@ const Anal = () => {
     const [divisionArray, setDivisionArray] = useState([])
     const [categoryArray, setCategoryArray] = useState([])
     const [subCategoryArray, setSubCategoryArray] = useState([])
+    const [brandArray, setBrandArray] = useState([])
 
     const [divisionList, setDivisionList] = useState<string[]>([])
     const [categoryList, setCategoryList] = useState([])
     const [subCategoryList, setSubCategoryList] = useState([])
+    const [brandList, setBrandList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
 
     const [showDrawer, setShowDrawer] = useState(false)
@@ -105,7 +111,7 @@ const Anal = () => {
             setSkuWiseDetails([])
             setDatewisedetails([])
 
-            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}`)
+            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}`)
             const data = response.data
 
             setData(data)
@@ -133,10 +139,16 @@ const Anal = () => {
                 name: item,
                 value: item,
             }))
+            const brnd = data.tags.brand.map((item: any) => ({
+                id: item,
+                name: item,
+                value: item,
+            }))
 
             setDivisionArray(div)
             setCategoryArray(cat)
             setSubCategoryArray(sub)
+            setBrandArray(brnd)
 
             const skuDetailsArray = skuData
                 ? Object.entries(skuData).map(([key, value]) => ({
@@ -152,7 +164,6 @@ const Anal = () => {
                 value,
             }))
 
-            console.log('dddddddddd', dateWIseDetailArray)
             setDatewisedetails(dateWIseDetailArray)
         } catch (error) {
             console.error(error)
@@ -162,9 +173,6 @@ const Anal = () => {
     useEffect(() => {
         fetchData(from, to)
     }, [page, pageSize, selectedCompany.id, from, to, typeFetch])
-
-    console.log('SKU Details:', skuWiseDetails)
-    console.log('adteeeeeeeee', datewisedetails)
 
     const columns = useMemo<ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]>(
         () => [
@@ -218,14 +226,24 @@ const Anal = () => {
             {
                 header: 'Image',
                 accessorKey: 'value.image',
-                cell: (info) => {
-                    const imageUrl = (info.getValue() as string).split(',')[0]
-                    return <img src={imageUrl} alt="Product Image" width={50} height={50} />
-                },
+                cell: ({ getValue, row }) => (
+                    <img
+                        src={getValue().split(',')[0]}
+                        alt="Image"
+                        className="w-24 h-20 object-cover cursor-pointer"
+                        onClick={() => handleOpenModal(row.original.value.image)}
+                    />
+                ),
             },
         ],
         [],
     )
+
+    const handleOpenModal = (img: any) => {
+        console.log('sdsds', img)
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
 
     const handleDownload = async () => {
         try {
@@ -310,6 +328,8 @@ const Anal = () => {
             setCategoryList(selectedValues)
         } else if (fieldName === 'sub_category') {
             setSubCategoryList(selectedValues)
+        } else if (fieldName === 'brand') {
+            setBrandList(selectedValues)
         }
     }
     const handleApply = () => {
@@ -331,6 +351,11 @@ const Anal = () => {
             if (query) query += '&'
             query += `subcategory=${subCategoryIds}`
         }
+        if (brandList.length > 0) {
+            const brandIds = brandList.map((item: any) => item.id).join(',')
+            if (query) query += '&'
+            query += `brand=${brandIds}`
+        }
 
         setTypeFetch(query)
         setShowDrawer(false)
@@ -349,10 +374,10 @@ const Anal = () => {
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
-                <div className="w-full lg:w-1/2 flex flex-col  ">
-                    <Button variant="new" onClick={handleDrawer} className="xl:w-1/3 w-auto flex gap-3">
+                <div className="w-auto lg:w-1/2 flex flex-col  ">
+                    <Button variant="new" onClick={handleDrawer} className="xl:w-1/2 w-auto flex gap-3 items-center justify-center">
                         {' '}
-                        <FaFilter className="text-xl" /> CATEGORY FILTER
+                        <FaFilter className="text-lg" /> <p>CATEGORY FILTER</p>
                     </Button>
                 </div>
 
@@ -391,7 +416,7 @@ const Anal = () => {
             </div>
 
             <div className="flex flex-col gap-2 justify-center mb-6">
-                <div className="total">
+                <div className="Total">
                     <span className="font-bold">TOTAL AMOUNT:</span>
                     <span className="italic">{data?.total_amount}</span>
                 </div>
@@ -462,6 +487,7 @@ const Anal = () => {
                     categoryArray={categoryArray}
                     showDrawer={showDrawer}
                     subCategoryArray={subCategoryArray}
+                    brandArray={brandArray}
                     handleApply={handleApply}
                     handleCloseDrawer={handleCloseDrawer}
                     handleMultiSelect={handleMultiSelect}
@@ -469,14 +495,24 @@ const Anal = () => {
                     division={divisionList}
                     category={categoryList}
                     sub_category={subCategoryList}
+                    brand={brandList}
                     setSubCategoryList={setSubCategoryList}
                     setCategoryList={setCategoryList}
                     setDivisionList={setDivisionList}
+                    setBrandList={setBrandList}
                     setTypeFetch={setTypeFetch}
+                />
+            )}
+
+            {showImageModal && (
+                <ImageMODAL
+                    dialogIsOpen={showImageModal}
+                    setIsOpen={setShowImageModal}
+                    image={particularRowImage && particularRowImage?.split(',')}
                 />
             )}
         </div>
     )
 }
 
-export default Anal
+export default AnalyticsOverview
