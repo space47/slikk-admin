@@ -372,7 +372,7 @@ const PageSettings = () => {
 
     return (
         <div>
-            <div className=" flex justify-between">
+            <div className=" flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="buttons flex gap-3 mb-7 ">
                     <div className="drop border  bg-gray-200 text-black text-lg font-semibold ">
                         <Dropdown className=" text-xl text-black " title={currentSelectedPage.name} onSelect={handleSelect}>
@@ -390,7 +390,7 @@ const PageSettings = () => {
                     </Button>
                 </div>
 
-                <div className="add">
+                <div className="flex gap-3 items-center justify-center order-first xl:order-none">
                     <Button variant="new" size="md" onClick={handleAddPageClick}>
                         ADD PAGE SETTINGS
                     </Button>

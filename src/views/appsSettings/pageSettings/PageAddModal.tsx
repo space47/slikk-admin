@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import React, { useEffect, useState } from 'react'
 import { Modal, notification } from 'antd'
 import { Field, Form, Formik } from 'formik'
@@ -11,18 +11,14 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Dropdown, Button } from '@/components/ui'
 import Checkbox from '@/components/ui/Checkbox'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { COMPONENT_CATEGORY_TYPES, BANNER_UPLOAD_DATA } from '@/common/banner'
+import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import Select from '@/components/ui/Select'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { DIVISION_STATE } from '@/store/types/division.types'
-import { CATEGORY_STATE } from '@/store/types/category.types'
-import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
-import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
-import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { borrderStyleArray, genericComponentArray } from './genericComp'
+import PageAddCommonImage from './PageAddCommonImage'
 
 interface DataType {
     type: string
@@ -100,42 +96,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [productData, setProductData] = useState<string[]>([])
     const [textAreaValue, setTextAreaValue] = useState('')
     const MAX_UPLOAD = 10000
-    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
-    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
-    const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
-    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    const categoryOptions = category.categories.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const divisionOptions = divisions.divisions.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const subcategoryOptions = subCategory.subcategories.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const productTypeOptions = product_type.product_types.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const brandOptions = brands.brands.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
-    const filterOptions = filters.filters.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
     const [componentOption, setComponentOptions] = useState('')
 
     const dispatch = useAppDispatch()
@@ -223,26 +185,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     })
     const [selectedType, setSelectedType] = useState('')
 
-    const [inputValue, setInputValue] = useState('')
-
-    // const handleSelectdrop = (key: string) => {
-    //     console.log('ddddddddddd', key)
-    //     setSelectedType(key)
-    // }
-
-    // const handleInputDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setInputValue(e.target.value)
-    // }
-
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
         setShowTable(true)
-    }
-
-    const handleMultiSelect = (field: string, value: string) => {
-        if (formikRef.current) {
-            formikRef.current.setFieldValue(field, value)
-        }
     }
 
     const fetchInput = async () => {
@@ -392,18 +337,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     console.log('compo', componentOption)
 
     const [borderForm, setBorderForm] = useState('')
-
-    const cornerRadiusArray = [
-        { label: '1px', value: 1 },
-        { label: '2px', value: 2 },
-        { label: '3px', value: 3 },
-        { label: '4px', value: 4 },
-    ]
-
-    const borderArray = [
-        { label: 'YES', value: 'yes' },
-        { label: 'NO', value: 'no' },
-    ]
 
     const borderStyleArray = [
         { label: 'Dotted', value: 'dotted' },
@@ -586,61 +519,21 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Header Icon Image</div>
+                                <PageAddCommonImage
+                                    label="Header Icon Image"
+                                    name="header_config_icon_Array"
+                                    fieldName="header_config_icon_Array"
+                                    fileList={values.header_config_icon_Array}
+                                    beforeUpload={beforeUpload}
+                                />
 
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="header_config_icon_Array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.header_config_icon_Array}
-                                                            onChange={(files) => {
-                                                                console.log('Updated header_config_icon_Array:', files)
-                                                                form.setFieldValue('header_config_icon_Array', files)
-                                                            }}
-                                                            className="items-center flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('header_config_icon_Array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
-
-                                {/* .................................................................... */}
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Header Image</div>
-
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="header_config_image_Array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.header_config_image_Array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.header_config_image_Array,
-                                                                )
-                                                                form.setFieldValue('header_config_image_Array', files)
-                                                            }}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('header_config_image_Array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
+                                <PageAddCommonImage
+                                    label="Header Image"
+                                    name="header_config_image_Array"
+                                    fieldName="header_config_image_Array"
+                                    fileList={values.header_config_image_Array}
+                                    beforeUpload={beforeUpload}
+                                />
                                 <FormItem asterisk label="Header Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
@@ -667,38 +560,14 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                         component={Input}
                                     />
                                 </FormItem>
+                                <PageAddCommonImage
+                                    label="Sub Header Image"
+                                    name="sub_header_config_image_Array"
+                                    fieldName="sub_header_config_image_Array"
+                                    fileList={values.sub_header_config_image_Array}
+                                    beforeUpload={beforeUpload}
+                                />
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Sub Header Image</div>
-
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="sub_header_config_image_Array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.sub_header_config_image_Array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.sub_header_config_image_Array,
-                                                                )
-                                                                form.setFieldValue('sub_header_config_image_Array', files)
-                                                            }}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) =>
-                                                                form.setFieldValue('sub_header_config_image_Array', files)
-                                                            }
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
                                 <FormItem asterisk label="Sub Header Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
@@ -707,10 +576,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                         component={Input}
                                     />
                                 </FormItem>
-                                {/* ........................................................ */}
-
-                                {/* ............Footer COnfig>>>>>>>>>>>>>>>>>>>>>> */}
-
                                 <FormItem asterisk label="Footer Style" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="footer_config.style" placeholder="Place your header Style" component={Input} />
                                 </FormItem>
@@ -718,35 +583,14 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     <Field type="text" name="footer_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Footer Image</div>
+                                <PageAddCommonImage
+                                    label="Footer Image"
+                                    name="footer_config_image_Array"
+                                    fieldName="footer_config_image_Array"
+                                    fileList={values.footer_config_image_Array}
+                                    beforeUpload={beforeUpload}
+                                />
 
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="footer_config_image_Array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.footer_config_image_Array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.footer_config_image_Array,
-                                                                )
-                                                                form.setFieldValue('footer_config_image_Array', files)
-                                                            }}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('footer_config_image_Array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
                                 <FormItem asterisk label="Footer Position" className="col-span-1 w-[60%] h-[80%]">
                                     <Field
                                         type="text"
@@ -755,10 +599,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                         component={Input}
                                     />
                                 </FormItem>
-
-                                {/* ..................................................... */}
-
-                                {/* Data Types.......................................... */}
 
                                 <FormItem asterisk label="Data Type" className="col-span-1 w-[60%] h-[80%]">
                                     <Field name="data_type.type">
@@ -770,8 +610,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                     options={dataTypeArray}
                                                     value={dataTypeArray.find((option) => option.value === field.value)}
                                                     onChange={(option) => {
-                                                        const value = option?.value || '' // Safely handle null/undefined option
-                                                        form.setFieldValue(field.name, value) // Update the form field value
+                                                        const value = option?.value || ''
+                                                        form.setFieldValue(field.name, value)
                                                     }}
                                                 />
                                             )
@@ -829,17 +669,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                         />
                                     </FormItem>
                                 </FormContainer>
-                                {/* <FormItem
-                                    label="Data Type Barcode"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="data_type.barcodes"
-                                        placeholder="Place your dataType"
-                                        component={Input}
-                                    />
-                                </FormItem> */}
+
                                 <FormItem label="Data Type Posts" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="data_type.posts" placeholder="Place your dataType" component={Input} />
                                 </FormItem>
@@ -852,21 +682,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
                                     <Field name="is_section_clickable" component={Checkbox} />
                                 </FormItem>
-                                {/* <FormItem
-                                    label="Section Filter"
-                                    className="col-span-1 w-[60%] h-[80%]"
-                                >
-                                    <textarea
-                                        name="footer"
-                                        value={textAreaValue}
-                                        onChange={(e: any) =>
-                                            setTextAreaValue(e.target.value)
-                                        }
-                                        id=""
-                                        className="w-2/3 border border-gray-200 rounded-lg items-center h-[100px] p-2"
-                                    ></textarea>
-                                </FormItem> */}
-
                                 <FormContainer className="grid grid-cols-2 gap-4 w-3/4">
                                     {/* Filters */}
                                     <FormItem label="Filters">
