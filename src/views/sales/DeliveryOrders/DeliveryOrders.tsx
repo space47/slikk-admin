@@ -36,6 +36,7 @@ import { CiFilter } from 'react-icons/ci'
 import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
 import { MdAssignmentTurnedIn, MdCancel } from 'react-icons/md'
+import { FaFilter } from 'react-icons/fa'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -363,7 +364,7 @@ const DeliveryOrders = () => {
                     </Button>
 
                     <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
-                        <CiFilter className="text-xl font-extrabold" />
+                        <FaFilter className="text-xl font-extrabold" />
                     </Button>
                 </div>
             </div>

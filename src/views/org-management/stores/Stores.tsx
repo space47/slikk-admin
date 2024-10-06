@@ -3,13 +3,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
@@ -40,9 +34,7 @@ const Stores = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(
-                `merchant/store?p=${page}&page_size=${pageSize}`,
-            )
+            const response = await axiosInstance.get(`merchant/store?p=${page}&page_size=${pageSize}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -191,30 +183,18 @@ const Stores = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'Location URL',
                 accessorKey: 'location_url',
                 cell: (info) => (
-                    <a
-                        href={info.getValue() as string}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    <a href={info.getValue() as string} target="_blank" rel="noopener noreferrer">
                         Location
                     </a>
                 ),
@@ -224,10 +204,7 @@ const Stores = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button
-                        onClick={() => handleActionClick(row.original.id)}
-                        className="border-none bg-none"
-                    >
+                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
                         <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
@@ -273,7 +250,7 @@ const Stores = () => {
 
     return (
         <div>
-            <div className="flex justify-between">
+            <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="mb-4">
                     <input
                         type="text"
@@ -283,11 +260,8 @@ const Stores = () => {
                         className="p-2 border rounded"
                     />
                 </div>
-                <div className="flex items-end justify-end mb-4">
-                    <button
-                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                        onClick={handleStore}
-                    >
+                <div className="flex items-end justify-end mb-4 order-first xl:order-none">
+                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleStore}>
                         ADD NEW STORE
                     </button>{' '}
                 </div>
@@ -298,10 +272,7 @@ const Stores = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -311,31 +282,19 @@ const Stores = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
