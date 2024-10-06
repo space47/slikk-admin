@@ -107,7 +107,7 @@ const BrandOrder = () => {
             setSkuWiseDetails([])
             setDatewisedetails([])
 
-            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}`)
+            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}`)
             const data = response.data
 
             setData(data)
