@@ -198,7 +198,7 @@ const RefundActivity = () => {
             const sendApiRequest = async () => {
                 try {
                     const body = {
-                        action,
+                        action: action,
                     }
 
                     const response = await axiosInstance.patch(`merchant/return_order/${returnDetails?.return_order_id}`, body)
