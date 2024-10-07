@@ -81,6 +81,12 @@ const SendNotification = () => {
         { label: 'cart', value: 'cart' },
     ]
 
+    const DISCOUNTOPTIONS = [
+        { value: 'sort_lowtohigh', label: 'Low to High' },
+        { value: 'sort_hightolow', label: 'High to Low' },
+        { value: 'sort_discount', label: 'DISCOUNT' },
+    ]
+
     const initialValue: sendNotificationType = {
         page: '',
         notification_type: '',
@@ -129,7 +135,7 @@ const SendNotification = () => {
         console.log(utm_medium, utm_source, utm_campaign, utm_tags)
         const imageUpload = values.image_url_array.length > 0 ? await handleimage(image_url_array) : values.image_url
 
-        console.log(UtmArray.filter((item) => values[item.name]).map((item) => `${item.name.replace('_', '-')}_${values[item.name]}`))
+        console.log('DISCOUNT', values.discountTags)
 
         const data = {
             ...formData,
@@ -137,6 +143,7 @@ const SendNotification = () => {
             filters: [
                 ...values.filters.map((filter) => filter),
                 ...UtmArray.filter((item) => values[item.name]).map((item) => `${item.name.replace('_', '-')}_${values[item.name]}`),
+                ...values.discountTags.map((filter) => filter),
             ].join(','),
             message: plainTextMessage,
         }
@@ -214,6 +221,26 @@ const SendNotification = () => {
                                         }}
                                     </Field>
                                 </FormItem>
+                                <div className="flex flex-col">
+                                    <div>Sort By</div>
+                                    <Field name="discountTags">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    isMulti
+                                                    placeholder="Select Discount Tags"
+                                                    options={DISCOUNTOPTIONS}
+                                                    getOptionLabel={(option) => option.label}
+                                                    getOptionValue={(option) => option.value}
+                                                    onChange={(newVal) => {
+                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                        form.setFieldValue(field.name, newValues)
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </div>
 
                                 <FormItem label="Target Page">
                                     <Field name="target_page">

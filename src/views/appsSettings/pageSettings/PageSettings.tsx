@@ -182,12 +182,12 @@ const PageSettings = () => {
             },
             {
                 header: 'Background Image',
-                accessorKey: 'background_image',
+                accessorKey: 'background_config.background_image',
                 cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Mobile Background Image',
-                accessorKey: 'mobile_background_image',
+                accessorKey: 'background_config.mobile_background_image',
                 cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
             },
             {
@@ -359,7 +359,7 @@ const PageSettings = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Page Updated successfully',
             })
-            navigate(0)
+            // navigate(0)
         } catch (error) {
             console.log(error)
             notification.error({

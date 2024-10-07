@@ -74,19 +74,12 @@ const BrandStock = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const [filterInput, setFilterInput] = useState('')
 
-    const fetchData = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchData = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
@@ -101,11 +94,7 @@ const BrandStock = () => {
         }
     }
 
-    const filter = async (
-        page: number,
-        pageSize: number,
-        filter: string = '',
-    ) => {
+    const filter = async (page: number, pageSize: number, filter: string = '') => {
         try {
             let searchInputType = `&sku=${filter}`
             setFilterInput(searchInputType)
@@ -215,20 +204,12 @@ const BrandStock = () => {
             {
                 header: 'Created',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             {
                 header: 'Updated',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             // {
             //     header: 'GRN number',
@@ -302,9 +283,7 @@ const BrandStock = () => {
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = `${selectedCompany.name}_Stock-${moment(date).format('YYYY-MM-DD')}.csv`
@@ -318,8 +297,8 @@ const BrandStock = () => {
 
     return (
         <div className="overflow-x-auto">
-            <div className="upper flex flex-col md:flex-row justify-between mb-4 items-start md:items-center">
-                <div className="w-full md:w-auto">
+            <div className="upper flex flex-col md:flex-row justify-between mb-4 items-center md:items-center gap-4">
+                <div className="w-auto md:w-auto">
                     <input
                         type="text"
                         placeholder="Search here"
@@ -329,39 +308,8 @@ const BrandStock = () => {
                     />
                 </div>
 
-                {/* <div className="flex flex-col md:flex-row gap-5 w-full md:w-auto">
-                    <div className="w-full md:w-auto">
-                        <div className="mb-1 font-semibold text-sm">
-                            FROM DATE:
-                        </div>
-                        <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
-                            className="w-full md:w-auto"
-                        />
-                    </div>
-                    <div className="w-full md:w-auto">
-                        <div className="mb-1 font-semibold text-sm">
-                            TO DATE:
-                        </div>
-                        <DatePicker
-                            inputSuffix={
-                                <TbCalendarStats className="text-xl" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(to)}
-                            onChange={handleToChange}
-                            minDate={moment(from).add(1, 'day').toDate()}
-                            className="w-full md:w-auto"
-                        />
-                    </div>
-                </div> */}
                 <button
-                    className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex "
+                    className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex order-first xl:order-none "
                     onClick={handleDownload}
                 >
                     <IoMdDownload className="text-xl" />
@@ -374,10 +322,7 @@ const BrandStock = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -387,12 +332,7 @@ const BrandStock = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
@@ -410,9 +350,7 @@ const BrandStock = () => {
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                         className="w-full md:w-auto"

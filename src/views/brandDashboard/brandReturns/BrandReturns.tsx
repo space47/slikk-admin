@@ -64,17 +64,10 @@ const BrandReturns = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [showSpinner, setShowSpinner] = useState(false)
 
-    const fetchData = async (
-        page: number,
-        pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchData = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             setShowSpinner(true)
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -174,9 +167,7 @@ const BrandReturns = () => {
                 },
             )
 
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = `${selectedCompany.name}(${from}-${to}).csv`
@@ -244,53 +235,47 @@ const BrandReturns = () => {
                 </>
             ) : (
                 <div className="overflow-x-auto">
-                    <div className="upper flex justify-between mb-5 items-end ">
+                    <div className="flex xl:flex-row xl:justify-between mb-5 items-center xl:items-end flex-col gap-4 ">
+                        <button
+                            className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mt-6 xl:hidden  "
+                            onClick={handleDownload}
+                        >
+                            <IoMdDownload className="text-xl" />
+                        </button>
                         <div className=" align-bottom">
                             <input
                                 type="text"
                                 placeholder="Search here"
                                 value={globalFilter}
-                                onChange={(e) =>
-                                    setGlobalFilter(e.target.value)
-                                }
+                                onChange={(e) => setGlobalFilter(e.target.value)}
                                 className="p-2 border rounded"
                             />
                         </div>
 
-                        <div className="flex gap-5 items-end ">
+                        <div className="flex gap-5 items-center xl:items-end xl:flex-row flex-col ">
                             <div>
-                                <div className="mb-1 font-semibold text-sm">
-                                    FROM DATE:
-                                </div>
+                                <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
                                 <DatePicker
-                                    inputPrefix={
-                                        <HiOutlineCalendar className="text-lg" />
-                                    }
+                                    inputPrefix={<HiOutlineCalendar className="text-lg" />}
                                     defaultValue={new Date()}
                                     value={new Date(from)}
                                     onChange={handleFromChange}
                                 />
                             </div>
                             <div>
-                                <div className="mb-1 font-semibold text-sm">
-                                    TO DATE:
-                                </div>
+                                <div className="mb-1 font-semibold text-sm">TO DATE:</div>
                                 <DatePicker
-                                    inputSuffix={
-                                        <TbCalendarStats className="text-xl" />
-                                    }
+                                    inputSuffix={<TbCalendarStats className="text-xl" />}
                                     defaultValue={new Date()}
                                     value={new Date(to)}
                                     onChange={handleToChange}
-                                    minDate={moment(from)
-                                        .add(1, 'day')
-                                        .toDate()}
+                                    minDate={moment(from).add(1, 'day').toDate()}
                                 />
                             </div>
                             <div>
                                 <div className="flex items-end justify-end ">
                                     <button
-                                        className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mt-6 "
+                                        className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg xl:flex mt-6 hidden  "
                                         onClick={handleDownload}
                                     >
                                         <IoMdDownload className="text-xl" />
@@ -307,14 +292,8 @@ const BrandReturns = () => {
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <Tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
-                                        <Th
-                                            key={header.id}
-                                            colSpan={header.colSpan}
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
+                                        <Th key={header.id} colSpan={header.colSpan}>
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
                                         </Th>
                                     ))}
                                 </Tr>
@@ -324,35 +303,21 @@ const BrandReturns = () => {
                             {table.getRowModel().rows.map((row) => (
                                 <Tr key={row.id}>
                                     {row.getVisibleCells().map((cell) => (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </Td>
+                                        <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                     ))}
                                 </Tr>
                             ))}
                         </TBody>
                     </Table>
                     <div className="flex items-center justify-between mt-4">
-                        <Pagination
-                            pageSize={pageSize}
-                            currentPage={page}
-                            total={totalData}
-                            onChange={onPaginationChange}
-                        />
+                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                         <div style={{ minWidth: 130 }}>
                             <Select<Option>
                                 size="sm"
                                 isSearchable={false}
-                                value={pageSizeOptions.find(
-                                    (option) => option.value === pageSize,
-                                )}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
-                                onChange={(option) =>
-                                    onSelectChange(option?.value)
-                                }
+                                onChange={(option) => onSelectChange(option?.value)}
                             />
                         </div>
                     </div>

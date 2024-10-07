@@ -23,7 +23,7 @@ import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { MdCancel } from 'react-icons/md'
-import { borrderStyleArray, genericComponentArray } from './genericComp'
+import { BackGroundArray, borrderStyleArray, genericComponentArray } from './genericComp'
 import { width } from '@mui/system'
 import PageEditImage from './PageEditImage'
 
@@ -158,21 +158,24 @@ const PageModal: React.FC<modalProps> = ({
         header_config: particularRow.header_config,
         component_type: particularRow.component_type,
         section_heading: particularRow.section_heading,
-        background_image: particularRow.background_image,
+        background_image: particularRow.background_config.background_image,
         sub_header_config: particularRow.sub_header_config,
-        mobile_background_image: particularRow.mobile_background_image,
+        mobile_background_image: particularRow.background_config?.mobile_background_image,
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
-        carousel_autoplay: particularRow.carousel_autoplay,
-        carousel: particularRow.carousel,
-        interval: particularRow.interval,
-        width: particularRow.width,
-        corner_radius: particularRow.corner_radius,
+        background_config: particularRow.background_config,
+        // background_color: particularRow?.background_config?.background_color,
+        // carousel_autoplay: particularRow.carousel_autoplay,
+        // carousel: particularRow.carousel,
+        // interval: particularRow.interval,
+        // width: particularRow.width,
+        // corner_radius: particularRow.corner_radius,
         border: particularRow.border,
         border_style: particularRow.border_style,
-        border_width: particularRow.border_width,
-        border_color: particularRow.border_color,
+        // border_width: particularRow.border_width,
+        // border_color: particularRow.border_color,
+        component_config: particularRow.component_config,
     })
 
     console.log('Interval check', initialValue.interval)
@@ -277,6 +280,13 @@ const PageModal: React.FC<modalProps> = ({
                 ...row,
                 background_image: imageUpload ? imageUpload : row.background_image,
                 mobile_background_image: mobileimageUpload ? mobileimageUpload : row.mobile_background_image,
+                background_config: {
+                    background_color: row.background_config?.background_color,
+                    background_topMargin: Number(row.background_config?.background_topMargin),
+                    background_bottomMargin: Number(row.background_config?.background_bottomMargin),
+                    background_image: imageUpload ? imageUpload : row.background_image,
+                    mobile_background_image: mobileimageUpload ? mobileimageUpload : row.mobile_background_image,
+                },
                 footer_config: {
                     ...row.footer_config,
                     image: footerImageUpload,
@@ -296,27 +306,30 @@ const PageModal: React.FC<modalProps> = ({
                     barcodes: productData.join(','),
                 },
                 component_config: {
-                    carousel: row.carousel,
-                    carousel_dot: row.carousel_dot,
-                    grid: row.grid,
-                    carousel_autoplay: row.carousel_autoplay,
-                    width: Number(row.width),
-                    interval: Number(row.interval),
-                    corner_radius: Number(row.corner_radius),
+                    carousel: row.component_config.carousel,
+                    carousel_dot: row.component_config.carousel_dot,
+                    grid: row.component_config.grid,
+                    carousel_autoplay: row.component_config.carousel_autoplay,
+                    width: Number(row.component_config.width),
+                    interval: Number(row.component_config.interval),
+                    corner_radius: Number(row.component_config.corner_radius),
                     border: row.border,
                     border_style: row.border_style,
-                    border_width: Number(row.border_width),
-                    border_color: row.border_color,
+                    border_width: Number(row.component_config.border_width),
+                    border_color: row.component_config.border_color,
+                    show_dots: row.component_config.show_dots,
+                    infinit_loop: row.component_config.infinit_loop,
                 },
                 section_filters: row.data_type.filters,
             }
             setParticularRow(newRow)
+            console.log('FINAL ADD INSIDE SUBMIT', newRow)
         } catch (error) {
             console.error('Error in handleSubmit:', error)
         }
     }
 
-    console.log('---------------', particularRow)
+    console.log('MainConosle', particularRow)
     const handleRemoveImage = (val: string) => {
         if (val === 'background_image') {
             setInitalValue((prev: any) => ({
@@ -449,7 +462,7 @@ const PageModal: React.FC<modalProps> = ({
                                 </FormItem>
                                 {/* 
                                 {componentOption === 'Generic' && ( */}
-                                <FormContainer>
+                                <FormContainer className="flex gap-2">
                                     <FormContainer className="grid grid-cols-2 gap-10">
                                         {genericComponentArray.map((item, key) => (
                                             <FormItem key={key} label={item.label} className="w-1/2">
@@ -474,41 +487,42 @@ const PageModal: React.FC<modalProps> = ({
                                                 setFieldValue('border', isChecked)
                                                 setBorderForm(isChecked) // Set borderForm to 'yes' or 'no'
                                             }}
-                                        />
-                                    </FormItem>
-
-                                    {borderForm === true && (
-                                        <FormContainer>
-                                            <FormItem label="Border Style" className="col-span-1 w-1/4">
-                                                <Field name="border_style">
-                                                    {({ field, form }: FieldProps<any>) => {
-                                                        return (
-                                                            <Select
-                                                                field={field}
-                                                                form={form}
-                                                                options={borderStyleArray}
-                                                                value={borderStyleArray.find((option) => option.value === field.value)}
-                                                                onChange={(option) => {
-                                                                    const value = option?.value || '' // Safely handle null/undefined option
-                                                                    form.setFieldValue(field.name, value) // Update the form field value
-                                                                }}
-                                                            />
-                                                        )
-                                                    }}
-                                                </Field>
-                                            </FormItem>
-                                            {borrderStyleArray.map((item, key) => (
-                                                <FormItem key={key} label={item.label} className="w-1/2">
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.name}
-                                                        placeholder={item.placeholder}
-                                                        component={Input} // Fallback to 'input' if component is not valid
-                                                    />
+                                        />{' '}
+                                        <br />
+                                        <br />
+                                        {borderForm === true && (
+                                            <FormContainer>
+                                                <FormItem label="Border Style" className="col-span-1 w-2/3">
+                                                    <Field name="border_style">
+                                                        {({ field, form }: FieldProps<any>) => {
+                                                            return (
+                                                                <Select
+                                                                    field={field}
+                                                                    form={form}
+                                                                    options={borderStyleArray}
+                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
+                                                                    onChange={(option) => {
+                                                                        const value = option?.value || '' // Safely handle null/undefined option
+                                                                        form.setFieldValue(field.name, value) // Update the form field value
+                                                                    }}
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
                                                 </FormItem>
-                                            ))}
-                                        </FormContainer>
-                                    )}
+                                                {borrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-1/2">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input} // Fallback to 'input' if component is not valid
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormItem>
                                 </FormContainer>
                                 {/* )} */}
 
@@ -586,6 +600,12 @@ const PageModal: React.FC<modalProps> = ({
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
+
+                                {BackGroundArray.map((item, key) => (
+                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                    </FormItem>
+                                ))}
 
                                 {/* ............Header Config................................................. */}
 
