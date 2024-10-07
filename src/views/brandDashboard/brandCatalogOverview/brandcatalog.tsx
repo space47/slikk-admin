@@ -3,13 +3,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useAppSelector } from '@/store'
@@ -71,9 +65,7 @@ const BrandCatalog = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [filterInput, setFilterInput] = useState('')
     const [showSpinner, setShowSpinner] = useState(false)
     const [showImageModal, setShowImageModal] = useState(false)
@@ -98,11 +90,7 @@ const BrandCatalog = () => {
         }
     }
 
-    const filter = async (
-        page: number,
-        pageSize: number,
-        filter: string = '',
-    ) => {
+    const filter = async (page: number, pageSize: number, filter: string = '') => {
         try {
             let searchInputType = `&sku=${filter}`
             setFilterInput(searchInputType)
@@ -281,9 +269,7 @@ const BrandCatalog = () => {
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = `${selectedCompany.name}_Catalog-${moment(date).format('YYYY-MM-DD')}.csv`
@@ -303,19 +289,17 @@ const BrandCatalog = () => {
                 </div>
             ) : (
                 <>
-                    <div className="flex justify-between mb-4">
+                    <div className="flex xl:justify-between xl:flex-row gap-4 flex-col mb-4 items-center ">
                         <div className="">
                             <input
                                 type="text"
                                 placeholder="Search here"
                                 value={globalFilter}
-                                onChange={(e) =>
-                                    setGlobalFilter(e.target.value)
-                                }
+                                onChange={(e) => setGlobalFilter(e.target.value)}
                                 className="p-2 border rounded"
                             />
                         </div>
-                        <div>
+                        <div className="flex order-first xl:order-none">
                             <button
                                 className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex "
                                 onClick={handleDownload}
@@ -331,14 +315,8 @@ const BrandCatalog = () => {
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <Tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
-                                        <Th
-                                            key={header.id}
-                                            colSpan={header.colSpan}
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
+                                        <Th key={header.id} colSpan={header.colSpan}>
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
                                         </Th>
                                     ))}
                                 </Tr>
@@ -348,12 +326,7 @@ const BrandCatalog = () => {
                             {table.getRowModel().rows.map((row) => (
                                 <Tr key={row.id}>
                                     {row.getVisibleCells().map((cell) => (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </Td>
+                                        <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                     ))}
                                 </Tr>
                             ))}
@@ -361,23 +334,14 @@ const BrandCatalog = () => {
                     </Table>
 
                     <div className="flex items-center justify-between mt-4">
-                        <Pagination
-                            pageSize={pageSize}
-                            currentPage={page}
-                            total={totalData}
-                            onChange={onPaginationChange}
-                        />
+                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                         <div style={{ minWidth: 130 }}>
                             <Select<Option>
                                 size="sm"
                                 isSearchable={false}
-                                value={pageSizeOptions.find(
-                                    (option) => option.value === pageSize,
-                                )}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
-                                onChange={(option) =>
-                                    onSelectChange(option?.value || 0)
-                                }
+                                onChange={(option) => onSelectChange(option?.value || 0)}
                             />
                         </div>
                     </div>
@@ -385,10 +349,7 @@ const BrandCatalog = () => {
                         <ImageMODAL
                             dialogIsOpen={showImageModal}
                             setIsOpen={setShowImageModal}
-                            image={
-                                particularRowImage &&
-                                particularRowImage?.split(',')
-                            }
+                            image={particularRowImage && particularRowImage?.split(',')}
                         />
                     )}
                 </>

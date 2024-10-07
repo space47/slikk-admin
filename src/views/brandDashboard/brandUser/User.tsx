@@ -3,13 +3,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
@@ -55,15 +49,11 @@ const Seller = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [getMobilenumber, setGetMobileNumber] = useState('')
 
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(
-                `company/${selectedCompany.id}/users`,
-            )
+            const response = await axiosInstance.get(`company/${selectedCompany.id}/users`)
             const data = response.data.data
             const total = response.data.data.length
             setData(data)
@@ -103,22 +93,12 @@ const Seller = () => {
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: ({ getValue }) => (
-                    <img
-                        src={getValue() as string}
-                        alt="User"
-                        className="w-12 h-12 object-cover"
-                    />
-                ),
+                cell: ({ getValue }) => <img src={getValue() as string} alt="User" className="w-12 h-12 object-cover" />,
             },
             {
                 header: 'Date Joined',
                 accessorKey: 'date_joined',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format('YYYY-MM-DD')}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
             // {
             //     header: 'Edit',
@@ -159,15 +139,10 @@ const Seller = () => {
         }
 
         try {
-            const response = await axiosInstance.patch(
-                `company/user/${getMobilenumber}`,
-                body,
-            )
+            const response = await axiosInstance.patch(`company/user/${getMobilenumber}`, body)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message ||
-                    'User has benn Successfully deleted',
+                description: response?.data?.message || 'User has benn Successfully deleted',
             })
             navigate(0)
         } catch (error) {
@@ -219,7 +194,7 @@ const Seller = () => {
 
     return (
         <div>
-            <div className="flex justify-between mb-4 items-center">
+            <div className="flex xl:flex xl:justify-between flex-col mb-4 items-center gap-4">
                 <div className="">
                     <input
                         type="text"
@@ -229,11 +204,8 @@ const Seller = () => {
                         className="p-2 border rounded"
                     />
                 </div>
-                <div className="flex items-end">
-                    <button
-                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                        onClick={handleUser}
-                    >
+                <div className="flex items-end order-first xl:order-none">
+                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleUser}>
                         ADD NEW USER
                     </button>{' '}
                 </div>
@@ -244,10 +216,7 @@ const Seller = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -257,31 +226,19 @@ const Seller = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
@@ -300,8 +257,7 @@ const Seller = () => {
                     }}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <IoWarningOutline className="text-red-600 text-4xl" />{' '}
-                        ARE YOU SURE YOU WANT TO DELETE !!
+                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
                     </div>
                 </Modal>
             )}

@@ -4,49 +4,65 @@ import Input from '@/components/ui/Input'
 export const genericComponentArray = [
     {
         label: 'Grid',
-        name: 'grid',
+        name: 'component_config.grid',
         component: { Checkbox },
         type: 'checkbox',
         placeholder: 'Enter grid',
     },
     {
         label: 'Carousel AutoPlay',
-        name: 'carousel_autoplay',
+        name: 'component_config.carousel_autoplay',
         component: { Checkbox },
         type: 'checkbox',
         placeholder: 'Enter Autoplay',
     },
     {
         label: 'Interval',
-        name: 'interval',
+        name: 'component_config.interval',
+        component: { Input },
+        type: 'number',
+        placeholder: 'Enter Interval in secs',
+    },
+
+    {
+        label: 'Show Dots',
+        name: 'component_config.show_dots',
         component: { Input },
         type: 'number',
         placeholder: 'Enter Interval in secs',
     },
     {
+        label: 'Infinit Loop',
+        name: 'component_config.infinit_loop',
+        component: { Input },
+        type: 'number',
+        placeholder: 'Enter Interval in secs',
+    },
+
+    {
         label: 'carousel',
-        name: 'carousel',
+        name: 'component_config.carousel',
         component: { Checkbox },
         type: 'checkbox',
         placeholder: 'Enter carousel',
     },
     {
         label: 'carousel Dot',
-        name: 'carousel_dot',
+        name: 'component_config.carousel_dot',
         component: { Checkbox },
         type: 'checkbox',
         placeholder: 'Enter carousel dot',
     },
     {
         label: 'Width',
-        name: 'width',
+        name: 'component_config.width',
         type: 'number',
         component: { Input },
         placeholder: 'Enter Width (eg: 0.5, 0.25...etc)',
     },
     {
         label: 'Corner Radius',
-        name: 'corner_radius',
+        name: 'component_config.corner_radius',
         type: 'number',
         component: { Input },
         placeholder: 'Enter Corner Radius',
@@ -56,16 +72,27 @@ export const genericComponentArray = [
 export const borrderStyleArray = [
     {
         label: 'BorderWidth',
-        name: 'border_width',
+        name: 'component_config.border_width',
         type: 'number',
         component: { Input },
         placeholder: 'Enter Width (eg: 1,2)',
     },
     {
         label: 'Color',
-        name: 'border_color',
+        name: 'component_config.border_color',
         type: 'text',
         component: { Input },
         placeholder: 'Enter color hexcode',
+    },
+]
+
+export const BackGroundArray = [
+    { label: 'Background Color', type: 'text', name: 'background_config.background_color', placeholder: 'Place bg color in hex' },
+    { label: 'Background TopMargin', type: 'text', name: 'background_config.background_topMargin', placeholder: 'Place Top Margin' },
+    {
+        label: 'Background BottomMargin',
+        type: 'text',
+        name: 'background_config.background_bottomMargin',
+        placeholder: 'Place bottom Margin',
     },
 ]

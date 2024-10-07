@@ -17,7 +17,7 @@ import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePos
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { borrderStyleArray, genericComponentArray } from './genericComp'
+import { BackGroundArray, borrderStyleArray, genericComponentArray } from './genericComp'
 import PageAddCommonImage from './PageAddCommonImage'
 
 interface DataType {
@@ -275,6 +275,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     ]
 
     const handleSubmit = async (row: any) => {
+        console.log('satrt')
         const imageUpload = await handleimage(row.background_image_array)
 
         const mobileImageUpload = await handleimage(row.mobile_background_array)
@@ -310,6 +311,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...row.data_type,
                 barcodes: productData.join(','),
             },
+            background_config: {
+                background_color: row.background_config?.background_color,
+                background_topMargin: Number(row.background_config?.background_topMargin),
+                background_bottomMargin: Number(row.background_config?.background_bottomMargin),
+                background_image: imageUpload,
+                mobile_background_image: mobileImageUpload,
+            },
             component_config: {
                 carousel: row.carousel,
                 carousel_dot: row.carousel_dot,
@@ -326,10 +334,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             section_filters: row.data_type.filters,
         }
 
+        console.log('end rowAdd')
+
         setData((prevData: WebType[]) => [...prevData, newRowAdd])
         setSelectedType('')
         setInitalValue('')
-        console.log('Section', newRowAdd.section_filters)
+
         console.log('----------uooioihot-----', newRowAdd)
         console.log('....', row)
         setIsModalOpen(false)
@@ -509,6 +519,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                         </FormItem>
                                     </FormContainer>
                                 </FormContainer>
+
+                                {BackGroundArray.map((item, key) => (
+                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                    </FormItem>
+                                ))}
 
                                 {/* ............Header Config................................................. */}
 
