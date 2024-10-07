@@ -64,6 +64,40 @@ export const SendNotificationARRAY = [
     },
 ]
 
+export const MAXMINARRAY = [
+    {
+        label: 'Max Price',
+        name: 'maxprice',
+        classname: 'col-span-1 w-1/2',
+        placeholder: 'Enter max Price',
+        type: 'text',
+    },
+    {
+        label: 'Min Price',
+        name: 'minprice',
+        classname: 'col-span-1 w-1/2',
+        placeholder: 'Enter min Price',
+        type: 'text',
+    },
+]
+
+export const OFFARRAY = [
+    {
+        label: 'Max off percenatge',
+        name: 'maxoff',
+        classname: 'col-span-1 w-1/2',
+        placeholder: 'Enter maxoff %',
+        type: 'text',
+    },
+    {
+        label: 'Min off percentage',
+        name: 'minoff',
+        classname: 'col-span-1 w-1/2',
+        placeholder: 'Enter minoff %',
+        type: 'text',
+    },
+]
+
 export const UtmArray = [
     {
         label: 'UTM Medium',
