@@ -2,6 +2,7 @@ type BannerField = {
     type: string
     defVal: string | number | boolean
     placeHolder: string
+    label: string
 }
 
 type BannerFields = {
@@ -10,46 +11,68 @@ type BannerFields = {
 
 export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
     name: {
+        label: 'Name',
         type: 'text',
         defVal: '',
         placeHolder: 'Enter Name',
     },
     footer: {
+        label: 'Footer',
         type: 'text',
         defVal: '',
         placeHolder: 'Enter Footer',
     },
     coupon_code: {
+        label: 'Coupon_Code',
         type: 'text',
         defVal: '',
         placeHolder: 'Enter Coupon',
     },
     max_price: {
+        label: 'Max Price',
         type: 'number',
         defVal: 0,
         placeHolder: 'Enter Max Price',
     },
     min_price: {
+        label: 'Min Price',
         type: 'number',
         defVal: 0,
         placeHolder: 'Enter Min Price',
     },
+    max_off: {
+        label: 'Max off %',
+        type: 'number',
+        defVal: 0,
+        placeHolder: 'Enter Max off %',
+    },
+    min_off: {
+        label: 'Min off %',
+        type: 'number',
+        defVal: 0,
+        placeHolder: 'Enter Min off %',
+    },
+
     redirection_url: {
+        label: 'Url',
         type: 'text',
         defVal: '',
         placeHolder: 'Enter Redirection URL',
     },
     from_date: {
+        label: 'From',
         type: 'date',
         defVal: '',
         placeHolder: 'Enter From Date',
     },
     to_date: {
+        label: 'To',
         type: 'date',
         defVal: '',
         placeHolder: 'Enter To Date',
     },
     is_clickable: {
+        label: '',
         type: 'checkbox',
         defVal: true,
         placeHolder: 'is_clickable',
