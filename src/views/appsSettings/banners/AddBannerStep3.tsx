@@ -156,15 +156,18 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                         {ADD_BANNER_BASIC_FIELDS[field].type == 'checkbox' && (
                             <span className="font-bold">{ADD_BANNER_BASIC_FIELDS[field].placeHolder}</span>
                         )}
-                        <input
-                            name={field}
-                            className="border p-2 rounded-xl"
-                            type={ADD_BANNER_BASIC_FIELDS[field].type}
-                            placeholder={ADD_BANNER_BASIC_FIELDS[field].placeHolder}
-                            onChange={handleChange}
-                            defaultValue={bannerForm[index][field] || ADD_BANNER_BASIC_FIELDS[field].defVal}
-                            defaultChecked={bannerForm[index][field] || ADD_BANNER_BASIC_FIELDS[field].defVal}
-                        />
+                        <div className="flex flex-col">
+                            <div className="la">{ADD_BANNER_BASIC_FIELDS[field].label}</div>
+                            <input
+                                name={field}
+                                className="border p-2 rounded-xl"
+                                type={ADD_BANNER_BASIC_FIELDS[field].type}
+                                placeholder={ADD_BANNER_BASIC_FIELDS[field].placeHolder}
+                                onChange={handleChange}
+                                defaultValue={bannerForm[index][field] || ADD_BANNER_BASIC_FIELDS[field].defVal}
+                                defaultChecked={bannerForm[index][field] || ADD_BANNER_BASIC_FIELDS[field].defVal}
+                            />
+                        </div>
                     </div>
                 ))}
             </form>

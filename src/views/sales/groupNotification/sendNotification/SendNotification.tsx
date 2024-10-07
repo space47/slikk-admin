@@ -13,7 +13,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 // import { NotificationTYPE } from './createNotification.common'
 // import { NotificationARRAY } from './NotificationForms'
 import { RichTextEditor } from '@/components/shared'
-import { SendNotificationARRAY, sendNotificationType, UtmArray } from './sendNotify.common'
+import { MAXMINARRAY, OFFARRAY, SendNotificationARRAY, sendNotificationType, UtmArray } from './sendNotify.common'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
@@ -135,7 +135,10 @@ const SendNotification = () => {
         console.log(utm_medium, utm_source, utm_campaign, utm_tags)
         const imageUpload = values.image_url_array.length > 0 ? await handleimage(image_url_array) : values.image_url
 
-        console.log('DISCOUNT', values.discountTags)
+        console.log(
+            'DISCOUNT',
+            MAXMINARRAY.filter((item) => values[item.name]).map((item) => `${item.name}_${values[item.name]}`),
+        )
 
         const data = {
             ...formData,
@@ -143,6 +146,8 @@ const SendNotification = () => {
             filters: [
                 ...values.filters.map((filter) => filter),
                 ...UtmArray.filter((item) => values[item.name]).map((item) => `${item.name.replace('_', '-')}_${values[item.name]}`),
+                ...MAXMINARRAY.filter((item) => values[item.name]).map((item) => `${item.name}_${values[item.name]}`),
+                ...OFFARRAY.filter((item) => values[item.name]).map((item) => `${item.name}_${values[item.name]}`),
                 ...values.discountTags.map((filter) => filter),
             ].join(','),
             message: plainTextMessage,
@@ -221,6 +226,22 @@ const SendNotification = () => {
                                         }}
                                     </Field>
                                 </FormItem>
+
+                                <FormContainer className="flex gap-3">
+                                    {MAXMINARRAY.map((item, key) => (
+                                        <FormItem key={key} label={item.label} className={item.classname}>
+                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        </FormItem>
+                                    ))}
+                                </FormContainer>
+                                <FormContainer className="flex gap-3">
+                                    {OFFARRAY.map((item, key) => (
+                                        <FormItem key={key} label={item.label} className={item.classname}>
+                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        </FormItem>
+                                    ))}
+                                </FormContainer>
+
                                 <div className="flex flex-col">
                                     <div>Sort By</div>
                                     <Field name="discountTags">
