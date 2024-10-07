@@ -158,7 +158,7 @@ const PageModal: React.FC<modalProps> = ({
         header_config: particularRow.header_config,
         component_type: particularRow.component_type,
         section_heading: particularRow.section_heading,
-        background_image: particularRow.background_config.background_image,
+        background_image: particularRow.background_config?.background_image,
         sub_header_config: particularRow.sub_header_config,
         mobile_background_image: particularRow.background_config?.mobile_background_image,
         is_section_clickable: particularRow.is_section_clickable,
