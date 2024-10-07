@@ -292,6 +292,7 @@ const PageModal: React.FC<modalProps> = ({
                 },
                 data_type: {
                     ...row.data_type,
+                    type: row.data_type.type,
                     barcodes: productData.join(','),
                 },
                 component_config: {
