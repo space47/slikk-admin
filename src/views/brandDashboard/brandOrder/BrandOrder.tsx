@@ -360,6 +360,12 @@ const BrandOrder = () => {
     return (
         <div className="overflow-x-auto">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
+                <button
+                    className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 xl:hidden"
+                    onClick={handleDownload}
+                >
+                    <IoMdDownload className="text-xl" />
+                </button>
                 <div className="w-auto lg:w-1/2 flex flex-col  ">
                     <Button variant="new" onClick={handleDrawer} className="xl:w-1/2 w-auto flex gap-3 items-center justify-center">
                         {' '}
@@ -387,10 +393,10 @@ const BrandOrder = () => {
                             minDate={moment(from).toDate()}
                         />
                     </div>
-                    <div>
-                        <div className="flex items-end justify-end">
+                    <div className="order-first xl:order-none items-center">
+                        <div className="flex items-end justify-end ">
                             <button
-                                className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 "
+                                className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg xl:flex xl:mt-5 hidden  "
                                 onClick={handleDownload}
                             >
                                 <IoMdDownload className="text-xl" />
