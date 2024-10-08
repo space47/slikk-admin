@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
 import { NOTIFYSTATS, NotifyResponse } from './getNotiStats.common'
+import { DatePicker } from '@/components/ui'
+import { HiOutlineCalendar } from 'react-icons/hi'
 
 type Option = {
     value: number
@@ -28,6 +30,8 @@ const pageSizeOptions = [
 const GetNotificationStats = () => {
     const [data, setData] = useState<NOTIFYSTATS[]>([])
     const [totalData, setTotalData] = useState(0)
+    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -35,7 +39,7 @@ const GetNotificationStats = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             // const filterValue = globalFilter ? `&name=${globalFilter}` : ''
-            const response = await axiosInstance.get(`/notification/stats?p=${page}&page_size=${pageSize}`)
+            const response = await axiosInstance.get(`/notification/stats?p=${page}&page_size=${pageSize}&from=${from}&to=${to}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -146,6 +150,23 @@ const GetNotificationStats = () => {
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
     }
+
+    const handleFromChange = (date: Date | null) => {
+        if (date) {
+            setFrom(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setFrom(moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    const handleToChange = (date: Date | null) => {
+        if (date) {
+            setTo(moment(date).format('YYYY-MM-DD'))
+        } else {
+            setTo(moment().format('YYYY-MM-DD'))
+        }
+    }
+
     const navigate = useNavigate()
 
     const handleSeller = () => {
@@ -155,19 +176,48 @@ const GetNotificationStats = () => {
     return (
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
-                    />
+                <div className="mb-4 flex">
+                    <div>
+                        <div>Enter name:</div>
+                        <input
+                            type="text"
+                            placeholder="Search here"
+                            value={globalFilter}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            className="p-2 border rounded"
+                        />
+                    </div>
                 </div>
-                <div className="flex items-end justify-end mb-4 order-first xl:order-1">
-                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
-                        Create Notification
-                    </button>{' '}
+
+                <div className="flex gap-5 items-center flex-col xl:flex-row mb-4">
+                    <div className="flex ">
+                        <div>
+                            <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
+                            <DatePicker
+                                inputPrefix={<HiOutlineCalendar className="text-lg" />}
+                                defaultValue={new Date()}
+                                value={new Date(from)}
+                                onChange={handleFromChange}
+                                className="w-2/3"
+                            />
+                        </div>
+                        <div>
+                            <div className="mb-1 font-semibold text-sm">TO DATE:</div>
+                            <DatePicker
+                                inputPrefix={<HiOutlineCalendar className="text-xl" />}
+                                defaultValue={new Date()}
+                                value={new Date(to)}
+                                onChange={handleToChange}
+                                minDate={moment(from).toDate()}
+                                className="w-2/3"
+                            />
+                        </div>
+                    </div>
+                    <div className=" mt-4 order-first xl:order-1">
+                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
+                            Create Notification
+                        </button>{' '}
+                    </div>
                 </div>
             </div>
             <Table>

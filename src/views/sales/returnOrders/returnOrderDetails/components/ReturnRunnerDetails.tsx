@@ -19,11 +19,11 @@ const ReturnRunnerDetails = () => {
             <div className="group flex flex-col gap-2">
                 <div className="flex items-center">
                     <div className="ltr:ml-2 rtl:mr-2">
-                        <span className="text-xl font-bold flex gap-1">{returnProducts?.map((item) => item.partner)}</span>
+                        <span className="text-xl font-bold flex gap-1">{returnProducts?.at(-1)?.partner}</span>
                     </div>
                 </div>
                 <div className="time">
-                    <span className="font-bold">AWB: {returnProducts?.map((item) => item.awb_code)}</span>
+                    <span className="font-bold">AWB: {returnProducts?.at(-1)?.awb_code}</span>
                 </div>
             </div>
         </Card>

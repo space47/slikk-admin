@@ -9,6 +9,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import OrderCreateTable from './OrderCreateTable'
 
 interface ReplaceDrawerProps {
     dialogIsOpen: boolean
@@ -35,6 +36,8 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [productData, setProductData] = useState('')
+    const [showBelowData, setShowBelowData] = useState(false)
+    const [productTableData, setProductTableData] = useState()
 
     const fetchInput = async () => {
         try {
@@ -66,10 +69,12 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
     }
 
     const handleActionClick = (value: any) => {
-        console.log('Barcode', value)
-        setProductData(value)
+        console.log('Barcode', value.barcode)
+        setProductData(value.barcode)
         setShowTable(false)
-        // setSearchInput('')
+        setShowBelowData(true)
+        setProductTableData(value)
+        setSearchInput('')
     }
 
     const handleAPIforReplace = async () => {
@@ -90,6 +95,8 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
             console.log(error)
         }
     }
+
+    console.log('OOKOKOOKOK', productTableData)
 
     return (
         <div>
@@ -126,10 +133,44 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
                         </div>
                     </div>
 
-                    {showTable && searchInput && <CreatePostTable data={tableData} handleActionClick={handleActionClick} />}
+                    <div className=" overflow-scroll scrollbar-hide">
+                        {showTable && searchInput && <OrderCreateTable data={tableData} handleActionClick={handleActionClick} />}
+                    </div>
+                    {showBelowData && (
+                        <>
+                            <div className="flex gap-1 items-center mt-4 justify-center">
+                                <div>
+                                    <img
+                                        src={productTableData?.image.split(',')[0].trim()}
+                                        alt="img"
+                                        className="px-4 py-2 border"
+                                        style={{ width: '200px', height: '200px' }}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <div className="px-4 py-2 border">
+                                        {' '}
+                                        <span className="font-bold">SKU:</span> {productTableData?.sku}
+                                    </div>
+                                    <div className="px-4 py-2 border">
+                                        <span className="font-bold">Barcode: </span>
+                                        {productTableData?.barcode}
+                                    </div>
+
+                                    <div className="px-4 py-2 border">
+                                        <span className="font-bold">Brand:</span> {productTableData?.brand}
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 <div className="mt-10">
+                    {/* {productData !== undefined ||
+                        (productData !== null && (
+                            
+                        ))} */}
                     <button className="flex justify-end items-end bg-red-500 text-white px-3 py-2 rounded-md" onClick={handleAPIforReplace}>
                         Replace
                     </button>
