@@ -120,6 +120,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/sales/reverseDelivery/ReverseDelivery')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsOrderManagement.skuOrderHistory',
+        path: `${APP_PREFIX_PATH}/skuOrderHistory`,
+        component: lazy(() => import('@/views/sales/skuOrderHistory/SkuOrderHistory')),
+        authority: [ADMIN, USER],
+    },
 
     // SELLERS................................................................................................................
 
@@ -775,6 +781,12 @@ const appsRoute: Routes = [
     {
         key: 'appsCommuncication.sendNotification',
         path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification`,
+        component: lazy(() => import('@/views/sales/groupNotification/sendNotification/GetNotificationStats')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.sendNotification',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification/addNew`,
         component: lazy(() => import('@/views/sales/groupNotification/sendNotification/SendNotification')),
         authority: [ADMIN, USER],
     },

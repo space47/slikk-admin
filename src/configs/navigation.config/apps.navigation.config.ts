@@ -72,6 +72,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsOrderManagement.skuOrderHistory',
+                        path: `${APP_PREFIX_PATH}/skuOrderHistory`,
+                        title: 'Sku Order History',
+                        translateKey: 'nav.appsOrderManagement.skuOrderHistory',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 

@@ -6,10 +6,12 @@ import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
 import { useNavigate } from 'react-router-dom'
+import ReplaceDrawer from './ReplaceDrawer'
 
 import.meta.env.VITE_WEB_URI
 
 type Product = {
+    id: number
     barcode: string
     brand: string
     name: string
@@ -30,6 +32,7 @@ type Product = {
 
 type OrderProductsProps = {
     data?: Product[]
+    invoice_id: any
 }
 
 const { Tr, Th, Td, THead, TBody } = Table
@@ -39,6 +42,7 @@ const columnHelper = createColumnHelper<Product>()
 const ProductColumn = ({ row }: { row: Product }) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
+
     const navigate = useNavigate()
 
     const segregatedNames = (value: any) => {
@@ -91,76 +95,104 @@ const PriceAmount = ({ amount }: { amount: number }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
-const columns = [
-    columnHelper.accessor('name', {
-        header: 'Product',
-        cell: (props) => {
-            const row = props.row.original
-            return <ProductColumn row={row} />
-        },
-    }),
+const OrderProducts = ({ data = [], invoice_id }: OrderProductsProps) => {
+    const [replaceDrawer, setReplaceDrawer] = useState(false)
+    const [itemId, setItemId] = useState<number>()
 
-    columnHelper.accessor('size', {
-        header: 'Size',
-        cell: (props) => {
-            const row = props.row.original
-            return <div>{row.size ? row.size.toUpperCase() : ''}</div>
-        },
-    }),
-    columnHelper.accessor('location', {
-        header: 'Location',
-    }),
-    columnHelper.accessor('color', {
-        header: 'Color',
-        cell: (props) => {
-            const row = props.row.original
-            return <div>{row.color}</div>
-        },
-    }),
-    columnHelper.accessor('sp', {
-        header: 'Price',
-        cell: (props) => {
-            const row = props.row.original
-            console.log('MRP', row?.mrp)
-            console.log('SP', row?.sp)
+    const columns = [
+        columnHelper.accessor('name', {
+            header: 'Product',
+            cell: (props) => {
+                const row = props.row.original
+                return <ProductColumn row={row} />
+            },
+        }),
 
-            const percentageCalculation = Math.round(((parseFloat(row.mrp) - parseFloat(row.sp)) / parseFloat(row.mrp)) * 100)
+        columnHelper.accessor('size', {
+            header: 'Size',
+            cell: (props) => {
+                const row = props.row.original
+                return <div>{row.size ? row.size.toUpperCase() : ''}</div>
+            },
+        }),
+        columnHelper.accessor('location', {
+            header: 'Location',
+        }),
 
-            return percentageCalculation > 0 ? (
-                <div className="w-[200px] overflow-ellipsis flex flex-col">
-                    <span className="line-through">Rs.{row.mrp}</span>
-                    <span>Rs.{row.sp}</span>
-                    <span>{percentageCalculation} % off</span>
-                </div>
-            ) : row.mrp === row.sp ? (
-                <div>Rs.{row.sp}</div>
-            ) : (
-                <div>Rs.{row.sp}</div>
-            )
-        },
-    }),
-    columnHelper.accessor('quantity', {
-        header: 'Quantity',
-    }),
+        columnHelper.accessor('color', {
+            header: 'Color',
+            cell: (props) => {
+                const row = props.row.original
+                return <div>{row.color}</div>
+            },
+        }),
+        columnHelper.accessor('sp', {
+            header: 'Price',
+            cell: (props) => {
+                const row = props.row.original
+                console.log('MRP', row?.mrp)
+                console.log('SP', row?.sp)
 
-    columnHelper.accessor('fulfilled_quantity', {
-        header: 'Fullfilled Quantity',
-    }),
-    columnHelper.accessor('final_price', {
-        header: 'Final Price',
-        cell: (props) => {
-            const row = props.row.original
-            return <PriceAmount amount={row.final_price} />
-        },
-    }),
-]
+                const percentageCalculation = Math.round(((parseFloat(row.mrp) - parseFloat(row.sp)) / parseFloat(row.mrp)) * 100)
 
-const OrderProducts = ({ data = [] }: OrderProductsProps) => {
+                return percentageCalculation > 0 ? (
+                    <div className="w-[200px] overflow-ellipsis flex flex-col">
+                        <span className="line-through">Rs.{row.mrp}</span>
+                        <span>Rs.{row.sp}</span>
+                        <span>{percentageCalculation} % off</span>
+                    </div>
+                ) : row.mrp === row.sp ? (
+                    <div>Rs.{row.sp}</div>
+                ) : (
+                    <div>Rs.{row.sp}</div>
+                )
+            },
+        }),
+        columnHelper.accessor('quantity', {
+            header: 'Quantity',
+        }),
+
+        columnHelper.accessor('fulfilled_quantity', {
+            header: 'Fullfilled Quantity',
+        }),
+        columnHelper.accessor('final_price', {
+            header: 'Final Price',
+            cell: (props) => {
+                const row = props.row.original
+                return <PriceAmount amount={row.final_price} />
+            },
+        }),
+        columnHelper.accessor('name', {
+            header: 'Replace',
+            cell: (props) => {
+                const rowID = props.row.original.id
+                return (
+                    <>
+                        <button className="text-white bg-red-500 px-3 py-2 rounded-[10px]" onClick={() => handleReplace(rowID)}>
+                            Replace
+                        </button>
+                    </>
+                )
+            },
+        }),
+    ]
+
+    const handleReplace = (itemId: number) => {
+        setReplaceDrawer(true)
+        setItemId(itemId)
+    }
+
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
+
+    const handleReplaceClose = () => {
+        setReplaceDrawer(false)
+    }
+
+    const handleReplaceSubmit = () => {}
 
     return (
         <AdaptableCard className="mb-4">
@@ -190,6 +222,16 @@ const OrderProducts = ({ data = [] }: OrderProductsProps) => {
                     })}
                 </TBody>
             </Table>
+
+            {replaceDrawer && (
+                <ReplaceDrawer
+                    dialogIsOpen={replaceDrawer}
+                    onDialogClose={handleReplaceClose}
+                    handleSubmit={handleReplaceSubmit}
+                    id={itemId}
+                    invoice_id={invoice_id}
+                />
+            )}
         </AdaptableCard>
     )
 }

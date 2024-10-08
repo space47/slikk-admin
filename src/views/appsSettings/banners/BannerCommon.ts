@@ -49,6 +49,8 @@ export interface BANNERMODEL {
     section_background_mobile_array: []
     max_price: number
     min_price: number
+    max_off: number
+    min_off: number
     barcodes: string
     redirection_url: string | null
     tags_input: string

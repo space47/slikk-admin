@@ -144,6 +144,8 @@ const EditBanner = () => {
         section_background_mobile: bannerData?.section_background_mobile || '',
         max_price: bannerData?.max_price || 0,
         min_price: bannerData?.min_price || 0,
+        max_off: bannerData?.max_off || 0,
+        min_off: bannerData?.min_off || 0,
         barcodes: bannerData?.barcodes || '',
         redirection_url: bannerData?.redirection_url || null,
         tags_input: bannerData?.tags.join(',') || '',
