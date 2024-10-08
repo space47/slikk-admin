@@ -95,4 +95,16 @@ export const BackGroundArray = [
         name: 'background_config.background_bottomMargin',
         placeholder: 'Place bottom Margin',
     },
+    {
+        label: 'Desktop Position',
+        type: 'text',
+        name: 'background_config.desktop_position',
+        placeholder: 'Place Desktop Position',
+    },
+    {
+        label: 'Mobile Position',
+        type: 'text',
+        name: 'background_config.mobile_position',
+        placeholder: 'Place Mobile Position',
+    },
 ]
