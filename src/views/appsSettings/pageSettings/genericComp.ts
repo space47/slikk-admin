@@ -28,14 +28,14 @@ export const genericComponentArray = [
         label: 'Show Dots',
         name: 'component_config.show_dots',
         component: { Input },
-        type: 'number',
+        type: 'checkbox',
         placeholder: 'Enter Interval in secs',
     },
     {
         label: 'Infinit Loop',
         name: 'component_config.infinit_loop',
         component: { Input },
-        type: 'number',
+        type: 'checkbox',
         placeholder: 'Enter Interval in secs',
     },
 
