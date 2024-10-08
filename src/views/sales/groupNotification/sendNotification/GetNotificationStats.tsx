@@ -38,8 +38,9 @@ const GetNotificationStats = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             // const filterValue = globalFilter ? `&name=${globalFilter}` : ''
-            const response = await axiosInstance.get(`/notification/stats?p=${page}&page_size=${pageSize}&from=${from}&to=${to}`)
+            const response = await axiosInstance.get(`/notification/stats?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
