@@ -57,7 +57,7 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
                 cell: ({ row }) => (
                     <button
                         type="button"
-                        onClick={() => handleActionClick(row.original.barcode)}
+                        onClick={() => handleActionClick(row.original)}
                         className="text-white bg-green-700 px-3 py-1 rounded-lg hover:bg-green-500"
                     >
                         <span className="text-sm">ADD</span>
