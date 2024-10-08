@@ -51,7 +51,7 @@ const GetNotificationStats = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, globalFilter])
+    }, [page, pageSize, globalFilter, from, to])
 
     // const handleActionClick = (id: number) => {
     //     // console.log('OK', id)
