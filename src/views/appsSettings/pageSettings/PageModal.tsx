@@ -102,6 +102,11 @@ const PageModal: React.FC<modalProps> = ({
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState<string[]>([particularRow ? particularRow.data_type.barcodes : []])
+    // posts....................
+    // const[postInput, setPOstInput] = useState('')
+    // const [showPostTable, setShowPostTable] = useState(false)
+    // const [postTableData, setPostTableData] = useState([])
+    // const [postData, setPostData] = useState([])
     const [textAreaValue, setTextAreaValue] = useState()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
@@ -282,6 +287,8 @@ const PageModal: React.FC<modalProps> = ({
                 mobile_background_image: mobileimageUpload ? mobileimageUpload : row.mobile_background_image,
                 background_config: {
                     background_color: row.background_config?.background_color,
+                    desktop_position: row.background_config?.desktop_position,
+                    mobile_position: row.background_config?.mobile_position,
                     background_topMargin: Number(row.background_config?.background_topMargin),
                     background_bottomMargin: Number(row.background_config?.background_bottomMargin),
                     background_image: imageUpload ? imageUpload : row.background_image,
