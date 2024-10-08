@@ -84,8 +84,7 @@ const DROPDOWNARRAY = [
 const CreatePost = () => {
     const navigate = useNavigate()
 
-    const [currentSelectedPage, setCurrentSelectedPage] =
-        useState<Record<string, string>>()
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
@@ -154,11 +153,8 @@ const CreatePost = () => {
     const fetchInput = async () => {
         try {
             if (searchInput) {
-                const qname =
-                    currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
-                const response = await axioisInstance.get(
-                    `/search/product?dashboard=true&${qname}=${searchInput}`,
-                )
+                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
+                const response = await axioisInstance.get(`/search/product?dashboard=true&${qname}=${searchInput}`)
                 const data = response.data.results
                 setTableData(data)
                 console.log(data)
@@ -178,6 +174,8 @@ const CreatePost = () => {
         setShowTable(false)
         setSearchInput('')
     }
+
+    console.log('DATATOFTHEHERO', productData)
 
     const handleSubmit = async (values: Post) => {
         console.log('Type', values.type)
@@ -216,20 +214,15 @@ const CreatePost = () => {
             formData.append('mobile', values.mobile)
             console.log('Finished checking formdata')
             console.log('Starting API call')
-            const response = await axioisInstance.post(
-                'merchant/userpost',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
+            const response = await axioisInstance.post('merchant/userpost', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
                 },
-            )
+            })
             setSubmitLoader(false)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'POST created successfully',
+                description: response?.data?.message || 'POST created successfully',
             })
             navigate('/app/uploadPost')
             console.log('Ending API call')
@@ -238,8 +231,7 @@ const CreatePost = () => {
             setSubmitLoader(false)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'POST not created',
+                description: error?.response?.data?.message || 'POST not created',
             })
         }
     }
@@ -254,50 +246,23 @@ const CreatePost = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, resetForm, setFieldValue }) => (
-                    <Form
-                        className="w-2/3"
-                        onKeyDown={(e: any) =>
-                            e.key === 'Enter' && e.preventDefault()
-                        }
-                    >
+                    <Form className="w-2/3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {CREATE_POST.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.className}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.className}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
 
-                                <FormItem
-                                    asterisk
-                                    label="Type"
-                                    className="col-span-1 w-full"
-                                >
+                                <FormItem asterisk label="Type" className="col-span-1 w-full">
                                     <Field name="type">
                                         {({ field, form }: FieldProps) => (
                                             <Select
                                                 {...field}
-                                                value={SegmentOptions().find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value,
-                                                )}
+                                                value={SegmentOptions().find((option) => option.value === field.value)}
                                                 options={SegmentOptions()}
-                                                onChange={(option) =>
-                                                    form.setFieldValue(
-                                                        'type',
-                                                        option?.value,
-                                                    )
-                                                }
+                                                onChange={(option) => form.setFieldValue('type', option?.value)}
                                             />
                                         )}
                                     </Field>
@@ -308,35 +273,16 @@ const CreatePost = () => {
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 Image / Video
                                 <FormContainer className=" mt-5 ">
-                                    <FormItem
-                                        label=""
-                                        className="grid grid-rows-2"
-                                    >
+                                    <FormItem label="" className="grid grid-rows-2">
                                         <Field name="file_array">
-                                            {({
-                                                form,
-                                            }: FieldProps<Product>) => (
+                                            {({ form }: FieldProps<Product>) => (
                                                 <>
                                                     <Upload
                                                         multiple
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
-                                                        fileList={
-                                                            values.file_array
-                                                        }
-                                                        onChange={(files) =>
-                                                            form.setFieldValue(
-                                                                'file_array',
-                                                                files,
-                                                            )
-                                                        }
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'file_array',
-                                                                files,
-                                                            )
-                                                        }
+                                                        beforeUpload={beforeUpload}
+                                                        fileList={values.file_array}
+                                                        onChange={(files) => form.setFieldValue('file_array', files)}
+                                                        onFileRemove={(files) => form.setFieldValue('file_array', files)}
                                                     />
                                                 </>
                                             )}
@@ -349,35 +295,16 @@ const CreatePost = () => {
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 Thumbnail
                                 <FormContainer className=" mt-5 ">
-                                    <FormItem
-                                        label=""
-                                        className="grid grid-rows-2"
-                                    >
+                                    <FormItem label="" className="grid grid-rows-2">
                                         <Field name="thumbnail_array">
-                                            {({
-                                                form,
-                                            }: FieldProps<Product>) => (
+                                            {({ form }: FieldProps<Product>) => (
                                                 <>
                                                     <Upload
                                                         multiple
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
-                                                        fileList={
-                                                            values.thumbnail_array
-                                                        }
-                                                        onChange={(files) =>
-                                                            form.setFieldValue(
-                                                                'thumbnail_array',
-                                                                files,
-                                                            )
-                                                        }
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'thumbnail_array',
-                                                                files,
-                                                            )
-                                                        }
+                                                        beforeUpload={beforeUpload}
+                                                        fileList={values.thumbnail_array}
+                                                        onChange={(files) => form.setFieldValue('thumbnail_array', files)}
+                                                        onFileRemove={(files) => form.setFieldValue('thumbnail_array', files)}
                                                         // uploadButtonText="Add Files"
                                                     />
                                                 </>
@@ -405,22 +332,13 @@ const CreatePost = () => {
                                     <div className="bg-gray-200 rounded-[10px] font-bold text-lg ">
                                         <Dropdown
                                             className=" text-xl text-black bg-gray-200 font-bold "
-                                            title={
-                                                currentSelectedPage?.value
-                                                    ? currentSelectedPage.label
-                                                    : 'SELECT'
-                                            }
+                                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
                                             onSelect={handleSelect}
                                         >
                                             {DROPDOWNARRAY?.map((item, key) => {
                                                 return (
-                                                    <DropdownItem
-                                                        key={key}
-                                                        eventKey={item.value}
-                                                    >
-                                                        <span>
-                                                            {item.label}
-                                                        </span>
+                                                    <DropdownItem key={key} eventKey={item.value}>
+                                                        <span>{item.label}</span>
                                                     </DropdownItem>
                                                 )
                                             })}
@@ -428,12 +346,7 @@ const CreatePost = () => {
                                     </div>
                                 </div>
 
-                                {showTable && searchInput && (
-                                    <CreatePostTable
-                                        data={tableData}
-                                        handleActionClick={handleActionClick}
-                                    />
-                                )}
+                                {showTable && searchInput && <CreatePostTable data={tableData} handleActionClick={handleActionClick} />}
 
                                 <FormItem label="Product" className="w-1/2">
                                     <Field
@@ -442,10 +355,7 @@ const CreatePost = () => {
                                         value={productData}
                                         onChange={(e: any) => {
                                             setProductData(e.target.value)
-                                            setFieldValue(
-                                                'products',
-                                                e.target.value,
-                                            )
+                                            setFieldValue('products', e.target.value)
                                         }}
                                         placeholder="Enter product barcode"
                                     />
@@ -457,18 +367,10 @@ const CreatePost = () => {
                                     <Spinner className="mr-4" size="50px" />
                                 ) : (
                                     <>
-                                        <Button
-                                            type="reset"
-                                            className="mr-2 bg-gray-600"
-                                            onClick={() => resetForm()}
-                                        >
+                                        <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                             Reset
                                         </Button>
-                                        <Button
-                                            variant="solid"
-                                            type="submit"
-                                            className=" text-white"
-                                        >
+                                        <Button variant="solid" type="submit" className=" text-white">
                                             Submit
                                         </Button>
                                     </>
