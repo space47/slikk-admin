@@ -16,6 +16,12 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         defVal: '',
         placeHolder: 'Enter Name',
     },
+    position: {
+        label: 'Position',
+        type: 'number',
+        defVal: '',
+        placeHolder: 'Enter position',
+    },
     footer: {
         label: 'Footer',
         type: 'text',

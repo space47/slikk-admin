@@ -18,7 +18,7 @@ function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, com
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
 
     useEffect(() => {
-        console.log(bannerForm)
+        console.log('tttp', bannerForm)
     }, [bannerForm])
 
     const handleInputChange = (index: any, field: any, value: any) => {
@@ -53,7 +53,7 @@ function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, com
                                 bannerForm={bannerForm}
                                 setBannerForm={setBannerFormData}
                                 index={key}
-                                handleInputChange={(field: string, value: any) => handleInputChange(key, field, value)}
+                                handleInputChange={(field: any, value: any) => handleInputChange(key, field, value)}
                             />
 
                             <div className="absolute top-5 right-5">
@@ -100,7 +100,9 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
     const handleChange = (e: any) => {
         const { name, value, type, checked } = e.target
-        handleInputChange(name, type === 'checkbox' ? checked : value)
+
+        const finalValue = type === 'number' ? Number(value) : type === 'checkbox' ? checked : value
+        handleInputChange(name, finalValue)
     }
 
     const handleSetDataInForm = (key: string, value: any) => {
@@ -121,7 +123,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         } else {
             tempBannerForm[index] = { ...bannerForm[index], [key]: value }
         }
-        console.log(tempBannerForm)
+        console.log('temp', tempBannerForm)
         setBannerForm(tempBannerForm)
     }
 
