@@ -314,6 +314,8 @@ const PageModal: React.FC<modalProps> = ({
                     mobile_position: row.background_config?.mobile_position,
                     background_topMargin: Number(row.background_config?.background_topMargin),
                     background_bottomMargin: Number(row.background_config?.background_bottomMargin),
+                    mobile_Width: Number(row.background_config?.mobile_width),
+                    web_Width: Number(row.background_config?.web_width),
                     background_image: imageUpload ? imageUpload : row.background_image,
                     mobile_background_image: mobileimageUpload ? mobileimageUpload : row.mobile_background_image,
                 },
