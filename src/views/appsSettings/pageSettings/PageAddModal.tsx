@@ -339,8 +339,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             },
             background_config: {
                 background_color: row.background_config?.background_color,
+                desktop_position: row.background_config?.desktop_position,
+                mobile_position: row.background_config?.mobile_position,
                 background_topMargin: Number(row.background_config?.background_topMargin),
                 background_bottomMargin: Number(row.background_config?.background_bottomMargin),
+                mobile_Width: Number(row.background_config?.mobile_width),
+                web_Width: Number(row.background_config?.web_width),
                 background_image: imageUpload,
                 mobile_background_image: mobileImageUpload,
             },

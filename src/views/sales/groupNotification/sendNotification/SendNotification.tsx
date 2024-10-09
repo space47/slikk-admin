@@ -4,7 +4,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
-import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
+import { Field, Form, Formik, FieldProps, useFormikContext } from 'formik' // Add FieldProps here
 import * as Yup from 'yup'
 import { useState } from 'react'
 import { message, notification } from 'antd'
@@ -19,6 +19,7 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { Dialog, Upload } from '@/components/ui'
 import { IoMdAddCircle } from 'react-icons/io'
+import { MdCancel } from 'react-icons/md'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -26,7 +27,7 @@ const SendNotification = () => {
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
-
+    const [filterId, setFilterId] = useState()
     const MAX_UPLOAD = 100
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
@@ -129,28 +130,29 @@ const SendNotification = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        console.log('start')
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
-        const { image_url_array, utm_medium, utm_source, utm_campaign, utm_tags, ...formData } = values
-        console.log(utm_medium, utm_source, utm_campaign, utm_tags)
+        const { image_url_array, utm_medium, utm_source, utm_campaign, minprice, maxprice, minoff, maxoff, utm_tags, ...formData } = values
+        console.log(utm_medium, utm_source, utm_campaign, utm_tags, maxoff, maxprice, minoff, minprice)
         const imageUpload = values.image_url_array.length > 0 ? await handleimage(image_url_array) : values.image_url
-
-        console.log(
-            'DISCOUNT',
-            MAXMINARRAY.filter((item) => values[item.name]).map((item) => `${item.name}_${values[item.name]}`),
-        )
 
         const data = {
             ...formData,
             image_url: imageUpload,
             filters: [
-                ...values.filters.map((filter) => filter),
-                ...UtmArray.filter((item) => values[item.name]).map((item) => `${item.name.replace('_', '-')}_${values[item.name]}`),
-                ...MAXMINARRAY.filter((item) => values[item.name]).map((item) => `${item.name}_${values[item.name]}`),
-                ...OFFARRAY.filter((item) => values[item.name]).map((item) => `${item.name}_${values[item.name]}`),
-                ...values.discountTags.map((filter) => filter),
-            ].join(','),
+                ...(values.filters || []),
+                ...UtmArray.filter((item) => values[item.name] !== undefined).map(
+                    (item) => `${item.name.replace('_', '-')}_${values[item.name]}`,
+                ),
+                ...MAXMINARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
+                ...OFFARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
+                ...(values.discountTags || []),
+                `filterId_${filterId}`,
+            ]
+                .filter((filter) => filter)
+                .join(','),
             message: plainTextMessage,
         }
 
@@ -179,6 +181,47 @@ const SendNotification = () => {
     const handleAddFilter = () => {
         setShowAddFilter([...showAddFilter, showAddFilter.length])
     }
+
+    const handleRemoveFilter = (index: number) => {
+        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
+        setShowAddFilter(updatedFilters)
+    }
+    const [filtersData, setFiltersData] = useState([])
+
+    const handleAddFilters = async (values) => {
+        console.log('Values', values)
+        const newFilterData = showAddFilter.map((_, index) => {
+            return values.filtersAdd[index] || []
+        })
+
+        setFiltersData((prev) => {
+            const updatedFilters = [...prev, newFilterData]
+
+            const lastElement = updatedFilters.at(-1)
+
+            sendFilterData(lastElement)
+
+            return updatedFilters
+        })
+    }
+
+    const sendFilterData = async (filterData) => {
+        try {
+            const body = {
+                filter_data: filterData,
+            }
+
+            const response = await axioisInstance.post(`/product/search/criteria`, body)
+            console.log('MAIN response', response.data.data)
+            const id = response.data?.data?.id
+
+            setFilterId(id)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    console.log('Final Filters Data:', filtersData.at(-1))
+    console.log('data of filter id', filterId)
 
     return (
         <div>
@@ -213,8 +256,8 @@ const SendNotification = () => {
                                         }}
                                     </Field>
                                 </FormItem>
-                                <FormItem label="Filters">
-                                    <Field name="filters">
+                                <FormItem label="SEARCH STRINGS">
+                                    {/* <Field name="filters">
                                         {({ field, form }: FieldProps<any>) => {
                                             return (
                                                 <Select
@@ -230,16 +273,16 @@ const SendNotification = () => {
                                                 />
                                             )
                                         }}
-                                    </Field>
+                                    </Field> */}
 
                                     <FormContainer className="items-center mt-4">
-                                        <button onClick={handleAddFilter}>
-                                            <IoMdAddCircle className="text-xl" />
+                                        <button onClick={handleAddFilter} type="button">
+                                            <IoMdAddCircle className="text-3xl text-green-500" />
                                         </button>
                                     </FormContainer>
 
                                     {showAddFilter.map((_, index) => (
-                                        <FormItem key={index} className="flex flex-col gap-2">
+                                        <FormItem key={index} className="flex  gap-2">
                                             <Field name={`filtersAdd[${index}]`} key={index}>
                                                 {({ field, form }: FieldProps<any>) => (
                                                     <Select
@@ -252,15 +295,29 @@ const SendNotification = () => {
                                                             const newValues = newVal ? newVal.map((val) => val.value) : []
                                                             form.setFieldValue(field.name, newValues)
                                                         }}
+                                                        className="w-3/4"
                                                     />
                                                 )}
                                             </Field>
+                                            <button
+                                                type="button"
+                                                className="flex justify-end mt-1 items-end"
+                                                onClick={() => handleRemoveFilter(index)}
+                                            >
+                                                <MdCancel className="text-xl text-red-500" />
+                                            </button>
                                         </FormItem>
                                     ))}
 
                                     {showAddFilter.length > 0 && (
                                         <>
-                                            <Button variant="new">AAD</Button>
+                                            <Field>
+                                                {({ form }: FieldProps<any>) => (
+                                                    <Button variant="new" onClick={() => handleAddFilters(form.values)} type="button">
+                                                        Search Strings
+                                                    </Button>
+                                                )}
+                                            </Field>
                                         </>
                                     )}
                                 </FormItem>
