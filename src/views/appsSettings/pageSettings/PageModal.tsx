@@ -26,6 +26,9 @@ import { MdCancel } from 'react-icons/md'
 import { BackGroundArray, borrderStyleArray, genericComponentArray } from './genericComp'
 import { width } from '@mui/system'
 import PageEditImage from './PageEditImage'
+import { FaCross } from 'react-icons/fa'
+import { TbFlagCancel } from 'react-icons/tb'
+import PageSettingsPostTable from './PageSettingsPostTable'
 
 interface DataType {
     type: string
@@ -103,10 +106,11 @@ const PageModal: React.FC<modalProps> = ({
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState<string[]>([particularRow ? particularRow.data_type.barcodes : []])
     // posts....................
-    // const[postInput, setPOstInput] = useState('')
-    // const [showPostTable, setShowPostTable] = useState(false)
-    // const [postTableData, setPostTableData] = useState([])
-    // const [postData, setPostData] = useState([])
+    const [postInput, setPOstInput] = useState('')
+    const [showPostTable, setShowPostTable] = useState(false)
+    const [postTableData, setPostTableData] = useState([])
+    const [postData, setPostData] = useState<string[]>([particularRow ? particularRow.data_type.posts : []])
+
     const [textAreaValue, setTextAreaValue] = useState()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
@@ -114,8 +118,6 @@ const PageModal: React.FC<modalProps> = ({
     const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-
-    console.log('Filters', filters)
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -182,8 +184,8 @@ const PageModal: React.FC<modalProps> = ({
         // border_color: particularRow.border_color,
         component_config: particularRow.component_config,
     })
+    console.log('The initial value that I got ', particularRow)
 
-    console.log('Interval check', initialValue.interval)
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
         setShowTable(true)
@@ -196,7 +198,6 @@ const PageModal: React.FC<modalProps> = ({
                 const response = await axioisInstance.get(`/search/product?dashboard=true&${qname}=${searchInput}`)
                 const data = response.data.results
                 setTableData(data)
-                console.log(data)
             }
         } catch (error) {
             console.log(error)
@@ -207,12 +208,22 @@ const PageModal: React.FC<modalProps> = ({
         fetchInput()
     }, [searchInput])
 
-    const handleActionClick = (value: any) => {
-        console.log('Barcode', value)
-        setProductData((prev) => (prev ? [...prev, value] : [value]))
-        setShowTable(false)
-        setSearchInput('')
+    const fetchPost = async () => {
+        try {
+            if (postInput) {
+                // const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
+                const response = await axioisInstance.get(`/posts?name=${postInput}`)
+                const data = response.data.data.results
+                setPostTableData(data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
+
+    useEffect(() => {
+        fetchPost()
+    }, [postInput])
 
     const handleMultiSelect = (field: string, value: string) => {
         if (formikRef.current) {
@@ -240,7 +251,6 @@ const PageModal: React.FC<modalProps> = ({
                     },
                 })
                 .then((response) => {
-                    console.log(response)
                     const newData = response.data.url
                     notification.success({
                         message: 'Success',
@@ -271,7 +281,7 @@ const PageModal: React.FC<modalProps> = ({
 
     const handleSubmit = async (row: any) => {
         try {
-            console.log('handleSubmit called', row.data_type.filters)
+            console.log('handleSubmit called')
             const imageUpload = await handleimage(row.background_image_array)
             const mobileimageUpload = await handleimage(row.mobile_background_array)
             const footerImageUpload = await handleimage(row.footer_config_image_Array)
@@ -310,6 +320,7 @@ const PageModal: React.FC<modalProps> = ({
                 data_type: {
                     ...row.data_type,
                     type: row.data_type.type,
+                    posts: postData.join(','),
                     barcodes: productData.join(','),
                 },
                 component_config: {
@@ -336,7 +347,6 @@ const PageModal: React.FC<modalProps> = ({
         }
     }
 
-    console.log('MainConosle', particularRow)
     const handleRemoveImage = (val: string) => {
         if (val === 'background_image') {
             setInitalValue((prev: any) => ({
@@ -371,7 +381,7 @@ const PageModal: React.FC<modalProps> = ({
     const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialDataType(e.target.value)
     }
-    console.log('BBBrand', brands)
+
     const borderArray = [
         { label: 'YES', value: 'yes' },
         { label: 'NO', value: 'no' },
@@ -426,6 +436,24 @@ const PageModal: React.FC<modalProps> = ({
                 image: null,
             },
         }))
+    }
+
+    const handleActionClick = (value: any) => {
+        setProductData((prev) => (prev ? [...prev, value] : [value]))
+        setShowTable(false)
+        setSearchInput('')
+    }
+
+    // POSTS...............
+    const handlePOSTSearch = (e) => {
+        setPOstInput(e.target.value)
+        setShowPostTable(true)
+    }
+
+    const handlePostClick = (value: any) => {
+        setPostData((prev) => (prev ? [...prev, value] : [value]))
+        setShowPostTable(false)
+        setPOstInput('')
     }
 
     return (
@@ -778,8 +806,9 @@ const PageModal: React.FC<modalProps> = ({
 
                                     {showTable && searchInput && <CreatePostTable data={tableData} handleActionClick={handleActionClick} />}
 
-                                    <FormItem label="Barcodes" className="w-full">
-                                        <Field
+                                    <FormItem label="Barcodes" className="w-full flex gap-7">
+                                        <input
+                                            disabled
                                             type="text"
                                             name="data_type.barcodes"
                                             value={productData}
@@ -789,8 +818,63 @@ const PageModal: React.FC<modalProps> = ({
                                             }}
                                             placeholder="Enter product barcode"
                                         />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setProductData([])
+                                                setFieldValue('products', '')
+                                            }}
+                                        >
+                                            <MdCancel className="text-red-500 text-xl" />
+                                        </button>
                                     </FormItem>
                                 </FormContainer>
+                                {/* POSTS */}
+
+                                <FormContainer className="flex flex-col gap-4 ">
+                                    <div className="text-xl">Posts</div>
+                                    <div className="flex gap-10">
+                                        <div className="flex justify-start ">
+                                            <input
+                                                type="search"
+                                                name="search"
+                                                id=""
+                                                placeholder="search SKU for product"
+                                                value={postInput}
+                                                className=" w-[250px] rounded-[10px]"
+                                                onChange={handlePOSTSearch}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {showPostTable && postInput && (
+                                        <PageSettingsPostTable data={postTableData} handleActionClick={handlePostClick} />
+                                    )}
+
+                                    <FormItem label="Posts" className="w-full flex gap-7">
+                                        <input
+                                            disabled
+                                            type="text"
+                                            name="data_type.posts"
+                                            value={postData}
+                                            onChange={(e: any) => {
+                                                setPostData(e.target.value)
+                                                setFieldValue('products', e.target.value)
+                                            }}
+                                            placeholder="Enter product barcode"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPostData([])
+                                                setFieldValue('products', '')
+                                            }}
+                                        >
+                                            <MdCancel className="text-red-500 text-xl" />
+                                        </button>
+                                    </FormItem>
+                                </FormContainer>
+
                                 <FormItem label="Data Type Posts" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="data_type.posts" placeholder="Place your dataType" component={Input} />
                                 </FormItem>
