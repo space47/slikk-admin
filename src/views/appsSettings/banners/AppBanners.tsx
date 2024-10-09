@@ -71,6 +71,7 @@ const AppBanners = () => {
         () => [
             { header: 'ID', accessorKey: 'id' },
             { header: 'Name', accessorKey: 'name' },
+            { header: 'Position', accessorKey: 'position' },
             { header: 'Section Heading', accessorKey: 'section_heading' },
             { header: 'Parent Banner', accessorKey: 'parent_banner' },
             {
