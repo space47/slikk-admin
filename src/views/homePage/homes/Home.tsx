@@ -10,11 +10,12 @@ import { HiOutlineCalendar } from 'react-icons/hi'
 import DatePicker from '@/components/ui/DatePicker'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
-import { TbCalendarStats } from 'react-icons/tb'
+import { TbCalendarStats, TbMoneybag } from 'react-icons/tb'
 import { HiMiniBanknotes } from 'react-icons/hi2'
 import BrandDataChart from '../homeChart/BubbleChart'
 import MultipleMap from '@/common/multipleMap'
 import { MdOutlineFullscreen } from 'react-icons/md'
+import { IoBasketSharp } from 'react-icons/io5'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -75,6 +76,16 @@ const Home = () => {
     const netReturn = (homeData?.returned?.count || 0) + (homeData?.cancelled?.count || 0) + (homeData?.declined?.count || 0)
     const netReturnSales =
         (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
+
+    const averageOrderValue = homeData ? homeData?.received?.total_amount / homeData?.received?.count : 0
+
+    const dataValues = Object.values(homeData?.brand_wise_sale ?? {})
+
+    const sum = dataValues.reduce((acc, value) => acc + value, 0)
+
+    const basketSize = homeData ? sum / homeData?.received?.count : 0
+
+    console.log('sum of Data', sum)
 
     const handleFromChange = (date: Date | null) => {
         if (date) {
@@ -242,6 +253,30 @@ const Home = () => {
                         <div>
                             <h2 className="text-xl font-semibold">Net Sales</h2>
                             <p>Amount: Rs. {netSales?.toFixed(2)}</p>
+                        </div>
+                    </div>
+                </Card>
+
+                {/* ......................................................... */}
+                <Card className="shadow-lg">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <TbMoneybag className="text-4xl mx-4 text-green-800 " />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold">Average Order Value</h2>
+                            <p>Value: {averageOrderValue?.toFixed(2)}</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="shadow-lg">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <IoBasketSharp className="text-4xl mx-4 text-amber-800 " />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold">Average Basket Size</h2>
+                            <p>Value: {basketSize.toFixed(2)}</p>
                         </div>
                     </div>
                 </Card>
