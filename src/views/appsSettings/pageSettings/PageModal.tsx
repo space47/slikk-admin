@@ -104,12 +104,25 @@ const PageModal: React.FC<modalProps> = ({
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
-    const [productData, setProductData] = useState<string[]>([particularRow ? particularRow.data_type.barcodes : []])
+    // const [productData, setProductData] = useState([
+    //     particularRow
+    //         ? Array.isArray(particularRow.data_type.barcodes)
+    //             ? particularRow.data_type.barcodes
+    //             : [particularRow.data_type.barcodes]
+    //         : [],
+    // ])
+    const [productData, setProductData] = useState(particularRow.data_type.barcodes)
     // posts....................
     const [postInput, setPOstInput] = useState('')
     const [showPostTable, setShowPostTable] = useState(false)
     const [postTableData, setPostTableData] = useState([])
-    const [postData, setPostData] = useState<string[]>([particularRow ? particularRow.data_type.posts : []])
+    const [postData, setPostData] = useState<string[]>([
+        particularRow
+            ? Array.isArray(particularRow.data_type.posts)
+                ? particularRow.data_type.posts
+                : [particularRow.data_type.posts]
+            : [],
+    ])
 
     const [textAreaValue, setTextAreaValue] = useState()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
@@ -320,8 +333,8 @@ const PageModal: React.FC<modalProps> = ({
                 data_type: {
                     ...row.data_type,
                     type: row.data_type.type,
-                    posts: postData.join(','),
-                    barcodes: productData.join(','),
+                    posts: Array.isArray(postData) ? postData.join(',') : row.data_type.posts,
+                    barcodes: Array.isArray(productData) ? productData.join(',') : row.data_type.barcodes,
                 },
                 component_config: {
                     carousel: row.component_config.carousel,
@@ -341,11 +354,14 @@ const PageModal: React.FC<modalProps> = ({
                 section_filters: row.data_type.filters,
             }
             setParticularRow(newRow)
+            console.log('Barecode THAT HAS BEEN UPDATED', newRow.data_type.barcodes)
             console.log('FINAL ADD INSIDE SUBMIT', newRow)
         } catch (error) {
             console.error('Error in handleSubmit:', error)
         }
     }
+
+    console.log('ppppppproduct DDDDDDDDDatata', productData)
 
     const handleRemoveImage = (val: string) => {
         if (val === 'background_image') {
@@ -807,14 +823,13 @@ const PageModal: React.FC<modalProps> = ({
                                     {showTable && searchInput && <CreatePostTable data={tableData} handleActionClick={handleActionClick} />}
 
                                     <FormItem label="Barcodes" className="w-full flex gap-7">
-                                        <input
-                                            disabled
+                                        <Field
                                             type="text"
                                             name="data_type.barcodes"
                                             value={productData}
                                             onChange={(e: any) => {
                                                 setProductData(e.target.value)
-                                                setFieldValue('products', e.target.value)
+                                                setFieldValue('data_type.barcodes', e.target.value)
                                             }}
                                             placeholder="Enter product barcode"
                                         />
@@ -853,13 +868,12 @@ const PageModal: React.FC<modalProps> = ({
 
                                     <FormItem label="Posts" className="w-full flex gap-7">
                                         <input
-                                            disabled
                                             type="text"
                                             name="data_type.posts"
                                             value={postData}
                                             onChange={(e: any) => {
                                                 setPostData(e.target.value)
-                                                setFieldValue('products', e.target.value)
+                                                setFieldValue('data_type.posts', e.target.value)
                                             }}
                                             placeholder="Enter product barcode"
                                         />

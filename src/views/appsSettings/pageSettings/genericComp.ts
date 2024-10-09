@@ -46,13 +46,13 @@ export const genericComponentArray = [
         type: 'checkbox',
         placeholder: 'Enter carousel',
     },
-    {
-        label: 'carousel Dot',
-        name: 'component_config.carousel_dot',
-        component: { Checkbox },
-        type: 'checkbox',
-        placeholder: 'Enter carousel dot',
-    },
+    // {
+    //     label: 'carousel Dot',
+    //     name: 'component_config.carousel_dot',
+    //     component: { Checkbox },
+    //     type: 'checkbox',
+    //     placeholder: 'Enter carousel dot',
+    // },
     {
         label: 'Width',
         name: 'component_config.width',
