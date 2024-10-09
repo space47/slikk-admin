@@ -334,8 +334,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             },
             data_type: {
                 ...row.data_type,
-                posts: postData.join(','),
-                barcodes: productData.join(','),
+                posts: Array.isArray(postData) ? postData.join(',') : row.data_type.posts,
+                barcodes: Array.isArray(productData) ? productData.join(',') : row.data_type.barcodes,
             },
             background_config: {
                 background_color: row.background_config?.background_color,
