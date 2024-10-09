@@ -21,6 +21,7 @@ export type OrderItem = {
     size?: string
     color?: string
     order_item_rating: ORDER_ITEM_RATING | null
+    create_date: string
 }
 
 export type ordercommon = {
