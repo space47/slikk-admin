@@ -88,10 +88,10 @@ export const borrderStyleArray = [
 
 export const BackGroundArray = [
     { label: 'Background Color', type: 'text', name: 'background_config.background_color', placeholder: 'Place bg color in hex' },
-    { label: 'Background TopMargin', type: 'text', name: 'background_config.background_topMargin', placeholder: 'Place Top Margin' },
+    { label: 'Background TopMargin', type: 'number', name: 'background_config.background_topMargin', placeholder: 'Place Top Margin' },
     {
         label: 'Background BottomMargin',
-        type: 'text',
+        type: 'number',
         name: 'background_config.background_bottomMargin',
         placeholder: 'Place bottom Margin',
     },
@@ -106,5 +106,17 @@ export const BackGroundArray = [
         type: 'text',
         name: 'background_config.mobile_position',
         placeholder: 'Place Mobile Position',
+    },
+    {
+        label: 'Mobile Width',
+        type: 'number',
+        name: 'background_config.mobile_width',
+        placeholder: 'Place Mobile width',
+    },
+    {
+        label: 'Web Width',
+        type: 'number',
+        name: 'background_config.web_width',
+        placeholder: 'Place Mobile width',
     },
 ]
