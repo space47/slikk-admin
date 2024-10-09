@@ -283,29 +283,29 @@ const SendNotification = () => {
 
                                     {showAddFilter.map((_, index) => (
                                         <FormItem key={index} className="flex  gap-2">
-                                            <Field name={`filtersAdd[${index}]`} key={index}>
-                                                {({ field, form }: FieldProps<any>) => (
-                                                    <Select
-                                                        isMulti
-                                                        placeholder={`Select Filter Tags ${index + 1}`}
-                                                        options={filters.filters}
-                                                        getOptionLabel={(option) => option.label}
-                                                        getOptionValue={(option) => option.value}
-                                                        onChange={(newVal) => {
-                                                            const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                            form.setFieldValue(field.name, newValues)
-                                                        }}
-                                                        className="w-3/4"
-                                                    />
-                                                )}
-                                            </Field>
-                                            <button
-                                                type="button"
-                                                className="flex justify-end mt-1 items-end"
-                                                onClick={() => handleRemoveFilter(index)}
-                                            >
-                                                <MdCancel className="text-xl text-red-500" />
-                                            </button>
+                                            <div className="flex gap-3 items-center">
+                                                <Field name={`filtersAdd[${index}]`} key={index}>
+                                                    {({ field, form }: FieldProps<any>) => (
+                                                        <Select
+                                                            isMulti
+                                                            placeholder={`Select Filter Tags ${index + 1}`}
+                                                            options={filters.filters}
+                                                            getOptionLabel={(option) => option.label}
+                                                            getOptionValue={(option) => option.value}
+                                                            onChange={(newVal) => {
+                                                                const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                                form.setFieldValue(field.name, newValues)
+                                                            }}
+                                                            className="w-3/4"
+                                                        />
+                                                    )}
+                                                </Field>
+                                                <div className="">
+                                                    <button type="button" className="" onClick={() => handleRemoveFilter(index)}>
+                                                        <MdCancel className="text-xl text-red-500" />
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </FormItem>
                                     ))}
 

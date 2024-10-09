@@ -12,6 +12,15 @@ export const BANNER_FIELDS_TYPE = [
         status: 'name',
     },
     {
+        label: 'Position',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        name: 'position',
+        placeholder: 'Place Positon',
+        component: { Input },
+        status: 'position',
+    },
+    {
         label: 'Section Heading',
         classname: 'col-span-1 w-full',
         type: 'text',

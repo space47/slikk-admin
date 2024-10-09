@@ -71,6 +71,7 @@ const AppBanners = () => {
         () => [
             { header: 'ID', accessorKey: 'id' },
             { header: 'Name', accessorKey: 'name' },
+            { header: 'Position', accessorKey: 'position' },
             { header: 'Section Heading', accessorKey: 'section_heading' },
             { header: 'Parent Banner', accessorKey: 'parent_banner' },
             {
@@ -180,7 +181,9 @@ const AppBanners = () => {
                 accessorKey: 'id',
                 cell: ({ row }) => (
                     <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
-                        <FaEdit className="text-xl text-blue-600" />
+                        <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
+                            <FaEdit className="text-xl text-blue-600" />
+                        </a>
                     </button>
                 ),
             },
@@ -198,7 +201,7 @@ const AppBanners = () => {
     )
 
     const handleActionClick = (id: number) => {
-        navigate(`/app/appSettings/banners/${id}`)
+        // navigate(`/app/appSettings/banners/${id}`)
     }
 
     const handleDeleteClick = (id: number) => {
