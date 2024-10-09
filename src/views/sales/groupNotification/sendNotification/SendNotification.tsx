@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { Dialog, Upload } from '@/components/ui'
+import { IoMdAddCircle } from 'react-icons/io'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -174,6 +175,11 @@ const SendNotification = () => {
         }
     }
 
+    const [showAddFilter, setShowAddFilter] = useState<number[]>([])
+    const handleAddFilter = () => {
+        setShowAddFilter([...showAddFilter, showAddFilter.length])
+    }
+
     return (
         <div>
             <Formik
@@ -225,6 +231,38 @@ const SendNotification = () => {
                                             )
                                         }}
                                     </Field>
+
+                                    <FormContainer className="items-center mt-4">
+                                        <button onClick={handleAddFilter}>
+                                            <IoMdAddCircle className="text-xl" />
+                                        </button>
+                                    </FormContainer>
+
+                                    {showAddFilter.map((_, index) => (
+                                        <FormItem key={index} className="flex flex-col gap-2">
+                                            <Field name={`filtersAdd[${index}]`} key={index}>
+                                                {({ field, form }: FieldProps<any>) => (
+                                                    <Select
+                                                        isMulti
+                                                        placeholder={`Select Filter Tags ${index + 1}`}
+                                                        options={filters.filters}
+                                                        getOptionLabel={(option) => option.label}
+                                                        getOptionValue={(option) => option.value}
+                                                        onChange={(newVal) => {
+                                                            const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                            form.setFieldValue(field.name, newValues)
+                                                        }}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    ))}
+
+                                    {showAddFilter.length > 0 && (
+                                        <>
+                                            <Button variant="new">AAD</Button>
+                                        </>
+                                    )}
                                 </FormItem>
 
                                 <FormContainer className="flex gap-3">

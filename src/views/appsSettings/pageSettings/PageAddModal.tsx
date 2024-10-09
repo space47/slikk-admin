@@ -19,6 +19,8 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { BackGroundArray, borrderStyleArray, genericComponentArray } from './genericComp'
 import PageAddCommonImage from './PageAddCommonImage'
+import { MdCancel } from 'react-icons/md'
+import PageSettingsPostTable from './PageSettingsPostTable'
 
 interface DataType {
     type: string
@@ -94,6 +96,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState<string[]>([])
+
+    const [postInput, setPOstInput] = useState('')
+    const [showPostTable, setShowPostTable] = useState(false)
+    const [postTableData, setPostTableData] = useState([])
+    const [postData, setPostData] = useState<string[]>([])
+
     const [textAreaValue, setTextAreaValue] = useState('')
     const MAX_UPLOAD = 10000
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -208,6 +216,23 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         fetchInput()
     }, [searchInput])
 
+    const fetchPost = async () => {
+        try {
+            if (postInput) {
+                // const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
+                const response = await axioisInstance.get(`/posts?name=${postInput}`)
+                const data = response.data.data.results
+                setPostTableData(data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchPost()
+    }, [postInput])
+
     const handleActionClick = (value: any) => {
         console.log('Barcode', value)
         setProductData((prev) => (prev ? [...prev, value] : [value]))
@@ -288,7 +313,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
         const headerIconImageUpload = await handleimage(row.header_config_icon_Array)
 
-        console.log('headerIconImage', headerIconImageUpload)
+        console.log('headerIconImage', imageUpload)
 
         const newRowAdd = {
             ...row,
@@ -309,6 +334,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             },
             data_type: {
                 ...row.data_type,
+                posts: postData.join(','),
                 barcodes: productData.join(','),
             },
             background_config: {
@@ -319,29 +345,30 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 mobile_background_image: mobileImageUpload,
             },
             component_config: {
-                carousel: row.carousel,
-                carousel_dot: row.carousel_dot,
-                grid: row.grid,
-                carousel_autoplay: row.carousel_autoplay,
-                width: Number(row.width),
-                corner_radius: Number(row.corner_radius),
-                border: row.border,
-                interval: Number(row.interval),
-                border_style: row.border_style,
-                border_width: Number(row.border_width),
-                border_color: row.border_color,
+                carousel: row.component_config.carousel,
+                carousel_dot: row.component_config.carousel_dot,
+                grid: row.component_config.grid,
+                carousel_autoplay: row.component_config.carousel_autoplay,
+                width: Number(row.component_config.width),
+                corner_radius: Number(row.component_config.corner_radius),
+                border: row.component_config.border,
+                interval: Number(row.component_config.interval),
+                border_style: row.component_config.border_style,
+                border_width: Number(row.component_config.border_width),
+                border_color: row.component_config.border_color,
             },
             section_filters: row.data_type.filters,
         }
+        console.log('NG IMAGE', newRowAdd.background_image)
 
-        console.log('end rowAdd')
+        console.log('end rowAdd', newRowAdd.background_config.background_image)
 
         setData((prevData: WebType[]) => [...prevData, newRowAdd])
         setSelectedType('')
         setInitalValue('')
 
-        console.log('----------uooioihot-----', newRowAdd)
-        console.log('....', row)
+        console.log('Main Data That is to be send in the API', newRowAdd)
+        console.log('The row which is set', row)
         setIsModalOpen(false)
     }
     console.log('compo', componentOption)
@@ -352,6 +379,17 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         { label: 'Dotted', value: 'dotted' },
         { label: 'Solid', value: 'solid' },
     ]
+
+    const handlePOSTSearch = (e) => {
+        setPOstInput(e.target.value)
+        setShowPostTable(true)
+    }
+
+    const handlePostClick = (value: any) => {
+        setPostData((prev) => (prev ? [...prev, value] : [value]))
+        setShowPostTable(false)
+        setPOstInput('')
+    }
 
     return (
         <>
@@ -672,8 +710,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
                                     {showTable && searchInput && <CreatePostTable data={tableData} handleActionClick={handleActionClick} />}
 
-                                    <FormItem label="Barcodes" className="w-full">
-                                        <Field
+                                    <FormItem label="Barcodes" className="w-full flex gap-3">
+                                        <input
+                                            disabled
                                             type="text"
                                             name="data_type.barcodes"
                                             value={productData}
@@ -683,6 +722,59 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                             }}
                                             placeholder="Enter product barcode"
                                         />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setProductData([])
+                                                setFieldValue('products', '')
+                                            }}
+                                        >
+                                            <MdCancel className="text-red-500 text-xl" />
+                                        </button>
+                                    </FormItem>
+                                </FormContainer>
+
+                                <FormContainer className="flex flex-col gap-4 ">
+                                    <div className="text-xl">Posts</div>
+                                    <div className="flex gap-10">
+                                        <div className="flex justify-start ">
+                                            <input
+                                                type="search"
+                                                name="search"
+                                                id=""
+                                                placeholder="search SKU for product"
+                                                value={postInput}
+                                                className=" w-[250px] rounded-[10px]"
+                                                onChange={handlePOSTSearch}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {showPostTable && postInput && (
+                                        <PageSettingsPostTable data={postTableData} handleActionClick={handlePostClick} />
+                                    )}
+
+                                    <FormItem label="Posts" className="w-full flex gap-7">
+                                        <input
+                                            disabled
+                                            type="text"
+                                            name="data_type.posts"
+                                            value={postData}
+                                            onChange={(e: any) => {
+                                                setPostData(e.target.value)
+                                                setFieldValue('products', e.target.value)
+                                            }}
+                                            placeholder="Enter product barcode"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPostData([])
+                                                setFieldValue('products', '')
+                                            }}
+                                        >
+                                            <MdCancel className="text-red-500 text-xl" />
+                                        </button>
                                     </FormItem>
                                 </FormContainer>
 
