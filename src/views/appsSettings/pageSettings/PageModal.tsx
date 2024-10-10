@@ -23,7 +23,7 @@ import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { MdCancel } from 'react-icons/md'
-import { BackGroundArray, borrderStyleArray, genericComponentArray } from './genericComp'
+import { BackGroundArray, borrderStyleArray, genericComponentArray, webBorrderStyleArray } from './genericComp'
 import { width } from '@mui/system'
 import PageEditImage from './PageEditImage'
 import { FaCross } from 'react-icons/fa'
@@ -193,6 +193,8 @@ const PageModal: React.FC<modalProps> = ({
         // corner_radius: particularRow.corner_radius,
         border: particularRow.border,
         border_style: particularRow.border_style,
+        web_border: particularRow.web_border,
+        web_border_style: particularRow.web_border_style,
         // border_width: particularRow.border_width,
         // border_color: particularRow.border_color,
         component_config: particularRow.component_config,
@@ -346,12 +348,31 @@ const PageModal: React.FC<modalProps> = ({
                     width: Number(row.component_config.width),
                     interval: Number(row.component_config.interval),
                     corner_radius: Number(row.component_config.corner_radius),
+                    //.....
                     border: row.border,
                     border_style: row.border_style,
                     border_width: Number(row.component_config.border_width),
                     border_color: row.component_config.border_color,
+
+                    web_border: row.web_border,
+                    web_border_style: row.web_border_style,
+                    web_border_width: Number(row.component_config.web_border_width),
+                    web_border_color: row.component_config.web_border_color,
+
+                    //....
                     show_dots: row.component_config.show_dots,
                     infinit_loop: row.component_config.infinit_loop,
+
+                    // Web part
+                    web_carousel: row.component_config.web_carousel,
+                    web_carousel_dot: row.component_config.web_carousel_dot,
+                    web_grid: row.component_config.web_grid,
+                    web_carousel_autoplay: row.component_config.web_carousel_autoplay,
+                    web_width: Number(row.component_config.web_width),
+                    web_interval: Number(row.component_config.web_interval),
+                    web_corner_radius: Number(row.component_config.web_corner_radius),
+                    web_show_dots: row.component_config.web_show_dots,
+                    web_infinit_loop: row.component_config.web_infinit_loop,
                 },
                 section_filters: row.data_type.filters,
             }
@@ -395,6 +416,7 @@ const PageModal: React.FC<modalProps> = ({
     const [initialDataType, setInitialDataType] = useState(getDataType(particularRow.data_type).value)
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
     const [borderForm, setBorderForm] = useState(initialValue.border)
+    const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue.web_border)
 
     const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialDataType(e.target.value)
@@ -516,18 +538,34 @@ const PageModal: React.FC<modalProps> = ({
                                 {/* 
                                 {componentOption === 'Generic' && ( */}
                                 <FormContainer className="flex gap-2">
-                                    <FormContainer className="grid grid-cols-2 gap-10">
-                                        {genericComponentArray.map((item, key) => (
-                                            <FormItem key={key} label={item.label} className="w-1/2">
-                                                <Field
-                                                    type={item.type}
-                                                    name={item.name}
-                                                    placeholder={item.placeholder}
-                                                    component={Input} // Fallback to 'input' if component is not valid
-                                                />
-                                            </FormItem>
-                                        ))}
-                                    </FormContainer>
+                                    <div className="flex flex-col ">
+                                        <FormContainer className="grid grid-cols-2 gap-10">
+                                            <div className="font-bold mt-1">Mobile Configurations :</div> <br />
+                                            {genericComponentArray.slice(0, 8).map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-1/2">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input} // Fallback to 'input' if component is not valid
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+                                        <FormContainer className="grid grid-cols-2 gap-10">
+                                            <div className="font-bold mt-1">Web Configurations :</div> <br />
+                                            {genericComponentArray.slice(8).map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-1/2">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input} // Fallback to 'input' if component is not valid
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+                                    </div>
 
                                     <FormItem label="Border" className="col-span-1 w-1/4">
                                         <Field
@@ -570,6 +608,54 @@ const PageModal: React.FC<modalProps> = ({
                                                             name={item.name}
                                                             placeholder={item.placeholder}
                                                             component={Input} // Fallback to 'input' if component is not valid
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormItem>
+
+                                    <FormItem label="Web Border" className="col-span-1 w-1/4">
+                                        <Field
+                                            type="checkbox"
+                                            name="web_border"
+                                            placeholder="Enter border"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('web_border', isChecked)
+                                                setWebBorderForm(isChecked)
+                                            }}
+                                        />{' '}
+                                        <br />
+                                        <br />
+                                        {webBorderForm === true && (
+                                            <FormContainer>
+                                                <FormItem label="Web Border Style" className="col-span-1 w-2/3">
+                                                    <Field name="web_border_style">
+                                                        {({ field, form }: FieldProps<any>) => {
+                                                            return (
+                                                                <Select
+                                                                    field={field}
+                                                                    form={form}
+                                                                    options={borderStyleArray}
+                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
+                                                                    onChange={(option) => {
+                                                                        const value = option?.value || ''
+                                                                        form.setFieldValue(field.name, value)
+                                                                    }}
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
+                                                </FormItem>
+                                                {webBorrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-1/2">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input}
                                                         />
                                                     </FormItem>
                                                 ))}

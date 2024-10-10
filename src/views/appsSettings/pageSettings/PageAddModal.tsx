@@ -17,7 +17,7 @@ import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePos
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { BackGroundArray, borrderStyleArray, genericComponentArray } from './genericComp'
+import { BackGroundArray, borrderStyleArray, genericComponentArray, webBorrderStyleArray } from './genericComp'
 import PageAddCommonImage from './PageAddCommonImage'
 import { MdCancel } from 'react-icons/md'
 import PageSettingsPostTable from './PageSettingsPostTable'
@@ -101,7 +101,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [showPostTable, setShowPostTable] = useState(false)
     const [postTableData, setPostTableData] = useState([])
     const [postData, setPostData] = useState<string[]>([])
-
+    const [webBorderForm, setWebBorderForm] = useState<boolean>()
     const [textAreaValue, setTextAreaValue] = useState('')
     const MAX_UPLOAD = 10000
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -360,6 +360,22 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 border_style: row.component_config.border_style,
                 border_width: Number(row.component_config.border_width),
                 border_color: row.component_config.border_color,
+                show_dots: row.component_config.show_dots,
+                infinit_loop: row.component_config.infinit_loop,
+                // web PArt
+                web_carousel: row.component_config.web_carousel,
+                web_carousel_dot: row.component_config.web_carousel_dot,
+                web_grid: row.component_config.web_grid,
+                web_carousel_autoplay: row.component_config.web_carousel_autoplay,
+                web_width: Number(row.component_config.web_width),
+                web_corner_radius: Number(row.component_config.web_corner_radius),
+                web_interval: Number(row.component_config.web_interval),
+                web_border: row.component_config.web_border,
+                web_border_style: row.component_config.web_border_style,
+                web_border_width: Number(row.component_config.web_border_width),
+                web_border_color: row.component_config.web_border_color,
+                web_show_dots: row.component_config.web_show_dots,
+                web_infinit_loop: row.component_config.web_infinit_loop,
             },
             section_filters: row.data_type.filters,
         }
@@ -403,7 +419,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     initialValues={initialValue}
                     innerRef={formikRef}
                     // validationSchema={validationSchema}
-                    // ONSUBMIT LOGICCCCCCC....................................................................................................
+
                     onSubmit={handleSubmit}
                 >
                     {({ values, touched, errors, resetForm, setFieldValue }) => (
@@ -424,9 +440,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                     options={componentOptions}
                                                     value={componentOptions.find((option) => option.value === field.value)}
                                                     onChange={(option) => {
-                                                        const value = option ? option.value : '' // Handle null or undefined options
-                                                        form.setFieldValue(field.name, value) // Update the form field value
-                                                        setComponentOptions(value) // Set the component options
+                                                        const value = option ? option.value : ''
+                                                        form.setFieldValue(field.name, value)
+                                                        setComponentOptions(value)
                                                     }}
                                                     onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                                                 />
@@ -437,54 +453,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 {/* Generic Fields........................................................ */}
 
                                 <FormContainer>
-                                    <FormContainer className="grid grid-cols-2 gap-10">
-                                        {genericComponentArray.map((item, key) => (
-                                            <FormItem key={key} label={item.label} className="w-1/2">
-                                                <Field
-                                                    type={item.type}
-                                                    name={item.name}
-                                                    placeholder={item.placeholder}
-                                                    component={Input} // Fallback to 'input' if component is not valid
-                                                />
-                                            </FormItem>
-                                        ))}
-                                    </FormContainer>
-
-                                    <FormItem label="Border" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="border"
-                                            placeholder="Enter border"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('border', isChecked)
-                                                setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
-                                            }}
-                                        />
-                                    </FormItem>
-
-                                    {borderForm === 'yes' && (
-                                        <FormContainer>
-                                            <FormItem label="Border Style" className="col-span-1 w-1/4">
-                                                <Field name="border_style">
-                                                    {({ field, form }: FieldProps<any>) => {
-                                                        return (
-                                                            <Select
-                                                                field={field}
-                                                                form={form}
-                                                                options={borderStyleArray}
-                                                                value={borderStyleArray.find((option) => option.value === field.value)}
-                                                                onChange={(option) => {
-                                                                    const value = option?.value || '' // Safely handle null/undefined option
-                                                                    form.setFieldValue(field.name, value) // Update the form field value
-                                                                }}
-                                                            />
-                                                        )
-                                                    }}
-                                                </Field>
-                                            </FormItem>
-                                            {borrderStyleArray.map((item, key) => (
+                                    <div className="flex flex-col ">
+                                        <FormContainer className="grid grid-cols-2 gap-10">
+                                            <div className="font-bold mt-1">Mobile Configurations :</div> <br />
+                                            {genericComponentArray.slice(0, 8).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
@@ -495,7 +467,113 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                 </FormItem>
                                             ))}
                                         </FormContainer>
-                                    )}
+                                        <FormContainer className="grid grid-cols-2 gap-10">
+                                            <div className="font-bold mt-1">Web Configurations :</div> <br />
+                                            {genericComponentArray.slice(8).map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-1/2">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input} // Fallback to 'input' if component is not valid
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+                                    </div>
+
+                                    <FormItem label="Border" className="col-span-1 w-1/4">
+                                        <Field
+                                            type="checkbox"
+                                            name="border"
+                                            placeholder="Enter border"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('border', isChecked)
+                                                setBorderForm(isChecked ? 'yes' : 'no')
+                                            }}
+                                        />
+                                        {borderForm === 'yes' && (
+                                            <FormContainer>
+                                                <FormItem label="Border Style" className="col-span-1 w-full">
+                                                    <Field name="border_style">
+                                                        {({ field, form }: FieldProps<any>) => {
+                                                            return (
+                                                                <Select
+                                                                    field={field}
+                                                                    form={form}
+                                                                    options={borderStyleArray}
+                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
+                                                                    onChange={(option) => {
+                                                                        const value = option?.value || ''
+                                                                        form.setFieldValue(field.name, value)
+                                                                    }}
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
+                                                </FormItem>
+                                                {borrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-full">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormItem>
+                                    <FormItem label="Web Border" className="col-span-1 w-1/4">
+                                        <Field
+                                            type="checkbox"
+                                            name="web_border"
+                                            placeholder="Enter border"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('web_border', isChecked)
+                                                setWebBorderForm(isChecked)
+                                            }}
+                                        />{' '}
+                                        <br />
+                                        <br />
+                                        {webBorderForm === true && (
+                                            <FormContainer>
+                                                <FormItem label="Web Border Style" className="col-span-1 w-full">
+                                                    <Field name="web_border_style">
+                                                        {({ field, form }: FieldProps<any>) => {
+                                                            return (
+                                                                <Select
+                                                                    field={field}
+                                                                    form={form}
+                                                                    options={borderStyleArray}
+                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
+                                                                    onChange={(option) => {
+                                                                        const value = option?.value || ''
+                                                                        form.setFieldValue(field.name, value)
+                                                                    }}
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
+                                                </FormItem>
+                                                {webBorrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-full">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormItem>
                                 </FormContainer>
 
                                 {/* ......................................................................... */}
@@ -512,7 +590,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                     <>
                                                         <Upload
                                                             beforeUpload={beforeUpload}
-                                                            fileList={values.background_image_array} // uploadedd the file
+                                                            fileList={values.background_image_array}
                                                             onChange={(files) => {
                                                                 console.log(
                                                                     'OnchangeFiles',
