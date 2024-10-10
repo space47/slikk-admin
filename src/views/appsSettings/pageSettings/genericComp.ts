@@ -110,13 +110,13 @@ export const BackGroundArray = [
     {
         label: 'Mobile Width',
         type: 'number',
-        name: 'background_config.mobile_Width',
+        name: 'background_config.mobile_width',
         placeholder: 'Place Mobile width',
     },
     {
         label: 'Web Width',
         type: 'number',
-        name: 'background_config.web_Width',
+        name: 'background_config.web_width',
         placeholder: 'Place Mobile width',
     },
 ]
