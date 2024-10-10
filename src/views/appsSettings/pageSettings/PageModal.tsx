@@ -509,7 +509,7 @@ const PageModal: React.FC<modalProps> = ({
                 >
                     {({ values, touched, errors, resetForm, setFieldValue }) => (
                         <Form className="w-full">
-                            <FormContainer className="grid grid-cols-2 gap-3">
+                            <FormContainer className="grid grid-cols-2 gap-3 ">
                                 <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="section_heading" placeholder="Place your Section heading" component={Input} />
                                 </FormItem>
@@ -537,7 +537,7 @@ const PageModal: React.FC<modalProps> = ({
                                 </FormItem>
                                 {/* 
                                 {componentOption === 'Generic' && ( */}
-                                <FormContainer className="flex gap-2">
+                                <FormItem className="flex gap-2 ">
                                     <div className="flex flex-col ">
                                         <FormContainer className="grid grid-cols-2 gap-10">
                                             <div className="font-bold mt-1">Mobile Configurations :</div> <br />
@@ -567,184 +567,198 @@ const PageModal: React.FC<modalProps> = ({
                                         </FormContainer>
                                     </div>
 
-                                    <FormItem label="Border" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="border"
-                                            placeholder="Enter border"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('border', isChecked)
-                                                setBorderForm(isChecked) // Set borderForm to 'yes' or 'no'
-                                            }}
-                                        />{' '}
-                                        <br />
-                                        <br />
-                                        {borderForm === true && (
-                                            <FormContainer>
-                                                <FormItem label="Border Style" className="col-span-1 w-2/3">
-                                                    <Field name="border_style">
-                                                        {({ field, form }: FieldProps<any>) => {
-                                                            return (
-                                                                <Select
-                                                                    field={field}
-                                                                    form={form}
-                                                                    options={borderStyleArray}
-                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
-                                                                    onChange={(option) => {
-                                                                        const value = option?.value || '' // Safely handle null/undefined option
-                                                                        form.setFieldValue(field.name, value) // Update the form field value
-                                                                    }}
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </FormItem>
-                                                {borrderStyleArray.map((item, key) => (
-                                                    <FormItem key={key} label={item.label} className="w-1/2">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item.name}
-                                                            placeholder={item.placeholder}
-                                                            component={Input} // Fallback to 'input' if component is not valid
-                                                        />
+                                    <div className="flex gap-4 ">
+                                        <FormItem label="Border" className="col-span-1 w-1/4">
+                                            <Field
+                                                type="checkbox"
+                                                name="border"
+                                                placeholder="Enter border"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('border', isChecked)
+                                                    setBorderForm(isChecked) // Set borderForm to 'yes' or 'no'
+                                                }}
+                                            />{' '}
+                                            <br />
+                                            <br />
+                                            {borderForm === true && (
+                                                <FormContainer>
+                                                    <FormItem label="Border Style" className="col-span-1 w-2/3">
+                                                        <Field name="border_style">
+                                                            {({ field, form }: FieldProps<any>) => {
+                                                                return (
+                                                                    <Select
+                                                                        field={field}
+                                                                        form={form}
+                                                                        options={borderStyleArray}
+                                                                        value={borderStyleArray.find(
+                                                                            (option) => option.value === field.value,
+                                                                        )}
+                                                                        onChange={(option) => {
+                                                                            const value = option?.value || '' // Safely handle null/undefined option
+                                                                            form.setFieldValue(field.name, value) // Update the form field value
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            }}
+                                                        </Field>
                                                     </FormItem>
-                                                ))}
-                                            </FormContainer>
-                                        )}
-                                    </FormItem>
+                                                    {borrderStyleArray.map((item, key) => (
+                                                        <FormItem key={key} label={item.label} className="w-1/2">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item.name}
+                                                                placeholder={item.placeholder}
+                                                                component={Input} // Fallback to 'input' if component is not valid
+                                                            />
+                                                        </FormItem>
+                                                    ))}
+                                                </FormContainer>
+                                            )}
+                                        </FormItem>
 
-                                    <FormItem label="Web Border" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="web_border"
-                                            placeholder="Enter border"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('web_border', isChecked)
-                                                setWebBorderForm(isChecked)
-                                            }}
-                                        />{' '}
-                                        <br />
-                                        <br />
-                                        {webBorderForm === true && (
-                                            <FormContainer>
-                                                <FormItem label="Web Border Style" className="col-span-1 w-2/3">
-                                                    <Field name="web_border_style">
-                                                        {({ field, form }: FieldProps<any>) => {
-                                                            return (
-                                                                <Select
-                                                                    field={field}
-                                                                    form={form}
-                                                                    options={borderStyleArray}
-                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
-                                                                    onChange={(option) => {
-                                                                        const value = option?.value || ''
-                                                                        form.setFieldValue(field.name, value)
-                                                                    }}
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </FormItem>
-                                                {webBorrderStyleArray.map((item, key) => (
-                                                    <FormItem key={key} label={item.label} className="w-1/2">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item.name}
-                                                            placeholder={item.placeholder}
-                                                            component={Input}
-                                                        />
+                                        <FormItem label="Web Border" className="col-span-1 w-1/4">
+                                            <Field
+                                                type="checkbox"
+                                                name="web_border"
+                                                placeholder="Enter border"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('web_border', isChecked)
+                                                    setWebBorderForm(isChecked)
+                                                }}
+                                            />{' '}
+                                            <br />
+                                            <br />
+                                            {webBorderForm === true && (
+                                                <FormContainer>
+                                                    <FormItem label="Web Border Style" className="col-span-1 w-2/3">
+                                                        <Field name="web_border_style">
+                                                            {({ field, form }: FieldProps<any>) => {
+                                                                return (
+                                                                    <Select
+                                                                        field={field}
+                                                                        form={form}
+                                                                        options={borderStyleArray}
+                                                                        value={borderStyleArray.find(
+                                                                            (option) => option.value === field.value,
+                                                                        )}
+                                                                        onChange={(option) => {
+                                                                            const value = option?.value || ''
+                                                                            form.setFieldValue(field.name, value)
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            }}
+                                                        </Field>
                                                     </FormItem>
-                                                ))}
-                                            </FormContainer>
-                                        )}
-                                    </FormItem>
-                                </FormContainer>
+                                                    {webBorrderStyleArray.map((item, key) => (
+                                                        <FormItem key={key} label={item.label} className="w-1/2">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item.name}
+                                                                placeholder={item.placeholder}
+                                                                component={Input}
+                                                            />
+                                                        </FormItem>
+                                                    ))}
+                                                </FormContainer>
+                                            )}
+                                        </FormItem>
+                                    </div>
+                                </FormItem>
                                 {/* )} */}
 
                                 {/* image */}
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    {initialValue.background_image ? (
-                                        <div className="flex flex-col items-center justify-center w-[150px]">
-                                            <img
-                                                src={initialValue.background_image}
-                                                alt={`Image `}
-                                                className="w-[150px] h-[40px] flex object-contain "
-                                            />
-                                            <button className="text-red-500 text-md " onClick={() => handleRemoveImage('background_image')}>
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        'No Image'
-                                    )}
-                                    <FormContainer className=" ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="background_image_array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <div className="font-semibold flex justify-center">Background Image</div>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.background_image_array} // uploadedd the file
-                                                            onChange={(files) => form.setFieldValue('background_image_array', files)}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('background_image_array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
+                                <div className="flex  flex-col gap-4 items-start">
+                                    <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                        {initialValue.background_image ? (
+                                            <div className="flex flex-col items-center justify-center w-[150px]">
+                                                <img
+                                                    src={initialValue.background_image}
+                                                    alt={`Image `}
+                                                    className="w-[150px] h-[40px] flex object-contain "
+                                                />
+                                                <button
+                                                    className="text-red-500 text-md "
+                                                    onClick={() => handleRemoveImage('background_image')}
+                                                >
+                                                    <MdCancel className="text-red-500 bg-none text-lg" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            'No Image'
+                                        )}
+                                        <FormContainer className=" ">
+                                            <FormItem label="" className="grid grid-rows-2">
+                                                <Field name="background_image_array">
+                                                    {({ field, form }: FieldProps<WebType>) => (
+                                                        <>
+                                                            <div className="font-semibold flex justify-center">Background Image</div>
+                                                            <Upload
+                                                                beforeUpload={beforeUpload}
+                                                                fileList={values.background_image_array} // uploadedd the file
+                                                                onChange={(files) => form.setFieldValue('background_image_array', files)}
+                                                                className="flex justify-center"
+                                                                onFileRemove={(files) =>
+                                                                    form.setFieldValue('background_image_array', files)
+                                                                }
+                                                            />
+                                                        </>
+                                                    )}
+                                                </Field>
+                                            </FormItem>
+                                        </FormContainer>
                                     </FormContainer>
-                                </FormContainer>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    {initialValue.mobile_background_image ? (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={initialValue.mobile_background_image}
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button
-                                                className="text-red-500 text-md "
-                                                onClick={() => handleRemoveImage('mobile_background_image')}
-                                            >
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        'No Image'
-                                    )}
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="mobile_background_array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <div className="font-semibold flex justify-center">Mobile Background Image</div>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.mobile_background_array} // uploadedd the file
-                                                            onChange={(files) => form.setFieldValue('mobile_background_array', files)}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('mobile_background_array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
+                                    <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                        {initialValue.mobile_background_image ? (
+                                            <div className="flex flex-col items-center justify-center min-w-[100px]">
+                                                <img
+                                                    src={initialValue.mobile_background_image}
+                                                    alt={`Image `}
+                                                    className="w-[100px] h-[40px] flex object-contain "
+                                                />
+                                                <button
+                                                    className="text-red-500 text-md "
+                                                    onClick={() => handleRemoveImage('mobile_background_image')}
+                                                >
+                                                    <MdCancel className="text-red-500 bg-none text-lg" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            'No Image'
+                                        )}
+                                        <FormContainer className=" mt-5 ">
+                                            <FormItem label="" className="grid grid-rows-2">
+                                                <Field name="mobile_background_array">
+                                                    {({ field, form }: FieldProps<WebType>) => (
+                                                        <>
+                                                            <div className="font-semibold flex justify-center">Mobile Background Image</div>
+                                                            <Upload
+                                                                beforeUpload={beforeUpload}
+                                                                fileList={values.mobile_background_array} // uploadedd the file
+                                                                onChange={(files) => form.setFieldValue('mobile_background_array', files)}
+                                                                className="flex justify-center"
+                                                                onFileRemove={(files) =>
+                                                                    form.setFieldValue('mobile_background_array', files)
+                                                                }
+                                                            />
+                                                        </>
+                                                    )}
+                                                </Field>
+                                            </FormItem>
+                                        </FormContainer>
                                     </FormContainer>
-                                </FormContainer>
-
-                                {BackGroundArray.map((item, key) => (
-                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
+                                    {BackGroundArray.map((item, key) => (
+                                        <FormItem asterisk label={item.label} className="w-1/2" key={key}>
+                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        </FormItem>
+                                    ))}
+                                </div>
 
                                 {/* ............Header Config................................................. */}
 

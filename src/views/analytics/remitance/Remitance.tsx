@@ -10,6 +10,7 @@ import Table from '@/components/ui/Table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Item, REMITANCE } from '@/store/types/remitance.types'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
+import { FaDownload } from 'react-icons/fa'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -107,9 +108,12 @@ const Remitance = () => {
 
     return (
         <div className="p-6 ">
-            <div className="flex flex-col lg:flex-row lg:items-center gap-6 justify-around">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-6  justify-between">
                 {/* Date Pickers Section */}
-                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                <div className="flex flex-col md:flex-row gap-4 xl:items-start items-center md:items-center">
+                    <Button onClick={handleDownload} variant="new" className="justify-center gap-2 xl:hidden flex">
+                        <FaDownload className="text-xl" />
+                    </Button>
                     <div className="flex flex-col">
                         <label className="mb-2 font-semibold text-sm text-gray-700">
                             From Date: {showOneMonthBack ? '(Start of Month)' : ''}
@@ -134,22 +138,24 @@ const Remitance = () => {
                 </div>
 
                 {/* Brands Dropdown Section */}
-                <div className="flex flex-col items-start">
-                    <label className="mb-2 font-semibold text-sm text-gray-700">Brands:</label>
-                    <Select
-                        options={brands.brands}
-                        getOptionLabel={(option) => option.name}
-                        getOptionValue={(option) => option.id.toString()}
-                        onChange={handleBrandSelect}
-                        className="w-[200px]"
-                    />
-                </div>
+                <div className="flex items-center gap-8">
+                    <div className="flex xl:flex-col flex-row gap-2 xl:items-start items-center">
+                        <label className="mb-2 font-semibold text-sm text-gray-700">Brands:</label>
+                        <Select
+                            options={brands.brands}
+                            getOptionLabel={(option) => option.name}
+                            getOptionValue={(option) => option.id.toString()}
+                            onChange={handleBrandSelect}
+                            className="w-[200px] items-center"
+                        />
+                    </div>
 
-                {/* Download Button */}
-                <div className="flex justify-center items-center">
-                    <Button onClick={handleDownload} variant="new">
-                        Download
-                    </Button>
+                    {/* Download Button */}
+                    <div className="flex justify-center items-center mt-5">
+                        <Button onClick={handleDownload} variant="new" className="justify-center gap-2 hidden xl:flex">
+                            <FaDownload className="text-xl" /> Download
+                        </Button>
+                    </div>
                 </div>
             </div>
             <br />
