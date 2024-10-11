@@ -127,6 +127,7 @@ const DeliveryOrders = () => {
                 )
             },
         },
+        { header: 'Device Type', accessorKey: 'device_type' },
 
         { header: 'Delivery Type', accessorKey: 'delivery_type' },
         { header: 'STATUS', accessorKey: 'status' },
