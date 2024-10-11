@@ -323,10 +323,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 return {
                     buttonText: 'MARK AS SHIPPED',
                 }
-            case 'OUT FOR DELIVERY':
-                return {
-                    buttonText: 'MARK AS DELIVERED',
-                }
+            case 'OUT_FOR_DELIVERY':
             case 'SHIPPED':
                 return {
                     buttonText: 'MARK AS DELIVERED',
@@ -416,7 +413,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     status={status}
                 />
             )}
-            {status === 'OUT FOR DELIVERY' && (
+            {status === 'OUT_FOR_DELIVERY' && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
