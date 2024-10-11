@@ -58,6 +58,13 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter Corner Radius',
     },
+    {
+        label: 'Gap',
+        name: 'component_config.gap',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter gap',
+    },
 
     // Web Versions below
     {
@@ -115,6 +122,13 @@ export const genericComponentArray = [
         type: 'number',
         component: { Input },
         placeholder: 'Enter Web Corner Radius',
+    },
+    {
+        label: 'Web Gap',
+        name: 'component_config.web_gap',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter web gap',
     },
 ]
 

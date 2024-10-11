@@ -362,6 +362,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 border_color: row.component_config.border_color,
                 show_dots: row.component_config.show_dots,
                 infinit_loop: row.component_config.infinit_loop,
+                gap: Number(row.component_config.gap),
                 // web PArt
                 web_carousel: row.component_config.web_carousel,
                 web_carousel_dot: row.component_config.web_carousel_dot,
@@ -376,6 +377,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 web_border_color: row.component_config.web_border_color,
                 web_show_dots: row.component_config.web_show_dots,
                 web_infinit_loop: row.component_config.web_infinit_loop,
+                web_gap: Number(row.component_config.web_gap),
             },
             section_filters: row.data_type.filters,
         }
@@ -456,7 +458,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     <div className="flex flex-row gap-10 ">
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Mobile Configurations :</div>
-                                            {genericComponentArray.slice(0, 8).map((item, key) => (
+                                            {genericComponentArray.slice(0, 9).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-2/3">
                                                     <Field
                                                         type={item.type}
@@ -469,7 +471,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                         </FormContainer>
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Web Configurations :</div>
-                                            {genericComponentArray.slice(8).map((item, key) => (
+                                            {genericComponentArray.slice(9).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-2/3">
                                                     <Field
                                                         type={item.type}
