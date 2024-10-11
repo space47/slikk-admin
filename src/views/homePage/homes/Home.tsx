@@ -6,7 +6,7 @@ import { RiFileList3Fill } from 'react-icons/ri'
 import { IoMdReturnLeft } from 'react-icons/io'
 import { FaSearch, FaShoppingCart } from 'react-icons/fa'
 import { GrCompliance } from 'react-icons/gr'
-import { HiOutlineCalendar } from 'react-icons/hi'
+import { HiCurrencyRupee, HiOutlineCalendar } from 'react-icons/hi'
 import DatePicker from '@/components/ui/DatePicker'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
@@ -14,9 +14,11 @@ import { TbCalendarStats, TbMoneybag } from 'react-icons/tb'
 import { HiMiniBanknotes } from 'react-icons/hi2'
 import BrandDataChart from '../homeChart/BubbleChart'
 import MultipleMap from '@/common/multipleMap'
-import { MdOutlineFullscreen } from 'react-icons/md'
+import { MdDeliveryDining, MdOutlineFullscreen } from 'react-icons/md'
 import { IoBasketSharp } from 'react-icons/io5'
-import { PiCurrencyInrBold } from 'react-icons/pi'
+import { PiCurrencyInrBold, PiDevicesFill } from 'react-icons/pi'
+import { RiMoneyRupeeCircleFill } from 'react-icons/ri'
+import { FaMoneyBillTrendUp } from 'react-icons/fa6'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -86,7 +88,7 @@ const Home = () => {
 
     const basketSize = homeData ? sum / homeData?.received?.count : 0
 
-    console.log('sum of Data', sum)
+    console.log('sum of Data', homeData?.delivery_type)
 
     const handleFromChange = (date: Date | null) => {
         if (date) {
@@ -249,7 +251,7 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <PiCurrencyInrBold className="text-4xl mx-4 text-green-500 " />
+                            <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Net Sales</h2>
@@ -262,7 +264,7 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <HiMiniBanknotes className="text-4xl mx-4 text-yellow-400 " />
+                            <FaMoneyBillTrendUp className="text-4xl mx-4 text-yellow-400 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Average Order Value</h2>
@@ -273,11 +275,39 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <FaShoppingCart className="text-4xl mx-4 text-amber-800 " />
+                            <FaShoppingCart className="text-4xl mx-4 text-amber-500 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Average Basket Size</h2>
                             <p>Value: {basketSize ? basketSize.toFixed(2) : 0}</p>
+                        </div>
+                    </div>
+                </Card>
+                {/* LAst Two.............. */}
+
+                <Card className="shadow-lg">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <MdDeliveryDining className="text-5xl mx-4 text-blue-500 " />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold">Delivery Type</h2>
+                            <p>Express: {homeData?.delivery_type.EXPRESS ? homeData?.delivery_type.EXPRESS : 0}</p>
+                            <p>Standard: {homeData?.delivery_type.STANDARD ? homeData?.delivery_type.STANDARD : 0}</p>
+                            <p>Try&Buy: {homeData?.delivery_type.TRY_AND_BUY ? homeData?.delivery_type.TRY_AND_BUY : 0}</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="shadow-lg">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <PiDevicesFill className="text-5xl mx-4  " />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold">Device Type</h2>
+                            <p>Android: {homeData?.device_type.ANDROID ? homeData?.device_type.ANDROID : 0}</p>
+                            <p>Web: {homeData?.device_type.WEB ? homeData?.device_type.WEB : 0}</p>
+                            <p>IOS: {homeData?.device_type.IOS ? homeData?.device_type.IOS : 0}</p>
                         </div>
                     </div>
                 </Card>

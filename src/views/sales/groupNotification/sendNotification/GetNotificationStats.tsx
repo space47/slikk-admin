@@ -177,7 +177,7 @@ const GetNotificationStats = () => {
     return (
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4 flex gap-2 xl:flex-row flex-col">
+                <div className="mb-4 flex gap-2 items-center">
                     <div>
                         <div>Enter name:</div>
                         <input
@@ -188,12 +188,12 @@ const GetNotificationStats = () => {
                             className="p-2 border rounded"
                         />
                     </div>
-                    <div className="order-first">
+                    <div className="mt-4">
                         <button
                             className="bg-black text-white px-5 py-2 items-center justify-center rounded-md hover:bg-gray-700 xl:hidden  flex"
                             onClick={handleSeller}
                         >
-                            Create Notification
+                            Add New
                         </button>
                     </div>
                 </div>

@@ -7,9 +7,9 @@ export const headingGroup = [
         className: 'w-full',
     },
     {
-        label: 'User Mobile',
+        label: 'User ',
         name: 'user',
-        placeholder: 'Enter User number',
+        placeholder: 'Enter User ',
         type: 'text',
         className: 'w-full',
     },
