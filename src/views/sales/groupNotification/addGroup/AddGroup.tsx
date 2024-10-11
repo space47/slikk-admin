@@ -214,23 +214,54 @@ const AddGroup = () => {
                             </FormContainer>
                             <FormContainer>
                                 <h3>cart:</h3>
-                                <FormContainer>
-                                    <FormContainer className="w-1/2">
-                                        <FormItem label="Cart" className="col-span-1 w-1/2">
-                                            <Field type="date" name="cart_start" component={Input} />
-                                            <Field type="date" name="cart_end" component={Input} />
-                                        </FormItem>
-                                    </FormContainer>
+
+                                <FormContainer className="w-1/2">
+                                    <FormItem label="Cart" className="col-span-1 w-full sm:w-1/2 space-y-2">
+                                        <div className="flex flex-col">
+                                            <label className="text-gray-700 font-semibold mb-1">Cart Start</label>
+                                            <Field
+                                                type="date"
+                                                name="cart_start"
+                                                component={Input}
+                                                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <label className="text-gray-700 font-semibold mb-1">Cart End</label>
+                                            <Field
+                                                type="date"
+                                                name="cart_end"
+                                                component={Input}
+                                                className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                    </FormItem>
                                 </FormContainer>
                             </FormContainer>
                             <h3>User:</h3> <br />
                             <div className="grid grid-cols-2 gap-4">
                                 {userProfileGroup.map((item, key) => {
                                     return (
-                                        <FormContainer key={key}>
-                                            <FormItem label={item.label} className="col-span-1 w-1/2">
-                                                <Field type={item.type} name={item.start_name} component={Input} />
-                                                <Field type={item.type} name={item.end_name} component={Input} />
+                                        <FormContainer key={key} className="space-y-4">
+                                            <FormItem label={item.label} className="col-span-1 w-full sm:w-1/2 space-y-2">
+                                                <div className="flex flex-col">
+                                                    <label className="text-gray-700 font-semibold mb-1">{item.label} Start</label>
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.start_name}
+                                                        component={Input}
+                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col mt-4">
+                                                    <label className="text-gray-700 font-semibold mb-1">{item.label} End</label>
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.end_name}
+                                                        component={Input}
+                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
                                             </FormItem>
                                         </FormContainer>
                                     )
@@ -263,20 +294,28 @@ const AddGroup = () => {
                             <FormContainer className="grid grid-cols-2 gap-4">
                                 {orderGroup.map((item, key) => {
                                     return (
-                                        <FormContainer key={key}>
-                                            <FormItem label={item.label} className="col-span-1 w-1/2">
-                                                <Field
-                                                    type={item.type}
-                                                    name={item.start_name}
-                                                    component={Input}
-                                                    placeholder={item.start_placeholder}
-                                                />
-                                                <Field
-                                                    type={item.type}
-                                                    name={item.end_name}
-                                                    component={Input}
-                                                    placeholder={item.min_placeholder}
-                                                />
+                                        <FormContainer key={key} className="space-y-4">
+                                            <FormItem label={item.label} className="col-span-1 w-full sm:w-1/2 space-y-2">
+                                                <div className="flex flex-col">
+                                                    <label className="text-gray-700 font-semibold mb-1">{item.start_placeholder} </label>
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.start_name}
+                                                        component={Input}
+                                                        placeholder={item.start_placeholder}
+                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col mt-4">
+                                                    <label className="text-gray-700 font-semibold mb-1">{item.min_placeholder} </label>
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.end_name}
+                                                        component={Input}
+                                                        placeholder={item.min_placeholder}
+                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
                                             </FormItem>
                                         </FormContainer>
                                     )
@@ -305,9 +344,27 @@ const AddGroup = () => {
                         {/* OrderItem................................ */}
                         <FormContainer className="grid grid-cols-2 gap-10">
                             <h3>Order Item</h3> <br />
-                            <FormItem label="Basket Size" className="col-span-1 w-1/2">
-                                <Field type="number" name="max_basket_size" placeholder="max" component={Input} />
-                                <Field type="number" name="min_basket_size" placeholder="min" component={Input} />
+                            <FormItem label="Basket Size" className="col-span-1 w-full sm:w-1/2 space-y-2">
+                                <div className="flex flex-col">
+                                    <label className="text-gray-700 font-semibold mb-1">Max Basket Size</label>{' '}
+                                    <Field
+                                        type="number"
+                                        name="max_basket_size"
+                                        placeholder="Max"
+                                        component={Input}
+                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div className="flex flex-col">
+                                    <label className="text-gray-700 font-semibold mb-1">Min Basket Size</label>
+                                    <Field
+                                        type="number"
+                                        name="min_basket_size"
+                                        placeholder="Min"
+                                        component={Input}
+                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
                             </FormItem>
                             <FormItem label="Filters">
                                 <Field name="tag_filters">
@@ -355,20 +412,28 @@ const AddGroup = () => {
                             <FormContainer className="grid grid-cols-2 gap-6">
                                 {LoyaltyArray.map((item, key) => {
                                     return (
-                                        <FormContainer key={key}>
-                                            <FormItem label={item.label} className="col-span-1 w-1/2">
-                                                <Field
-                                                    type={item.type}
-                                                    name={item.start_name}
-                                                    component={Input}
-                                                    placeholder={item.start_placeholder}
-                                                />
-                                                <Field
-                                                    type={item.type}
-                                                    name={item.end_name}
-                                                    component={Input}
-                                                    placeholder={item.min_placeholder}
-                                                />
+                                        <FormContainer key={key} className="space-y-4">
+                                            <FormItem label={item.label} className="col-span-1 w-full sm:w-1/2 space-y-2">
+                                                <div className="flex flex-col">
+                                                    <label className="text-gray-700 font-semibold mb-1">{item.start_placeholder} </label>
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.start_name}
+                                                        component={Input}
+                                                        placeholder={item.start_placeholder}
+                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col mt-4">
+                                                    <label className="text-gray-700 font-semibold mb-1">{item.min_placeholder} </label>
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.end_name}
+                                                        component={Input}
+                                                        placeholder={item.min_placeholder}
+                                                        className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
                                             </FormItem>
                                         </FormContainer>
                                     )

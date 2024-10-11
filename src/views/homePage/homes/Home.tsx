@@ -4,7 +4,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
 import { IoMdReturnLeft } from 'react-icons/io'
-import { FaSearch } from 'react-icons/fa'
+import { FaSearch, FaShoppingCart } from 'react-icons/fa'
 import { GrCompliance } from 'react-icons/gr'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import DatePicker from '@/components/ui/DatePicker'
@@ -16,6 +16,7 @@ import BrandDataChart from '../homeChart/BubbleChart'
 import MultipleMap from '@/common/multipleMap'
 import { MdOutlineFullscreen } from 'react-icons/md'
 import { IoBasketSharp } from 'react-icons/io5'
+import { PiCurrencyInrBold } from 'react-icons/pi'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -202,7 +203,7 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 xl:mx-10">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
                 <Card className="shadow-lg cursor-pointer" onClick={handleReceived}>
                     <div className="flex justify-between items-center">
                         <div>
@@ -248,7 +249,7 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <HiMiniBanknotes className="text-4xl mx-4 text-yellow-400 " />
+                            <PiCurrencyInrBold className="text-4xl mx-4 text-green-500 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Net Sales</h2>
@@ -261,22 +262,22 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <TbMoneybag className="text-4xl mx-4 text-green-800 " />
+                            <HiMiniBanknotes className="text-4xl mx-4 text-yellow-400 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Average Order Value</h2>
-                            <p>Value: {averageOrderValue?.toFixed(2)}</p>
+                            <p>Value: {averageOrderValue ? averageOrderValue?.toFixed(2) : 0}</p>
                         </div>
                     </div>
                 </Card>
                 <Card className="shadow-lg">
                     <div className="flex justify-between items-center">
                         <div>
-                            <IoBasketSharp className="text-4xl mx-4 text-amber-800 " />
+                            <FaShoppingCart className="text-4xl mx-4 text-amber-800 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Average Basket Size</h2>
-                            <p>Value: {basketSize.toFixed(2)}</p>
+                            <p>Value: {basketSize ? basketSize.toFixed(2) : 0}</p>
                         </div>
                     </div>
                 </Card>

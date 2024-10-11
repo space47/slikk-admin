@@ -33,6 +33,7 @@ type Product = {
 type OrderProductsProps = {
     data?: Product[]
     invoice_id: any
+    status: any
 }
 
 const { Tr, Th, Td, THead, TBody } = Table
@@ -95,7 +96,7 @@ const PriceAmount = ({ amount }: { amount: number }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
-const OrderProducts = ({ data = [], invoice_id }: OrderProductsProps) => {
+const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) => {
     const [replaceDrawer, setReplaceDrawer] = useState(false)
     const [itemId, setItemId] = useState<number>()
 
@@ -163,19 +164,23 @@ const OrderProducts = ({ data = [], invoice_id }: OrderProductsProps) => {
             },
         }),
         columnHelper.accessor('name', {
-            header: 'Replace',
+            header: `${status !== 'COMPLETED' ? 'Replace' : ''}`,
             cell: (props) => {
                 const rowID = props.row.original.id
                 return (
                     <>
-                        <button className="text-white bg-red-500 px-3 py-2 rounded-[10px]" onClick={() => handleReplace(rowID)}>
-                            Replace
-                        </button>
+                        {status !== 'COMPLETED' && status !== 'CANCELLED' && (
+                            <button className="text-white bg-red-500 px-3 py-2 rounded-[10px]" onClick={() => handleReplace(rowID)}>
+                                Replace
+                            </button>
+                        )}
                     </>
                 )
             },
         }),
     ]
+
+    console.log('STATUS OF ITEM', status)
 
     const handleReplace = (itemId: number) => {
         setReplaceDrawer(true)

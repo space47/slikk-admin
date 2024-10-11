@@ -186,6 +186,8 @@ const EditProduct = () => {
         length: productData?.length,
         necktype: productData?.necktype,
         risetype: productData?.risetype,
+        colorfamily: productData?.filter_to_display_map.colorfamily,
+
         sleevtype: productData?.sleevtype,
         trend: productData?.filter_tags?.trend?.join('/'),
         trendtype: productData?.filter_tags?.trendtype?.join('/'),
