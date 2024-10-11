@@ -306,6 +306,7 @@ const OrderList = () => {
                 },
             },
             { header: 'Order Count', accessorKey: 'user_order_count' },
+            { header: 'Device Type', accessorKey: 'device_type' },
             { header: 'Customer Name', accessorKey: 'user.name' },
             { header: 'Delivery Type', accessorKey: 'delivery_type' },
             // { header: 'Store Address', accessorKey: 'store.address' },

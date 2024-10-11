@@ -96,7 +96,7 @@ const SendNotification = () => {
         message: '',
         target_page: '',
         key: '',
-        users: '9818454888',
+        users: '9818454888,8310903174',
         page_title: '',
         filters: '',
         image_url: '',

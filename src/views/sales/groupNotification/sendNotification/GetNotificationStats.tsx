@@ -95,7 +95,7 @@ const GetNotificationStats = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
 
             {
