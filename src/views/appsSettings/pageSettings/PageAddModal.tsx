@@ -17,7 +17,7 @@ import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePos
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { BackGroundArray, borrderStyleArray, genericComponentArray } from './genericComp'
+import { BackGroundArray, borrderStyleArray, genericComponentArray, webBorrderStyleArray } from './genericComp'
 import PageAddCommonImage from './PageAddCommonImage'
 import { MdCancel } from 'react-icons/md'
 import PageSettingsPostTable from './PageSettingsPostTable'
@@ -101,7 +101,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [showPostTable, setShowPostTable] = useState(false)
     const [postTableData, setPostTableData] = useState([])
     const [postData, setPostData] = useState<string[]>([])
-
+    const [webBorderForm, setWebBorderForm] = useState<boolean>()
     const [textAreaValue, setTextAreaValue] = useState('')
     const MAX_UPLOAD = 10000
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -343,8 +343,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 mobile_position: row.background_config?.mobile_position,
                 background_topMargin: Number(row.background_config?.background_topMargin),
                 background_bottomMargin: Number(row.background_config?.background_bottomMargin),
-                mobile_Width: Number(row.background_config?.mobile_width),
-                web_Width: Number(row.background_config?.web_width),
+                mobile_width: Number(row.background_config?.mobile_width),
+                web_width: Number(row.background_config?.web_width),
                 background_image: imageUpload,
                 mobile_background_image: mobileImageUpload,
             },
@@ -360,6 +360,22 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 border_style: row.component_config.border_style,
                 border_width: Number(row.component_config.border_width),
                 border_color: row.component_config.border_color,
+                show_dots: row.component_config.show_dots,
+                infinit_loop: row.component_config.infinit_loop,
+                // web PArt
+                web_carousel: row.component_config.web_carousel,
+                web_carousel_dot: row.component_config.web_carousel_dot,
+                web_grid: row.component_config.web_grid,
+                web_carousel_autoplay: row.component_config.web_carousel_autoplay,
+                web_width: Number(row.component_config.web_width),
+                web_corner_radius: Number(row.component_config.web_corner_radius),
+                web_interval: Number(row.component_config.web_interval),
+                web_border: row.component_config.web_border,
+                web_border_style: row.component_config.web_border_style,
+                web_border_width: Number(row.component_config.web_border_width),
+                web_border_color: row.component_config.web_border_color,
+                web_show_dots: row.component_config.web_show_dots,
+                web_infinit_loop: row.component_config.web_infinit_loop,
             },
             section_filters: row.data_type.filters,
         }
@@ -403,7 +419,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     initialValues={initialValue}
                     innerRef={formikRef}
                     // validationSchema={validationSchema}
-                    // ONSUBMIT LOGICCCCCCC....................................................................................................
+
                     onSubmit={handleSubmit}
                 >
                     {({ values, touched, errors, resetForm, setFieldValue }) => (
@@ -424,9 +440,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                     options={componentOptions}
                                                     value={componentOptions.find((option) => option.value === field.value)}
                                                     onChange={(option) => {
-                                                        const value = option ? option.value : '' // Handle null or undefined options
-                                                        form.setFieldValue(field.name, value) // Update the form field value
-                                                        setComponentOptions(value) // Set the component options
+                                                        const value = option ? option.value : ''
+                                                        form.setFieldValue(field.name, value)
+                                                        setComponentOptions(value)
                                                     }}
                                                     onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                                                 />
@@ -437,55 +453,11 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 {/* Generic Fields........................................................ */}
 
                                 <FormContainer>
-                                    <FormContainer className="grid grid-cols-2 gap-10">
-                                        {genericComponentArray.map((item, key) => (
-                                            <FormItem key={key} label={item.label} className="w-1/2">
-                                                <Field
-                                                    type={item.type}
-                                                    name={item.name}
-                                                    placeholder={item.placeholder}
-                                                    component={Input} // Fallback to 'input' if component is not valid
-                                                />
-                                            </FormItem>
-                                        ))}
-                                    </FormContainer>
-
-                                    <FormItem label="Border" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="border"
-                                            placeholder="Enter border"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('border', isChecked)
-                                                setBorderForm(isChecked ? 'yes' : 'no') // Set borderForm to 'yes' or 'no'
-                                            }}
-                                        />
-                                    </FormItem>
-
-                                    {borderForm === 'yes' && (
-                                        <FormContainer>
-                                            <FormItem label="Border Style" className="col-span-1 w-1/4">
-                                                <Field name="border_style">
-                                                    {({ field, form }: FieldProps<any>) => {
-                                                        return (
-                                                            <Select
-                                                                field={field}
-                                                                form={form}
-                                                                options={borderStyleArray}
-                                                                value={borderStyleArray.find((option) => option.value === field.value)}
-                                                                onChange={(option) => {
-                                                                    const value = option?.value || '' // Safely handle null/undefined option
-                                                                    form.setFieldValue(field.name, value) // Update the form field value
-                                                                }}
-                                                            />
-                                                        )
-                                                    }}
-                                                </Field>
-                                            </FormItem>
-                                            {borrderStyleArray.map((item, key) => (
-                                                <FormItem key={key} label={item.label} className="w-1/2">
+                                    <div className="flex flex-row gap-10 ">
+                                        <FormContainer className="grid grid-cols-1 gap-10">
+                                            <div className="font-bold mt-1">Mobile Configurations :</div>
+                                            {genericComponentArray.slice(0, 8).map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-2/3">
                                                     <Field
                                                         type={item.type}
                                                         name={item.name}
@@ -495,78 +467,196 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                 </FormItem>
                                             ))}
                                         </FormContainer>
-                                    )}
+                                        <FormContainer className="grid grid-cols-1 gap-10">
+                                            <div className="font-bold mt-1">Web Configurations :</div>
+                                            {genericComponentArray.slice(8).map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-2/3">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input} // Fallback to 'input' if component is not valid
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+                                    </div>
+
+                                    <div className="flex gap-14">
+                                        <FormItem label="Border" className="col-span-1 w-1/4">
+                                            <Field
+                                                type="checkbox"
+                                                name="border"
+                                                placeholder="Enter border"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('border', isChecked)
+                                                    setBorderForm(isChecked ? 'yes' : 'no')
+                                                }}
+                                            />
+                                            {borderForm === 'yes' && (
+                                                <FormContainer>
+                                                    <FormItem label="Border Style" className="col-span-1 w-full">
+                                                        <Field name="border_style">
+                                                            {({ field, form }: FieldProps<any>) => {
+                                                                return (
+                                                                    <Select
+                                                                        field={field}
+                                                                        form={form}
+                                                                        options={borderStyleArray}
+                                                                        value={borderStyleArray.find(
+                                                                            (option) => option.value === field.value,
+                                                                        )}
+                                                                        onChange={(option) => {
+                                                                            const value = option?.value || ''
+                                                                            form.setFieldValue(field.name, value)
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            }}
+                                                        </Field>
+                                                    </FormItem>
+                                                    {borrderStyleArray.map((item, key) => (
+                                                        <FormItem key={key} label={item.label} className="w-full">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item.name}
+                                                                placeholder={item.placeholder}
+                                                                component={Input}
+                                                            />
+                                                        </FormItem>
+                                                    ))}
+                                                </FormContainer>
+                                            )}
+                                        </FormItem>
+                                        <FormItem label="Web Border" className="col-span-1 w-1/4">
+                                            <Field
+                                                type="checkbox"
+                                                name="web_border"
+                                                placeholder="Enter border"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('web_border', isChecked)
+                                                    setWebBorderForm(isChecked)
+                                                }}
+                                            />{' '}
+                                            <br />
+                                            <br />
+                                            {webBorderForm === true && (
+                                                <FormContainer>
+                                                    <FormItem label="Web Border Style" className="col-span-1 w-full">
+                                                        <Field name="web_border_style">
+                                                            {({ field, form }: FieldProps<any>) => {
+                                                                return (
+                                                                    <Select
+                                                                        field={field}
+                                                                        form={form}
+                                                                        options={borderStyleArray}
+                                                                        value={borderStyleArray.find(
+                                                                            (option) => option.value === field.value,
+                                                                        )}
+                                                                        onChange={(option) => {
+                                                                            const value = option?.value || ''
+                                                                            form.setFieldValue(field.name, value)
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            }}
+                                                        </Field>
+                                                    </FormItem>
+                                                    {webBorrderStyleArray.map((item, key) => (
+                                                        <FormItem key={key} label={item.label} className="w-full">
+                                                            <Field
+                                                                type={item.type}
+                                                                name={item.name}
+                                                                placeholder={item.placeholder}
+                                                                component={Input}
+                                                            />
+                                                        </FormItem>
+                                                    ))}
+                                                </FormContainer>
+                                            )}
+                                        </FormItem>
+                                    </div>
                                 </FormContainer>
 
                                 {/* ......................................................................... */}
 
                                 {/* image */}
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1">Background Image</div>
+                                <div className="flex flex-col  items-start ">
+                                    <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                        <div className="font-semibold mb-1">Background Image</div>
 
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="background_image_array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.background_image_array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.background_image_array,
-                                                                )
-                                                                form.setFieldValue('background_image_array', files)
-                                                            }}
-                                                            className="items-center flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('background_image_array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
+                                        <FormContainer className=" mt-5 ">
+                                            <FormItem label="" className="grid grid-rows-2">
+                                                <Field name="background_image_array">
+                                                    {({ field, form }: FieldProps<WebType>) => (
+                                                        <>
+                                                            <Upload
+                                                                beforeUpload={beforeUpload}
+                                                                fileList={values.background_image_array}
+                                                                onChange={(files) => {
+                                                                    console.log(
+                                                                        'OnchangeFiles',
+                                                                        files,
+                                                                        field.name,
+                                                                        values.background_image_array,
+                                                                    )
+                                                                    form.setFieldValue('background_image_array', files)
+                                                                }}
+                                                                className="items-center flex justify-center"
+                                                                onFileRemove={(files) =>
+                                                                    form.setFieldValue('background_image_array', files)
+                                                                }
+                                                            />
+                                                        </>
+                                                    )}
+                                                </Field>
+                                            </FormItem>
+                                        </FormContainer>
                                     </FormContainer>
-                                </FormContainer>
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <div className="font-semibold mb-1 text-md">Mobile Background Image</div>
+                                    <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                        <div className="font-semibold mb-1 text-md">Mobile Background Image</div>
 
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="mobile_background_array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.mobile_background_array} // uploadedd the file
-                                                            onChange={(files) => {
-                                                                console.log(
-                                                                    'OnchangeFiles',
-                                                                    files,
-                                                                    field.name,
-                                                                    values.mobile_background_array,
-                                                                )
-                                                                form.setFieldValue('mobile_background_array', files)
-                                                            }}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('mobile_background_array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
+                                        <FormContainer className=" mt-5 ">
+                                            <FormItem label="" className="grid grid-rows-2">
+                                                <Field name="mobile_background_array">
+                                                    {({ field, form }: FieldProps<WebType>) => (
+                                                        <>
+                                                            <Upload
+                                                                beforeUpload={beforeUpload}
+                                                                fileList={values.mobile_background_array} // uploadedd the file
+                                                                onChange={(files) => {
+                                                                    console.log(
+                                                                        'OnchangeFiles',
+                                                                        files,
+                                                                        field.name,
+                                                                        values.mobile_background_array,
+                                                                    )
+                                                                    form.setFieldValue('mobile_background_array', files)
+                                                                }}
+                                                                className="flex justify-center"
+                                                                onFileRemove={(files) =>
+                                                                    form.setFieldValue('mobile_background_array', files)
+                                                                }
+                                                            />
+                                                        </>
+                                                    )}
+                                                </Field>
+                                            </FormItem>
+                                        </FormContainer>
                                     </FormContainer>
-                                </FormContainer>
 
-                                {BackGroundArray.map((item, key) => (
-                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
+                                    {BackGroundArray.map((item, key) => (
+                                        <FormItem asterisk label={item.label} className="w-1/2" key={key}>
+                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        </FormItem>
+                                    ))}
+                                </div>
 
                                 {/* ............Header Config................................................. */}
 

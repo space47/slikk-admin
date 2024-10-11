@@ -232,16 +232,16 @@ const SendNotification = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                         <FormContainer>
-                            <FormContainer className="grid grid-cols-2 gap-10">
+                            <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10">
                                 {SendNotificationARRAY.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
 
-                                <FormItem label="Notification Type" className="col-span-1 w-1/2">
+                                <FormItem label="Notification Type" className="col-span-1 w-full xl:w-1/2">
                                     <Field name="notification_type">
                                         {({ field, form }: FieldProps<any>) => {
                                             return (
@@ -257,24 +257,6 @@ const SendNotification = () => {
                                     </Field>
                                 </FormItem>
                                 <FormItem label="SEARCH STRINGS">
-                                    {/* <Field name="filters">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    placeholder="Select Filter Tags"
-                                                    options={filters.filters}
-                                                    getOptionLabel={(option) => option.label}
-                                                    getOptionValue={(option) => option.value}
-                                                    onChange={(newVal) => {
-                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                        form.setFieldValue(field.name, newValues)
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field> */}
-
                                     <FormContainer className="items-center mt-4">
                                         <button onClick={handleAddFilter} type="button">
                                             <IoMdAddCircle className="text-3xl text-green-500" />
@@ -288,7 +270,7 @@ const SendNotification = () => {
                                                     {({ field, form }: FieldProps<any>) => (
                                                         <Select
                                                             isMulti
-                                                            placeholder={`Select Filter Tags ${index + 1}`}
+                                                            placeholder={`Filter Tags ${index + 1}`}
                                                             options={filters.filters}
                                                             getOptionLabel={(option) => option.label}
                                                             getOptionValue={(option) => option.value}
@@ -322,16 +304,16 @@ const SendNotification = () => {
                                     )}
                                 </FormItem>
 
-                                <FormContainer className="flex gap-3">
+                                <FormContainer className="flex gap-3 flex-col xl:flex-row">
                                     {MAXMINARRAY.map((item, key) => (
-                                        <FormItem key={key} label={item.label} className={item.classname}>
+                                        <FormItem key={key} label={item.label} className="w-full xl:w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
                                     ))}
                                 </FormContainer>
-                                <FormContainer className="flex gap-3">
+                                <FormContainer className="flex gap-3 flex-col xl:flex-row">
                                     {OFFARRAY.map((item, key) => (
-                                        <FormItem key={key} label={item.label} className={item.classname}>
+                                        <FormItem key={key} label={item.label} className="w-full xl:w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
                                     ))}
@@ -344,7 +326,7 @@ const SendNotification = () => {
                                             return (
                                                 <Select
                                                     isMulti
-                                                    placeholder="Select Discount Tags"
+                                                    placeholder="Discount Tags"
                                                     options={DISCOUNTOPTIONS}
                                                     getOptionLabel={(option) => option.label}
                                                     getOptionValue={(option) => option.value}
@@ -416,7 +398,7 @@ const SendNotification = () => {
                             </FormItem>
                         </FormContainer>
 
-                        <FormContainer className="flex justify-end mt-5">
+                        <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
                             <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                 Reset
                             </Button>

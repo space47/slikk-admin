@@ -177,7 +177,7 @@ const GetNotificationStats = () => {
     return (
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4 flex">
+                <div className="mb-4 flex gap-2 xl:flex-row flex-col">
                     <div>
                         <div>Enter name:</div>
                         <input
@@ -188,10 +188,18 @@ const GetNotificationStats = () => {
                             className="p-2 border rounded"
                         />
                     </div>
+                    <div className="order-first">
+                        <button
+                            className="bg-black text-white px-5 py-2 items-center justify-center rounded-md hover:bg-gray-700 xl:hidden  flex"
+                            onClick={handleSeller}
+                        >
+                            Create Notification
+                        </button>
+                    </div>
                 </div>
 
                 <div className="flex gap-5 items-center flex-col xl:flex-row mb-4">
-                    <div className="flex ">
+                    <div className="flex flex-col xl:flex-row  items-center gap-2 xl:gap-1 ">
                         <div>
                             <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
                             <DatePicker
@@ -199,7 +207,7 @@ const GetNotificationStats = () => {
                                 defaultValue={new Date()}
                                 value={new Date(from)}
                                 onChange={handleFromChange}
-                                className="w-2/3"
+                                className="w-full xl:w-2/3"
                             />
                         </div>
                         <div>
@@ -210,12 +218,15 @@ const GetNotificationStats = () => {
                                 value={new Date(to)}
                                 onChange={handleToChange}
                                 minDate={moment(from).toDate()}
-                                className="w-2/3"
+                                className="w-full xl:w-2/3"
                             />
                         </div>
                     </div>
                     <div className=" mt-4 order-first xl:order-1">
-                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
+                        <button
+                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700 hidden xl:flex"
+                            onClick={handleSeller}
+                        >
                             Create Notification
                         </button>{' '}
                     </div>

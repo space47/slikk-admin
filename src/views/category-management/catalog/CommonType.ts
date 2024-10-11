@@ -10,6 +10,7 @@ type Product = {
     variant_type: string
     variant_id: string
     tax_rate: number
+    colorfamily: string
     mrp: number
     sp: number
     barcode: string
@@ -79,7 +80,7 @@ export const DROPDOWNARRAY = [
     { label: 'Division', value: 'division' },
     { label: 'Sub Category', value: 'sub_category' },
     { label: 'Category', value: 'category' },
-    { label: 'Product Type', value: 'Product_type' }
+    { label: 'Product Type', value: 'Product_type' },
 ]
 
 export default Product

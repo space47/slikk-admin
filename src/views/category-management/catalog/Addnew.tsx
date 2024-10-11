@@ -184,6 +184,7 @@ const AddProduct = () => {
             ...values,
             color_code_link: colorlink ? colorlink : values.color_code_link,
             image: imageShow,
+            colorfamily: values.colorfamily,
             video_link: videoShow,
         }
 

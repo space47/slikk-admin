@@ -47,6 +47,7 @@ type Product = {
     product_type: string
     variants: ProductVariant[]
     sku: string
+    filter_to_display_map: any
 }
 
 type Option = {
@@ -85,6 +86,11 @@ const Products = () => {
     const [typeFetch, setTypeFetch] = useState('')
 
     const [showDrawer, setShowDrawer] = useState(false)
+
+    console.log(
+        'main Data',
+        data.map((item) => item.filter_to_display_map.colorfamily),
+    )
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -269,6 +275,11 @@ const Products = () => {
             {
                 header: 'COLOR',
                 accessorKey: 'color',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'COLOR Family',
+                accessorKey: 'filter_to_display_map.colorfamily',
                 cell: (info) => info.getValue(),
             },
             {
