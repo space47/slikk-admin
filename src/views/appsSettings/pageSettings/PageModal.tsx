@@ -538,9 +538,9 @@ const PageModal: React.FC<modalProps> = ({
                                 {/* 
                                 {componentOption === 'Generic' && ( */}
                                 <FormItem className="flex gap-2 ">
-                                    <div className="flex flex-col ">
-                                        <FormContainer className="grid grid-cols-2 gap-10">
-                                            <div className="font-bold mt-1">Mobile Configurations :</div> <br />
+                                    <div className="flex flex-row gap-10 ">
+                                        <FormContainer className="grid grid-cols-1 gap-10">
+                                            <div className="font-bold mt-1">Mobile Configurations :</div>
                                             {genericComponentArray.slice(0, 8).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
@@ -552,8 +552,8 @@ const PageModal: React.FC<modalProps> = ({
                                                 </FormItem>
                                             ))}
                                         </FormContainer>
-                                        <FormContainer className="grid grid-cols-2 gap-10">
-                                            <div className="font-bold mt-1">Web Configurations :</div> <br />
+                                        <FormContainer className="grid grid-cols-1 gap-10">
+                                            <div className="font-bold mt-1">Web Configurations :</div>
                                             {genericComponentArray.slice(8).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
@@ -567,7 +567,7 @@ const PageModal: React.FC<modalProps> = ({
                                         </FormContainer>
                                     </div>
 
-                                    <div className="flex gap-4 ">
+                                    <div className="flex gap-14 ">
                                         <FormItem label="Border" className="col-span-1 w-1/4">
                                             <Field
                                                 type="checkbox"
