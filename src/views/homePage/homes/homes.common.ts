@@ -13,6 +13,15 @@ export type SalesData = {
     }
     open: number
     brand_wise_sale: Record<string, number>
+    delivery_type: {
+        EXPRESS: number
+        STANDARD: number
+        TRY_AND_BUY: number
+    }
+    device_type: { ANDROID: number; WEB: number; IOS: number }
+
+    ANDROID: 1
+    WEB: 2
 }
 
 interface Profile {
