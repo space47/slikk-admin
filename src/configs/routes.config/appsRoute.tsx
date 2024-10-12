@@ -790,6 +790,18 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/sales/groupNotification/sendNotification/SendNotification')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsCommuncication.urlShortner',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/urlShortner`,
+        component: lazy(() => import('@/views/sales/urlShortner/GetUrlShortner')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.urlShortner',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/urlShortner/addNew`,
+        component: lazy(() => import('@/views/sales/urlShortner/AddUrlShortner')),
+        authority: [ADMIN, USER],
+    },
 
     // Tracking
     {
