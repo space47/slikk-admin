@@ -50,132 +50,205 @@ const AddGroup = () => {
     }, [])
 
     const handleSubmit = async (values: any) => {
-        console.log('Form values:', values) // Log values to check before proceeding
-        console.log('max', values.gender)
+        console.log('start')
 
         const formData = {
-            name: values.name,
-            user: values.user,
+            ...(values.name && { name: values.name }),
+            ...(values.user && { user: values.user }),
             rules: {
                 cart: [
-                    {
-                        type: 'cart',
-                        value: {
-                            start_date: values.cart_start,
-                            end_date: values.cart_end,
-                        },
-                    },
+                    ...(values.cart_start && values.cart_end
+                        ? [
+                              {
+                                  type: 'cart',
+                                  value: {
+                                      start_date: values.cart_start,
+                                      end_date: values.cart_end,
+                                  },
+                              },
+                          ]
+                        : []),
                 ],
                 userInfo: [
-                    {
-                        type: 'registration',
-                        value: {
-                            start_date: values.registration_start,
-                            end_date: values.registration_end,
-                        },
-                    },
-                    {
-                        type: 'dob',
-                        value: {
-                            start_date: values.dob_start,
-                            end_date: values.dob_end,
-                        },
-                    },
-                    {
-                        type: 'gender',
-                        value: values.gender.join(','),
-                    },
+                    ...(values.registration_start && values.registration_end
+                        ? [
+                              {
+                                  type: 'registration',
+                                  value: {
+                                      start_date: values.registration_start,
+                                      end_date: values.registration_end,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.dob_start && values.dob_end
+                        ? [
+                              {
+                                  type: 'dob',
+                                  value: {
+                                      start_date: values.dob_start,
+                                      end_date: values.dob_end,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.gender && values.gender.length
+                        ? [
+                              {
+                                  type: 'gender',
+                                  value: values.gender.join(','),
+                              },
+                          ]
+                        : []),
                 ],
                 order: [
-                    {
-                        type: 'order_date',
-                        value: {
-                            start_date: values.start_date,
-                            end_date: values.start_date,
-                        },
-                    },
-                    {
-                        type: 'order_value',
-                        value: {
-                            max_amount: values.max_value,
-                            min_amoun: values.min_value,
-                        },
-                    },
-                    {
-                        type: 'life_time_purchase',
-                        value: {
-                            max_amount: values.max_purchase,
-                            min_amount: values.min_purchase,
-                        },
-                    },
-                    {
-                        type: 'order_count',
-                        value: {
-                            max_order_count: values.max_count,
-                            min_order_count: values.min_count,
-                        },
-                    },
-                    {
-                        type: 'order_delivery_type',
-                        value: values.order_delivery_type.join(','),
-                    },
+                    ...(values.start_date
+                        ? [
+                              {
+                                  type: 'order_date',
+                                  value: {
+                                      start_date: values.start_date,
+                                      end_date: values.end_date || values.start_date, // Adjust end_date if required
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.max_value && values.min_value
+                        ? [
+                              {
+                                  type: 'order_value',
+                                  value: {
+                                      max_amount: values.max_value,
+                                      min_amount: values.min_value,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.max_purchase && values.min_purchase
+                        ? [
+                              {
+                                  type: 'life_time_purchase',
+                                  value: {
+                                      max_amount: values.max_purchase,
+                                      min_amount: values.min_purchase,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.max_count && values.min_count
+                        ? [
+                              {
+                                  type: 'order_count',
+                                  value: {
+                                      max_order_count: values.max_count,
+                                      min_order_count: values.min_count,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.order_delivery_type && values.order_delivery_type.length
+                        ? [
+                              {
+                                  type: 'order_delivery_type',
+                                  value: values.order_delivery_type.join(','),
+                              },
+                          ]
+                        : []),
                 ],
                 loyalty: [
-                    { type: 'tier', value: values.loyalty.join(',') },
-                    {
-                        type: 'points available',
-                        value: {
-                            max: values.max_point_available,
-                            min: values.min_point_available,
-                        },
-                    },
-                    {
-                        type: 'points earned',
-                        value: {
-                            max: values.max_point_earned,
-                            min: values.min_point_earned,
-                        },
-                    },
-                    {
-                        type: 'points redeemed',
-                        value: {
-                            max: values.max_point_redeemed,
-                            min: values.min_point_redeemed,
-                        },
-                    },
+                    ...(values.loyalty && values.loyalty.length
+                        ? [
+                              {
+                                  type: 'tier',
+                                  value: values.loyalty.join(','),
+                              },
+                          ]
+                        : []),
+                    ...(values.max_point_available && values.min_point_available
+                        ? [
+                              {
+                                  type: 'points available',
+                                  value: {
+                                      max: values.max_point_available,
+                                      min: values.min_point_available,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.max_point_earned && values.min_point_earned
+                        ? [
+                              {
+                                  type: 'points earned',
+                                  value: {
+                                      max: values.max_point_earned,
+                                      min: values.min_point_earned,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.max_point_redeemed && values.min_point_redeemed
+                        ? [
+                              {
+                                  type: 'points redeemed',
+                                  value: {
+                                      max: values.max_point_redeemed,
+                                      min: values.min_point_redeemed,
+                                  },
+                              },
+                          ]
+                        : []),
                 ],
                 order_item: [
-                    {
-                        type: 'basket_size',
-                        value: {
-                            max: values.max_basket_size,
-                            min: values.min_basket_size,
-                        },
-                    },
-                    {
-                        type: 'tag_filters',
-                        value: values.filters,
-                    },
+                    ...(values.max_basket_size && values.min_basket_size
+                        ? [
+                              {
+                                  type: 'basket_size',
+                                  value: {
+                                      max: values.max_basket_size,
+                                      min: values.min_basket_size,
+                                  },
+                              },
+                          ]
+                        : []),
+                    ...(values.filters
+                        ? [
+                              {
+                                  type: 'tag_filters',
+                                  value: values.filters,
+                              },
+                          ]
+                        : []),
                 ],
-
                 location: [
-                    {
-                        type: 'city',
-                        value: values.city,
-                    },
-                    {
-                        type: 'state',
-                        value: values.state,
-                    },
-                    {
-                        type: 'distance',
-                        value: values.distance,
-                    },
+                    ...(values.city
+                        ? [
+                              {
+                                  type: 'city',
+                                  value: values.city,
+                              },
+                          ]
+                        : []),
+                    ...(values.state
+                        ? [
+                              {
+                                  type: 'state',
+                                  value: values.state,
+                              },
+                          ]
+                        : []),
+                    ...(values.distance
+                        ? [
+                              {
+                                  type: 'distance',
+                                  value: values.distance,
+                              },
+                          ]
+                        : []),
                 ],
             },
         }
 
-        console.log('To be sent to API', formData)
+        console.log('mid')
         try {
             const response = await axioisInstance.post(`/notification/groups`, formData)
             console.log(response.data)
@@ -183,6 +256,8 @@ const AddGroup = () => {
                 message: 'success',
                 description: response.data.message || 'Successfully added group',
             })
+
+            console.log('finish')
         } catch (error) {
             console.log(error)
             notification.error({
@@ -213,10 +288,9 @@ const AddGroup = () => {
                                 </FormContainer>
                             </FormContainer>
                             <FormContainer>
-                                <h3>cart:</h3>
-
                                 <FormContainer className="w-1/2">
-                                    <FormItem label="Cart" className="col-span-1 w-full sm:w-1/2 space-y-2">
+                                    <h3>Cart</h3>
+                                    <FormItem className="col-span-1 w-full sm:w-1/2 space-y-2">
                                         <div className="flex flex-col">
                                             <label className="text-gray-700 font-semibold mb-1">Cart Start</label>
                                             <Field
