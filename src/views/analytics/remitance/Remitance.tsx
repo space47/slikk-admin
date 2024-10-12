@@ -11,6 +11,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Item, REMITANCE } from '@/store/types/remitance.types'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -24,6 +25,8 @@ const Remitance = () => {
     const [brandValue, setBrandValue] = useState<any | null>(null)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const dispatch = useAppDispatch()
 
@@ -83,6 +86,50 @@ const Remitance = () => {
         }
     }
 
+    const handleOrderItem = async () => {
+        try {
+            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const response = await axiosInstance.get(
+                `/merchant/order_items?download=true&download_type=finance&from=${from}&to=${to}${brandData}&company_id=${selectedCompany.id}`,
+                {
+                    responseType: 'blob',
+                },
+            )
+
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${to}.csv`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.error('Error downloading CSV:', error)
+        }
+    }
+
+    const handleReturnOrderItem = async () => {
+        try {
+            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const response = await axiosInstance.get(
+                `/merchant/return_order_items?download=true&download_type=finance&from=${from}&to=${to}${brandData}&company_id=${selectedCompany.id}`,
+                {
+                    responseType: 'blob',
+                },
+            )
+
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${to}.csv`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (error) {
+            console.error('Error downloading CSV:', error)
+        }
+    }
+
     const columns = useMemo(
         () => [
             { header: 'SKU', accessorKey: 'sku' },
@@ -102,58 +149,64 @@ const Remitance = () => {
         getCoreRowModel: getCoreRowModel(),
     })
 
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
+    // const onPaginationChange = (page: number) => {
+    //     setPage(page)
+    // }
 
     return (
         <div className="p-6 ">
-            <div className="flex flex-col lg:flex-row lg:items-center gap-6  justify-between">
+            <div className="flex flex-col   gap-6">
                 {/* Date Pickers Section */}
-                <div className="flex flex-col md:flex-row gap-4 xl:items-start items-center md:items-center">
-                    <Button onClick={handleDownload} variant="new" className="justify-center gap-2 xl:hidden flex">
-                        <FaDownload className="text-xl" />
-                    </Button>
-                    <div className="flex flex-col">
-                        <label className="mb-2 font-semibold text-sm text-gray-700">
-                            From Date: {showOneMonthBack ? '(Start of Month)' : ''}
-                        </label>
-                        <DatePicker
-                            inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
-                            className="w-56 rounded-md border-gray-300 focus:border-blue-500"
-                        />
+                <div className="flex flex-col xl:flex-row gap-4  xl:justify-between items-center ">
+                    <div className="flex flex-col xl:flex-row gap-3  xl:gap-8">
+                        <div className="flex flex-col">
+                            <label className="mb-2 font-semibold text-sm text-gray-700">
+                                From Date: {showOneMonthBack ? '(Start of Month)' : ''}
+                            </label>
+                            <DatePicker
+                                inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
+                                value={new Date(from)}
+                                onChange={handleFromChange}
+                                className="w-56 rounded-md border-gray-300 focus:border-blue-500"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="mb-2 font-semibold text-sm text-gray-700">To Date:</label>
+                            <DatePicker
+                                inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
+                                value={new Date(to)}
+                                onChange={handleToChange}
+                                minDate={new Date(from)}
+                                className="w-56 rounded-md border-gray-300 focus:border-blue-500"
+                            />
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <label className="mb-2 font-semibold text-sm text-gray-700">To Date:</label>
-                        <DatePicker
-                            inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
-                            value={new Date(to)}
-                            onChange={handleToChange}
-                            minDate={new Date(from)}
-                            className="w-56 rounded-md border-gray-300 focus:border-blue-500"
-                        />
+
+                    {/*  */}
+                    <div className="flex items-center gap-8">
+                        <div className="flex xl:flex-col flex-row gap-2 xl:items-start items-center">
+                            <label className="mb-2 font-semibold text-sm text-gray-700">Brands:</label>
+                            <Select
+                                options={brands.brands}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.id.toString()}
+                                onChange={handleBrandSelect}
+                                className="w-[200px] items-center"
+                            />
+                        </div>
                     </div>
                 </div>
 
-                {/* Brands Dropdown Section */}
-                <div className="flex items-center gap-8">
-                    <div className="flex xl:flex-col flex-row gap-2 xl:items-start items-center">
-                        <label className="mb-2 font-semibold text-sm text-gray-700">Brands:</label>
-                        <Select
-                            options={brands.brands}
-                            getOptionLabel={(option) => option.name}
-                            getOptionValue={(option) => option.id.toString()}
-                            onChange={handleBrandSelect}
-                            className="w-[200px] items-center"
-                        />
-                    </div>
-
-                    {/* Download Button */}
-                    <div className="flex justify-center items-center mt-5">
-                        <Button onClick={handleDownload} variant="new" className="justify-center gap-2 hidden xl:flex">
-                            <FaDownload className="text-xl" /> Download
+                {/* Row Dumps....... */}
+                <hr />
+                <div>
+                    <h5>Dowmload Raw Dumps:</h5> <br />
+                    <div className="flex flex-col xl:flex-row gap-4 xl:gap-10">
+                        <Button variant="new" onClick={handleOrderItem}>
+                            Order Item
+                        </Button>
+                        <Button variant="new" onClick={handleReturnOrderItem}>
+                            Return Order Item
                         </Button>
                     </div>
                 </div>
@@ -162,37 +215,43 @@ const Remitance = () => {
             <br />
 
             {/* Conditionally Render Table Section */}
-
-            {remitance.length > 0 ? (
-                <div className="overflow-x-auto mt-6">
-                    <div className="mb-3 flex gap-2">
-                        {' '}
-                        <span className="font-bold">TOTAL AMOUNT:</span> {fullRemitanceRespone?.total_amount}{' '}
+            <div className="flex flex-col">
+                {remitance.length > 0 ? (
+                    <div className="overflow-x-auto mt-6">
+                        <div className="flex justify-center items-center mt-5">
+                            <Button onClick={handleDownload} variant="new" className="justify-center gap-2 flex">
+                                <FaDownload className="text-xl" /> Download
+                            </Button>
+                        </div>
+                        <div className="mb-3 flex gap-2">
+                            {' '}
+                            <span className="font-bold">TOTAL AMOUNT:</span> {fullRemitanceRespone?.total_amount}{' '}
+                        </div>
+                        <Table className="min-w-full">
+                            <THead>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <Tr key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => (
+                                            <Th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</Th>
+                                        ))}
+                                    </Tr>
+                                ))}
+                            </THead>
+                            <TBody>
+                                {table.getRowModel().rows.map((row) => (
+                                    <Tr key={row.id}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                        ))}
+                                    </Tr>
+                                ))}
+                            </TBody>
+                        </Table>
                     </div>
-                    <Table className="min-w-full">
-                        <THead>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <Tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => (
-                                        <Th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</Th>
-                                    ))}
-                                </Tr>
-                            ))}
-                        </THead>
-                        <TBody>
-                            {table.getRowModel().rows.map((row) => (
-                                <Tr key={row.id}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                                    ))}
-                                </Tr>
-                            ))}
-                        </TBody>
-                    </Table>
-                </div>
-            ) : (
-                ''
-            )}
+                ) : (
+                    ''
+                )}
+            </div>
         </div>
     )
 }
