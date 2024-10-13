@@ -798,6 +798,13 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsCommuncication.urlShortner',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/urlShortner/:shortCode`,
+        component: lazy(() => import('@/views/sales/urlShortner/EditUrlShortner')),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appsCommuncication.urlShortner',
         path: `${APP_PREFIX_PATH}/appsCommuncication/urlShortner/addNew`,
         component: lazy(() => import('@/views/sales/urlShortner/AddUrlShortner')),
         authority: [ADMIN, USER],

@@ -39,7 +39,9 @@ const GetUrlShortner = () => {
         }
     }
 
-    const hanldeUrlEdit = () => {}
+    const hanldeUrlEdit = () => {
+        navigate(`/app/appsCommuncication/urlShortner/${urlData?.url}`)
+    }
 
     return (
         <div className="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-lg">
