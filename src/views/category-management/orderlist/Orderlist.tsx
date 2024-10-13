@@ -157,9 +157,9 @@ const OrderList = () => {
             const orderCount = response.data?.data.count
 
             if (previousOrders.current.length > 0) {
-                const newOrderExists = ordersData.some(
-                    (newOrder) => !previousOrders.current.some((oldOrder) => oldOrder.invoice_id === newOrder.invoice_id),
-                )
+                const latestPreviousOrderDate = new Date(Math.max(...previousOrders.current.map((order) => new Date(order.create_date))))
+
+                const newOrderExists = ordersData.some((newOrder: any) => new Date(newOrder.create_date) > latestPreviousOrderDate)
 
                 if (newOrderExists) {
                     setSoundEnabled(true)
