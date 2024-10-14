@@ -49,6 +49,7 @@ const AddUrlShortner = () => {
     const handleCopy = (data: string) => {
         navigator.clipboard.writeText(data)
     }
+    console.log('WEB URI', shortUrlData)
 
     return (
         <div>
@@ -73,18 +74,24 @@ const AddUrlShortner = () => {
                             </FormContainer>
                             <br />
                             {showGeneratedUrl && (
-                                <>
-                                    <div>
-                                        <div className="flex gap-2 text-xl ">
-                                            <span className="font-bold">Short Url:</span>
-                                            <span className="text-blue-500">{shortUrlData}</span>
-                                            <AiOutlineCopy
-                                                className="text-gray-500 cursor-pointer text-xl mt-1"
-                                                onClick={() => handleCopy(shortUrlData)}
-                                            />
-                                        </div>
+                                <div>
+                                    <div className="flex gap-2 text-xl items-center">
+                                        <span className="font-bold">Short Url:</span>
+                                        <a
+                                            href={`${shortUrlData}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-500 hover:underline"
+                                        >
+                                            {/* {import.meta.env.VITE_WEB_URI} */}
+                                            {shortUrlData}
+                                        </a>
+                                        <AiOutlineCopy
+                                            className="text-gray-500 cursor-pointer text-xl"
+                                            onClick={() => handleCopy(shortUrlData)}
+                                        />
                                     </div>
-                                </>
+                                </div>
                             )}
                             {/* ------------------------------------------------------------------------------------------------ */}
 

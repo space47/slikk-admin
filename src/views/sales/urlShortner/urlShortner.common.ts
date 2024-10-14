@@ -16,7 +16,7 @@ export const initialValueForUrl: URLTYPES = {
 
 export const URLARRAY = [
     {
-        label: 'Short Code',
+        label: 'Short Url(Enter unique urls)',
         name: 'short_code',
         placeholder: 'Enter short code',
         type: 'text',
@@ -43,11 +43,11 @@ export const URLARRAY = [
         type: 'url',
         classname: 'w-full',
     },
-    {
-        label: 'Default URL',
-        name: 'default_url',
-        placeholder: 'Enter default URL',
-        type: 'url',
-        classname: 'w-full',
-    },
+    // {
+    //     label: 'Default URL',
+    //     name: 'default_url',
+    //     placeholder: 'Enter default URL',
+    //     type: 'url',
+    //     classname: 'w-full',
+    // },
 ]

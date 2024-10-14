@@ -531,7 +531,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsCommuncication.urlShortner',
                         path: `${APP_PREFIX_PATH}/appsCommuncication/urlShortner`,
-                        title: 'Url Shortner',
+                        title: 'Unique Url',
                         translateKey: 'nav.appsCommuncication.urlShortner',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
