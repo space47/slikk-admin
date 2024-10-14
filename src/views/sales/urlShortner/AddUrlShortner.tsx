@@ -83,27 +83,27 @@ const AddUrlShortner = () => {
 
         const noSelectFilters = [
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
-                (item) => `${item.name.replace('_', '-')}_${values[item.name]}`,
+                (item) => `${item.name.replace('_', '-')}=${values[item.name]}`,
             ),
-        ].join(',')
+        ].join('&')
         const formData = {
             short_code: values?.short_code,
 
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}/${noSelectFilters}`
+                    ? `${values.ios_url}?${noSelectFilters}`
                     : ''
                 : `https://slikk.club/${values?.target_page}?filters=${filters}`,
 
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}/${noSelectFilters}`
+                    ? `${values.web_url}?${noSelectFilters}`
                     : ''
                 : `https://slikk.club/${values?.target_page}?filters=${filters}`,
 
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}/${noSelectFilters}`
+                    ? `${values.android_url}?${noSelectFilters}`
                     : ''
                 : `https://slikk.club/${values?.target_page}?filters=${filters}`,
         }
