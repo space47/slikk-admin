@@ -644,6 +644,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsAnalytics.monthlyReport',
+                        path: `${APP_PREFIX_PATH}/analytics/monthlyReport`,
+                        title: 'Monthly Reports',
+                        translateKey: 'nav.appsAnalytics.monthlyReport',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
 
                     // {
                     //     key: 'appsAnalytics.riderTracking',

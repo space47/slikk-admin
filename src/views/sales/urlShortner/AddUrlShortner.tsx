@@ -10,9 +10,13 @@ import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { URLARRAY, URLTYPES, initialValueForUrl } from './urlShortner.common'
+import { useState } from 'react'
+import { AiOutlineCopy } from 'react-icons/ai'
 
 const AddUrlShortner = () => {
     const navigate = useNavigate()
+    const [shortUrlData, setShortUrlData] = useState('')
+    const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
 
     const handleSubmit = async (values: URLTYPES) => {
         console.log('handleSubmit')
@@ -30,6 +34,9 @@ const AddUrlShortner = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Url Shortner created Successfully',
             })
+            const sUrl = response.data.short_url
+            setShortUrlData(sUrl)
+            setShowGeneratedUrl(true)
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -37,6 +44,10 @@ const AddUrlShortner = () => {
                 description: error?.response?.data?.message || 'Failed to create Url Shortner',
             })
         }
+    }
+
+    const handleCopy = (data: string) => {
+        navigator.clipboard.writeText(data)
     }
 
     return (
@@ -60,6 +71,21 @@ const AddUrlShortner = () => {
                                     </FormItem>
                                 ))}
                             </FormContainer>
+                            <br />
+                            {showGeneratedUrl && (
+                                <>
+                                    <div>
+                                        <div className="flex gap-2 text-xl ">
+                                            <span className="font-bold">Short Url:</span>
+                                            <span className="text-blue-500">{shortUrlData}</span>
+                                            <AiOutlineCopy
+                                                className="text-gray-500 cursor-pointer text-xl mt-1"
+                                                onClick={() => handleCopy(shortUrlData)}
+                                            />
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                             {/* ------------------------------------------------------------------------------------------------ */}
 
                             <FormContainer className="flex justify-end mt-5">
