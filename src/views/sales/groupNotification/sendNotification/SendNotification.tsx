@@ -28,6 +28,7 @@ const SendNotification = () => {
         dispatch(getAllFiltersAPI())
     }, [])
     const [filterId, setFilterId] = useState()
+
     const MAX_UPLOAD = 100
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {

@@ -1,73 +1,118 @@
-import { Button } from '@/components/ui'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
-import React, { useState } from 'react'
-import { AiOutlineCopy } from 'react-icons/ai'
-import { FaEdit } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useMemo } from 'react'
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
+import Table from '@/components/ui/Table'
 
-interface URLDATATYPE {
-    status: string
-    url: string
-}
+import { useAppDispatch, useAppSelector } from '@/store'
+
+import moment from 'moment'
+import { Button, Pagination, Select } from '@/components/ui'
+import { useNavigate } from 'react-router-dom'
+import { URLSHORTNERTYPE } from '@/store/types/shortUrl.types'
+import { fetchUrlShortner, setPage, setPageSize } from '@/store/slices/urlShortner/urlShortner.slice'
+
+const { Tr, Th, Td, THead, TBody } = Table
+
+const pageSizeOptions = [
+    { value: 10, label: '10 / page' },
+    { value: 25, label: '25 / page' },
+    { value: 50, label: '50 / page' },
+    { value: 100, label: '100 / page' },
+]
 
 const GetUrlShortner = () => {
-    const [urlInput, setUrlInput] = useState('')
-    const [urlData, setUrlData] = useState<URLDATATYPE>()
-    const [urlShow, setUrlShow] = useState(false)
-
     const navigate = useNavigate()
-    const handleAddUrlShortner = () => {
-        navigate(`/app/appsCommuncication/urlShortner/addNew`)
+    const dispatch = useAppDispatch()
+
+    const { result, page, pageSize, count } = useAppSelector((state: { urlShortner: URLSHORTNERTYPE }) => state.urlShortner)
+
+    useEffect(() => {
+        dispatch(fetchUrlShortner())
+    }, [dispatch, page, pageSize])
+
+    const columns = useMemo(
+        () => [
+            { header: 'MARKETING TITLE', accessorKey: 'short_code' },
+            { header: 'Short Url', accessorKey: 'short_url' },
+            { header: 'WEB URL', accessorKey: 'web_url' },
+            { header: 'ANDROID URL', accessorKey: 'android_url' },
+            { header: 'IOS URL', accessorKey: 'ios_url' },
+            {
+                header: 'Create Date',
+                accessorKey: 'create_date',
+                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+            {
+                header: 'Update Date',
+                accessorKey: 'update_date',
+                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+        ],
+        [],
+    )
+
+    const table = useReactTable({
+        data: result || [],
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        manualPagination: false,
+        // state: {
+        //     pagination: {
+        //         pageIndex: 0,
+        //         pageSize: data?.results?.length || 10,
+        //     },
+        // },
+    })
+
+    const onPaginationChange = (page: number) => {
+        dispatch(setPage(page))
     }
 
-    const handleCopy = (file: any) => {
-        navigator.clipboard.writeText(file)
-        notification.success({
-            message: 'Copied',
-        })
-    }
-
-    const handleGetUrl = async () => {
-        try {
-            const response = await axioisInstance.get(`/s/${urlInput}`)
-            const data = response.data
-            setUrlData(data)
-            setUrlShow(true)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const hanldeUrlEdit = () => {
-        navigate(`/app/appsCommuncication/urlShortner/${urlData?.url}`)
+    const handleCreateUrl = () => {
+        navigate('/app/appsCommuncication/urlShortner/addNew')
     }
 
     return (
-        <div className="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-lg shadow-lg">
-            <Button onClick={handleAddUrlShortner} variant="new" className=" text-white font-semibold px-4 py-2 rounded-md  transition">
-                Add Url
-            </Button>
-
-            <input
-                value={urlInput}
-                placeholder="Enter URL to get data"
-                onChange={(e) => setUrlInput(e.target.value)}
-                className="mt-4 p-2 border border-gray-300 rounded-md w-full max-w-md focus:outline-none "
-            />
-
-            <Button onClick={handleGetUrl} className="text-white font-semibold px-4 py-2 mt-4 rounded-md transition" variant="accept">
-                Get Url
-            </Button>
-
-            {urlShow && (
-                <div className="mt-6 text-lg font-medium text-gray-700 flex gap-2">
-                    <span className="font-bold">{urlInput}:</span> {urlData?.url}
-                    <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(urlData?.url)} />
-                    <br />
-                    <FaEdit className="text-xl text-blue-600 cursor-pointer" onClick={hanldeUrlEdit} />
+        <div className="flex flex-col gap-5">
+            {' '}
+            <div className="flex justify-end">
+                <Button variant="new" onClick={handleCreateUrl}>
+                    CREATE URL
+                </Button>
+            </div>
+            <div className="overflow-x-auto">
+                <Table className="min-w-full">
+                    <THead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <Tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <Th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</Th>
+                                ))}
+                            </Tr>
+                        ))}
+                    </THead>
+                    <TBody>
+                        {table.getRowModel().rows.map((row) => (
+                            <Tr key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                ))}
+                            </Tr>
+                        ))}
+                    </TBody>
+                </Table>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
+                <Pagination pageSize={pageSize} currentPage={page} total={count} onChange={onPaginationChange} />
+                <div className="w-full sm:w-auto min-w-[130px]">
+                    <Select
+                        size="sm"
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
+                        options={pageSizeOptions}
+                        onChange={(option) => dispatch(setPageSize(option?.value))}
+                        className="w-full flex justify-end"
+                    />
                 </div>
-            )}
+            </div>
         </div>
     )
 }

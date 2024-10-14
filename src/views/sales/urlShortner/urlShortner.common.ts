@@ -16,7 +16,7 @@ export const initialValueForUrl: URLTYPES = {
 
 export const URLARRAY = [
     {
-        label: 'Short Url(Enter unique urls)',
+        label: 'Link TITLE(Enter unique titlw)',
         name: 'short_code',
         placeholder: 'Enter short code',
         type: 'text',
