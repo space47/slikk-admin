@@ -35,7 +35,6 @@ interface DATEPROPS {
 }
 
 const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFrom, setTo, handleDateChange }: DATEPROPS) => {
-    const currentMonth = moment().month()
     const [selectedOption, setSelectedOption] = useState('TODAY')
 
     const handleSelect = (value: string) => {
@@ -93,7 +92,7 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
                 </Dropdown>
             </div>
 
-            <div className="w-[250px]">
+            <div className="xl:w-[250px] w-[200px]">
                 <div className="mb-2">Date Range:</div>
                 <DatePickerRange placeholder="Select dates range" onChange={handleDateChange} />
             </div>

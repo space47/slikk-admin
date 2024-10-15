@@ -29,6 +29,7 @@ import { FaDownload, FaFilter } from 'react-icons/fa'
 import ImageMODAL from '@/common/ImageModal'
 import BrandOrderDrawer from './brandOrderDrawer/BrandOrderDrawer'
 import { IoMdDownload } from 'react-icons/io'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 type SKU_DETAILS = {
     name: string
@@ -306,6 +307,13 @@ const BrandOrder = () => {
         }
     }
 
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+        }
+    }
+
     const handleDrawer = () => {
         setShowDrawer(true)
     }
@@ -374,25 +382,15 @@ const BrandOrder = () => {
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-5 items-start lg:items-end">
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">FROM DATE: {showLastSevenDays && '(Last 7 Days)'}</div>
-                        <DatePicker
-                            inputPrefix={<HiOutlineCalendar className="text-lg" />}
-                            defaultValue={new Date()}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
-                        />
-                    </div>
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">TO DATE:</div>
-                        <DatePicker
-                            inputSuffix={<TbCalendarStats className="text-xl" />}
-                            defaultValue={new Date()}
-                            value={new Date(to)}
-                            onChange={handleToChange}
-                            minDate={moment(from).toDate()}
-                        />
-                    </div>
+                    <UltimateDatePicker
+                        from={from}
+                        setFrom={setFrom}
+                        to={to}
+                        setTo={setTo}
+                        handleFromChange={handleFromChange}
+                        handleToChange={handleToChange}
+                        handleDateChange={handleDateChange}
+                    />
                     <div className="order-first xl:order-none items-center">
                         <div className="flex items-end justify-end ">
                             <button
