@@ -3,13 +3,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -56,9 +50,7 @@ const PaginationTable = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axioisInstance.get(
-                `bulkupload/history?type=catalogue&p=${page}&page_size=${pageSize}`,
-            )
+            const response = await axioisInstance.get(`bulkupload/history?type=catalogue&p=${page}&page_size=${pageSize}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -88,45 +80,59 @@ const PaginationTable = () => {
         return parts[parts.length - 1]
     }
 
-    const handleActionClick = async (
-        failure: number,
-        error_file: string,
-        uploaded_file: string,
-    ) => {
+    const handleActionClick = async (failure: number, error_file: string, uploaded_file: string) => {
         try {
-            console.log('OK', failure, 'Err', error_file, 'upo', uploaded_file)
             const requiredFile = failure === 0 ? uploaded_file : error_file
-            const response = await axioisInstance.get(
-                `file/presign?file_url=${requiredFile}`,
-            )
+            const response = await axioisInstance.get(`file/presign?file_url=${requiredFile}`)
             console.log('sss', response)
             const preSignedUrl = response.data.data
             const data = await fetch(preSignedUrl)
                 .then((res) => res.blob())
                 .then((blob) => {
-                    // Create a URL for the blob
                     const url = URL.createObjectURL(blob)
 
-                    // Create a new anchor element
                     const a = document.createElement('a')
                     a.href = url
-                    a.download = `${requiredFile}.csv` // Specify the file name
+                    a.download = `${requiredFile}.csv`
 
-                    // Append the anchor to the body (required for Firefox)
                     document.body.appendChild(a)
 
-                    // Trigger the download
                     a.click()
 
-                    // Remove the anchor element
                     document.body.removeChild(a)
 
-                    // Revoke the object URL
                     URL.revokeObjectURL(url)
                 })
                 .catch((err) => console.log(err))
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
-            // window.open(preSignedUrl, '_blank')
+    const handleDownloadOriginalFile = async (failure: number, error_file: string, uploaded_file: string) => {
+        try {
+            const requiredFile = uploaded_file
+            const response = await axioisInstance.get(`file/presign?file_url=${requiredFile}`)
+            console.log('sss', response)
+            const preSignedUrl = response.data.data
+            const data = await fetch(preSignedUrl)
+                .then((res) => res.blob())
+                .then((blob) => {
+                    const url = URL.createObjectURL(blob)
+
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `${requiredFile}.csv`
+
+                    document.body.appendChild(a)
+
+                    a.click()
+
+                    document.body.removeChild(a)
+
+                    URL.revokeObjectURL(url)
+                })
+                .catch((err) => console.log(err))
         } catch (error) {
             console.log(error)
         }
@@ -177,17 +183,33 @@ const PaginationTable = () => {
                 accessorKey: '',
                 cell: ({ row }) => (
                     <Button
-                        onClick={() =>
-                            handleActionClick(
-                                row.original.failure,
-                                row.original.error_file,
-                                row.original.uploaded_file,
-                            )
-                        }
+                        onClick={() => handleActionClick(row.original.failure, row.original.error_file, row.original.uploaded_file)}
+                        variant="accept"
                     >
                         DOWNLOAD
                     </Button>
                 ),
+            },
+            {
+                header: 'Success File Download',
+                accessorKey: '',
+                cell: ({ row }) => {
+                    const errorFile = row.original.error_file
+                    if (errorFile) {
+                        return (
+                            <Button
+                                onClick={() =>
+                                    handleDownloadOriginalFile(row.original.failure, row.original.error_file, row.original.uploaded_file)
+                                }
+                                variant="accept"
+                            >
+                                Download Original
+                            </Button>
+                        )
+                    } else {
+                        return 'No Errors'
+                    }
+                },
             },
         ],
         [],
@@ -230,10 +252,7 @@ const PaginationTable = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -243,31 +262,19 @@ const PaginationTable = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />
