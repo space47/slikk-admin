@@ -89,9 +89,9 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
 
     return (
         <div className="flex gap-1 items-center">
-            <div className="border w-auto rounded-sm h-auto font-bold mt-8">
+            <div className="border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white ">
                 <Dropdown
-                    className="text-xl text-black bg-gray-200 font-bold border-2 border-blue-600"
+                    className="text-xl text-white bg-white font-bold border-2 border-blue-600"
                     title={selectedOption}
                     onSelect={(value) => handleSelect(value.toString())}
                 >
