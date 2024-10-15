@@ -18,10 +18,10 @@ const MONTHS = Array.from({ length: 12 }, (_, index) => ({
 const PREVIOUSARRAY = [
     { label: 'TODAY', value: 'TODAY' },
     { label: 'YESTERDAY', value: 'YESTERDAY' },
-    { label: 'CURRENT_WEEK', value: 'CURRENT_WEEK' },
-    { label: 'LAST_WEEK', value: 'LAST_WEEK' },
-    { label: 'CURRENT_MONTH', value: 'CURRENT_MONTH' },
-    { label: 'LAST_MONTH', value: 'LAST_MONTH' },
+    { label: 'CURRENT WEEK', value: 'CURRENT WEEK' },
+    { label: 'LAST WEEK', value: 'LAST WEEK' },
+    { label: 'CURRENT MONTH', value: 'CURRENT MONTH' },
+    { label: 'LAST MONTH', value: 'LAST MONTH' },
 ]
 
 interface DATEPROPS {
@@ -53,19 +53,19 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
                 startDate = moment().subtract(1, 'days').format('YYYY-MM-DD')
                 endDate = startDate
                 break
-            case 'CURRENT_WEEK':
+            case 'CURRENT WEEK':
                 startDate = moment().startOf('week').format('YYYY-MM-DD')
                 endDate = moment().endOf('week').format('YYYY-MM-DD')
                 break
-            case 'LAST_WEEK':
+            case 'LAST WEEK':
                 startDate = moment().subtract(1, 'week').startOf('week').format('YYYY-MM-DD')
                 endDate = moment().subtract(1, 'week').endOf('week').format('YYYY-MM-DD')
                 break
-            case 'CURRENT_MONTH':
+            case 'CURRENT MONTH':
                 startDate = moment().startOf('month').format('YYYY-MM-DD')
                 endDate = moment().endOf('month').format('YYYY-MM-DD')
                 break
-            case 'LAST_MONTH':
+            case 'LAST MONTH':
                 startDate = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
                 endDate = moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
                 break
@@ -79,7 +79,7 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
 
     return (
         <div className="flex gap-1 items-center">
-            <div className="border w-auto rounded-sm h-[40px] font-bold mt-8">
+            <div className="border w-auto rounded-sm h-auto font-bold mt-8">
                 <Dropdown
                     className="text-xl text-black bg-gray-200 font-bold border-2 border-blue-600"
                     title={selectedOption}

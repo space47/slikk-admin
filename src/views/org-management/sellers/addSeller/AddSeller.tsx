@@ -25,6 +25,7 @@ type FormModel = {
     handling_charges_per_order: number
     id: number
     ifsc: string
+    confirm: string
     is_active: boolean
     name: string
     poc: string
@@ -52,6 +53,7 @@ const initialValue: FormModel = {
     handling_charges_per_order: 0,
     id: 0,
     ifsc: '',
+    confirm: '',
     is_active: false,
     name: '',
     poc: '',
@@ -77,8 +79,25 @@ const AddSeller = () => {
 
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
+        if (values.account_number !== values.confirm) {
+            notification.error({
+                message: 'Failure',
+                description: 'Account number does not match',
+            })
+            return
+        }
+        if (values.contact_number === values.alternate_contact_number) {
+            notification.error({
+                message: 'Failure',
+                description: 'Alternate Mobile Number Should be different',
+            })
+            return
+        }
+
+        const { confirm, ...filteredValues } = values
+        console.log(confirm)
         const formData = {
-            ...values,
+            ...filteredValues,
             handling_charges_per_order: Number(values.handling_charges_per_order),
         }
 

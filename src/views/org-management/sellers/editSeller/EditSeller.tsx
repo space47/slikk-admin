@@ -26,6 +26,7 @@ type FormModel = {
     id: number
     ifsc: string
     is_active: boolean
+    confirm: string
     name: string
     poc: string
     poc_email: string
@@ -67,12 +68,10 @@ type FormModel = {
 // })
 
 const SegmentOptions = () => {
-    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor'].map(
-        (segment) => ({
-            label: segment,
-            value: segment,
-        }),
-    )
+    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor'].map((segment) => ({
+        label: segment,
+        value: segment,
+    }))
 }
 
 const EditSeller = () => {
@@ -83,9 +82,7 @@ const EditSeller = () => {
 
     const fetchsellerData = async () => {
         try {
-            const response = await axioisInstance.get(
-                `merchant/company?company_id=${id}`,
-            )
+            const response = await axioisInstance.get(`merchant/company?company_id=${id}`)
             const data = response.data.data
             console.log('ssdssdsd', data)
             setSellerData(data)
@@ -113,6 +110,7 @@ const EditSeller = () => {
         id: sellerData?.id || 0,
         ifsc: sellerData?.ifsc || '',
         is_active: sellerData?.is_active || false,
+        confirm: sellerData?.ifsc || '',
         name: sellerData?.name || '',
         poc: sellerData?.poc || '',
         poc_email: sellerData?.poc_email || '',
@@ -129,13 +127,13 @@ const EditSeller = () => {
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
 
-        // if (values.account_number !== values.confirm) {
-        //     notification.error({
-        //         message: 'Failure',
-        //         description: 'Account number does not match',
-        //     })
-        //     return
-        // }
+        if (values.account_number !== values.confirm) {
+            notification.error({
+                message: 'Failure',
+                description: 'Account number does not match',
+            })
+            return
+        }
         if (values.contact_number === values.alternate_contact_number) {
             notification.error({
                 message: 'Failure',
@@ -144,31 +142,30 @@ const EditSeller = () => {
             return
         }
 
+        const { confirm, ...filteredValues } = values
+        console.log(confirm)
+
         const formData = {
-            ...values,
+            ...filteredValues,
+            handling_charges_per_order: Number(values.handling_charges_per_order),
         }
 
         console.log('formData', formData)
 
         try {
-            const response = await axioisInstance.patch(
-                `merchant/company/${id}`,
-                formData,
-            )
+            const response = await axioisInstance.patch(`merchant/company/${id}`, formData)
 
             console.log(response)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Seller created Successfully',
+                description: response?.data?.message || 'Seller created Successfully',
             })
             navigate('/app/sellers')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Seller not created',
+                description: error?.response?.data?.message || 'Seller not created',
             })
         }
     }
@@ -187,17 +184,8 @@ const EditSeller = () => {
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {SELLING_FORM.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
 
@@ -212,80 +200,40 @@ const EditSeller = () => {
                                         {({ field }: FieldProps) => (
                                             <Select
                                                 {...field}
-                                                value={SegmentOptions().find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value,
-                                                )}
+                                                value={SegmentOptions().find((option) => option.value === field.value)}
                                                 options={SegmentOptions()}
-                                                onChange={(option) =>
-                                                    setFieldValue(
-                                                        'segment',
-                                                        option?.value,
-                                                    )
-                                                }
+                                                onChange={(option) => setFieldValue('segment', option?.value)}
                                             />
                                         )}
                                     </Field>
                                 </FormItem>
                             </FormContainer>
 
-                            <h5 className="mb-5 from-neutral-900">
-                                POC Details
-                            </h5>
+                            <h5 className="mb-5 from-neutral-900">POC Details</h5>
                             <FormContainer className="grid grid-cols-2 gap-10 ">
                                 {POC_FORM.map((item, key) => (
-                                    <FormItem
-                                        asterisk
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem asterisk key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
                             </FormContainer>
 
                             {/* ------------------------------------------------------------------------------------------------ */}
 
-                            <h5 className="mb-5 from-neutral-900">
-                                Account Details
-                            </h5>
+                            <h5 className="mb-5 from-neutral-900">Account Details</h5>
                             <FormContainer className="grid grid-cols-2 gap-10 ">
                                 {ACCOUNT_FORM.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.classname}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
-                                <Button
-                                    type="reset"
-                                    className="mr-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    className="bg-blue-500 text-white"
-                                >
+                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
                                     Submit
                                 </Button>
                             </FormContainer>
