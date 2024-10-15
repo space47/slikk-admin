@@ -17,28 +17,20 @@ type Props5 = {
 
 const CancelReasons = [
     {
-        label: 'Found a Better Price: I found the same item at a lower price elsewhere.',
-        value: 'better_price',
-    },
-    {
         label: 'Ordered by Mistake: I accidentally ordered the wrong item or quantity.',
         value: 'ordered_by_mistake',
-    },
-    {
-        label: 'Shipping Delay: The estimated delivery date is too late.',
-        value: 'shipping_delay',
     },
     {
         label: 'Payment Issues: There was a problem with my payment method.',
         value: 'payment_issues',
     },
     {
-        label: 'No Longer Needed: I no longer need the item.',
-        value: 'no_longer_needed',
-    },
-    {
         label: 'Changed Mind: I changed my mind about the purchase.',
         value: 'changed_mind',
+    },
+    {
+        label: 'Customer Not Reachable: The customer is not responding.',
+        value: 'customer_not_reachable',
     },
     {
         label: 'Other: I have another reason for canceling my order.',
@@ -46,15 +38,8 @@ const CancelReasons = [
     },
 ]
 
-const CancelModal: React.FC<Props5> = ({
-    isModalOpen,
-    handleClose,
-    invoice_id,
-    setIsModalOpen,
-}) => {
-    const [cancelReason, setCancelReason] = useState<string | undefined>(
-        undefined,
-    )
+const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, setIsModalOpen }) => {
+    const [cancelReason, setCancelReason] = useState<string | undefined>(undefined)
 
     const handleSelect = useCallback((value: string) => {
         setCancelReason(value)
@@ -74,15 +59,11 @@ const CancelModal: React.FC<Props5> = ({
         }
 
         try {
-            const response = await axioisInstance.post(
-                `merchant/cancelorder/${invoice_id}`,
-                body,
-            )
+            const response = await axioisInstance.post(`merchant/cancelorder/${invoice_id}`, body)
 
             notification.success({
                 message: 'SUCCESS',
-                description:
-                    response.data.message || 'Order successfully Cancelled',
+                description: response.data.message || 'Order successfully Cancelled',
             })
             setIsModalOpen(false)
         } catch (error) {
@@ -102,30 +83,22 @@ const CancelModal: React.FC<Props5> = ({
             onClose={handleClose}
         >
             <div className="p-4 sm:p-6 md:p-8 bg-white rounded-lg shadow-lg overflow-y-scroll h-[600px] xl:h-[500px] overflow-scroll scrollbar-hide">
-                <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center gap-1">
-                    Cancel Order{' '}
-                    <IoIosWarning className="text-yellow-600 text-2xl sm:text-3xl" />{' '}
+                <h2 className="text-xl sm:text-2xl font-bold mb-4 flex items-center gap-1">
+                    CANCEL ORDER <IoIosWarning className="text-yellow-600 text-2xl sm:text-3xl" />{' '}
                 </h2>
-                <div className="w-full sm:w-1/3 flex flex-col justify-center items-start">
-                    <div className="text-base font-medium mb-1 text-red-500">
-                        Reason For Cancelling
-                    </div>
+                <div className="w-full sm:w-1/3 flex flex-col justify-center items-start font-semibold">
+                    <div className="text-base font-bold mb-1 text-red-500">REASON FOR CANCELLING</div>
                     <Dropdown
                         className="bg-gray-300 w-full sm:w-auto"
                         title={
                             cancelReason
-                                ? CancelReasons.find(
-                                      (reason) => reason.value === cancelReason,
-                                  )?.label || 'SELECT RETURN REASON'
+                                ? CancelReasons.find((reason) => reason.value === cancelReason)?.label || 'SELECT RETURN REASON'
                                 : 'SELECT RETURN REASON'
                         }
                         onSelect={handleSelect}
                     >
                         {CancelReasons.map((reason) => (
-                            <DropdownItem
-                                key={reason.value}
-                                eventKey={reason.value}
-                            >
+                            <DropdownItem key={reason.value} eventKey={reason.value}>
                                 <span>{reason.label}</span>
                             </DropdownItem>
                         ))}

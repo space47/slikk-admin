@@ -22,6 +22,7 @@ import userAnalyticsReducer from './slices/userAnalytics/userAnalytics.slice'
 import remitanceReducer from './slices/remitanceSlice/Remitance.slice'
 import notificationReducer from './slices/notificationSlice/notificationSlice'
 import urlShortnerReducer from './slices/urlShortner/urlShortner.slice'
+import monthlyReportReducer from './slices/monthlyReport/monthlyReport.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -59,6 +60,7 @@ const staticReducers = {
     remitance: remitanceReducer,
     notification: notificationReducer,
     urlShortner: urlShortnerReducer,
+    monthlyReport: monthlyReportReducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
 
