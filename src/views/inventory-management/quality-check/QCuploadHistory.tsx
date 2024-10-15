@@ -4,13 +4,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 // import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
@@ -58,9 +52,7 @@ const PaginationTable = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axioisInstance.get(
-                `bulkupload/history?type=quality_check&p=${page}&page_size=${pageSize}`,
-            )
+            const response = await axioisInstance.get(`bulkupload/history?type=quality_check&p=${page}&page_size=${pageSize}`)
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -90,26 +82,44 @@ const PaginationTable = () => {
         return parts[parts.length - 1]
     }
 
-    const handleDownload = async (
-        failure: number,
-        error_file: string,
-        uploaded_file: string,
-    ) => {
-        console.log(
-            `Action clicked `,
-            error_file,
-            'UPLOAD',
-            uploaded_file,
-            'FAIL',
-            failure,
-        )
+    const handleDownload = async (failure: number, error_file: string, uploaded_file: string) => {
+        console.log(`Action clicked `, error_file, 'UPLOAD', uploaded_file, 'FAIL', failure)
 
         try {
             const requiredUrl = failure === 0 ? uploaded_file : error_file
 
-            const response = await axioisInstance.get(
-                `file/presign?file_url=${requiredUrl}`,
-            )
+            const response = await axioisInstance.get(`file/presign?file_url=${requiredUrl}`)
+
+            const preSignedUrl = response.data.data
+            const data = await fetch(preSignedUrl)
+                .then((res) => res.blob())
+                .then((blob) => {
+                    const url = URL.createObjectURL(blob)
+
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `${requiredUrl}`
+
+                    document.body.appendChild(a)
+
+                    a.click()
+
+                    document.body.removeChild(a)
+
+                    URL.revokeObjectURL(url)
+                })
+                .catch((err) => console.log(err))
+        } catch (error) {
+            console.log(error)
+            return 'Error'
+        }
+    }
+
+    const handleDownloadOriginalFile = async (failure: number, error_file: string, uploaded_file: string) => {
+        try {
+            const requiredUrl = uploaded_file
+
+            const response = await axioisInstance.get(`file/presign?file_url=${requiredUrl}`)
 
             const preSignedUrl = response.data.data
             const data = await fetch(preSignedUrl)
@@ -141,13 +151,7 @@ const PaginationTable = () => {
             {
                 header: 'Upload Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => (
-                    <span>
-                        {moment(getValue() as string).format(
-                            'YYYY-MM-DD hh:mm:ss a',
-                        )}
-                    </span>
-                ),
+                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
                 header: 'File name',
@@ -183,21 +187,37 @@ const PaginationTable = () => {
                 cell: (info) => extractErrorName(info.getValue()),
             },
             {
-                header: 'Action',
+                header: 'Download',
                 accessorKey: '',
                 cell: ({ row }) => (
                     <Button
-                        onClick={() =>
-                            handleDownload(
-                                row.original.failure,
-                                row.original.error_file,
-                                row.original.uploaded_file,
-                            )
-                        }
+                        onClick={() => handleDownload(row.original.failure, row.original.error_file, row.original.uploaded_file)}
+                        variant="accept"
                     >
-                        DOWNLOAD
+                        Download
                     </Button>
                 ),
+            },
+            {
+                header: 'Success File Download',
+                accessorKey: '',
+                cell: ({ row }) => {
+                    const errorFile = row.original.error_file
+                    if (errorFile) {
+                        return (
+                            <Button
+                                onClick={() =>
+                                    handleDownloadOriginalFile(row.original.failure, row.original.error_file, row.original.uploaded_file)
+                                }
+                                variant="accept"
+                            >
+                                Download Original
+                            </Button>
+                        )
+                    } else {
+                        return 'No Errors'
+                    }
+                },
             },
         ],
         [],
@@ -239,10 +259,7 @@ const PaginationTable = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -252,31 +269,19 @@ const PaginationTable = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />

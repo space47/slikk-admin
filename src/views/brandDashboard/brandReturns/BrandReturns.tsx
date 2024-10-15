@@ -22,6 +22,7 @@ import { TbCalendarStats } from 'react-icons/tb'
 import { FaDownload } from 'react-icons/fa'
 import { Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 interface Product {
     name: string
@@ -224,6 +225,12 @@ const BrandReturns = () => {
             setTo(moment().format('YYYY-MM-DD'))
         }
     }
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+        }
+    }
 
     return (
         <>
@@ -253,25 +260,15 @@ const BrandReturns = () => {
                         </div>
 
                         <div className="flex gap-5 items-center xl:items-end xl:flex-row flex-col ">
-                            <div>
-                                <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
-                                <DatePicker
-                                    inputPrefix={<HiOutlineCalendar className="text-lg" />}
-                                    defaultValue={new Date()}
-                                    value={new Date(from)}
-                                    onChange={handleFromChange}
-                                />
-                            </div>
-                            <div>
-                                <div className="mb-1 font-semibold text-sm">TO DATE:</div>
-                                <DatePicker
-                                    inputSuffix={<TbCalendarStats className="text-xl" />}
-                                    defaultValue={new Date()}
-                                    value={new Date(to)}
-                                    onChange={handleToChange}
-                                    minDate={moment(from).add(1, 'day').toDate()}
-                                />
-                            </div>
+                            <UltimateDatePicker
+                                from={from}
+                                setFrom={setFrom}
+                                to={to}
+                                setTo={setTo}
+                                handleFromChange={handleFromChange}
+                                handleToChange={handleToChange}
+                                handleDateChange={handleDateChange}
+                            />
                             <div>
                                 <div className="flex items-end justify-end ">
                                     <button
