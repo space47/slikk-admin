@@ -22,6 +22,7 @@ const PREVIOUSARRAY = [
     { label: 'LAST WEEK', value: 'LAST WEEK' },
     { label: 'CURRENT MONTH', value: 'CURRENT MONTH' },
     { label: 'LAST MONTH', value: 'LAST MONTH' },
+    { label: 'CUSTOM', value: 'CUSTOM' },
 ]
 
 interface DATEPROPS {
@@ -36,37 +37,47 @@ interface DATEPROPS {
 
 const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFrom, setTo, handleDateChange }: DATEPROPS) => {
     const [selectedOption, setSelectedOption] = useState('TODAY')
+    const [showinfDatePicker, setShowingDatePicker] = useState(false)
 
     const handleSelect = (value: string) => {
         setSelectedOption(value)
 
-        let startDate: string
-        let endDate: string
+        let startDate: string | undefined
+        let endDate: string | undefined
 
         switch (value) {
             case 'TODAY':
                 startDate = moment().format('YYYY-MM-DD')
                 endDate = startDate
+                setShowingDatePicker(false)
                 break
             case 'YESTERDAY':
                 startDate = moment().subtract(1, 'days').format('YYYY-MM-DD')
                 endDate = startDate
+                setShowingDatePicker(false)
                 break
             case 'CURRENT WEEK':
                 startDate = moment().startOf('week').format('YYYY-MM-DD')
                 endDate = moment().endOf('week').format('YYYY-MM-DD')
+                setShowingDatePicker(false)
                 break
             case 'LAST WEEK':
                 startDate = moment().subtract(1, 'week').startOf('week').format('YYYY-MM-DD')
                 endDate = moment().subtract(1, 'week').endOf('week').format('YYYY-MM-DD')
+                setShowingDatePicker(false)
                 break
             case 'CURRENT MONTH':
                 startDate = moment().startOf('month').format('YYYY-MM-DD')
                 endDate = moment().endOf('month').format('YYYY-MM-DD')
+                setShowingDatePicker(false)
                 break
             case 'LAST MONTH':
                 startDate = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
                 endDate = moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
+                setShowingDatePicker(false)
+                break
+            case 'CUSTOM':
+                setShowingDatePicker(true)
                 break
             default:
                 return
@@ -92,10 +103,12 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
                 </Dropdown>
             </div>
 
-            <div className="xl:w-[250px] w-[200px]">
-                <div className="mb-2">Date Range:</div>
-                <DatePickerRange placeholder="Select dates range" onChange={handleDateChange} />
-            </div>
+            {showinfDatePicker && (
+                <div className="xl:w-[250px] w-[200px]">
+                    <div className="mb-2">Date Range:</div>
+                    <DatePickerRange placeholder="Select dates range" onChange={handleDateChange} />
+                </div>
+            )}
         </div>
     )
 }
