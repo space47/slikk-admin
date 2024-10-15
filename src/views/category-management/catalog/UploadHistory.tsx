@@ -8,6 +8,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import axios from 'axios'
+import { FaDownload } from 'react-icons/fa'
 
 type User = {
     name: string
@@ -179,22 +180,28 @@ const PaginationTable = () => {
                 cell: (info) => extractErrorName(info.getValue()),
             },
             {
-                header: 'Action',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <Button
-                        onClick={() => handleActionClick(row.original.failure, row.original.error_file, row.original.uploaded_file)}
-                        variant="accept"
-                    >
-                        DOWNLOAD
-                    </Button>
-                ),
-            },
-            {
-                header: 'Success File Download',
+                header: 'Error File',
                 accessorKey: '',
                 cell: ({ row }) => {
-                    const errorFile = row.original.error_file
+                    const failureFile = row.original.failure
+                    if (failureFile) {
+                        return (
+                            <Button
+                                onClick={() => handleActionClick(row.original.failure, row.original.error_file, row.original.uploaded_file)}
+                                variant="reject"
+                                size="sm"
+                            >
+                                <FaDownload className="text-xl" />
+                            </Button>
+                        )
+                    }
+                },
+            },
+            {
+                header: 'Success File ',
+                accessorKey: '',
+                cell: ({ row }) => {
+                    const errorFile = row.original.uploaded_file
                     if (errorFile) {
                         return (
                             <Button
@@ -202,8 +209,9 @@ const PaginationTable = () => {
                                     handleDownloadOriginalFile(row.original.failure, row.original.error_file, row.original.uploaded_file)
                                 }
                                 variant="accept"
+                                size="sm"
                             >
-                                Download Original
+                                <FaDownload className="text-xl" />
                             </Button>
                         )
                     } else {
