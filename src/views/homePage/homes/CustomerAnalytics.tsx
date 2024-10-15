@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom'
 import { CUSTOMERANALYTICS } from './homes.common'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Avatar from '@/components/ui/Avatar'
+import moment from 'moment'
 
 const CustomerAnalytics = () => {
     const [customerData, setCustomerData] = useState<CUSTOMERANALYTICS>()
@@ -15,9 +16,7 @@ const CustomerAnalytics = () => {
 
     const fetchCustomerData = async () => {
         try {
-            const response = await axioisInstance.get(
-                `/merchant/analytics/order?mobile=${mobile}&type=user_summary`,
-            )
+            const response = await axioisInstance.get(`/merchant/analytics/order?mobile=${mobile}&type=user_summary`)
             const data = response.data.data
             setCustomerData(data)
         } catch (error) {
@@ -29,84 +28,80 @@ const CustomerAnalytics = () => {
         fetchCustomerData()
     }, [])
 
-    console.log('DAAATA', customerData)
+    console.log('DAAATA', customerData?.profile.image)
+
+    const CustomerArray = [
+        {
+            name: 'Name',
+            value: `${customerData?.profile?.first_name || ''} ${customerData?.profile?.last_name || ''}`.trim(),
+        },
+        {
+            name: 'Email',
+            value: customerData?.profile?.email,
+        },
+        {
+            name: 'Mobile',
+            value: customerData?.profile?.mobile,
+        },
+        {
+            name: 'Country Code',
+            value: customerData?.profile?.country_code,
+        },
+        {
+            name: 'Date of Birth',
+            value: moment(customerData?.profile?.dob).format('YYYY-MM-DD'),
+        },
+        {
+            name: 'Gender',
+            value: customerData?.profile?.gender || 'N/A',
+        },
+        {
+            name: 'Device ID',
+            value: customerData?.profile?.device_id || 'N/A',
+        },
+    ]
 
     return (
-        <div className="p-4 bg-gray-100 min-h-screen">
-            <h1 className="text-2xl font-bold mb-6">Customer Analytics</h1>
+        <div className="p-6 bg-gray-50 min-h-screen">
+            <h1 className="text-3xl font-extrabold text-gray-800 mb-8">Customer Analytics</h1>
             {customerData ? (
-                <ul className="space-y-6">
-                    <li className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <h2 className="text-lg font-semibold mb-2">Profile</h2>
-                        <div className="flex gap-10 items-center justify-around mb-4">
-                            <Avatar
-                                shape="circle"
-                                src={customerData.profile.image}
-                                className="w-[100px] h-[100px]"
-                            />
-                            <div>
-                                <p className="text-sm">
-                                    <span className="font-semibold">Name:</span>{' '}
-                                    {customerData.profile.first_name}{' '}
-                                    {customerData.profile.last_name}
-                                </p>
-                                <p className="text-sm">
-                                    <span className="font-semibold">
-                                        Email:
-                                    </span>{' '}
-                                    {customerData.profile.email}
-                                </p>
-                                <p className="text-sm">
-                                    <span className="font-semibold">
-                                        Mobile:
-                                    </span>{' '}
-                                    {customerData.profile.mobile}
-                                </p>
-                                <p className="text-sm">
-                                    <span className="font-semibold">
-                                        Country Code:
-                                    </span>{' '}
-                                    {customerData.profile.country_code}
-                                </p>
-                                <p className="text-sm">
-                                    <span className="font-semibold">
-                                        Date of Birth:
-                                    </span>{' '}
-                                    {customerData.profile.dob}
-                                </p>
-                                <p className="text-sm">
-                                    <span className="font-semibold">
-                                        Gender:
-                                    </span>{' '}
-                                    {customerData.profile.gender || 'N/A'}
-                                </p>
-                                <p className="text-sm">
-                                    <span className="font-semibold">
-                                        Device ID:
-                                    </span>{' '}
-                                    {customerData.profile.device_id}
-                                </p>
+                <div className="flex flex-wrap gap-6">
+                    {/* Profile Section */}
+                    <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex-1">
+                        <h2 className="text-xl font-semibold mb-4 text-gray-700">Profile</h2>
+                        <div className="flex items-center gap-4">
+                            <Avatar shape="circle" src={customerData.profile.image} className="w-[80px] h-[80px] border border-gray-300" />
+                            <div className="space-y-1">
+                                {CustomerArray.map((item, key) => (
+                                    <p className="text-sm text-gray-600" key={key}>
+                                        <span className="font-medium text-gray-700">{item.name}:</span> {item.value}
+                                    </p>
+                                ))}
                             </div>
                         </div>
-                    </li>
-                    <li className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <h2 className="text-lg font-semibold mb-2">Orders</h2>
-                        <p className="text-sm">
-                            <span className="font-semibold">Order Count:</span>{' '}
-                            {customerData.orders.count}
+                    </div>
+
+                    {/* Orders Section */}
+                    <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex-1">
+                        <h2 className="text-xl font-semibold mb-4 text-gray-700">Orders</h2>
+                        <p className="text-sm text-gray-600 mb-1">
+                            <span className="font-medium text-gray-700">Order Count:</span> {customerData.orders.count}
                         </p>
-                        <p className="text-sm">
-                            <span className="font-semibold">Total Amount:</span>{' '}
-                            Rs.{customerData.orders.total_amount.toFixed(2)}
+                        <p className="text-sm text-gray-600">
+                            <span className="font-medium text-gray-700">Total Amount:</span> Rs.
+                            {customerData.orders.total_amount.toFixed(2)}
                         </p>
-                    </li>
-                    <li className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <h2 className="text-lg font-semibold mb-2">Cart</h2>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             ) : (
-                <p className="text-gray-600">Loading data...</p>
+                <p className="text-gray-500">Loading data...</p>
             )}
+
+            {/* Cart Section */}
+            <div className="bg-white p-5 mt-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+                <h2 className="text-xl font-semibold mb-4 text-gray-700">Cart</h2>
+                <p className="text-sm text-gray-500">No items in the cart.</p>
+            </div>
         </div>
     )
 }

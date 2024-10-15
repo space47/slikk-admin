@@ -61,6 +61,12 @@ const SEARCHOPTIONS = [
     { label: 'AWB', value: 'awb' },
 ]
 
+const DELIVERY_OPTIONS = [
+    { label: 'EXPRESS', value: 'EXPRESS' },
+    { label: 'STANDARD', value: 'STANDARD' },
+    { label: 'TRY_AND_BUY', value: 'TRY_AND_BUY' },
+]
+
 const DeliveryOrders = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
@@ -75,6 +81,10 @@ const DeliveryOrders = () => {
     const [showFilter, setShowFilter] = useState(false)
 
     const [partner, setPartner] = useState<{
+        [key: string]: { value: string; label: string }
+    }>({})
+
+    const [deliveryChangeType, setDeliveryChangeType] = useState<{
         [key: string]: { value: string; label: string }
     }>({})
 
@@ -129,7 +139,34 @@ const DeliveryOrders = () => {
         },
         { header: 'Device Type', accessorKey: 'device_type' },
 
-        { header: 'Delivery Type', accessorKey: 'delivery_type' },
+        {
+            header: 'Delivery Type',
+            accessorKey: 'delivery_type',
+            cell: ({ row }: any) => {
+                const Rowid = row?.original.invoice_id
+                const selectedDeliveryType = deliveryChangeType[Rowid]?.label || row.original?.delivery_type || 'SELECT'
+
+                return (
+                    <Dropdown
+                        className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                        title={selectedDeliveryType}
+                        onSelect={(value) => handleDeliveryChange(value, Rowid)}
+                    >
+                        <div className="max-h-60 overflow-y-auto">
+                            {DELIVERY_OPTIONS.map((item, key) => (
+                                <DropdownItem
+                                    key={key}
+                                    eventKey={item.value}
+                                    className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                >
+                                    <span>{item.label}</span>
+                                </DropdownItem>
+                            ))}
+                        </div>
+                    </Dropdown>
+                )
+            },
+        },
         { header: 'STATUS', accessorKey: 'status' },
         { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
         {
@@ -268,6 +305,38 @@ const DeliveryOrders = () => {
             ...prev,
             [row.id]: { value: selectedValue, label: selectedLabel },
         }))
+    }
+
+    const handleDeliveryChange = (selectedValue: any, row: any) => {
+        console.log('DELIVERY VALUE', selectedValue, row)
+        const selectedLabel = DELIVERY_OPTIONS.find((item) => item.value === selectedValue)?.label || ''
+
+        setDeliveryChangeType((prev) => ({
+            ...prev,
+            [row]: { value: selectedValue, label: selectedLabel },
+        }))
+        deliveryChangeAPI(selectedValue, row)
+    }
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    const deliveryChangeAPI = async (selectedValue: string, id: any) => {
+        try {
+            const body = {
+                action: 'CHANGE_DELIVERY_TYPE',
+                delivery_type: selectedValue,
+            }
+            const response = await axioisInstance.patch(`/merchant/order/${id}`, body)
+            notification.success({
+                message: response.data.message || 'DELIVERY TYPE UPDATED',
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const handleDropdownSelect = (selectedValue: string) => {
@@ -427,6 +496,9 @@ const DeliveryOrders = () => {
                     handleDeliverySelect={handleDeliverySelect}
                     paymentType={paymentType}
                     handlePaymentSelect={handlePaymentSelect}
+                    handleDateChange={handleDateChange}
+                    setFrom={setFrom}
+                    setTo={setTo}
                 />
             )}
         </div>

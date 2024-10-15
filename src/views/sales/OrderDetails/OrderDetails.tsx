@@ -45,6 +45,7 @@ type SalesOrderDetailsResponse = {
         amount: number
         mode: string
         transaction_time: string
+        status: string
     }
     coupon_discount: string
     delivery: string
@@ -217,23 +218,24 @@ const OrderDetails = () => {
                                 </span>
                             </div>
                             <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
-                                {data.status === 'COMPLETED' ? (
+                                {data.status === 'COMPLETED' && data?.payment?.status === 'PAID' ? (
                                     <button
                                         className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                         onClick={handleReturnOrder}
                                     >
                                         RETURN ORDER
                                     </button>
-                                ) : data.status !== 'DECLINED' &&
-                                  data.status !== 'CANCELLED' &&
-                                  ['PENDING', 'ACCEPTED', 'PACKED', 'OUT_FOR_DELIVERY'].includes(data.status) ? (
-                                    <button
-                                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
-                                        onClick={handleCancelOrder}
-                                    >
-                                        CANCEL ORDER
-                                    </button>
-                                ) : null}
+                                ) : (
+                                    data.status !== 'DECLINED' &&
+                                    data.status !== 'CANCELLED' && (
+                                        <button
+                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                            onClick={handleCancelOrder}
+                                        >
+                                            CANCEL ORDER
+                                        </button>
+                                    )
+                                )}
 
                                 {data.return_order.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">

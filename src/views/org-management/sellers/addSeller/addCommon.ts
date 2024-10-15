@@ -178,4 +178,13 @@ export const ACCOUNT_FORM = [
         component: { Input },
         status: 'bank_name',
     },
+    {
+        label: 'IFSC',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'ifsc',
+        placeholder: 'Place your IFSC',
+        component: { Input },
+        status: 'ifsc',
+    },
 ]

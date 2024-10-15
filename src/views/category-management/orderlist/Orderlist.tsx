@@ -425,6 +425,15 @@ const OrderList = () => {
             setTo(moment().format('YYYY-MM-DD'))
         }
     }
+
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+        }
+    }
+
+    console.log('TO DTAE', to)
     const handleSelect = (value: any) => {
         const selected = SEARCHOPTIONS.find((item) => item.value === value)
         if (selected) {
@@ -619,6 +628,9 @@ const OrderList = () => {
                     handleDeliverySelect={handleDeliverySelect}
                     paymentType={paymentType}
                     handlePaymentSelect={handlePaymentSelect}
+                    handleDateChange={handleDateChange}
+                    setFrom={setFrom}
+                    setTo={setTo}
                 />
             )}
 
