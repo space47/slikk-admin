@@ -243,7 +243,7 @@ const Home = () => {
                 </Card>
                 <Card className="shadow-lg">
                     <div className="flex gap-10 items-center">
-                        <div>
+                        <div className="mt-2">
                             <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />
                         </div>
                         <div>
