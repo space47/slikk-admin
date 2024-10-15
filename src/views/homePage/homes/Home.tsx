@@ -200,7 +200,7 @@ const Home = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
                 <Card className="shadow-lg cursor-pointer" onClick={handleReceived}>
-                    <div className="flex justify-between items-center">
+                    <div className="flex gap-10 items-center">
                         <div>
                             <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />
                         </div>
@@ -215,7 +215,7 @@ const Home = () => {
                     </div>
                 </Card>
                 <Card className="shadow-lg cursor-pointer" onClick={handleCompleted}>
-                    <div className="flex justify-between items-center">
+                    <div className="flex gap-10 items-center">
                         <div>
                             <GrCompliance className="text-4xl mx-4 text-green-500" />
                         </div>
@@ -230,7 +230,7 @@ const Home = () => {
                     </div>
                 </Card>
                 <Card className="shadow-lg cursor-pointer" onClick={handleReturned}>
-                    <div className="flex justify-between items-center">
+                    <div className="flex gap-10 items-center">
                         <div>
                             <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />
                         </div>
@@ -242,7 +242,7 @@ const Home = () => {
                     </div>
                 </Card>
                 <Card className="shadow-lg">
-                    <div className="flex justify-between items-center">
+                    <div className="flex gap-10 items-center">
                         <div>
                             <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />
                         </div>
@@ -255,7 +255,7 @@ const Home = () => {
 
                 {/* ......................................................... */}
                 <Card className="shadow-lg">
-                    <div className="flex justify-between items-center">
+                    <div className="flex gap-10 items-center">
                         <div>
                             <FaMoneyBillTrendUp className="text-4xl mx-4 text-yellow-400 " />
                         </div>
@@ -266,7 +266,7 @@ const Home = () => {
                     </div>
                 </Card>
                 <Card className="shadow-lg">
-                    <div className="flex justify-between items-center">
+                    <div className="flex gap-10 items-center">
                         <div>
                             <FaShoppingCart className="text-4xl mx-4 text-amber-500 " />
                         </div>
@@ -279,7 +279,7 @@ const Home = () => {
                 {/* LAst Two.............. */}
 
                 <Card className="shadow-lg">
-                    <div className="flex justify-between items-center">
+                    <div className="flex gap-10 items-center">
                         <div>
                             <MdDeliveryDining className="text-5xl mx-4 text-blue-500 " />
                         </div>
@@ -292,7 +292,7 @@ const Home = () => {
                     </div>
                 </Card>
                 <Card className="shadow-lg">
-                    <div className="flex justify-between items-center">
+                    <div className="flex gap-10 items-center">
                         <div>
                             <PiDevicesFill className="text-5xl mx-4  " />
                         </div>
