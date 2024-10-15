@@ -19,6 +19,7 @@ import { IoBasketSharp } from 'react-icons/io5'
 import { PiCurrencyInrBold, PiDevicesFill } from 'react-icons/pi'
 import { RiMoneyRupeeCircleFill } from 'react-icons/ri'
 import { FaMoneyBillTrendUp } from 'react-icons/fa6'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -136,6 +137,12 @@ const Home = () => {
             },
         })
     }
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+        }
+    }
 
     return (
         <div className="flex flex-col gap-6 p-4">
@@ -180,29 +187,15 @@ const Home = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap gap-5 justify-end xl:mt-4">
-                    <div className="w-full xl:w-[40%] sm:w-auto">
-                        <div className="mb-1 font-semibold text-sm">FROM:</div>
-                        <DatePicker
-                            inputPrefix={<HiOutlineCalendar className="text-lg" />}
-                            defaultValue={new Date()}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
-                            className=" shadow-lg w-auto"
-                        />
-                    </div>
-                    <div className="w-full xl:w-[40%] sm:w-auto">
-                        <div className="mb-1 font-semibold text-sm">TO:</div>
-                        <DatePicker
-                            inputPrefix={<TbCalendarStats className="text-xl" />}
-                            defaultValue={new Date()}
-                            value={moment(to).toDate()}
-                            onChange={handleToChange}
-                            minDate={moment(from).toDate()}
-                            className="shadow-lg w-auto"
-                        />
-                    </div>
-                </div>
+                <UltimateDatePicker
+                    from={from}
+                    setFrom={setFrom}
+                    to={to}
+                    setTo={setTo}
+                    handleFromChange={handleFromChange}
+                    handleToChange={handleToChange}
+                    handleDateChange={handleDateChange}
+                />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">

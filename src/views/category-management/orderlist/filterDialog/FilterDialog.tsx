@@ -14,6 +14,7 @@ import { ORDER_STATUS } from '../commontypes'
 // import { RiEBike2Fill } from 'react-icons/ri'
 import moment from 'moment'
 import { DELEIVERYOPTIONS, PAYMENTOPTIONS } from '../Orderlist'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 type OrderFilterProps = {
     showFilter: any
@@ -28,6 +29,9 @@ type OrderFilterProps = {
     handleDeliverySelect: any
     paymentType: any
     handlePaymentSelect: any
+    handleDateChange: any
+    setFrom: any
+    setTo: any
 }
 
 const FilterDialogOrder = ({
@@ -43,6 +47,9 @@ const FilterDialogOrder = ({
     handleDeliverySelect,
     paymentType,
     handlePaymentSelect,
+    handleDateChange,
+    setFrom,
+    setTo,
 }: OrderFilterProps) => {
     return (
         <div>
@@ -55,29 +62,15 @@ const FilterDialogOrder = ({
                 className="xl:mx-0 mx-8"
             >
                 <div className="flex flex-col  gap-6 items-start justify-start mt-4 lg:mt-0 xl:mx-0 mx-10">
-                    <div className="flex flex-col justify-start gap-6">
-                        <div>
-                            <div className="mb-1 font-semibold text-xs md:text-sm ">FROM DATE:</div>
-                            <DatePicker
-                                inputPrefix={<HiOutlineCalendar className="text-base md:text-lg" />}
-                                defaultValue={new Date()}
-                                value={new Date(from)}
-                                onChange={handleFromChange}
-                                className="w-[240px]"
-                            />
-                        </div>
-                        <div>
-                            <div className="mb-1 font-semibold text-xs md:text-sm">TO DATE:</div>
-                            <DatePicker
-                                inputSuffix={<TbCalendarStats className="text-base md:text-xl" />}
-                                defaultValue={new Date()}
-                                value={moment(to).toDate()}
-                                onChange={handleToChange}
-                                minDate={moment(from).toDate()}
-                                className="w-[240px]"
-                            />
-                        </div>
-                    </div>
+                    <UltimateDatePicker
+                        from={from}
+                        setFrom={setFrom}
+                        to={to}
+                        setTo={setTo}
+                        handleFromChange={handleFromChange}
+                        handleToChange={handleToChange}
+                        handleDateChange={handleDateChange}
+                    />
 
                     <div className="flex flex-col">
                         <label htmlFor="" className="font-semibold text-lg mb-2">

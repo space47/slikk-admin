@@ -317,6 +317,12 @@ const DeliveryOrders = () => {
         }))
         deliveryChangeAPI(selectedValue, row)
     }
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+        }
+    }
 
     const deliveryChangeAPI = async (selectedValue: string, id: any) => {
         try {
@@ -490,6 +496,9 @@ const DeliveryOrders = () => {
                     handleDeliverySelect={handleDeliverySelect}
                     paymentType={paymentType}
                     handlePaymentSelect={handlePaymentSelect}
+                    handleDateChange={handleDateChange}
+                    setFrom={setFrom}
+                    setTo={setTo}
                 />
             )}
         </div>
