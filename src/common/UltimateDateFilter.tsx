@@ -22,7 +22,7 @@ const PREVIOUSARRAY = [
     { label: 'LAST WEEK', value: 'LAST WEEK' },
     { label: 'CURRENT MONTH', value: 'CURRENT MONTH' },
     { label: 'LAST MONTH', value: 'LAST MONTH' },
-    { label: 'CUSTOM', value: 'CUSTOM' },
+    { label: 'CUSTOM DATES', value: 'CUSTOM DATES' },
 ]
 
 interface DATEPROPS {
@@ -76,7 +76,7 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
                 endDate = moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
                 setShowingDatePicker(false)
                 break
-            case 'CUSTOM':
+            case 'CUSTOM DATES':
                 setShowingDatePicker(true)
                 break
             default:
@@ -88,8 +88,8 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
     }
 
     return (
-        <div className="flex gap-1 items-center">
-            <div className="border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white ">
+        <div className="flex gap-1 items-center xl:mr-10">
+            <div className="border w-auto rounded-md h-auto font-bold mt-8 bg-black text-white flex justify-center">
                 <Dropdown
                     className="text-xl text-white bg-white font-bold border-2 border-blue-600"
                     title={selectedOption}
@@ -104,7 +104,7 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
             </div>
 
             {showinfDatePicker && (
-                <div className="xl:w-[250px] w-[200px]">
+                <div className="xl:w-[230px] w-[200px]">
                     <div className="mb-2">Date Range:</div>
                     <DatePickerRange placeholder="Select dates range" onChange={handleDateChange} />
                 </div>
