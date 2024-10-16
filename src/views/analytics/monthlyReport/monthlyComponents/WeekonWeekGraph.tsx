@@ -1,77 +1,89 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Chart from 'react-apexcharts'
-import moment from 'moment'
-import { COLOR_2 } from '@/constants/chart.constant'
-import { MONTHLYREPORTTYPES } from '@/store/types/monthlyReport.types'
+import { COLORS } from '@/constants/chart.constant'
 import { useAppSelector } from '@/store'
-
-function convertDatesToDays(orderData) {
-    return orderData.map((item) => {
-        const day = moment(item.create_at_date).format('dddd') // Get the day name (e.g., "Monday")
-
-        return {
-            day: day,
-            total: item.total,
-        }
-    })
-}
-
-const weekDaysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+import { MONTHLYREPORTTYPES } from '@/store/types/monthlyReport.types'
+import { useMemo } from 'react'
 
 const WeekOnWeekGraph = () => {
     const { monthlyReport } = useAppSelector((state: { monthlyReport: MONTHLYREPORTTYPES }) => state.monthlyReport)
+    const orderState = monthlyReport?.order_by_date
 
-    const sortedData = monthlyReport?.order_by_date
-    const groupedData = convertDatesToDays(sortedData)
+    const transformData = () => {
+        const weeksData: any = []
 
-    console.log('groupdata', groupedData)
+        for (let i = 0; i < 4; i++) {
+            weeksData.push(Array(7).fill(0))
+        }
 
-    const data = [
-        {
-            name: 'TOTAL',
-            data: groupedData.map((item) => item.total),
-        },
-    ]
+        orderState?.forEach((order) => {
+            const orderDate = new Date(order.create_at_date)
+            const dayIndex = (orderDate.getDay() + 6) % 7
+            const weekIndex = Math.floor((orderDate.getDate() - 1) / 7)
+
+            if (weekIndex < 4) {
+                weeksData[weekIndex][dayIndex] += order.total
+            }
+        })
+
+        const seriesData = weeksData.map((weekData: any, index: any) => ({
+            name: `Week ${index + 1}`,
+            data: weekData,
+        }))
+
+        return seriesData
+    }
+
+    const data = useMemo(() => transformData(), [orderState])
 
     return (
         <Chart
             options={{
                 chart: {
-                    type: 'bar',
-                    stacked: true,
+                    height: 350,
+                    type: 'line',
                     zoom: {
                         enabled: false,
                     },
                 },
-                dataLabels: {
-                    enabled: false,
-                },
+                colors: [...COLORS],
+                // dataLabels: {
+                //     enabled: false,
+                // },
                 stroke: {
+                    width: [3],
                     curve: 'smooth',
-                    width: 3,
                 },
-                colors: [COLOR_2, '#FF4560', '#775DD0'],
-                responsive: [
-                    {
-                        breakpoint: 480,
-                        options: {
-                            legend: {
-                                position: 'bottom',
-                                offsetX: -10,
-                                offsetY: 0,
-                            },
-                        },
-                    },
-                ],
                 legend: {
-                    position: 'right',
-                    offsetY: 40,
+                    tooltipHoverFormatter: function (val, opts) {
+                        return val + ' - ' + opts.w.globals.series[opts.seriesIndex][opts.dataPointIndex] + ''
+                    },
+                },
+                markers: {
+                    size: 0,
+                    hover: {
+                        sizeOffset: 6,
+                    },
                 },
                 xaxis: {
-                    categories: groupedData.map((item) => item.day),
+                    categories: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                },
+                tooltip: {
+                    y: [
+                        {
+                            title: {
+                                formatter: function (val) {
+                                    return val + ':'
+                                },
+                            },
+                        },
+                    ],
+                },
+                grid: {
+                    borderColor: '#f1f1f1',
                 },
             }}
             series={data}
-            type="bar"
             height={300}
         />
     )
