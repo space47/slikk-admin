@@ -188,7 +188,7 @@ const PaginationTable = () => {
                 cell: (info) => extractErrorName(info.getValue()),
             },
             {
-                header: 'ERROR DOWNLOAD',
+                header: 'Error File Download',
                 accessorKey: '',
                 cell: ({ row }) => {
                     const failureFile = row.original.failure
@@ -206,7 +206,7 @@ const PaginationTable = () => {
                 },
             },
             {
-                header: 'SUCCESS Download',
+                header: 'Success FIle Download',
                 accessorKey: '',
                 cell: ({ row }) => {
                     const errorFile = row.original.uploaded_file

@@ -184,9 +184,9 @@ const SendNotification = () => {
     }
 
     const handleRemoveFilter = (index: number) => {
-        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
-        setShowAddFilter(updatedFilters)
+        setShowAddFilter((prev) => prev.filter((_, i) => i !== index))
     }
+    console.log('FILTER INDEX', showAddFilter)
     const [filtersData, setFiltersData] = useState([])
 
     const handleAddFilters = async (values) => {
@@ -271,7 +271,7 @@ const SendNotification = () => {
                                                     {({ field, form }: FieldProps<any>) => (
                                                         <Select
                                                             isMulti
-                                                            placeholder={`Filter Tags ${index + 1}`}
+                                                            placeholder={`Filter Tags ${index}`}
                                                             options={filters.filters}
                                                             getOptionLabel={(option) => option.label}
                                                             getOptionValue={(option) => option.value}
