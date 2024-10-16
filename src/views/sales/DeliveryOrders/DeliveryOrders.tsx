@@ -61,7 +61,7 @@ const SEARCHOPTIONS = [
     { label: 'AWB', value: 'awb' },
 ]
 
-const DELIVERY_OPTIONS = [
+export const DELIVERY_OPTIONS = [
     { label: 'EXPRESS', value: 'EXPRESS' },
     { label: 'STANDARD', value: 'STANDARD' },
     { label: 'TRY_AND_BUY', value: 'TRY_AND_BUY' },

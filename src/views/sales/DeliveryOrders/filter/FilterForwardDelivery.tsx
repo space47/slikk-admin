@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
 import Drawer from '@/components/ui/Drawer'
-import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
-import { DELEIVERYOPTIONS, PAYMENTOPTIONS } from '@/views/category-management/orderlist/Orderlist'
+import { ORDER_STATUS, DELEIVERYOPTIONS, PAYMENTOPTIONS } from '@/views/category-management/orderlist/commontypes'
+
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 type OrderFilterProps = {
