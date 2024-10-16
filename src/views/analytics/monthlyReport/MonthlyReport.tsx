@@ -1,20 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // MonthlyReport.tsx
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchMonthlyReport, setFrom, setTo } from '@/store/slices/monthlyReport/monthlyReport.slice'
 import ReportCards from './monthlyComponents/ReportCards'
 import { MONTHLYREPORTTYPES } from '@/store/types/monthlyReport.types'
+import DailyReportDraph from './monthlyComponents/DailyReportGraph'
+import { Dropdown } from '@/components/ui'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import WeekOnWeekGraph from './monthlyComponents/WeekonWeekGraph'
+import MonthlyReportGraph from './monthlyComponents/MonthlyReportGraph'
+
+const GRAPHARRAY = [
+    { label: 'DAILY', value: 'DAILY' },
+    { label: 'WEEK_ON_WEEK', value: 'WEEK_ON_WEEK' },
+    { label: 'MONTHLY', value: 'MONTHLY' },
+]
 
 const MonthlyReport = () => {
     const dispatch = useAppDispatch()
     const { monthlyReport, from, to } = useAppSelector((state: { monthlyReport: MONTHLYREPORTTYPES }) => state.monthlyReport)
+    const [selectedOption, setSelectedOption] = useState('DAILY')
     console.log(monthlyReport)
 
     useEffect(() => {
         dispatch(fetchMonthlyReport())
-    }, [dispatch])
+    }, [dispatch, from, to])
 
     const handleFromChange = (date: Date | null) => {
         dispatch(setFrom(date ? date.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)))
@@ -63,6 +75,10 @@ const MonthlyReport = () => {
         URL.revokeObjectURL(url)
     }
 
+    const handleSelect = (value: string) => {
+        setSelectedOption(value)
+    }
+
     return (
         <div className="flex flex-col gap-4">
             <div>
@@ -74,8 +90,27 @@ const MonthlyReport = () => {
                     handleFromChange={handleFromChange}
                     handleToChange={handleToChange}
                     handleDateChange={handleDateChange}
+                    dispatch={dispatch}
                 />
             </div>
+
+            <div className="bg-black text-white w-[150px] rounded-[8px] items-center flex justify-center">
+                <Dropdown
+                    className="text-xl text-white bg-white font-bold border-2 border-blue-600"
+                    title={selectedOption}
+                    onSelect={(value) => handleSelect(value.toString())}
+                >
+                    {GRAPHARRAY.map((item) => (
+                        <DropdownItem key={item.value} eventKey={item.value}>
+                            <span>{item.label}</span>
+                        </DropdownItem>
+                    ))}
+                </Dropdown>
+            </div>
+
+            {selectedOption === 'DAILY' && <DailyReportDraph />}
+            {selectedOption === 'WEEK_ON_WEEK' && <WeekOnWeekGraph />}
+            {selectedOption === 'MONTHLY' && <MonthlyReportGraph />}
             <ReportCards handleUserDOWNLOAD={handleUserDOWNLOAD} />
         </div>
     )

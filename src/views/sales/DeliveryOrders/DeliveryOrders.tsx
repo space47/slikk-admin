@@ -319,8 +319,9 @@ const DeliveryOrders = () => {
     }
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (dates && dates[0]) {
-            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
-            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+            dispatch(setFrom(moment(dates[0]).format('YYYY-MM-DD')))
+            const toDate = dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')
+            dispatch(setTo(toDate))
         }
     }
 
@@ -395,6 +396,8 @@ const DeliveryOrders = () => {
     const handleFilterClose = useCallback(() => {
         setShowFilter(false)
     }, [setShowFilter])
+
+    console.log(`from`, from, 'and', 'to', to)
 
     return (
         <div className="overflow-x-auto">
@@ -499,6 +502,7 @@ const DeliveryOrders = () => {
                     handleDateChange={handleDateChange}
                     setFrom={setFrom}
                     setTo={setTo}
+                    dispatch={dispatch}
                 />
             )}
         </div>

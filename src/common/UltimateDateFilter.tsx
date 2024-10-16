@@ -1,19 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react'
-import { Button, Dropdown } from '@/components/ui'
+import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import moment from 'moment'
-import { TbCalendarStats } from 'react-icons/tb'
-import { HiOutlineCalendar } from 'react-icons/hi'
+import { useAppDispatch } from '@/store'
+
 import DatePicker from '@/components/ui/DatePicker'
 
 const { DatePickerRange } = DatePicker
-
-// Array of months for selection
-const MONTHS = Array.from({ length: 12 }, (_, index) => ({
-    label: moment().month(index).format('MMMM'), // January, February, etc.
-    value: index, // 0 for January, 1 for February, etc.
-}))
 
 const PREVIOUSARRAY = [
     { label: 'TODAY', value: 'TODAY' },
@@ -33,9 +27,10 @@ interface DATEPROPS {
     handleFromChange: any
     handleToChange: any
     handleDateChange: any
+    dispatch?: any
 }
 
-const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFrom, setTo, handleDateChange }: DATEPROPS) => {
+const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATEPROPS) => {
     const [selectedOption, setSelectedOption] = useState('TODAY')
     const [showinfDatePicker, setShowingDatePicker] = useState(false)
 
@@ -57,13 +52,13 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
                 setShowingDatePicker(false)
                 break
             case 'CURRENT WEEK':
-                startDate = moment().startOf('week').format('YYYY-MM-DD')
-                endDate = moment().endOf('week').format('YYYY-MM-DD')
+                startDate = moment().startOf('isoWeek').format('YYYY-MM-DD')
+                endDate = moment().endOf('isoWeek').format('YYYY-MM-DD')
                 setShowingDatePicker(false)
                 break
             case 'LAST WEEK':
-                startDate = moment().subtract(1, 'week').startOf('week').format('YYYY-MM-DD')
-                endDate = moment().subtract(1, 'week').endOf('week').format('YYYY-MM-DD')
+                startDate = moment().subtract(1, 'week').startOf('isoWeek').format('YYYY-MM-DD')
+                endDate = moment().subtract(1, 'week').endOf('isoWeek').format('YYYY-MM-DD')
                 setShowingDatePicker(false)
                 break
             case 'CURRENT MONTH':
@@ -83,8 +78,13 @@ const UltimateDatePicker = ({ handleFromChange, handleToChange, from, to, setFro
                 return
         }
 
-        setFrom(startDate)
-        setTo(endDate)
+        if (dispatch) {
+            dispatch(setFrom(startDate))
+            dispatch(setTo(endDate))
+        } else {
+            setFrom(startDate)
+            setTo(endDate)
+        }
     }
 
     return (

@@ -1,22 +1,22 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { MONTHLYREPORTTYPES } from '@/store/types/monthlyReport.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import moment from 'moment'
 
 const initialState: MONTHLYREPORTTYPES = {
     monthlyReport: null,
     loading: false,
     message: '',
-    page: 1,
-    pageSize: 10,
-    count: 0,
+    from: moment().startOf('month').format('YYYY-MM-DD'),
+    to: moment().endOf('month').format('YYYY-MM-DD'),
 }
 
 export const fetchMonthlyReport = createAsyncThunk('monthlyReport/fetchMonthlyReport', async (_, { getState, rejectWithValue }) => {
     try {
-        const state = getState() as { urlShortner: MONTHLYREPORTTYPES }
-        const { from, to } = state.urlShortner
+        const state = getState() as { monthlyReport: MONTHLYREPORTTYPES }
+        const { from, to } = state.monthlyReport
 
-        const response = await axioisInstance.get(`/merchant/analytics/order?type=monthly_report`)
+        const response = await axioisInstance.get(`/merchant/analytics/order?from=${from}&to=${to}&type=monthly_report`)
 
         return {
             data: response.data?.data,

@@ -11,9 +11,7 @@ type GraphProps = {
 }
 
 const BrandOrderGraph: React.FC<GraphProps> = ({ data }) => {
-    const sortedData = data.sort(
-        (a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime(),
-    )
+    const sortedData = data.sort((a, b) => new Date(a.dateKey).getTime() - new Date(b.dateKey).getTime())
     const Amountdata = [
         {
             name: 'Total Amount',
@@ -23,9 +21,7 @@ const BrandOrderGraph: React.FC<GraphProps> = ({ data }) => {
 
     return (
         <div>
-            <span className="flex justify-center font-semibold">
-                TOTAL AMOUNT
-            </span>
+            <span className="flex justify-center font-semibold">TOTAL AMOUNT</span>
             <Chart
                 options={{
                     chart: {
