@@ -14,7 +14,7 @@ import MonthlyReportGraph from './monthlyComponents/MonthlyReportGraph'
 
 const GRAPHARRAY = [
     { label: 'DAILY', value: 'DAILY' },
-    { label: 'WEEK_ON_WEEK', value: 'WEEK_ON_WEEK' },
+    { label: 'WEEK ON WEEK', value: 'WEEK ON WEEK' },
     { label: 'MONTHLY', value: 'MONTHLY' },
 ]
 
@@ -27,14 +27,6 @@ const MonthlyReport = () => {
     useEffect(() => {
         dispatch(fetchMonthlyReport())
     }, [dispatch, from, to])
-
-    const handleFromChange = (date: Date | null) => {
-        dispatch(setFrom(date ? date.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)))
-    }
-
-    const handleToChange = (date: Date | null) => {
-        dispatch(setTo(date ? date.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10)))
-    }
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (dates && dates[0]) {
@@ -87,8 +79,6 @@ const MonthlyReport = () => {
                     setTo={setTo}
                     from={from}
                     to={to}
-                    handleFromChange={handleFromChange}
-                    handleToChange={handleToChange}
                     handleDateChange={handleDateChange}
                     dispatch={dispatch}
                 />
@@ -109,7 +99,7 @@ const MonthlyReport = () => {
             </div>
 
             {selectedOption === 'DAILY' && <DailyReportDraph />}
-            {selectedOption === 'WEEK_ON_WEEK' && <WeekOnWeekGraph />}
+            {selectedOption === 'WEEK ON WEEK' && <WeekOnWeekGraph />}
             {selectedOption === 'MONTHLY' && <MonthlyReportGraph />}
             <ReportCards handleUserDOWNLOAD={handleUserDOWNLOAD} />
         </div>

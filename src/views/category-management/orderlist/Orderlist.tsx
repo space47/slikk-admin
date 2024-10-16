@@ -18,7 +18,7 @@ import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
 import type { Order, OrderItem } from './commontypes'
 import { Button, Dropdown } from '@/components/ui'
-import { ORDER_STATUS } from './commontypes'
+import { ORDER_STATUS, DELEIVERYOPTIONS, PAYMENTOPTIONS } from './commontypes'
 import { IoMdDownload } from 'react-icons/io'
 import { FaExclamationCircle, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
 import FilterDialogOrder from './filterDialog/FilterDialog'
@@ -27,7 +27,15 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import NotificationSound from '@/common/orderNotification'
 import PendingNotification from '@/common/pendingNotification'
 
+import { notification } from 'antd'
+
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
+
+const CHANGE_DELIVERY_OPTIONS = [
+    { label: 'EXPRESS', value: 'EXPRESS' },
+    { label: 'STANDARD', value: 'STANDARD' },
+    { label: 'TRY_AND_BUY', value: 'TRY_AND_BUY' },
+]
 
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
@@ -43,18 +51,6 @@ interface DropdownStatus {
 const SEARCHOPTIONS = [
     { label: 'INVOICE', value: 'invoice' },
     { label: 'MOBILE', value: 'mobile' },
-]
-
-export const DELEIVERYOPTIONS = [
-    { label: 'Express', value: 'EXPRESS' },
-    { label: 'Standard', value: 'STANDARD' },
-    { label: 'Try&Buy', value: 'TRY_AND_BUY' },
-]
-
-export const PAYMENTOPTIONS = [
-    { label: 'COD', value: 'COD' },
-    { label: 'ONLINE', value: 'ONLINE' },
-    { label: 'POD', value: 'POD' },
 ]
 
 const OrderList = () => {
@@ -86,6 +82,9 @@ const OrderList = () => {
     const [soundEnabled, setSoundEnabled] = useState(false)
     const [pendingSound, setPendingSound] = useState(false)
     const [numberClick, setNumberClick] = useState(false)
+    const [deliveryChangeType, setDeliveryChangeType] = useState<{
+        [key: string]: { value: string; label: string }
+    }>({})
 
     const previousOrders = useRef<Order[]>([])
 
@@ -242,8 +241,6 @@ const OrderList = () => {
         }
     }
 
-    console.log('OKONUMBER', numberClick)
-
     const columns = useMemo(
         () => [
             {
@@ -308,7 +305,35 @@ const OrderList = () => {
             { header: 'Order Count', accessorKey: 'user_order_count' },
             { header: 'Device Type', accessorKey: 'device_type' },
             { header: 'Customer Name', accessorKey: 'user.name' },
-            { header: 'Delivery Type', accessorKey: 'delivery_type' },
+            {
+                header: 'Delivery Type',
+                accessorKey: 'delivery_type',
+                cell: ({ row }: any) => {
+                    const Rowid = row?.original.invoice_id
+                    const selectedDeliveryType = deliveryChangeType[Rowid]?.label || row.original?.delivery_type || 'SELECT'
+                    console.log('OKOKOKOKK', selectedDeliveryType)
+
+                    return (
+                        <Dropdown
+                            className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                            title={selectedDeliveryType}
+                            onSelect={(value) => handleDeliveryChange(value, Rowid)}
+                        >
+                            <div className="max-h-60 overflow-y-auto">
+                                {CHANGE_DELIVERY_OPTIONS.map((item, key) => (
+                                    <DropdownItem
+                                        key={key}
+                                        eventKey={item.value}
+                                        className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                    >
+                                        <span>{item.label}</span>
+                                    </DropdownItem>
+                                ))}
+                            </div>
+                        </Dropdown>
+                    )
+                },
+            },
             // { header: 'Store Address', accessorKey: 'store.address' },
             {
                 header: 'Customer Address',
@@ -399,6 +424,33 @@ const OrderList = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading the file:', error)
+        }
+    }
+
+    const handleDeliveryChange = (selectedValue: any, row: any) => {
+        console.log('DELIVERY VALUE', selectedValue, row)
+        const selectedLabel = CHANGE_DELIVERY_OPTIONS.find((item) => item.value === selectedValue)?.label || ''
+
+        setDeliveryChangeType((prev) => ({
+            ...prev,
+            [row]: { value: selectedValue, label: selectedLabel },
+        }))
+        deliveryChangeAPI(selectedValue, row)
+    }
+
+    const deliveryChangeAPI = async (selectedValue: string, id: any) => {
+        try {
+            const body = {
+                action: 'CHANGE_DELIVERY_TYPE',
+                delivery_type: selectedValue,
+            }
+            const response = await axiosInstance.patch(`/merchant/order/${id}`, body)
+            notification.success({
+                message: response.data.message || 'DELIVERY TYPE UPDATED',
+            })
+            navigate(0)
+        } catch (error) {
+            console.log(error)
         }
     }
 
