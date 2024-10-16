@@ -119,3 +119,15 @@ export const RETURN_ORDERS = [
     { name: 'OUT_FOR_DELIVERY', value: 'OUT_FOR_DELIVERY' },
     { name: 'COMPLETED', value: 'COMPLETED' },
 ]
+
+export const DELEIVERYOPTIONS = [
+    { label: 'Express', value: 'EXPRESS' },
+    { label: 'Standard', value: 'STANDARD' },
+    { label: 'Try&Buy', value: 'TRY_AND_BUY' },
+]
+
+export const PAYMENTOPTIONS = [
+    { label: 'COD', value: 'COD' },
+    { label: 'ONLINE', value: 'ONLINE' },
+    { label: 'POD', value: 'POD' },
+]
