@@ -34,28 +34,11 @@ const DailyReportDraph = () => {
                     width: 3,
                 },
                 colors: [COLOR_2],
-                responsive: [
-                    {
-                        breakpoint: 480,
-                        options: {
-                            legend: {
-                                position: 'bottom',
-                                offsetX: -10,
-                                offsetY: 0,
-                            },
-                        },
-                    },
-                ],
-                legend: {
-                    position: 'right',
-                    offsetY: 40,
-                },
                 xaxis: {
                     categories: sortedData.map((item) => item.create_at_date),
                 },
             }}
             series={data}
-            type="bar"
             height={300}
         />
     )

@@ -76,7 +76,7 @@ const MonthlyReportDraph = () => {
                 },
             }}
             series={data}
-            type="bar"
+            // type="bar"
             height={300}
         />
     )
