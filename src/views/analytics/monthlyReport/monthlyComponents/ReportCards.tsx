@@ -38,11 +38,11 @@ const ReportCards = ({ handleUserDOWNLOAD }: CARDPROPS) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-10">
             <Card className="shadow-lg rounded-lg p-6 bg-white border hover:shadow-xl transition-all duration-300">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">Data Details</h2>
+                <h2 className="text-xl font-semibold mb-4  text-blue-600">Data Details</h2>
                 {DATADETAILS.map((item, key) => (
                     <div key={key} className="flex flex-col gap-2">
                         <div className="flex justify-between items-center xl:text-[16px] font-semibold">
-                            <span className="text-gray-600 font-medium">{item.name}:</span>
+                            <span className="text-green-600 font-semibold ">{item.name}:</span>
                             <span className="text-gray-900">{item.value}</span>
                         </div>
                     </div>
@@ -50,15 +50,15 @@ const ReportCards = ({ handleUserDOWNLOAD }: CARDPROPS) => {
             </Card>
 
             <Card className="shadow-lg rounded-lg p-6 bg-white border hover:shadow-xl transition-all duration-300">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">User Data</h2>
+                <h2 className="text-xl font-semibold mb-4 text-blue-600">User Data</h2>
                 {USERDATAARRAYS.map((item, key) => (
                     <div key={key} className="flex flex-col bg-white rounded-lg ">
                         <div className="flex justify-between items-center">
-                            <span className="text-gray-600 font-medium xl:text-[16px]">{item.name}:</span>
+                            <span className="text-green-600 font-semibold xl:text-[16px]">{item.name}:</span>
                             <div className="flex items-center gap-4">
                                 <span className="text-gray-900 font-semibold">{item?.value?.count ?? item?.value?.total}</span>
                                 <button className="flex items-center justify-center " onClick={() => handleUserDOWNLOAD(item.value?.users)}>
-                                    <FaDownload className="text-gray-800 text-xl" />
+                                    <FaDownload className="text-red-500 text-md" />
                                 </button>
                             </div>
                         </div>
@@ -67,11 +67,11 @@ const ReportCards = ({ handleUserDOWNLOAD }: CARDPROPS) => {
             </Card>
 
             <Card className="shadow-lg rounded-lg p-6 bg-white border hover:shadow-xl transition-all duration-300">
-                <h2 className="text-xl font-semibold mb-4 text-gray-800">Delivery Type</h2>
+                <h2 className="text-xl font-semibold mb-4 text-blue-600">Delivery Type</h2>
                 {DELIVERYTYPE.map((item, key) => (
                     <div key={key} className="flex flex-col gap-2">
                         <div className="flex justify-between items-center xl:text-[16px] font-semibold">
-                            <span className="text-gray-600 font-medium">{item.name}:</span>
+                            <span className="text-green-600 font-semibold">{item.name}:</span>
                             <span className="text-gray-900">{item.value}</span>
                         </div>
                     </div>

@@ -1,15 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
 import Drawer from '@/components/ui/Drawer'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
-
-// import { IoMdDownload } from 'react-icons/io'
-// import { FaLocationDot } from 'react-icons/fa6'
-// import { FaMapMarkedAlt } from 'react-icons/fa'
-// import { RiEBike2Fill } from 'react-icons/ri'
-import moment from 'moment'
 import { ORDER_STATUS } from '@/views/category-management/orderlist/commontypes'
 import { DELEIVERYOPTIONS, PAYMENTOPTIONS } from '@/views/category-management/orderlist/Orderlist'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
@@ -28,8 +19,9 @@ type OrderFilterProps = {
     paymentType: any
     handlePaymentSelect: any
     handleDateChange: any
-    setFrom
-    setTo
+    setFrom: any
+    setTo: any
+    dispatch?: any
 }
 
 const FilterForwardDelivery = ({
@@ -48,6 +40,7 @@ const FilterForwardDelivery = ({
     handleDateChange,
     setFrom,
     setTo,
+    dispatch,
 }: OrderFilterProps) => {
     return (
         <div>
@@ -69,6 +62,7 @@ const FilterForwardDelivery = ({
                         handleFromChange={handleFromChange}
                         handleToChange={handleToChange}
                         handleDateChange={handleDateChange}
+                        dispatch={dispatch}
                     />
 
                     {/* Status Selection */}
