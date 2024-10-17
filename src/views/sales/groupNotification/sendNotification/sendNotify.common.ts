@@ -128,3 +128,24 @@ export const UtmArray = [
         placeholder: 'Enter tags',
     },
 ]
+
+export const notificationTypeArray = [
+    { value: 'sms', label: 'sms' },
+    { value: 'email', label: 'email' },
+    { value: 'whatsapp', label: 'whatsapp' },
+    { value: 'app', label: 'app' },
+]
+
+export const targetPageArray = [
+    { label: 'product', value: 'product' },
+    { label: 'productListing', value: 'productListing' },
+    { label: 'wishlist', value: 'wishlist' },
+    { label: 'order', value: 'order' },
+    { label: 'cart', value: 'cart' },
+]
+
+export const DISCOUNTOPTIONS = [
+    { value: 'sort_lowtohigh', label: 'Low to High' },
+    { value: 'sort_hightolow', label: 'High to Low' },
+    { value: 'sort_discount', label: 'DISCOUNT' },
+]

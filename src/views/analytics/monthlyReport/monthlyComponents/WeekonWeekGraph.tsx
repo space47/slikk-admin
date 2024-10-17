@@ -18,9 +18,8 @@ const WeekOnWeekGraph = () => {
 
         orderState?.forEach((order) => {
             const orderDate = new Date(order.create_at_date)
-            console.log('ORDER DATE', orderDate.getDate() - 1 / 7)
             const dayIndex = (orderDate.getDay() + 6) % 7
-            console.log('dayIndex', dayIndex)
+
             const weekIndex = Math.floor((orderDate.getDate() - 1) / 7)
 
             if (weekIndex < 4) {
@@ -33,7 +32,6 @@ const WeekOnWeekGraph = () => {
             data: weekData,
         }))
 
-        console.log('weekData', seriesData)
         return seriesData
     }
 

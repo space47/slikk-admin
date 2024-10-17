@@ -200,3 +200,29 @@ export const BackGroundArray = [
         placeholder: 'Place Mobile width',
     },
 ]
+
+export const NAMEPOSITION = [
+    {
+        label: 'Top',
+        value: 'top',
+    },
+    {
+        label: 'Bottom',
+        value: 'bottom',
+    },
+]
+
+export const ALIGNVALUES = [
+    {
+        label: 'Right',
+        value: 'right',
+    },
+    {
+        label: 'Center',
+        value: 'center',
+    },
+    {
+        label: 'Left',
+        value: 'left',
+    },
+]

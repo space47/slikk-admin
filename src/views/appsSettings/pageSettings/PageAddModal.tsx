@@ -17,10 +17,11 @@ import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePos
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { BackGroundArray, borrderStyleArray, genericComponentArray, webBorrderStyleArray } from './genericComp'
+import { ALIGNVALUES, BackGroundArray, borrderStyleArray, genericComponentArray, NAMEPOSITION, webBorrderStyleArray } from './genericComp'
 import PageAddCommonImage from './PageAddCommonImage'
 import { MdCancel } from 'react-icons/md'
 import PageSettingsPostTable from './PageSettingsPostTable'
+import CommonSelect from './CommonSelect'
 
 interface DataType {
     type: string
@@ -105,6 +106,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [textAreaValue, setTextAreaValue] = useState('')
     const MAX_UPLOAD = 10000
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const [nameForm, setNameForm] = useState<boolean>()
+    const [webNameForm, setWebNameForm] = useState<boolean>()
+    const [footerAlignForm, setFooterAlignForm] = useState<boolean>()
+    const [webFooterAlignForm, setWebFooterAlignForm] = useState<boolean>()
 
     const [componentOption, setComponentOptions] = useState('')
 
@@ -363,7 +368,14 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 show_dots: row.component_config.show_dots,
                 infinit_loop: row.component_config.infinit_loop,
                 gap: Number(row.component_config.gap),
+                name_position: row.component_config.name_position,
+                name_align: row.component_config.name_align,
+                name_footer: row.name_footer,
+                name: row.name,
+                name_footer_align: row.component_config.name_footer_align,
                 // web PArt
+                web_name_footer: row.web_name_footer,
+                web_name_footer_align: row.component_config.web_name_footer_align,
                 web_carousel: row.component_config.web_carousel,
                 web_carousel_dot: row.component_config.web_carousel_dot,
                 web_grid: row.component_config.web_grid,
@@ -378,6 +390,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 web_show_dots: row.component_config.web_show_dots,
                 web_infinit_loop: row.component_config.web_infinit_loop,
                 web_gap: Number(row.component_config.web_gap),
+                web_name: row.web_name,
+                web_name_position: row.component_config.web_name_position,
+                web_name_align: row.component_config.web_name_align,
             },
             section_filters: row.data_type.filters,
         }
@@ -579,6 +594,108 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                         </FormItem>
                                                     ))}
                                                 </FormContainer>
+                                            )}
+                                        </FormItem>
+                                    </div>
+                                    {/*  */}
+
+                                    <div className="flex gap-14 ">
+                                        <FormItem label="Name" className="col-span-1 w-1/4">
+                                            <Field
+                                                type="checkbox"
+                                                name="name"
+                                                placeholder="Enter name"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('name', isChecked)
+                                                    setNameForm(isChecked) // Set borderForm to 'yes' or 'no'
+                                                }}
+                                            />{' '}
+                                            <br />
+                                            <br />
+                                            {nameForm && (
+                                                <>
+                                                    <CommonSelect
+                                                        label="Position"
+                                                        name="component_config.name_position"
+                                                        options={NAMEPOSITION}
+                                                    />
+                                                    <CommonSelect label="Align" name="component_config.name_align" options={ALIGNVALUES} />
+                                                    <FormItem label="Footer" className="w-1/2">
+                                                        <Field
+                                                            type="checkbox"
+                                                            name="name_footer"
+                                                            component={Input}
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                const isChecked = e.target.checked
+                                                                setFieldValue('name_footer', isChecked)
+                                                                setFooterAlignForm(isChecked)
+                                                            }}
+                                                        />
+
+                                                        {footerAlignForm && (
+                                                            <>
+                                                                <CommonSelect
+                                                                    label="Align Footer"
+                                                                    name="component_config.name_footer_align"
+                                                                    options={ALIGNVALUES}
+                                                                />
+                                                            </>
+                                                        )}
+                                                    </FormItem>
+                                                </>
+                                            )}
+                                        </FormItem>
+
+                                        <FormItem label="Web Name" className="col-span-1 w-1/4">
+                                            <Field
+                                                type="checkbox"
+                                                name="web_name"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('web_name', isChecked)
+                                                    setWebNameForm(isChecked)
+                                                }}
+                                            />{' '}
+                                            <br />
+                                            <br />
+                                            {webNameForm === true && (
+                                                <>
+                                                    <CommonSelect
+                                                        label="Web position"
+                                                        name="component_config.web_name_position"
+                                                        options={NAMEPOSITION}
+                                                    />
+                                                    <CommonSelect
+                                                        label="Web Align"
+                                                        name="component_config.web_name_align"
+                                                        options={ALIGNVALUES}
+                                                    />
+                                                    <FormItem label="Web Footer" className="w-1/2">
+                                                        <Field
+                                                            type="checkbox"
+                                                            name="web_name_footer"
+                                                            component={Input}
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                const isChecked = e.target.checked
+                                                                setFieldValue('web_name_footer', isChecked)
+                                                                setWebFooterAlignForm(isChecked)
+                                                            }}
+                                                        />
+
+                                                        {webFooterAlignForm && (
+                                                            <>
+                                                                <CommonSelect
+                                                                    label="Web Align Footer"
+                                                                    name="component_config.web_name_footer_align"
+                                                                    options={ALIGNVALUES}
+                                                                />
+                                                            </>
+                                                        )}
+                                                    </FormItem>
+                                                </>
                                             )}
                                         </FormItem>
                                     </div>

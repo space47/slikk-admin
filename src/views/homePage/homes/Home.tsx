@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { SalesData } from './homes.common'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -5,19 +6,13 @@ import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
 import { IoMdReturnLeft } from 'react-icons/io'
 import { FaSearch, FaShoppingCart } from 'react-icons/fa'
-import { GrCompliance } from 'react-icons/gr'
-import { HiCurrencyRupee, HiOutlineCalendar } from 'react-icons/hi'
-import DatePicker from '@/components/ui/DatePicker'
+import { HiCurrencyRupee } from 'react-icons/hi'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
-import { TbCalendarStats, TbMoneybag } from 'react-icons/tb'
-import { HiMiniBanknotes } from 'react-icons/hi2'
 import BrandDataChart from '../homeChart/BubbleChart'
 import MultipleMap from '@/common/multipleMap'
 import { MdDeliveryDining, MdOutlineFullscreen } from 'react-icons/md'
-import { IoBasketSharp } from 'react-icons/io5'
-import { PiCurrencyInrBold, PiDevicesFill } from 'react-icons/pi'
-import { RiMoneyRupeeCircleFill } from 'react-icons/ri'
+import { PiDevicesFill } from 'react-icons/pi'
 import { FaMoneyBillTrendUp } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 
@@ -30,7 +25,6 @@ const Home = () => {
         customer: '',
         invoice_id: '',
     })
-    const [showFullScreen, setShowFullScreen] = useState(false)
     const navigate = useNavigate()
 
     const handleShowFullScreen = () => {
@@ -89,24 +83,6 @@ const Home = () => {
 
     const basketSize = homeData ? sum / homeData?.received?.count : 0
 
-    console.log('sum of Data', homeData?.delivery_type)
-
-    const handleFromChange = (date: Date | null) => {
-        if (date) {
-            setFrom(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setFrom(moment().format('YYYY-MM-DD'))
-        }
-    }
-
-    const handleToChange = (date: Date | null) => {
-        if (date) {
-            setTo(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setTo(moment().format('YYYY-MM-DD'))
-        }
-    }
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setInputValues((prevValues) => ({
@@ -143,6 +119,51 @@ const Home = () => {
             setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
         }
     }
+
+    const CARDDATA = [
+        {
+            handleClick: handleReceived,
+            img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
+            label: 'Received Orders',
+            p1Data: homeData?.received.count,
+            p2Data: homeData?.received.total_amount?.toFixed(2),
+        },
+        {
+            handleClick: handleCompleted,
+            img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
+            label: 'Completed Orders',
+            p1Data: homeData?.completed.count,
+            p2Data: homeData?.completed.total_amount?.toFixed(2),
+        },
+        {
+            handleClick: handleReturned,
+            img: <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />,
+            label: 'Returned Orders',
+            p1Data: netReturn,
+            p2Data: netReturnSales?.toFixed(2),
+        },
+    ]
+
+    const CARDDATA2nd = [
+        {
+            label: 'Net Sales',
+            img: <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />,
+            p1Tag: 'Amount: Rs.',
+            p1Data: netSales?.toFixed(2),
+        },
+        {
+            label: 'Average Order Value',
+            img: <FaMoneyBillTrendUp className="text-4xl mx-4 text-yellow-400 " />,
+            p1Tag: 'Value:',
+            p1Data: averageOrderValue ? averageOrderValue?.toFixed(2) : 0,
+        },
+        {
+            label: 'Average Basket Size',
+            img: <FaShoppingCart className="text-4xl mx-4 text-amber-500 " />,
+            p1Tag: 'Value:',
+            p1Data: basketSize ? basketSize.toFixed(2) : 0,
+        },
+    ]
 
     return (
         <div className="flex flex-col gap-6 p-4">
@@ -187,96 +208,39 @@ const Home = () => {
                     </div>
                 </div>
 
-                <UltimateDatePicker
-                    from={from}
-                    setFrom={setFrom}
-                    to={to}
-                    setTo={setTo}
-                    handleFromChange={handleFromChange}
-                    handleToChange={handleToChange}
-                    handleDateChange={handleDateChange}
-                />
+                <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
-                <Card className="shadow-lg cursor-pointer" onClick={handleReceived}>
-                    <div className="flex gap-10 items-center">
-                        <div>
-                            <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />
+                {CARDDATA.map((item, key) => (
+                    <Card className="shadow-lg cursor-pointer" onClick={handleReceived} key={key}>
+                        <div className="flex gap-10 items-center">
+                            <div>{item.img}</div>
+                            <div>
+                                <h2 className="text-xl font-semibold">{item.label}</h2>
+                                <p>Count: {item.p1Data}</p>
+                                <p>
+                                    Total Amount: Rs.
+                                    {item.p2Data}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-xl font-semibold">Received Orders</h2>
-                            <p>Count: {homeData?.received.count}</p>
-                            <p>
-                                Total Amount: Rs.
-                                {homeData?.received.total_amount?.toFixed(2)}
-                            </p>
-                        </div>
-                    </div>
-                </Card>
-                <Card className="shadow-lg cursor-pointer" onClick={handleCompleted}>
-                    <div className="flex gap-10 items-center">
-                        <div>
-                            <GrCompliance className="text-4xl mx-4 text-green-500" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-semibold">Completed Orders</h2>
-                            <p>Count: {homeData?.completed.count}</p>
-                            <p>
-                                Total Amount: Rs.
-                                {homeData?.completed.total_amount?.toFixed(2)}
-                            </p>
-                        </div>
-                    </div>
-                </Card>
-                <Card className="shadow-lg cursor-pointer" onClick={handleReturned}>
-                    <div className="flex gap-10 items-center">
-                        <div>
-                            <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-semibold">Returned Orders</h2>
-                            <p>Count: {netReturn}</p>
-                            <p>Total Amount: Rs. {netReturnSales?.toFixed(2)}</p>
-                        </div>
-                    </div>
-                </Card>
-                <Card className="shadow-lg">
-                    <div className="flex gap-10 items-center">
-                        <div className="mt-2">
-                            <HiCurrencyRupee className="text-5xl mx-4 text-green-500 " />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-semibold">Net Sales</h2>
-                            <p>Amount: Rs. {netSales?.toFixed(2)}</p>
-                        </div>
-                    </div>
-                </Card>
+                    </Card>
+                ))}
 
-                {/* ......................................................... */}
-                <Card className="shadow-lg">
-                    <div className="flex gap-10 items-center">
-                        <div>
-                            <FaMoneyBillTrendUp className="text-4xl mx-4 text-yellow-400 " />
+                {CARDDATA2nd.map((item, key) => (
+                    <Card className="shadow-lg" key={key}>
+                        <div className="flex gap-10 items-center">
+                            <div className="mt-2">{item.img}</div>
+                            <div>
+                                <h2 className="text-xl font-semibold">{item.label}</h2>
+                                <p>
+                                    {item.p1Tag} {item.p1Data}
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-xl font-semibold">Average Order Value</h2>
-                            <p>Value: {averageOrderValue ? averageOrderValue?.toFixed(2) : 0}</p>
-                        </div>
-                    </div>
-                </Card>
-                <Card className="shadow-lg">
-                    <div className="flex gap-10 items-center">
-                        <div>
-                            <FaShoppingCart className="text-4xl mx-4 text-amber-500 " />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-semibold">Average Basket Size</h2>
-                            <p>Value: {basketSize ? basketSize.toFixed(2) : 0}</p>
-                        </div>
-                    </div>
-                </Card>
-                {/* LAst Two.............. */}
+                    </Card>
+                ))}
 
                 <Card className="shadow-lg">
                     <div className="flex gap-10 items-center">
