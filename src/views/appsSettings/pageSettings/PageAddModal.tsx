@@ -622,30 +622,30 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                         options={NAMEPOSITION}
                                                     />
                                                     <CommonSelect label="Align" name="component_config.name_align" options={ALIGNVALUES} />
-                                                    <FormItem label="Footer" className="w-1/2">
-                                                        <Field
-                                                            type="checkbox"
-                                                            name="name_footer"
-                                                            component={Input}
-                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                const isChecked = e.target.checked
-                                                                setFieldValue('name_footer', isChecked)
-                                                                setFooterAlignForm(isChecked)
-                                                            }}
-                                                        />
-
-                                                        {footerAlignForm && (
-                                                            <>
-                                                                <CommonSelect
-                                                                    label="Align Footer"
-                                                                    name="component_config.name_footer_align"
-                                                                    options={ALIGNVALUES}
-                                                                />
-                                                            </>
-                                                        )}
-                                                    </FormItem>
                                                 </>
                                             )}
+                                            <FormItem label="Footer" className="w-1/2">
+                                                <Field
+                                                    type="checkbox"
+                                                    name="name_footer"
+                                                    component={Input}
+                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                        const isChecked = e.target.checked
+                                                        setFieldValue('name_footer', isChecked)
+                                                        setFooterAlignForm(isChecked)
+                                                    }}
+                                                />
+
+                                                {footerAlignForm && (
+                                                    <>
+                                                        <CommonSelect
+                                                            label="Align Footer"
+                                                            name="component_config.name_footer_align"
+                                                            options={ALIGNVALUES}
+                                                        />
+                                                    </>
+                                                )}
+                                            </FormItem>
                                         </FormItem>
 
                                         <FormItem label="Web Name" className="col-span-1 w-1/4">
@@ -673,30 +673,30 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                         name="component_config.web_name_align"
                                                         options={ALIGNVALUES}
                                                     />
-                                                    <FormItem label="Web Footer" className="w-1/2">
-                                                        <Field
-                                                            type="checkbox"
-                                                            name="web_name_footer"
-                                                            component={Input}
-                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                const isChecked = e.target.checked
-                                                                setFieldValue('web_name_footer', isChecked)
-                                                                setWebFooterAlignForm(isChecked)
-                                                            }}
-                                                        />
-
-                                                        {webFooterAlignForm && (
-                                                            <>
-                                                                <CommonSelect
-                                                                    label="Web Align Footer"
-                                                                    name="component_config.web_name_footer_align"
-                                                                    options={ALIGNVALUES}
-                                                                />
-                                                            </>
-                                                        )}
-                                                    </FormItem>
                                                 </>
                                             )}
+                                            <FormItem label="Web Footer" className="w-1/2">
+                                                <Field
+                                                    type="checkbox"
+                                                    name="web_name_footer"
+                                                    component={Input}
+                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                        const isChecked = e.target.checked
+                                                        setFieldValue('web_name_footer', isChecked)
+                                                        setWebFooterAlignForm(isChecked)
+                                                    }}
+                                                />
+
+                                                {webFooterAlignForm && (
+                                                    <>
+                                                        <CommonSelect
+                                                            label="Web Align Footer"
+                                                            name="component_config.web_name_footer_align"
+                                                            options={ALIGNVALUES}
+                                                        />
+                                                    </>
+                                                )}
+                                            </FormItem>
                                         </FormItem>
                                     </div>
                                 </FormContainer>
