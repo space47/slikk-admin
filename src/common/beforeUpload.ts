@@ -1,4 +1,4 @@
-const MAX_UPLOAD = 100
+const MAX_UPLOAD = 500000000000
 
 export const beforeUpload = (file: FileList | null, fileList: File[]) => {
     let valid: string | boolean = true
@@ -17,7 +17,7 @@ export const beforeUpload = (file: FileList | null, fileList: File[]) => {
         'application/vnd.ms-excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ]
-    const MAX_FILE_SIZE = 5000000
+    const MAX_FILE_SIZE = 50000000000000
 
     if (fileList.length >= MAX_UPLOAD) {
         return `You can only upload ${MAX_UPLOAD} file(s)`

@@ -12,7 +12,7 @@ import { notification } from 'antd'
 import Upload from '@/components/ui/Upload'
 
 const CouponsType = () => {
-    return ['PERCENT_OFF', 'MONEY_OFF'].map((coupon) => ({
+    return ['PERCENT_OFF', 'FLAT_OFF'].map((coupon) => ({
         label: coupon,
         value: coupon,
     }))
