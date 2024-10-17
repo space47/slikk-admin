@@ -294,6 +294,7 @@ const PageModal: React.FC<modalProps> = ({
                     interval: Number(row.component_config.interval),
                     corner_radius: Number(row.component_config.corner_radius),
                     gap: Number(row.component_config.gap),
+                    font_size: Number(row.component_config.font_size),
                     name_position: row.component_config.name_position,
                     name_align: row.component_config.name_align,
                     name_footer: row.name_footer,
@@ -327,6 +328,7 @@ const PageModal: React.FC<modalProps> = ({
                     web_show_dots: row.component_config.web_show_dots,
                     web_infinit_loop: row.component_config.web_infinit_loop,
                     web_gap: Number(row.component_config.web_gap),
+                    web_font_size: Number(row.component_config.web_font_size),
                     web_name: row.web_name,
                     web_name_position: row.component_config.web_name_position,
                     web_name_align: row.component_config.web_name_align,
@@ -502,7 +504,7 @@ const PageModal: React.FC<modalProps> = ({
                                     <div className="flex flex-row gap-10 ">
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Mobile Configurations :</div>
-                                            {genericComponentArray.slice(0, 9).map((item, key) => (
+                                            {genericComponentArray.slice(0, 10).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
@@ -515,7 +517,7 @@ const PageModal: React.FC<modalProps> = ({
                                         </FormContainer>
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Web Configurations :</div>
-                                            {genericComponentArray.slice(9).map((item, key) => (
+                                            {genericComponentArray.slice(10).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
