@@ -65,6 +65,13 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter gap',
     },
+    {
+        label: 'Font Size',
+        name: 'component_config.font_size',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Font Size',
+    },
 
     // Web Versions below
     {
@@ -129,6 +136,13 @@ export const genericComponentArray = [
         type: 'number',
         component: { Input },
         placeholder: 'Enter web gap',
+    },
+    {
+        label: 'Web Font Size',
+        name: 'component_config.web_font_size',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Font Size',
     },
 ]
 
