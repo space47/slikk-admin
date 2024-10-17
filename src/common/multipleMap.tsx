@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -28,11 +28,7 @@ interface MultipleMapProps {
     amount: any[]
 }
 
-const CurrentLocationButton = ({
-    setCenter,
-}: {
-    setCenter: React.Dispatch<React.SetStateAction<[number, number]>>
-}) => {
+const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.SetStateAction<[number, number]>> }) => {
     const map = useMap()
 
     const handleClick = () => {
@@ -60,42 +56,30 @@ const CurrentLocationButton = ({
     )
 }
 
-const MultipleMap: React.FC<MultipleMapProps> = ({
-    latitudes,
-    longitudes,
-    amount,
-}) => {
+const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount }) => {
     const currLat = 12.9014
     const currLong = 77.65122
     const R = 6371
 
-    const markers = latitudes.map((lat, index) => {
-        const lon = longitudes[index]
-        const dLat = (lat - currLat) * (Math.PI / 180)
-        const dLon = (lon - currLong) * (Math.PI / 180)
+    const markers = useMemo(() => {
+        return latitudes.map((lat, index) => {
+            const lon = longitudes[index]
+            const dLat = (lat - currLat) * (Math.PI / 180)
+            const dLon = (lon - currLong) * (Math.PI / 180)
 
-        const rLat1 = currLat * (Math.PI / 180)
-        const rLat2 = lat * (Math.PI / 180)
+            const rLat1 = currLat * (Math.PI / 180)
+            const rLat2 = lat * (Math.PI / 180)
 
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.sin(dLon / 2) *
-                Math.sin(dLon / 2) *
-                Math.cos(rLat1) *
-                Math.cos(rLat2)
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2)
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
-        const distance = (R * c).toFixed(2)
-
-        return { lat, lon, amount: amount[index], distance }
-    })
+            const distance = (R * c).toFixed(2)
+            return { lat, lon, amount: amount[index], distance }
+        })
+    }, [latitudes, longitudes, amount])
 
     return (
-        <MapContainer
-            center={[currLat, currLong]}
-            zoom={13}
-            style={{ height: '100vh', width: '100%' }}
-        >
+        <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100vh', width: '100%' }}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {markers.map((marker, index) => (
                 <Marker key={index} position={[marker.lat, marker.lon]}>

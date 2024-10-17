@@ -18,6 +18,14 @@ export type SalesData = {
         STANDARD: number
         TRY_AND_BUY: number
     }
+    cancelled: {
+        count: number
+        total_amount: number
+    }
+    declined: {
+        count: number
+        total_amount: number
+    }
     device_type: { ANDROID: number; WEB: number; IOS: number }
 
     ANDROID: 1

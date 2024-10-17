@@ -1,0 +1,39 @@
+const MAX_UPLOAD = 100
+
+export const beforeUpload = (file: FileList | null, fileList: File[]) => {
+    let valid: string | boolean = true
+
+    const allowedFileType = [
+        'application/pdf',
+        'image/jpeg',
+        'image/jpg',
+        'image/webp',
+        'image/png',
+        'image/JPEG',
+        'image/JPG',
+        'image/WEBP',
+        'image/PNG',
+        'text/csv',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ]
+    const MAX_FILE_SIZE = 5000000
+
+    if (fileList.length >= MAX_UPLOAD) {
+        return `You can only upload ${MAX_UPLOAD} file(s)`
+    }
+
+    if (file) {
+        for (const f of file) {
+            if (!allowedFileType.includes(f.type)) {
+                valid = 'Please upload a valid file format'
+            }
+
+            if (f.size >= MAX_FILE_SIZE) {
+                valid = 'Upload image cannot more then 500kb!'
+            }
+        }
+    }
+
+    return valid
+}
