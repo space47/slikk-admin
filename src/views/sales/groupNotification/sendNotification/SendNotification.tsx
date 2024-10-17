@@ -1,25 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
-import { Field, Form, Formik, FieldProps, useFormikContext } from 'formik' // Add FieldProps here
-import * as Yup from 'yup'
-import { useState } from 'react'
-import { message, notification } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { Field, Form, Formik, FieldProps } from 'formik'
+import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-// import { NotificationTYPE } from './createNotification.common'
-// import { NotificationARRAY } from './NotificationForms'
 import { RichTextEditor } from '@/components/shared'
-import { MAXMINARRAY, OFFARRAY, SendNotificationARRAY, sendNotificationType, UtmArray } from './sendNotify.common'
+import {
+    MAXMINARRAY,
+    OFFARRAY,
+    SendNotificationARRAY,
+    sendNotificationType,
+    UtmArray,
+    notificationTypeArray,
+    targetPageArray,
+    DISCOUNTOPTIONS,
+} from './sendNotify.common'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { Dialog, Upload } from '@/components/ui'
+import { Upload } from '@/components/ui'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
+import { beforeUpload } from '@/common/beforeUpload'
+import { handleimage } from '@/common/handleImage'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -28,67 +34,6 @@ const SendNotification = () => {
         dispatch(getAllFiltersAPI())
     }, [])
     const [filterId, setFilterId] = useState()
-
-    const MAX_UPLOAD = 100
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'image/JPEG',
-            'image/JPG',
-            'image/WEBP',
-            'image/PNG',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
-
-    const notificationTypeArray = [
-        { value: 'sms', label: 'sms' },
-        { value: 'email', label: 'email' },
-        { value: 'whatsapp', label: 'whatsapp' },
-        { value: 'app', label: 'app' },
-    ]
-
-    const targetPageArray = [
-        { label: 'product', value: 'product' },
-        { label: 'productListing', value: 'productListing' },
-        { label: 'wishlist', value: 'wishlist' },
-        { label: 'order', value: 'order' },
-        { label: 'cart', value: 'cart' },
-    ]
-
-    const DISCOUNTOPTIONS = [
-        { value: 'sort_lowtohigh', label: 'Low to High' },
-        { value: 'sort_hightolow', label: 'High to Low' },
-        { value: 'sort_discount', label: 'DISCOUNT' },
-    ]
 
     const initialValue: sendNotificationType = {
         page: '',
@@ -104,34 +49,7 @@ const SendNotification = () => {
         image_url_array: [],
     }
 
-    const handleimage = async (files: File[]) => {
-        const formData = new FormData()
-
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'product')
-
-        try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            console.log(response)
-            const newData = response.data.url
-
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-
-            return 'Error'
-        }
-    }
-
     const handleSubmit = async (values: any) => {
-        console.log('start')
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
@@ -180,16 +98,16 @@ const SendNotification = () => {
 
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const handleAddFilter = () => {
-        setShowAddFilter([...showAddFilter, showAddFilter.length])
+        setShowAddFilter((prevFilters) => [...prevFilters, showAddFilter.length])
     }
 
     const handleRemoveFilter = (index: number) => {
-        setShowAddFilter((prev) => prev.filter((_, i) => i !== index))
+        setShowAddFilter((prev) => prev.filter((item) => item !== index))
     }
-    console.log('FILTER INDEX', showAddFilter)
+
     const [filtersData, setFiltersData] = useState([])
 
-    const handleAddFilters = async (values) => {
+    const handleAddFilters = async (values: any) => {
         console.log('Values', values)
         const newFilterData = showAddFilter.map((_, index) => {
             return values.filtersAdd[index] || []
@@ -206,7 +124,7 @@ const SendNotification = () => {
         })
     }
 
-    const sendFilterData = async (filterData) => {
+    const sendFilterData = async (filterData: any) => {
         try {
             const body = {
                 filter_data: filterData,
@@ -221,9 +139,6 @@ const SendNotification = () => {
             console.log(error)
         }
     }
-    console.log('Final Filters Data:', filtersData.at(-1))
-    console.log('data of filter id', filterId)
-
     return (
         <div>
             <Formik
@@ -264,14 +179,14 @@ const SendNotification = () => {
                                         </button>
                                     </FormContainer>
 
-                                    {showAddFilter.map((_, index) => (
-                                        <FormItem key={index} className="flex  gap-2">
+                                    {showAddFilter.map((item, udx) => (
+                                        <FormItem key={item} className="flex  gap-2">
                                             <div className="flex gap-3 items-center">
-                                                <Field name={`filtersAdd[${index}]`} key={index}>
+                                                <Field name={`filtersAdd[${item}]`} key={item}>
                                                     {({ field, form }: FieldProps<any>) => (
                                                         <Select
                                                             isMulti
-                                                            placeholder={`Filter Tags ${index}`}
+                                                            placeholder={`Select Filter Tags `}
                                                             options={filters.filters}
                                                             getOptionLabel={(option) => option.label}
                                                             getOptionValue={(option) => option.value}
@@ -284,7 +199,7 @@ const SendNotification = () => {
                                                     )}
                                                 </Field>
                                                 <div className="">
-                                                    <button type="button" className="" onClick={() => handleRemoveFilter(index)}>
+                                                    <button type="button" className="" onClick={() => handleRemoveFilter(item)}>
                                                         <MdCancel className="text-xl text-red-500" />
                                                     </button>
                                                 </div>

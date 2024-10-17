@@ -15,20 +15,15 @@ import Checkbox from '@/components/ui/Checkbox'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { DIVISION_STATE } from '@/store/types/division.types'
-import { CATEGORY_STATE } from '@/store/types/category.types'
-import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
-import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
-import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { MdCancel } from 'react-icons/md'
-import { BackGroundArray, borrderStyleArray, genericComponentArray, webBorrderStyleArray } from './genericComp'
+import { ALIGNVALUES, BackGroundArray, borrderStyleArray, genericComponentArray, NAMEPOSITION, webBorrderStyleArray } from './genericComp'
 import { width } from '@mui/system'
 import PageEditImage from './PageEditImage'
-import { FaCross } from 'react-icons/fa'
-import { TbFlagCancel } from 'react-icons/tb'
 import PageSettingsPostTable from './PageSettingsPostTable'
+import CommonSelect from './CommonSelect'
+import { beforeUpload } from '@/common/beforeUpload'
 
 interface DataType {
     type: string
@@ -104,13 +99,6 @@ const PageModal: React.FC<modalProps> = ({
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
-    // const [productData, setProductData] = useState([
-    //     particularRow
-    //         ? Array.isArray(particularRow.data_type.barcodes)
-    //             ? particularRow.data_type.barcodes
-    //             : [particularRow.data_type.barcodes]
-    //         : [],
-    // ])
     const [productData, setProductData] = useState(particularRow.data_type.barcodes)
     // posts....................
     const [postInput, setPOstInput] = useState('')
@@ -124,53 +112,12 @@ const PageModal: React.FC<modalProps> = ({
             : [],
     ])
 
-    const [textAreaValue, setTextAreaValue] = useState()
-    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
-    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
-    const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
-    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
-
-    const MAX_UPLOAD = 10000
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
 
     const [initialValue, setInitalValue] = useState<any>({
         data_type: particularRow.data_type,
@@ -195,6 +142,10 @@ const PageModal: React.FC<modalProps> = ({
         border_style: particularRow.border_style,
         web_border: particularRow.web_border,
         web_border_style: particularRow.web_border_style,
+        name: particularRow.name,
+        web_name: particularRow.web_name,
+        name_footer: particularRow.name_footer,
+        web_name_footer: particularRow.web_name_footer,
         // border_width: particularRow.border_width,
         // border_color: particularRow.border_color,
         component_config: particularRow.component_config,
@@ -239,12 +190,6 @@ const PageModal: React.FC<modalProps> = ({
     useEffect(() => {
         fetchPost()
     }, [postInput])
-
-    const handleMultiSelect = (field: string, value: string) => {
-        if (formikRef.current) {
-            formikRef.current.setFieldValue(field, value)
-        }
-    }
 
     const handleimage = async (files: File[]) => {
         if (!files || files?.length == 0) {
@@ -349,6 +294,11 @@ const PageModal: React.FC<modalProps> = ({
                     interval: Number(row.component_config.interval),
                     corner_radius: Number(row.component_config.corner_radius),
                     gap: Number(row.component_config.gap),
+                    name_position: row.component_config.name_position,
+                    name_align: row.component_config.name_align,
+                    name_footer: row.name_footer,
+                    name: row.name,
+                    name_footer_align: row.component_config.name_footer_align,
                     //.....
                     border: row.border,
                     border_style: row.border_style,
@@ -365,6 +315,8 @@ const PageModal: React.FC<modalProps> = ({
                     infinit_loop: row.component_config.infinit_loop,
 
                     // Web part
+                    web_name_footer: row.web_name_footer,
+                    web_name_footer_align: row.component_config.web_name_footer_align,
                     web_carousel: row.component_config.web_carousel,
                     web_carousel_dot: row.component_config.web_carousel_dot,
                     web_grid: row.component_config.web_grid,
@@ -375,6 +327,9 @@ const PageModal: React.FC<modalProps> = ({
                     web_show_dots: row.component_config.web_show_dots,
                     web_infinit_loop: row.component_config.web_infinit_loop,
                     web_gap: Number(row.component_config.web_gap),
+                    web_name: row.web_name,
+                    web_name_position: row.component_config.web_name_position,
+                    web_name_align: row.component_config.web_name_align,
                 },
                 section_filters: row.data_type.filters,
             }
@@ -419,6 +374,10 @@ const PageModal: React.FC<modalProps> = ({
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
     const [borderForm, setBorderForm] = useState(initialValue.border)
     const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue.web_border)
+    const [nameForm, setNameForm] = useState(initialValue.name)
+    const [webNameForm, setWebNameForm] = useState(initialValue.web_name)
+    const [footerAlignForm, setFooterAlignForm] = useState(initialValue.name_footer)
+    const [webFooterAlignForm, setWebFooterAlignForm] = useState(initialValue.web_name_footer)
 
     const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialDataType(e.target.value)
@@ -549,7 +508,7 @@ const PageModal: React.FC<modalProps> = ({
                                                         type={item.type}
                                                         name={item.name}
                                                         placeholder={item.placeholder}
-                                                        component={Input} // Fallback to 'input' if component is not valid
+                                                        component={Input}
                                                     />
                                                 </FormItem>
                                             ))}
@@ -562,7 +521,7 @@ const PageModal: React.FC<modalProps> = ({
                                                         type={item.type}
                                                         name={item.name}
                                                         placeholder={item.placeholder}
-                                                        component={Input} // Fallback to 'input' if component is not valid
+                                                        component={Input}
                                                     />
                                                 </FormItem>
                                             ))}
@@ -612,7 +571,7 @@ const PageModal: React.FC<modalProps> = ({
                                                                 type={item.type}
                                                                 name={item.name}
                                                                 placeholder={item.placeholder}
-                                                                component={Input} // Fallback to 'input' if component is not valid
+                                                                component={Input}
                                                             />
                                                         </FormItem>
                                                     ))}
@@ -670,7 +629,109 @@ const PageModal: React.FC<modalProps> = ({
                                             )}
                                         </FormItem>
                                     </div>
+
+                                    <div className="flex gap-14 ">
+                                        <FormItem label="Name" className="col-span-1 w-1/4">
+                                            <Field
+                                                type="checkbox"
+                                                name="name"
+                                                placeholder="Enter name"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('name', isChecked)
+                                                    setNameForm(isChecked) // Set borderForm to 'yes' or 'no'
+                                                }}
+                                            />{' '}
+                                            <br />
+                                            <br />
+                                            {nameForm && (
+                                                <>
+                                                    <CommonSelect
+                                                        label="Position"
+                                                        name="component_config.name_position"
+                                                        options={NAMEPOSITION}
+                                                    />
+                                                    <CommonSelect label="Align" name="component_config.name_align" options={ALIGNVALUES} />
+                                                    <FormItem label="Footer" className="w-1/2">
+                                                        <Field
+                                                            type="checkbox"
+                                                            name="name_footer"
+                                                            component={Input}
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                const isChecked = e.target.checked
+                                                                setFieldValue('name_footer', isChecked)
+                                                                setFooterAlignForm(isChecked)
+                                                            }}
+                                                        />
+
+                                                        {footerAlignForm && (
+                                                            <>
+                                                                <CommonSelect
+                                                                    label="Align Footer"
+                                                                    name="component_config.name_footer_align"
+                                                                    options={ALIGNVALUES}
+                                                                />
+                                                            </>
+                                                        )}
+                                                    </FormItem>
+                                                </>
+                                            )}
+                                        </FormItem>
+
+                                        <FormItem label="Web Name" className="col-span-1 w-1/4">
+                                            <Field
+                                                type="checkbox"
+                                                name="web_name"
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    const isChecked = e.target.checked
+                                                    setFieldValue('web_name', isChecked)
+                                                    setWebNameForm(isChecked)
+                                                }}
+                                            />{' '}
+                                            <br />
+                                            <br />
+                                            {webNameForm === true && (
+                                                <>
+                                                    <CommonSelect
+                                                        label="Web position"
+                                                        name="component_config.web_name_position"
+                                                        options={NAMEPOSITION}
+                                                    />
+                                                    <CommonSelect
+                                                        label="Web Align"
+                                                        name="component_config.web_name_align"
+                                                        options={ALIGNVALUES}
+                                                    />
+                                                    <FormItem label="Web Footer" className="w-1/2">
+                                                        <Field
+                                                            type="checkbox"
+                                                            name="web_name_footer"
+                                                            component={Input}
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                const isChecked = e.target.checked
+                                                                setFieldValue('web_name_footer', isChecked)
+                                                                setWebFooterAlignForm(isChecked)
+                                                            }}
+                                                        />
+
+                                                        {webFooterAlignForm && (
+                                                            <>
+                                                                <CommonSelect
+                                                                    label="Web Align Footer"
+                                                                    name="component_config.web_name_footer_align"
+                                                                    options={ALIGNVALUES}
+                                                                />
+                                                            </>
+                                                        )}
+                                                    </FormItem>
+                                                </>
+                                            )}
+                                        </FormItem>
+                                    </div>
                                 </FormItem>
+
                                 {/* )} */}
 
                                 {/* image */}

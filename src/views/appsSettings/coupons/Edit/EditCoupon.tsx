@@ -12,9 +12,10 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useParams } from 'react-router-dom'
 import { Upload } from '@/components/ui'
+import { beforeUpload } from '@/common/beforeUpload'
 
 const CouponsType = () => {
-    return ['PERCENT_OFF', 'FLATT_OFF', 'DELIVERY_DISCOUNT'].map((segment) => ({
+    return ['PERCENT_OFF', 'FLAT_OFF'].map((segment) => ({
         label: segment,
         value: segment,
     }))
@@ -39,41 +40,6 @@ const AddCoupons = () => {
     }, [coupon_code, dispatch])
 
     console.log('couponsEdit', couponsEdit)
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]
-        const MAX_FILE_SIZE = 500000000000
-        const MAX_UPLOAD = 5000000000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
 
     const initialValue = {
         code: '',

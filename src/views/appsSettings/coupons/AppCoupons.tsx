@@ -93,7 +93,7 @@ const AppCoupons = () => {
             format: (value) => {
                 console.log('Row data:', value) // Check if row.original contains 'code'
                 return (
-                    <Button onClick={() => handleActionClick(row.original.id)} className="bg-none border-none">
+                    <Button onClick={() => handleActionClick(value)} className="bg-none border-none">
                         <FaEdit className="text-xl text-blue-600 items-center flex justify-center" />
                     </Button>
                 )
