@@ -8,10 +8,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { FaEdit } from 'react-icons/fa'
-import { NOTIFYSTATS, NotifyResponse } from './getNotiStats.common'
-import { DatePicker } from '@/components/ui'
-import { HiOutlineCalendar } from 'react-icons/hi'
+import { NOTIFYSTATS, NotifyResponse, pageSizeOptions } from './getNotiStats.common'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 type Option = {
     value: number
@@ -19,13 +17,6 @@ type Option = {
 }
 
 const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
 
 const GetNotificationStats = () => {
     const [data, setData] = useState<NOTIFYSTATS[]>([])
@@ -39,7 +30,6 @@ const GetNotificationStats = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            // const filterValue = globalFilter ? `&name=${globalFilter}` : ''
             const response = await axiosInstance.get(`/notification/stats?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`)
             const data = response.data.data.results
             const total = response.data.data.count
@@ -53,11 +43,6 @@ const GetNotificationStats = () => {
     useEffect(() => {
         fetchData(page, pageSize)
     }, [page, pageSize, globalFilter, from, to])
-
-    // const handleActionClick = (id: number) => {
-    //     // console.log('OK', id)
-    //     navigate(`/app/sellers/${id}`)
-    // }
 
     const columns = useMemo<ColumnDef<NOTIFYSTATS>[]>(
         () => [
@@ -109,16 +94,6 @@ const GetNotificationStats = () => {
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
-
-            // {
-            //     header: 'Edit',
-            //     accessorKey: '',
-            //     cell: ({ row }) => (
-            //         <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
-            //             <FaEdit className="text-xl text-blue-600" />
-            //         </button>
-            //     ),
-            // },
         ],
         [],
     )
@@ -152,19 +127,10 @@ const GetNotificationStats = () => {
         setPageSize(Number(value))
     }
 
-    const handleFromChange = (date: Date | null) => {
-        if (date) {
-            setFrom(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setFrom(moment().format('YYYY-MM-DD'))
-        }
-    }
-
-    const handleToChange = (date: Date | null) => {
-        if (date) {
-            setTo(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setTo(moment().format('YYYY-MM-DD'))
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
+            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
         }
     }
 
@@ -199,28 +165,8 @@ const GetNotificationStats = () => {
                 </div>
 
                 <div className="flex gap-5 items-center flex-col xl:flex-row mb-4">
-                    <div className="flex flex-col xl:flex-row  items-center gap-2 xl:gap-1 ">
-                        <div>
-                            <div className="mb-1 font-semibold text-sm">FROM DATE:</div>
-                            <DatePicker
-                                inputPrefix={<HiOutlineCalendar className="text-lg" />}
-                                defaultValue={new Date()}
-                                value={new Date(from)}
-                                onChange={handleFromChange}
-                                className="w-full xl:w-2/3"
-                            />
-                        </div>
-                        <div>
-                            <div className="mb-1 font-semibold text-sm">TO DATE:</div>
-                            <DatePicker
-                                inputPrefix={<HiOutlineCalendar className="text-xl" />}
-                                defaultValue={new Date()}
-                                value={new Date(to)}
-                                onChange={handleToChange}
-                                minDate={moment(from).toDate()}
-                                className="w-full xl:w-2/3"
-                            />
-                        </div>
+                    <div className="">
+                        <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
                     </div>
                     <div className=" mt-4 order-first xl:order-1">
                         <button
