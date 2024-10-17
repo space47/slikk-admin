@@ -269,15 +269,18 @@ const PageModal: React.FC<modalProps> = ({
                 footer_config: {
                     ...row.footer_config,
                     image: footerImageUpload,
+                    font_size: Number(row.footer_config.font_size),
                 },
                 header_config: {
                     ...row.header_config,
                     icon: headerIconUpload,
                     image: headerImageUpload,
+                    font_size: Number(row.header_config.font_size),
                 },
                 sub_header_config: {
                     ...row.sub_header_config,
                     image: subHeaderImageUpload,
+                    font_size: Number(row.sub_header_config.font_size),
                 },
                 data_type: {
                     ...row.data_type,
@@ -833,6 +836,9 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem asterisk label="Header Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
+                                <FormItem asterisk label="Header Font Size" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="header_config.font_size" placeholder="Place Font Size" component={Input} />
+                                </FormItem>
                                 <PageEditImage
                                     label="Header Icon Image"
                                     rowName={particularRow.header_config.icon}
@@ -883,6 +889,9 @@ const PageModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem>
+                                <FormItem asterisk label="Sub Header Font Size" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="sub_header_config.font_size" placeholder="Place font size" component={Input} />
+                                </FormItem>
                                 <PageEditImage
                                     label="Sub_Header Image"
                                     rowName={particularRow.sub_header_config.image}
@@ -910,6 +919,9 @@ const PageModal: React.FC<modalProps> = ({
                                 </FormItem>
                                 <FormItem asterisk label="Footer Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="footer_config.text" placeholder="Place your header Text" component={Input} />
+                                </FormItem>
+                                <FormItem asterisk label="Footer Font Size" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="number" name="footer_config.font_size" placeholder="Place Font Size" component={Input} />
                                 </FormItem>
                                 <PageEditImage
                                     label="Footer Image"
