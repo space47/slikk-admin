@@ -829,11 +829,37 @@ const appsRoute: Routes = [
         // },
     },
     {
+        key: 'appstryAndBuy.reverseTrip',
+        path: `${APP_PREFIX_PATH}/reverseTrip`,
+        component: lazy(() => import('@/views/slikkLogistics/reverseTrip/ReverseTrip')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.reverseTrip',
+        path: `${APP_PREFIX_PATH}/reverseTrip/:tripId`,
+        component: lazy(() => import('@/views/slikkLogistics/reverseTrip/componentsTrip/ReverseTripDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.reverseTrip',
+        path: `${APP_PREFIX_PATH}/reverseTrip/update/:tripId`,
+        component: lazy(() => import('@/views/slikkLogistics/reverseTrip/createReverseTrip/UpdateTrip')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.reverseTrip',
+        path: `${APP_PREFIX_PATH}/CreateReverseTrip`,
+        component: lazy(() => import('@/views/slikkLogistics/reverseTrip/createReverseTrip/CreateReverseTrip')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appstryAndBuy.riderTracking',
         path: `${APP_PREFIX_PATH}/tryAndBuy/riderTracking/:task_id`,
         component: lazy(() => import('@/views/slikkLogistics/riderTracking/riderDetails/RiderDetails')),
         authority: [ADMIN, USER],
     },
+
+    // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
     {
         key: 'appsAnalytics.orders',
         path: `${APP_PREFIX_PATH}/analytics/orders`,

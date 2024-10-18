@@ -35,7 +35,7 @@ const TaskTracking = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get('logistic/slikk/task?page_size=25')
+            const response = await axiosInstance.get(`logistic/slikk/task?page_size=100`)
             const data = response.data.data.results
             const total = response.data.data.count
 
