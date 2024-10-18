@@ -269,15 +269,18 @@ const PageModal: React.FC<modalProps> = ({
                 footer_config: {
                     ...row.footer_config,
                     image: footerImageUpload,
+                    font_size: Number(row.footer_config.font_size),
                 },
                 header_config: {
                     ...row.header_config,
                     icon: headerIconUpload,
                     image: headerImageUpload,
+                    font_size: Number(row.header_config.font_size),
                 },
                 sub_header_config: {
                     ...row.sub_header_config,
                     image: subHeaderImageUpload,
+                    font_size: Number(row.sub_header_config.font_size),
                 },
                 data_type: {
                     ...row.data_type,
@@ -295,6 +298,7 @@ const PageModal: React.FC<modalProps> = ({
                     corner_radius: Number(row.component_config.corner_radius),
                     gap: Number(row.component_config.gap),
                     font_size: Number(row.component_config.font_size),
+                    footer_font_size: Number(row.component_config.footer_font_size),
                     name_position: row.component_config.name_position,
                     name_align: row.component_config.name_align,
                     name_footer: row.name_footer,
@@ -329,6 +333,7 @@ const PageModal: React.FC<modalProps> = ({
                     web_infinit_loop: row.component_config.web_infinit_loop,
                     web_gap: Number(row.component_config.web_gap),
                     web_font_size: Number(row.component_config.web_font_size),
+                    web_footer_font_size: Number(row.component_config.web_footer_font_size),
                     web_name: row.web_name,
                     web_name_position: row.component_config.web_name_position,
                     web_name_align: row.component_config.web_name_align,
@@ -504,7 +509,7 @@ const PageModal: React.FC<modalProps> = ({
                                     <div className="flex flex-row gap-10 ">
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Mobile Configurations :</div>
-                                            {genericComponentArray.slice(0, 10).map((item, key) => (
+                                            {genericComponentArray.slice(0, 11).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
@@ -517,7 +522,7 @@ const PageModal: React.FC<modalProps> = ({
                                         </FormContainer>
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Web Configurations :</div>
-                                            {genericComponentArray.slice(10).map((item, key) => (
+                                            {genericComponentArray.slice(11).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
@@ -833,6 +838,9 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem asterisk label="Header Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
                                 </FormItem>
+                                <FormItem asterisk label="Header Font Size" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="header_config.font_size" placeholder="Place Font Size" component={Input} />
+                                </FormItem>
                                 <PageEditImage
                                     label="Header Icon Image"
                                     rowName={particularRow.header_config.icon}
@@ -883,6 +891,9 @@ const PageModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem>
+                                <FormItem asterisk label="Sub Header Font Size" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="text" name="sub_header_config.font_size" placeholder="Place font size" component={Input} />
+                                </FormItem>
                                 <PageEditImage
                                     label="Sub_Header Image"
                                     rowName={particularRow.sub_header_config.image}
@@ -910,6 +921,9 @@ const PageModal: React.FC<modalProps> = ({
                                 </FormItem>
                                 <FormItem asterisk label="Footer Text" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="footer_config.text" placeholder="Place your header Text" component={Input} />
+                                </FormItem>
+                                <FormItem asterisk label="Footer Font Size" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field type="number" name="footer_config.font_size" placeholder="Place Font Size" component={Input} />
                                 </FormItem>
                                 <PageEditImage
                                     label="Footer Image"
