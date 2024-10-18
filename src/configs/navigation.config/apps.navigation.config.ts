@@ -565,7 +565,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appstryAndBuy.taskTracking',
                         path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking`,
-                        title: 'Task Tracking',
+                        title: 'Forward Task ',
                         translateKey: 'nav.appstryAndBuy.tryAndBuy',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
@@ -576,6 +576,17 @@ const appsNavigationConfig: NavigationTree[] = [
                         key: 'appstryAndBuy.riderTracking',
                         path: `${APP_PREFIX_PATH}/tryAndBuy/riderTracking`,
                         title: 'Rider Tracking',
+                        translateKey: 'nav.appstryAndBuy.tryAndBuy',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+
+                    {
+                        key: 'appstryAndBuy.reverseTrip',
+                        path: `${APP_PREFIX_PATH}/reverseTrip`,
+                        title: 'Reverse Trip',
                         translateKey: 'nav.appstryAndBuy.tryAndBuy',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,

@@ -97,7 +97,7 @@ const Seller = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)} className="bg-none border-none">
+                    <Button onClick={() => handleActionClick(row.original.mobile)} className="bg-none border-none">
                         <FaEdit className="text-xl text-blue-600" />
                     </Button>
                 ),
