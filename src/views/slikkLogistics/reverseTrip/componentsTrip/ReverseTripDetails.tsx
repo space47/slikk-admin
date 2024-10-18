@@ -25,8 +25,6 @@ const ReverseTripDetails = () => {
         fetchMainData()
     }, [])
 
-    console.log('DATAMAP', mainData?.logistic_tasks)
-
     return (
         <div className="flex flex-col gap-8">
             <div className="bg-white p-4 rounded-lg shadow-md max-w-md font-bold flex flex-col gap-1 justify-center">
@@ -65,9 +63,9 @@ const ReverseTripDetails = () => {
                 <TripActivity data={mainData?.event_logs} />
             </div>
 
-            {/* <div>
+            <div className=" flex justify-center">
                 <TripMap logistic_tasks={mainData?.logistic_tasks} trip_id={tripId} />
-            </div> */}
+            </div>
         </div>
     )
 }
