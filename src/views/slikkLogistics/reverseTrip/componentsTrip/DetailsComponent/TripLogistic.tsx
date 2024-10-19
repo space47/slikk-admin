@@ -48,7 +48,20 @@ const TripLogistic = ({ trip_id, listOfTaskIds = [], setListOfTaskIds, setMobile
                     )
                 },
             },
-            { header: 'Return_Order Id', accessorKey: 'client_order_id' },
+            {
+                header: 'Return_Order Id',
+                accessorKey: 'client_order_id',
+                cell: ({ getValue }: { getValue: () => string }) => (
+                    <a
+                        href={`/app/returnOrders/${getValue()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                    >
+                        {getValue()}
+                    </a>
+                ),
+            },
             { header: 'Status', accessorKey: 'status' },
             { header: 'Runner Name', accessorKey: 'runner_detail.name' },
             { header: 'Runner Mobile', accessorKey: 'runner_detail.mobile' },

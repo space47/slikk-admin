@@ -1,16 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    flexRender,
-} from '@tanstack/react-table'
-import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
 import { REVERSETask } from '../reverseTrip.common'
 import moment from 'moment'
@@ -18,8 +9,7 @@ import { Button, Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/views/category-management/category/categoryTable/categoryCommon'
 import { notification } from 'antd'
 import AssignTrackerModal from './AssignTrackerModal'
-
-const { Tr, Th, Td, THead, TBody, Sorter } = Table
+import EasyTable from '@/common/EasyTable'
 
 const CreateReverseTrip = () => {
     const [reverseTaskDetail, setReverseTaskDetail] = useState<REVERSETask[]>([])
@@ -53,7 +43,7 @@ const CreateReverseTrip = () => {
             {
                 header: 'Task Id',
                 accessorKey: 'task_id',
-                cell: ({ getValue }) => {
+                cell: ({ getValue }: any) => {
                     const taskId = getValue()
                     // const isChecked = checkboxStore.includes(taskId)
 
@@ -65,7 +55,20 @@ const CreateReverseTrip = () => {
                     )
                 },
             },
-            { header: 'Return_Order Id', accessorKey: 'client_order_id' },
+            {
+                header: 'Return_Order Id',
+                accessorKey: 'client_order_id',
+                cell: ({ getValue }: { getValue: () => string }) => (
+                    <a
+                        href={`/app/returnOrders/${getValue()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                    >
+                        {getValue()}
+                    </a>
+                ),
+            },
             { header: 'Status', accessorKey: 'status' },
             { header: 'Runner Name', accessorKey: 'runner_detail.name' },
             { header: 'Runner mobile', accessorKey: 'runner_detail.mobile' },
@@ -96,22 +99,6 @@ const CreateReverseTrip = () => {
 
     console.log('CHECKBOXDATA', checkboxStore)
 
-    const table = useReactTable({
-        data: reverseTaskDetail,
-        columns,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-        },
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: true,
-        // pageCount: Math.ceil(orderCount ?? 0 / pageSize),
-    })
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
@@ -151,36 +138,7 @@ const CreateReverseTrip = () => {
                     Create Trip
                 </Button>
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                            <Sorter sort={header.column.getIsSorted()} />
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={reverseTaskDetail} page={page} pageSize={pageSize} columns={columns} />
 
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 <Pagination

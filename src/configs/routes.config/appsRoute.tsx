@@ -817,6 +817,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/slikkLogistics/taskTracking/TaskTracking')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appstryAndBuy.taskTracking',
+        path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking/:task_id`,
+        component: lazy(() => import('@/views/slikkLogistics/taskTracking/trackingTaskComponents/TaskDetails')),
+        authority: [ADMIN, USER],
+    },
 
     {
         key: 'appstryAndBuy.riderTracking',
