@@ -11,9 +11,21 @@ interface CARDPROPS {
     handleAdd: any
     addedValue: any
     handleRemove: any
+    selectAll?: boolean
+    handleSelectAll?: any
 }
 
-const CardComponent = ({ label, getValue, selectedValue, handleSelect, handleAdd, addedValue, handleRemove }: CARDPROPS) => {
+const CardComponent = ({
+    label,
+    getValue,
+    selectedValue,
+    handleSelect,
+    handleAdd,
+    addedValue,
+    handleRemove,
+    selectAll,
+    handleSelectAll,
+}: CARDPROPS) => {
     return (
         <div className="flex justify-around">
             {/* All Permissions */}
@@ -31,6 +43,12 @@ const CardComponent = ({ label, getValue, selectedValue, handleSelect, handleAdd
                     </label>
                 </div>
                 <div className="">
+                    {selectAll && (
+                        <div className="flex gap-2 items-center">
+                            <input type="checkbox" checked={selectedValue.length === getValue.length} onChange={handleSelectAll} />{' '}
+                            <span className="font-bold">Select All</span>
+                        </div>
+                    )}
                     {getValue?.map((item: any) => (
                         <div key={item.id} className="flex flex-col">
                             <label className="bg-gray-100 px-2 py-2 flex items-center">
