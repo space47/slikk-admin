@@ -250,7 +250,8 @@ const BrandUserEdit = () => {
         const company_ids = addedCompany ? addedCompany.map((item) => item.id) : []
         const bodyData = {
             ...values,
-            company_ids: `${company_ids.join(',')}`,
+            action: 'add',
+            company_id: `${company_ids.join(',')}`,
             group_id: `${groupIds.join(',')}`,
             permission_id: `${permissionIds.join(',')}`,
         }

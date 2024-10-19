@@ -95,15 +95,21 @@ const AddUser = () => {
     }, [])
 
     const handlePermissionSelect = (id: number) => {
-        setSelectedPermissions((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id]))
+        setSelectedPermissions((prevSelected) =>
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
+        )
     }
 
     const handleGroupSelect = (id: number) => {
-        setSelectedGroups((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id]))
+        setSelectedGroups((prevSelected) =>
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
+        )
     }
 
     const handleCompanySelect = (id: number) => {
-        setSelectedCompanyList((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id]))
+        setSelectedCompanyList((prevSelected) =>
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
+        )
     }
 
     const handleAddPermissions = () => {
@@ -517,7 +523,10 @@ const AddUser = () => {
                                                 <div key={item.id} className="flex flex-col">
                                                     <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
                                                         <span>{item.name}</span>
-                                                        <button className="text-red-500 ml-2" onClick={() => handleRemovePermissions(item.id)}>
+                                                        <button
+                                                            className="text-red-500 ml-2"
+                                                            onClick={() => handleRemovePermissions(item.id)}
+                                                        >
                                                             <IoMdCloseCircle className="text-red-400" />
                                                         </button>
                                                     </div>
