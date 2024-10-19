@@ -46,13 +46,13 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         defVal: 0,
         placeHolder: 'Enter Min Price',
     },
-    max_off: {
+    maxoff: {
         label: 'Max off %',
         type: 'number',
         defVal: 0,
         placeHolder: 'Enter Max off %',
     },
-    min_off: {
+    minoff: {
         label: 'Min off %',
         type: 'number',
         defVal: 0,

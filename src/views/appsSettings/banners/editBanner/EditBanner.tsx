@@ -4,7 +4,7 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import DatePicker from '@/components/ui/DatePicker'
-import { Field, Form, Formik, FieldProps } from 'formik'
+import { Field, Form, Formik, FieldProps, ErrorMessage } from 'formik'
 // import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
@@ -27,6 +27,7 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { MdCancel } from 'react-icons/md'
 import ImageComponent from './component/ImageComponent'
 import SectionsComponent from './component/SectionsComponent'
+import * as Yup from 'yup'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -42,7 +43,10 @@ const EditBanner = () => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    console.log('SSSSSSSSSS', filters)
+    const validationSchema = Yup.object().shape({
+        min_off: Yup.number().lessThan(Yup.ref('max_off'), 'Min off should be less than Max off'),
+        max_off: Yup.number(),
+    })
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -149,6 +153,7 @@ const EditBanner = () => {
         barcodes: bannerData?.barcodes || '',
         redirection_url: bannerData?.redirection_url || null,
         tags_input: bannerData?.tags.join(',') || '',
+        position: bannerData?.position || null,
     }
 
     console.log(
@@ -244,11 +249,21 @@ const EditBanner = () => {
             sub_category: values.sub_category.map((item) => item.name).join(','),
             product_type: values.product_type.map((item) => item.name).join(','),
             brand: values.brand.map((item) => item.name).join(','),
-            tags: values.tags_input.split(',').map((item) => item.trim()),
+            tags: [
+                ...values.tags_input.split(','),
+                BANNER_FIELDS_TYPE.map((item) => item.name).includes('max_off') && values?.max_off
+                    ? [`maxoff_${values?.max_off}`].join(',')
+                    : [],
+                BANNER_FIELDS_TYPE.map((item) => item.name).includes('min_off') && values?.min_off
+                    ? [`minoff_${values?.min_off}`].join(',')
+                    : [],
+            ].filter((filter) => filter),
         }
 
+        console.log('dATA', formData)
+
         try {
-            const response = await axioisInstance.patch(`banners`, formData)
+            // const response = await axioisInstance.patch(`banners`, formData)
 
             notification.success({
                 message: 'Success',
@@ -278,7 +293,7 @@ const EditBanner = () => {
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">Edit Banner</h3>
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit} validationSchema={validationSchema}>
                 {({ values, setFieldValue }) => (
                     <Form className="w-2/3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
@@ -286,6 +301,7 @@ const EditBanner = () => {
                                 {BANNER_FIELDS_TYPE.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
                             </FormContainer>
