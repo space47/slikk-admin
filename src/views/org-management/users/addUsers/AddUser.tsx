@@ -111,6 +111,14 @@ const AddUser = () => {
             prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
         )
     }
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            const allCompanyIds = filteredComapny.map((item) => item.id)
+            setSelectedCompanyList(allCompanyIds)
+        } else {
+            setSelectedCompanyList([])
+        }
+    }
 
     const handleAddPermissions = () => {
         const alreadyAdded = selectedPermissions.filter((permId) => addedPermissions.some((added) => added.id === permId))
@@ -349,7 +357,17 @@ const AddUser = () => {
                                                 All Companys
                                             </label>
                                         </div>
+
                                         <div className="">
+                                            <div className="flex gap-2 items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedCompanyList.length === filteredComapny.length}
+                                                    onChange={handleSelectAll}
+                                                />{' '}
+                                                <span className="font-bold">Select All</span>
+                                            </div>
+
                                             {filteredComapny?.map((item) => (
                                                 <div key={item.id} className="flex flex-col">
                                                     <label className="bg-gray-100 px-2 py-2 flex items-center">
