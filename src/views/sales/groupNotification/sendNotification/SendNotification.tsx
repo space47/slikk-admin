@@ -133,8 +133,10 @@ const SendNotification = () => {
             const response = await axioisInstance.post(`/product/search/criteria`, body)
             console.log('MAIN response', response.data.data)
             const id = response.data?.data?.id
-
             setFilterId(id)
+            notification.success({
+                message: 'Filters has been set',
+            })
         } catch (error) {
             console.log(error)
         }

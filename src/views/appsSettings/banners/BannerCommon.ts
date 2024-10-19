@@ -54,4 +54,5 @@ export interface BANNERMODEL {
     barcodes: string
     redirection_url: string | null
     tags_input: string
+    position: number | null
 }

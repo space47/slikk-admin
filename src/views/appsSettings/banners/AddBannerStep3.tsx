@@ -21,8 +21,21 @@ function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, com
         console.log('tttp', bannerForm)
     }, [bannerForm])
 
-    const handleInputChange = (index: any, field: any, value: any) => {
-        setBannerFormData((prev) => prev.map((form, idx) => (idx === index ? { ...form, [field]: value } : form)))
+    const handleInputChange = (index: number, field: string, value: any) => {
+        setBannerFormData((prev) =>
+            prev.map((form, idx) => {
+                if (idx === index) {
+                    if (field === 'maxoff' || field === 'minoff') {
+                        return {
+                            ...form,
+                            tags: [...form.tags.filter((tag) => !tag.startsWith(`${field}_`)), `${field}_${value}`],
+                        }
+                    }
+                    return { ...form, [field]: value }
+                }
+                return form
+            }),
+        )
     }
 
     const handlePreviewClicked = () => {
