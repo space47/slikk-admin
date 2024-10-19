@@ -26,17 +26,18 @@ const ReverseTripDetails = () => {
     }, [])
 
     return (
-        <div className="flex flex-col gap-8">
-            <div className="bg-white p-4 rounded-lg shadow-md max-w-md font-bold flex flex-col gap-1 justify-center">
-                <div className="flex justify-between mb-2">
+        <div className="flex flex-col gap-8 p-6">
+            {/* Trip Summary Section */}
+            <div className="bg-white p-6 rounded-lg shadow-md max-w-lg font-bold flex flex-col gap-2">
+                <div className="flex justify-between mb-3">
                     <span className="font-semibold text-gray-700">Trip Id:</span>
                     <span className="text-gray-900">{mainData?.trip_id}</span>
                 </div>
-                <div className="flex justify-between mb-2">
+                <div className="flex justify-between mb-3">
                     <span className="font-semibold text-gray-700">Created:</span>
                     <span className="text-gray-900">{moment(mainData?.create_date).format('YYYY-MM-DD')}</span>
                 </div>
-                <div className="flex justify-between mb-2">
+                <div className="flex justify-between mb-3">
                     <span className="font-semibold text-gray-700">Assigned To:</span>
                     <span className="text-gray-900">{mainData?.assigned_to}</span>
                 </div>
@@ -55,16 +56,24 @@ const ReverseTripDetails = () => {
                     </span>
                 </div>
             </div>
-            <div className="flex flex-col gap-5">
-                <h4>Task Details</h4>
+
+            {/* Task Details Section */}
+            <div className="flex flex-col gap-4">
+                <h4 className="text-lg font-semibold text-gray-800">Task Details</h4>
                 <TripLogistic trip_id={tripId} />
             </div>
-            <div>
-                <TripActivity data={mainData?.event_logs} />
-            </div>
 
-            <div className=" flex justify-center">
-                <TripMap logistic_tasks={mainData?.logistic_tasks} trip_id={tripId} />
+            {/* Activity and Map Section */}
+            <div className="flex gap-8 items-start">
+                {/* Trip Activity */}
+                <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
+                    <TripActivity data={mainData?.event_logs} />
+                </div>
+
+                {/* Trip Map */}
+                <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
+                    <TripMap logistic_tasks={mainData?.logistic_tasks} trip_id={tripId} />
+                </div>
             </div>
         </div>
     )

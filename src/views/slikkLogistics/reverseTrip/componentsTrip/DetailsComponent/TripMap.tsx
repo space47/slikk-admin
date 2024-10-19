@@ -80,7 +80,7 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
     }
 
     return (
-        <div className="flex flex-col gap-10 w-[80%]">
+        <div className="flex flex-col gap-10 ">
             {isLoaded && logData.length > 0 ? (
                 <GoogleMap
                     onLoad={handleOnLoad}

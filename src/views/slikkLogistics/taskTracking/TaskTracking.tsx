@@ -9,6 +9,8 @@ import Select from '@/components/ui/Select'
 import TrackModal from './TrackModal'
 import { MdAssignment } from 'react-icons/md'
 import { TaskDetails } from './TaskCommonType'
+import { Button } from '@/components/ui'
+import { useNavigate } from 'react-router-dom'
 
 type Option = {
     value: number
@@ -32,6 +34,7 @@ const TaskTracking = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const [showAssignModal, setShowAssignModal] = useState(false)
     const [storeTaskId, setStoreTaskId] = useState()
+    const navigate = useNavigate()
 
     const fetchData = async () => {
         try {
@@ -69,8 +72,22 @@ const TaskTracking = () => {
         setShowAssignModal(false)
     }
 
+    const handleTaskDetailopen = (task_id: unknown) => {
+        navigate(`/app/tryAndBuy/taskTracking/${task_id}`)
+    }
+
     const columns = [
-        { header: 'Task ID', accessor: 'task_id' },
+        {
+            header: 'Task ID',
+            accessor: 'task_id',
+            format: (_: any, row: TaskDetails) => {
+                return (
+                    <button className="px-3 py-2 bg-gray-400 text-white rounded-[10px]" onClick={() => handleTaskDetailopen(row.task_id)}>
+                        {row.task_id}
+                    </button>
+                )
+            },
+        },
         { header: 'Status', accessor: 'status' },
         { header: 'Runner Latitude', accessor: 'runner_latitude' },
         { header: 'Runner Longitude', accessor: 'runner_longitude' },
@@ -199,16 +216,6 @@ const TaskTracking = () => {
 
     return (
         <div>
-            {/* <div className="flex items-end justify-end mb-2">
-                <button
-                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleSeller}
-                >
-                    ADD NEW SUB_CATEGORY
-                </button>{' '}
-                <br />
-                <br />
-            </div> */}
             <div className="mb-4">
                 <input
                     type="text"
