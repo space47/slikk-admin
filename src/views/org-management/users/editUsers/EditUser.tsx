@@ -226,6 +226,15 @@ const BrandUserEdit = () => {
         setAddedCompany((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
 
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            const allCompanyIds = companyList.map((item) => item.id)
+            setSelectedCompany(allCompanyIds)
+        } else {
+            setSelectedCompany([])
+        }
+    }
+
     const initialValue: FormModel = {
         first_name: userData?.first_name || '',
         last_name: userData?.last_name || '',
@@ -250,7 +259,8 @@ const BrandUserEdit = () => {
         const company_ids = addedCompany ? addedCompany.map((item) => item.id) : []
         const bodyData = {
             ...values,
-            company_ids: `${company_ids.join(',')}`,
+            action: 'add',
+            company_id: `${company_ids.join(',')}`,
             group_id: `${groupIds.join(',')}`,
             permission_id: `${permissionIds.join(',')}`,
         }
@@ -304,6 +314,8 @@ const BrandUserEdit = () => {
                                         addedValue={addedCompany}
                                         handleAdd={handleAddCompany}
                                         handleRemove={handleRemoveCompany}
+                                        selectAll
+                                        handleSelectAll={handleSelectAll}
                                     />
                                 </FormContainer>
                                 <br />
