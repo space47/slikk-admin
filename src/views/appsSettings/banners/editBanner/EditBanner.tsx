@@ -44,7 +44,7 @@ const EditBanner = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const validationSchema = Yup.object().shape({
-        min_off: Yup.number().lessThan(Yup.ref('max_off'), 'Min off should be less than Max off'),
+        min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off')
         max_off: Yup.number(),
     })
 
@@ -263,7 +263,7 @@ const EditBanner = () => {
         console.log('dATA', formData)
 
         try {
-            // const response = await axioisInstance.patch(`banners`, formData)
+            const response = await axioisInstance.patch(`banners`, formData)
 
             notification.success({
                 message: 'Success',
