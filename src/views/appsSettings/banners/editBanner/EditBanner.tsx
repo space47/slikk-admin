@@ -45,7 +45,7 @@ const EditBanner = () => {
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off')
-        max_off: Yup.number(),
+        max_off: Yup.number()
     })
 
     const dispatch = useAppDispatch()
