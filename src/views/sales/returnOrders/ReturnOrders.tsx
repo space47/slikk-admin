@@ -386,7 +386,7 @@ const OrderList = () => {
                             onChange={handleSearch}
                         />
                     </div>
-                    <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md">
+                    <div className="bg-gray-100  dark:bg-blue-600 dark:text-white xl:text-md text-sm w-auto rounded-md">
                         <Dropdown
                             className=" text-xl text-black bg-gray-200 font-bold "
                             title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}

@@ -9,9 +9,7 @@ import { Spinner } from '../Spinner'
 import type { CommonProps, TypeAttributes, ColorLevel } from '../@types/common'
 import type { ReactNode, ComponentPropsWithRef, MouseEvent } from 'react'
 
-export interface ButtonProps
-    extends CommonProps,
-        Omit<ComponentPropsWithRef<'button'>, 'onClick'> {
+export interface ButtonProps extends CommonProps, Omit<ComponentPropsWithRef<'button'>, 'onClick'> {
     active?: boolean
     block?: boolean
     color?: string
@@ -21,15 +19,7 @@ export interface ButtonProps
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void
     shape?: TypeAttributes.Shape
     size?: TypeAttributes.Size
-    variant?:
-        | 'solid'
-        | 'twoTone'
-        | 'plain'
-        | 'default'
-        | 'new'
-        | 'accept'
-        | 'reject'
-        | 'pending'
+    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending'
 }
 
 type ButtonColor = {
@@ -66,9 +56,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
     const buttonColor = splitedColor[0] || themeColor
     const buttonColorLevel = splitedColor[1] || primaryColorLevel
 
-    const [increaseLevel, decreaseLevel] = useColorLevel(
-        buttonColorLevel as ColorLevel,
-    )
+    const [increaseLevel, decreaseLevel] = useColorLevel(buttonColorLevel as ColorLevel)
 
     const getButtonSize = () => {
         let sizeClass = ''
@@ -76,33 +64,25 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
             case SIZES.LG:
                 sizeClass = classNames(
                     `h-${CONTROL_SIZES.lg}`,
-                    icon && !children
-                        ? `w-${CONTROL_SIZES.lg} ${sizeIconClass} text-2xl`
-                        : 'px-8 py-2 text-base',
+                    icon && !children ? `w-${CONTROL_SIZES.lg} ${sizeIconClass} text-2xl` : 'px-8 py-2 text-base',
                 )
                 break
             case SIZES.SM:
                 sizeClass = classNames(
                     `h-${CONTROL_SIZES.sm}`,
-                    icon && !children
-                        ? `w-${CONTROL_SIZES.sm} ${sizeIconClass} text-lg`
-                        : 'px-3 py-2 text-sm',
+                    icon && !children ? `w-${CONTROL_SIZES.sm} ${sizeIconClass} text-lg` : 'px-3 py-2 text-sm',
                 )
                 break
             case SIZES.XS:
                 sizeClass = classNames(
                     `h-${CONTROL_SIZES.xs}`,
-                    icon && !children
-                        ? `w-${CONTROL_SIZES.xs} ${sizeIconClass} text-base`
-                        : 'px-3 py-1 text-xs',
+                    icon && !children ? `w-${CONTROL_SIZES.xs} ${sizeIconClass} text-base` : 'px-3 py-1 text-xs',
                 )
                 break
             default:
                 sizeClass = classNames(
                     `h-${CONTROL_SIZES.md}`,
-                    icon && !children
-                        ? `w-${CONTROL_SIZES.md} ${sizeIconClass} text-xl`
-                        : 'px-8 py-2',
+                    icon && !children ? `w-${CONTROL_SIZES.md} ${sizeIconClass} text-xl` : 'px-8 py-2',
                 )
                 break
         }
@@ -113,13 +93,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
 
     const solidColor = () => {
         const btn = {
-            bgColor: active
-                ? `bg-${buttonColor}-${increaseLevel}`
-                : `bg-${buttonColor}-${buttonColorLevel}`,
+            bgColor: active ? `bg-${buttonColor}-${increaseLevel}` : `bg-${buttonColor}-${buttonColorLevel}`,
             textColor: 'text-white',
-            hoverColor: active
-                ? ''
-                : `hover:bg-${buttonColor}-${decreaseLevel}`,
+            hoverColor: active ? '' : `hover:bg-${buttonColor}-${decreaseLevel}`,
             activeColor: `active:bg-${buttonColor}-${increaseLevel}`,
         }
         return getBtnColor(btn)
@@ -131,9 +107,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 ? `bg-${buttonColor}-200 dark:bg-${buttonColor}-50`
                 : `bg-${buttonColor}-50 dark:bg-${buttonColor}-500 dark:bg-opacity-20`,
             textColor: `text-${buttonColor}-${buttonColorLevel} dark:text-${buttonColor}-50`,
-            hoverColor: active
-                ? ''
-                : `hover:bg-${buttonColor}-100 dark:hover:bg-${buttonColor}-500 dark:hover:bg-opacity-30`,
+            hoverColor: active ? '' : `hover:bg-${buttonColor}-100 dark:hover:bg-${buttonColor}-500 dark:hover:bg-opacity-30`,
             activeColor: `active:bg-${buttonColor}-200 dark:active:bg-${buttonColor}-500 dark:active:bg-opacity-40`,
         }
         return getBtnColor(btn)
@@ -141,12 +115,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
     const newColor = () => {
         const btn = {
             bgColor: active
-                ? `bg-gray-100 border border-gray-300 dark:bg-gray-500 dark:border-gray-500`
-                : `bg-black border border-gray-800 dark:bg-black dark:border-gray-700`,
+                ? `bg-gray-100 border border-gray-300 dark:bg-gray-500 dark:border-gray-500 dark:bg-blue-500 dark:text-white`
+                : `bg-black border border-gray-800 dark:bg-black dark:border-gray-700 dark:bg-blue-600 dark:text-white`,
             textColor: `text-white dark:text-white`,
-            hoverColor: active
-                ? `hover:bg-gray-200 dark:hover:bg-gray-600`
-                : `hover:bg-gray-900 dark:hover:bg-gray-800`,
+            hoverColor: active ? `hover:bg-gray-200 dark:hover:bg-gray-600` : `hover:bg-gray-900 dark:hover:bg-gray-800`,
             activeColor: `active:bg-gray-300 dark:active:bg-gray-700 dark:active:border-gray-600`,
         }
         return getBtnColor(btn)
@@ -195,9 +167,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
 
     const plainColor = () => {
         const btn = {
-            bgColor: active
-                ? `bg-gray-100 dark:bg-gray-500`
-                : 'bg-transparent border border-transparent',
+            bgColor: active ? `bg-gray-100 dark:bg-gray-500` : 'bg-transparent border border-transparent',
             textColor: `text-gray-600 dark:text-gray-100`,
             hoverColor: active ? '' : `hover:bg-gray-50 dark:hover:bg-gray-600`,
             activeColor: `active:bg-gray-100 dark:active:bg-gray-500 dark:active:border-gray-500`,
@@ -205,15 +175,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         return getBtnColor(btn)
     }
 
-    const getBtnColor = ({
-        bgColor,
-        hoverColor,
-        activeColor,
-        textColor,
-    }: ButtonColor) => {
-        return `${bgColor} ${
-            disabled || loading ? disabledClass : hoverColor + ' ' + activeColor
-        } ${textColor}`
+    const getBtnColor = ({ bgColor, hoverColor, activeColor, textColor }: ButtonColor) => {
+        return `${bgColor} ${disabled || loading ? disabledClass : hoverColor + ' ' + activeColor} ${textColor}`
     }
 
     const btnColor = () => {
@@ -239,14 +202,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         }
     }
 
-    const classes = classNames(
-        defaultClass,
-        btnColor(),
-        `radius-${shape}`,
-        getButtonSize(),
-        className,
-        block ? 'w-full' : '',
-    )
+    const classes = classNames(defaultClass, btnColor(), `radius-${shape}`, getButtonSize(), className, block ? 'w-full' : '')
 
     const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
         const { onClick } = props

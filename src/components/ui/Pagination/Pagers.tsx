@@ -1,10 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import classNames from 'classnames'
-import {
-    HiOutlineChevronDoubleLeft,
-    HiOutlineDotsHorizontal,
-    HiChevronDoubleRight,
-} from 'react-icons/hi'
+import { HiOutlineChevronDoubleLeft, HiOutlineDotsHorizontal, HiChevronDoubleRight } from 'react-icons/hi'
 
 const PAGER_COUNT = 7
 
@@ -30,11 +26,7 @@ const NextMore = ({ className, onArrow }: MoreProps) => {
             }}
             onClick={() => onArrow('nextMore')}
         >
-            {quickNextArrowIcon ? (
-                <HiChevronDoubleRight />
-            ) : (
-                <HiOutlineDotsHorizontal />
-            )}
+            {quickNextArrowIcon ? <HiChevronDoubleRight /> : <HiOutlineDotsHorizontal />}
         </li>
     )
 }
@@ -54,11 +46,7 @@ const PrevMore = ({ className, onArrow }: MoreProps) => {
             }}
             onClick={() => onArrow('prevMore')}
         >
-            {quickPrevArrowIcon ? (
-                <HiOutlineChevronDoubleLeft />
-            ) : (
-                <HiOutlineDotsHorizontal />
-            )}
+            {quickPrevArrowIcon ? <HiOutlineChevronDoubleLeft /> : <HiOutlineDotsHorizontal />}
         </li>
     )
 }
@@ -101,10 +89,7 @@ const Pagers = (props: PagersProps) => {
         }
     }, [currentPage, pageCount])
 
-    const onPagerClick = (
-        value: number,
-        e: React.MouseEvent<HTMLLIElement, MouseEvent>
-    ) => {
+    const onPagerClick = (value: number, e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
         e.preventDefault()
         let newPage = value
 
@@ -131,7 +116,7 @@ const Pagers = (props: PagersProps) => {
             }
             onChange(newPage)
         },
-        [currentPage, onChange]
+        [currentPage, onChange],
     )
 
     const getPages = useMemo(() => {
@@ -147,13 +132,8 @@ const Pagers = (props: PagersProps) => {
             }
         } else if (showPrevMore && showNextMore) {
             const offset = Math.floor(PAGER_COUNT / 2) - 1
-            const maxRange =
-                currentPage >= pageCount - 2 && currentPage <= pageCount
-            for (
-                let i = currentPage - offset;
-                i <= currentPage + (maxRange ? 0 : offset);
-                i++
-            ) {
+            const maxRange = currentPage >= pageCount - 2 && currentPage <= pageCount
+            for (let i = currentPage - offset; i <= currentPage + (maxRange ? 0 : offset); i++) {
                 pagerArray.push(i)
             }
         } else {
@@ -161,69 +141,41 @@ const Pagers = (props: PagersProps) => {
                 pagerArray.push(i)
             }
         }
-        
+
         if (pagerArray.length > PAGER_COUNT) {
             return []
         }
-        
+
         return pagerArray
     }, [showPrevMore, showNextMore, currentPage, pageCount])
 
     const getPagerClass = (index: number) => {
-        return classNames(
-            pagerClass.default,
-            currentPage === index ? pagerClass.active : pagerClass.inactive
-        )
+        return classNames(pagerClass.default, currentPage === index ? pagerClass.active : pagerClass.inactive)
     }
 
     return (
         <ul>
             {pageCount > 0 && (
-                <li
-                    className={getPagerClass(1)}
-                    role="presentation"
-                    onClick={(e) => onPagerClick(1, e)}
-                >
-                    1
+                <li className={getPagerClass(1)} role="presentation" onClick={(e) => onPagerClick(1, e)}>
+                    <div className=" dark:text-blue-600">1</div>
                 </li>
             )}
             {showPrevMore && (
-                <PrevMore
-                    className={classNames(
-                        pagerClass.default,
-                        pagerClass.inactive
-                    )}
-                    onArrow={(arrow) => onArrowClick(arrow)}
-                />
+                <PrevMore className={classNames(pagerClass.default, pagerClass.inactive)} onArrow={(arrow) => onArrowClick(arrow)} />
             )}
             {getPages.map((pager, index) => {
                 return (
-                    <li
-                        key={index}
-                        className={getPagerClass(pager)}
-                        role="presentation"
-                        onClick={(e) => onPagerClick(pager, e)}
-                    >
-                        {pager}
+                    <li key={index} className={getPagerClass(pager)} role="presentation" onClick={(e) => onPagerClick(pager, e)}>
+                        <div className=" dark:text-blue-600">{pager}</div>
                     </li>
                 )
             })}
             {showNextMore && (
-                <NextMore
-                    className={classNames(
-                        pagerClass.default,
-                        pagerClass.inactive
-                    )}
-                    onArrow={(arrow) => onArrowClick(arrow)}
-                />
+                <NextMore className={classNames(pagerClass.default, pagerClass.inactive)} onArrow={(arrow) => onArrowClick(arrow)} />
             )}
             {pageCount > 1 && (
-                <li
-                    className={getPagerClass(pageCount)}
-                    role="presentation"
-                    onClick={(e) => onPagerClick(pageCount, e)}
-                >
-                    {pageCount}
+                <li className={getPagerClass(pageCount)} role="presentation" onClick={(e) => onPagerClick(pageCount, e)}>
+                    <div className=" dark:text-blue-600">{pageCount}</div>
                 </li>
             )}
         </ul>
