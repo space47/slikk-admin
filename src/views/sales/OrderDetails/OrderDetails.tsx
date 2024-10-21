@@ -260,11 +260,11 @@ const OrderDetails = () => {
 
                         <div className="xl:flex gap-6">
                             <div className="xl:flex-1">
-                                <div className="bg-white shadow-lg p-4 rounded-lg mb-6">
+                                <div className="bg-white shadow-lg p-4 rounded-lg mb-6 dark:bg-gray-900">
                                     <OrderProducts data={data.order_items} invoice_id={data.invoice_id} status={data.status} />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-white shadow-lg p-6 rounded-lg">
+                                    <div className="bg-white shadow-lg p-6 rounded-lg  dark:bg-gray-900">
                                         <CustomerInfo
                                             user={data.user}
                                             billing_address={data.billing_address}
@@ -272,14 +272,14 @@ const OrderDetails = () => {
                                             location_url={data.location_url}
                                         />
                                     </div>
-                                    <div className="bg-white shadow-lg p-6 rounded-lg">
+                                    <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
                                         <ShippingInfo
                                             data={data.logistic}
                                             logistic_partner={data.logistic?.partner}
                                             delivery_type={data.delivery_type}
                                         />
                                     </div>
-                                    <div className="bg-white shadow-lg p-6 rounded-lg">
+                                    <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
                                         <PaymentSummary
                                             data={data.payment}
                                             tax={data.tax}

@@ -17,6 +17,13 @@ export const genericComponentArray = [
         placeholder: 'Enter Autoplay',
     },
     {
+        label: 'Section AlignMent',
+        name: 'component_config.section_alignment',
+        component: { Input },
+        type: 'text',
+        placeholder: 'Enter Section Alignment',
+    },
+    {
         label: 'Interval',
         name: 'component_config.interval',
         component: { Input },
@@ -94,6 +101,13 @@ export const genericComponentArray = [
         component: { Checkbox },
         type: 'checkbox',
         placeholder: 'Enter Web Autoplay',
+    },
+    {
+        label: 'Web Section AlignMent',
+        name: 'component_config.web_section_alignment',
+        component: { Input },
+        type: 'text',
+        placeholder: 'Enter Section Alignment',
     },
     {
         label: 'Web Interval',
