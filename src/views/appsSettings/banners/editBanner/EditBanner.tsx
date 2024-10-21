@@ -281,11 +281,6 @@ const EditBanner = () => {
 
     console.log('DIVVVIU', divisions.divisions)
 
-    console.log(
-        'TREEDATA',
-        divisions.divisions.map((item) => item.categories.map((item) => item.name)),
-    )
-
     const [filteredCategories, setFilteredCategories] = useState([])
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])

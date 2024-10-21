@@ -3,15 +3,8 @@ import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-    useGlobalFilter,
-} from '@tanstack/react-table'
+
+import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
@@ -202,6 +195,7 @@ const AppBanners = () => {
 
     const handleActionClick = (id: number) => {
         // navigate(`/app/appSettings/banners/${id}`)
+        console.log('id', id)
     }
 
     const handleDeleteClick = (id: number) => {
@@ -230,10 +224,10 @@ const AppBanners = () => {
             },
             globalFilter,
         },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
-        },
+        // onPaginationChange: ({ pageIndex, pageSize }) => {
+        //     setPage(pageIndex + 1)
+        //     setPageSize(pageSize)
+        // },
         onGlobalFilterChange: setGlobalFilter,
     })
 
