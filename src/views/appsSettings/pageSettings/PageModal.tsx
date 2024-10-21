@@ -304,6 +304,7 @@ const PageModal: React.FC<modalProps> = ({
                     name_footer: row.name_footer,
                     name: row.name,
                     name_footer_align: row.component_config.name_footer_align,
+                    section_alignment: row.component_config.section_alignment,
                     //.....
                     border: row.border,
                     border_style: row.border_style,
@@ -337,6 +338,7 @@ const PageModal: React.FC<modalProps> = ({
                     web_name: row.web_name,
                     web_name_position: row.component_config.web_name_position,
                     web_name_align: row.component_config.web_name_align,
+                    web_section_alignment: row.component_config.web_section_alignment,
                 },
                 section_filters: row.data_type.filters,
             }
@@ -509,7 +511,7 @@ const PageModal: React.FC<modalProps> = ({
                                     <div className="flex flex-row gap-10 ">
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Mobile Configurations :</div>
-                                            {genericComponentArray.slice(0, 11).map((item, key) => (
+                                            {genericComponentArray.slice(0, 12).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
@@ -522,7 +524,7 @@ const PageModal: React.FC<modalProps> = ({
                                         </FormContainer>
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Web Configurations :</div>
-                                            {genericComponentArray.slice(11).map((item, key) => (
+                                            {genericComponentArray.slice(12).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
