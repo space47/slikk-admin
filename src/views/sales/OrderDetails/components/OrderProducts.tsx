@@ -1,11 +1,11 @@
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
-import Avatar from '@/components/ui/Avatar'
+
 import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
-import { useNavigate } from 'react-router-dom'
+
 import ReplaceDrawer from './ReplaceDrawer'
 
 import.meta.env.VITE_WEB_URI
@@ -19,11 +19,11 @@ type Product = {
     size: string
     product_type: string
     image: string
-    sp: number
+    sp: string
     quantity: string
     sub_category: string
     location: string
-    mrp: number
+    mrp: string
     fulfilled_quantity: string
     final_price: number
     sku: string
@@ -32,8 +32,8 @@ type Product = {
 
 type OrderProductsProps = {
     data?: Product[]
-    invoice_id: any
-    status: any
+    invoice_id: number
+    status: string
 }
 
 const { Tr, Th, Td, THead, TBody } = Table
@@ -44,13 +44,11 @@ const ProductColumn = ({ row }: { row: Product }) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
 
-    const navigate = useNavigate()
-
-    const segregatedNames = (value: any) => {
+    const segregatedNames = (value: string) => {
         return value?.replace(/\s+/g, '-')
     }
 
-    const handleImageView = (img: any) => {
+    const handleImageView = (img: string) => {
         setParticularROwImage(img)
         setShowImageModal(true)
     }

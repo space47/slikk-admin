@@ -15,7 +15,7 @@ interface ReplaceDrawerProps {
     dialogIsOpen: boolean
     onDialogClose: any
     handleSubmit: any
-    id: number
+    id: number | undefined
     invoice_id: any
 }
 type ProductTable = {
