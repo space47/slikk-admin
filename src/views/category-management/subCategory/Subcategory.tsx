@@ -129,9 +129,12 @@ const Subcategory = () => {
         {
             header: 'Edit',
             accessor: 'id',
-            format: (value: any) => (
-                <button onClick={() => handleActionClick(value)} className="border-none bg-none">
-                    <FaEdit className="text-xl text-blue-600" />
+            format: (value) => (
+                <button className="border-none bg-none">
+                    <a href={`/app/category/subCategory/${value}`}>
+                        {' '}
+                        <FaEdit className="text-xl text-blue-600" />
+                    </a>
                 </button>
             ),
         },
@@ -148,9 +151,9 @@ const Subcategory = () => {
 
     const navigate = useNavigate()
 
-    const handleActionClick = (id: any) => {
-        navigate(`/app/category/subCategory/${id}`)
-    }
+    // const handleActionClick = (id: any) => {
+    //     navigate(`/app/category/subCategory/${id}`)
+    // }
 
     const handleSeller = () => {
         navigate('/app/category/subCategory/addNew')

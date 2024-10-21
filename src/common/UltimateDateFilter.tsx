@@ -15,7 +15,7 @@ const PREVIOUSARRAY = [
     { label: 'LAST WEEK', value: 'LAST WEEK' },
     { label: 'CURRENT MONTH', value: 'CURRENT MONTH' },
     { label: 'LAST MONTH', value: 'LAST MONTH' },
-    { label: 'CUSTOM DATES', value: 'CUSTOM DATES' },
+    { label: 'CUSTOM ', value: 'CUSTOM' },
 ]
 
 interface DATEPROPS {
@@ -70,7 +70,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
                 endDate = moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD')
                 setShowingDatePicker(false)
                 break
-            case 'CUSTOM DATES':
+            case 'CUSTOM':
                 setShowingDatePicker(true)
                 break
             default:
