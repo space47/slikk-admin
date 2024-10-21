@@ -218,7 +218,8 @@ const OrderDetails = () => {
                                 </span>
                             </div>
                             <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
-                                {data.status === 'COMPLETED' && data?.payment?.status === 'PAID' ? (
+                                {data.status === 'COMPLETED' &&
+                                (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') ? (
                                     <button
                                         className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                         onClick={handleReturnOrder}
