@@ -28,6 +28,7 @@ import NotificationSound from '@/common/orderNotification'
 import PendingNotification from '@/common/pendingNotification'
 
 import { notification } from 'antd'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -557,7 +558,7 @@ const OrderList = () => {
                         <IoMdDownload className="text-xl md:text-xl" />
                     </button>
                 </div>
-                <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
+                <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
                     <div className="flex gap-1 xl:gap-2  xl:flex-row  ">
                         <div className="flex justify-start ">
                             <input
@@ -590,7 +591,7 @@ const OrderList = () => {
 
                     {/* To here */}
                     <div className="flex gap-4">
-                        <div className="flex flex-col md:flex-row items-end justify-end mb-4">
+                        <div className="flex flex-col md:flex-row items-end justify-end ">
                             <button
                                 className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1"
                                 onClick={handleDownload}
@@ -599,14 +600,28 @@ const OrderList = () => {
                                 Export
                             </button>
                         </div>
-                        <div>
-                            <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
-                                <CiFilter className="text-xl font-extrabold" /> Filter
-                            </Button>
 
-                            <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
-                                <FaFilter className="text-xl font-extrabold" />
-                            </Button>
+                        <div className="flex gap-2 items-center">
+                            <div>
+                                <UltimateDatePicker
+                                    from={from}
+                                    setFrom={setFrom}
+                                    to={to}
+                                    setTo={setTo}
+                                    handleFromChange={handleFromChange}
+                                    handleToChange={handleToChange}
+                                    handleDateChange={handleDateChange}
+                                />
+                            </div>
+                            <div className="xl:mt-7">
+                                <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
+                                    <CiFilter className="text-xl font-extrabold" /> Filter
+                                </Button>
+
+                                <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden mt-5">
+                                    <FaFilter className="text-xl font-extrabold" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>

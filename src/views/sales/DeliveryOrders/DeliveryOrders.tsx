@@ -37,6 +37,7 @@ import FilterDialogOrder from '@/views/category-management/orderlist/filterDialo
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
 import { MdAssignmentTurnedIn, MdCancel } from 'react-icons/md'
 import { FaFilter } from 'react-icons/fa'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -401,7 +402,7 @@ const DeliveryOrders = () => {
 
     return (
         <div className="overflow-x-auto">
-            <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4 md:flex-col">
+            <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4 md:flex-col">
                 <div className="flex gap-2">
                     <div className="flex justify-start ">
                         <input
@@ -431,14 +432,29 @@ const DeliveryOrders = () => {
                     </div>
                 </div>
 
-                <div>
-                    <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
-                        <CiFilter className="text-xl font-extrabold" /> Filter
-                    </Button>
+                <div className="flex gap-3 items-center">
+                    <div>
+                        <UltimateDatePicker
+                            from={from}
+                            setFrom={setFrom}
+                            to={to}
+                            setTo={setTo}
+                            handleFromChange={handleFromChange}
+                            handleToChange={handleToChange}
+                            handleDateChange={handleDateChange}
+                            dispatch={dispatch}
+                        />
+                    </div>
 
-                    <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
-                        <FaFilter className="text-xl font-extrabold" />
-                    </Button>
+                    <div className="mt-7">
+                        <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
+                            <CiFilter className="text-xl font-extrabold" /> Filter
+                        </Button>
+
+                        <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
+                            <FaFilter className="text-xl font-extrabold" />
+                        </Button>
+                    </div>
                 </div>
             </div>
 

@@ -26,6 +26,7 @@ import FilterReturnOrder from './filter/FilterReturnOrder'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { DropdownStatus } from '@/store/types/orderList.types'
 import { FaFilter } from 'react-icons/fa'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 interface ReturnOrderItem {
     order_item: number
@@ -373,7 +374,7 @@ const OrderList = () => {
                     <IoMdDownload className="text-xl md:text-xl" />
                 </button>
             </div>
-            <div className="flex flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
+            <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
                 <div className="flex gap-2">
                     <div className="flex justify-start ">
                         <input
@@ -386,7 +387,7 @@ const OrderList = () => {
                             onChange={handleSearch}
                         />
                     </div>
-                    <div className="bg-gray-100  dark:bg-blue-600 dark:text-white xl:text-md text-sm w-auto rounded-md">
+                    <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md">
                         <Dropdown
                             className=" text-xl text-black bg-gray-200 font-bold "
                             title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
@@ -404,7 +405,7 @@ const OrderList = () => {
                 </div>
 
                 <div className="flex gap-4">
-                    <div className="flex flex-col md:flex-row items-end justify-end mb-4">
+                    <div className="flex flex-col md:flex-row items-end justify-end ">
                         <button
                             className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1"
                             onClick={handleDownload}
@@ -413,14 +414,28 @@ const OrderList = () => {
                             Export
                         </button>
                     </div>
-                    <div>
-                        <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
-                            <CiFilter className="text-xl font-extrabold" /> Filter
-                        </Button>
 
-                        <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
-                            <FaFilter className="text-xl font-extrabold" />
-                        </Button>
+                    <div className="flex gap-2 items-center">
+                        <div>
+                            <UltimateDatePicker
+                                from={from}
+                                setFrom={setFrom}
+                                to={to}
+                                setTo={setTo}
+                                handleFromChange={handleFromChange}
+                                handleToChange={handleToChange}
+                                handleDateChange={handleDateChange}
+                            />
+                        </div>
+                        <div className="xl:mt-7">
+                            <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
+                                <CiFilter className="text-xl font-extrabold" /> Filter
+                            </Button>
+
+                            <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden mt-5">
+                                <FaFilter className="text-xl font-extrabold" />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

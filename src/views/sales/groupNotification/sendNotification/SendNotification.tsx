@@ -21,7 +21,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { Upload } from '@/components/ui'
+import { Spinner, Upload } from '@/components/ui'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { beforeUpload } from '@/common/beforeUpload'
@@ -29,6 +29,7 @@ import { handleimage } from '@/common/handleImage'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const [showSpinner, setShowSpinner] = useState(false)
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -82,11 +83,13 @@ const SendNotification = () => {
         }
 
         try {
+            setShowSpinner(true)
             const response = await axioisInstance.post(`/notification/send`, data)
             notification.success({
                 message: 'SUCCESS',
                 description: response.data.message || 'Notification has been added',
             })
+            setShowSpinner(false)
         } catch (error) {
             console.log(error)
             notification.error({
@@ -141,6 +144,11 @@ const SendNotification = () => {
             console.log(error)
         }
     }
+
+    if (showSpinner) {
+        return <div className="flex h-screen items-center justify-center">{<Spinner size={40} />}</div>
+    }
+
     return (
         <div>
             <Formik
