@@ -27,11 +27,11 @@ const Table = forwardRef<HTMLElement, TableProps>((props, ref) => {
         hoverable && 'table-hover',
         compact && 'table-compact',
         borderlessRow && 'borderless-row',
-        className
+        className,
     )
 
     return (
-        <div className={classNames(overflow && 'overflow-x-auto')}>
+        <div className={classNames(overflow && 'overflow-x-auto min-h-[500px]')}>
             <Component className={tableClass} {...rest} ref={ref}>
                 {children}
             </Component>

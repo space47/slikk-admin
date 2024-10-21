@@ -6,21 +6,21 @@ import { ORDER_STATUS, DELEIVERYOPTIONS, PAYMENTOPTIONS } from '@/views/category
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 type OrderFilterProps = {
-    showFilter: any
-    handleFilterClose: any
+    showFilter?: any
+    handleFilterClose?: any
     dropdownStatus?: any
     handleDropdownSelect?: any
-    handleFromChange: any
-    from: any
-    to: any
-    handleToChange: any
-    deliveryType: any
-    handleDeliverySelect: any
-    paymentType: any
-    handlePaymentSelect: any
-    handleDateChange: any
-    setFrom: any
-    setTo: any
+    handleFromChange?: any
+    from?: any
+    to?: any
+    handleToChange?: any
+    deliveryType?: any
+    handleDeliverySelect?: any
+    paymentType?: any
+    handlePaymentSelect?: any
+    handleDateChange?: any
+    setFrom?: any
+    setTo?: any
     dispatch?: any
 }
 
@@ -29,18 +29,10 @@ const FilterForwardDelivery = ({
     handleFilterClose,
     dropdownStatus = { value: [] }, // default value
     handleDropdownSelect,
-    handleFromChange,
-    from,
-    to,
-    handleToChange,
     deliveryType = { value: [] }, // default value
     handleDeliverySelect,
     paymentType = { value: [] }, // default value
     handlePaymentSelect,
-    handleDateChange,
-    setFrom,
-    setTo,
-    dispatch,
 }: OrderFilterProps) => {
     return (
         <div>
@@ -54,7 +46,7 @@ const FilterForwardDelivery = ({
             >
                 <div className="flex flex-col gap-6 items-start justify-start mt-4 lg:mt-0 xl:mx-0 mx-10">
                     {/* Date Pickers */}
-                    <UltimateDatePicker
+                    {/* <UltimateDatePicker
                         from={from}
                         setFrom={setFrom}
                         to={to}
@@ -63,7 +55,7 @@ const FilterForwardDelivery = ({
                         handleToChange={handleToChange}
                         handleDateChange={handleDateChange}
                         dispatch={dispatch}
-                    />
+                    /> */}
 
                     {/* Status Selection */}
                     <div className="flex flex-col">

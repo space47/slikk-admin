@@ -213,7 +213,7 @@ const Home = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
                 {CARDDATA.map((item, key) => (
-                    <Card className="shadow-lg cursor-pointer" onClick={handleReceived} key={key}>
+                    <Card className="shadow-lg cursor-pointer" onClick={item.handleClick} key={key}>
                         <div className="flex gap-10 items-center">
                             <div>{item.img}</div>
                             <div>

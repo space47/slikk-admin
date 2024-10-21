@@ -161,9 +161,9 @@ const ProductEdit = () => {
         return valid
     }
 
-    const handleFooterChange = (e: any) => {
-        setFooter(e.target.value)
-    }
+    // const handleFooterChange = (e: any) => {
+    //     setFooter(e.target.value)
+    // }
 
     const handleFileupload = async (files: File[]) => {
         const formData = new FormData()

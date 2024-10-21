@@ -128,9 +128,12 @@ const ProductType = () => {
         {
             header: 'Edit',
             accessor: 'id',
-            format: (value: any) => (
-                <button onClick={() => handleActionClick(value)} className="border-none bg-none">
-                    <FaEdit className="text-xl text-blue-600" />
+            format: (value) => (
+                <button className="border-none bg-none">
+                    <a href={`/app/category/productType/${value}`}>
+                        {' '}
+                        <FaEdit className="text-xl text-blue-600" />
+                    </a>
                 </button>
             ),
         },
@@ -147,9 +150,9 @@ const ProductType = () => {
 
     const navigate = useNavigate()
 
-    const handleActionClick = (id: any) => {
-        navigate(`/app/category/productType/${id}`)
-    }
+    // const handleActionClick = (id: any) => {
+    //     navigate(`/app/category/productType/${id}`)
+    // }
 
     const handleSeller = () => {
         navigate('/app/category/productType/addNew')

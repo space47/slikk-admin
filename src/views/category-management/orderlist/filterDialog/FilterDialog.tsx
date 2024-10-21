@@ -1,36 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
 import Drawer from '@/components/ui/Drawer'
-import type { MouseEvent } from 'react'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Button, Dropdown } from '@/components/ui'
 import { ORDER_STATUS, DELEIVERYOPTIONS, PAYMENTOPTIONS } from '../commontypes'
 // import { IoMdDownload } from 'react-icons/io'
 // import { FaLocationDot } from 'react-icons/fa6'
 // import { FaMapMarkedAlt } from 'react-icons/fa'
 // import { RiEBike2Fill } from 'react-icons/ri'
-import moment from 'moment'
-import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 type OrderFilterProps = {
-    showFilter: any
-    handleFilterClose: any
+    showFilter?: any
+    handleFilterClose?: any
     dropdownStatus?: any
     handleDropdownSelect?: any
-    handleFromChange: any
-    from: any
-    to: any
-    handleToChange: any
-    deliveryType: any
-    handleDeliverySelect: any
-    paymentType: any
-    handlePaymentSelect: any
-    handleDateChange: any
-    setFrom: any
-    setTo: any
+    handleFromChange?: any
+    from?: any
+    to?: any
+    handleToChange?: any
+    deliveryType?: any
+    handleDeliverySelect?: any
+    paymentType?: any
+    handlePaymentSelect?: any
+    handleDateChange?: any
+    setFrom?: any
+    setTo?: any
 }
 
 const FilterDialogOrder = ({
@@ -38,17 +30,11 @@ const FilterDialogOrder = ({
     handleFilterClose,
     dropdownStatus,
     handleDropdownSelect,
-    handleFromChange,
-    from,
-    to,
-    handleToChange,
+
     deliveryType,
     handleDeliverySelect,
     paymentType,
     handlePaymentSelect,
-    handleDateChange,
-    setFrom,
-    setTo,
 }: OrderFilterProps) => {
     return (
         <div>
@@ -61,7 +47,7 @@ const FilterDialogOrder = ({
                 className="xl:mx-0 mx-8"
             >
                 <div className="flex flex-col  gap-6 items-start justify-start mt-4 lg:mt-0 xl:mx-0 mx-10">
-                    <UltimateDatePicker
+                    {/* <UltimateDatePicker
                         from={from}
                         setFrom={setFrom}
                         to={to}
@@ -69,7 +55,7 @@ const FilterDialogOrder = ({
                         handleFromChange={handleFromChange}
                         handleToChange={handleToChange}
                         handleDateChange={handleDateChange}
-                    />
+                    /> */}
 
                     <div className="flex flex-col">
                         <label htmlFor="" className="font-semibold text-lg mb-2">
