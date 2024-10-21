@@ -3,18 +3,14 @@ import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useLocation } from 'react-router-dom'
 import moment from 'moment'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
 import { FaEdit } from 'react-icons/fa'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import EasyTable from '@/common/EasyTable'
 
 type TableData = {
     id: number
@@ -93,24 +89,19 @@ const PaginationTable = () => {
         }
     }
 
-    const handleGRNClick = (document_number: any, company: any) => {
-        console.log('done', document_number)
+    // const handleGRNClick = (document_number: any, company: any) => {
+    //     console.log('done', document_number)
 
-        navigate(`/app/goods/received/${company}/${document_number}`)
-    }
-    // const getFirstImageUrl = (images: string): string => {
-    //     if (images.length === 0) return ''
-    //     const img = images.split(',')
-    //     return img[0] || ''
+    //     navigate(`/app/goods/received/${company}/${document_number}`)
     // }
 
     const handleDocumentClick = (id: any) => {
         console.log('ok', id)
     }
 
-    const handleActionClick = (grn: string) => {
-        navigate(`/app/goods/received/edit/${grn}`)
-    }
+    // const handleActionClick = (grn: string) => {
+    //     navigate(`/app/goods/received/edit/${grn}`)
+    // }
 
     const columns = useMemo<ColumnDef<TableData>[]>(
         () => [
@@ -119,10 +110,12 @@ const PaginationTable = () => {
                 accessorKey: 'grn_number',
                 cell: ({ row }) => (
                     <div
-                        onClick={() => handleGRNClick(row.original.grn_number, row.original.company)}
+                        // onClick={() => handleGRNClick(row.original.grn_number, row.original.company)}
                         className="cursor-pointer bg-gray-200 px-3 py-3 rounded-md text-black font-semibold"
                     >
-                        {row.original.grn_number}
+                        <a href={`/app/goods/received/${row.original.company}/${row.original.grn_number}`} target="_blank" rel="noreferrer">
+                            {row.original.grn_number}
+                        </a>
                     </div>
                 ),
             },
@@ -195,34 +188,17 @@ const PaginationTable = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original.grn_number)} className="border-none bg-none">
-                        <FaEdit className="text-xl text-blue-500" />
+                    <button className="border-none bg-none">
+                        <a href={`/app/goods/received/edit/${row.original.grn_number}`} target="_blank" rel="noreferrer">
+                            {' '}
+                            <FaEdit className="text-xl text-blue-500" />
+                        </a>
                     </button>
                 ),
             },
         ],
         [],
     )
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize), // Ensure page count is updated
-        manualPagination: true, // Enable manual pagination
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1) // React Table uses zero-based index
-            setPageSize(pageSize)
-        },
-    })
 
     const onPaginationChange = (page: number) => {
         setPage(page)
@@ -237,54 +213,10 @@ const PaginationTable = () => {
     const handleGRN = () => {
         navigate('/app/goods/received/form')
     }
-    const handleFromChange = (date: Date | null) => {
-        if (date) {
-            setFrom(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setFrom(moment().format('YYYY-MM-DD'))
-        }
-    }
-
-    const handleToChange = (date: Date | null) => {
-        if (date) {
-            setTo(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setTo(moment().format('YYYY-MM-DD'))
-        }
-    }
 
     return (
         <div>
             <div className=" flex gap-6 justify-end mb-5">
-                {/* <div className="flex gap-5">
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            FROM DATE:
-                        </div>
-                        <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
-                        />
-                    </div>
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            TO DATE:
-                        </div>
-                        <DatePicker
-                            inputSuffix={
-                                <TbCalendarStats className="text-xl" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(to)}
-                            onChange={handleToChange}
-                            minDate={moment(from).add(1, 'day').toDate()}
-                        />
-                    </div>
-                </div> */}
                 <div className="flex items-end justify-end">
                     <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleGRN}>
                         ADD NEW GRN
@@ -293,28 +225,7 @@ const PaginationTable = () => {
                 <br />
                 <br />
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
