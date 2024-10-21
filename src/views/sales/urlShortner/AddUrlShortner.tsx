@@ -162,6 +162,15 @@ const AddUrlShortner = () => {
                                 />
                             </FormItem>
 
+                            {filterShow && (
+                                <FilterSelect
+                                    handleAddFilter={handleAddFilter}
+                                    showAddFilter={showAddFilter}
+                                    handleAddFilters={handleAddFilters}
+                                    handleRemoveFilter={handleRemoveFilter}
+                                />
+                            )}
+
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {URLARRAY.slice(1).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
@@ -175,15 +184,6 @@ const AddUrlShortner = () => {
                                     </FormItem>
                                 ))}
                             </FormContainer>
-
-                            {filterShow && (
-                                <FilterSelect
-                                    handleAddFilter={handleAddFilter}
-                                    showAddFilter={showAddFilter}
-                                    handleAddFilters={handleAddFilters}
-                                    handleRemoveFilter={handleRemoveFilter}
-                                />
-                            )}
 
                             <FormContainer className="flex justify-end mt-5">
                                 <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
