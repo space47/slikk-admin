@@ -23,9 +23,7 @@ const ReturnOrderDetails = () => {
 
     const { return_order_id } = useParams()
     const dispatch = useAppDispatch()
-    const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders,
-    )
+    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const returnDetails = returnOrder?.returnOrders
 
     useEffect(() => {
@@ -37,28 +35,18 @@ const ReturnOrderDetails = () => {
             <div className="flex flex-col justify-between xl:flex-row xl:justify-between">
                 <div className="flex flex-col gap-1">
                     <div className="flex gap-2 font-bold text-xl">
-                        Return Order: #
-                        <span className="font-normal">
-                            {returnDetails?.return_order_id}
-                        </span>
+                        Return Order: #<span className="font-normal">{returnDetails?.return_order_id}</span>
                     </div>
                     <div>
                         Original Order:
-                        <a
-                            href={`/app/orders/${returnDetails?.order.invoice_id}`}
-                            className="text-blue-500 hover:underline"
-                        >
+                        <a href={`/app/orders/${returnDetails?.order.invoice_id}`} className="text-blue-500 hover:underline">
                             {returnDetails?.order.invoice_id}
                         </a>
                     </div>
                     <div>
                         <span className="flex items-center">
                             <HiOutlineCalendar className="text-lg" />
-                            <span className="ltr:ml-1 rtl:mr-1">
-                                {moment(returnDetails?.create_date).format(
-                                    'MM/DD/YYYY hh:mm:ss a',
-                                )}
-                            </span>
+                            <span className="ltr:ml-1 rtl:mr-1">{moment(returnDetails?.create_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
                         </span>
                     </div>
                 </div>
@@ -66,17 +54,11 @@ const ReturnOrderDetails = () => {
 
             {/* Components */}
             <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
-                <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md">
+                <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-900">
                     <ReturnProductsDetails />
-                    <RefundActivity
-                        data={returnDetails?.log}
-                        status="completed"
-                        task_id={returnDetails?.id}
-                        latitude="11"
-                        longitude="22"
-                    />
+                    <RefundActivity data={returnDetails?.log} status="completed" task_id={returnDetails?.id} latitude="11" longitude="22" />
                 </div>
-                <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow-md gap-5 w-full xl:w-1/3">
+                <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow-md gap-5 w-full xl:w-1/3 dark:bg-gray-900">
                     <ReturnUserInfo />
                     <ReturnRunnerDetails />
                     <ReturnSummary />
