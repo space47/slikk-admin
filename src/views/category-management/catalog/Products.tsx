@@ -15,6 +15,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import ImageMODAL from '@/common/ImageModal'
 import { FaEdit, FaFilter } from 'react-icons/fa'
 import StockOverviewFilter from '@/views/inventory-management/stock-overview/stockOverviewComponents/StockOverviewFilter'
+import EasyTable from '@/common/EasyTable'
 
 type ProductVariant = {
     name: string
@@ -92,53 +93,46 @@ const Products = () => {
         data.map((item) => item.filter_to_display_map.colorfamily),
     )
 
-    const fetchData = async (page: number, pageSize: number) => {
+    const fetchData = async (page: number, pageSize: number, filter: string = '') => {
         try {
-            const response = await axiosInstance.get(`merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}`)
+            let searchInputType = ''
 
-            const data = response.data.data.results
-            const total = response.data.data.count
+            if (filter) {
+                searchInputType = `&sku=${filter}`
 
-            setData(data)
-            setTotalData(total)
-        } catch (error) {
-            console.error('Error fetching data:', error)
-        }
-    }
-
-    const filter = async (page: number, pageSize: number, filter: string = '') => {
-        try {
-            let searchInputType = `&sku=${filter}`
-            setFilterInput(searchInputType)
-            let response = await axiosInstance.get(
-                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
-            )
-
-            if (response.data.data.results.length === 0) {
-                searchInputType = `&name=${filter}`
-                setFilterInput(searchInputType)
-                response = await axiosInstance.get(
+                let response = await axiosInstance.get(
                     `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
                 )
+
+                if (response.data.data.results.length === 0) {
+                    searchInputType = `&name=${filter}`
+                    response = await axiosInstance.get(
+                        `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
+                    )
+                }
+
+                const data = response.data.data.results
+                const total = response.data.data.count
+
+                setData(data)
+                setTotalData(total)
+            } else {
+                const response = await axiosInstance.get(`merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}`)
+
+                const data = response.data.data.results
+                const total = response.data.data.count
+
+                setData(data)
+                setTotalData(total)
             }
-
-            const data = response.data.data.results
-            const total = response.data.data.count
-
-            setData(data)
-            setTotalData(total)
         } catch (error) {
             console.error('Error fetching data:', error)
         }
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize, typeFetch, searchType])
-
-    useEffect(() => {
-        filter(page, pageSize, globalFilter)
-    }, [page, pageSize, globalFilter, searchType])
+        fetchData(page, pageSize, globalFilter)
+    }, [page, pageSize, typeFetch, globalFilter, searchType])
 
     console.log('FILTERE', filterInput)
 
@@ -303,35 +297,6 @@ const Products = () => {
         [],
     )
 
-    const handleSelect = (value: any) => {
-        const selected = DROPDOWNARRAY.find((item) => item.value === value)
-        if (selected) {
-            setCurrentSelectedPage(selected)
-        }
-    }
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
-        },
-        onGlobalFilterChange: setGlobalFilter,
-    })
-
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
@@ -432,28 +397,7 @@ const Products = () => {
                 </div>
             </div>
 
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
