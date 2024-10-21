@@ -164,12 +164,12 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
             },
         }),
         columnHelper.accessor('name', {
-            header: `${status !== 'COMPLETED' ? 'Replace' : ''}`,
+            header: `${status !== 'CANCELLED' ? 'Replace' : ''}`,
             cell: (props) => {
                 const rowID = props.row.original.id
                 return (
                     <>
-                        {status !== 'COMPLETED' && status !== 'CANCELLED' && (
+                        {status !== 'CANCELLED' && (
                             <button className="text-white bg-red-500 px-3 py-2 rounded-[10px]" onClick={() => handleReplace(rowID)}>
                                 Replace
                             </button>

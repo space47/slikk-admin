@@ -2,19 +2,15 @@
 import { BANNER_UPLOAD_DATA } from '@/common/banner'
 import { Button, Select, Upload } from '@/components/ui'
 import { useAppSelector } from '@/store'
-import { CATEGORY_STATE } from '@/store/types/category.types'
 import { DIVISION_STATE } from '@/store/types/division.types'
-import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
-import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
-import FontAwesome from '@/views/ui-components/common/Icons/FontAwesome'
 import React, { useEffect, useState } from 'react'
-import { FaCross, FaWindowClose, FaXRay } from 'react-icons/fa'
+import { FaWindowClose } from 'react-icons/fa'
 import { ADD_BANNER_BASIC_FIELDS } from './generalFields'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { notification } from 'antd'
 
-function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
+function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
 
     useEffect(() => {
@@ -28,7 +24,7 @@ function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, com
                     if (field === 'maxoff' || field === 'minoff') {
                         return {
                             ...form,
-                            tags: [...form.tags.filter((tag) => !tag.startsWith(`${field}_`)), `${field}_${value}`],
+                            tags: [...form.tags.filter((tag: any) => !tag.startsWith(`${field}_`)), `${field}_${value}`],
                         }
                     }
                     return { ...form, [field]: value }
@@ -73,7 +69,7 @@ function AddBannerStep3({ selectedPage, selectedSectionData, setCurrentStep, com
                                 <FaWindowClose
                                     color="red"
                                     onClick={() => {
-                                        setBannerFormData(bannerForm.filter((banner, ind) => banner.id != _.id))
+                                        setBannerFormData(bannerForm.filter((banner) => banner.id != _.id))
                                     }}
                                 />
                             </div>
@@ -98,15 +94,12 @@ export default AddBannerStep3
 
 const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputChange }: any) => {
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
-    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
-    const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-    const [filteredCategories, setFilteredCategories] = useState([])
-    const [filteredSubCategories, setFilteredSubCategories] = useState([])
-    const [filteredProductTypes, setFilteredProductTypes] = useState([])
-    const [sortOrder, setSortOrder] = useState('')
+    const [filteredCategories, setFilteredCategories] = useState<string[]>([])
+    const [filteredSubCategories, setFilteredSubCategories] = useState<string[]>([])
+    const [filteredProductTypes, setFilteredProductTypes] = useState<string[]>([])
+    const [sortOrder, setSortOrder] = useState<string | undefined>('')
 
     console.log('Fillfillters', filters)
     console.log('BBBrand', brands)
@@ -158,11 +151,11 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         <div className="flex flex-row flex-wrap gap-x-5 gap-y-2 p-4">
             <div className="flex flex-col gap-y-2 items-center justify-center">
                 <span>Select Banner Web Image</span>
-                <Upload uploadLimit={1} onChange={(file, _) => handleSetDataInForm('image_web_file', file[0])} />
+                <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('image_web_file', file[0])} />
             </div>
             <div className="flex flex-col gap-y-2 items-center justify-center">
                 <span>Select Banner Mobile Image</span>
-                <Upload uploadLimit={1} onChange={(file, _) => handleSetDataInForm('image_mobile_file', file[0])} />
+                <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('image_mobile_file', file[0])} />
             </div>
 
             <form className="p-4 flex flex-row gap-3 flex-wrap">
