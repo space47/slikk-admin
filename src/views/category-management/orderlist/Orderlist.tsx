@@ -2,23 +2,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    flexRender,
-} from '@tanstack/react-table'
-import { rankItem } from '@tanstack/match-sorter-utils'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import type { FilterFn } from '@tanstack/react-table'
 import type { Order, OrderItem } from './commontypes'
 import { Button, Dropdown } from '@/components/ui'
-import { ORDER_STATUS, DELEIVERYOPTIONS, PAYMENTOPTIONS } from './commontypes'
 import { IoMdDownload } from 'react-icons/io'
 import { FaExclamationCircle, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
 import FilterDialogOrder from './filterDialog/FilterDialog'
@@ -29,6 +18,7 @@ import PendingNotification from '@/common/pendingNotification'
 
 import { notification } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
+import EasyTable from '@/common/EasyTable'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -56,7 +46,6 @@ const SEARCHOPTIONS = [
 
 const OrderList = () => {
     const [orders, setOrders] = useState<Order[]>([])
-    const [globalFilter, setGlobalFilter] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [deliveryType, setDeliveryType] = useState<DropdownStatus>({
         value: [],
@@ -67,7 +56,7 @@ const OrderList = () => {
         name: [],
     })
     const [searchInput, setSearchInput] = useState<string>('')
-    const [mobileFilter, setMobileFilter] = useState('')
+
     const [pageSize, setPageSize] = useState(10)
 
     const [page, setPage] = useState(1)
@@ -363,29 +352,6 @@ const OrderList = () => {
         [],
     )
 
-    const table = useReactTable({
-        data: orders,
-        columns,
-        filterFns: {
-            fuzzy: fuzzyFilter,
-        },
-        state: {
-            globalFilter: globalFilter,
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-        },
-        onGlobalFilterChange: setMobileFilter,
-        globalFilterFn: fuzzyFilter,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: true,
-        pageCount: Math.ceil(orderCount ?? 0 / pageSize),
-    })
-
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -627,36 +593,7 @@ const OrderList = () => {
                 </div>
                 <br />
 
-                <Table>
-                    <THead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <Tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <Th key={header.id} colSpan={header.colSpan}>
-                                        {header.isPlaceholder ? null : (
-                                            <div
-                                                className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                                onClick={header.column.getToggleSortingHandler()}
-                                            >
-                                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                                <Sorter sort={header.column.getIsSorted()} />
-                                            </div>
-                                        )}
-                                    </Th>
-                                ))}
-                            </Tr>
-                        ))}
-                    </THead>
-                    <TBody>
-                        {table.getRowModel().rows.map((row) => (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                                ))}
-                            </Tr>
-                        ))}
-                    </TBody>
-                </Table>
+                <EasyTable mainData={orders} page={page} pageSize={pageSize} columns={columns} />
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                     {numberClick !== true && (
@@ -708,9 +645,3 @@ const OrderList = () => {
 }
 
 export default OrderList
-
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    const itemRank = rankItem(row.getValue(columnId), value)
-    addMeta(itemRank)
-    return itemRank.passed
-}
