@@ -142,9 +142,9 @@ const Products = () => {
 
     console.log('FILTERE', filterInput)
 
-    const handleActionClick = (barcode: any) => {
-        navigate(`/app/catalog/products/${barcode}`)
-    }
+    // const handleActionClick = (barcode: any) => {
+    //     navigate(`/app/catalog/products/${barcode}`)
+    // }
 
     const hanldeFilter = () => {
         setShowDrawer(true)
@@ -291,8 +291,11 @@ const Products = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original.barcode)} className="border-none bg-none">
-                        <FaEdit className="text-xl text-blue-600" />
+                    <button className="border-none bg-none">
+                        <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
+                            {' '}
+                            <FaEdit className="text-xl text-blue-600" />
+                        </a>
                     </button>
                 ),
             },

@@ -76,9 +76,9 @@ const Brand = () => {
         fetchData(page, pageSize)
     }, [page, pageSize, globalFilter])
 
-    const handleActionClick = (id: any) => {
-        navigate(`/app/category/brand/${id}`)
-    }
+    // const handleActionClick = (id: any) => {
+    //     navigate(`/app/category/brand/${id}`)
+    // }
 
     const columns = useMemo<ColumnDef<Brand & Action>[]>(
         () => [
@@ -166,8 +166,11 @@ const Brand = () => {
                 header: 'Action',
                 accessorKey: 'id',
                 cell: ({ row }) => (
-                    <Button onClick={() => handleActionClick(row.original.id)} className="bg-none border-none">
-                        <FaEdit className="text-xl text-blue-600" />
+                    <Button className="bg-none border-none">
+                        <a href={`/app/category/brand/${row.original.id}`}>
+                            {' '}
+                            <FaEdit className="text-xl text-blue-600" />
+                        </a>
                     </Button>
                 ),
             },
@@ -207,22 +210,8 @@ const Brand = () => {
 
     const navigate = useNavigate()
 
-    const handleSeller = () => {
-        navigate('/app/sellers/addnew')
-    }
-
     return (
         <div>
-            {/* <div className="flex items-end justify-end mb-2">
-                <button
-                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleSeller}
-                >
-                    ADD NEW
-                </button>
-                <br />
-                <br />
-            </div> */}
             <div className="mb-4">
                 <input
                     type="text"
