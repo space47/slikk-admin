@@ -22,12 +22,12 @@ type OrderFilterProps = {
     handleFilterClose: any
     dropdownStatus?: any
     handleDropdownSelect?: any
-    handleFromChange: any
+    handleFromChange?: any
     from: any
     setFrom: any
     setTo: any
     to: any
-    handleToChange: any
+    handleToChange?: any
     deliveryType: any
     handleDeliveryType: any
     handleDateChange: any
