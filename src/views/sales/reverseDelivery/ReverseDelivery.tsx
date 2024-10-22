@@ -1,31 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    flexRender,
-} from '@tanstack/react-table'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
-import { Table, Pagination, Select, DatePicker, Dropdown } from '@/components/ui'
-import type { FilterFn } from '@tanstack/react-table'
-import { rankItem } from '@tanstack/match-sorter-utils'
+import { Pagination, Select, Dropdown } from '@/components/ui'
+
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiEBike2Fill } from 'react-icons/ri'
-import { DELEIVERYRETRUNOPTIONS, ReturnOrder } from '../returnOrders/ReturnOrders'
+import { ReturnOrder } from '../returnOrders/ReturnOrders'
 import FilterReturnOrder from '../returnOrders/filter/FilterReturnOrder'
 import { CiFilter } from 'react-icons/ci'
 import { MdAssignmentTurnedIn, MdCancel } from 'react-icons/md'
 import { FaFilter } from 'react-icons/fa'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-
-const { Tr, Th, Td, THead, TBody, Sorter } = Table
+import EasyTable from '@/common/EasyTable'
 
 interface ReturnDropdownStatus {
     value: string[]
@@ -59,7 +49,7 @@ const ReverseDelivery = () => {
         name: [],
     })
     const [searchInput, setSearchInput] = useState<string>('')
-    const [pageSize, setPageSize] = useState(10)
+    const [pageSize, setPageSize] = useState<number>(10)
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
@@ -250,18 +240,6 @@ const ReverseDelivery = () => {
         },
     ]
 
-    const table = useReactTable({
-        data: orders,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: true,
-        pageCount: Math.ceil(orderCount ?? 0 / pageSize),
-        globalFilterFn: fuzzyFilter,
-    })
-
     const handleCancelTask = async (return_order_id: any) => {
         try {
             const body = {
@@ -289,13 +267,6 @@ const ReverseDelivery = () => {
         setPage(page)
     }
 
-    const handleFromChange = (date: Date | null) => {
-        setFrom(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
-    }
-
-    const handleToChange = (date: Date | null) => {
-        setTo(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
-    }
     const handleSelect = (value: any) => {
         const selected = SEARCHOPTIONS.find((item) => item.value === value)
         if (selected) {
@@ -307,7 +278,6 @@ const ReverseDelivery = () => {
     }
 
     const handlePartnerSelect = (selectedValue: any, row: any) => {
-        console.log('VALUE', selectedValue, row)
         const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
 
         setPartner((prev) => ({
@@ -418,15 +388,7 @@ const ReverseDelivery = () => {
 
                 <div className="flex gap-3 items-center">
                     <div>
-                        <UltimateDatePicker
-                            from={from}
-                            setFrom={setFrom}
-                            to={to}
-                            setTo={setTo}
-                            handleFromChange={handleFromChange}
-                            handleToChange={handleToChange}
-                            handleDateChange={handleDateChange}
-                        />
+                        <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
                     </div>
 
                     <div className="mt-7">
@@ -441,36 +403,7 @@ const ReverseDelivery = () => {
                 </div>
             </div>
 
-            <Table className="scrollbar-hide">
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                            <Sorter sort={header.column.getIsSorted()} />
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable columns={columns} page={page} pageSize={pageSize} mainData={orders} />
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
@@ -490,8 +423,6 @@ const ReverseDelivery = () => {
                     handleFilterClose={handleFilterClose}
                     dropdownStatus={dropdownStatus}
                     handleDropdownSelect={handleDropdownSelect}
-                    handleFromChange={handleFromChange}
-                    handleToChange={handleToChange}
                     from={from}
                     to={to}
                     deliveryType={deliveryType}
@@ -506,9 +437,3 @@ const ReverseDelivery = () => {
 }
 
 export default ReverseDelivery
-
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    const itemRank = rankItem(row.getValue(columnId), value)
-    addMeta(itemRank)
-    return itemRank.passed
-}

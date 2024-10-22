@@ -128,9 +128,6 @@ const BrandUserEdit = () => {
             console.log(error)
         }
     }
-    console.log('INI', getGroups)
-    console.log('GROUPSDATA', addedGroups)
-    console.log('PermSDATA', addedPermissions)
 
     useEffect(() => {
         fetchData()
@@ -138,8 +135,6 @@ const BrandUserEdit = () => {
         fetchGroups()
         fetchDataRightGroup()
     }, [])
-
-    console.log('DATAS', addedCompany)
 
     // permissions.................................................................
     const handlePermissionSelect = (id: number) => {
@@ -244,14 +239,6 @@ const BrandUserEdit = () => {
         permissions: [],
         company: [],
     }
-    console.log(
-        'usermainDtaa',
-        getGroups.map((item) => item),
-    )
-    console.log(
-        'dataokok',
-        addedGroups.map((item) => item),
-    )
 
     const handleSubmit = async (values: any) => {
         const groupIds = addedGroups.map((item) => item.id)

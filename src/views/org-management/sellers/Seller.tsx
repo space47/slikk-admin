@@ -1,55 +1,13 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
-
-type Product = {
-    account_holder_name: string
-    account_number: string
-    address: string
-    alternate_contact_number: string
-    bank_name: string
-    cin: string
-    contact_number: string
-    create_date: string
-    damages_per_sku: number
-    gstin: string
-    handling_charges_per_order: number
-    id: number
-    ifsc: string
-    is_active: boolean
-    name: string
-    poc: string
-    poc_email: string
-    registered_name: string
-    removal_fee_per_sku: number
-    revenue_share: number
-    segment: string
-    settlement_days: number
-    update_date: string
-    warehouse_charge_per_sku: number
-}
-
-type Option = {
-    value: number
-    label: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import EasyTable from '@/common/EasyTable'
+import { Option, pageSizeOptions, Product } from './sellerCommon'
 
 const Seller = () => {
     const [data, setData] = useState<Product[]>([])
@@ -75,28 +33,12 @@ const Seller = () => {
         fetchData(page, pageSize)
     }, [page, pageSize, globalFilter])
 
-    // const getFirstImageUrl = (images: string) => {
-    //     const img = images.split(',')
-    //     return img[0]
-    // }
-
     const handleActionClick = (id: number) => {
-        // console.log('OK', id)
         navigate(`/app/sellers/${id}`)
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
-            // {
-            //     header: 'Account Holder Name',
-            //     accessorKey: 'account_holder_name',
-            //     cell: (info) => info.getValue(),
-            // },
-            // {
-            //     header: 'Account Number',
-            //     accessorKey: 'account_number',
-            //     cell: (info) => info.getValue(),
-            // },
             {
                 header: 'ID',
                 accessorKey: 'id',
@@ -149,79 +91,30 @@ const Seller = () => {
                 accessorKey: 'address',
                 cell: (info) => info.getValue(),
             },
-            // {
-            //     header: 'Bank Name',
-            //     accessorKey: 'bank_name',
-            //     cell: (info) => info.getValue(),
-            // },
-            // {
-            //     header: 'CIN',
-            //     accessorKey: 'cin',
-            //     cell: (info) => info.getValue(),
-            // },
 
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
-            // {
-            //     header: 'Damages Per SKU',
-            //     accessorKey: 'damages_per_sku',
-            //     cell: (info) => info.getValue(),
-            // },
 
-            // {
-            //     header: 'Handling Charges Per Order',
-            //     accessorKey: 'handling_charges_per_order',
-            //     cell: (info) => info.getValue(),
-            // },
-            // {
-            //     header: 'ID',
-            //     accessorKey: 'id',
-            //     cell: (info) => info.getValue(),
-            // },
-            // {
-            //     header: 'IFSC',
-            //     accessorKey: 'ifsc',
-            //     cell: (info) => info.getValue(),
-            // },
             {
                 header: 'Is Active',
                 accessorKey: 'is_active',
                 cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
 
-            // {
-            //     header: 'Removal Fee Per SKU',
-            //     accessorKey: 'removal_fee_per_sku',
-            //     cell: (info) => info.getValue(),
-            // },
-            // {
-            //     header: 'Revenue Share',
-            //     accessorKey: 'revenue_share',
-            //     cell: (info) => info.getValue(),
-            // },
             {
                 header: 'Segment',
                 accessorKey: 'segment',
                 cell: (info) => info.getValue(),
             },
-            // {
-            //     header: 'Settlement Days',
-            //     accessorKey: 'settlement_days',
-            //     cell: (info) => info.getValue(),
-            // },
+
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
-            // {
-            //     header: 'Warehouse Charge Per SKU',
-            //     accessorKey: 'warehouse_charge_per_sku',
-            //     cell: (info) => info.getValue(),
-            // },
 
             {
                 header: 'Edit',
@@ -235,28 +128,6 @@ const Seller = () => {
         ],
         [],
     )
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
-        },
-        // onGlobalFilterChange: setGlobalFilter,
-    })
 
     const onPaginationChange = (page: number) => {
         setPage(page)
@@ -289,28 +160,7 @@ const Seller = () => {
                     </button>{' '}
                 </div>
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
