@@ -237,27 +237,25 @@ const EditBanner = () => {
 
         const formData = {
             ...values,
-            banner_id: values.id,
-            image_web: webImageUpload,
-            image_mobile: mobileImageUpload,
-            section_background_web: sectiioBgWebUpload,
-            section_background_mobile: sectionBgMobileUpload,
+            banner_id: values.id || '',
+            image_web: webImageUpload || '',
+            image_mobile: mobileImageUpload || '',
+            section_background_web: sectiioBgWebUpload || '',
+            section_background_mobile: sectionBgMobileUpload || '',
             image_web_array: null,
             image_mobile_array: null,
-            division: values.division.map((item) => item.name).join(','),
-            category: values.category.map((item) => item.name).join(','),
-            sub_category: values.sub_category.map((item) => item.name).join(','),
-            product_type: values.product_type.map((item) => item.name).join(','),
-            brand: values.brand.map((item) => item.name).join(','),
+            division: values.division ? values.division.map((item) => item.name).join(',') : '',
+            category: values.category ? values.category.map((item) => item.name).join(',') : '',
+            sub_category: values.sub_category ? values.sub_category.map((item) => item.name).join(',') : '',
+            product_type: values.product_type ? values.product_type.map((item) => item.name).join(',') : '',
+            brand: values.brand ? values.brand.map((item) => item.name).join(',') : '',
             tags: [
-                ...values.tags_input.split(','),
-                BANNER_FIELDS_TYPE.map((item) => item.name).includes('max_off') && values?.max_off
-                    ? [`maxoff_${values?.max_off}`].join(',')
-                    : [],
-                BANNER_FIELDS_TYPE.map((item) => item.name).includes('min_off') && values?.min_off
-                    ? [`minoff_${values?.min_off}`].join(',')
-                    : [],
-            ].filter((filter) => filter),
+                ...(values.tags_input
+                    ? values.tags_input.split(',').filter((tag) => !tag.startsWith('maxoff_') && !tag.startsWith('minoff_'))
+                    : []),
+                BANNER_FIELDS_TYPE.map((item) => item.name).includes('max_off') && values?.max_off && `maxoff_${values?.max_off}`,
+                BANNER_FIELDS_TYPE.map((item) => item.name).includes('min_off') && values?.min_off && `minoff_${values?.min_off}`,
+            ].filter((item) => item),
         }
 
         console.log('dATA', formData)

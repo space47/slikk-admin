@@ -1,70 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import EasyTable from '@/common/EasyTable'
-
-type TableData = {
-    id: number
-    company: number
-    create_date: string
-    document_url: string
-    document_date: string
-    document_number: string
-    images: string
-    last_updated_by: {
-        name: string
-        mobile: string
-    }
-    received_address: string
-    received_by: {
-        name: string
-        mobile: string
-    }
-    slikk_owned: boolean
-    store: number
-    total_quantity: number
-    total_sku: number
-    update_date: string
-    grn_number: string
-    action: React.ReactNode
-}
-
-type Option = {
-    value: number
-    label: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import { Option, pageSizeOptions, TableData } from './inwardCommon'
 
 const PaginationTable = () => {
     const [data, setData] = useState<TableData[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
-    const fetchData = async (page: number, pageSize: number, from: string, to: string) => {
+    const fetchData = async (page: number, pageSize: number) => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
                 `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}`, // &company_id
             )
@@ -78,8 +35,8 @@ const PaginationTable = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize, from, to)
-    }, [page, pageSize, from, to, selectedCompany])
+        fetchData(page, pageSize)
+    }, [page, pageSize, selectedCompany])
 
     const getowner = (own: any) => {
         if (own === true) {
@@ -89,19 +46,9 @@ const PaginationTable = () => {
         }
     }
 
-    // const handleGRNClick = (document_number: any, company: any) => {
-    //     console.log('done', document_number)
-
-    //     navigate(`/app/goods/received/${company}/${document_number}`)
-    // }
-
     const handleDocumentClick = (id: any) => {
         console.log('ok', id)
     }
-
-    // const handleActionClick = (grn: string) => {
-    //     navigate(`/app/goods/received/edit/${grn}`)
-    // }
 
     const columns = useMemo<ColumnDef<TableData>[]>(
         () => [
