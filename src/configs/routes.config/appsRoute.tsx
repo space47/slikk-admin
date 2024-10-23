@@ -779,6 +779,13 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCommuncication.groups',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/editGroups/:groupId`,
+        component: lazy(() => import('@/views/sales/groupNotification/editGroup/EditGroup')),
+        authority: [ADMIN, USER],
+    },
+
+    {
         key: 'appsCommuncication.sendNotification',
         path: `${APP_PREFIX_PATH}/appsCommuncication/sendNotification`,
         component: lazy(() => import('@/views/sales/groupNotification/sendNotification/GetNotificationStats')),

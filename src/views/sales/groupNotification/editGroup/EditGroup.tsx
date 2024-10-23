@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
@@ -9,7 +9,7 @@ import { Field, Form, Formik, FieldProps } from 'formik'
 
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
-import { groupLocation, headingGroup, LoyaltyArray, orderGroup, userProfileGroup } from './commonTypesGroup/userProfile'
+import { groupLocation, headingGroup, LoyaltyArray, orderGroup, userProfileGroup } from '../addGroup/commonTypesGroup/userProfile'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
@@ -37,9 +37,56 @@ const LoyaltyOptions = [
     { label: 'ICON', value: 'Icon' },
 ]
 
-const AddGroup = () => {
+const EditGroup = () => {
+    const [initialData, setInitialData] = useState([])
+
+    const fetchGroupNotification = async () => {
+        try {
+            const response = await axioisInstance.get(`/notification/groups?group_id=6`)
+            const data = response?.data?.data
+            const mappedData = data.map((item) => item.rules)
+            setInitialData(mappedData)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchGroupNotification()
+    }, [])
+
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-    const initialValue = {}
+
+    console.log('INITIAL', initialData)
+    const initialValues = {
+        // city: initialData?.location?.[0]?.value || '',
+        // state: initialData?.location?.[1]?.value || '',
+        // distance: initialData?.location?.[2]?.value || '',
+        // tier: initialData?.loyalty?.[0]?.value || '',
+        // points_available_max: initialData?.loyalty?.[1]?.value?.max || '',
+        // points_available_min: initialData?.loyalty?.[1]?.value?.min || '',
+        // points_earned_max: initialData?.loyalty?.[2]?.value?.max || '',
+        // points_earned_min: initialData?.loyalty?.[2]?.value?.min || '',
+        // points_redeemed_max: initialData?.loyalty?.[3]?.value?.max || '',
+        // points_redeemed_min: initialData?.loyalty?.[3]?.value?.min || '',
+        // order_start_date: initialData?.order?.[0]?.value?.start_date || '',
+        // order_end_date: initialData?.order?.[0]?.value?.end_date || '',
+        // order_value_max: initialData?.order?.[1]?.value?.max_amount || '',
+        // order_value_min: initialData?.order?.[1]?.value?.min_amount || '',
+        // life_time_purchase_max: initialData?.order?.[2]?.value?.max_amount || '',
+        // life_time_purchase_min: initialData?.order?.[2]?.value?.min_amount || '',
+        // order_count_max: initialData?.order?.[3]?.value?.max_order_count || '',
+        // order_count_min: initialData?.order?.[3]?.value?.min_order_count || '',
+        // order_delivery_type: initialData?.order?.[4]?.value || '',
+        // basket_size_max: initialData?.order_item?.[0]?.value?.max || '',
+        // basket_size_min: initialData?.order_item?.[0]?.value?.min || '',
+        // registration_start_date: initialData?.userInfo?.[0]?.value?.start_date || '',
+        // registration_end_date: initialData?.userInfo?.[0]?.value?.end_date || '',
+        // dob_start_date: initialData?.userInfo?.[1]?.value?.start_date || '',
+        // dob_end_date: initialData?.userInfo?.[1]?.value?.end_date || '',
+        // gender: initialData?.userInfo?.[2]?.value || '',
+        // user_id: initialData?.user || '',
+    }
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -267,7 +314,7 @@ const AddGroup = () => {
         <div>
             <Formik
                 enableReinitialize
-                initialValues={initialValue}
+                initialValues={initialValues}
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
@@ -538,4 +585,4 @@ const AddGroup = () => {
     )
 }
 
-export default AddGroup
+export default EditGroup

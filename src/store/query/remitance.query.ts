@@ -10,7 +10,7 @@ interface REMITANCETYPE {
 interface ApiResponse {
     data: {
         data: {
-            remitance: any[]
+            items: any[]
             count: number
             total_amount: number
         }
@@ -30,7 +30,7 @@ export const remitanceApi = createApi({
             transformResponse: (response: ApiResponse) => {
                 const data = response?.data?.data
                 return {
-                    remitance: data?.remitance || [],
+                    remitance: data?.items || [],
                     count: data?.count || 0,
                     total_amount: data?.total_amount || 0,
                 }
