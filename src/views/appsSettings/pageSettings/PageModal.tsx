@@ -401,6 +401,14 @@ const PageModal: React.FC<modalProps> = ({
         { label: 'Dotted', value: 'dotted' },
         { label: 'Solid', value: 'solid' },
     ]
+
+    const SECTIONARRAY = [
+        { label: 'Flex End', value: 'flex-end' },
+        { label: 'Center', value: 'center' },
+        { label: 'Space Between', value: 'space-between' },
+        { label: 'Space Around', value: 'space-around' },
+        { label: 'Space Evenly', value: 'space-evenly' },
+    ]
     const dataTypeArray = [
         { label: 'banner', value: 'banner' },
         { label: 'wishlist', value: 'wishlist' },
@@ -511,7 +519,7 @@ const PageModal: React.FC<modalProps> = ({
                                     <div className="flex flex-row gap-10 ">
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Mobile Configurations :</div>
-                                            {genericComponentArray.slice(0, 12).map((item, key) => (
+                                            {genericComponentArray.slice(0, 11).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
@@ -521,10 +529,16 @@ const PageModal: React.FC<modalProps> = ({
                                                     />
                                                 </FormItem>
                                             ))}
+                                            <CommonSelect
+                                                name="component_config.section_alignment"
+                                                label="Section Alignment"
+                                                options={SECTIONARRAY}
+                                            />
                                         </FormContainer>
+
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Web Configurations :</div>
-                                            {genericComponentArray.slice(12).map((item, key) => (
+                                            {genericComponentArray.slice(11).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-1/2">
                                                     <Field
                                                         type={item.type}
@@ -534,6 +548,11 @@ const PageModal: React.FC<modalProps> = ({
                                                     />
                                                 </FormItem>
                                             ))}
+                                            <CommonSelect
+                                                name="component_config.web_section_alignment"
+                                                label="Web Section Alignment"
+                                                options={SECTIONARRAY}
+                                            />
                                         </FormContainer>
                                     </div>
 

@@ -304,6 +304,14 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         { label: 'creator', value: 'creator' },
     ]
 
+    const SECTIONARRAY = [
+        { label: 'Flex End', value: 'flex-end' },
+        { label: 'Center', value: 'center' },
+        { label: 'Space Between', value: 'space-between' },
+        { label: 'Space Around', value: 'space-around' },
+        { label: 'Space Evenly', value: 'space-evenly' },
+    ]
+
     const handleSubmit = async (row: any) => {
         console.log('satrt')
         const imageUpload = await handleimage(row.background_image_array)
@@ -479,7 +487,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     <div className="flex flex-row gap-10 ">
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Mobile Configurations :</div>
-                                            {genericComponentArray.slice(0, 12).map((item, key) => (
+                                            {genericComponentArray.slice(0, 11).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-2/3">
                                                     <Field
                                                         type={item.type}
@@ -489,10 +497,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                     />
                                                 </FormItem>
                                             ))}
+                                            <CommonSelect
+                                                name="component_config.section_alignment"
+                                                label="Section Alignment"
+                                                options={SECTIONARRAY}
+                                            />
                                         </FormContainer>
                                         <FormContainer className="grid grid-cols-1 gap-10">
                                             <div className="font-bold mt-1">Web Configurations :</div>
-                                            {genericComponentArray.slice(12).map((item, key) => (
+                                            {genericComponentArray.slice(11).map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-2/3">
                                                     <Field
                                                         type={item.type}
@@ -502,6 +515,11 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                                     />
                                                 </FormItem>
                                             ))}
+                                            <CommonSelect
+                                                name="component_config.web_section_alignment"
+                                                label="Section Alignment"
+                                                options={SECTIONARRAY}
+                                            />
                                         </FormContainer>
                                     </div>
 
@@ -520,26 +538,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                             />
                                             {borderForm === 'yes' && (
                                                 <FormContainer>
-                                                    <FormItem label="Border Style" className="col-span-1 w-full">
-                                                        <Field name="border_style">
-                                                            {({ field, form }: FieldProps<any>) => {
-                                                                return (
-                                                                    <Select
-                                                                        field={field}
-                                                                        form={form}
-                                                                        options={borderStyleArray}
-                                                                        value={borderStyleArray.find(
-                                                                            (option) => option.value === field.value,
-                                                                        )}
-                                                                        onChange={(option) => {
-                                                                            const value = option?.value || ''
-                                                                            form.setFieldValue(field.name, value)
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            }}
-                                                        </Field>
-                                                    </FormItem>
+                                                    <CommonSelect name="border_style" label="Border Style" options={borderStyleArray} />
                                                     {borrderStyleArray.map((item, key) => (
                                                         <FormItem key={key} label={item.label} className="w-full">
                                                             <Field
@@ -569,26 +568,11 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                             <br />
                                             {webBorderForm === true && (
                                                 <FormContainer>
-                                                    <FormItem label="Web Border Style" className="col-span-1 w-full">
-                                                        <Field name="web_border_style">
-                                                            {({ field, form }: FieldProps<any>) => {
-                                                                return (
-                                                                    <Select
-                                                                        field={field}
-                                                                        form={form}
-                                                                        options={borderStyleArray}
-                                                                        value={borderStyleArray.find(
-                                                                            (option) => option.value === field.value,
-                                                                        )}
-                                                                        onChange={(option) => {
-                                                                            const value = option?.value || ''
-                                                                            form.setFieldValue(field.name, value)
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            }}
-                                                        </Field>
-                                                    </FormItem>
+                                                    <CommonSelect
+                                                        name="web_border_style"
+                                                        label="Web Border Style"
+                                                        options={borderStyleArray}
+                                                    />
                                                     {webBorrderStyleArray.map((item, key) => (
                                                         <FormItem key={key} label={item.label} className="w-full">
                                                             <Field
