@@ -30,11 +30,45 @@ import { handleimage } from '@/common/handleImage'
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [showSpinner, setShowSpinner] = useState(false)
+    const [groupValue, setGroupValue] = useState('')
+    const [groupDatatoSend, setGroupDataToSend] = useState([])
+    const [groupId, setgroupId] = useState()
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [])
     const [filterId, setFilterId] = useState()
+
+    const fetchGroupValue = async () => {
+        try {
+            const response = await axioisInstance.get(`/notification/groups?group_name=${groupValue}`)
+            const data = response?.data?.data.results
+            setGroupDataToSend(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        if (groupValue) {
+            fetchGroupValue()
+        }
+    }, [groupValue])
+
+    const hanldeGroupSearch = async (groupName: string) => {
+        console.log('onclicking group', groupName)
+        try {
+            const response = await axioisInstance.get(`/notification/groups?group_name=${groupName}`)
+            const Gdata = response?.data?.data.results
+            const groupID = Gdata?.map((item) => item.id).join(',')
+            setgroupId(groupID)
+            // setGroupDataToSend([])
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    console.log('GroupId', groupId)
 
     const initialValue: sendNotificationType = {
         page: '',
@@ -83,13 +117,11 @@ const SendNotification = () => {
         }
 
         try {
-            setShowSpinner(true)
             const response = await axioisInstance.post(`/notification/send`, data)
             notification.success({
                 message: 'SUCCESS',
                 description: response.data.message || 'Notification has been added',
             })
-            setShowSpinner(false)
         } catch (error) {
             console.log(error)
             notification.error({
@@ -149,6 +181,8 @@ const SendNotification = () => {
         return <div className="flex h-screen items-center justify-center">{<Spinner size={40} />}</div>
     }
 
+    console.log('VALE', groupValue)
+
     return (
         <div>
             <Formik
@@ -182,6 +216,32 @@ const SendNotification = () => {
                                         }}
                                     </Field>
                                 </FormItem>
+
+                                <FormItem label="Group Name" className="w-full xl:w-2/3 items-center">
+                                    <input
+                                        type="text"
+                                        name="group_name"
+                                        placeholder="Enter Group name"
+                                        value={groupValue}
+                                        onChange={(e) => setGroupValue(e.target.value)}
+                                    />
+
+                                    {groupValue && (
+                                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+                                            {groupDatatoSend?.map((item, key) => (
+                                                <div key={key} className="flex items-center justify-center">
+                                                    <div
+                                                        className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out"
+                                                        onClick={() => hanldeGroupSearch(item.name)}
+                                                    >
+                                                        {item.name}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </FormItem>
+
                                 <FormItem label="SEARCH STRINGS">
                                     <FormContainer className="items-center mt-4">
                                         <button onClick={handleAddFilter} type="button">

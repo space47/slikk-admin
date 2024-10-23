@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { notification } from 'antd'
+import { useParams } from 'react-router-dom'
 
 const genderOptions = [
     {
@@ -40,10 +41,12 @@ const LoyaltyOptions = [
 const EditGroup = () => {
     const [initialData, setInitialData] = useState([])
 
+    const { groupId } = useParams()
+
     const fetchGroupNotification = async () => {
         try {
-            const response = await axioisInstance.get(`/notification/groups?group_id=6`)
-            const data = response?.data?.data
+            const response = await axioisInstance.get(`/notification/groups?group_id=${groupId}`)
+            const data = response?.data?.data?.results
             const mappedData = data.map((item) => item.rules)
             setInitialData(mappedData)
         } catch (error) {
@@ -57,35 +60,49 @@ const EditGroup = () => {
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    console.log('INITIAL', initialData)
+    console.log('INITIAL', initialData?.map((item) => item.order[2]?.value.max).join(','))
     const initialValues = {
-        // city: initialData?.location?.[0]?.value || '',
-        // state: initialData?.location?.[1]?.value || '',
-        // distance: initialData?.location?.[2]?.value || '',
-        // tier: initialData?.loyalty?.[0]?.value || '',
-        // points_available_max: initialData?.loyalty?.[1]?.value?.max || '',
-        // points_available_min: initialData?.loyalty?.[1]?.value?.min || '',
-        // points_earned_max: initialData?.loyalty?.[2]?.value?.max || '',
-        // points_earned_min: initialData?.loyalty?.[2]?.value?.min || '',
-        // points_redeemed_max: initialData?.loyalty?.[3]?.value?.max || '',
-        // points_redeemed_min: initialData?.loyalty?.[3]?.value?.min || '',
-        // order_start_date: initialData?.order?.[0]?.value?.start_date || '',
-        // order_end_date: initialData?.order?.[0]?.value?.end_date || '',
-        // order_value_max: initialData?.order?.[1]?.value?.max_amount || '',
-        // order_value_min: initialData?.order?.[1]?.value?.min_amount || '',
-        // life_time_purchase_max: initialData?.order?.[2]?.value?.max_amount || '',
-        // life_time_purchase_min: initialData?.order?.[2]?.value?.min_amount || '',
-        // order_count_max: initialData?.order?.[3]?.value?.max_order_count || '',
-        // order_count_min: initialData?.order?.[3]?.value?.min_order_count || '',
-        // order_delivery_type: initialData?.order?.[4]?.value || '',
-        // basket_size_max: initialData?.order_item?.[0]?.value?.max || '',
-        // basket_size_min: initialData?.order_item?.[0]?.value?.min || '',
-        // registration_start_date: initialData?.userInfo?.[0]?.value?.start_date || '',
-        // registration_end_date: initialData?.userInfo?.[0]?.value?.end_date || '',
-        // dob_start_date: initialData?.userInfo?.[1]?.value?.start_date || '',
-        // dob_end_date: initialData?.userInfo?.[1]?.value?.end_date || '',
-        // gender: initialData?.userInfo?.[2]?.value || '',
-        // user_id: initialData?.user || '',
+        // cart: {
+        //     cart_start: initialData?.map((item) => item?.cart?.value?.start_date).join(',') || '',
+        //     cart_end: initialData?.map((item) => item?.cart?.value?.end_date).join(',') || '',
+        // },
+        // userInfo: {
+        //     registration_start: initialData?.map((item) => item?.userInfo?.[0]?.value?.start_date).join(',') || '',
+        //     registration_end: initialData?.map((item) => item?.userInfo?.[0]?.value?.end_date).join(',') || '',
+        //     dob_start: initialData?.map((item) => item?.userInfo?.[1]?.value?.start_date).join(',') || '',
+        //     dob_end: initialData?.map((item) => item?.userInfo?.[1]?.value?.end_date).join(',') || '',
+        //     gender: initialData?.map((item) => item?.userInfo?.[2]?.value).join(',') || '',
+        // },
+        // order: {
+        //     start_date: initialData?.map((item) => item?.order?.[0]?.value?.start_date).join(',') || '',
+        //     end_date: initialData?.map((item) => item?.order?.[0]?.value?.end_date).join(',') || '',
+        //     max_value: initialData?.map((item) => item?.order?.[1]?.value?.max_amount).join(',') || '',
+        //     min_value: initialData?.map((item) => item?.order?.[1]?.value?.min_amount).join(',') || '',
+        //     max_purchase: initialData?.map((item) => item?.order?.[2]?.value?.max) || '',
+        //     min_purchase: initialData?.map((item) => item?.order?.[2]?.value?.min_amount) || '',
+        //     max_count: initialData?.map((item) => item?.order?.[3]?.value?.max_order_count).join(',') || '',
+        //     min_count: initialData?.map((item) => item?.order?.[3]?.value?.min_order_count).join(',') || '',
+        //     order_delivery_type: initialData?.map((item) => item?.order?.[4]?.value).join(',') || '',
+        // },
+        // loyalty: {
+        //     loyalty: initialData?.map((item) => item?.loyalty?.[0]?.value) || '',
+        //     max_point_available: initialData?.map((item) => item?.loyalty?.[1]?.value?.max).join(',') || '',
+        //     min_point_available: initialData?.map((item) => item?.loyalty?.[1]?.value?.min).join(',') || '',
+        //     max_point_earned: initialData?.map((item) => item?.loyalty?.[2]?.value?.max).join(',') || '',
+        //     min_point_earned: initialData?.map((item) => item?.loyalty?.[2]?.value?.min).join(',') || '',
+        //     max_point_redeemed: initialData?.map((item) => item?.loyalty?.[3]?.value?.max).join(',') || '',
+        //     min_point_redeemed: initialData?.map((item) => item?.loyalty?.[3]?.value?.min).join(',') || '',
+        // },
+        // order_item: {
+        //     max_basket_size: initialData?.map((item) => item?.order_item?.[0]?.value?.max).join(',') || '',
+        //     min_basket_size: initialData?.map((item) => item?.order_item?.[0]?.value?.min).join(',') || '',
+        //     filters: initialData?.map((item) => item?.filters).join(',') || '',
+        // },
+        // location: {
+        //     city: initialData?.map((item) => item?.location?.[0]?.value).join(',') || '',
+        //     state: initialData?.map((item) => item?.location?.[1]?.value).join(',') || '',
+        //     distance: initialData?.map((item) => item?.location?.[2]?.value).join(',') || '',
+        // },
     }
 
     const dispatch = useAppDispatch()
