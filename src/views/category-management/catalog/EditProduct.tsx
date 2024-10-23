@@ -15,12 +15,10 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdCloseCircle } from 'react-icons/io'
 import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from './ProductCommon'
 import { MdCancel } from 'react-icons/md'
+import ImageCommonProduct from './ImageCommonProduct'
+import { handleimage, handleVideo } from './handlingProductImage'
 
 const EditProduct = () => {
-    const [datas, setDatas] = useState()
-    const [imagview, setImageView] = useState<string>('')
-    const [showData, setShowData] = useState(false)
-    const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
     const [productData, setProductData] = useState<any>()
     const [allImage, setAllImage] = useState<string[]>([])
@@ -28,66 +26,6 @@ const EditProduct = () => {
     const [allColor, setAllColor] = useState<string[]>([])
 
     const { barcode } = useParams()
-
-    const MAX_UPLOAD = 100
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
-    const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = ['video/mp4', 'video/mov', 'video/flv', 'video/avi', 'video/wmv', 'video/webm', 'video/avchd']
-        const MAX_FILE_SIZE = 9000000000000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
 
     const fetchUser = async () => {
         try {
@@ -195,13 +133,6 @@ const EditProduct = () => {
         fabric: productData?.filter_tags?.fabric?.join('/'),
     }
 
-    useEffect(() => {
-        console.log('cccccsss', allImage, initialValue.images, initialValue.image)
-    }, [initialValue])
-
-    console.log('SIZE', initialValue.trend)
-    console.log('PRODUCTDSATA', initialValue.fabric)
-
     const handleRemoveImage = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault()
 
@@ -220,90 +151,6 @@ const EditProduct = () => {
         setAllColor(updatedColor)
     }
 
-    const handleimage = async (files: File[]) => {
-        console.log('filessss', files)
-        if (!files) {
-            return
-        }
-        if (!files.length) {
-            return
-        }
-        const formData = new FormData()
-
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'product')
-
-        try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            console.log(response)
-            const newData = response.data.url
-            setImageView(newData)
-            console.log(newData)
-            setShowImage(true)
-
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
-        }
-    }
-
-    const handleVideo = async (files: File[]) => {
-        if (!files) {
-            return
-        }
-        if (!files.length) {
-            return
-        }
-        const formData = new FormData()
-
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'product')
-
-        try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            console.log(response)
-            const newData = response.data.url
-            setDatas(newData)
-            setShowData(true)
-
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Video uploaded successfully',
-            })
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'Video Not uploaded',
-            })
-            return 'Error'
-        }
-    }
-
     const handleSubmit = async (values: Product) => {
         let img_url = allImage.join(','),
             video_url = allVideo.join(','),
@@ -320,10 +167,8 @@ const EditProduct = () => {
             img_url = temp.filter((t) => t).join(',')
         }
 
-        console.log('color code start')
         const colorlink = await handleimage(values.color_code)
 
-        console.log('color uploaded')
         if (values.color_code && values.color_code.length && !colorlink) {
             return
         } else if (values.color_code && colorlink) {
@@ -331,9 +176,8 @@ const EditProduct = () => {
             color_code_url = temp.filter((t) => t).join(',')
         }
 
-        console.log('video start')
         const videoUpload = await handleVideo(values.video)
-        console.log('video upload')
+
         if (values.video && values.video.length && !videoUpload) {
             return
         } else if (values.video && videoUpload) {
@@ -341,10 +185,12 @@ const EditProduct = () => {
             video_url = temp.filter((t) => t).join(',')
         }
 
+        console.log('COLORCODEURL', color_code_url)
+
         const formData = {
             ...values,
 
-            color_code: color_code_url,
+            color_code_link: color_code_url,
             image: img_url,
             video_link: video_url,
         }
@@ -359,7 +205,7 @@ const EditProduct = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Product Edited Successfully',
             })
-            navigate('/app/catalog/products')
+            // navigate('/app/catalog/products')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -395,181 +241,38 @@ const EditProduct = () => {
                                     </FormItem>
                                 ))}
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
-                                    Image
-                                    <FormContainer className=" mt-5 w-full ">
-                                        {/* DIV */}
+                                <ImageCommonProduct
+                                    label="image"
+                                    allName={allImage}
+                                    handleRemove={handleRemoveImage}
+                                    name="images"
+                                    fieldname="images"
+                                    fileLists={values.images}
+                                    textName="image"
+                                    placeholder="Enter Image Url"
+                                />
+                                <ImageCommonProduct
+                                    label="Color Code Thumbnail"
+                                    allName={allColor}
+                                    handleRemove={handleRemoveColor}
+                                    name="color_code"
+                                    fieldname="color_code"
+                                    fileLists={values.color_code}
+                                    textName="color_code_link"
+                                    placeholder="Enter color code Url"
+                                />
+                                <ImageCommonProduct
+                                    isVideo
+                                    label="Video"
+                                    allName={allVideo}
+                                    handleRemove={handleRemoveVideo}
+                                    name="video"
+                                    fieldname="video"
+                                    fileLists={values.video}
+                                    textName="video_link"
+                                    placeholder="Enter Video Url"
+                                />
 
-                                        <div className="overflow-x-scroll w-[350px] scrollbar-hide flex justify-center">
-                                            <div className="image w-[80%] min-h-[100px] h-auto mt-5 flex gap-3 items-center">
-                                                {allImage && allImage.length > 0 ? (
-                                                    allImage?.map(
-                                                        (img, index) =>
-                                                            img && (
-                                                                <div key={index} className="flex flex-col gap-3">
-                                                                    <img src={img} alt="img" className="w-[100px]" />
-
-                                                                    <button className=" mb-5" onClick={(e) => handleRemoveImage(e, index)}>
-                                                                        <MdCancel className="text-red-500 bg-none text-lg" />
-                                                                    </button>
-                                                                </div>
-                                                            ),
-                                                    )
-                                                ) : (
-                                                    <p>No image</p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="image">
-                                                {({ form }: FieldProps<Product>) => (
-                                                    <>
-                                                        <Upload
-                                                            multiple
-                                                            className="flex justify-center"
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.images}
-                                                            onChange={(files) => form.setFieldValue('images', files)}
-                                                            onFileRemove={(files) => form.setFieldValue('images', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                    <FormItem
-                                        label=""
-                                        invalid={errors.image && touched.image}
-                                        errorMessage={errors.image}
-                                        className="col-span-1 w-[80%]"
-                                    >
-                                        <Field
-                                            type="text"
-                                            name="image"
-                                            placeholder="Enter ImageUrl or Upload Image file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* .............................................................. */}
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide">
-                                    Color Code Thumbnail
-                                    <FormContainer className=" mt-5 ">
-                                        <div className=" overflow-x-scroll w-[350px] scrollbar-hide flex justify-center">
-                                            <div className=" image w-[20%] h-[20%] mt-5 flex gap-3 items-center  ">
-                                                {allColor && allColor.length > 0 ? (
-                                                    allColor?.map((img, index) =>
-                                                        img ? (
-                                                            <div key={index} className="flex flex-col gap-3">
-                                                                <img src={img} alt="img" className="rounded-xl" />
-
-                                                                <button
-                                                                    className=" text-sm mb-5"
-                                                                    onClick={(e) => handleRemoveColor(e, index)}
-                                                                >
-                                                                    <MdCancel className="text-red-500 bg-none text-lg" />
-                                                                </button>
-                                                            </div>
-                                                        ) : (
-                                                            ''
-                                                        ),
-                                                    )
-                                                ) : (
-                                                    <p>No image</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="color_code">
-                                                {({ form }: FieldProps<Product>) => (
-                                                    <>
-                                                        <Upload
-                                                            multiple
-                                                            className="flex justify-center"
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.color_code}
-                                                            onChange={(files) => form.setFieldValue('color_code', files)}
-                                                            onFileRemove={(files) => form.setFieldValue('color_code', files)}
-                                                            // uploadButtonText="Add Files"
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                    <FormItem label="" className="col-span-1 w-[80%]">
-                                        <Field
-                                            type="text"
-                                            name="color_code_link"
-                                            placeholder="Enter Color Url or Upload Color file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* .......................video........................................ */}
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
-                                    Video
-                                    <FormContainer className=" mt-5 ">
-                                        <div className=" overflow-x-scroll w-[350px] ">
-                                            <div className=" image w-[10%] h-[20%] mt-5 flex gap-3 items-center  ">
-                                                {allVideo && allVideo.length > 0 ? (
-                                                    allVideo?.map((img, index) =>
-                                                        img ? <img key={index} src={img} alt="img" className="rounded-xl" /> : '',
-                                                    )
-                                                ) : (
-                                                    <p>No image</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <FormItem
-                                            label=""
-                                            invalid={Boolean(errors.video && touched.video)}
-                                            errorMessage={errors.video as string}
-                                            className="grid grid-rows-2"
-                                        >
-                                            <Field name="video_link">
-                                                {({ form }: FieldProps<Product>) => (
-                                                    <>
-                                                        <Upload
-                                                            multiple
-                                                            beforeUpload={beforeVideoUpload}
-                                                            fileList={values.video}
-                                                            onChange={(files) => form.setFieldValue('Video', files)}
-                                                            onFileRemove={(files) => form.setFieldValue('images', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                    <FormItem
-                                        label=""
-                                        invalid={errors.video_link && touched.video_link}
-                                        errorMessage={errors.video_link}
-                                        className="col-span-1 w-[80%]"
-                                    >
-                                        <Field
-                                            type="text"
-                                            name="video_link"
-                                            placeholder="Enter VideoUrl or Upload Video file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
                                 {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field

@@ -1,49 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
-// import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { SaveAs } from '@mui/icons-material'
 import { FaDownload } from 'react-icons/fa'
-
-type User = {
-    name: string
-    email: string
-    mobile: string
-}
-
-type TableData = {
-    comments: string
-    company: number
-    create_date: string
-    error_file: string
-    failure: number
-    id: number
-    success: number
-    upload_type: string
-    uploaded_file: string
-    user: User
-}
-
-type Option = {
-    value: number
-    label: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import EasyTable from '@/common/EasyTable'
+import { Option, pageSizeOptions, TableData } from './qcCommon'
 
 const PaginationTable = () => {
     const [data, setData] = useState<TableData[]>([])
@@ -99,7 +64,7 @@ const PaginationTable = () => {
 
                     const a = document.createElement('a')
                     a.href = url
-                    a.download = `${requiredUrl}`
+                    a.download = `${requiredUrl.split('_').slice(0, 2).join('')}.csv`
 
                     document.body.appendChild(a)
 
@@ -130,7 +95,7 @@ const PaginationTable = () => {
 
                     const a = document.createElement('a')
                     a.href = url
-                    a.download = `${requiredUrl}`
+                    a.download = `${requiredUrl.split('_').slice(10, 15).join('')}.csv`
 
                     document.body.appendChild(a)
 
@@ -231,26 +196,6 @@ const PaginationTable = () => {
         [],
     )
 
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize), // Ensure page count is updated
-        manualPagination: true, // Enable manual pagination
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1) // React Table uses zero-based index
-            setPageSize(pageSize)
-        },
-    })
-
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
@@ -261,28 +206,7 @@ const PaginationTable = () => {
 
     return (
         <div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>

@@ -64,7 +64,7 @@ const staticReducers = {
     urlShortner: urlShortnerReducer,
     monthlyReport: monthlyReportReducer,
     taskData: taskDataReducer,
-    [remitanceApi.reducerPath]: remitanceApi.reducer,
+    // [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
 

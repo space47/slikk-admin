@@ -3,23 +3,19 @@ import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-
 import { BANNERMODEL } from './BannerCommon'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { Modal, notification } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
+import EasyTable from '@/common/EasyTable'
 
 type Option = {
     value: number
     label: string
 }
-
-const { Tr, Th, Td, THead, TBody } = Table
 
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
@@ -207,34 +203,6 @@ const AppBanners = () => {
         setShowDeleteModal(false)
     }
 
-    console.log('Bannner Id', bannerid)
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        // onPaginationChange: ({ pageIndex, pageSize }) => {
-        //     setPage(pageIndex + 1)
-        //     setPageSize(pageSize)
-        // },
-        onGlobalFilterChange: setGlobalFilter,
-    })
-
-    // const onPaginationChange = (page: number) => {
-    //     setPage(page)
-    // }
-
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
     }
@@ -287,28 +255,7 @@ const AppBanners = () => {
                     </div>
                 </div>
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
                 <div style={{ minWidth: 130 }}>
