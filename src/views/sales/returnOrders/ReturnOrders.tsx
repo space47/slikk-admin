@@ -54,11 +54,6 @@ export interface ReturnOrder {
     uuid: string
 }
 
-// interface ReturnStatus {
-//     value: string[]
-//     name: string[]
-// }
-
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
 const pageSizeOptions = [

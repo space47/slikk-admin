@@ -70,7 +70,7 @@ const BrandReturns = () => {
 
     const fetchData = async (page: number, pageSize: number, from: string, to: string) => {
         try {
-            setShowSpinner(true)
+            // setShowSpinner(true)
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
                 `merchant/return_order_items?company_id=${selectedCompany.id}&brand=true&from=${from}&to=${To_Date}`,
@@ -231,6 +231,8 @@ const BrandReturns = () => {
             setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
         }
     }
+
+    console.log(from, '--------------', to)
 
     return (
         <>
