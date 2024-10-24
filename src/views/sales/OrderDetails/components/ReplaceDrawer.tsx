@@ -102,7 +102,7 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
         <div>
             <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose} width={800}>
                 <h5 className="mb-4">Replace Order Item Here</h5>
-                <div className="flex flex-col gap-4 ">
+                <div className="flex flex-col xl:gap-4 gap-1 ">
                     <div className="text-xl">Barcode</div>
                     <div className="flex gap-10">
                         <div className="flex justify-start ">
@@ -112,11 +112,11 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
                                 id=""
                                 placeholder="search SKU for product"
                                 value={searchInput}
-                                className=" w-[250px] rounded-[10px]"
+                                className=" xl:w-[250px] rounded-[10px] w-[180px]"
                                 onChange={handleSearch}
                             />
                         </div>
-                        <div className="bg-gray-200 rounded-[10px] font-bold text-lg ">
+                        <div className="bg-gray-200 rounded-[10px] font-bold xl:text-lg text-md items-center ">
                             <Dropdown
                                 className=" text-xl text-black bg-gray-200 font-bold "
                                 title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
@@ -133,7 +133,7 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
                         </div>
                     </div>
 
-                    <div className=" overflow-scroll scrollbar-hide">
+                    <div className=" overflow-scroll scrollbar-hide h-[300px]">
                         {showTable && searchInput && <OrderCreateTable data={tableData} handleActionClick={handleActionClick} />}
                     </div>
                     {showBelowData && (
