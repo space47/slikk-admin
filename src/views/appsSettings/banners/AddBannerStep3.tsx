@@ -22,13 +22,19 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
             prev.map((form, idx) => {
                 if (idx === index) {
                     if (field === 'maxoff' || field === 'minoff') {
+                        const updatedTags = form.tags
+                            ? [...form.tags.filter((tag: string) => !tag.startsWith(`${field}_`)), `${field}_${value}`]
+                            : [`${field}_${value}`]
+
                         return {
                             ...form,
-                            tags: [...form.tags.filter((tag: any) => !tag.startsWith(`${field}_`)), `${field}_${value}`],
+                            tags: updatedTags,
                         }
                     }
+
                     return { ...form, [field]: value }
                 }
+
                 return form
             }),
         )

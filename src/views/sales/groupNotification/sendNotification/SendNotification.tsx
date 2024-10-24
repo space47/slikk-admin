@@ -62,7 +62,8 @@ const SendNotification = () => {
             const Gdata = response?.data?.data.results
             const groupID = Gdata?.map((item) => item.id).join(',')
             setgroupId(groupID)
-            // setGroupDataToSend([])
+            setGroupValue(groupName)
+            setGroupDataToSend([])
         } catch (error) {
             console.log(error)
         }
@@ -95,6 +96,7 @@ const SendNotification = () => {
         const data = {
             ...formData,
             image_url: imageUpload,
+            notification_group_id: groupId,
             filters: [
                 ...(values.filters || []),
                 ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -166,7 +168,7 @@ const SendNotification = () => {
             }
 
             const response = await axioisInstance.post(`/product/search/criteria`, body)
-            console.log('MAIN response', response.data.data)
+
             const id = response.data?.data?.id
             setFilterId(id)
             notification.success({
