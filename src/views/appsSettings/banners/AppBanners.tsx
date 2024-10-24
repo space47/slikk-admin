@@ -100,7 +100,7 @@ const AppBanners = () => {
                 accessorKey: 'image_web',
                 cell: (info) =>
                     info.getValue() ? (
-                        <img src={info.getValue().split(',')[0]} alt="" className=" object-contain w-[100px] h-[100xp] " />
+                        <img src={info.getValue()?.split(',')[0]} alt="" className=" object-contain w-[100px] h-[100xp] " />
                     ) : (
                         ''
                     ),
@@ -109,7 +109,7 @@ const AppBanners = () => {
                 header: 'Image (Mobile)',
                 accessorKey: 'image_mobile',
                 cell: (info) =>
-                    info.getValue() ? <img src={info.getValue().split(',')[0]} alt="" className=" object-contain w-[100px]  " /> : '',
+                    info.getValue() ? <img src={info.getValue()?.split(',')[0]} alt="" className=" object-contain w-[100px]  " /> : '',
             },
 
             { header: 'Offers', accessorKey: 'offers' },

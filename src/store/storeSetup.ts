@@ -1,27 +1,13 @@
-import {
-    configureStore,
-    Action,
-    Reducer,
-    AnyAction,
-    Store,
-} from '@reduxjs/toolkit'
-import {
-    persistStore,
-    persistReducer,
-    FLUSH,
-    REHYDRATE,
-    PAUSE,
-    PERSIST,
-    PURGE,
-    REGISTER,
-} from 'redux-persist'
+import { configureStore, Action, Reducer, AnyAction, Store } from '@reduxjs/toolkit'
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { PERSIST_STORE_NAME } from '@/constants/app.constant'
 import rootReducer, { RootState, AsyncReducers } from './rootReducer'
 import RtkQueryService from '@/services/RtkQueryService'
+import { remitanceApi } from './query/remitance.query'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const middlewares: any[] = [RtkQueryService.middleware]
+const middlewares: any[] = [RtkQueryService.middleware, remitanceApi.middleware]
 
 const persistConfig = {
     key: PERSIST_STORE_NAME,
@@ -40,14 +26,7 @@ const store: CustomStore = configureStore({
         getDefaultMiddleware({
             immutableCheck: false,
             serializableCheck: {
-                ignoredActions: [
-                    FLUSH,
-                    REHYDRATE,
-                    PAUSE,
-                    PERSIST,
-                    PURGE,
-                    REGISTER,
-                ],
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
         }).concat(middlewares),
     devTools: process.env.NODE_ENV === 'development',
@@ -63,12 +42,7 @@ export function injectReducer<S>(key: string, reducer: Reducer<S, Action>) {
             return false
         }
         store.asyncReducers[key] = reducer
-        store.replaceReducer(
-            persistReducer(
-                persistConfig,
-                rootReducer(store.asyncReducers) as Reducer
-            )
-        )
+        store.replaceReducer(persistReducer(persistConfig, rootReducer(store.asyncReducers) as Reducer))
     }
     persistor.persist()
     return store

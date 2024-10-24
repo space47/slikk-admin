@@ -32,7 +32,8 @@ const SendNotification = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const [groupValue, setGroupValue] = useState('')
     const [groupDatatoSend, setGroupDataToSend] = useState([])
-    const [groupId, setgroupId] = useState()
+    const [clickedGuarantee, setClickedGuarantee] = useState({})
+    const [groupId, setgroupId] = useState<string[]>([])
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -57,13 +58,17 @@ const SendNotification = () => {
 
     const hanldeGroupSearch = async (groupName: string) => {
         console.log('onclicking group', groupName)
+        setClickedGuarantee((prevState) => ({
+            ...prevState,
+            [groupName]: !prevState[groupName],
+        }))
         try {
             const response = await axioisInstance.get(`/notification/groups?group_name=${groupName}`)
             const Gdata = response?.data?.data.results
             const groupID = Gdata?.map((item) => item.id).join(',')
-            setgroupId(groupID)
-            setGroupValue(groupName)
-            setGroupDataToSend([])
+            setgroupId((prev) => [...prev, groupID])
+            // setGroupValue(groupName)
+            // setGroupDataToSend([])
         } catch (error) {
             console.log(error)
         }
@@ -96,7 +101,7 @@ const SendNotification = () => {
         const data = {
             ...formData,
             image_url: imageUpload,
-            notification_group_id: groupId,
+            notification_group_id: groupId.join(','),
             filters: [
                 ...(values.filters || []),
                 ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -233,7 +238,11 @@ const SendNotification = () => {
                                             {groupDatatoSend?.map((item, key) => (
                                                 <div key={key} className="flex items-center justify-center">
                                                     <div
-                                                        className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out"
+                                                        className={
+                                                            clickedGuarantee[item.name]
+                                                                ? 'px-6 py-2 bg-gray-500 text-green-200 font-semibold rounded-lg shadow-md transition duration-300 ease-in-out cursor-pointer'
+                                                                : 'px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out cursor-pointer'
+                                                        }
                                                         onClick={() => hanldeGroupSearch(item.name)}
                                                     >
                                                         {item.name}

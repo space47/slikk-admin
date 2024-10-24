@@ -228,8 +228,7 @@ const OrderDetails = () => {
                                     </button>
                                 ) : (
                                     data.status !== 'DECLINED' &&
-                                    data.status !== 'CANCELLED' &&
-                                    data?.payment?.status !== 'PAID' && (
+                                    data.status !== 'CANCELLED' && (
                                         <button
                                             className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                             onClick={handleCancelOrder}
