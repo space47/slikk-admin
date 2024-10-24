@@ -235,8 +235,11 @@ const EditBanner = () => {
 
         console.log('tags', values)
 
+        const { max_off, min_off, ...rest } = values
+        console.log(max_off, min_off)
+
         const formData = {
-            ...values,
+            ...rest,
             banner_id: values.id || '',
             image_web: webImageUpload || '',
             image_mobile: mobileImageUpload || '',
