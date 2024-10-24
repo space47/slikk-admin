@@ -14,7 +14,7 @@ type ProductTableProps = {
     handleActionClick: (e: any) => void
 }
 
-const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
+const OrderCreateTable = ({ data, handleActionClick }: ProductTableProps) => {
     const columns = useMemo<ColumnDef<any>[]>(
         () => [
             {
@@ -76,7 +76,7 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
 
     return (
         <div className="overflow-x-auto overflow-y-scroll scrollbar-hide">
-            <table className="min-w-full bg-white">
+            <table className="min-w-full bg-white ">
                 <thead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -104,4 +104,4 @@ const CreatePostTable = ({ data, handleActionClick }: ProductTableProps) => {
     )
 }
 
-export default CreatePostTable
+export default OrderCreateTable
