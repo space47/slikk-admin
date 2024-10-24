@@ -23,8 +23,8 @@ const Remitance = () => {
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showOneMonthBack, setShowOneMonthBack] = useState(true)
     const [brandValue, setBrandValue] = useState<any | null>(null)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
+    // const [page, setPage] = useState(1)
+    // const [pageSize, setPageSize] = useState(10)
 
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
