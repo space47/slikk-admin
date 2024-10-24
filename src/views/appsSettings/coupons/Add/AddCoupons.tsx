@@ -140,7 +140,7 @@ const AddCoupons = () => {
     }
     return (
         <div>
-            <h3 className="mb-5 from-neutral-900">COUPON EDIT</h3>
+            <h3 className="mb-5 from-neutral-900 font-semibold">COUPON ADD</h3>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}

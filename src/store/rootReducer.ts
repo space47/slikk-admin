@@ -25,6 +25,7 @@ import urlShortnerReducer from './slices/urlShortner/urlShortner.slice'
 import monthlyReportReducer from './slices/monthlyReport/monthlyReport.slice'
 import taskDataReducer from './slices/taskData/taskData.slice'
 import { remitanceApi } from './query/remitance.query'
+import userSummaryReducer from './slices/orderUserSummary/UserSummary.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -64,6 +65,7 @@ const staticReducers = {
     urlShortner: urlShortnerReducer,
     monthlyReport: monthlyReportReducer,
     taskData: taskDataReducer,
+    userSummary: userSummaryReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }
