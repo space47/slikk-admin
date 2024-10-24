@@ -1,12 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
-import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
-import type { MouseEvent } from 'react'
-// import { CREATE_POST } from './commonPost'
-import Upload from '@/components/ui/Upload'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import OrderCreateTable from './OrderCreateTable'
@@ -167,10 +163,6 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
                 </div>
 
                 <div className="mt-10">
-                    {/* {productData !== undefined ||
-                        (productData !== null && (
-                            
-                        ))} */}
                     <button className="flex justify-end items-end bg-red-500 text-white px-3 py-2 rounded-md" onClick={handleAPIforReplace}>
                         Replace
                     </button>

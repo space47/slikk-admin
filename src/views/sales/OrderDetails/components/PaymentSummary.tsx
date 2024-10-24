@@ -26,7 +26,7 @@ type PaymentSummaryProps = {
     handlePODAction: any
 }
 
-const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
+export const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
     return (
         <li className={`flex items-center justify-between${!isLast ? ' mb-3' : ''}`}>
             <span>{label}</span>
@@ -41,7 +41,7 @@ const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
         </li>
     )
 }
-const PaymentType = ({ label, value, isLast }: PaymentInfoProps) => {
+export const PaymentType = ({ label, value, isLast }: PaymentInfoProps) => {
     return (
         <li className={`flex items-center justify-between${!isLast ? ' mb-3' : ''}`}>
             <span>{label}</span>
