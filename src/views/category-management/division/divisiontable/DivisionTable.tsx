@@ -6,7 +6,6 @@ import moment from 'moment'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { Modal } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
@@ -73,14 +72,6 @@ const DivisionTable = () => {
 
     const navigate = useNavigate()
 
-    // const handleActionClick = (id: any) => {
-    //     navigate(`/app/category/division/${id}`)
-    // }
-
-    const handleSeller = () => {
-        navigate('/app/category/division/addNew')
-    }
-
     // Paginate filtered data
     const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(filteredData.length / pageSize)
@@ -90,14 +81,14 @@ const DivisionTable = () => {
         {
             header: 'Create Date',
             accessor: 'create_date',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value: any) => moment(value).format('YYYY-MM-DD'),
         },
         { header: 'Title', accessor: 'title' },
         { header: 'Description', accessor: 'description' },
         {
             header: 'Image',
             accessor: 'image',
-            format: (value) => {
+            format: (value: any) => {
                 console.log('ValueData', value)
                 return <img src={value} alt="product" width="50" />
             },
@@ -105,7 +96,7 @@ const DivisionTable = () => {
         {
             header: 'Footer',
             accessor: 'footer',
-            format: (value) => {
+            format: (value: any) => {
                 console.log('ValueData', value)
                 return (
                     <div className="w-[200px] h-[70px] overflow-hidden">
@@ -123,23 +114,23 @@ const DivisionTable = () => {
         {
             header: 'Active',
             accessor: 'is_active',
-            format: (value) => (value ? 'Yes' : 'No'),
+            format: (value: any) => (value ? 'Yes' : 'No'),
         },
         {
             header: 'Update Date',
             accessor: 'update_date',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            format: (value: any) => moment(value).format('YYYY-MM-DD'),
         },
         {
             header: 'Try and Buy',
             accessor: 'is_try_and_buy',
-            format: (value) => (value ? 'Yes' : 'No'),
+            format: (value: any) => (value ? 'Yes' : 'No'),
         },
         { header: 'Last Updated By', accessor: 'last_updated_by' },
         {
             header: 'Edit',
             accessor: 'id',
-            format: (value) => (
+            format: (value: any) => (
                 <button className="border-none bg-none">
                     <a href={`/app/category/division/${value}`}>
                         {' '}
@@ -151,7 +142,7 @@ const DivisionTable = () => {
         {
             header: 'Delete',
             accessor: 'id',
-            format: (value) => (
+            format: (value: any) => (
                 <button onClick={() => handleDeleteClick(value)} className="border-none bg-none">
                     <FaTrash className="text-xl text-red-600" />
                 </button>
@@ -160,7 +151,6 @@ const DivisionTable = () => {
     ]
 
     const handleDeleteClick = (id: any) => {
-        console.log('DELETE', id)
         setDeleteModal(true)
         setIdStoreForDelete(id)
     }
@@ -173,6 +163,7 @@ const DivisionTable = () => {
             const response = await axiosInstance.delete(`division`, {
                 data: body,
             })
+            console.log(response)
             setDeleteModal(false)
             navigate(0)
         } catch (error) {
@@ -186,16 +177,6 @@ const DivisionTable = () => {
 
     return (
         <div>
-            {/* <div className="flex items-end justify-end mb-2">
-                <button
-                    className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
-                    onClick={handleSeller}
-                >
-                    ADD NEW DISISION
-                </button>{' '}
-                <br />
-                <br />
-            </div> */}
             <div className="mb-4">
                 <input
                     type="text"

@@ -32,7 +32,7 @@ type Product = {
 
 type OrderProductsProps = {
     data?: Product[]
-    invoice_id: number
+    invoice_id: string | undefined
     status: string
 }
 
