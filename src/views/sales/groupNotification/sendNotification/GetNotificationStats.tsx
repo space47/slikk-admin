@@ -1,14 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { NOTIFYSTATS, NotifyResponse, pageSizeOptions } from './getNotiStats.common'
+import { NOTIFYSTATS, pageSizeOptions } from './getNotiStats.common'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import EasyTable from '@/common/EasyTable'
 
@@ -16,8 +13,6 @@ type Option = {
     value: number
     label: string
 }
-
-const { Tr, Th, Td, THead, TBody } = Table
 
 const GetNotificationStats = () => {
     const [data, setData] = useState<NOTIFYSTATS[]>([])
@@ -134,26 +129,23 @@ const GetNotificationStats = () => {
                             className="p-2 border rounded"
                         />
                     </div>
-                    <div className="mt-4">
+                    {/* <div className="mt-4">
                         <button
                             className="bg-black text-white px-5 py-2 items-center justify-center rounded-md hover:bg-gray-700 xl:hidden  flex"
                             onClick={handleSeller}
                         >
                             Add New
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
-                <div className="flex gap-5 items-center flex-col xl:flex-row mb-4">
+                <div className="flex gap-1 items-center flex-row mb-4">
                     <div className="">
                         <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
                     </div>
-                    <div className=" mt-4 order-first xl:order-1">
-                        <button
-                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700 hidden xl:flex"
-                            onClick={handleSeller}
-                        >
-                            Create Notification
+                    <div className=" mt-8 xl:mt-8 order-first xl:order-1">
+                        <button className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-700 " onClick={handleSeller}>
+                            <span className="font-semibold"> Create Notification</span>
                         </button>{' '}
                     </div>
                 </div>

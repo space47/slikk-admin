@@ -20,96 +20,10 @@ import CancelModal from './components/CancelModal'
 import { FaArrowCircleDown, FaDownload, FaMapMarkedAlt } from 'react-icons/fa'
 import { notification } from 'antd'
 import { Button } from '@/components/ui'
+import { SalesOrderDetailsResponse } from './orderList.common'
 // import { string } from 'yup'
 
-type RETURNORDER = {
-    amount: string
-    create_date: string
-    order: string
-    return_order_delivery: any
-    return_order_id: string
-    return_order_items: any
-    return_type: string
-    status: string
-    uuid: string
-}
-
-type SalesOrderDetailsResponse = {
-    amount: string
-    invoice_id?: string
-    progressStatus?: number
-    payementStatus?: number
-    create_date?: string
-    dateTime?: number
-    payment?: {
-        amount: number
-        mode: string
-        transaction_time: string
-        status: string
-    }
-    coupon_discount: string
-    delivery: string
-    delivery_discount: number
-    delivery_type: string
-    tax: string | number
-    address_name: string
-    logistic?: {
-        partner: number
-        price: number
-        create_date: number
-        drop_time: number
-        shippingLogo: string
-        runner_name: string
-        runner_phone_number: string
-        runner_profile_pic_url: string
-        state: string
-    }
-
-    logistic_partner: any
-    order_items?: {
-        barcode: string
-        brand: string
-        name: string
-        color: string
-        size: string
-        product_type: string
-        image: string
-        sp: number
-        quantity: string
-        location: string
-        sub_category: string
-        mrp: number
-        fulfilled_quantity: string
-        final_price: number
-        sku: string
-        id: number
-        returnable_quantity: number
-    }[]
-
-    log: {
-        timestamp: string
-        status: string
-    }[]
-    user: {
-        name: string
-        mobile: string
-    }
-    store: {
-        address: string
-        latitude: number
-        longitude: number
-    }
-    billing_address: string
-    status: string
-    loyalty_discount: string
-    points_discount: string
-    location_url: string
-    return_order: RETURNORDER[]
-}
-
 const OrderDetails = () => {
-    // const location = useLocation()
-
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<SalesOrderDetailsResponse>()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
@@ -218,26 +132,25 @@ const OrderDetails = () => {
                                 </span>
                             </div>
                             <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
-                                {data.status === 'COMPLETED' &&
-                                (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') ? (
-                                    <button
-                                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
-                                        onClick={handleReturnOrder}
-                                    >
-                                        RETURN ORDER
-                                    </button>
-                                ) : (
-                                    data.status !== 'DECLINED' &&
-                                    data.status !== 'CANCELLED' && (
+                                <div className="flex gap-4">
+                                    {data.status === 'COMPLETED' &&
+                                        (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') && (
+                                            <button
+                                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                                onClick={handleReturnOrder}
+                                            >
+                                                RETURN ORDER
+                                            </button>
+                                        )}{' '}
+                                    {data.status !== 'DECLINED' && data.status !== 'CANCELLED' && (
                                         <button
                                             className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
                                             onClick={handleCancelOrder}
                                         >
                                             CANCEL ORDER
                                         </button>
-                                    )
-                                )}
-
+                                    )}
+                                </div>
                                 {data.return_order.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">
                                         <span className="text-gray-700">Return Orders:</span>
