@@ -124,7 +124,7 @@ const EditProduct = () => {
         length: productData?.length,
         necktype: productData?.necktype,
         risetype: productData?.risetype,
-        colorfamily: productData?.filter_to_display_map.colorfamily,
+        colorfamily: productData?.filter_tags.colorfamily.map((item) => item).join(','),
 
         sleevtype: productData?.sleevtype,
         trend: productData?.filter_tags?.trend?.join('/'),
