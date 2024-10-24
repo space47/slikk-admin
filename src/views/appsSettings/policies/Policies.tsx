@@ -24,6 +24,7 @@ const Policies = () => {
                 })
                 .catch((error) => {
                     console.log(error)
+                    setRichTextValue('')
                     setData([])
                 })
         } catch (error) {
@@ -41,7 +42,6 @@ const Policies = () => {
             name: CONFIGOPTIONS.find((p) => p.value == a)?.label || '',
         })
     }
-    console.log('VALUE', currentSelectedPage)
 
     const handlePolicySubmit = async () => {
         try {
@@ -60,8 +60,8 @@ const Policies = () => {
 
     return (
         <div className="flex flex-col gap-10">
-            <div className="drop border  bg-gray-200 text-black text-lg font-semibold w-[250px] ">
-                <Dropdown className=" text-xl text-black " title={currentSelectedPage.value} onSelect={handleSelect}>
+            <div className=" text-black text-lg font-semibold inline-flex w-auto">
+                <Dropdown className="text-xl text-black" title={currentSelectedPage.value} onSelect={handleSelect}>
                     {CONFIGOPTIONS?.map((item, key) => {
                         return (
                             <DropdownItem key={key} eventKey={item.value}>
