@@ -160,14 +160,23 @@ const PageSettings = () => {
 
     const columns: ColumnDef<WebType>[] = useMemo(
         () => [
+            // {
+            //     id: 'dragger',
+            //     header: '',
+            //     accessorKey: 'dragger',
+            //     cell: (props) => (
+            //         <span {...(props as any).dragHandleProps}>
+            //             <MdDragIndicator />
+            //         </span>
+            //     ),
+            // },
             {
-                id: 'dragger',
-                header: '',
-                accessorKey: 'dragger',
-                cell: (props) => (
-                    <span {...(props as any).dragHandleProps}>
-                        <MdDragIndicator />
-                    </span>
+                header: 'Edit',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button onClick={() => handleActionClick(row.original)} className="border-none bg-none">
+                        <FaEdit className="text-xl text-blue-600" />
+                    </button>
                 ),
             },
             {
@@ -296,15 +305,7 @@ const PageSettings = () => {
                     )
                 },
             },
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original)} className="border-none bg-none">
-                        <FaEdit className="text-xl text-blue-600" />
-                    </button>
-                ),
-            },
+
             {
                 header: 'Delete',
                 accessorKey: '',

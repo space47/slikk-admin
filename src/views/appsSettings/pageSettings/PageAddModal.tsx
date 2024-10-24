@@ -305,6 +305,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     ]
 
     const SECTIONARRAY = [
+        { label: 'Flex Start', value: 'flex-start' },
         { label: 'Flex End', value: 'flex-end' },
         { label: 'Center', value: 'center' },
         { label: 'Space Between', value: 'space-between' },
