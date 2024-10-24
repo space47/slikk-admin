@@ -25,7 +25,7 @@ export const remitanceApi = createApi({
     endpoints: (builder) => ({
         fetchRemitanceApi: builder.query<REMITANCETYPE, { page: number; pageSize: number; from: string; to: string; brandValue: any }>({
             query: ({ page, pageSize, from, to, brandValue }) => {
-                return `/sales?brand=${brandValue.name}&from=${from}&to=${to}&page=${page}&pageSize=${pageSize}`
+                return `/sales?brand=${brandValue?.name}&from=${from}&to=${to}&page=${page}&pageSize=${pageSize}`
             },
             transformResponse: (response: ApiResponse) => {
                 const data = response?.data?.data
