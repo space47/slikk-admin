@@ -1,34 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { CUSTOMERANALYTICS } from './homes.common'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useParams } from 'react-router-dom'
 import Avatar from '@/components/ui/Avatar'
 import moment from 'moment'
+import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { fetchUserSummary } from '@/store/slices/orderUserSummary/UserSummary.slice'
+import CartHome from './componentsHomes/CartHome'
 
 const CustomerAnalytics = () => {
-    const [customerData, setCustomerData] = useState<CUSTOMERANALYTICS>()
-    // const useQuery = () => {
-    //     return new URLSearchParams(useLocation().search)
-    // }
+    const dispatch = useAppDispatch()
+    const { mobile } = useParams<{ mobile: string }>()
 
-    const { mobile } = useParams<{ mobile: any }>()
-    // const query = useQuery()
-
-    const fetchCustomerData = async () => {
-        try {
-            const response = await axioisInstance.get(`/merchant/analytics/order?mobile=${mobile}&type=user_summary`)
-            const data = response.data.data
-            setCustomerData(data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
 
     useEffect(() => {
-        fetchCustomerData()
-    }, [])
+        if (mobile) {
+            dispatch(fetchUserSummary(mobile))
+        }
+    }, [dispatch])
 
-    console.log('DAAATA', customerData?.profile.image)
+    console.log('DATA', customerData)
 
     const CustomerArray = [
         {
@@ -62,18 +53,22 @@ const CustomerAnalytics = () => {
     ]
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-6 bg-gray-50 min-h-screen dark:bg-gray-800 dark:text-white">
             <h1 className="text-3xl font-extrabold text-gray-800 mb-8">Customer Analytics</h1>
             {customerData ? (
                 <div className="flex flex-wrap gap-6">
                     {/* Profile Section */}
-                    <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex-1">
+                    <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex-1 dark:bg-gray-800 dark:text-white">
                         <h2 className="text-xl font-semibold mb-4 text-gray-700">Profile</h2>
                         <div className="flex items-center gap-4">
-                            <Avatar shape="circle" src={customerData.profile.image} className="w-[80px] h-[80px] border border-gray-300" />
-                            <div className="space-y-1">
+                            <Avatar
+                                shape="circle"
+                                src={customerData?.profile?.image}
+                                className="w-[80px] h-[80px] border border-gray-300"
+                            />
+                            <div className="space-y-1 dark:text-white">
                                 {CustomerArray.map((item, key) => (
-                                    <p className="text-sm text-gray-600" key={key}>
+                                    <p className="text-sm text-gray-600 dark:text-white" key={key}>
                                         <span className="font-medium text-gray-700">{item.name}:</span> {item.value}
                                     </p>
                                 ))}
@@ -85,23 +80,31 @@ const CustomerAnalytics = () => {
                     <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex-1">
                         <h2 className="text-xl font-semibold mb-4 text-gray-700">Orders</h2>
                         <p className="text-sm text-gray-600 mb-1">
-                            <span className="font-medium text-gray-700">Order Count:</span> {customerData.orders.count}
+                            <span className="font-medium text-gray-700">Order Count:</span> {customerData.orders?.count}
                         </p>
                         <p className="text-sm text-gray-600">
                             <span className="font-medium text-gray-700">Total Amount:</span> Rs.
-                            {customerData.orders.total_amount.toFixed(2)}
+                            {customerData.orders?.total_amount.toFixed(2)}
                         </p>
                     </div>
                 </div>
             ) : (
                 <p className="text-gray-500">Loading data...</p>
             )}
-
+            <br />
+            <div className="font-bold text-xl">Cart Details:</div>
             {/* Cart Section */}
-            <div className="bg-white p-5 mt-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
-                <h2 className="text-xl font-semibold mb-4 text-gray-700">Cart</h2>
-                <p className="text-sm text-gray-500">No items in the cart.</p>
-            </div>
+            {customerData?.cart !== null ? (
+                <>
+                    <div className="bg-white p-5 mt-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
+                        <CartHome />
+                    </div>
+                </>
+            ) : (
+                <>
+                    <div className="text-xl font-bold flex items-center justify-center ">No Cart Available 😔</div>
+                </>
+            )}
         </div>
     )
 }

@@ -181,6 +181,11 @@ const Home = () => {
                                 onChange={handleInputChange}
                                 placeholder="Customer Number"
                                 className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleCustomerFunction(inputValues.customer)
+                                    }
+                                }}
                             />
                             <button
                                 onClick={() => handleCustomerFunction(inputValues.customer)}
@@ -197,6 +202,11 @@ const Home = () => {
                                 onChange={handleInputChange}
                                 placeholder="Invoice ID"
                                 className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleInvoiceFunction(inputValues.invoice_id)
+                                    }
+                                }}
                             />
                             <button
                                 onClick={() => handleInvoiceFunction(inputValues.invoice_id)}
