@@ -58,6 +58,17 @@ const AppBanners = () => {
 
     const columns = useMemo(
         () => [
+            {
+                header: 'Edit',
+                accessorKey: 'id',
+                cell: ({ row }) => (
+                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
+                        <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
+                            <FaEdit className="text-xl text-blue-600" />
+                        </a>
+                    </button>
+                ),
+            },
             { header: 'ID', accessorKey: 'id' },
             { header: 'Name', accessorKey: 'name' },
             { header: 'Position', accessorKey: 'position' },
@@ -165,17 +176,7 @@ const AppBanners = () => {
                     </div>
                 ),
             },
-            {
-                header: 'Edit',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
-                        <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
-                            <FaEdit className="text-xl text-blue-600" />
-                        </a>
-                    </button>
-                ),
-            },
+
             {
                 header: 'Delete',
                 accessorKey: 'id',
