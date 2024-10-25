@@ -37,7 +37,9 @@ const CartOrder = () => {
     }
 
     useEffect(() => {
-        fetchOrders()
+        if (user) {
+            fetchOrders()
+        }
     }, [])
 
     const columns = useMemo(
