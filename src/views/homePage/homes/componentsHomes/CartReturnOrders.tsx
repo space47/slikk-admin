@@ -50,7 +50,7 @@ export const DELEIVERYRETRUNOPTIONS = [
 const CartReturnOrders = () => {
     const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
 
-    const user = customerData?.profile.mobile
+    const user = customerData?.profile?.mobile
 
     console.log('MOBILE', user)
 
