@@ -17,6 +17,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useAppSelector } from '@/store'
 import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
 import { Spinner } from '@/components/ui'
+import { useParams } from 'react-router-dom'
 
 interface ReturnOrderItem {
     order_item: number
@@ -49,6 +50,7 @@ export const DELEIVERYRETRUNOPTIONS = [
 
 const CartReturnOrders = () => {
     const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
+    const { mobile } = useParams()
 
     const user = customerData?.profile?.mobile
 
@@ -64,7 +66,7 @@ const CartReturnOrders = () => {
     const fetchOrders = async (page: number, pageSize: number) => {
         try {
             setShowSpinner(true)
-            const returnUrl = `merchant/return_orders?p=${page}&page_size=${pageSize}&mobile=${user}`
+            const returnUrl = `merchant/return_orders?p=${page}&page_size=${pageSize}&mobile=${mobile}`
 
             const response = await axioisInstance.get(returnUrl)
 
@@ -80,7 +82,9 @@ const CartReturnOrders = () => {
     }
 
     useEffect(() => {
-        fetchOrders(page, pageSize)
+        if (customerData) {
+            fetchOrders(page, pageSize)
+        }
     }, [])
 
     const columns = useMemo(
