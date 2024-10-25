@@ -28,19 +28,19 @@ const CustomerAnalytics = () => {
         },
         {
             name: 'Email',
-            value: customerData?.profile?.email,
+            value: customerData?.profile?.email || '',
         },
         {
             name: 'Mobile',
-            value: customerData?.profile?.mobile,
+            value: customerData?.profile?.mobile || '',
         },
         {
             name: 'Country Code',
-            value: customerData?.profile?.country_code,
+            value: customerData?.profile?.country_code || '',
         },
         {
             name: 'Date of Birth',
-            value: moment(customerData?.profile?.dob).format('YYYY-MM-DD'),
+            value: moment(customerData?.profile?.dob).format('YYYY-MM-DD') || '',
         },
         {
             name: 'Gender',
@@ -69,7 +69,7 @@ const CustomerAnalytics = () => {
                             <div className="space-y-1 dark:text-white">
                                 {CustomerArray.map((item, key) => (
                                     <p className="text-sm text-gray-600 dark:text-white" key={key}>
-                                        <span className="font-medium text-gray-700">{item.name}:</span> {item.value}
+                                        <span className="font-medium text-gray-700">{item?.name}:</span> {item?.value}
                                     </p>
                                 ))}
                             </div>

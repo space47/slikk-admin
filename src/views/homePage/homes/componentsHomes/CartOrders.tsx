@@ -12,7 +12,7 @@ import { Spinner } from '@/components/ui'
 const CartOrder = () => {
     const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
 
-    const user = customerData?.profile.mobile
+    const user = customerData?.profile?.mobile
 
     const [orders, setOrders] = useState<any[]>([])
     const [page, setPage] = useState(1)
