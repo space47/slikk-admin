@@ -8,9 +8,11 @@ import EasyTable from '@/common/EasyTable'
 import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
 import { useAppSelector } from '@/store'
 import { Spinner } from '@/components/ui'
+import { useParams } from 'react-router-dom'
 
 const CartOrder = () => {
     const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
+    const { mobile } = useParams()
 
     const user = customerData?.profile?.mobile
 
@@ -23,7 +25,7 @@ const CartOrder = () => {
     const fetchOrders = async () => {
         try {
             setShowSpinner(true)
-            const response = await axiosInstance.get(`/merchant/orders?p=1&page_size=100&mobile=${user}`)
+            const response = await axiosInstance.get(`/merchant/orders?p=1&page_size=100&mobile=${mobile}`)
 
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
@@ -37,7 +39,7 @@ const CartOrder = () => {
     }
 
     useEffect(() => {
-        if (user) {
+        if (customerData) {
             fetchOrders()
         }
     }, [])
