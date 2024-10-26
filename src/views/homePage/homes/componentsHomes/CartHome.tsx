@@ -1,27 +1,24 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import CartItems from './CartItems'
 import CartPaymentSummary from './CartPaymentSummary'
 import CartShipping from './CartShipping'
-import CartOrder from './CartOrders'
 import CartTabs from './CartTabs'
 
 const CartHome = () => {
     return (
-        <div>
+        <div className="p-4 md:p-8 lg:p-12">
             <CartItems />
-            <div className="flex gap-2 xl:justify-around xl:flex-row flex-col ">
-                <div className="w-[500px]">
-                    {' '}
+            <div className="flex flex-col lg:flex-row lg:justify-between gap-6 mt-8">
+                <div className="w-full lg:w-1/2">
                     <CartPaymentSummary />
                 </div>
-                <div className="w-[500px]">
+                <div className="w-full lg:w-1/2">
                     <CartShipping />
                 </div>
             </div>
-            <br />
-            <div>
-                <div className="flex flex-col gap-7">
-                    <div className="font-bold text-xl">Transaction History</div>
+            <div className="mt-10">
+                <div className="flex flex-col gap-4">
+                    <h2 className="font-bold text-2xl">Transaction History</h2>
                     <CartTabs />
                 </div>
             </div>
