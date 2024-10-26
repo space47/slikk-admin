@@ -132,12 +132,6 @@ const PageModal: React.FC<modalProps> = ({
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
         background_config: particularRow.background_config,
-        // background_color: particularRow?.background_config?.background_color,
-        // carousel_autoplay: particularRow.carousel_autoplay,
-        // carousel: particularRow.carousel,
-        // interval: particularRow.interval,
-        // width: particularRow.width,
-        // corner_radius: particularRow.corner_radius,
         border: particularRow.border,
         border_style: particularRow.border_style,
         web_border: particularRow.web_border,
@@ -146,9 +140,8 @@ const PageModal: React.FC<modalProps> = ({
         web_name: particularRow.web_name,
         name_footer: particularRow.name_footer,
         web_name_footer: particularRow.web_name_footer,
-        // border_width: particularRow.border_width,
-        // border_color: particularRow.border_color,
         component_config: particularRow.component_config,
+        section_border: particularRow.section_border,
     })
     console.log('The initial value that I got ', particularRow)
 
@@ -272,6 +265,7 @@ const PageModal: React.FC<modalProps> = ({
                     web_font_size: Number(row.footer_config.web_font_size),
                     font_size: Number(row.footer_config.font_size),
                     background_color: row.footer_config.background_color,
+                    font_color: row.footer_config.font_color,
                 },
                 header_config: {
                     ...row.header_config,
@@ -280,6 +274,7 @@ const PageModal: React.FC<modalProps> = ({
                     web_font_size: Number(row.header_config.web_font_size),
                     font_size: Number(row.header_config.font_size),
                     background_color: row.header_config.background_color,
+                    font_color: row.header_config.font_color,
                 },
                 sub_header_config: {
                     ...row.sub_header_config,
@@ -287,6 +282,7 @@ const PageModal: React.FC<modalProps> = ({
                     web_font_size: Number(row.sub_header_config.web_font_size),
                     font_size: Number(row.sub_header_config.font_size),
                     background_color: row.sub_header_config.background_color,
+                    font_color: row.sub_header_config.font_color,
                 },
                 data_type: {
                     ...row.data_type,
@@ -933,6 +929,14 @@ const PageModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem>
+                                <FormItem asterisk label="Header Font Color" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field
+                                        type="text"
+                                        name="header_config.font_color"
+                                        placeholder="Place your Font Color"
+                                        component={Input}
+                                    />
+                                </FormItem>
                                 {/* ................................................................................ */}
                                 {/* .......sub_header....................... */}
                                 <FormItem asterisk label="Sub Header Style" className="col-span-1 w-[60%] h-[80%]">
@@ -989,6 +993,15 @@ const PageModal: React.FC<modalProps> = ({
                                         component={Input}
                                     />
                                 </FormItem>
+                                <FormItem asterisk label="Sub Header Font Color" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field
+                                        type="text"
+                                        name="sub_header_config.font_color"
+                                        placeholder="Place your Font Color"
+                                        component={Input}
+                                    />
+                                </FormItem>
+
                                 {/* ........................................................ */}
 
                                 {/* ............Footer COnfig>>>>>>>>>>>>>>>>>>>>>> */}
@@ -1033,6 +1046,14 @@ const PageModal: React.FC<modalProps> = ({
                                     <Field
                                         type="text"
                                         name="footer_config.background_color"
+                                        placeholder="Place your footer color"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem asterisk label="Footer Font Color" className="col-span-1 w-[60%] h-[80%]">
+                                    <Field
+                                        type="text"
+                                        name="footer_config.font_color"
                                         placeholder="Place your footer color"
                                         component={Input}
                                     />
