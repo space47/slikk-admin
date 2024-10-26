@@ -174,6 +174,10 @@ const DeliveryOrders = () => {
             header: 'Runner Number',
             accessorKey: 'logistic.runner_phone_number',
         },
+        {
+            header: 'Payment Mode',
+            accessorKey: 'payment.mode',
+        },
 
         {
             header: 'Pickup Time',

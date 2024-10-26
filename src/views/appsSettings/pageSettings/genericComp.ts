@@ -58,6 +58,21 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter Width (e.g., 0.5, 0.25, etc.)',
     },
+
+    {
+        label: 'Row',
+        name: 'component_config.row',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Row',
+    },
+    {
+        label: 'Column',
+        name: 'component_config.column',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Column',
+    },
     {
         label: 'Corner Radius',
         name: 'component_config.corner_radius',
@@ -68,6 +83,13 @@ export const genericComponentArray = [
     {
         label: 'Gap',
         name: 'component_config.gap',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter gap',
+    },
+    {
+        label: 'Vertical Gap',
+        name: 'component_config.vertical_gap',
         type: 'number',
         component: { Input },
         placeholder: 'Enter gap',
@@ -145,6 +167,20 @@ export const genericComponentArray = [
         placeholder: 'Enter Web Width (e.g., 0.5, 0.25, etc.)',
     },
     {
+        label: 'Web row',
+        name: 'component_config.web_row',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Row',
+    },
+    {
+        label: 'Web Column',
+        name: 'component_config.web_column',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Column',
+    },
+    {
         label: 'Web Corner Radius',
         name: 'component_config.web_corner_radius',
         type: 'number',
@@ -157,6 +193,13 @@ export const genericComponentArray = [
         type: 'number',
         component: { Input },
         placeholder: 'Enter web gap',
+    },
+    {
+        label: 'Web Vertical Gap',
+        name: 'component_config.web_vertical_gap',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter gap',
     },
     {
         label: 'Web Font Size',
