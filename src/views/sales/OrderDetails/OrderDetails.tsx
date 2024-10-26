@@ -17,9 +17,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import CancelModal from './components/CancelModal'
-import { FaArrowCircleDown, FaDownload, FaMapMarkedAlt } from 'react-icons/fa'
+import { FaDownload } from 'react-icons/fa'
 import { notification } from 'antd'
-import { Button } from '@/components/ui'
 import { SalesOrderDetailsResponse } from './orderList.common'
 // import { string } from 'yup'
 
@@ -150,6 +149,27 @@ const OrderDetails = () => {
                                             CANCEL ORDER
                                         </button>
                                     )}
+                                    {/* {data.status === 'COMPLETED' &&
+                                    (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') ? (
+                                        <button
+                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                            onClick={handleReturnOrder}
+                                        >
+                                            RETURN ORDER
+                                        </button>
+                                    ) : (
+                                        data.status !== 'DECLINED' &&
+                                        data.status !== 'CANCELLED' &&
+                                        (data.status === 'COMPLETED' || data.payment?.status !== 'PAID') &&
+                                        (data.status !== 'COMPLETED' || data.payment?.status === 'PAID') && (
+                                            <button
+                                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                                onClick={handleCancelOrder}
+                                            >
+                                                CANCEL ORDER
+                                            </button>
+                                        )
+                                    )} */}
                                 </div>
                                 {data.return_order.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">
