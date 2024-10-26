@@ -445,6 +445,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const borderStyleArray = [
         { label: 'Dotted', value: 'dotted' },
         { label: 'Solid', value: 'solid' },
+        { label: 'Underline', value: 'underline' },
     ]
 
     const handlePOSTSearch = (e) => {

@@ -408,6 +408,7 @@ const PageModal: React.FC<modalProps> = ({
     const borderStyleArray = [
         { label: 'Dotted', value: 'dotted' },
         { label: 'Solid', value: 'solid' },
+        { label: 'Underline', value: 'underline' },
     ]
 
     const SECTIONARRAY = [
