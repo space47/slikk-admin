@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import Avatar from '@/components/ui/Avatar'
 import moment from 'moment'
@@ -32,12 +32,9 @@ const CustomerAnalytics = () => {
         },
         {
             name: 'Mobile',
-            value: customerData?.profile?.mobile || '',
+            value: `${customerData?.profile?.country_code || ''} ${customerData?.profile?.mobile || ''}`.trim(),
         },
-        {
-            name: 'Country Code',
-            value: customerData?.profile?.country_code || '',
-        },
+
         {
             name: 'Date of Birth',
             value: moment(customerData?.profile?.dob).format('YYYY-MM-DD') || '',

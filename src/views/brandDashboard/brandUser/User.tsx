@@ -194,7 +194,7 @@ const Seller = () => {
 
     return (
         <div>
-            <div className="flex xl:flex xl:justify-between flex-col mb-4 items-center gap-4">
+            <div className="flex xl:flex-row xl:justify-between flex-col mb-4 items-center gap-4">
                 <div className="">
                     <input
                         type="text"

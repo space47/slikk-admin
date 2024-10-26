@@ -7,15 +7,11 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 const BrandInfo = () => {
     const [sellerDetails, setSellerDetails] = useState<SELLERDETAILTYPES>({})
 
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const fetchSellerDetails = async () => {
         try {
-            const response = await axioisInstance.get(
-                `/merchant/company?company_id=${selectedCompany.id}`,
-            )
+            const response = await axioisInstance.get(`/merchant/company?company_id=${selectedCompany.id}`)
             const data = response.data.data
             setSellerDetails(data)
         } catch (error) {
@@ -82,19 +78,13 @@ const BrandInfo = () => {
     return (
         <div className="p-6 bg-white rounded-xl shadow-lg space-y-10 text-lg">
             <div>
-                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
-                    Seller Details
-                </h2>
+                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">Seller Details</h2>
                 <div className="flex flex-wrap gap-12 font-semibold">
-                    <div className="space-y-3">
+                    <div className="space-y-3 xl:grid xl:grid-cols-2">
                         {sellerDetailsArray.slice(0, 7).map((detail, index) => (
-                            <div key={index} className="flex flex-row gap-4">
-                                <strong className="font-medium text-gray-700">
-                                    {detail.label}:
-                                </strong>
-                                <span className="text-gray-600">
-                                    {detail.value}
-                                </span>
+                            <div key={index} className="flex flex-row gap-3 xl:items-center">
+                                <strong className="font-medium text-gray-700 w-[100px]">{detail.label}:</strong>
+                                <span className="text-gray-600 xl:w-[700px]">{detail.value}</span>
                             </div>
                         ))}
                     </div>
@@ -102,19 +92,13 @@ const BrandInfo = () => {
             </div>
 
             <div>
-                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
-                    Charges & Margins
-                </h2>
+                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">Charges & Margins</h2>
                 <div className="flex flex-wrap gap-12 font-semibold">
                     <div className="space-y-3">
                         {chargesArray.map((detail, index) => (
                             <div key={index} className="flex flex-row gap-4">
-                                <strong className="font-medium text-gray-700">
-                                    {detail.label}:
-                                </strong>
-                                <span className="text-gray-600">
-                                    {detail.value}
-                                </span>
+                                <strong className="font-medium text-gray-700">{detail.label}:</strong>
+                                <span className="text-gray-600">{detail.value}</span>
                             </div>
                         ))}
                     </div>
@@ -122,19 +106,13 @@ const BrandInfo = () => {
             </div>
 
             <div>
-                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
-                    POC Details
-                </h2>
+                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">POC Details</h2>
                 <div className="grid grid-cols-2 gap-6 font-semibold">
                     <div className="space-y-3">
                         {pocDetailsArray.map((detail, index) => (
                             <div key={index} className="flex flex-row gap-4">
-                                <strong className="font-medium text-gray-700">
-                                    {detail.label}:
-                                </strong>
-                                <span className="text-gray-600">
-                                    {detail.value}
-                                </span>
+                                <strong className="font-medium text-gray-700">{detail.label}:</strong>
+                                <span className="text-gray-600">{detail.value}</span>
                             </div>
                         ))}
                     </div>
@@ -142,31 +120,21 @@ const BrandInfo = () => {
             </div>
 
             <div>
-                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">
-                    Bank Details
-                </h2>
+                <h2 className="text-xl font-bold mb-4 border-b-2 border-gray-200 pb-3">Bank Details</h2>
                 <div className="flex flex-wrap gap-12 font-semibold">
                     <div className="space-y-3">
                         {bankDetailsArray.slice(0, 3).map((detail, index) => (
                             <div key={index} className="flex flex-row gap-4">
-                                <strong className="font-medium text-gray-700">
-                                    {detail.label}:
-                                </strong>
-                                <span className="text-gray-600">
-                                    {detail.value}
-                                </span>
+                                <strong className="font-medium text-gray-700">{detail.label}:</strong>
+                                <span className="text-gray-600">{detail.value}</span>
                             </div>
                         ))}
                     </div>
                     <div className="space-y-3 ">
                         {bankDetailsArray.slice(3).map((detail, index) => (
                             <div key={index} className="flex flex-row gap-4">
-                                <strong className="font-medium text-gray-700">
-                                    {detail.label}:
-                                </strong>
-                                <span className="text-gray-600">
-                                    {detail.value}
-                                </span>
+                                <strong className="font-medium text-gray-700">{detail.label}:</strong>
+                                <span className="text-gray-600">{detail.value}</span>
                             </div>
                         ))}
                     </div>

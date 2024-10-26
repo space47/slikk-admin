@@ -1,30 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-// import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-// import Button from '@/components/ui/Button'
 import TrackModal from './TrackModal'
 import { MdAssignment } from 'react-icons/md'
-import { TaskDetails } from './TaskCommonType'
-import { Button } from '@/components/ui'
+import { Option, pageSizeOptions, TaskDetails } from './TaskCommonType'
+
 import { useNavigate } from 'react-router-dom'
 
-type Option = {
-    value: number
-    label: string
-}
-
 const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
 
 const TaskTracking = () => {
     const [data, setData] = useState<TaskDetails[]>([])
@@ -60,10 +46,7 @@ const TaskTracking = () => {
     const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(totalData / pageSize)
 
-    // const navigate = useNavigate()
-
     const handleAssignClick = (task_id: any) => {
-        console.log('Task Id', task_id)
         setShowAssignModal(true)
         setStoreTaskId(task_id)
     }
@@ -234,7 +217,7 @@ const TaskTracking = () => {
                     </Tr>
                 </THead>
                 <TBody>
-                    {paginatedData.map((row) => (
+                    {paginatedData.map((row: any) => (
                         <Tr key={row.task_id}>
                             {columns.map((column, index) => (
                                 <Td key={index}>{column.format ? column.format(row[column.accessor], row) : row[column.accessor] || ''}</Td>
