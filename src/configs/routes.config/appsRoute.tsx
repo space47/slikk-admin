@@ -909,6 +909,13 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/analytics/monthlyReport/MonthlyReport')),
         authority: [ADMIN, USER],
     },
+
+    {
+        key: 'appsConfiguration.configurations',
+        path: `${APP_PREFIX_PATH}/configurations/add`,
+        component: lazy(() => import('@/views/configurationsSlikk/AddCongigurations')),
+        authority: [ADMIN, USER],
+    },
 ]
 
 export default appsRoute

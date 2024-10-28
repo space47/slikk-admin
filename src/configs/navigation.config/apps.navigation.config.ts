@@ -680,6 +680,28 @@ const appsNavigationConfig: NavigationTree[] = [
                 ],
             },
 
+            {
+                key: 'apps.configuration',
+                path: '',
+                title: 'Configuration',
+                translateKey: 'nav.appsConfiguration.configuration',
+                icon: 'analytics',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
+                    {
+                        key: 'appsConfiguration.configurations',
+                        path: `${APP_PREFIX_PATH}/configurations/add`,
+                        title: 'Configurations',
+                        translateKey: 'nav.appsConfiguration.configurations',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                ],
+            },
+
             // ..............................................................................................................
 
             // {
