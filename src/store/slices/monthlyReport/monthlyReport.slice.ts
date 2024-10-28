@@ -15,8 +15,8 @@ export const fetchMonthlyReport = createAsyncThunk('monthlyReport/fetchMonthlyRe
     try {
         const state = getState() as { monthlyReport: MONTHLYREPORTTYPES }
         const { from, to } = state.monthlyReport
-
-        const response = await axioisInstance.get(`/merchant/analytics/order?from=${from}&to=${to}&type=monthly_report`)
+        const toDate = moment(to).add(1, 'days').format('YYYY-MM-DD')
+        const response = await axioisInstance.get(`/merchant/analytics/order?from=${from}&to=${toDate}&type=monthly_report`)
 
         return {
             data: response.data?.data,
