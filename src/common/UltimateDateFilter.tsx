@@ -105,7 +105,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
             {showinfDatePicker && (
                 <div className="xl:w-[230px] w-[200px]">
                     <div className="mb-2">Date Range:</div>
-                    <DatePickerRange placeholder="Select dates range" onChange={handleDateChange} />
+                    <DatePickerRange placeholder="Select dates range" onChange={handleDateChange} singleDate />
                 </div>
             )}
         </div>
