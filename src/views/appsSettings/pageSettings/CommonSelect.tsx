@@ -6,12 +6,14 @@ interface SELECTPROPS {
     label: string
     name: string
     options: any
+    className?: string
+    needClassName?: boolean
 }
 
-const CommonSelect = ({ label, name, options }: SELECTPROPS) => {
+const CommonSelect = ({ label, name, options, className, needClassName = false }: SELECTPROPS) => {
     return (
         <FormContainer>
-            <FormItem label={label} className="col-span-1 w-full">
+            <FormItem label={label} className={needClassName ? className : 'col-span-1 w-full'}>
                 <Field name={name}>
                     {({ field, form }: FieldProps<any>) => {
                         return (

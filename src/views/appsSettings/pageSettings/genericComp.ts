@@ -108,6 +108,20 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter Footer Font Size',
     },
+    {
+        label: 'Font Color',
+        name: 'component_config.font_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter Font Color',
+    },
+    {
+        label: 'Footer Font Color',
+        name: 'component_config.footer_font_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter Font Color',
+    },
 
     // Web Versions below
     {
@@ -214,6 +228,20 @@ export const genericComponentArray = [
         type: 'number',
         component: { Input },
         placeholder: 'Enter Footer Font Size',
+    },
+    {
+        label: 'Web Font Color',
+        name: 'component_config.web_font_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
+    {
+        label: 'Web Footer Font Color',
+        name: 'component_config.web_footer_font_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
     },
 ]
 

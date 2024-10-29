@@ -691,7 +691,7 @@ const appsNavigationConfig: NavigationTree[] = [
                 subMenu: [
                     {
                         key: 'appsConfiguration.configurations',
-                        path: `${APP_PREFIX_PATH}/configurations/add`,
+                        path: `${APP_PREFIX_PATH}/configurations`,
                         title: 'Configurations',
                         translateKey: 'nav.appsConfiguration.configurations',
                         icon: '',
