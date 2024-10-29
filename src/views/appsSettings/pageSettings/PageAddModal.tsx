@@ -396,6 +396,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 column: Number(row.component_config?.column) || 0,
                 font_size: Number(row.component_config?.font_size) || 0,
                 footer_font_size: Number(row.component_config?.footer_font_size) || 0,
+                font_color: row.component_config?.font_color || '',
+                footer_font_color: row.component_config?.footer_font_color || '',
+                font_style: row.component_config?.font_style || '',
+                footer_font_style: row.component_config?.footer_font_style || '',
                 name_position: row.component_config?.name_position || '',
                 name_align: row.component_config?.name_align || '',
                 name_footer: row?.name_footer || '',
@@ -423,10 +427,14 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 web_column: Number(row.component_config?.column) || 0,
                 web_font_size: Number(row.component_config?.web_font_size) || 0,
                 web_footer_font_size: Number(row.component_config?.web_footer_font_size) || 0,
+                web_font_color: row.component_config?.web_font_color || '',
+                web_footer_font_color: row.component_config?.web_footer_font_color || '',
                 web_name: row?.web_name || '',
                 web_name_position: row.component_config?.web_name_position || '',
                 web_name_align: row.component_config?.web_name_align || '',
                 web_section_alignment: row.component_config?.web_section_alignment || '',
+                web_font_style: row.component_config?.web_font_style || '',
+                web_footer_font_style: row.component_config?.web_footer_font_style || '',
             },
             section_filters: row.data_type?.filters || '',
             section_border: row?.section_border || '',
@@ -450,6 +458,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         { label: 'Dotted', value: 'dotted' },
         { label: 'Solid', value: 'solid' },
         { label: 'Underline', value: 'underline' },
+    ]
+
+    const FontSizeArray = [
+        { label: 'Bold', value: 'bold' },
+        { label: 'Regular', value: 'regular' },
+        { label: 'Underline', value: 'underline' },
+        { label: 'Italic', value: 'italic' },
     ]
 
     const handlePOSTSearch = (e) => {
@@ -509,11 +524,25 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
                                 <div className="font-bold mt-1">COMPONENT CONFIGURATIONS:</div>
                                 <div className=" grid grid-cols-2">
-                                    {genericComponentArray.slice(0, 14).map((item, key) => (
+                                    {genericComponentArray.slice(0, 16).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
                                     ))}
+                                    <CommonSelect
+                                        name="component_config.font_style"
+                                        label="Font Style"
+                                        options={FontSizeArray}
+                                        needClassName
+                                        className="col-span-1 w-1/2"
+                                    />
+                                    <CommonSelect
+                                        name="component_config.footer_font_style"
+                                        label="Footer Font Style"
+                                        options={FontSizeArray}
+                                        needClassName
+                                        className="col-span-1 w-1/2"
+                                    />
                                     <CommonSelect
                                         name="component_config.section_alignment"
                                         label="Section Alignment"
@@ -532,11 +561,25 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
                                 <FormContainer className=" grid grid-cols-2">
                                     <div className="font-bold mt-1">Web Configurations :</div>
-                                    {genericComponentArray.slice(14).map((item, key) => (
+                                    {genericComponentArray.slice(16).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
                                     ))}
+                                    <CommonSelect
+                                        name="component_config.web_font_style"
+                                        label="Font Style"
+                                        options={FontSizeArray}
+                                        needClassName
+                                        className="col-span-1 w-1/2"
+                                    />
+                                    <CommonSelect
+                                        name="component_config.web_footer_font_style"
+                                        label="Footer Font Style"
+                                        options={FontSizeArray}
+                                        needClassName
+                                        className="col-span-1 w-1/2"
+                                    />
                                     <CommonSelect
                                         name="component_config.web_section_alignment"
                                         label="Section Alignment"
@@ -772,7 +815,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 ))}
 
                                 {/* ............Header Config................................................. */}
-
+                                <CommonSelect
+                                    name="header_config.style"
+                                    label="Header config Style"
+                                    options={FontSizeArray}
+                                    needClassName
+                                    className="col-span-1 w-1/2"
+                                />
                                 {HEADERCONFIGARRAY.map((item, key) => (
                                     <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
                                         <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
@@ -797,6 +846,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
                                 {/* ................................................................................ */}
                                 {/* .......sub_header....................... */}
+                                <CommonSelect
+                                    name="sub_header_config.style"
+                                    label="Sub-Header config Style"
+                                    options={FontSizeArray}
+                                    needClassName
+                                    className="col-span-1 w-1/2"
+                                />
                                 {SUBHEADERCONFIGARRAY.map((item, key) => (
                                     <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
                                         <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
@@ -812,7 +868,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 />
 
                                 {/* FOOOTER.......................................................... */}
-
+                                <CommonSelect
+                                    name="footer_config.style"
+                                    label="Footer config Style"
+                                    options={FontSizeArray}
+                                    needClassName
+                                    className="col-span-1 w-1/2"
+                                />
                                 {FOOTERCONFIGARRAY.map((item, key) => (
                                     <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
                                         <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />

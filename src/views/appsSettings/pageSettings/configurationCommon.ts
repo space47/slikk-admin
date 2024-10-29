@@ -1,9 +1,9 @@
 export const HEADERCONFIGARRAY = [
-    {
-        label: 'Header Style',
-        name: 'header_config.style',
-        type: 'text',
-    },
+    // {
+    //     label: 'Header Style',
+    //     name: 'header_config.style',
+    //     type: 'text',
+    // },
     {
         label: 'Header Text',
         name: 'header_config.text',
@@ -37,11 +37,11 @@ export const HEADERCONFIGARRAY = [
 ]
 
 export const SUBHEADERCONFIGARRAY = [
-    {
-        label: 'Sub-Header Style',
-        name: 'sub_header_config.style',
-        type: 'text',
-    },
+    // {
+    //     label: 'Sub-Header Style',
+    //     name: 'sub_header_config.style',
+    //     type: 'text',
+    // },
     {
         label: 'Sub-Header Text',
         name: 'sub_header_config.text',
@@ -75,11 +75,11 @@ export const SUBHEADERCONFIGARRAY = [
 ]
 
 export const FOOTERCONFIGARRAY = [
-    {
-        label: 'Footer Style',
-        name: 'footer_config.style',
-        type: 'text',
-    },
+    // {
+    //     label: 'Footer Style',
+    //     name: 'footer_config.style',
+    //     type: 'text',
+    // },
     {
         label: 'Footer Text',
         name: 'footer_config.text',
