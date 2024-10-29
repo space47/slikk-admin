@@ -22,6 +22,8 @@ import PageAddCommonImage from './PageAddCommonImage'
 import { MdCancel } from 'react-icons/md'
 import PageSettingsPostTable from './PageSettingsPostTable'
 import CommonSelect from './CommonSelect'
+import { DATATYPEVALUES, FOOTERCONFIGARRAY, HEADERCONFIGARRAY, SUBHEADERCONFIGARRAY } from './configurationCommon'
+import TagsEdit from './TagsEdit'
 
 interface DataType {
     type: string
@@ -473,7 +475,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     onSubmit={handleSubmit}
                 >
                     {({ values, touched, errors, resetForm, setFieldValue }) => (
-                        <Form className="w-full">
+                        <Form className="w-full ">
                             <FormContainer className="grid grid-cols-2 gap-3">
                                 <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="section_heading" placeholder="Place your Section heading" component={Input} />
@@ -505,319 +507,277 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 </FormItem>
                                 {/* Generic Fields........................................................ */}
 
-                                <FormContainer>
-                                    <div className="flex flex-row gap-10 ">
-                                        <FormContainer className="grid grid-cols-1 gap-10">
-                                            <div className="font-bold mt-1">Mobile Configurations :</div>
-                                            {genericComponentArray.slice(0, 14).map((item, key) => (
-                                                <FormItem key={key} label={item.label} className="w-2/3">
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.name}
-                                                        placeholder={item.placeholder}
-                                                        component={Input} // Fallback to 'input' if component is not valid
-                                                    />
-                                                </FormItem>
-                                            ))}
-                                            <CommonSelect
-                                                name="component_config.section_alignment"
-                                                label="Section Alignment"
-                                                options={SECTIONARRAY}
-                                            />
-                                            <CommonSelect
-                                                name="component_config.content_alignment"
-                                                label="Content Alignment"
-                                                options={SECTIONARRAY}
-                                            />
-                                        </FormContainer>
-                                        <FormContainer className="grid grid-cols-1 gap-10">
-                                            <div className="font-bold mt-1">Web Configurations :</div>
-                                            {genericComponentArray.slice(14).map((item, key) => (
-                                                <FormItem key={key} label={item.label} className="w-2/3">
-                                                    <Field
-                                                        type={item.type}
-                                                        name={item.name}
-                                                        placeholder={item.placeholder}
-                                                        component={Input} // Fallback to 'input' if component is not valid
-                                                    />
-                                                </FormItem>
-                                            ))}
-                                            <CommonSelect
-                                                name="component_config.web_section_alignment"
-                                                label="Section Alignment"
-                                                options={SECTIONARRAY}
-                                            />
-                                            <CommonSelect
-                                                name="component_config.web_content_alignment"
-                                                label="Web Content Alignment"
-                                                options={SECTIONARRAY}
-                                            />
-                                        </FormContainer>
-                                    </div>
-
-                                    <div className="flex gap-14">
-                                        <FormItem label="Border" className="col-span-1 w-1/4">
-                                            <Field
-                                                type="checkbox"
-                                                name="border"
-                                                placeholder="Enter border"
-                                                component={Input}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    const isChecked = e.target.checked
-                                                    setFieldValue('border', isChecked)
-                                                    setBorderForm(isChecked ? 'yes' : 'no')
-                                                }}
-                                            />
-                                            {borderForm === 'yes' && (
-                                                <FormContainer>
-                                                    <CommonSelect name="border_style" label="Border Style" options={borderStyleArray} />
-                                                    {borrderStyleArray.map((item, key) => (
-                                                        <FormItem key={key} label={item.label} className="w-full">
-                                                            <Field
-                                                                type={item.type}
-                                                                name={item.name}
-                                                                placeholder={item.placeholder}
-                                                                component={Input}
-                                                            />
-                                                        </FormItem>
-                                                    ))}
-                                                </FormContainer>
-                                            )}
-                                        </FormItem>
-                                        <FormItem label="Web Border" className="col-span-1 w-1/4">
-                                            <Field
-                                                type="checkbox"
-                                                name="web_border"
-                                                placeholder="Enter border"
-                                                component={Input}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    const isChecked = e.target.checked
-                                                    setFieldValue('web_border', isChecked)
-                                                    setWebBorderForm(isChecked)
-                                                }}
-                                            />{' '}
-                                            <br />
-                                            <br />
-                                            {webBorderForm === true && (
-                                                <FormContainer>
-                                                    <CommonSelect
-                                                        name="web_border_style"
-                                                        label="Web Border Style"
-                                                        options={borderStyleArray}
-                                                    />
-                                                    {webBorrderStyleArray.map((item, key) => (
-                                                        <FormItem key={key} label={item.label} className="w-full">
-                                                            <Field
-                                                                type={item.type}
-                                                                name={item.name}
-                                                                placeholder={item.placeholder}
-                                                                component={Input}
-                                                            />
-                                                        </FormItem>
-                                                    ))}
-                                                </FormContainer>
-                                            )}
-                                        </FormItem>
-                                    </div>
-                                    {/*  */}
-
-                                    <div className="flex gap-14 ">
-                                        <FormItem label="Name" className="col-span-1 w-1/4">
-                                            <Field
-                                                type="checkbox"
-                                                name="name"
-                                                placeholder="Enter name"
-                                                component={Input}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    const isChecked = e.target.checked
-                                                    setFieldValue('name', isChecked)
-                                                    setNameForm(isChecked) // Set borderForm to 'yes' or 'no'
-                                                }}
-                                            />{' '}
-                                            <br />
-                                            <br />
-                                            {nameForm && (
-                                                <>
-                                                    <CommonSelect
-                                                        label="Position"
-                                                        name="component_config.name_position"
-                                                        options={NAMEPOSITION}
-                                                    />
-                                                    <CommonSelect label="Align" name="component_config.name_align" options={ALIGNVALUES} />
-                                                </>
-                                            )}
-                                            <FormItem label="Footer" className="w-1/2">
-                                                <Field
-                                                    type="checkbox"
-                                                    name="name_footer"
-                                                    component={Input}
-                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                        const isChecked = e.target.checked
-                                                        setFieldValue('name_footer', isChecked)
-                                                        setFooterAlignForm(isChecked)
-                                                    }}
-                                                />
-
-                                                {footerAlignForm && (
-                                                    <>
-                                                        <CommonSelect
-                                                            label="Align Footer"
-                                                            name="component_config.name_footer_align"
-                                                            options={ALIGNVALUES}
-                                                        />
-                                                    </>
-                                                )}
-                                            </FormItem>
-                                        </FormItem>
-
-                                        <FormItem label="Web Name" className="col-span-1 w-1/4">
-                                            <Field
-                                                type="checkbox"
-                                                name="web_name"
-                                                component={Input}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    const isChecked = e.target.checked
-                                                    setFieldValue('web_name', isChecked)
-                                                    setWebNameForm(isChecked)
-                                                }}
-                                            />{' '}
-                                            <br />
-                                            <br />
-                                            {webNameForm === true && (
-                                                <>
-                                                    <CommonSelect
-                                                        label="Web position"
-                                                        name="component_config.web_name_position"
-                                                        options={NAMEPOSITION}
-                                                    />
-                                                    <CommonSelect
-                                                        label="Web Align"
-                                                        name="component_config.web_name_align"
-                                                        options={ALIGNVALUES}
-                                                    />
-                                                </>
-                                            )}
-                                            <FormItem label="Web Footer" className="w-1/2">
-                                                <Field
-                                                    type="checkbox"
-                                                    name="web_name_footer"
-                                                    component={Input}
-                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                        const isChecked = e.target.checked
-                                                        setFieldValue('web_name_footer', isChecked)
-                                                        setWebFooterAlignForm(isChecked)
-                                                    }}
-                                                />
-
-                                                {webFooterAlignForm && (
-                                                    <>
-                                                        <CommonSelect
-                                                            label="Web Align Footer"
-                                                            name="component_config.web_name_footer_align"
-                                                            options={ALIGNVALUES}
-                                                        />
-                                                    </>
-                                                )}
-                                            </FormItem>
-                                        </FormItem>
-                                    </div>
-                                </FormContainer>
-
-                                {/* ......................................................................... */}
-
-                                {/* image */}
-
-                                <div className="flex flex-col  items-start ">
-                                    <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                        <div className="font-semibold mb-1">Background Image</div>
-
-                                        <FormContainer className=" mt-5 ">
-                                            <FormItem label="" className="grid grid-rows-2">
-                                                <Field name="background_image_array">
-                                                    {({ field, form }: FieldProps<WebType>) => (
-                                                        <>
-                                                            <Upload
-                                                                beforeUpload={beforeUpload}
-                                                                fileList={values.background_image_array}
-                                                                onChange={(files) => {
-                                                                    console.log(
-                                                                        'OnchangeFiles',
-                                                                        files,
-                                                                        field.name,
-                                                                        values.background_image_array,
-                                                                    )
-                                                                    form.setFieldValue('background_image_array', files)
-                                                                }}
-                                                                className="items-center flex justify-center"
-                                                                onFileRemove={(files) =>
-                                                                    form.setFieldValue('background_image_array', files)
-                                                                }
-                                                            />
-                                                        </>
-                                                    )}
-                                                </Field>
-                                            </FormItem>
-                                        </FormContainer>
-                                    </FormContainer>
-
-                                    <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                        <div className="font-semibold mb-1 text-md">Mobile Background Image</div>
-
-                                        <FormContainer className=" mt-5 ">
-                                            <FormItem label="" className="grid grid-rows-2">
-                                                <Field name="mobile_background_array">
-                                                    {({ field, form }: FieldProps<WebType>) => (
-                                                        <>
-                                                            <Upload
-                                                                beforeUpload={beforeUpload}
-                                                                fileList={values.mobile_background_array} // uploadedd the file
-                                                                onChange={(files) => {
-                                                                    console.log(
-                                                                        'OnchangeFiles',
-                                                                        files,
-                                                                        field.name,
-                                                                        values.mobile_background_array,
-                                                                    )
-                                                                    form.setFieldValue('mobile_background_array', files)
-                                                                }}
-                                                                className="flex justify-center"
-                                                                onFileRemove={(files) =>
-                                                                    form.setFieldValue('mobile_background_array', files)
-                                                                }
-                                                            />
-                                                        </>
-                                                    )}
-                                                </Field>
-                                            </FormItem>
-                                        </FormContainer>
-                                    </FormContainer>
-
-                                    {BackGroundArray.map((item, key) => (
-                                        <FormItem asterisk label={item.label} className="w-1/2" key={key}>
+                                <div className="font-bold mt-1">COMPONENT CONFIGURATIONS:</div>
+                                <div className=" grid grid-cols-2">
+                                    {genericComponentArray.slice(0, 14).map((item, key) => (
+                                        <FormItem key={key} label={item.label} className="w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
                                     ))}
+                                    <CommonSelect
+                                        name="component_config.section_alignment"
+                                        label="Section Alignment"
+                                        options={SECTIONARRAY}
+                                        needClassName
+                                        className=" col-span-1 w-1/2"
+                                    />
+                                    <CommonSelect
+                                        name="component_config.content_alignment"
+                                        label="Content Alignment"
+                                        options={SECTIONARRAY}
+                                        needClassName
+                                        className=" col-span-1 w-1/2"
+                                    />
                                 </div>
+
+                                <FormContainer className=" grid grid-cols-2">
+                                    <div className="font-bold mt-1">Web Configurations :</div>
+                                    {genericComponentArray.slice(14).map((item, key) => (
+                                        <FormItem key={key} label={item.label} className="w-2/3">
+                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        </FormItem>
+                                    ))}
+                                    <CommonSelect
+                                        name="component_config.web_section_alignment"
+                                        label="Section Alignment"
+                                        options={SECTIONARRAY}
+                                        needClassName
+                                        className=" col-span-1 w-1/2"
+                                    />
+                                    <CommonSelect
+                                        name="component_config.web_content_alignment"
+                                        label="Web Content Alignment"
+                                        options={SECTIONARRAY}
+                                        needClassName
+                                        className=" col-span-1 w-1/2"
+                                    />
+                                </FormContainer>
+
+                                <FormItem label="Border" className="col-span-1 w-1/4">
+                                    <Field
+                                        type="checkbox"
+                                        name="border"
+                                        placeholder="Enter border"
+                                        component={Input}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const isChecked = e.target.checked
+                                            setFieldValue('border', isChecked)
+                                            setBorderForm(isChecked ? 'yes' : 'no')
+                                        }}
+                                    />
+                                    {borderForm === 'yes' && (
+                                        <FormContainer>
+                                            <CommonSelect name="border_style" label="Border Style" options={borderStyleArray} />
+                                            {borrderStyleArray.map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-full">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input}
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+                                    )}
+                                </FormItem>
+                                <FormItem label="Web Border" className="col-span-1 w-1/4">
+                                    <Field
+                                        type="checkbox"
+                                        name="web_border"
+                                        placeholder="Enter border"
+                                        component={Input}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const isChecked = e.target.checked
+                                            setFieldValue('web_border', isChecked)
+                                            setWebBorderForm(isChecked)
+                                        }}
+                                    />{' '}
+                                    <br />
+                                    <br />
+                                    {webBorderForm === true && (
+                                        <FormContainer>
+                                            <CommonSelect name="web_border_style" label="Web Border Style" options={borderStyleArray} />
+                                            {webBorrderStyleArray.map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-full">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input}
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+                                    )}
+                                </FormItem>
+
+                                {/*  */}
+
+                                <FormItem label="Name" className="col-span-1 w-1/4">
+                                    <Field
+                                        type="checkbox"
+                                        name="name"
+                                        placeholder="Enter name"
+                                        component={Input}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const isChecked = e.target.checked
+                                            setFieldValue('name', isChecked)
+                                            setNameForm(isChecked) // Set borderForm to 'yes' or 'no'
+                                        }}
+                                    />{' '}
+                                    <br />
+                                    <br />
+                                    {nameForm && (
+                                        <>
+                                            <CommonSelect label="Position" name="component_config.name_position" options={NAMEPOSITION} />
+                                            <CommonSelect label="Align" name="component_config.name_align" options={ALIGNVALUES} />
+                                        </>
+                                    )}
+                                    <FormItem label="Footer" className="w-1/2">
+                                        <Field
+                                            type="checkbox"
+                                            name="name_footer"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('name_footer', isChecked)
+                                                setFooterAlignForm(isChecked)
+                                            }}
+                                        />
+
+                                        {footerAlignForm && (
+                                            <>
+                                                <CommonSelect
+                                                    label="Align Footer"
+                                                    name="component_config.name_footer_align"
+                                                    options={ALIGNVALUES}
+                                                />
+                                            </>
+                                        )}
+                                    </FormItem>
+                                </FormItem>
+
+                                <FormItem label="Web Name" className="col-span-1 w-1/4">
+                                    <Field
+                                        type="checkbox"
+                                        name="web_name"
+                                        component={Input}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const isChecked = e.target.checked
+                                            setFieldValue('web_name', isChecked)
+                                            setWebNameForm(isChecked)
+                                        }}
+                                    />{' '}
+                                    <br />
+                                    <br />
+                                    {webNameForm === true && (
+                                        <>
+                                            <CommonSelect
+                                                label="Web position"
+                                                name="component_config.web_name_position"
+                                                options={NAMEPOSITION}
+                                            />
+                                            <CommonSelect label="Web Align" name="component_config.web_name_align" options={ALIGNVALUES} />
+                                        </>
+                                    )}
+                                    <FormItem label="Web Footer" className="w-1/2">
+                                        <Field
+                                            type="checkbox"
+                                            name="web_name_footer"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('web_name_footer', isChecked)
+                                                setWebFooterAlignForm(isChecked)
+                                            }}
+                                        />
+
+                                        {webFooterAlignForm && (
+                                            <>
+                                                <CommonSelect
+                                                    label="Web Align Footer"
+                                                    name="component_config.web_name_footer_align"
+                                                    options={ALIGNVALUES}
+                                                />
+                                            </>
+                                        )}
+                                    </FormItem>
+                                </FormItem>
+
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                    <div className="font-semibold mb-1">Background Image</div>
+
+                                    <FormContainer className=" mt-5 ">
+                                        <FormItem label="" className="grid grid-rows-2">
+                                            <Field name="background_image_array">
+                                                {({ field, form }: FieldProps<WebType>) => (
+                                                    <>
+                                                        <Upload
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.background_image_array}
+                                                            onChange={(files) => {
+                                                                console.log(
+                                                                    'OnchangeFiles',
+                                                                    files,
+                                                                    field.name,
+                                                                    values.background_image_array,
+                                                                )
+                                                                form.setFieldValue('background_image_array', files)
+                                                            }}
+                                                            className="items-center flex justify-center"
+                                                            onFileRemove={(files) => form.setFieldValue('background_image_array', files)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+                                </FormContainer>
+
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                    <div className="font-semibold mb-1 text-md">Mobile Background Image</div>
+
+                                    <FormContainer className=" mt-5 ">
+                                        <FormItem label="" className="grid grid-rows-2">
+                                            <Field name="mobile_background_array">
+                                                {({ field, form }: FieldProps<WebType>) => (
+                                                    <>
+                                                        <Upload
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.mobile_background_array} // uploadedd the file
+                                                            onChange={(files) => {
+                                                                console.log(
+                                                                    'OnchangeFiles',
+                                                                    files,
+                                                                    field.name,
+                                                                    values.mobile_background_array,
+                                                                )
+                                                                form.setFieldValue('mobile_background_array', files)
+                                                            }}
+                                                            className="flex justify-center"
+                                                            onFileRemove={(files) => form.setFieldValue('mobile_background_array', files)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    </FormContainer>
+                                </FormContainer>
+
+                                {BackGroundArray.map((item, key) => (
+                                    <FormItem asterisk label={item.label} className="w-1/2" key={key}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                    </FormItem>
+                                ))}
 
                                 {/* ............Header Config................................................. */}
 
-                                <FormItem asterisk label="Header Style" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="header_config.style" placeholder="Place your header Style" component={Input} />
-                                </FormItem>
-                                <FormItem asterisk label="Header Text" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="header_config.text" placeholder="Place your header Text" component={Input} />
-                                </FormItem>
-                                <FormItem asterisk label="Header mobile Font Size" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="number" name="header_config.font_size" placeholder="Place Font_Size" component={Input} />
-                                </FormItem>
-                                <FormItem asterisk label="Header Web Font Size" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="number"
-                                        name="header_config.web_font_size"
-                                        placeholder="Place Font_Size"
-                                        component={Input}
-                                    />
-                                </FormItem>
+                                {HEADERCONFIGARRAY.map((item, key) => (
+                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
+                                    </FormItem>
+                                ))}
 
                                 <PageAddCommonImage
                                     label="Header Icon Image"
@@ -834,59 +794,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     fileList={values.header_config_image_Array}
                                     beforeUpload={beforeUpload}
                                 />
-                                <FormItem asterisk label="Header Position" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="header_config.position"
-                                        placeholder="Place your header Position"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem asterisk label="Header BG Color" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="header_config.background_color"
-                                        placeholder="Place your header Color"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem asterisk label="Header Font Color" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="header_config.font_color"
-                                        placeholder="Place your Font Color"
-                                        component={Input}
-                                    />
-                                </FormItem>
+
                                 {/* ................................................................................ */}
                                 {/* .......sub_header....................... */}
-                                <FormItem asterisk label="Sub Header Style" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="sub_header_config.style"
-                                        placeholder="Place your header Style"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem asterisk label="Sub Header Text" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="sub_header_config.text"
-                                        placeholder="Place your header Text"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem asterisk label="Sub Header Web Font Size" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="sub_header_config.web_font_size"
-                                        placeholder="Place Font Size"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem asterisk label="Sub Header Mobile Font Size" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="sub_header_config.font_size" placeholder="Place Font Size" component={Input} />
-                                </FormItem>
+                                {SUBHEADERCONFIGARRAY.map((item, key) => (
+                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
+                                    </FormItem>
+                                ))}
+
                                 <PageAddCommonImage
                                     label="Sub Header Image"
                                     name="sub_header_config_image_Array"
@@ -895,49 +811,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     beforeUpload={beforeUpload}
                                 />
 
-                                <FormItem asterisk label="Sub Header Position" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="sub_header_config.position"
-                                        placeholder="Place your header Position"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem asterisk label="Sub Header BG Color" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="sub_header_config.background_color"
-                                        placeholder="Place your sub header color"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem asterisk label="Sub Header Font Color" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="sub_header_config.font_color"
-                                        placeholder="Place your Font Color"
-                                        component={Input}
-                                    />
-                                </FormItem>
-
                                 {/* FOOOTER.......................................................... */}
-                                <FormItem asterisk label="Footer Style" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="footer_config.style" placeholder="Place your header Style" component={Input} />
-                                </FormItem>
-                                <FormItem asterisk label="Footer Text" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="footer_config.text" placeholder="Place your header Text" component={Input} />
-                                </FormItem>
-                                <FormItem asterisk label="Footer Mobile Font Size" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="number" name="footer_config.font_size" placeholder="Place Font Size" component={Input} />
-                                </FormItem>
-                                <FormItem asterisk label="Footer web Font Size" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="number"
-                                        name="footer_config.web_font_size"
-                                        placeholder="Place Font Size"
-                                        component={Input}
-                                    />
-                                </FormItem>
+
+                                {FOOTERCONFIGARRAY.map((item, key) => (
+                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
+                                    </FormItem>
+                                ))}
 
                                 <PageAddCommonImage
                                     label="Footer Image"
@@ -946,32 +826,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     fileList={values.footer_config_image_Array}
                                     beforeUpload={beforeUpload}
                                 />
-
-                                <FormItem asterisk label="Footer Position" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="footer_config.position"
-                                        placeholder="Place your footer Position"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem asterisk label="Footer Bg Color" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="footer_config.background_color"
-                                        placeholder="Place your footer color"
-                                        component={Input}
-                                    />
-                                </FormItem>
-
-                                <FormItem asterisk label="Footer Font Color" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="footer_config.font_color"
-                                        placeholder="Place your footer color"
-                                        component={Input}
-                                    />
-                                </FormItem>
 
                                 <FormItem asterisk label="Data Type" className="col-span-1 w-[60%] h-[80%]">
                                     <Field name="data_type.type">
@@ -1097,40 +951,17 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     </FormItem>
                                 </FormContainer>
 
-                                <FormItem label="Data Type Posts" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.posts" placeholder="Place your dataType" component={Input} />
-                                </FormItem>
-                                <FormItem label="Data Type Brands" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.brands" placeholder="Place your dataType" component={Input} />
-                                </FormItem>
-                                <FormItem label="Data Type Handles" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.handles" placeholder="Place your dataType" component={Input} />
-                                </FormItem>
-                                <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field name="is_section_clickable" component={Checkbox} />
-                                </FormItem>
-                                <FormContainer className="grid grid-cols-2 gap-4 w-3/4">
-                                    {/* Filters */}
-                                    <FormItem label="Filters">
-                                        <Field name="data_type.filters">
-                                            {({ field, form }: FieldProps<any>) => {
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        placeholder="Select Filter Tags"
-                                                        options={filters.filters}
-                                                        getOptionLabel={(option) => option.label}
-                                                        getOptionValue={(option) => option.value}
-                                                        onChange={(newVal, actionMeta) => {
-                                                            const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                            form.setFieldValue(field.name, newValues)
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
+                                {DATATYPEVALUES.map((item, key) => (
+                                    <FormItem label={item.label.toUpperCase()} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={`place ${item.label.toUpperCase()}`}
+                                            component={Input}
+                                        />
                                     </FormItem>
-                                </FormContainer>
+                                ))}
+                                <TagsEdit filterOptions={filters.filters} isValue />
 
                                 {/* ..................................................... */}
                             </FormContainer>
