@@ -912,6 +912,12 @@ const appsRoute: Routes = [
 
     {
         key: 'appsConfiguration.configurations',
+        path: `${APP_PREFIX_PATH}/configurations`,
+        component: lazy(() => import('@/views/configurationsSlikk/configg/ConfigurationPage')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsConfiguration.configurationsAdd',
         path: `${APP_PREFIX_PATH}/configurations/add`,
         component: lazy(() => import('@/views/configurationsSlikk/AddCongigurations')),
         authority: [ADMIN, USER],
