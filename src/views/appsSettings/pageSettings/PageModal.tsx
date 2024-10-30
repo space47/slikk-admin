@@ -18,7 +18,16 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { MdCancel } from 'react-icons/md'
-import { ALIGNVALUES, BackGroundArray, borrderStyleArray, genericComponentArray, NAMEPOSITION, webBorrderStyleArray } from './genericComp'
+import {
+    ALIGNVALUES,
+    BackGroundArray,
+    borrderStyleArray,
+    genericComponentArray,
+    NAMEPOSITION,
+    sectionBorrderStyleArray,
+    webBorrderStyleArray,
+    WebSectionBorrderStyleArray,
+} from './genericComp'
 import { width } from '@mui/system'
 import PageEditImage from './PageEditImage'
 import PageSettingsPostTable from './PageSettingsPostTable'
@@ -139,13 +148,15 @@ const PageModal: React.FC<modalProps> = ({
         web_border: particularRow.web_border,
         web_border_style: particularRow.web_border_style,
         name: particularRow.name,
+        section_border: particularRow?.section_border,
+
         web_name: particularRow.web_name,
         name_footer: particularRow.name_footer,
         web_name_footer: particularRow.web_name_footer,
         component_config: particularRow.component_config,
-        section_border: particularRow.section_border,
+        web_section_border: particularRow?.web_section_border,
     })
-    console.log('The initial value that I got ', particularRow)
+    console.log('The initial value that I got ', particularRow.section_border)
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -351,9 +362,23 @@ const PageModal: React.FC<modalProps> = ({
                     web_footer_font_color: row.component_config?.web_footer_font_color || '',
                     web_font_style: row.component_config?.web_font_style || '',
                     web_footer_font_style: row.component_config?.web_footer_font_style || '',
+
+                    //
+                    section_border: row.section_border || '',
+                    section_border_style: row.component_config?.section_border_style || '',
+                    section_border_width: Number(row.component_config?.section_border_width) || 0,
+                    section_border_color: row.component_config?.section_border_color || '',
+                    web_section_border: row.web_section_border || '',
+                    web_section_border_style: row.component_config?.web_section_border_style || '',
+                    web_section_border_width: Number(row.component_config?.web_section_border_width) || 0,
+                    web_section_border_color: row.component_config?.web_section_border_color || '',
+
+                    section_margin: Number(row.component_config?.section_margin),
+                    section_padding: Number(row.component_config?.section_padding),
+                    web_section_margin: Number(row.component_config?.web_section_margin),
+                    web_section_padding: Number(row.component_config?.web_section_padding),
                 },
                 section_filters: row?.data_type?.filters || '',
-                section_border: row?.section_border || '',
             }
 
             setParticularRow(newRow)
@@ -401,6 +426,10 @@ const PageModal: React.FC<modalProps> = ({
     const [webNameForm, setWebNameForm] = useState(initialValue.web_name)
     const [footerAlignForm, setFooterAlignForm] = useState(initialValue.name_footer)
     const [webFooterAlignForm, setWebFooterAlignForm] = useState(initialValue.web_name_footer)
+    const [sectionBorderShow, setSectioBorderShow] = useState(initialValue.section_border)
+    const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue.web_section_border)
+
+    console.log('Checking for section border ', sectionBorderShow, 'and web section border', webSectionBorderShow)
 
     const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialDataType(e.target.value)
@@ -514,9 +543,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="section_heading" placeholder="Place your Section heading" component={Input} />
                                 </FormItem>
-                                <FormItem asterisk label="Section Border" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="section_border" placeholder="Place Section Border" component={Input} />
-                                </FormItem>
                                 <FormItem asterisk label="Component Types" className="col-span-1 w-[60%] h-[80%]">
                                     <Field name="component_type">
                                         {({ field, form }: FieldProps<any>) => {
@@ -542,9 +568,8 @@ const PageModal: React.FC<modalProps> = ({
                                 {/* 
                                 {componentOption === 'Generic' && ( */}
 
-                                <div className="font-bold mt-1">Component Configurations :</div>
                                 <FormContainer className="grid grid-cols-2">
-                                    {genericComponentArray.slice(0, 16).map((item, key) => (
+                                    {genericComponentArray.slice(0, 18).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-1/2">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
@@ -577,7 +602,7 @@ const PageModal: React.FC<modalProps> = ({
 
                                 <FormContainer className="grid grid-cols-2">
                                     <div className="font-bold mt-1">Web Configurations :</div>
-                                    {genericComponentArray.slice(16).map((item, key) => (
+                                    {genericComponentArray.slice(18).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-1/2">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
@@ -656,6 +681,38 @@ const PageModal: React.FC<modalProps> = ({
                                             </FormContainer>
                                         )}
                                     </FormItem>
+                                    <FormItem label="Section Border" className="col-span-1 w-1/4">
+                                        <Field
+                                            type="checkbox"
+                                            name="section_border"
+                                            placeholder="Enter section border"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('section_border', isChecked)
+                                                setSectioBorderShow(isChecked ? 'yes' : 'no')
+                                            }}
+                                        />
+                                        {sectionBorderShow === true && (
+                                            <FormContainer>
+                                                <CommonSelect
+                                                    name="component_config.section_border_style"
+                                                    label="Section Border Style"
+                                                    options={borderStyleArray}
+                                                />
+                                                {sectionBorrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-full">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormItem>
 
                                     <FormItem label="Web Border" className="col-span-1 w-1/4">
                                         <Field
@@ -693,6 +750,39 @@ const PageModal: React.FC<modalProps> = ({
                                                 </FormItem>
                                                 {webBorrderStyleArray.map((item, key) => (
                                                     <FormItem key={key} label={item.label} className="w-1/2">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormItem>
+
+                                    <FormItem label="Web Section Border" className="col-span-1 w-1/4">
+                                        <Field
+                                            type="checkbox"
+                                            name="web_section_border"
+                                            placeholder="Enter web section border"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('web_section_border', isChecked)
+                                                setWebSectioBorderShow(isChecked ? 'yes' : 'no')
+                                            }}
+                                        />
+                                        {webSectionBorderShow === true && (
+                                            <FormContainer>
+                                                <CommonSelect
+                                                    name="component_config.web_section_border_style"
+                                                    label="Web Section Border Style"
+                                                    options={borderStyleArray}
+                                                />
+                                                {WebSectionBorrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-full">
                                                         <Field
                                                             type={item.type}
                                                             name={item.name}
