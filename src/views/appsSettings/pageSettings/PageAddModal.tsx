@@ -17,7 +17,15 @@ import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePos
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { ALIGNVALUES, BackGroundArray, borrderStyleArray, genericComponentArray, NAMEPOSITION, webBorrderStyleArray } from './genericComp'
+import {
+    ALIGNVALUES,
+    BackGroundArray,
+    borrderStyleArray,
+    genericComponentArray,
+    NAMEPOSITION,
+    sectionBorrderStyleArray,
+    webBorrderStyleArray,
+} from './genericComp'
 import PageAddCommonImage from './PageAddCommonImage'
 import { MdCancel } from 'react-icons/md'
 import PageSettingsPostTable from './PageSettingsPostTable'
@@ -112,7 +120,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [webNameForm, setWebNameForm] = useState<boolean>()
     const [footerAlignForm, setFooterAlignForm] = useState<boolean>()
     const [webFooterAlignForm, setWebFooterAlignForm] = useState<boolean>()
-
+    const [sectionBorderShow, setSectioBorderShow] = useState('')
+    const [webSectionBorderShow, setWebSectioBorderShow] = useState('')
     const [componentOption, setComponentOptions] = useState('')
 
     const dispatch = useAppDispatch()
@@ -388,6 +397,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 border_style: row.component_config?.border_style || '',
                 border_width: Number(row.component_config?.border_width) || 0,
                 border_color: row.component_config?.border_color || '',
+                // Section Border
+                section_border: row.section_border || '',
+                section_border_style: row.component_config?.section_border_style || '',
+                section_border_width: Number(row.component_config?.section_border_width) || 0,
+                section_border_color: row.component_config?.section_border_color || '',
+                // ....
                 show_dots: row.component_config?.show_dots || false,
                 infinit_loop: row.component_config?.infinit_loop || false,
                 gap: Number(row.component_config?.gap) || 0,
@@ -435,9 +450,18 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 web_section_alignment: row.component_config?.web_section_alignment || '',
                 web_font_style: row.component_config?.web_font_style || '',
                 web_footer_font_style: row.component_config?.web_footer_font_style || '',
+
+                web_section_border: row.web_section_border || '',
+                web_section_border_style: row.component_config?.web_section_border_style || '',
+                web_section_border_width: Number(row.component_config?.web_section_border_width) || 0,
+                web_section_border_color: row.component_config?.web_section_border_color || '',
+
+                section_margin: Number(row.component_config?.section_margin),
+                section_padding: Number(row.component_config?.section_padding),
+                web_section_margin: Number(row.component_config?.web_section_margin),
+                web_section_padding: Number(row.component_config?.web_section_padding),
             },
             section_filters: row.data_type?.filters || '',
-            section_border: row?.section_border || '',
         }
 
         console.log('End of row')
@@ -495,9 +519,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="section_heading" placeholder="Place your Section heading" component={Input} />
                                 </FormItem>
-                                <FormItem asterisk label="Section Border" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="section_border" placeholder="Place Section Border" component={Input} />
-                                </FormItem>
+
                                 <FormItem asterisk label="Component Types" className="col-span-1 w-[60%] h-[80%]">
                                     <Field name="component_type">
                                         {({ field, form }: FieldProps<any>) => {
@@ -522,9 +544,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 </FormItem>
                                 {/* Generic Fields........................................................ */}
 
-                                <div className="font-bold mt-1">COMPONENT CONFIGURATIONS:</div>
                                 <div className=" grid grid-cols-2">
-                                    {genericComponentArray.slice(0, 16).map((item, key) => (
+                                    {genericComponentArray.slice(0, 18).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
@@ -561,7 +582,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
                                 <FormContainer className=" grid grid-cols-2">
                                     <div className="font-bold mt-1">Web Configurations :</div>
-                                    {genericComponentArray.slice(16).map((item, key) => (
+                                    {genericComponentArray.slice(18).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
@@ -582,7 +603,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     />
                                     <CommonSelect
                                         name="component_config.web_section_alignment"
-                                        label="Section Alignment"
+                                        label="Web Section Alignment"
                                         options={SECTIONARRAY}
                                         needClassName
                                         className=" col-span-1 w-1/2"
@@ -610,8 +631,45 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     />
                                     {borderForm === 'yes' && (
                                         <FormContainer>
-                                            <CommonSelect name="border_style" label="Border Style" options={borderStyleArray} />
+                                            <CommonSelect
+                                                name="component_config.border_style"
+                                                label="Border Style"
+                                                options={borderStyleArray}
+                                            />
                                             {borrderStyleArray.map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-full">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input}
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+                                    )}
+                                </FormItem>
+                                {/* Section Border */}
+                                <FormItem label="Section Border" className="col-span-1 w-1/4">
+                                    <Field
+                                        type="checkbox"
+                                        name="section_border"
+                                        placeholder="Enter section border"
+                                        component={Input}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const isChecked = e.target.checked
+                                            setFieldValue('section_border', isChecked)
+                                            setSectioBorderShow(isChecked ? 'yes' : 'no')
+                                        }}
+                                    />
+                                    {sectionBorderShow === 'yes' && (
+                                        <FormContainer>
+                                            <CommonSelect
+                                                name="component_config.section_border_style"
+                                                label="Section Border Style"
+                                                options={borderStyleArray}
+                                            />
+                                            {sectionBorrderStyleArray.map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-full">
                                                     <Field
                                                         type={item.type}
@@ -640,7 +698,44 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                     <br />
                                     {webBorderForm === true && (
                                         <FormContainer>
-                                            <CommonSelect name="web_border_style" label="Web Border Style" options={borderStyleArray} />
+                                            <CommonSelect
+                                                name="component_config.web_border_style"
+                                                label="Web Border Style"
+                                                options={borderStyleArray}
+                                            />
+                                            {webBorrderStyleArray.map((item, key) => (
+                                                <FormItem key={key} label={item.label} className="w-full">
+                                                    <Field
+                                                        type={item.type}
+                                                        name={item.name}
+                                                        placeholder={item.placeholder}
+                                                        component={Input}
+                                                    />
+                                                </FormItem>
+                                            ))}
+                                        </FormContainer>
+                                    )}
+                                </FormItem>
+                                {/* Web Section Border */}
+                                <FormItem label="Web Section Border" className="col-span-1 w-1/4">
+                                    <Field
+                                        type="checkbox"
+                                        name="web_section_border"
+                                        placeholder="Enter web section border"
+                                        component={Input}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            const isChecked = e.target.checked
+                                            setFieldValue('web_section_border', isChecked)
+                                            setWebSectioBorderShow(isChecked ? 'yes' : 'no')
+                                        }}
+                                    />
+                                    {webSectionBorderShow === 'yes' && (
+                                        <FormContainer>
+                                            <CommonSelect
+                                                name="component_config.web_section_border_style"
+                                                label="Web Section Border Style"
+                                                options={borderStyleArray}
+                                            />
                                             {webBorrderStyleArray.map((item, key) => (
                                                 <FormItem key={key} label={item.label} className="w-full">
                                                     <Field

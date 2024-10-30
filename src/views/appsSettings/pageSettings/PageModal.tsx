@@ -18,7 +18,16 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { MdCancel } from 'react-icons/md'
-import { ALIGNVALUES, BackGroundArray, borrderStyleArray, genericComponentArray, NAMEPOSITION, webBorrderStyleArray } from './genericComp'
+import {
+    ALIGNVALUES,
+    BackGroundArray,
+    borrderStyleArray,
+    genericComponentArray,
+    NAMEPOSITION,
+    sectionBorrderStyleArray,
+    webBorrderStyleArray,
+    WebSectionBorrderStyleArray,
+} from './genericComp'
 import { width } from '@mui/system'
 import PageEditImage from './PageEditImage'
 import PageSettingsPostTable from './PageSettingsPostTable'
@@ -139,13 +148,15 @@ const PageModal: React.FC<modalProps> = ({
         web_border: particularRow.web_border,
         web_border_style: particularRow.web_border_style,
         name: particularRow.name,
+        section_border: particularRow?.section_border,
+
         web_name: particularRow.web_name,
         name_footer: particularRow.name_footer,
         web_name_footer: particularRow.web_name_footer,
         component_config: particularRow.component_config,
-        section_border: particularRow.section_border,
+        web_section_border: particularRow?.web_section_border,
     })
-    console.log('The initial value that I got ', particularRow)
+    console.log('The initial value that I got ', particularRow.section_border)
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -251,40 +262,20 @@ const PageModal: React.FC<modalProps> = ({
                 background_image: imageUpload || row?.background_image,
                 mobile_background_image: mobileimageUpload || row?.mobile_background_image,
                 background_config: {
-                    background_color: row?.background_config?.background_color || '',
-                    desktop_position: row?.background_config?.desktop_position || '',
-                    mobile_position: row?.background_config?.mobile_position || '',
-                    background_topMargin: Number(row?.background_config?.background_topMargin) || 0,
-                    background_bottomMargin: Number(row?.background_config?.background_bottomMargin) || 0,
-                    mobile_width: Number(row?.background_config?.mobile_width) || 0,
-                    web_width: Number(row?.background_config?.web_width) || 0,
-                    background_image: imageUpload || row?.background_image,
-                    mobile_background_image: mobileimageUpload || row?.mobile_background_image,
+                    ...row?.background_config,
                 },
                 footer_config: {
                     ...row?.footer_config,
                     image: footerImageUpload || '',
-                    web_font_size: Number(row?.footer_config?.web_font_size) || 0,
-                    font_size: Number(row?.footer_config?.font_size) || 0,
-                    background_color: row?.footer_config?.background_color || '',
-                    font_color: row?.footer_config?.font_color || '',
                 },
                 header_config: {
                     ...row?.header_config,
                     icon: headerIconUpload || '',
                     image: headerImageUpload || '',
-                    web_font_size: Number(row?.header_config?.web_font_size) || 0,
-                    font_size: Number(row?.header_config?.font_size) || 0,
-                    background_color: row?.header_config?.background_color || '',
-                    font_color: row?.header_config?.font_color || '',
                 },
                 sub_header_config: {
                     ...row?.sub_header_config,
                     image: subHeaderImageUpload || '',
-                    web_font_size: Number(row?.sub_header_config?.web_font_size) || 0,
-                    font_size: Number(row?.sub_header_config?.font_size) || 0,
-                    background_color: row?.sub_header_config?.background_color || '',
-                    font_color: row?.sub_header_config?.font_color || '',
                 },
                 data_type: {
                     ...row?.data_type,
@@ -293,67 +284,9 @@ const PageModal: React.FC<modalProps> = ({
                     barcodes: Array.isArray(productData) ? productData.join(',') : row?.data_type?.barcodes || '',
                 },
                 component_config: {
-                    carousel: row?.component_config?.carousel || false,
-                    carousel_dot: row?.component_config?.carousel_dot || false,
-                    grid: row?.component_config?.grid || false,
-                    carousel_autoplay: row?.component_config?.carousel_autoplay || false,
-                    width: Number(row?.component_config?.width) || 0,
-                    interval: Number(row?.component_config?.interval) || 0,
-                    corner_radius: Number(row?.component_config?.corner_radius) || 0,
-                    gap: Number(row?.component_config?.gap) || 0,
-                    vertical_gap: Number(row?.component_config?.vertical_gap) || 0,
-                    row: Number(row?.component_config?.row) || 0,
-                    column: Number(row?.component_config?.column) || 0,
-                    font_size: Number(row?.component_config?.font_size) || 0,
-                    footer_font_size: Number(row?.component_config?.footer_font_size) || 0,
-                    font_color: row.component_config?.font_color || '',
-                    footer_font_color: row.component_config?.footer_font_color || '',
-                    font_style: row.component_config?.font_style || '',
-                    footer_font_style: row.component_config?.footer_font_style || '',
-                    name_position: row?.component_config?.name_position || '',
-                    name_align: row?.component_config?.name_align || '',
-                    name_footer: row?.name_footer || '',
-                    name: row?.name || '',
-                    name_footer_align: row?.component_config?.name_footer_align || '',
-                    section_alignment: row?.component_config?.section_alignment || '',
-                    border: row?.border || '',
-                    border_style: row?.border_style || '',
-                    border_width: Number(row?.component_config?.border_width) || 0,
-                    border_color: row?.component_config?.border_color || '',
-                    web_border: row?.web_border || '',
-                    web_border_style: row?.web_border_style || '',
-                    web_border_width: Number(row?.component_config?.web_border_width) || 0,
-                    web_border_color: row?.component_config?.web_border_color || '',
-                    show_dots: row?.component_config?.show_dots || false,
-                    infinit_loop: row?.component_config?.infinit_loop || false,
-                    web_name_footer: row?.web_name_footer || '',
-                    web_name_footer_align: row?.component_config?.web_name_footer_align || '',
-                    web_carousel: row?.component_config?.web_carousel || false,
-                    web_carousel_dot: row?.component_config?.web_carousel_dot || false,
-                    web_grid: row?.component_config?.web_grid || false,
-                    web_carousel_autoplay: row?.component_config?.web_carousel_autoplay || false,
-                    web_width: Number(row?.component_config?.web_width) || 0,
-                    web_interval: Number(row?.component_config?.web_interval) || 0,
-                    web_corner_radius: Number(row?.component_config?.web_corner_radius) || 0,
-                    web_show_dots: row?.component_config?.web_show_dots || false,
-                    web_infinit_loop: row?.component_config?.web_infinit_loop || false,
-                    web_gap: Number(row?.component_config?.web_gap) || 0,
-                    web_vertical_gap: Number(row?.component_config?.web_vertical_gap) || 0,
-                    web_row: Number(row?.component_config?.web_row) || 0,
-                    web_column: Number(row?.component_config?.web_column) || 0,
-                    web_font_size: Number(row?.component_config?.web_font_size) || 0,
-                    web_footer_font_size: Number(row?.component_config?.web_footer_font_size) || 0,
-                    web_name: row?.web_name || '',
-                    web_name_position: row?.component_config?.web_name_position || '',
-                    web_name_align: row?.component_config?.web_name_align || '',
-                    web_section_alignment: row?.component_config?.web_section_alignment || '',
-                    web_font_color: row.component_config?.web_font_color || '',
-                    web_footer_font_color: row.component_config?.web_footer_font_color || '',
-                    web_font_style: row.component_config?.web_font_style || '',
-                    web_footer_font_style: row.component_config?.web_footer_font_style || '',
+                    ...row?.component_config,
                 },
                 section_filters: row?.data_type?.filters || '',
-                section_border: row?.section_border || '',
             }
 
             setParticularRow(newRow)
@@ -401,6 +334,10 @@ const PageModal: React.FC<modalProps> = ({
     const [webNameForm, setWebNameForm] = useState(initialValue.web_name)
     const [footerAlignForm, setFooterAlignForm] = useState(initialValue.name_footer)
     const [webFooterAlignForm, setWebFooterAlignForm] = useState(initialValue.web_name_footer)
+    const [sectionBorderShow, setSectioBorderShow] = useState(initialValue.section_border)
+    const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue.web_section_border)
+
+    console.log('Checking for section border ', sectionBorderShow, 'and web section border', webSectionBorderShow)
 
     const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialDataType(e.target.value)
@@ -514,9 +451,6 @@ const PageModal: React.FC<modalProps> = ({
                                 <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
                                     <Field type="text" name="section_heading" placeholder="Place your Section heading" component={Input} />
                                 </FormItem>
-                                <FormItem asterisk label="Section Border" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="section_border" placeholder="Place Section Border" component={Input} />
-                                </FormItem>
                                 <FormItem asterisk label="Component Types" className="col-span-1 w-[60%] h-[80%]">
                                     <Field name="component_type">
                                         {({ field, form }: FieldProps<any>) => {
@@ -542,9 +476,8 @@ const PageModal: React.FC<modalProps> = ({
                                 {/* 
                                 {componentOption === 'Generic' && ( */}
 
-                                <div className="font-bold mt-1">Component Configurations :</div>
                                 <FormContainer className="grid grid-cols-2">
-                                    {genericComponentArray.slice(0, 16).map((item, key) => (
+                                    {genericComponentArray.slice(0, 18).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-1/2">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
@@ -577,7 +510,7 @@ const PageModal: React.FC<modalProps> = ({
 
                                 <FormContainer className="grid grid-cols-2">
                                     <div className="font-bold mt-1">Web Configurations :</div>
-                                    {genericComponentArray.slice(16).map((item, key) => (
+                                    {genericComponentArray.slice(18).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-1/2">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
@@ -656,6 +589,38 @@ const PageModal: React.FC<modalProps> = ({
                                             </FormContainer>
                                         )}
                                     </FormItem>
+                                    <FormItem label="Section Border" className="col-span-1 w-1/4">
+                                        <Field
+                                            type="checkbox"
+                                            name="section_border"
+                                            placeholder="Enter section border"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('section_border', isChecked)
+                                                setSectioBorderShow(isChecked ? 'yes' : 'no')
+                                            }}
+                                        />
+                                        {sectionBorderShow === true && (
+                                            <FormContainer>
+                                                <CommonSelect
+                                                    name="component_config.section_border_style"
+                                                    label="Section Border Style"
+                                                    options={borderStyleArray}
+                                                />
+                                                {sectionBorrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-full">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormItem>
 
                                     <FormItem label="Web Border" className="col-span-1 w-1/4">
                                         <Field
@@ -693,6 +658,39 @@ const PageModal: React.FC<modalProps> = ({
                                                 </FormItem>
                                                 {webBorrderStyleArray.map((item, key) => (
                                                     <FormItem key={key} label={item.label} className="w-1/2">
+                                                        <Field
+                                                            type={item.type}
+                                                            name={item.name}
+                                                            placeholder={item.placeholder}
+                                                            component={Input}
+                                                        />
+                                                    </FormItem>
+                                                ))}
+                                            </FormContainer>
+                                        )}
+                                    </FormItem>
+
+                                    <FormItem label="Web Section Border" className="col-span-1 w-1/4">
+                                        <Field
+                                            type="checkbox"
+                                            name="web_section_border"
+                                            placeholder="Enter web section border"
+                                            component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const isChecked = e.target.checked
+                                                setFieldValue('web_section_border', isChecked)
+                                                setWebSectioBorderShow(isChecked ? 'yes' : 'no')
+                                            }}
+                                        />
+                                        {webSectionBorderShow === true && (
+                                            <FormContainer>
+                                                <CommonSelect
+                                                    name="component_config.web_section_border_style"
+                                                    label="Web Section Border Style"
+                                                    options={borderStyleArray}
+                                                />
+                                                {WebSectionBorrderStyleArray.map((item, key) => (
+                                                    <FormItem key={key} label={item.label} className="w-full">
                                                         <Field
                                                             type={item.type}
                                                             name={item.name}
