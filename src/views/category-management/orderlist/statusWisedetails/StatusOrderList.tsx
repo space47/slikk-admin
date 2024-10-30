@@ -100,9 +100,7 @@ const StatusOrderList = () => {
                 setPageSize(totalOrders)
                 setPage(1)
             } else {
-                response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${var1}&to=${var2}&status=COMPLETED`,
-                )
+                response = await axiosInstance.get(`/merchant/orders?p=${page}&page_size=${pageSize}&status=COMPLETED`)
             }
 
             const ordersData = response.data?.data.results
@@ -220,7 +218,7 @@ const StatusOrderList = () => {
                 searwiseDownload = `&mobile=${mobileFilter}`
             }
 
-            const downloadUrl = `merchant/orders?download=true${searwiseDownload}&status=COMPLETED&from=${var1}&to=${var2}`
+            const downloadUrl = `merchant/orders?download=true${searwiseDownload}&status=COMPLETED`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
