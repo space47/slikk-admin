@@ -122,6 +122,20 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter Font Color',
     },
+    {
+        label: 'Section Margin',
+        name: 'component_config.section_margin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter margin',
+    },
+    {
+        label: 'Section Padding',
+        name: 'component_config.section_padding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
 
     // Web Versions below
     {
@@ -243,6 +257,20 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter Web Font Color',
     },
+    {
+        label: 'Web Section Margin',
+        name: 'component_config.web_section_margin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
+    {
+        label: 'Web Section Padding',
+        name: 'component_config.web_section_padding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Font Color',
+    },
 ]
 
 export const borrderStyleArray = [
@@ -256,6 +284,40 @@ export const borrderStyleArray = [
     {
         label: 'Color',
         name: 'component_config.border_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter color hexcode',
+    },
+]
+
+export const sectionBorrderStyleArray = [
+    {
+        label: 'Section Border Width',
+        name: 'component_config.section_border_width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Width (eg: 1,2)',
+    },
+    {
+        label: 'Section Color',
+        name: 'component_config.section_border_color',
+        type: 'text',
+        component: { Input },
+        placeholder: 'Enter color hexcode',
+    },
+]
+
+export const WebSectionBorrderStyleArray = [
+    {
+        label: 'Web Section Border Width',
+        name: 'component_config.web_section_border_width',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Width (eg: 1,2)',
+    },
+    {
+        label: 'Web Section Color',
+        name: 'component_config.web_section_border_color',
         type: 'text',
         component: { Input },
         placeholder: 'Enter color hexcode',

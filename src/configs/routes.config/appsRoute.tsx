@@ -917,9 +917,9 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'appsConfiguration.configurationsAdd',
-        path: `${APP_PREFIX_PATH}/configurations/add`,
-        component: lazy(() => import('@/views/configurationsSlikk/AddCongigurations')),
+        key: 'appsConfiguration.configurations',
+        path: `${APP_PREFIX_PATH}/configurations/edit/:id`,
+        component: lazy(() => import('@/views/configurationsSlikk/configg/componentsConfigg/EditConfigurations')),
         authority: [ADMIN, USER],
     },
 ]

@@ -35,6 +35,7 @@ import { RiBillLine } from 'react-icons/ri'
 import { PiKeyReturn, PiKeyReturnLight } from 'react-icons/pi'
 import { HiOutlineBanknotes } from 'react-icons/hi2'
 import { IoAnalyticsSharp, IoHomeOutline } from 'react-icons/io5'
+import { FcDataConfiguration } from 'react-icons/fc'
 
 export type NavigationIcons = Record<string, JSX.Element>
 
@@ -45,6 +46,7 @@ const navigationIcon: NavigationIcons = {
     sales: <HiOutlineTrendingUp />,
     org: <CgOrganisation />,
     reels: <BsCameraReels />,
+    config: <FcDataConfiguration />,
     users: <HiOutlineUsers />,
     bill: <RiBillLine />,
     note: <HiOutlineBanknotes />,
