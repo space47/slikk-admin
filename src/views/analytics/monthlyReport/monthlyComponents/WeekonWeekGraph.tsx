@@ -12,7 +12,7 @@ const WeekOnWeekGraph = () => {
     const transformData = () => {
         const weeksData: any = []
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 5; i++) {
             weeksData.push(Array(7).fill(0))
         }
 
@@ -22,7 +22,7 @@ const WeekOnWeekGraph = () => {
 
             const weekIndex = Math.floor((orderDate.getDate() - 1) / 7)
 
-            if (weekIndex < 4) {
+            if (weekIndex < 5) {
                 weeksData[weekIndex][dayIndex] += order.total
             }
         })
