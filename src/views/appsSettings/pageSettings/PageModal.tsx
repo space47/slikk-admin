@@ -351,7 +351,7 @@ const PageModal: React.FC<modalProps> = ({
     const borderStyleArray = [
         { label: 'Dotted', value: 'dotted' },
         { label: 'Solid', value: 'solid' },
-        { label: 'Underline', value: 'underline' },
+        { label: 'Dashed', value: 'dashed' },
     ]
 
     const SECTIONARRAY = [
@@ -598,7 +598,7 @@ const PageModal: React.FC<modalProps> = ({
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 const isChecked = e.target.checked
                                                 setFieldValue('section_border', isChecked)
-                                                setSectioBorderShow(isChecked ? 'yes' : 'no')
+                                                setSectioBorderShow(isChecked ? true : false)
                                             }}
                                         />
                                         {sectionBorderShow === true && (
@@ -679,7 +679,7 @@ const PageModal: React.FC<modalProps> = ({
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 const isChecked = e.target.checked
                                                 setFieldValue('web_section_border', isChecked)
-                                                setWebSectioBorderShow(isChecked ? 'yes' : 'no')
+                                                setWebSectioBorderShow(isChecked ? true : false)
                                             }}
                                         />
                                         {webSectionBorderShow === true && (
