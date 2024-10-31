@@ -27,15 +27,6 @@ const Home = () => {
     })
     const navigate = useNavigate()
 
-    const handleShowFullScreen = () => {
-        navigate(`/app/homePage/fullMap`, {
-            state: {
-                var1: from,
-                var2: to,
-            },
-        })
-    }
-
     const fetchHome = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -49,7 +40,8 @@ const Home = () => {
 
     const fetchOrderForLocation = async () => {
         try {
-            const response = await axiosInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${to}`)
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const response = await axiosInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${To_Date}`)
 
             const ordersData = response.data?.data
             setOrders(ordersData)
@@ -69,6 +61,15 @@ const Home = () => {
 
         return () => clearInterval(interval)
     }, [from, to])
+
+    const handleShowFullScreen = () => {
+        navigate(`/app/homePage/fullMap`, {
+            state: {
+                var1: from,
+                var2: to,
+            },
+        })
+    }
 
     const netSales =
         (homeData?.received?.total_amount || 0) -
