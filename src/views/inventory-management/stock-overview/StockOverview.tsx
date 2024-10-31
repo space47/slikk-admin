@@ -11,19 +11,8 @@ import moment from 'moment'
 import { IoMdDownload } from 'react-icons/io'
 import { notification } from 'antd'
 import ImageMODAL from '@/common/ImageModal'
-import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
-import { Dropdown } from '@/components/ui'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { TfiExchangeVertical } from 'react-icons/tfi'
+
 import { FaSync } from 'react-icons/fa'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { DIVISION_STATE } from '@/store/types/division.types'
-import { CATEGORY_STATE } from '@/store/types/category.types'
-import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
-import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
-import { BRAND_STATE } from '@/store/types/brand.types'
-import { getAllBrandsAPI } from '@/store/action/brand.action'
 import StockOverviewFilter from './stockOverviewComponents/StockOverviewFilter'
 
 interface LastUpdatedBy {
@@ -105,28 +94,20 @@ const StockOverview = () => {
 
     const [showDrawer, setShowDrawer] = useState(false)
 
-    const fetchData = async (page: number, pageSize: number) => {
+    const fetchAndFilterData = async (page: number, pageSize: number, filter: string = '') => {
         try {
-            const response = await axiosInstance.get(
-                `inventory?p=${page}&page_size=${pageSize}&${typeFetch}`, // /rowId(patch)...........body me quantity: {numberic value}, //location : text
-            )
-            const data = response.data.data.results
-            const total = response.data.data.count
-            setData(data)
-            setTotalData(total)
-        } catch (error) {
-            console.error(error)
-        }
-    }
+            let searchInputType = ''
 
-    const filter = async (page: number, pageSize: number, filter: string = '') => {
-        try {
-            let searchInputType = `&sku=${filter}`
-            setFilterInput(searchInputType)
+            if (filter) {
+                searchInputType = `&sku=${encodeURIComponent(filter)}`
+                setFilterInput(searchInputType)
+            }
+
+            console.log('FilterValue', searchInputType)
             let response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`)
 
-            if (response?.data?.data?.results?.length === 0) {
-                searchInputType = `&name=${filter}`
+            if (filter && response?.data?.data?.results?.length === 0) {
+                searchInputType = `&name=${encodeURIComponent(filter)}`
                 setFilterInput(searchInputType)
                 response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`)
             }
@@ -141,13 +122,10 @@ const StockOverview = () => {
         }
     }
 
+    // Update useEffect hooks to use the combined function
     useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize, currentSelectedPage, searchType, typeFetch])
-
-    useEffect(() => {
-        filter(page, pageSize, globalFilter)
-    }, [page, pageSize, globalFilter, searchType])
+        fetchAndFilterData(page, pageSize, globalFilter)
+    }, [page, pageSize, globalFilter, searchType, typeFetch, currentSelectedPage])
 
     const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
@@ -387,7 +365,6 @@ const StockOverview = () => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -433,10 +410,13 @@ const StockOverview = () => {
                 </button>
                 <div className="mb-4 w-full md:w-auto">
                     <input
-                        type="text"
+                        type="search"
                         placeholder="Search SKU/Name"
                         value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        onChange={(e) => {
+                            console.log('final Value', e.target.value)
+                            setGlobalFilter(e.target.value)
+                        }}
                         className="p-2 border rounded shadow-md w-full md:w-auto"
                     />
                 </div>

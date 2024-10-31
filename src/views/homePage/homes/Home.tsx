@@ -28,7 +28,12 @@ const Home = () => {
     const navigate = useNavigate()
 
     const handleShowFullScreen = () => {
-        navigate(`/app/homePage/fullMap`)
+        navigate(`/app/homePage/fullMap`, {
+            state: {
+                var1: from,
+                var2: to,
+            },
+        })
     }
 
     const fetchHome = async () => {
@@ -44,7 +49,7 @@ const Home = () => {
 
     const fetchOrderForLocation = async () => {
         try {
-            const response = await axiosInstance.get(`/merchant/orders?location_data=true`)
+            const response = await axiosInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${to}`)
 
             const ordersData = response.data?.data
             setOrders(ordersData)
@@ -55,7 +60,7 @@ const Home = () => {
 
     useEffect(() => {
         fetchOrderForLocation()
-    }, [])
+    }, [from, to])
 
     useEffect(() => {
         fetchHome()
@@ -105,7 +110,7 @@ const Home = () => {
         navigate(`/app/returnOrders`)
     }
 
-    const handleCompleted = () => {
+    const handleCompleted = (from, to) => {
         navigate('/app/orders/completed', {
             state: {
                 var1: from,
@@ -129,7 +134,7 @@ const Home = () => {
             p2Data: homeData?.received.total_amount?.toFixed(2),
         },
         {
-            handleClick: handleCompleted,
+            handleClick: () => handleCompleted(from, to),
             img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
             label: 'Completed Orders',
             p1Data: homeData?.completed.count,
@@ -223,7 +228,7 @@ const Home = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
                 {CARDDATA.map((item, key) => (
-                    <Card className="shadow-lg cursor-pointer" onClick={item.handleClick} key={key}>
+                    <Card className="shadow-lg cursor-pointer" onClick={() => item.handleClick()} key={key}>
                         <div className="flex gap-10 items-center">
                             <div>{item.img}</div>
                             <div>
