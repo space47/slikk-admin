@@ -33,7 +33,6 @@ import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiEBike2Fill } from 'react-icons/ri'
 import { CiFilter } from 'react-icons/ci'
-import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
 import { MdAssignmentTurnedIn, MdCancel } from 'react-icons/md'
 import { FaFilter } from 'react-icons/fa'
@@ -112,7 +111,7 @@ const DeliveryOrders = () => {
         {
             header: 'Tracking Url',
             accessorKey: 'logistic.tracking_url',
-            cell: ({ getValue, row }) => {
+            cell: ({ getValue, row }: any) => {
                 const { partner } = row.original?.logistic || {}
                 const { awb_code } = row.original || {}
                 const { delivery_type } = row.original || {}
@@ -238,7 +237,7 @@ const DeliveryOrders = () => {
         {
             header: 'Cancel Task',
             accessorKey: 'id',
-            cell: ({ row, getValue }: any) => (
+            cell: ({ row }: any) => (
                 <button onClick={() => handleCancelTask(row.original.invoice_id)}>
                     <MdCancel className="border-none bg-none text-2xl flex justify-center items-center text-red-600" />
                 </button>

@@ -35,3 +35,45 @@ export const pageSizeOptions = [
     { value: 50, label: '50 / page' },
     { value: 100, label: '100 / page' },
 ]
+
+export type FormModel = {
+    select: string
+    date: Date | null
+    time: Date | null
+    singleCheckbox: boolean
+    files: File[]
+    file_type: string
+    document_number: string
+    company: number
+    received_by: string
+    document_date: Date | null
+    origin_address: string
+    received_address: string
+    slikk_owned: boolean
+    total_sku: number | null
+    total_quantity: number | null
+    document: string
+    images: string
+    image: File[]
+}
+
+export const initialValue: FormModel = {
+    select: '',
+    date: null,
+    time: null,
+    singleCheckbox: false,
+    file_type: '',
+    document_number: '',
+    company: 1,
+    files: [],
+    received_by: '',
+    document_date: null,
+    origin_address: '',
+    received_address: '',
+    slikk_owned: false,
+    total_sku: null,
+    total_quantity: null,
+    document: '',
+    images: '',
+    image: [],
+}
