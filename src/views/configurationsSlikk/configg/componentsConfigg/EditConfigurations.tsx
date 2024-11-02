@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface, EDITFIELDSARRAY } from './commonConfigTypes'
 import { Field, Form, Formik } from 'formik'
 import { Button, FormContainer, FormItem, Input } from '@/components/ui'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useParams } from 'react-router-dom'
-import NestedObjectComponent from './NestedObjectComp'
 import { notification } from 'antd'
+import _ from 'lodash'
 
 const EditConfigurations = () => {
     const [editConfigData, setEditConfigData] = useState<ConfigInterface | null>(null)
@@ -25,14 +26,32 @@ const EditConfigurations = () => {
         fetchConfigurationApi()
     }, [id])
 
-    const initialValues: ConfigInterface = editConfigData || {
-        id: '',
-        name: '',
-        is_active: false,
-        last_updated_by: '',
-        create_date: '',
-        update_date: '',
-        value: {}, // initialize `value` as an empty object for default state
+    const renderFields = (obj: any, parentKey: string, setFieldValue: any) => {
+        return Object.entries(obj).map(([key, val]) => {
+            const fieldName = parentKey ? `${parentKey}.${key}` : key
+            console.log('keyParent', fieldName)
+            if (_.isPlainObject(val)) {
+                return (
+                    <div key={fieldName} className="col-span-2">
+                        <div className="text-xl font-semibold mb-1">{key}</div>
+                        <div className="grid grid-cols-2 gap-4">{renderFields(val, fieldName, setFieldValue)}</div>
+                    </div>
+                )
+            } else {
+                return (
+                    <FormItem key={fieldName} label={key} className="col-span-1 w-full">
+                        <Field
+                            component={Input}
+                            type="text"
+                            placeholder={`Enter ${key}`}
+                            name={fieldName}
+                            value={val}
+                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                        />
+                    </FormItem>
+                )
+            }
+        })
     }
 
     const handleSubmit = async (values: ConfigInterface) => {
@@ -58,7 +77,21 @@ const EditConfigurations = () => {
 
     return (
         <div>
-            <Formik enableReinitialize initialValues={initialValues} onSubmit={handleSubmit}>
+            <Formik
+                enableReinitialize
+                initialValues={
+                    editConfigData || {
+                        id: '',
+                        name: '',
+                        is_active: false,
+                        last_updated_by: '',
+                        create_date: '',
+                        update_date: '',
+                        value: {},
+                    }
+                }
+                onSubmit={handleSubmit}
+            >
                 {({ values, setFieldValue }) => (
                     <Form className="w-2/3">
                         <FormContainer>
@@ -71,8 +104,7 @@ const EditConfigurations = () => {
                             ))}
 
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {/* Pass only the `value` object to NestedObjectComponent */}
-                                <NestedObjectComponent obj={values.value} setFieldValue={setFieldValue} />
+                                {renderFields(values.value, 'value', setFieldValue)}
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
