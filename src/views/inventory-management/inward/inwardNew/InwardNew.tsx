@@ -3,157 +3,52 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 // import Select from '@/components/ui/Select'
 import DatePicker from '@/components/ui/DatePicker'
-// import TimeInput from '@/components/ui/TimeInput'
 import Checkbox from '@/components/ui/Checkbox'
-// import Radio from '@/components/ui/Radio'
-// import Switcher from '@/components/ui/Switcher'
-// import Segment from '@/components/ui/Segment'
 import Upload from '@/components/ui/Upload'
-// import SegmentItemOption from '@/components/shared/SegmentItemOption'
-// import { HiCheckCircle } from 'react-icons/hi'
 import { Field, Form, Formik } from 'formik'
-// import CreatableSelect from 'react-select/creatable'
-import * as Yup from 'yup'
 import type { FieldProps } from 'formik'
-import Textarea from '@/views/ui-components/forms/Input/Textarea'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useState } from 'react'
 import axios from 'axios'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import Infor from '@/components/template/VerticalMenuContent/Infor'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { RichTextEditor } from '@/components/shared'
-
-type FormModel = {
-    select: string
-    date: Date | null
-    time: Date | null
-    singleCheckbox: boolean
-    files: File[]
-    file_type: string
-    document_number: string
-    company: number
-    received_by: string
-    document_date: Date | null
-    origin_address: string
-    received_address: string
-    slikk_owned: boolean
-    total_sku: number | null
-    total_quantity: number | null
-    document: string
-    images: string
-    image: File[]
-}
-
-const MIN_UPLOAD = 1
-const MAX_UPLOAD = 8
-
-const initialValue: FormModel = {
-    select: '',
-    date: null,
-    time: null,
-    singleCheckbox: false,
-    file_type: '',
-    document_number: '',
-    company: 1,
-    files: [],
-    received_by: '',
-    document_date: null,
-    origin_address: '',
-    received_address: '',
-    slikk_owned: false,
-    total_sku: null,
-    total_quantity: null,
-    document: '',
-    images: '',
-    image: [],
-}
-
-// const validationSchema = Yup.object().shape({
-//     document_number: Yup.string().required('Document Number is required'),
-//     document_date: Yup.date().required('Document Date is required').nullable(),
-//     // origin_address: Yup.string()
-//     //     .required('Supplier Address is required')
-//     //     .transform((value) => value.trim()),
-//     // received_address: Yup.string()
-//     //     .required('Receiver Address is required')
-//     //     .transform((value) => value.trim()),
-//     received_by: Yup.string()
-//         .required('Received By is required')
-//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-//     total_sku: Yup.number()
-//         .required('Total SKUs is required')
-//         .integer('Must be an integer'),
-//     total_quantity: Yup.number()
-//         .required('Total Quantity is required')
-//         .integer('Must be an integer'),
-//     singleCheckbox: Yup.boolean(),
-//     // images: Yup.string().nullable(),
-//     // document: Yup.string().nullable(),
-// })
+import { beforeUpload } from '@/common/beforeUpload'
+import { FormModel, initialValue } from '../inwardCommon'
+import { Dropdown, Select } from '@/components/ui'
+import { setDefaultCompanyId } from '@/store/action/company.action'
+import { DIVISION_STATE } from '@/store/types/division.types'
 
 const MixedFormControl = () => {
     const [datas, setDatas] = useState()
     const [imagview, setImageView] = useState<string>('')
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
+    const dispatch = useAppDispatch()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+
+    const [companyData, setCompanyData] = useState<number>()
 
     const navigate = useNavigate()
 
-    console.log(datas)
-    console.log(imagview)
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
-
     const handleUpload = async (files: File[]) => {
         const formData = new FormData()
-        console.log('fiiiles', files)
+
         files.forEach((file) => {
             formData.append('file', file)
         })
         formData.append('file_type', 'grn')
         try {
-            console.log(formData.get('file'))
             const response = await axios.post('fileupload/dashboard', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             })
-            console.log(response)
+
             const newData = response.data.url
             setDatas(newData)
             setShowData(true)
@@ -181,16 +76,15 @@ const MixedFormControl = () => {
         formData.append('file_type', 'grn')
 
         try {
-            console.log(formData.get('file'))
             const response = await axioisInstance.post('fileupload/dashboard', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             })
-            console.log(response)
+
             const newData = response.data.url
             setImageView(newData)
-            console.log(newData)
+
             setShowImage(true)
             notification.success({
                 message: 'Success',
@@ -206,6 +100,8 @@ const MixedFormControl = () => {
             return 'Error'
         }
     }
+
+    console.log('COMPANY DATA', companyData)
 
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
@@ -236,18 +132,13 @@ const MixedFormControl = () => {
         } else if (values.image) {
             imageShow = values.images
         }
-
-        console.log('Dataas', docsUpload)
-        console.log('Immage', imageUpload)
         const formData = {
             ...values,
-            company: selectedCompany.id,
+            company: companyData,
 
             document: docsShow,
             images: imageShow,
         }
-
-        console.log('formDaata', formData)
 
         try {
             const response = await axioisInstance.post('goods/received', formData)
@@ -273,10 +164,9 @@ const MixedFormControl = () => {
                 enableReinitialize
                 initialValues={initialValue}
                 // validationSchema={validationSchema}
-                // ONSUBMIT LOGICCCCCCC....................................................................................................
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm }) => (
+                {({ values, touched, errors, resetForm, setFieldValue }) => (
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-3 ">
@@ -311,6 +201,48 @@ const MixedFormControl = () => {
                                     </Field>
                                 </FormItem>
                             </FormContainer>
+
+                            {/* <Dropdown key={selectedCompany.id} title={` ${selectedCompany.name}`} onClick={onDropdownClick}>
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll ">
+                                    {companyList.map((item, i) => (
+                                        <Dropdown.Item key={i} eventKey={i.toString()} onSelect={onDropdownItemClick}>
+                                            <div
+                                                onClick={handleOption}
+                                                className="text-[12px] capitalize whitespace-break-spaces  min-w-[250px] xl:w-[500px] xl:text-[14px]"
+                                            >
+                                                {item.name}, {item.registered_name}
+                                            </div>
+                                        </Dropdown.Item>
+                                    ))}
+                                </div>
+                            </Dropdown> */}
+
+                            <Field name="companyList">
+                                {({ field }: FieldProps<any>) => {
+                                    const fieldValue = Array.isArray(field.value) ? field.value : []
+
+                                    return (
+                                        <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                            <div className="font-semibold">Company List</div>
+                                            <Select
+                                                className="w-full"
+                                                options={companyList}
+                                                getOptionLabel={(option) => option.name}
+                                                getOptionValue={(option) => option.id}
+                                                defaultValue={companyList.filter((option) =>
+                                                    fieldValue.some((item) => item === option.name),
+                                                )}
+                                                onChange={(newVal) => {
+                                                    const selectedValues = newVal
+                                                    setFieldValue('companyList', selectedValues)
+                                                    setCompanyData(newVal?.id)
+                                                }}
+                                            />
+                                        </div>
+                                    )
+                                }}
+                            </Field>
+                            <br />
                             {/* Second line/////////////////////////////////////////////////////////// */}
 
                             <FormContainer>
@@ -456,14 +388,6 @@ const MixedFormControl = () => {
                                     <Field type="text" name="images" placeholder="Enter ImageUrl or Upload Image file" component={Input} />
                                 </FormItem>
                             </FormContainer>
-
-                            {/* {imagview && (
-                                <div className="border border-gray-500 w-[85%] items-center justify-center flex py-2 mb-4">
-                                    {imagview}
-                                </div>
-                            )} */}
-
-                            {/* ----------------------------------------------------------------------------------------- */}
 
                             <FormItem
                                 label="SLIKK OWNED"
