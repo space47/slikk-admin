@@ -223,7 +223,7 @@ const MixedFormControl = () => {
 
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                            <div className="font-semibold">Company List</div>
+                                            <div className="font-semibold">Select Company </div>
                                             <Select
                                                 className="w-full"
                                                 options={companyList}

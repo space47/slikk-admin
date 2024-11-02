@@ -42,7 +42,7 @@ type FormModel = {
     files: File[]
     file_type: string
     document_number: string
-    company: number
+    company?: number
     received_by: ReceivedBy
     document_date: Date | string
     origin_address: string
@@ -90,6 +90,8 @@ const InwardEdit = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
 
     const [companyData, setCompanyData] = useState<number>()
+
+    console.log('COMPANYLIST', companyList)
 
     const { grn } = useParams()
 
@@ -202,8 +204,6 @@ const InwardEdit = () => {
         }
     }
 
-    console.log('images', imagview)
-
     const fetchData = async () => {
         try {
             const response = await axioisInstance.get(`goods/received?grn_number=${grn}`)
@@ -228,7 +228,7 @@ const InwardEdit = () => {
         singleCheckbox: datas?.singleCheckbox || false,
         file_type: datas?.file_type || '',
         document_number: datas?.document_number || '',
-        company: datas?.company || 1,
+        company: datas?.company,
         files: datas?.files || [],
         received_by: {
             name: datas?.received_by?.name || '',
@@ -245,6 +245,8 @@ const InwardEdit = () => {
         images: datas?.images || '',
         image: datas?.image || [],
     }
+
+    console.log('COMNPANY CHECK', companyList.find((option) => option.id === initialValue.company)?.name)
 
     const handleSubmit = async (values: FormModel) => {
         console.log('handleSubmit')
@@ -336,22 +338,21 @@ const InwardEdit = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            <Field name="companyList">
-                                {({ field }: FieldProps<any>) => {
-                                    const fieldValue = Array.isArray(field.value) ? field.value : []
+                            <Field name="company">
+                                {({ field, form }: FieldProps<any>) => {
+                                    const selectedCompany = companyList.find((option) => option.id === form.values.company)
 
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                            <div className="font-semibold">Company List</div>
+                                            <div className="font-semibold">Select Company</div>
                                             <Select
                                                 className="w-full"
                                                 options={companyList}
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id}
-                                                defaultValue={companyList.find((option) => option.id === initialValue.company)}
+                                                value={selectedCompany || null}
                                                 onChange={(newVal) => {
-                                                    const selectedValues = newVal
-                                                    setFieldValue('companyList', selectedValues)
+                                                    form.setFieldValue('company', newVal?.id)
                                                     setCompanyData(newVal?.id)
                                                 }}
                                             />
