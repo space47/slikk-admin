@@ -27,6 +27,7 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 import moment from 'moment'
+import { Select } from '@/components/ui'
 
 type ReceivedBy = {
     name: string
@@ -43,7 +44,7 @@ type FormModel = {
     document_number: string
     company: number
     received_by: ReceivedBy
-    document_date: Date | null
+    document_date: Date | string
     origin_address: string
     received_address: string
     slikk_owned: boolean
@@ -85,9 +86,10 @@ const InwardEdit = () => {
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
     const [docsView, setDocsView] = useState<string[]>([])
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+
+    const [companyData, setCompanyData] = useState<number>()
 
     const { grn } = useParams()
 
@@ -105,7 +107,7 @@ const InwardEdit = () => {
             'image/webp',
             'text/csv',
             'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -137,31 +139,25 @@ const InwardEdit = () => {
         formData.append('file_type', 'grn')
         try {
             console.log(formData.get('file'))
-            const response = await axios.post(
-                'fileupload/dashboard',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-            )
+            const response = await axios.post('fileupload/dashboard', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             console.log(response)
             const newData = response.data.url
             setDatas(newData)
             setShowData(true)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'File uploaded successfully'
+                description: response?.data?.message || 'File uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded'
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -182,9 +178,9 @@ const InwardEdit = () => {
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
+                        'Content-Type': 'multipart/form-data',
+                    },
+                },
             )
             console.log(response)
             const newData = response.data.images
@@ -193,16 +189,14 @@ const InwardEdit = () => {
             setShowImage(true)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully'
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded'
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -212,9 +206,7 @@ const InwardEdit = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(
-                `goods/received?grn_number=${grn}`
-            )
+            const response = await axioisInstance.get(`goods/received?grn_number=${grn}`)
             const inwardData = response.data?.data
             setDatas(inwardData)
             setImageView(inwardData?.images ? inwardData.images.split(',') : [])
@@ -232,9 +224,7 @@ const InwardEdit = () => {
 
     const initialValue: FormModel = {
         select: datas?.select || '',
-        create_date: datas?.create_date
-            ? moment(datas.create_date).format('YYYY-MM-DD')
-            : '',
+        create_date: datas?.create_date ? moment(datas.create_date).format('YYYY-MM-DD') : '',
         singleCheckbox: datas?.singleCheckbox || false,
         file_type: datas?.file_type || '',
         document_number: datas?.document_number || '',
@@ -243,9 +233,9 @@ const InwardEdit = () => {
         received_by: {
             name: datas?.received_by?.name || '',
             mobile: datas?.received_by?.mobile || '',
-            email: datas?.received_by?.email || ''
+            email: datas?.received_by?.email || '',
         },
-        document_date: datas?.document_date || null,
+        document_date: datas?.document_date ? moment(datas?.document_date).format('YYYY-MM-DD') : '',
         origin_address: datas?.origin_address || '',
         received_address: datas?.received_address || '',
         slikk_owned: datas?.slikk_owned || false,
@@ -253,7 +243,7 @@ const InwardEdit = () => {
         total_quantity: datas?.total_quantity || null,
         document: datas?.document || '',
         images: datas?.images || '',
-        image: datas?.image || []
+        image: datas?.image || [],
     }
 
     const handleSubmit = async (values: FormModel) => {
@@ -290,9 +280,9 @@ const InwardEdit = () => {
         console.log('Immage', imageUpload)
         const formData = {
             ...values,
-            company: selectedCompany.id,
+            company: companyData,
             document: docsShow,
-            images: imageShow
+            images: imageShow,
         }
 
         console.log('formDaata', formData)
@@ -300,22 +290,20 @@ const InwardEdit = () => {
         try {
             const response = await axioisInstance.patch(
                 'goods/received', //
-                formData
+                formData,
             )
 
             console.log(response)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'GRN created Successfully'
+                description: response?.data?.message || 'GRN created Successfully',
             })
             navigate('/app/goods/received')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'GRN not created '
+                description: error?.response?.data?.message || 'GRN not created ',
             })
         }
     }
@@ -330,70 +318,53 @@ const InwardEdit = () => {
                 // ONSUBMIT LOGICCCCCCC....................................................................................................
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm }) => (
+                {({ values, touched, errors, resetForm, setFieldValue }) => (
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-3 ">
                                 <FormItem
                                     asterisk
                                     label="Document Number"
-                                    invalid={
-                                        errors.document_number &&
-                                        touched.document_number
-                                    }
+                                    invalid={errors.document_number && touched.document_number}
                                     errorMessage={errors.document_number}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="document_number"
-                                        placeholder="Place your Document Number"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="document_number" placeholder="Place your Document Number" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Date"
-                                    invalid={
-                                        errors.document_date &&
-                                        touched.document_date
-                                    }
-                                    errorMessage={errors.document_date}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        name="document_date"
-                                        placeholder="Date"
-                                    >
-                                        {({
-                                            field,
-                                            form
-                                        }: FieldProps<FormModel>) => (
-                                            <DatePicker
-                                                field={field}
-                                                form={form}
-                                                value={values.document_date}
-                                                onChange={(date) => {
-                                                    console.log(field.name)
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        date
-                                                    )
-                                                }}
-                                            />
-                                        )}
-                                    </Field>
+                                <FormItem asterisk label="Date" className="col-span-1 w-1/4">
+                                    <Field type="Date" name="document_date" placeholder="Place your Document Number" component={Input} />
                                 </FormItem>
                             </FormContainer>
+
+                            <Field name="companyList">
+                                {({ field }: FieldProps<any>) => {
+                                    const fieldValue = Array.isArray(field.value) ? field.value : []
+
+                                    return (
+                                        <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                            <div className="font-semibold">Company List</div>
+                                            <Select
+                                                className="w-full"
+                                                options={companyList}
+                                                getOptionLabel={(option) => option.name}
+                                                getOptionValue={(option) => option.id}
+                                                defaultValue={companyList.find((option) => option.id === initialValue.company)}
+                                                onChange={(newVal) => {
+                                                    const selectedValues = newVal
+                                                    setFieldValue('companyList', selectedValues)
+                                                    setCompanyData(newVal?.id)
+                                                }}
+                                            />
+                                        </div>
+                                    )
+                                }}
+                            </Field>
                             {/* Second line/////////////////////////////////////////////////////////// */}
 
                             <FormItem
                                 asterisk
                                 label="Supplier Address"
-                                invalid={
-                                    errors.origin_address &&
-                                    touched.origin_address
-                                }
+                                invalid={errors.origin_address && touched.origin_address}
                                 errorMessage={errors.origin_address}
                                 className="col-span-1 w-full"
                             >
@@ -408,10 +379,7 @@ const InwardEdit = () => {
                             <FormItem
                                 asterisk
                                 label="Receiver Address"
-                                invalid={
-                                    errors.received_address &&
-                                    touched.received_address
-                                }
+                                invalid={errors.received_address && touched.received_address}
                                 errorMessage={errors.received_address}
                                 className="col-span-1 w-full"
                             >
@@ -430,113 +398,58 @@ const InwardEdit = () => {
                                 <FormItem
                                     asterisk
                                     label="Received By Name"
-                                    invalid={
-                                        errors.received_by?.name &&
-                                        touched.received_by?.name
-                                    }
+                                    invalid={errors.received_by?.name && touched.received_by?.name}
                                     errorMessage={errors.received_by?.name}
                                     className="col-span-1 w-1/3"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="received_by.name"
-                                        placeholder="Enter your Name"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="received_by.name" placeholder="Enter your Name" component={Input} />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Received By Mobile"
-                                    invalid={
-                                        errors.received_by?.mobile &&
-                                        touched.received_by?.mobile
-                                    }
+                                    invalid={errors.received_by?.mobile && touched.received_by?.mobile}
                                     errorMessage={errors.received_by?.mobile}
                                     className="col-span-1 w-1/3"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="received_by.mobile"
-                                        placeholder="Enter your Mobile Number"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="received_by.mobile" placeholder="Enter your Mobile Number" component={Input} />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Total SKUs"
-                                    invalid={
-                                        errors.total_sku && touched.total_sku
-                                    }
+                                    invalid={errors.total_sku && touched.total_sku}
                                     errorMessage={errors.total_sku}
                                     className="col-span-1 w-1/3"
                                 >
-                                    <Field
-                                        type="number"
-                                        name="total_sku"
-                                        placeholder="Enter total Skus"
-                                        component={Input}
-                                    />
+                                    <Field type="number" name="total_sku" placeholder="Enter total Skus" component={Input} />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Total Quantity"
-                                    invalid={
-                                        errors.total_quantity &&
-                                        touched.total_quantity
-                                    }
+                                    invalid={errors.total_quantity && touched.total_quantity}
                                     errorMessage={errors.total_quantity}
                                     className="col-span-1 w-1/3"
                                 >
-                                    <Field
-                                        type="number"
-                                        name="total_quantity"
-                                        placeholder="Enter total items received"
-                                        component={Input}
-                                    />
+                                    <Field type="number" name="total_quantity" placeholder="Enter total items received" component={Input} />
                                 </FormItem>
                             </FormContainer>
 
                             {/* ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo */}
 
-                            <div className="font-bold mb-3">
-                                Upload Supporting Document
-                            </div>
+                            <div className="font-bold mb-3">Upload Supporting Document</div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <FormContainer className=" mt-5 ">
-                                    <FormItem
-                                        label=""
-                                        errorMessage={errors.document as string}
-                                        className="grid grid-rows-2"
-                                    >
+                                    <FormItem label="" errorMessage={errors.document as string} className="grid grid-rows-2">
                                         <Field name="files">
-                                            {({
-                                                field,
-                                                form
-                                            }: FieldProps<FormModel>) => (
+                                            {({ field, form }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
+                                                        beforeUpload={beforeUpload}
                                                         fileList={values.files} // uploadedd the file
                                                         onChange={(files) => {
-                                                            console.log(
-                                                                'OnchangeFiles',
-                                                                files,
-                                                                field.name,
-                                                                values.files
-                                                            )
-                                                            form.setFieldValue(
-                                                                'files',
-                                                                files
-                                                            )
+                                                            console.log('OnchangeFiles', files, field.name, values.files)
+                                                            form.setFieldValue('files', files)
                                                         }}
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'files',
-                                                                files
-                                                            )
-                                                        }
+                                                        onFileRemove={(files) => form.setFieldValue('files', files)}
                                                         // uploadButtonText="Add Files"
                                                     />
                                                 </>
@@ -551,10 +464,7 @@ const InwardEdit = () => {
                                     <br />
                                 </FormContainer>
 
-                                <FormItem
-                                    label=""
-                                    className="col-span-1 w-[80%]"
-                                >
+                                <FormItem label="" className="col-span-1 w-[80%]">
                                     <Field
                                         type="text"
                                         name="document"
@@ -569,56 +479,31 @@ const InwardEdit = () => {
                             </div> */}
 
                             {/* ...............................IMAGES.......................................... */}
-                            <div className="font-bold mb-3 mt-8">
-                                Upload Supporting Image
-                            </div>
+                            <div className="font-bold mb-3 mt-8">Upload Supporting Image</div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <FormContainer className=" mt-5 ">
                                     <div className=" image w-[50px] h-[50px] mt-5 flex gap-2  ">
                                         {imagview ? (
-                                            imagview.map((img, index) => (
-                                                <img
-                                                    key={index}
-                                                    src={img}
-                                                    alt="img"
-                                                    className="rounded-xl"
-                                                />
-                                            ))
+                                            imagview.map((img, index) => <img key={index} src={img} alt="img" className="rounded-xl" />)
                                         ) : (
                                             <p>No image</p>
                                         )}
                                     </div>
                                     <FormItem
                                         label=""
-                                        invalid={Boolean(
-                                            errors.files && touched.files
-                                        )}
+                                        invalid={Boolean(errors.files && touched.files)}
                                         errorMessage={errors.files as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="image">
-                                            {({
-                                                form
-                                            }: FieldProps<FormModel>) => (
+                                            {({ form }: FieldProps<FormModel>) => (
                                                 <>
                                                     <Upload
                                                         multiple
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
+                                                        beforeUpload={beforeUpload}
                                                         fileList={values.image}
-                                                        onChange={(files) =>
-                                                            form.setFieldValue(
-                                                                'image',
-                                                                files
-                                                            )
-                                                        }
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'image',
-                                                                files
-                                                            )
-                                                        }
+                                                        onChange={(files) => form.setFieldValue('image', files)}
+                                                        onFileRemove={(files) => form.setFieldValue('image', files)}
                                                         // uploadButtonText="Add Files"
                                                     />
                                                 </>
@@ -659,9 +544,7 @@ const InwardEdit = () => {
 
                             <FormItem
                                 label="SLIKK OWNED"
-                                invalid={
-                                    errors.slikk_owned && touched.slikk_owned
-                                }
+                                invalid={errors.slikk_owned && touched.slikk_owned}
                                 // errorMessage={errors.singleCheckbox}
                             >
                                 <Field name="slikk_owned" component={Checkbox}>
@@ -670,11 +553,7 @@ const InwardEdit = () => {
                             </FormItem>
 
                             <FormItem>
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button
