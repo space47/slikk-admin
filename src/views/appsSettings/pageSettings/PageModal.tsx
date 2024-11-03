@@ -262,7 +262,15 @@ const PageModal: React.FC<modalProps> = ({
                 background_image: imageUpload || row?.background_image,
                 mobile_background_image: mobileimageUpload || row?.mobile_background_image,
                 background_config: {
-                    ...row?.background_config,
+                    background_color: row?.background_config?.background_color || '',
+                    desktop_position: row?.background_config?.desktop_position || '',
+                    mobile_position: row?.background_config?.mobile_position || '',
+                    background_topMargin: Number(row?.background_config?.background_topMargin) || 0,
+                    background_bottomMargin: Number(row?.background_config?.background_bottomMargin) || 0,
+                    mobile_width: Number(row?.background_config?.mobile_width) || 0,
+                    web_width: Number(row?.background_config?.web_width) || 0,
+                    background_image: imageUpload || row?.background_image,
+                    mobile_background_image: mobileimageUpload || row?.mobile_background_image,
                 },
                 footer_config: {
                     ...row?.footer_config,
