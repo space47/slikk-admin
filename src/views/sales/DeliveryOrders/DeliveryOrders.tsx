@@ -182,7 +182,9 @@ const DeliveryOrders = () => {
             header: 'Pickup Time',
             accessorKey: 'log',
             cell: ({ row }: any) => {
-                const deliveryCreatedLog = row.original.log.find((logEntry: any) => logEntry.status === 'DELIVERY_CREATED')
+                const deliveryCreatedLog = row.original.log.find(
+                    (logEntry: any) => logEntry.status === 'SHIPPED' || logEntry.status === 'OUT_FOR_DELIVERY',
+                )
 
                 return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
             },
@@ -192,7 +194,9 @@ const DeliveryOrders = () => {
             header: 'Drop Time',
             accessorKey: 'log',
             cell: ({ row }: any) => {
-                const deliveryCreatedLog = row.original.log.find((logEntry: any) => logEntry.status === 'DELIVERED')
+                const deliveryCreatedLog = row.original.log.find(
+                    (logEntry: any) => logEntry.status === 'DELIVERED' || logEntry.status === 'COMPLETED',
+                )
 
                 return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
             },

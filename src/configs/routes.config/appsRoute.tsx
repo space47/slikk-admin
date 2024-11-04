@@ -407,6 +407,13 @@ const appsRoute: Routes = [
     },
 
     {
+        key: 'appsInventoryManagement.updateInventory',
+        path: `${APP_PREFIX_PATH}/updateInventory`,
+        component: lazy(() => import('@/views/inventory-management/stock-overview/updateInventory/UpdateInventory')),
+        authority: [ADMIN, USER],
+    },
+
+    {
         key: 'appsCategory.categoryNew',
         path: `${APP_PREFIX_PATH}/category/category-new`,
         component: lazy(() => import('@/views/category-management/category/CategoryNew')),

@@ -42,6 +42,11 @@ interface ReturnDropdownStatus {
     name: string[]
 }
 
+interface EventArray {
+    status: string
+    timestamp: string
+}
+
 export interface ReturnOrder {
     amount: string
     order: any
@@ -52,6 +57,7 @@ export interface ReturnOrder {
     return_type: string
     status: string
     uuid: string
+    log: EventArray[]
 }
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
@@ -165,7 +171,7 @@ const OrderList = () => {
             },
             {
                 header: 'Order Date',
-                accessorKey: 'return_order_items.create_date',
+                accessorKey: 'create_date',
                 cell: ({ getValue }: { getValue: () => string }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
@@ -207,8 +213,17 @@ const OrderList = () => {
             },
             {
                 header: 'Last Update',
-                accessorKey: 'return_order_items.update_date',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                accessorKey: 'return_order_items',
+                cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                    const updatedLog = row?.original?.log.at(-1)
+                    return (
+                        <div>
+                            {row?.original.log && row?.original?.log.length > 0
+                                ? moment(updatedLog?.timestamp).format('YYYY-MM-DD hh:mm:ss a')
+                                : moment(row?.original?.create_date).format('YYYY-MM-DD hh:mm:ss a')}
+                        </div>
+                    )
+                },
             },
             {
                 header: 'UUID',

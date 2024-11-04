@@ -14,6 +14,7 @@ import ImageMODAL from '@/common/ImageModal'
 
 import { FaSync } from 'react-icons/fa'
 import StockOverviewFilter from './stockOverviewComponents/StockOverviewFilter'
+import { useNavigate } from 'react-router-dom'
 
 interface LastUpdatedBy {
     name: string
@@ -83,7 +84,7 @@ const StockOverview = () => {
     const [particularRowImage, setParticularROwImage] = useState([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchType, setSearchType] = useState<string>('')
-
+    const navigate = useNavigate()
     // FOR THE LISTS
     const [divisionList, setDivisionList] = useState<string[]>([])
     const [categoryList, setCategoryList] = useState([])
@@ -399,6 +400,10 @@ const StockOverview = () => {
         }
     }
 
+    const hanldeUpdateInventory = () => {
+        navigate(`/app/updateInventory`)
+    }
+
     return (
         <div className="overflow-x-auto p-4">
             <div className="upper flex flex-col md:flex-row justify-between mb-5 items-center">
@@ -422,8 +427,11 @@ const StockOverview = () => {
                 </div>
                 <div className="flex flex-col gap-7 xl:flex-row items-center xl:items-baseline ">
                     <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
+                        <Button variant="new" onClick={hanldeUpdateInventory}>
+                            Update Inventory
+                        </Button>
                         <Button variant="new" onClick={hanldeFilter}>
-                            Category Filter
+                            Filter
                         </Button>
                     </div>
 
