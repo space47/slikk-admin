@@ -166,7 +166,10 @@ const OrderList = () => {
             {
                 header: 'Order Date',
                 accessorKey: 'return_order_items.create_date',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                    const lastItem = row.original.return_order_items.at(-1)
+                    return <span>{lastItem ? moment(lastItem.create_date).format('YYYY-MM-DD hh:mm:ss a') : 'N/A'}</span>
+                },
             },
             {
                 header: 'Return Type',
@@ -208,7 +211,10 @@ const OrderList = () => {
             {
                 header: 'Last Update',
                 accessorKey: 'return_order_items.update_date',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                    const lastItem = row.original.return_order_items.at(-1)
+                    return <span>{lastItem ? moment(lastItem.update_date).format('YYYY-MM-DD hh:mm:ss a') : 'N/A'}</span>
+                },
             },
             {
                 header: 'UUID',
