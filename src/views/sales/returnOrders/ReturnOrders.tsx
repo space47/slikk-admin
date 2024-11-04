@@ -216,7 +216,13 @@ const OrderList = () => {
                 accessorKey: 'return_order_items',
                 cell: ({ row }: { row: { original: ReturnOrder } }) => {
                     const updatedLog = row?.original?.log.at(-1)
-                    return <div>{moment(updatedLog?.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div>
+                    return (
+                        <div>
+                            {row?.original.log && row?.original?.log.length > 0
+                                ? moment(updatedLog?.timestamp).format('YYYY-MM-DD hh:mm:ss a')
+                                : moment(row?.original?.create_date).format('YYYY-MM-DD hh:mm:ss a')}
+                        </div>
+                    )
                 },
             },
             {
