@@ -56,8 +56,8 @@ const TaskTrackingMap = () => {
                     mapContainerStyle={mapContainerStyle}
                     zoom={zoom}
                     center={{
-                        lat: taskData.drop_details.latitude,
-                        lng: taskData.drop_details.longitude,
+                        lat: taskData.drop_details?.latitude,
+                        lng: taskData.drop_details?.longitude,
                     }}
                     options={{
                         fullscreenControl: true,
