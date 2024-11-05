@@ -20,7 +20,14 @@ const WeekOnWeekGraph = () => {
             const orderDate = new Date(order.create_at_date)
             const dayIndex = (orderDate.getDay() + 6) % 7
 
-            const weekIndex = Math.floor((orderDate.getDate() - 1) / 7)
+            const firstMonthDay = new Date(orderDate.getFullYear(), orderDate.getMonth(), 1)
+            const firstWeek = (8 - firstMonthDay.getDay()) % 7
+
+            const dayOfMonth = orderDate.getDate()
+
+            console.log('dayofonth', dayOfMonth)
+
+            const weekIndex = Math.floor((dayOfMonth - firstWeek + 6) / 7)
 
             if (weekIndex < 5) {
                 weeksData[weekIndex][dayIndex] += order.total
