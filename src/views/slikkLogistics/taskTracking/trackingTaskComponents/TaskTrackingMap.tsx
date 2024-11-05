@@ -21,7 +21,7 @@ const TaskTrackingMap = () => {
         const DirectionsService = new google.maps.DirectionsService()
         const origin = new google.maps.LatLng(taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude)
 
-        const destination = new google.maps.LatLng(taskData?.drop_details.latitude, taskData?.drop_details.longitude)
+        const destination = new google.maps.LatLng(taskData?.drop_details?.latitude, taskData?.drop_details?.longitude)
 
         DirectionsService.route(
             {
