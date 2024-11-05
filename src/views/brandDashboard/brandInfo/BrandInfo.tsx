@@ -21,7 +21,7 @@ const BrandInfo = () => {
 
     useEffect(() => {
         fetchSellerDetails()
-    }, [])
+    }, [selectedCompany])
 
     const sellerDetailsArray = [
         { label: 'Registered Name', value: sellerDetails.registered_name },
