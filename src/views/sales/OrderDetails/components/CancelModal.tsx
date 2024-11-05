@@ -3,7 +3,7 @@ import { Modal, Select, notification } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown, Button } from '@/components/ui'
 import Dialog from '@/components/ui/Dialog'
-import { IoIosWarning } from 'react-icons/io'
+import { IoIosAddCircle, IoIosWarning } from 'react-icons/io'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const { Option } = Select
@@ -40,13 +40,15 @@ const CancelReasons = [
 
 const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, setIsModalOpen }) => {
     const [cancelReason, setCancelReason] = useState<string | undefined>(undefined)
+    const [showCancelInput, setShowCancelInput] = useState(false)
+    const [inputValue, setInputValue] = useState('')
 
     const handleSelect = useCallback((value: string) => {
         setCancelReason(value)
     }, [])
 
     const handlePack = async () => {
-        if (!cancelReason) {
+        if (!cancelReason && !inputValue) {
             notification.error({
                 message: 'Selection Required',
                 description: 'Please select a cancel reason before proceeding.',
@@ -55,8 +57,10 @@ const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, s
         }
 
         const body = {
-            return_reason: cancelReason,
+            return_reason: inputValue ? inputValue : cancelReason,
         }
+
+        console.log('Body', body)
 
         try {
             const response = await axioisInstance.post(`merchant/cancelorder/${invoice_id}`, body)
@@ -103,6 +107,20 @@ const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, s
                             </DropdownItem>
                         ))}
                     </Dropdown>
+                    <button onClick={() => setShowCancelInput(true)} className="mb-5 bg-none text-green-600 text-3xl">
+                        <IoIosAddCircle />
+                    </button>
+                    {showCancelInput && (
+                        <>
+                            <input
+                                type="text"
+                                placeholder="Enter a resaon"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                className="flex rounded-lg"
+                            />
+                        </>
+                    )}
                 </div>
                 <div className="flex justify-end mt-6 gap-3">
                     <button

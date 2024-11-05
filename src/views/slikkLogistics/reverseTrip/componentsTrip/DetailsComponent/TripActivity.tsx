@@ -42,8 +42,8 @@ const TripActivity = ({ data = [] }: TripActivityProps) => {
                                 </div>
                             }
                         >
-                            <div className="font-bold text-md">{activity.status}</div>
-                            <div>{moment(activity.timestamp).format('DD:MM:YYYY hh:mm')}</div>
+                            <div className="font-bold text-md">{activity?.status}</div>
+                            <div>{moment(activity?.timestamp).format('DD:MM:YYYY hh:mm')}</div>
                         </Timeline.Item>
                     ))
                 )}
