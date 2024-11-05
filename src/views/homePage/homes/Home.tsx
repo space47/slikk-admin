@@ -104,11 +104,21 @@ const Home = () => {
     const handleInvoiceFunction = (inputName: string) => {
         navigate(`/app/orders/${inputName}`)
     }
-    const handleReceived = () => {
-        navigate(`/app/orders`)
+    const handleReceived = (from, to) => {
+        navigate(`/app/orders`, {
+            state: {
+                var1: from,
+                var2: to,
+            },
+        })
     }
-    const handleReturned = () => {
-        navigate(`/app/returnOrders`)
+    const handleReturned = (from, to) => {
+        navigate(`/app/returnOrders`, {
+            state: {
+                var1: from,
+                var2: to,
+            },
+        })
     }
 
     const handleCompleted = (from, to) => {
@@ -128,7 +138,7 @@ const Home = () => {
 
     const CARDDATA = [
         {
-            handleClick: handleReceived,
+            handleClick: () => handleReceived(from, to),
             img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
             label: 'Received Orders',
             p1Data: homeData?.received.count,
@@ -142,7 +152,7 @@ const Home = () => {
             p2Data: homeData?.completed.total_amount?.toFixed(2),
         },
         {
-            handleClick: handleReturned,
+            handleClick: () => handleReturned(from, to),
             img: <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />,
             label: 'Returned Orders',
             p1Data: netReturn,

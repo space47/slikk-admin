@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -45,6 +45,11 @@ const SEARCHOPTIONS = [
 ]
 
 const OrderList = () => {
+    const location = useLocation()
+    const { var1, var2 } = location.state || {}
+
+    console.log('VAR1,VAR2', var1, var2)
+
     const [orders, setOrders] = useState<Order[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [deliveryType, setDeliveryType] = useState<DropdownStatus>({
@@ -61,8 +66,8 @@ const OrderList = () => {
 
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
-    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [from, setFrom] = useState(var1 ? var1 : moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(var2 ? var2 : moment().format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
     const [dropdownStatus, setDropdownStatus] = useState<DropdownStatus>({
         value: [],
