@@ -374,7 +374,7 @@ const BrandOrder = () => {
                 >
                     <IoMdDownload className="text-xl" />
                 </button>
-                <div className="w-auto lg:w-1/2 flex flex-col  ">
+                <div className="w-auto xl:w-1/4 flex flex-col  ">
                     <Button variant="new" onClick={handleDrawer} className="xl:w-1/2 w-auto flex gap-3 items-center justify-center">
                         {' '}
                         <FaFilter className="text-lg" /> <p>CATEGORY FILTER</p>
