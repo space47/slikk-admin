@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
     useReactTable,
@@ -81,6 +81,8 @@ export const DELEIVERYRETRUNOPTIONS = [
 ]
 
 const OrderList = () => {
+    const location = useLocation()
+    const { var1, var2 } = location.state || {}
     const [orders, setOrders] = useState<ReturnOrder[]>([])
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -93,8 +95,8 @@ const OrderList = () => {
     const [searchInput, setSearchInput] = useState<string>('')
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
-    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [from, setFrom] = useState(var1 ? var1 : moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(var2 ? var2 : moment().format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
     const [dropdownStatus, setDropdownStatus] = useState<ReturnDropdownStatus>({
         value: [],
@@ -121,7 +123,7 @@ const OrderList = () => {
 
             const fromToParams = searchInput ? '' : `&from=${from}&to=${To_Date}`
 
-            const returnUrl = `merchant/return_orders?${searwiseDownload}${status}${fromToParams}${deliveryStatus}&p=${page}&page_size=${pageSize}`
+            const returnUrl = `merchant/return_orders?p=${page}&page_size=${pageSize}${searwiseDownload}${status}${fromToParams}${deliveryStatus}`
 
             const response = await axioisInstance.get(returnUrl)
 
@@ -215,16 +217,19 @@ const OrderList = () => {
                 header: 'Last Update',
                 accessorKey: 'return_order_items',
                 cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                    const updatedLog = row?.original?.log.at(-1)
+                    const log = row?.original?.log
+                    const updatedLog = log && log.length > 0 ? log.at(-1) : undefined
+
                     return (
                         <div>
-                            {row?.original.log && row?.original?.log.length > 0
-                                ? moment(updatedLog?.timestamp).format('YYYY-MM-DD hh:mm:ss a')
+                            {updatedLog
+                                ? moment(updatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')
                                 : moment(row?.original?.create_date).format('YYYY-MM-DD hh:mm:ss a')}
                         </div>
                     )
                 },
             },
+
             {
                 header: 'UUID',
                 accessorKey: 'uuid',
