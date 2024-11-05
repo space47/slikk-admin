@@ -88,7 +88,7 @@ const TaskTracking = () => {
             header: 'Runner Photo',
             accessor: 'runner_detail.photo',
             format: (_: any, row: TaskDetails) =>
-                row.runner_detail?.photo ? <img src={row.runner_detail.photo} alt="runner" width="50" /> : '',
+                row.runner_detail?.photo ? <img src={row.runner_detail?.photo} alt="runner" width="50" /> : '',
         },
         {
             header: 'Pickup Name',

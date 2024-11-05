@@ -15,7 +15,7 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_MAP_API_KEY,
+        googleMapsApiKey: import.meta.env.MAP_API_KEY,
         libraries: ['places'],
     })
 
@@ -24,15 +24,15 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
 
         if (logData.length > 1) {
             const DirectionsService = new google.maps.DirectionsService()
-            const origin = new google.maps.LatLng(logData[0].pickup_details.latitude, logData[0].pickup_details.longitude)
+            const origin = new google.maps.LatLng(logData[0].pickup_details?.latitude, logData[0].pickup_details?.longitude)
 
             const destination = new google.maps.LatLng(
-                logData[logData.length - 1].drop_details.latitude,
-                logData[logData.length - 1].drop_details.longitude,
+                logData[logData.length - 1].drop_details?.latitude,
+                logData[logData.length - 1].drop_details?.longitude,
             )
 
             const waypoints = logData.slice(1, logData.length - 1).map((task) => ({
-                location: new google.maps.LatLng(task.drop_details.latitude, task.drop_details.longitude),
+                location: new google.maps.LatLng(task.drop_details?.latitude, task.drop_details?.longitude),
                 stopover: true,
             }))
 
@@ -87,8 +87,8 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
                     mapContainerStyle={mapContainerStyle}
                     zoom={zoom}
                     center={{
-                        lat: logData[0].drop_details.latitude,
-                        lng: logData[0].drop_details.longitude,
+                        lat: logData[0].drop_details?.latitude,
+                        lng: logData[0].drop_details?.longitude,
                     }}
                     options={{
                         fullscreenControl: true,
@@ -102,12 +102,12 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
                         <React.Fragment key={index}>
                             <MarkerF
                                 position={{
-                                    lat: item.pickup_details.latitude,
-                                    lng: item.pickup_details.longitude,
+                                    lat: item.pickup_details?.latitude,
+                                    lng: item.pickup_details?.longitude,
                                 }}
                                 icon={icons.pickup}
                                 label={{
-                                    text: `${item?.pickup_details.name}`,
+                                    text: `${item?.pickup_details?.name}`,
                                     color: 'white',
                                     fontSize: '13px',
                                     fontWeight: 'bold',
@@ -115,12 +115,12 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
                             />
                             <MarkerF
                                 position={{
-                                    lat: item.drop_details.latitude,
-                                    lng: item.drop_details.longitude,
+                                    lat: item.drop_details?.latitude,
+                                    lng: item.drop_details?.longitude,
                                 }}
                                 icon={icons.drop}
                                 label={{
-                                    text: `${item?.drop_details.name}`,
+                                    text: `${item?.drop_details?.name}`,
                                     color: 'white',
                                     fontSize: '13px',
                                     fontWeight: 'bold',

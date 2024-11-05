@@ -11,7 +11,7 @@ import TaskTrackingMap from './TaskTrackingMap'
 const TaskDetails = () => {
     const { task_id } = useParams()
 
-    const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
+    const { taskData } = useAppSelector<TASKDETAILS>((state) => state?.taskData)
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(fetchTaskData(task_id ?? ''))
@@ -23,7 +23,7 @@ const TaskDetails = () => {
         { name: 'Task_ID', value: taskData?.task_id, hyper: false },
         { name: 'Created', value: taskData?.create_date, hyper: false },
         { name: 'Status', value: taskData?.status, hyper: false },
-        { name: 'Order', value: taskData.client_order_id, hyper: true },
+        { name: 'Order', value: taskData?.client_order_id, hyper: true },
     ]
 
     return (
