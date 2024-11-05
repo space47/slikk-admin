@@ -11,7 +11,7 @@ const TaskTrackingMap = () => {
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_MAP_API_KEY,
+        googleMapsApiKey: import.meta.env.MAP_API_KEY,
         libraries: ['places'],
     })
 
@@ -21,7 +21,7 @@ const TaskTrackingMap = () => {
         const DirectionsService = new google.maps.DirectionsService()
         const origin = new google.maps.LatLng(taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude)
 
-        const destination = new google.maps.LatLng(taskData.drop_details.latitude, taskData.drop_details.longitude)
+        const destination = new google.maps.LatLng(taskData?.drop_details.latitude, taskData?.drop_details.longitude)
 
         DirectionsService.route(
             {
@@ -56,8 +56,8 @@ const TaskTrackingMap = () => {
                     mapContainerStyle={mapContainerStyle}
                     zoom={zoom}
                     center={{
-                        lat: taskData.drop_details?.latitude,
-                        lng: taskData.drop_details?.longitude,
+                        lat: taskData?.drop_details?.latitude,
+                        lng: taskData?.drop_details?.longitude,
                     }}
                     options={{
                         fullscreenControl: true,
@@ -69,12 +69,12 @@ const TaskTrackingMap = () => {
                 >
                     <MarkerF
                         position={{
-                            lat: taskData.pickup_details.latitude,
-                            lng: taskData.pickup_details.longitude,
+                            lat: taskData?.pickup_details?.latitude,
+                            lng: taskData?.pickup_details?.longitude,
                         }}
                         icon={icons.pickup}
                         label={{
-                            text: `${taskData?.pickup_details.name}`,
+                            text: `${taskData?.pickup_details?.name}`,
                             color: 'white',
                             fontSize: '13px',
                             fontWeight: 'bold',
@@ -82,24 +82,24 @@ const TaskTrackingMap = () => {
                     />
                     <MarkerF
                         position={{
-                            lat: taskData.drop_details.latitude,
-                            lng: taskData.drop_details.longitude,
+                            lat: taskData?.drop_details?.latitude,
+                            lng: taskData?.drop_details?.longitude,
                         }}
                         icon={icons.drop}
                         label={{
-                            text: `${taskData?.drop_details.name}`,
+                            text: `${taskData?.drop_details?.name}`,
                             color: 'white',
                             fontSize: '13px',
                             fontWeight: 'bold',
                         }}
                     />
-                    {taskData.runner_latitude && taskData.runner_longitude && (
+                    {taskData?.runner_latitude && taskData?.runner_longitude && (
                         <MarkerF
                             position={{
                                 lat: taskData?.runner_latitude,
-                                lng: taskData.runner_longitude,
+                                lng: taskData?.runner_longitude,
                             }}
-                            icon={icons.runner}
+                            icon={icons?.runner}
                             label={{
                                 text: `${taskData?.runner_detail?.name}`,
                                 color: 'white',
