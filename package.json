@@ -48,6 +48,7 @@
     "i18next": "^23.12.2",
     "install": "^0.13.0",
     "leaflet": "^1.9.4",
+    "leaflet-routing-machine": "^3.2.12",
     "lodash": "^4.17.21",
     "miragejs": "^0.1.48",
     "moment": "^2.30.1",
