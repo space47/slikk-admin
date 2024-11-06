@@ -53,20 +53,10 @@ const RiderTracking = () => {
     }, [])
 
     const filteredData = riderData.filter((item) =>
-        Object.values(item).some((val) =>
-            val
-                ? val
-                      .toString()
-                      .toLowerCase()
-                      .includes(globalFilter.toLowerCase())
-                : false,
-        ),
+        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
 
-    const paginatedData = filteredData.slice(
-        (page - 1) * pageSize,
-        page * pageSize,
-    )
+    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(totalData / pageSize)
 
     const columns = [
@@ -77,7 +67,7 @@ const RiderTracking = () => {
                 row.task_id ? (
                     <div
                         className="bg-gray-300 px-4 flex justify-center items-center rounded-lg font-bold w-1/2 cursor-pointer hover:bg-gray-200"
-                        onClick={() => handleRider(row.task_id)}
+                        onClick={() => handleRider(row?.task_id)}
                     >
                         {row.task_id}
                     </div>
@@ -135,31 +125,18 @@ const RiderTracking = () => {
                     {paginatedData.map((row) => (
                         <Tr key={row.task_id}>
                             {columns.map((column, index) => (
-                                <Td key={index}>
-                                    {column.format
-                                        ? column.format(
-                                              row[column.accessor],
-                                              row,
-                                          )
-                                        : row[column.accessor] || ''}
-                                </Td>
+                                <Td key={index}>{column.format ? column.format(row[column.accessor], row) : row[column.accessor] || ''}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="mt-4 flex justify-between items-center">
-                <Pagination
-                    currentPage={page}
-                    total={totalPages}
-                    onChange={(newPage: any) => setPage(newPage)}
-                />
+                <Pagination currentPage={page} total={totalPages} onChange={(newPage: any) => setPage(newPage)} />
                 <Select<Option>
                     size="sm"
                     isSearchable={false}
-                    value={pageSizeOptions.find(
-                        (option) => option.value === pageSize,
-                    )}
+                    value={pageSizeOptions.find((option) => option.value === pageSize)}
                     options={pageSizeOptions}
                     onChange={(option) => setPageSize(Number(option?.value))}
                 />
