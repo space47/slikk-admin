@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom'
 import TaskLogisticItem from './TaskLogisticItem'
 import TaskActivity from './TaskActivity'
 import TaskTrackingMap from './TaskTrackingMap'
+import moment from 'moment'
 
 const TaskDetails = () => {
     const { task_id } = useParams()
@@ -21,7 +22,7 @@ const TaskDetails = () => {
 
     const CARDDATA = [
         { name: 'Task_ID', value: taskData?.task_id, hyper: false },
-        { name: 'Created', value: taskData?.create_date, hyper: false },
+        { name: 'Created', value: moment(taskData?.create_date).format('YYYY-MM-DD hh:mm:ss a'), hyper: false },
         { name: 'Status', value: taskData?.status, hyper: false },
         { name: 'Order', value: taskData?.client_order_id, hyper: true },
     ]

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import classNames from 'classnames'
 import Timeline from '@/components/ui/Timeline'
 import Badge from '@/components/ui/Badge'
@@ -9,40 +10,11 @@ import { notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4 } from './Modal'
-
-const LOGISTIC_PARTNER = [
-    { value: 'porter', label: 'PORTER' },
-    { value: 'shiprocket', label: 'SHIPROCKET' },
-    { value: 'shadowfax', label: 'SHADOWFAX' },
-    { value: 'slikk', label: 'SLIKK' },
-    { value: 'pidge', label: 'PIDGE' },
-]
+import { LOGISTIC, LOGISTIC_PARTNER, Payment, Product } from './activityCommon'
 
 type Event = {
     timestamp: string
     status: string
-}
-
-type Payment = {
-    amount: number
-    mode: string
-    transaction_time: string
-}
-
-export type Product = {
-    image: string
-    quantity: string
-    fulfilled_quantity: string
-    final_price: number
-    sku: string
-    name: string
-    id: number
-    brand: string
-}
-
-type LOGISTIC = {
-    order: number
-    partner: string
 }
 
 type ActivityProps = {
@@ -57,21 +29,16 @@ type ActivityProps = {
 const Activity = ({ data = [], status, product = [], payment, invoice_id, logistic }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
-    const [fulfilledQuantities, setFulfilledQuantities] = useState<{
-        [key: number]: number
-    }>({})
+    const [fulfilledQuantities, setFulfilledQuantities] = useState<{ [key: number]: number }>({})
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [action, setAction] = useState('')
-    const [triggerApiCall, setTriggerApiCall] = useState<boolean>(false)
-    const [triggerpackCall, setTriggerpackCall] = useState<boolean>(false)
-    const [triggerShipCall, setTriggerShipCall] = useState<boolean>(false)
-    const [triggerDeliveryCall, setTriggerDeliveryCall] = useState<boolean>(false)
-    const [cancelCall, setCancelCall] = useState<boolean>(false)
+    const [triggerApiCall, setTriggerApiCall] = useState(false)
+    const [triggerpackCall, setTriggerpackCall] = useState(false)
+    const [triggerShipCall, setTriggerShipCall] = useState(false)
+    const [triggerDeliveryCall, setTriggerDeliveryCall] = useState(false)
+    const [cancelCall, setCancelCall] = useState(false)
     const navigate = useNavigate()
-    const [partner, setPartner] = useState<{
-        value: string
-        label: string
-    } | null>(null)
+    const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
 
     const showModal = (content: string | undefined) => {
         setModalContent(content)
@@ -104,16 +71,13 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                         {} as { [key: number]: number },
                     )
 
-                    console.log('BEFORE PACK', data)
-
                     const body = {
                         action,
                         data,
                     }
 
                     const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-
-                    console.log(response.data)
+                    console.log(response)
                     setIsModalOpen(false)
                     setTriggerApiCall(false)
                     navigate(0)
@@ -125,8 +89,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             sendApiRequest()
         }
     }, [triggerApiCall, navigate])
-
-    // CANCEL.........................................................................................................
 
     const handleReject = () => {
         const hasFulfilledQty = Object.values(fulfilledQuantities).some((item) => item > 0)
@@ -157,8 +119,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     }
 
                     const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-
-                    console.log(response.data)
+                    console.log(response)
                     setIsModalOpen(false)
                     setCancelCall(false)
                     navigate(0)
@@ -171,137 +132,61 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         }
     }, [cancelCall, navigate])
 
-    // PACKED..............................................................................................................
+    const particularApiCall = async (
+        action: string,
+        invoice_id: string | undefined,
+        partnerValue: string | undefined,
+        navigate: any,
+        isDelivery: boolean = true,
+    ) => {
+        try {
+            const body = isDelivery ? { action, delivery_partner: partnerValue } : { action }
+            const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
+            navigate(0)
+            notification.success({
+                message: 'Success',
+                description: response?.data?.message || 'Order status updated successfully.',
+            })
+        } catch (error: any) {
+            console.error(error)
+            const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
+            notification.error({
+                message: 'Error',
+                description: errorMessage,
+            })
+        }
+    }
+
+    const handleApiCall = (trigger, setTrigger, isPacking) => {
+        if (trigger) {
+            particularApiCall(action, invoice_id, partner?.value, navigate, isPacking)
+            setTrigger(false)
+        }
+    }
+
+    useEffect(() => {
+        handleApiCall(triggerpackCall, setTriggerpackCall, true)
+        handleApiCall(triggerShipCall, setTriggerShipCall, false)
+        handleApiCall(triggerDeliveryCall, setTriggerDeliveryCall, false)
+    }, [triggerpackCall, triggerShipCall, triggerDeliveryCall, action, invoice_id, partner, navigate])
 
     const handlePack = () => {
         setAction('PACKED')
         setTriggerpackCall(true)
     }
 
-    useEffect(() => {
-        if (triggerpackCall) {
-            const sendApiRequest = async () => {
-                try {
-                    const body = {
-                        action,
-                        delivery_partner: partner?.value,
-                    }
-
-                    console.log('BEFORE DELIVERY', partner?.value)
-
-                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-                    navigate(0)
-                    console.log(response.data)
-                    setIsModalOpen(false)
-                    setTriggerpackCall(false)
-                    notification.success({
-                        message: 'Success',
-                        description: response?.data?.message || 'Order status updated successfully.',
-                    })
-                } catch (error: any) {
-                    console.error(error)
-                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-
-                    notification.error({
-                        message: 'Error',
-                        description: errorMessage,
-                    })
-                } finally {
-                    setTriggerpackCall(false)
-                }
-            }
-            sendApiRequest()
-        }
-    }, [triggerpackCall, navigate])
-
-    // SHIPPED...........................................................................................................
-
     const handleShip = () => {
         setAction('SHIPPED')
         setTriggerShipCall(true)
     }
-
-    useEffect(() => {
-        if (triggerShipCall) {
-            const sendApiRequest = async () => {
-                try {
-                    const body = {
-                        action,
-                    }
-
-                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-                    navigate(0)
-                    console.log(response.data)
-                    setIsModalOpen(false)
-                    setTriggerShipCall(false)
-                    notification.success({
-                        message: 'Success',
-                        description: response?.data?.message || 'Order status updated successfully.',
-                    })
-                } catch (error: any) {
-                    console.error(error)
-                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-
-                    notification.error({
-                        message: 'Error',
-                        description: errorMessage,
-                    })
-                } finally {
-                    setTriggerShipCall(false)
-                }
-            }
-            sendApiRequest()
-        }
-    }, [triggerShipCall, navigate])
-
-    //............................................................................................................................
-
-    // DELIVERY.............................................................................................................
 
     const handleDelivery = () => {
         setAction('DELIVERED')
         setTriggerDeliveryCall(true)
     }
 
-    useEffect(() => {
-        if (triggerDeliveryCall) {
-            const sendApiRequest = async () => {
-                try {
-                    const body = {
-                        action,
-                    }
-
-                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-                    navigate(0)
-                    console.log(response.data)
-                    setIsModalOpen(false)
-                    setTriggerDeliveryCall(false)
-                    notification.success({
-                        message: 'Success',
-                        description: response?.data?.message || 'Order status updated successfully.',
-                    })
-                } catch (error: any) {
-                    console.error(error)
-                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
-
-                    notification.error({
-                        message: 'Error',
-                        description: errorMessage,
-                    })
-                } finally {
-                    setTriggerDeliveryCall(false)
-                }
-            }
-            sendApiRequest()
-        }
-    }, [triggerDeliveryCall, navigate])
-
-    // CLOSE...........................................................................
-
     const handlePartnerSelect = (selectedValue: any) => {
-        console.log('VALUE', selectedValue)
         const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
-
         setPartner({ value: selectedValue, label: selectedLabel })
     }
 
@@ -312,35 +197,20 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const getButtonAndModalContent = (status: string) => {
         switch (status) {
             case 'PENDING':
-                return {
-                    buttonText: 'ACCEPT/REJECT',
-                }
+                return { buttonText: 'ACCEPT/REJECT' }
             case 'ACCEPTED':
-                return {
-                    buttonText: 'PICK AND PACK',
-                }
+                return { buttonText: 'PICK AND PACK' }
             case 'PACKED':
-                return {
-                    buttonText: 'MARK AS SHIPPED',
-                }
+                return { buttonText: 'MARK AS SHIPPED' }
             case 'OUT_FOR_DELIVERY':
             case 'SHIPPED':
-                return {
-                    buttonText: 'MARK AS DELIVERED',
-                }
+                return { buttonText: 'MARK AS DELIVERED' }
             case 'CANCELLED':
-                return {
-                    buttonText: '',
-                }
+                return { buttonText: '' }
             default:
-                return {
-                    buttonText: '',
-                    modalContent: '',
-                }
+                return { buttonText: '', modalContent: '' }
         }
     }
-
-    console.log('Paaaaaaaart', partner?.value)
 
     const { buttonText, modalContent: content } = getButtonAndModalContent(status)
 

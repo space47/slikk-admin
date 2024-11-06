@@ -26,9 +26,7 @@ const RiderDetails = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axiosInstance.get(
-                    `logistic/rider/task?task_id=${task_id}`,
-                )
+                const response = await axiosInstance.get(`logistic/rider/task?task_id=${task_id}`)
                 const riderData = response.data.data.results
                 setData(riderData)
                 setStatus(riderData?.[0]?.status || '')
@@ -64,10 +62,7 @@ const RiderDetails = () => {
     //     }
     // }, [])
 
-    console.log(
-        'LONG',
-        data.map((item) => item.pickup_details.latitude).join(','),
-    )
+    console.log('LONG', data?.map((item) => item?.pickup_details.latitude)?.join(','))
 
     return (
         <Container className="h-auto w-auto">
@@ -78,42 +73,20 @@ const RiderDetails = () => {
                             <div className="w-full flex flex-col xl:flex-row gap-10 justify-between">
                                 <RiderInfo
                                     title="Profile"
-                                    name={data.map(
-                                        (item) => item.pickup_details.name,
-                                    )}
-                                    latitude={data.map(
-                                        (item) => item.pickup_details.latitude,
-                                    )}
-                                    longitude={data.map(
-                                        (item) => item.pickup_details.longitude,
-                                    )}
-                                    address={data.map(
-                                        (item) => item.pickup_details.address,
-                                    )}
-                                    contact_number={data.map(
-                                        (item) =>
-                                            item.pickup_details.contact_number,
-                                    )}
+                                    name={data?.map((item) => item?.pickup_details.name)}
+                                    latitude={data?.map((item) => item?.pickup_details.latitude)}
+                                    longitude={data?.map((item) => item?.pickup_details.longitude)}
+                                    address={data?.map((item) => item?.pickup_details.address)}
+                                    contact_number={data?.map((item) => item?.pickup_details.contact_number)}
                                     className="flex-1 bg-white p-6 rounded-lg min-w-[300px]"
                                 />
                                 <RiderInfo
                                     title="Drop"
-                                    name={data.map(
-                                        (item) => item.drop_details.name,
-                                    )}
-                                    latitude={data.map(
-                                        (item) => item.drop_details.latitude,
-                                    )}
-                                    longitude={data.map(
-                                        (item) => item.drop_details.longitude,
-                                    )}
-                                    address={data.map(
-                                        (item) => item.drop_details.address,
-                                    )}
-                                    contact_number={data.map(
-                                        (item) =>
-                                            item.drop_details.contact_number,
-                                    )}
+                                    name={data?.map((item) => item?.drop_details.name)}
+                                    latitude={data?.map((item) => item?.drop_details.latitude)}
+                                    longitude={data?.map((item) => item?.drop_details.longitude)}
+                                    address={data?.map((item) => item?.drop_details.address)}
+                                    contact_number={data?.map((item) => item?.drop_details?.contact_number)}
                                     className="flex-1 bg-white p-6 rounded-lg min-w-[300px]"
                                 />
                             </div>
@@ -124,14 +97,8 @@ const RiderDetails = () => {
                         </div> */}
                         <div className="my-10 mx-12">
                             <MapComponent
-                                latitude={data
-                                    .map((item) => item.pickup_details.latitude)
-                                    .join(',')}
-                                longitude={data
-                                    .map(
-                                        (item) => item.pickup_details.longitude,
-                                    )
-                                    .join(',')}
+                                latitude={data?.map((item) => item?.pickup_details?.latitude).join(',')}
+                                longitude={data?.map((item) => item?.pickup_details?.longitude).join(',')}
                             />
                         </div>
                         <RiderActivity
@@ -147,11 +114,7 @@ const RiderDetails = () => {
             </Loading>
             {!loading && isEmpty(data) && (
                 <div className="h-full flex flex-col items-center justify-center">
-                    <DoubleSidedImage
-                        src="/img/others/img-2.png"
-                        darkModeSrc="/img/others/img-2-dark.png"
-                        alt="No order found!"
-                    />
+                    <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="No order found!" />
                     <h3 className="mt-8">No order found!</h3>
                 </div>
             )}
