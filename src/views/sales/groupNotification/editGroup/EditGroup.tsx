@@ -60,7 +60,6 @@ const EditGroup = () => {
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    console.log('INITIAL', initialData?.map((item) => item.order[2]?.value.max).join(','))
     const initialValues = {
         // cart: {
         //     cart_start: initialData?.map((item) => item?.cart?.value?.start_date).join(',') || '',

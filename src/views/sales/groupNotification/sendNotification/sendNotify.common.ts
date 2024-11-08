@@ -12,6 +12,39 @@ export interface sendNotificationType {
     image_url_array: File[]
 }
 
+export const SchedulerARRAY = [
+    {
+        label: 'Month',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'schedule_month',
+    },
+    {
+        label: 'Minute',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'schedule_minute',
+    },
+    {
+        label: 'Year',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'schedule_year',
+    },
+    {
+        label: 'Day',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'schedule_day',
+    },
+    {
+        label: 'Hour',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'schedule_hour',
+    },
+]
+
 export const SendNotificationARRAY = [
     {
         label: 'Event Name',
