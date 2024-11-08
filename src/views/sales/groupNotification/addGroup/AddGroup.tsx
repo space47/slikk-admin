@@ -54,13 +54,13 @@ const AddGroup = () => {
             ...(values.user && { user: values.user }),
             rules: {
                 cart: [
-                    ...(values.cart_start && values.cart_end
+                    ...((values.cart_start && values.cart_end) || values.allOpenCart
                         ? [
                               {
                                   type: 'cart',
                                   value: {
-                                      start_date: values.cart_start,
-                                      end_date: values.cart_end,
+                                      start_date: values.allOpenCart ? '' : values.cart_start,
+                                      end_date: values.allOpenCart ? '' : values.cart_end,
                                   },
                               },
                           ]
@@ -105,7 +105,7 @@ const AddGroup = () => {
                                   type: 'order_date',
                                   value: {
                                       start_date: values.start_date,
-                                      end_date: values.end_date || values.start_date, // Adjust end_date if required
+                                      end_date: values.end_date || values.start_date,
                                   },
                               },
                           ]
@@ -287,6 +287,15 @@ const AddGroup = () => {
                             <FormContainer>
                                 <FormContainer className="w-1/2">
                                     <h3>Cart</h3>
+
+                                    <FormItem label="All Open Cart">
+                                        <Field
+                                            type="checkbox"
+                                            name="allOpenCart"
+                                            component={Input}
+                                            className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </FormItem>
                                     <FormItem className="col-span-1 w-full sm:w-1/2 space-y-2">
                                         <div className="flex flex-col">
                                             <label className="text-gray-700 font-semibold mb-1">Cart Start</label>

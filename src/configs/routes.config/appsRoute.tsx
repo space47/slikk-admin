@@ -905,9 +905,15 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsAnalytics.masterRemitance',
+        path: `${APP_PREFIX_PATH}/analytics/masterRemitance`,
+        component: lazy(() => import('@/views/analytics/analyticsReports/AnalyticsReports')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAnalytics.reports',
         path: `${APP_PREFIX_PATH}/analytics/reports`,
-        component: lazy(() => import('@/views/analytics/analyticsReports/AnalyticsReports')),
+        component: lazy(() => import('@/views/analytics/reportsAnalytics/ReportAnalytics')),
         authority: [ADMIN, USER],
     },
     {
@@ -927,6 +933,24 @@ const appsRoute: Routes = [
         key: 'appsConfiguration.configurations',
         path: `${APP_PREFIX_PATH}/configurations/edit/:id`,
         component: lazy(() => import('@/views/configurationsSlikk/configg/componentsConfigg/EditConfigurations')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsConfiguration.reportConfigurations',
+        path: `${APP_PREFIX_PATH}/reportConfigurations`,
+        component: lazy(() => import('@/views/configurationsSlikk/reportConfigurations/GetReportConfiguratiions')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsConfiguration.reportConfigurations',
+        path: `${APP_PREFIX_PATH}/reportConfigurations/:id`,
+        component: lazy(() => import('@/views/configurationsSlikk/reportConfigurations/editQueryReport/EditReportQuery')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsConfiguration.reportConfigurations',
+        path: `${APP_PREFIX_PATH}/reportConfigurations/addNew`,
+        component: lazy(() => import('@/views/configurationsSlikk/reportConfigurations/addQueryReport/AddReportQuery')),
         authority: [ADMIN, USER],
     },
 ]
