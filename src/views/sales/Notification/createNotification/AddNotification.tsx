@@ -110,8 +110,9 @@ const AddNotification = () => {
                             <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                 Reset
                             </Button>
+
                             <Button variant="solid" type="submit" className=" text-white">
-                                Submit
+                                Send Now
                             </Button>
                         </FormContainer>
                     </Form>

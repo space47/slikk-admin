@@ -60,6 +60,28 @@ const GetGroupNotification = () => {
             },
             {
                 header: 'Order',
+                accessorKey: 'rules.cart',
+                cell: ({ getValue }: any) => {
+                    const orders = getValue()
+
+                    return (
+                        <div className="flex flex-col gap-2">
+                            {orders?.map((item: any, key: any) => {
+                                return (
+                                    <div key={key} className="flex gap-2">
+                                        <div>
+                                            <strong>{item.type}:</strong>
+                                        </div>
+                                        <div>{JSON.stringify(item.value)}</div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'Order',
                 accessorKey: 'rules.order',
                 cell: ({ getValue }: any) => {
                     const orders = getValue()

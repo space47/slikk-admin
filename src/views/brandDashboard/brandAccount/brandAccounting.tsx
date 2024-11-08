@@ -3,10 +3,9 @@ import moment from 'moment'
 import React, { useEffect, useState, useMemo } from 'react'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import DatePicker from '@/components/ui/DatePicker'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { BRAND_STATE } from '@/store/types/brand.types'
+import { useAppDispatch } from '@/store'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-import { Select, Button, Pagination, Spinner } from '@/components/ui'
+import { Button, Spinner } from '@/components/ui'
 import Table from '@/components/ui/Table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import {
@@ -15,13 +14,10 @@ import {
     flexRender,
 } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { DoubleSidedImage } from '@/components/shared'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const BrandAccounting = () => {
-    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [fullRemitanceRespone, setFullRemitanceResponse] = useState<any>()
     const [remitance, setRemitance] = useState([])
     const [from, setFrom] = useState(
@@ -29,13 +25,6 @@ const BrandAccounting = () => {
     )
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showOneMonthBack, setShowOneMonthBack] = useState(true)
-    const [brandValue, setBrandValue] = useState<any | null>(null)
-    // const [page, setPage] = useState(1)
-    // const [pageSize, setPageSize] = useState(10)
-
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
     const [showSpinner, setShowSpinner] = useState(false)
     const dispatch = useAppDispatch()
 

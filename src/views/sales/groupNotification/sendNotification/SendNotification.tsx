@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
@@ -26,6 +27,7 @@ import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { beforeUpload } from '@/common/beforeUpload'
 import { handleimage } from '@/common/handleImage'
+import SchedularModal from './SchedularModule'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -39,6 +41,10 @@ const SendNotification = () => {
         dispatch(getAllFiltersAPI())
     }, [])
     const [filterId, setFilterId] = useState()
+    const [showScheduleModal, setScheduleModal] = useState(false)
+    const [storeSchedular, setStoreSchedular] = useState({})
+    const [valueForSchedule, setValueForSchedule] = useState<any>()
+    const [submitvalue, setSubmitValue] = useState<any>(null)
 
     const fetchGroupValue = async () => {
         try {
@@ -123,6 +129,8 @@ const SendNotification = () => {
             data.users = values.users.replace(/\s+/g, '')
         }
 
+        setValueForSchedule(data)
+
         try {
             const response = await axioisInstance.post(`/notification/send`, data)
             notification.success({
@@ -188,7 +196,84 @@ const SendNotification = () => {
         return <div className="flex h-screen items-center justify-center">{<Spinner size={40} />}</div>
     }
 
-    console.log('VALE', groupValue)
+    const hanldeSchedule = (value: any) => {
+        console.log('VALUES are', value)
+        setValueForSchedule(value)
+        setScheduleModal(true)
+    }
+
+    const handleClose = () => {
+        setScheduleModal(false)
+    }
+
+    const handleOk = async (val: any) => {
+        const {
+            checkBox_schedule_day,
+            checkBox_schedule_minute,
+            checkBox_schedule_month,
+            checkBox_schedule_year,
+            checkBox_schedule_hour,
+            ...rest
+        } = val ?? {}
+
+        setStoreSchedular(rest)
+
+        console.log('Rest of Data', storeSchedular)
+        const parser = new DOMParser()
+        const htmlDoc = parser.parseFromString(valueForSchedule?.message ?? '', 'text/html')
+        const plainTextMessage = htmlDoc.body.textContent || ''
+
+        const imageUpload =
+            valueForSchedule?.image_url_array?.length > 0
+                ? await handleimage(valueForSchedule.image_url_array)
+                : (valueForSchedule?.image_url ?? '')
+
+        const { expiry_date, ...schedulerConfigs } = rest ?? {}
+
+        const body = {
+            title: valueForSchedule?.title ?? '',
+            message: plainTextMessage,
+            name: valueForSchedule?.event_name ?? '',
+            image: imageUpload,
+            scheduler_config: schedulerConfigs,
+            other_config: {
+                filters: [
+                    ...(valueForSchedule?.filters ?? []),
+                    ...UtmArray.filter((item) => valueForSchedule?.[item.name] !== undefined).map(
+                        (item) => `${item.name.replace('_', '-')}_${valueForSchedule?.[item.name]}`,
+                    ),
+                    ...MAXMINARRAY.filter((item) => valueForSchedule?.[item.name] !== undefined).map(
+                        (item) => `${item.name}_${valueForSchedule?.[item.name]}`,
+                    ),
+                    ...OFFARRAY.filter((item) => valueForSchedule?.[item.name] !== undefined).map(
+                        (item) => `${item.name}_${valueForSchedule?.[item.name]}`,
+                    ),
+                    ...(valueForSchedule?.discountTags ?? []),
+                    ...(filterId !== undefined ? [`filterId_${filterId}`] : []),
+                ].filter((filter) => filter),
+                target_page: valueForSchedule?.target_page ?? '',
+                key: valueForSchedule?.key ?? '',
+                page_title: valueForSchedule?.page_title ?? '',
+            },
+            expiry_date: expiry_date ?? '',
+            mobiles: valueForSchedule?.users ?? [],
+            groups: groupId.join(',') ?? '',
+        }
+
+        try {
+            const response = await axioisInstance.post(`/user_notification`, body)
+            notification.success({
+                message: 'Scheduled successfully',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failed to schedule',
+            })
+        }
+
+        setScheduleModal(false)
+    }
 
     return (
         <div>
@@ -399,13 +484,25 @@ const SendNotification = () => {
                             <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                 Reset
                             </Button>
+                            <Button type="button" className="mr-2 bg-gray-600" onClick={() => hanldeSchedule(values)}>
+                                Schedule
+                            </Button>
                             <Button variant="solid" type="submit" className=" text-white">
-                                Submit
+                                Send Now
                             </Button>
                         </FormContainer>
                     </Form>
                 )}
             </Formik>
+
+            {showScheduleModal && (
+                <SchedularModal
+                    handleClose={handleClose}
+                    handleOk={handleOk}
+                    dialogIsOpen={showScheduleModal}
+                    scheduleValues={valueForSchedule}
+                />
+            )}
         </div>
     )
 }
