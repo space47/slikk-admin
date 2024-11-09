@@ -47,10 +47,18 @@ const GetReportConfiguratiions = () => {
                 ),
             },
             { header: 'Name', accessorKey: 'name' },
+            { header: 'Display Name', accessorKey: 'display_name' },
             {
                 header: 'Value',
                 accessorKey: 'value',
-                cell: ({ getValue }) => <div className="flex flex-wrap overflow-ellipsis w-[450px] line-clamp-3">{getValue()}</div>,
+                cell: ({ getValue }) =>
+                    Object.entries(getValue()).map(([key, value], index) => {
+                        return (
+                            <div key={index} className="flex flex-col gap-2">
+                                {`${key} :  ${value}`}
+                            </div>
+                        )
+                    }),
             },
             {
                 header: 'Required Fields',

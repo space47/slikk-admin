@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { IoIosAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { RichTextEditor } from '@/components/shared'
-import Select from '@/components/ui/Select' // Assuming you have a Select component
+import Select from '@/components/ui/Select'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 
@@ -16,7 +16,7 @@ const reportQueryNames = [
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },
-    { label: 'MulltiSelect', value: 'MultiSelect' },
+    { label: 'MultiSelect', value: 'MultiSelect' },
 ]
 
 const AddReportQuery = () => {
@@ -24,22 +24,28 @@ const AddReportQuery = () => {
 
     const initialValue = {
         name: '',
+        display_name: '',
+        value: [{ key: '', value: '' }],
         required_fields: [{ key: '', value: '', dataType: 'String' }],
     }
 
     const handleSubmit = async (values: any) => {
-        const parser = new DOMParser()
-        const htmlDoc = parser.parseFromString(values.value, 'text/html')
-        const plainTextMessage = htmlDoc.body.textContent || ''
-
         const formattedRequiredFields = values.required_fields.reduce((obj: any, item: { key: string; value: any; dataType: string }) => {
             obj[item.key] = `${item.dataType}_${item.value}`
             return obj
         }, {})
 
+        const formattedValue = values.value.reduce((obj: any, item: { key: string; value: any }) => {
+            const parser = new DOMParser()
+            const htmlDoc = parser.parseFromString(item.value, 'text/html')
+            const plainTextValue = htmlDoc.body.textContent || ''
+            obj[item.key] = plainTextValue
+            return obj
+        }, {})
+
         const body = {
             ...values,
-            value: plainTextMessage,
+            value: formattedValue,
             required_fields: formattedRequiredFields,
         }
 
@@ -57,28 +63,68 @@ const AddReportQuery = () => {
     }
 
     return (
-        <div>
-            <h3 className="mb-5 from-neutral-900">Add Report Query</h3>
+        <div className="p-8 bg-white rounded-lg shadow-md">
+            <h3 className="mb-5 text-xl font-semibold text-neutral-900">Add Report Query</h3>
             <Formik initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-full lg:w-2/3">
                         <FormContainer>
-                            <FormItem label="Name" className="col-span-1 w-1/2">
+                            <FormItem label="Name" className="col-span-1 w-full lg:w-1/2 mb-4">
                                 <Field type="text" name="name" placeholder="Enter Name" component={Input} />
                             </FormItem>
-                            <FormItem label="Value" labelClass="!justify-start" className="col-span-1 w-full">
-                                <Field name="value">
-                                    {({ field, form }: FieldProps) => (
-                                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
-                                    )}
-                                </Field>
+                            <FormItem label="Report Display Name" className="col-span-1 w-full lg:w-1/2 mb-4">
+                                <Field type="text" name="display_name" placeholder="Enter Display Name" component={Input} />
                             </FormItem>
-                            <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
+                            <FormItem label="Query List" labelClass="!justify-start" className="col-span-1 w-full mb-4">
+                                <FieldArray name="value">
+                                    {({ push, remove }) => (
+                                        <div>
+                                            {values.value.map((item, index) => (
+                                                <div key={index} className="flex space-x-4 mt-2 items-center">
+                                                    <div className="flex flex-col gap-2 w-full lg:w-2/3">
+                                                        <Field
+                                                            name={`value[${index}].key`}
+                                                            placeholder="Enter Query Name"
+                                                            component={Input}
+                                                            className="w-1/4"
+                                                        />
+                                                        <Field name={`value[${index}].value`}>
+                                                            {({ field, form }: FieldProps) => (
+                                                                <RichTextEditor
+                                                                    value={field.value}
+                                                                    onChange={(val) => form.setFieldValue(field.name, val)}
+                                                                    className="w-full"
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className="text-red-600 hover:text-red-800 transition"
+                                                        onClick={() => remove(index)}
+                                                    >
+                                                        <MdCancel className="text-2xl" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => push({ key: '', value: '' })}
+                                                className="mt-3 flex items-center text-green-600 hover:text-green-800 transition"
+                                            >
+                                                <IoIosAddCircle className="text-2xl mr-1" />
+                                                Add Query
+                                            </button>
+                                        </div>
+                                    )}
+                                </FieldArray>
+                            </FormItem>
+                            <FormItem asterisk label="Required Fields" className="col-span-1 w-full lg:w-[60%] mb-4">
                                 <FieldArray name="required_fields">
                                     {({ push, remove }) => (
                                         <div>
-                                            {values.required_fields.map((item: any, index: number) => (
-                                                <div key={index} className="flex space-x-4 mt-2">
+                                            {values.required_fields.map((item, index) => (
+                                                <div key={index} className="flex space-x-4 mt-2 items-center">
                                                     <Field
                                                         name={`required_fields[${index}].key`}
                                                         placeholder="Key"
@@ -92,6 +138,7 @@ const AddReportQuery = () => {
                                                                 options={reportQueryNames}
                                                                 value={reportQueryNames.find((option) => option.value === field.value)}
                                                                 onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                                className="w-1/3"
                                                             />
                                                         )}
                                                     </Field>
@@ -108,31 +155,36 @@ const AddReportQuery = () => {
                                                             )
                                                         }}
                                                     </Field>
-                                                    <button type="button" className="bg-none border-none" onClick={() => remove(index)}>
-                                                        <MdCancel className="text-xl text-red-600" />
+                                                    <button
+                                                        type="button"
+                                                        className="text-red-600 hover:text-red-800 transition"
+                                                        onClick={() => remove(index)}
+                                                    >
+                                                        <MdCancel className="text-2xl" />
                                                     </button>
                                                 </div>
                                             ))}
                                             <button
                                                 type="button"
                                                 onClick={() => push({ key: '', value: '', dataType: 'String' })}
-                                                className="mt-3 bg-none border-none"
+                                                className="mt-3 flex items-center text-green-600 hover:text-green-800 transition"
                                             >
-                                                <IoIosAddCircle className="text-green-600 text-xl" />
+                                                <IoIosAddCircle className="text-2xl mr-1" />
+                                                Add Required Field
                                             </button>
                                         </div>
                                     )}
                                 </FieldArray>
                             </FormItem>
 
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
+                            <div className="flex justify-end mt-6 space-x-4">
+                                <Button type="reset" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button variant="solid" type="submit" className=" text-white">
+                                <Button variant="solid" type="submit">
                                     Submit
                                 </Button>
-                            </FormContainer>
+                            </div>
                         </FormContainer>
                     </Form>
                 )}

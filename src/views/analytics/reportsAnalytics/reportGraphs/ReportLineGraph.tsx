@@ -9,11 +9,9 @@ interface LineGraphProps {
 }
 
 const ReportLineGraph = ({ xAxisData, yAxisData }: LineGraphProps) => {
-    const { monthlyReport } = useAppSelector((state: { monthlyReport: MONTHLYREPORTTYPES }) => state.monthlyReport)
-
-    const sortedData = [...(monthlyReport?.order_by_date || [])].sort(
-        (a, b) => new Date(a.create_at_date).getTime() - new Date(b.create_at_date).getTime(),
-    )
+    // const sortedData = [...(monthlyReport?.order_by_date || [])].sort(
+    //     (a, b) => new Date(a.create_at_date).getTime() - new Date(b.create_at_date).getTime(),
+    // )
 
     const data = [
         {

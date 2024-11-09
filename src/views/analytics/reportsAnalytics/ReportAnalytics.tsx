@@ -122,7 +122,7 @@ const ReportAnalytics = () => {
         try {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
-            const data = response?.data?.data?.data
+            const data = response?.data?.data?.query
             setDynamicReportTable(data)
             setTotalCount(response?.data?.data?.total)
             setShowTable(true)
@@ -155,6 +155,8 @@ const ReportAnalytics = () => {
         )
     }
 
+    const handleDownloadCsv = () => {}
+
     return (
         <div>
             <Formik
@@ -167,7 +169,7 @@ const ReportAnalytics = () => {
                     <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                                <FormItem label="Target Page">
+                                <FormItem label="Select Target Page" className="font-bold">
                                     <Field name="target_page">
                                         {({ field, form }: FieldProps) => {
                                             return (
@@ -251,40 +253,37 @@ const ReportAnalytics = () => {
                                                             )
                                                         }}
                                                     </Field>
-
-                                                    <button type="button" className="bg-none border-none" onClick={() => remove(index)}>
-                                                        <MdCancel className="text-xl text-red-600" />
-                                                    </button>
                                                 </div>
                                             ))}
-                                            <button
-                                                type="button"
-                                                onClick={() => push({ key: '', value: '', dataType: 'String' })}
-                                                className="mt-3 bg-none border-none"
-                                            >
-                                                <IoIosAddCircle className="text-green-600 text-xl" />
-                                            </button>
                                         </div>
                                     )}
                                 </FieldArray>
                             </FormItem>
                         )}
-                        <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
-                            <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
-                                Reset
-                            </Button>
-                            <Button variant="new" type="submit" className=" text-white">
-                                Generate
-                            </Button>
-                        </FormContainer>
+                        {storeName !== null && storeName !== undefined && storeName !== '' && (
+                            <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
+                                {/* <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
+                                    Reset
+                                </Button> */}
+                                <Button variant="new" type="submit" className="text-white ">
+                                    Generate
+                                </Button>
+                            </FormContainer>
+                        )}
                     </Form>
                 )}
             </Formik>
             <br />
             {showTable && (
                 <>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-7">
                         <div className="font-semibold text-xl"> Report Table</div>
+                        <div className="flex justify-start">
+                            <Button variant="new" onClick={handleDownloadCsv}>
+                                Download CSV
+                            </Button>
+                        </div>
+
                         <ReportTable
                             tableData={dynamicReportTable}
                             page={page}
@@ -297,7 +296,7 @@ const ReportAnalytics = () => {
                     </div>
                     <br />
                     <div className="flex gap-2">
-                        <input
+                        {/* <input
                             type="search"
                             value={xAxisValue}
                             onChange={(e) => setXAxisvalue(e.target.value)}
@@ -308,7 +307,7 @@ const ReportAnalytics = () => {
                             value={yAxisValue}
                             onChange={(e) => setYAxisvalue(e.target.value)}
                             placeholder="Enter X axis"
-                        />
+                        /> */}
                         <ReportLineGraph />
                     </div>
                 </>
