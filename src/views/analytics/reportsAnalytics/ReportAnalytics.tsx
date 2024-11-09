@@ -1,4 +1,6 @@
-import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Button, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik'
@@ -6,12 +8,20 @@ import React, { useEffect, useState } from 'react'
 import { IoIosAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import ReportTable from './ReportTable'
+import ReportLineGraph from './reportGraphs/ReportLineGraph'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { CATEGORY_STATE } from '@/store/types/category.types'
+import { BRAND_STATE } from '@/store/types/brand.types'
+import { getAllBrandsAPI } from '@/store/action/brand.action'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
     { label: 'Number', value: 'Number' },
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
+    { label: 'Select', value: 'Select' },
+    { label: 'MulltiSelect', value: 'MultiSelect' },
 ]
 
 const ReportAnalytics = () => {
@@ -26,24 +36,42 @@ const ReportAnalytics = () => {
     const [totalount, setTotalCount] = useState(0)
     const [xAxisValue, setXAxisvalue] = useState('')
     const [yAxisValue, setYAxisvalue] = useState('')
+    const [showSpinner, setShowSpinner] = useState(false)
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
+    const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const fetchReportApi = async () => {
         try {
+            setShowSpinner(true)
             const response = await axioisInstance.get(`/query/config`)
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setReportQueryNames(
-                data?.results?.map((item) => ({
+                data?.results?.map((item: any) => ({
                     label: item.name,
                     value: item.name,
                 })),
             )
+            setShowSpinner(false)
         } catch (error) {
             console.log(error)
         }
     }
+
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(getAllBrandsAPI())
+    }, [])
+
     useEffect(() => {
         fetchReportApi()
     }, [])
+
+    const optionDataMap: { [key: string]: any } = {
+        brand: brands.brands,
+        category: category.categories,
+        division: divisions.divisions,
+    }
 
     const [reportData, setReportData] = useState({
         name: '',
@@ -70,6 +98,8 @@ const ReportAnalytics = () => {
         }
     }
 
+    console.log('ReportData', reportData)
+
     useEffect(() => {
         if (storeName) {
             fetchApi()
@@ -78,7 +108,7 @@ const ReportAnalytics = () => {
 
     const initialValue = {}
 
-    const [currentValues, setCurrentValues] = useState<any>() // State to store the current values
+    const [currentValues, setCurrentValues] = useState<any>()
 
     const fetchTable = async (values?: any) => {
         const offSetCount = (page - 1) * pageSize
@@ -90,11 +120,13 @@ const ReportAnalytics = () => {
                 .join('&')
         }
         try {
+            setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data?.data
             setDynamicReportTable(data)
             setTotalCount(response?.data?.data?.total)
             setShowTable(true)
+            setShowSpinner(false)
         } catch (error) {
             console.log(error)
         }
@@ -115,10 +147,13 @@ const ReportAnalytics = () => {
         setPage(page)
     }
 
-    // console.log(
-    //     'XAXIS FIND',
-    //     dynamicReportTable?.find((item, index) => item[key] === xAxisValue),
-    // )
+    if (showSpinner) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner size={40} />
+            </div>
+        )
+    }
 
     return (
         <div>
@@ -128,7 +163,7 @@ const ReportAnalytics = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, resetForm }) => (
+                {({ values, resetForm, setFieldValue }) => (
                     <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10">
@@ -140,7 +175,7 @@ const ReportAnalytics = () => {
                                                     placeholder="Select Target Page"
                                                     options={reportQueryNames}
                                                     value={reportQueryNames?.find((option) => option.value === field.value)}
-                                                    onChange={(option) => {
+                                                    onChange={(option: any) => {
                                                         form.setFieldValue(field.name, option?.value)
                                                         setStoreName(option?.value)
                                                     }}
@@ -167,6 +202,7 @@ const ReportAnalytics = () => {
                                                     <Field name={`required_fields[${index}].dataType`}>
                                                         {({ field, form }: FieldProps) => (
                                                             <Select
+                                                                className="w-1/4"
                                                                 placeholder="Select dataType"
                                                                 options={reportQueryArray}
                                                                 value={reportQueryArray.find((option) => option.value === field.value)}
@@ -176,7 +212,35 @@ const ReportAnalytics = () => {
                                                     </Field>
                                                     <Field name={`required_fields[${index}].value`}>
                                                         {({ field, form }: FieldProps) => {
-                                                            const dataType = values.required_fields[index].dataType
+                                                            const { dataType, key } = values.required_fields[index]
+                                                            const fieldValue = Array.isArray(field.value) ? field.value : []
+                                                            const options = optionDataMap[key]
+
+                                                            if ((dataType === 'Select' || dataType === 'MultiSelect') && options) {
+                                                                const selectedOption = options.find(
+                                                                    (option: any) =>
+                                                                        option.name.toLowerCase() === field.value.toLowerCase(),
+                                                                )
+
+                                                                return (
+                                                                    <Select
+                                                                        className="w-1/3"
+                                                                        {...field}
+                                                                        options={options}
+                                                                        getOptionLabel={(option) => option.name}
+                                                                        getOptionValue={(option) => option.id.toString()}
+                                                                        value={selectedOption || null}
+                                                                        onChange={(newVal) => {
+                                                                            console.log('Data for Val', newVal?.name)
+                                                                            form.setFieldValue(
+                                                                                `required_fields[${index}].value`,
+                                                                                newVal?.name,
+                                                                            )
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            }
+
                                                             return (
                                                                 <Input
                                                                     type={dataType === 'Date' ? 'date' : 'text'}
@@ -187,6 +251,7 @@ const ReportAnalytics = () => {
                                                             )
                                                         }}
                                                     </Field>
+
                                                     <button type="button" className="bg-none border-none" onClick={() => remove(index)}>
                                                         <MdCancel className="text-xl text-red-600" />
                                                     </button>
@@ -244,6 +309,7 @@ const ReportAnalytics = () => {
                             onChange={(e) => setYAxisvalue(e.target.value)}
                             placeholder="Enter X axis"
                         />
+                        <ReportLineGraph />
                     </div>
                 </>
             )}

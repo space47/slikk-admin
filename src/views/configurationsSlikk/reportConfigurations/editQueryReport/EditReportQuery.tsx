@@ -16,6 +16,8 @@ const reportQueryNames = [
     { label: 'Number', value: 'Number' },
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
+    { label: 'Select', value: 'Select' },
+    { label: 'MulltiSelect', value: 'MultiSelect' },
 ]
 
 const EditReportQuery = () => {

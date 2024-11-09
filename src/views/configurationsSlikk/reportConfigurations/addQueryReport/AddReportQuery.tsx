@@ -15,6 +15,8 @@ const reportQueryNames = [
     { label: 'Number', value: 'Number' },
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
+    { label: 'Select', value: 'Select' },
+    { label: 'MulltiSelect', value: 'MultiSelect' },
 ]
 
 const AddReportQuery = () => {
@@ -40,8 +42,6 @@ const AddReportQuery = () => {
             value: plainTextMessage,
             required_fields: formattedRequiredFields,
         }
-
-        console.log('Value of body', body)
 
         try {
             const response = await axioisInstance.post(`/query/config`, body)
