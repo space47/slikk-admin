@@ -115,7 +115,10 @@ const ReportAnalytics = () => {
         setPage(page)
     }
 
-    // console.log('XAXIS FIND', dynamicReportTable?.find((item:{key:any, value:any}, index)=> item[key]=== ))
+    // console.log(
+    //     'XAXIS FIND',
+    //     dynamicReportTable?.find((item, index) => item[key] === xAxisValue),
+    // )
 
     return (
         <div>
@@ -206,7 +209,7 @@ const ReportAnalytics = () => {
                                 Reset
                             </Button>
                             <Button variant="new" type="submit" className=" text-white">
-                                Genertae
+                                Generate
                             </Button>
                         </FormContainer>
                     </Form>
