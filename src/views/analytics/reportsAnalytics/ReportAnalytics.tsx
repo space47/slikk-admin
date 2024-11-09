@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
+import moment from 'moment'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -155,6 +156,27 @@ const ReportAnalytics = () => {
         )
     }
 
+    const xAxisData = dynamicReportTable
+        .map((item) => {
+            if (xAxisValue.toLowerCase().includes('date')) {
+                return moment(item[xAxisValue]).utcOffset(330).format('YYYY-MM-DD')
+            } else {
+                return item[xAxisValue]
+            }
+        })
+        .filter(Boolean)
+    const yAxisData = dynamicReportTable
+        .map((item) => {
+            if (yAxisValue.toLowerCase().includes('date')) {
+                return moment(item[yAxisValue]).utcOffset(330).format('YYYY-MM-DD')
+            } else {
+                return item[yAxisValue]
+            }
+        })
+        .filter(Boolean)
+
+    console.log('XAxisData', yAxisData)
+
     const handleDownloadCsv = () => {}
 
     return (
@@ -295,20 +317,44 @@ const ReportAnalytics = () => {
                         />
                     </div>
                     <br />
-                    <div className="flex gap-2">
-                        {/* <input
-                            type="search"
-                            value={xAxisValue}
-                            onChange={(e) => setXAxisvalue(e.target.value)}
-                            placeholder="Enter X axis"
-                        />
-                        <input
-                            type="search"
-                            value={yAxisValue}
-                            onChange={(e) => setYAxisvalue(e.target.value)}
-                            placeholder="Enter X axis"
-                        /> */}
-                        <ReportLineGraph />
+                    <div className="flex flex-col gap-2">
+                        <div className="flex gap-3">
+                            <div className="flex flex-col gap-2">
+                                <label htmlFor="">X-Axis</label>
+                                <Select
+                                    className="w-[300px]"
+                                    placeholder="Select X-Axis Value"
+                                    options={
+                                        dynamicReportTable.length > 0
+                                            ? Object.keys(dynamicReportTable[0]).map((key) => ({
+                                                  label: key,
+                                                  value: key,
+                                              }))
+                                            : []
+                                    }
+                                    value={xAxisValue ? { label: xAxisValue, value: xAxisValue } : null}
+                                    onChange={(option) => setXAxisvalue(option.value)}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label>Y-Axis</label>
+                                <Select
+                                    className="w-[300px]"
+                                    placeholder="Select Y-Axis value"
+                                    options={
+                                        dynamicReportTable.length > 0
+                                            ? Object.keys(dynamicReportTable[0]).map((key) => ({
+                                                  label: key,
+                                                  value: key,
+                                              }))
+                                            : []
+                                    }
+                                    value={yAxisValue ? { label: yAxisValue, value: yAxisValue } : null}
+                                    onChange={(option) => setYAxisvalue(option.value)}
+                                />
+                            </div>
+                        </div>
+                        <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} />
                     </div>
                 </>
             )}

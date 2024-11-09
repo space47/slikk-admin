@@ -9,14 +9,10 @@ interface LineGraphProps {
 }
 
 const ReportLineGraph = ({ xAxisData, yAxisData }: LineGraphProps) => {
-    // const sortedData = [...(monthlyReport?.order_by_date || [])].sort(
-    //     (a, b) => new Date(a.create_at_date).getTime() - new Date(b.create_at_date).getTime(),
-    // )
-
+    console.log('Y axis data in graph', yAxisData)
     const data = [
         {
-            name: 'TOTAL',
-            data: xAxisData,
+            data: yAxisData,
         },
     ]
 
@@ -38,7 +34,7 @@ const ReportLineGraph = ({ xAxisData, yAxisData }: LineGraphProps) => {
                 },
                 colors: [COLOR_2],
                 xaxis: {
-                    categories: yAxisData,
+                    categories: xAxisData,
                 },
             }}
             series={data}
