@@ -24,6 +24,8 @@ const ReportAnalytics = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(100)
     const [totalount, setTotalCount] = useState(0)
+    const [xAxisValue, setXAxisvalue] = useState('')
+    const [yAxisValue, setYAxisvalue] = useState('')
     const fetchReportApi = async () => {
         try {
             const response = await axioisInstance.get(`/query/config`)
@@ -99,19 +101,21 @@ const ReportAnalytics = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        setCurrentValues(values) // Set the current values
-        fetchTable(values) // Fetch table data with submitted values
+        setCurrentValues(values)
+        fetchTable(values)
     }
 
     useEffect(() => {
         if (currentValues) {
-            fetchTable(currentValues) // Fetch table data when page changes
+            fetchTable(currentValues)
         }
     }, [page])
 
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
+
+    // console.log('XAXIS FIND', dynamicReportTable?.find((item:{key:any, value:any}, index)=> item[key]=== ))
 
     return (
         <div>
@@ -221,6 +225,21 @@ const ReportAnalytics = () => {
                             orderCount={totalount}
                             setPage={setPage}
                             setPageSize={setPageSize}
+                        />
+                    </div>
+                    <br />
+                    <div className="flex gap-2">
+                        <input
+                            type="search"
+                            value={xAxisValue}
+                            onChange={(e) => setXAxisvalue(e.target.value)}
+                            placeholder="Enter X axis"
+                        />
+                        <input
+                            type="search"
+                            value={yAxisValue}
+                            onChange={(e) => setYAxisvalue(e.target.value)}
+                            placeholder="Enter X axis"
                         />
                     </div>
                 </>
