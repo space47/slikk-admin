@@ -12,6 +12,7 @@ import { Item, REMITANCE } from '@/store/types/remitance.types'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { MdCancel } from 'react-icons/md'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -25,8 +26,10 @@ const Remitance = () => {
     const [brandValue, setBrandValue] = useState<any | null>(null)
     // const [page, setPage] = useState(1)
     // const [pageSize, setPageSize] = useState(10)
-
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const [fieldValue, setFieldValue] = useState([]) // Initialize fieldValue state
+    const [companyData, setCompanyData] = useState(null)
 
     const dispatch = useAppDispatch()
 
@@ -48,7 +51,11 @@ const Remitance = () => {
 
     useEffect(() => {
         fetchRemitance()
-    }, [from, to, brandValue])
+    }, [brandValue])
+
+    const handleDateSubmit = () => {
+        fetchRemitance()
+    }
 
     const handleFromChange = (date: Date | null) => {
         if (date) {
@@ -88,9 +95,13 @@ const Remitance = () => {
 
     const handleOrderItem = async () => {
         try {
+            let companyId = ''
+            if (companyData) {
+                companyId = `&company_id=${companyData}`
+            }
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
-                `/merchant/order_items?download=true&download_type=finance&from=${from}&to=${to}${brandData}&company_id=${selectedCompany.id}`,
+                `/merchant/order_items?download=true&download_type=finance&from=${from}&to=${to}${brandData}${companyId}`,
                 {
                     responseType: 'blob',
                 },
@@ -110,9 +121,13 @@ const Remitance = () => {
 
     const handleReturnOrderItem = async () => {
         try {
+            let companyId = ''
+            if (companyData) {
+                companyId = `&company_id=${companyData}`
+            }
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
-                `/merchant/return_order_items?download=true&download_type=finance&from=${from}&to=${to}${brandData}&company_id=${selectedCompany.id}`,
+                `/merchant/return_order_items?download=true&download_type=finance&from=${from}&to=${to}${brandData}${companyId}`,
                 {
                     responseType: 'blob',
                 },
@@ -155,6 +170,12 @@ const Remitance = () => {
     // const onPaginationChange = (page: number) => {
     //     setPage(page)
     // }
+    console.log('Data for company', companyData)
+
+    const handleRemoveCompanyId = () => {
+        setCompanyData(null)
+        setFieldValue([])
+    }
 
     return (
         <div className="p-6 ">
@@ -183,6 +204,9 @@ const Remitance = () => {
                                 className="w-56 rounded-md border-gray-300 focus:border-blue-500"
                             />
                         </div>
+                        <Button variant="new" className="h-1/2 xl:mt-7" onClick={handleDateSubmit}>
+                            Submit
+                        </Button>
                     </div>
 
                     {/*  */}
@@ -211,6 +235,27 @@ const Remitance = () => {
                         <Button variant="new" onClick={handleReturnOrderItem}>
                             Return Order Item
                         </Button>
+                        <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                            <div className="font-semibold">Select Company</div>
+                            <div className="flex gap-2 items-center w-auto">
+                                <Select
+                                    className="w-full"
+                                    options={companyList}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) => option.id}
+                                    value={companyList.filter((option) => fieldValue.includes(option?.name))}
+                                    onChange={(newVal) => {
+                                        setFieldValue([newVal?.name])
+                                        setCompanyData(newVal?.id)
+                                    }}
+                                />
+                                <div>
+                                    <button onClick={handleRemoveCompanyId} className="bg-none border-none">
+                                        <div className="text-red-600">Clear</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
