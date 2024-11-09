@@ -20,7 +20,7 @@ const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
     const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const [inputValues, setInputValues] = useState({
         customer: '',
         invoice_id: '',
@@ -29,8 +29,8 @@ const Home = () => {
 
     const fetchHome = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const response = await axiosInstance.get(`/merchant/analytics/order?from=${from}&to=${To_Date}`)
+            // const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const response = await axiosInstance.get(`/merchant/analytics/order?from=${from}&to=${to}`)
             const data: SalesData = response.data.data
             setHomeData(data)
         } catch (error) {
@@ -40,8 +40,8 @@ const Home = () => {
 
     const fetchOrderForLocation = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const response = await axiosInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${To_Date}`)
+            // const to = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const response = await axiosInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${to}`)
 
             const ordersData = response.data?.data
             setOrders(ordersData)
@@ -299,7 +299,7 @@ const Home = () => {
             {/* CHART */}
 
             <div className="mt-5 w-[350px] xl:w-full">
-                {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} />}
+                {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}
             </div>
 
             <div className="flex justify-center items-start my-10 z-10">
