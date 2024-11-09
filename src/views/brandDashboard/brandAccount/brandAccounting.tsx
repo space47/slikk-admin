@@ -8,11 +8,7 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { Button, Spinner } from '@/components/ui'
 import Table from '@/components/ui/Table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
 
 const { Tr, Th, Td, THead, TBody } = Table
@@ -20,9 +16,7 @@ const { Tr, Th, Td, THead, TBody } = Table
 const BrandAccounting = () => {
     const [fullRemitanceRespone, setFullRemitanceResponse] = useState<any>()
     const [remitance, setRemitance] = useState([])
-    const [from, setFrom] = useState(
-        moment().startOf('month').format('YYYY-MM-DD'),
-    )
+    const [from, setFrom] = useState(moment().startOf('month').format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showOneMonthBack, setShowOneMonthBack] = useState(true)
     const [showSpinner, setShowSpinner] = useState(false)
@@ -36,9 +30,7 @@ const BrandAccounting = () => {
         try {
             setShowSpinner(true)
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const response = await axiosInstance.get(
-                `/merchant/product/sales?from=${from}&to=${To_Date}`,
-            )
+            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${To_Date}`)
             const remitanceData = response.data?.data.items
             setShowSpinner(false)
             setFullRemitanceResponse(response.data?.data)
@@ -51,7 +43,11 @@ const BrandAccounting = () => {
 
     useEffect(() => {
         fetchRemitance()
-    }, [from, to])
+    }, [])
+
+    const handleDateSubmit = () => {
+        fetchRemitance()
+    }
 
     const handleFromChange = (date: Date | null) => {
         if (date) {
@@ -69,16 +65,11 @@ const BrandAccounting = () => {
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const response = await axiosInstance.get(
-                `/merchant/product/sales?from=${from}&to=${To_Date}&download=true`,
-                {
-                    responseType: 'blob',
-                },
-            )
+            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${To_Date}&download=true`, {
+                responseType: 'blob',
+            })
 
-            const urlToBeDownloaded = window.URL.createObjectURL(
-                new Blob([response.data]),
-            )
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
             link.download = `Brands'-${from}-to-${to}.csv`
@@ -128,32 +119,28 @@ const BrandAccounting = () => {
                     <div className="flex flex-col xl:flex-row gap-3  xl:gap-8">
                         <div className="flex flex-col">
                             <label className="mb-2 font-semibold text-sm text-gray-700">
-                                From Date:{' '}
-                                {showOneMonthBack ? '(Start of Month)' : ''}
+                                From Date: {showOneMonthBack ? '(Start of Month)' : ''}
                             </label>
                             <DatePicker
-                                inputPrefix={
-                                    <HiOutlineCalendar className="text-lg text-gray-600" />
-                                }
+                                inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
                                 value={new Date(from)}
                                 onChange={handleFromChange}
                                 className="w-56 rounded-md border-gray-300 focus:border-blue-500"
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label className="mb-2 font-semibold text-sm text-gray-700">
-                                To Date:
-                            </label>
+                            <label className="mb-2 font-semibold text-sm text-gray-700">To Date:</label>
                             <DatePicker
-                                inputPrefix={
-                                    <HiOutlineCalendar className="text-lg text-gray-600" />
-                                }
+                                inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
                                 value={new Date(to)}
                                 onChange={handleToChange}
                                 minDate={new Date(from)}
                                 className="w-56 rounded-md border-gray-300 focus:border-blue-500"
                             />
                         </div>
+                        <Button variant="new" className="h-1/2 xl:mt-7" onClick={handleDateSubmit}>
+                            Submit
+                        </Button>
                     </div>
 
                     {/*  */}
@@ -169,33 +156,20 @@ const BrandAccounting = () => {
                 {remitance.length && remitance.length > 0 ? (
                     <div className="overflow-x-auto mt-6">
                         <div className="flex justify-end items-center mt-5">
-                            <Button
-                                onClick={handleDownload}
-                                variant="new"
-                                className="justify-center gap-2 flex"
-                            >
+                            <Button onClick={handleDownload} variant="new" className="justify-center gap-2 flex">
                                 <FaDownload className="text-xl" /> Download
                             </Button>
                         </div>
                         <div className="mb-3 flex gap-2">
                             {' '}
-                            <span className="font-bold">
-                                TOTAL AMOUNT:
-                            </span>{' '}
-                            {fullRemitanceRespone?.total_amount}{' '}
+                            <span className="font-bold">TOTAL AMOUNT:</span> {fullRemitanceRespone?.total_amount}{' '}
                         </div>
                         <Table className="min-w-full">
                             <THead>
                                 {table.getHeaderGroups().map((headerGroup) => (
                                     <Tr key={headerGroup.id}>
                                         {headerGroup.headers.map((header) => (
-                                            <Th key={header.id}>
-                                                {flexRender(
-                                                    header.column.columnDef
-                                                        .header,
-                                                    header.getContext(),
-                                                )}
-                                            </Th>
+                                            <Th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</Th>
                                         ))}
                                     </Tr>
                                 ))}
@@ -204,12 +178,7 @@ const BrandAccounting = () => {
                                 {table.getRowModel().rows.map((row) => (
                                     <Tr key={row.id}>
                                         {row.getVisibleCells().map((cell) => (
-                                            <Td key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </Td>
+                                            <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                                         ))}
                                     </Tr>
                                 ))}
@@ -221,9 +190,7 @@ const BrandAccounting = () => {
                         <div className="h-full flex flex-col items-center justify-center">
                             <div className="mt-6 text-center">
                                 <h3 className="mb-2">No Data</h3>
-                                <p className="text-base">
-                                    No Data available for the current Date
-                                </p>
+                                <p className="text-base">No Data available for the current Date</p>
                             </div>
                         </div>
                     </div>
