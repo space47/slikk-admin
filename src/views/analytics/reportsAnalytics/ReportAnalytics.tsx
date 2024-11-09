@@ -123,9 +123,9 @@ const ReportAnalytics = () => {
         try {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
-            const data = response?.data?.data?.query
+            const data = response?.data?.data || []
             setDynamicReportTable(data)
-            setTotalCount(response?.data?.data?.total)
+            setTotalCount(data.length)
             setShowTable(true)
             setShowSpinner(false)
         } catch (error) {
