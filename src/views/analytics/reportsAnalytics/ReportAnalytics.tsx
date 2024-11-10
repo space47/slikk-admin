@@ -112,31 +112,43 @@ const ReportAnalytics = () => {
     const [currentValues, setCurrentValues] = useState<any>()
 
     const fetchTable = async (values?: any) => {
-        const offSetCount = (page - 1) * pageSize
+    const offSetCount = (page - 1) * pageSize;
 
-        let reportParameters = ''
-        if (values?.required_fields) {
-            reportParameters = values.required_fields
-                .map((field: { key: string; value: string }) => `${field.key}=${field.value}`)
-                .join('&')
-        }
-        try {
-            setShowSpinner(true)
-            const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
-            const data = response?.data?.data || {}
-            if (reportData.hasOwnProperty(storeName)) {
-            setDynamicReportTable(reportData[storeName])  // Set the specific report data
-        } else {
-                setDynamicReportTable([])
-        }
-            setTotalCount(reportData[storeName]?.length || 0)
-            setShowTable(true)
-            setShowSpinner(false)
-        } catch (error) {
-            console.log(error)
-            setShowSpinner(false)
-        }
-    }
+            let reportParameters = '';
+            if (values?.required_fields) {
+                reportParameters = values.required_fields
+                    .map((field: { key: string; value: string }) => `${field.key}=${field.value}`)
+                    .join('&');
+            }
+        
+            try {
+                setShowSpinner(true);
+                const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`);
+                const data = response?.data?.data || {};
+        
+                if (data) {
+                    const tables = Object.keys(data);  // Get the keys for each table (e.g., query, total, etc.)
+                    
+                    // Store each table's data dynamically
+                    const tableData = tables.map((tableName) => ({
+                        name: tableName,
+                        data: data[tableName], // Store the actual data for each table
+                        total: data[tableName]?.length || 0, // Calculate total count (based on the table's length)
+                    }));
+        
+                    // Set dynamic report table data for all tables
+                    setDynamicReportTable(tableData);
+                } else {
+                    setDynamicReportTable([]);
+                }
+        
+                setShowTable(true);
+                setShowSpinner(false);
+            } catch (error) {
+                console.log(error);
+                setShowSpinner(false);
+            }
+        };
 
     const handleSubmit = async (values: any) => {
         setCurrentValues(values)
@@ -302,30 +314,38 @@ const yAxisData = Array.isArray(dynamicReportTable)
                 )}
             </Formik>
             <br />
-            {showTable && dynamicReportTable.length > 0 ? (
-                        <>
-                            <div className="flex flex-col gap-7">
-                                <div className="font-semibold text-xl">Report Table</div>
+           {showTable && dynamicReportTable.length > 0 ? (
+                    dynamicReportTable.map((table, index) => {
+                        const { name, data, total } = table;
+                        const columns = data.length > 0 ? Object.keys(data[0]) : [];
+                
+                        return (
+                            <div key={index} className="flex flex-col gap-7">
+                                <div className="font-semibold text-xl">{name} Table</div>
+                
+                                {/* Displaying Table Data */}
                                 <div className="flex justify-start">
                                     <Button variant="new" onClick={handleDownloadCsv}>
                                         Download CSV
                                     </Button>
                                 </div>
-                    
+                
                                 <ReportTable
-                                    tableData={dynamicReportTable}
+                                    tableData={data} // Pass table data dynamically
                                     page={page}
                                     pageSize={pageSize}
                                     onPaginationChange={onPaginationChange}
-                                    orderCount={totalCount} // Ensure this is named correctly
+                                    orderCount={total} // Show total count for each table
                                     setPage={setPage}
                                     setPageSize={setPageSize}
                                 />
                             </div>
-                        </>
-                    ) : (
-                        <div>No data available for the selected report.</div> // A fallback message if no data is present
-                    )}
+                        );
+                    })
+                ) : (
+                    <div>No data available for the selected report.</div> // A fallback message if no data is present
+                )}
+
 
                     <br />
                     <div className="flex flex-col gap-2">
