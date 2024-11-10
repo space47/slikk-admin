@@ -18,6 +18,7 @@ import moment from 'moment'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import ReportPieGraph from './reportGraphs/ReportPieChart'
 import ReportCompositeGraph from './reportGraphs/ReportCompositeGraph'
+import GraphComponent from './reportGraphs/GraphComponent'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -132,14 +133,19 @@ const ReportAnalytics = () => {
                 .map((field: { key: string; value: string }) => `${field.key}=${field.value}`)
                 .join('&')
         }
+
         try {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
             console.log('Data', data)
-            console.log('Object Data', Object.values(data))
-            const dynamicKey = Object.keys(data)[0]
-            setDynamicReportTable(data[dynamicKey])
+
+            const tablesData = Object.keys(data).map((key) => ({
+                key,
+                data: data[key],
+            }))
+
+            setDynamicReportTable(tablesData)
             setTotalCount(response?.data?.data?.total)
             setShowTable(true)
             setShowSpinner(false)
@@ -147,7 +153,6 @@ const ReportAnalytics = () => {
             console.log(error)
         }
     }
-
     const handleSubmit = async (values: any) => {
         setCurrentValues(values)
         fetchTable(values)
@@ -171,40 +176,39 @@ const ReportAnalytics = () => {
         )
     }
 
-    const xAxisData = dynamicReportTable
-        ?.map((item) => {
-            if (xAxisValue.toLowerCase().includes('date')) {
-                return moment(item[xAxisValue]).utcOffset(330).format('YYYY-MM-DD')
-            } else {
-                return item[xAxisValue]
-            }
-        })
-        .filter(Boolean)
-    const yAxisData = dynamicReportTable
-        ?.map((item) => {
-            if (yAxisValue.toLowerCase().includes('date')) {
-                return moment(item[yAxisValue]).utcOffset(330).format('YYYY-MM-DD')
-            } else {
-                return item[yAxisValue]
-            }
-        })
-        .filter(Boolean)
-
-    const yAxisData2 = dynamicReportTable
-        ?.map((item) => {
-            if (yAxisValue2.toLowerCase().includes('date')) {
-                return moment(item[yAxisValue2]).utcOffset(330).format('YYYY-MM-DD')
-            } else {
-                return item[yAxisValue2]
-            }
-        })
-        .filter(Boolean)
-
     const handleSelect = (value: string) => {
         setSelectedOption(value)
     }
 
-    const handleDownloadCsv = () => {}
+    const handleDownloadCsv = async (queryName: any) => {
+        let reportParameters = ''
+        if (currentValues?.required_fields) {
+            reportParameters = currentValues.required_fields
+                .map((field: { key: string; value: string }) => `${field.key}=${field.value}`)
+                .join('&')
+        }
+        try {
+            const response = await axioisInstance.get(
+                `/query/execute/${storeName}?${reportParameters}&download=true&query_name=${queryName}`,
+                {
+                    responseType: 'blob',
+                },
+            )
+
+            const blob = new Blob([response.data], { type: 'text/csv' })
+            const url = window.URL.createObjectURL(blob)
+
+            const link = document.createElement('a')
+            link.href = url
+            link.download = `${queryName}.csv`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <div>
@@ -229,6 +233,7 @@ const ReportAnalytics = () => {
                                                     onChange={(option: any) => {
                                                         form.setFieldValue(field.name, option?.value)
                                                         setStoreName(option?.value)
+                                                        setShowTable(false)
                                                     }}
                                                 />
                                             )
@@ -323,82 +328,94 @@ const ReportAnalytics = () => {
                 )}
             </Formik>
             <br />
+            {showTable &&
+                dynamicReportTable.map((table, index) => {
+                    console.log('key Name', table.key)
+                    return (
+                        <div key={index} className="mt-5 flex flex-col gap-4">
+                            <div className="flex justify-end ">
+                                <Button variant="new" onClick={() => handleDownloadCsv(table.key)}>
+                                    Download CSV
+                                </Button>
+                            </div>
+
+                            <ReportTable
+                                tableData={table.data}
+                                page={page}
+                                pageSize={pageSize}
+                                onPaginationChange={onPaginationChange}
+                                orderCount={totalount}
+                                setPage={setPage}
+                                setPageSize={setPageSize}
+                            />
+                        </div>
+                    )
+                })}
             {showTable && (
                 <>
-                    <div className="flex flex-col gap-7">
-                        <div className="font-semibold text-xl"> Report Table</div>
-                        <div className="flex justify-start">
-                            <Button variant="new" onClick={handleDownloadCsv}>
-                                Download CSV
-                            </Button>
-                        </div>
-
-                        <ReportTable
-                            tableData={dynamicReportTable}
-                            page={page}
-                            pageSize={pageSize}
-                            onPaginationChange={onPaginationChange}
-                            orderCount={totalount}
-                            setPage={setPage}
-                            setPageSize={setPageSize}
-                        />
-                    </div>
-                    <br />
                     <div className="flex flex-col gap-2">
-                        <div className="flex gap-3">
-                            <div className="flex flex-col gap-2">
-                                <label htmlFor="">X-Axis</label>
-                                <Select
-                                    className="w-[300px]"
-                                    placeholder="Select X-Axis Value"
-                                    options={
-                                        dynamicReportTable?.length > 0
-                                            ? Object.keys(dynamicReportTable[0]).map((key) => ({
-                                                  label: key,
-                                                  value: key,
-                                              }))
-                                            : []
-                                    }
-                                    value={xAxisValue ? { label: xAxisValue, value: xAxisValue } : null}
-                                    onChange={(option) => setXAxisvalue(option.value)}
-                                />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <label>Y-Axis</label>
-                                <Select
-                                    className="w-[300px]"
-                                    placeholder="Select Y-Axis value"
-                                    options={
-                                        dynamicReportTable?.length > 0
-                                            ? Object.keys(dynamicReportTable[0]).map((key) => ({
-                                                  label: key,
-                                                  value: key,
-                                              }))
-                                            : []
-                                    }
-                                    value={yAxisValue ? { label: yAxisValue, value: yAxisValue } : null}
-                                    onChange={(option) => setYAxisvalue(option.value)}
-                                />
-                            </div>
-                            {selectedOption === 'composite' && (
-                                <div className="flex flex-col gap-2">
-                                    <label>Y-Axis 2</label>
-                                    <Select
-                                        className="w-[300px]"
-                                        placeholder="Select Y-Axis value"
-                                        options={
-                                            dynamicReportTable?.length > 0
-                                                ? Object.keys(dynamicReportTable[0]).map((key) => ({
-                                                      label: key,
-                                                      value: key,
-                                                  }))
-                                                : []
-                                        }
-                                        value={yAxisValue2 ? { label: yAxisValue2, value: yAxisValue2 } : null}
-                                        onChange={(option) => setYAxisvalue2(option.value)}
-                                    />
+                        <div className="flex flex-col gap-4">
+                            {dynamicReportTable.map((table, index) => (
+                                <div key={table.key} className="flex gap-3">
+                                    <div className="flex flex-col gap-2">
+                                        <label>X-Axis ({table.key})</label>
+                                        <Select
+                                            className="w-[300px]"
+                                            placeholder={`Select X-Axis for ${table.key}`}
+                                            options={Object.keys(table.data[0] || {}).map((key) => ({
+                                                label: key,
+                                                value: key,
+                                            }))}
+                                            value={
+                                                xAxisValue[table.key]
+                                                    ? { label: xAxisValue[table.key], value: xAxisValue[table.key] }
+                                                    : null
+                                            }
+                                            onChange={(option) => setXAxisvalue((prev) => ({ [table.key]: option?.value || '' }))}
+                                        />
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <label>Y-Axis ({table.key})</label>
+                                        <Select
+                                            className="w-[300px]"
+                                            placeholder={`Select Y-Axis for ${table.key}`}
+                                            options={Object.keys(table.data[0] || {}).map((key) => ({
+                                                label: key,
+                                                value: key,
+                                            }))}
+                                            value={
+                                                yAxisValue[table.key]
+                                                    ? { label: yAxisValue[table.key], value: yAxisValue[table.key] }
+                                                    : null
+                                            }
+                                            onChange={(option) => setYAxisvalue((prev) => ({ [table.key]: option?.value || '' }))}
+                                        />
+                                    </div>
+
+                                    {selectedOption === 'composite' && (
+                                        <div className="flex flex-col gap-2">
+                                            <label>Y-Axis 2 ({table.key})</label>
+                                            <Select
+                                                className="w-[300px]"
+                                                placeholder={`Select Y-Axis 2 for ${table.key}`}
+                                                options={Object.keys(table.data[0] || {}).map((key) => ({
+                                                    label: key,
+                                                    value: key,
+                                                }))}
+                                                value={
+                                                    yAxisValue2[table.key]
+                                                        ? { label: yAxisValue2[table.key], value: yAxisValue2[table.key] }
+                                                        : null
+                                                }
+                                                onChange={(option) =>
+                                                    setYAxisvalue2((prev) => ({ ...prev, [table.key]: option?.value || '' }))
+                                                }
+                                            />
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            ))}
                         </div>
                         <div className="flex justify-end items-center mb-7 mr-10">
                             <div className="bg-black text-white w-auto rounded-[8px] items-center flex justify-center text-xl">
@@ -415,13 +432,21 @@ const ReportAnalytics = () => {
                                 </Dropdown>
                             </div>
                         </div>
-                        {selectedOption === 'line' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="line" />}
-                        {selectedOption === 'bar' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="bar" />}
-                        {selectedOption === 'pie' && <ReportPieGraph xAxisData={xAxisData} yAxisData={yAxisData} />}
-                        {selectedOption === 'heatmap' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="heatmap" />}
-                        {selectedOption === 'composite' && (
-                            <ReportCompositeGraph xAxisData={xAxisData} yAxisData1={yAxisData} yAxisData2={yAxisData2} />
-                        )}
+                        <div>
+                            {dynamicReportTable.map((keyData) => (
+                                <GraphComponent
+                                    key={keyData.key}
+                                    keyData={keyData}
+                                    selectedOption={selectedOption}
+                                    xAxisValue={xAxisValue}
+                                    yAxisValue={yAxisValue}
+                                    yAxisValue2={yAxisValue2}
+                                    setXAxisValue={setXAxisvalue}
+                                    setYAxisValue={setYAxisvalue}
+                                    setYAxisValue2={setYAxisvalue2}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </>
             )}
