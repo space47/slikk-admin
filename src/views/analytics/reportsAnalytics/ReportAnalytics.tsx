@@ -367,6 +367,7 @@ const yAxisData = Array.isArray(dynamicReportTable)
                         </div>
                         <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} />
                     </div>
+                </div>
                 </>
             )}
         </div>
