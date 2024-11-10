@@ -44,7 +44,7 @@ const ReportAnalytics = () => {
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.get(/query/config)
+            const response = await axioisInstance.get('/query/config')
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setReportQueryNames(
@@ -82,7 +82,7 @@ const ReportAnalytics = () => {
 
     const fetchApi = async () => {
         try {
-            const response = await axioisInstance.get(/query/config?name=${storeName})
+            const response = await axioisInstance.get('/query/config?name=${storeName}')
             const data = response?.data?.data
             const formattedData = {
                 name: data?.results[0]?.name || '',
@@ -123,7 +123,7 @@ const ReportAnalytics = () => {
         
             try {
                 setShowSpinner(true);
-                const response = await axioisInstance.get(/query/execute/${storeName}?${reportParameters});
+                const response = await axioisInstance.get('/query/execute/${storeName}?${reportParameters}');
                 const data = response?.data?.data || {};
         
                 if (data) {
