@@ -6,9 +6,10 @@ import { useAppSelector } from '@/store'
 interface LineGraphProps {
     xAxisData?: any
     yAxisData?: any
+    type?: string
 }
 
-const ReportLineGraph = ({ xAxisData, yAxisData }: LineGraphProps) => {
+const ReportLineGraph = ({ xAxisData, yAxisData, type }: LineGraphProps) => {
     console.log('Y axis data in graph', yAxisData)
     const data = [
         {
@@ -39,6 +40,7 @@ const ReportLineGraph = ({ xAxisData, yAxisData }: LineGraphProps) => {
             }}
             series={data}
             height={300}
+            type={type ? type : 'line'}
         />
     )
 }

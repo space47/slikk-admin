@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
+import { Button, Dropdown, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik'
@@ -15,6 +15,9 @@ import { CATEGORY_STATE } from '@/store/types/category.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import moment from 'moment'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import ReportPieGraph from './reportGraphs/ReportPieChart'
+import ReportCompositeGraph from './reportGraphs/ReportCompositeGraph'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -23,6 +26,13 @@ const reportQueryArray = [
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },
     { label: 'MulltiSelect', value: 'MultiSelect' },
+]
+const GRAPHARRAY = [
+    { label: 'Line', value: 'line' },
+    { label: 'Bar', value: 'bar' },
+    { label: 'Pie', value: 'pie' },
+    { label: 'heatmap', value: 'heatmap' },
+    { label: 'Composite', value: 'composite' },
 ]
 
 const ReportAnalytics = () => {
@@ -37,10 +47,12 @@ const ReportAnalytics = () => {
     const [totalount, setTotalCount] = useState(0)
     const [xAxisValue, setXAxisvalue] = useState('')
     const [yAxisValue, setYAxisvalue] = useState('')
+    const [yAxisValue2, setYAxisvalue2] = useState('')
     const [showSpinner, setShowSpinner] = useState(false)
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const [selectedOption, setSelectedOption] = useState('line')
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
@@ -123,8 +135,9 @@ const ReportAnalytics = () => {
         try {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
-            const data = response?.data?.data?.query
-            setDynamicReportTable(data)
+            const data = response?.data?.data
+            const dynamicKey = Object.keys(data)[0]
+            setDynamicReportTable(data[dynamicKey])
             setTotalCount(response?.data?.data?.total)
             setShowTable(true)
             setShowSpinner(false)
@@ -157,7 +170,7 @@ const ReportAnalytics = () => {
     }
 
     const xAxisData = dynamicReportTable
-        .map((item) => {
+        ?.map((item) => {
             if (xAxisValue.toLowerCase().includes('date')) {
                 return moment(item[xAxisValue]).utcOffset(330).format('YYYY-MM-DD')
             } else {
@@ -166,7 +179,7 @@ const ReportAnalytics = () => {
         })
         .filter(Boolean)
     const yAxisData = dynamicReportTable
-        .map((item) => {
+        ?.map((item) => {
             if (yAxisValue.toLowerCase().includes('date')) {
                 return moment(item[yAxisValue]).utcOffset(330).format('YYYY-MM-DD')
             } else {
@@ -175,7 +188,19 @@ const ReportAnalytics = () => {
         })
         .filter(Boolean)
 
-    console.log('XAxisData', yAxisData)
+    const yAxisData2 = dynamicReportTable
+        ?.map((item) => {
+            if (yAxisValue2.toLowerCase().includes('date')) {
+                return moment(item[yAxisValue2]).utcOffset(330).format('YYYY-MM-DD')
+            } else {
+                return item[yAxisValue2]
+            }
+        })
+        .filter(Boolean)
+
+    const handleSelect = (value: string) => {
+        setSelectedOption(value)
+    }
 
     const handleDownloadCsv = () => {}
 
@@ -325,7 +350,7 @@ const ReportAnalytics = () => {
                                     className="w-[300px]"
                                     placeholder="Select X-Axis Value"
                                     options={
-                                        dynamicReportTable.length > 0
+                                        dynamicReportTable?.length > 0
                                             ? Object.keys(dynamicReportTable[0]).map((key) => ({
                                                   label: key,
                                                   value: key,
@@ -342,7 +367,7 @@ const ReportAnalytics = () => {
                                     className="w-[300px]"
                                     placeholder="Select Y-Axis value"
                                     options={
-                                        dynamicReportTable.length > 0
+                                        dynamicReportTable?.length > 0
                                             ? Object.keys(dynamicReportTable[0]).map((key) => ({
                                                   label: key,
                                                   value: key,
@@ -353,8 +378,48 @@ const ReportAnalytics = () => {
                                     onChange={(option) => setYAxisvalue(option.value)}
                                 />
                             </div>
+                            {selectedOption === 'composite' && (
+                                <div className="flex flex-col gap-2">
+                                    <label>Y-Axis 2</label>
+                                    <Select
+                                        className="w-[300px]"
+                                        placeholder="Select Y-Axis value"
+                                        options={
+                                            dynamicReportTable?.length > 0
+                                                ? Object.keys(dynamicReportTable[0]).map((key) => ({
+                                                      label: key,
+                                                      value: key,
+                                                  }))
+                                                : []
+                                        }
+                                        value={yAxisValue2 ? { label: yAxisValue2, value: yAxisValue2 } : null}
+                                        onChange={(option) => setYAxisvalue2(option.value)}
+                                    />
+                                </div>
+                            )}
                         </div>
-                        <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} />
+                        <div className="flex justify-end items-center mb-7 mr-10">
+                            <div className="bg-black text-white w-auto rounded-[8px] items-center flex justify-center text-xl">
+                                <Dropdown
+                                    className="text-xl text-white bg-white font-bold border-2 border-blue-600"
+                                    title={selectedOption}
+                                    onSelect={(value) => handleSelect(value.toString())}
+                                >
+                                    {GRAPHARRAY.map((item) => (
+                                        <DropdownItem key={item.value} eventKey={item.value}>
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    ))}
+                                </Dropdown>
+                            </div>
+                        </div>
+                        {selectedOption === 'line' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="line" />}
+                        {selectedOption === 'bar' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="bar" />}
+                        {selectedOption === 'pie' && <ReportPieGraph xAxisData={xAxisData} yAxisData={yAxisData} />}
+                        {selectedOption === 'heatmap' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="heatmap" />}
+                        {selectedOption === 'composite' && (
+                            <ReportCompositeGraph xAxisData={xAxisData} yAxisData1={yAxisData} yAxisData2={yAxisData2} />
+                        )}
                     </div>
                 </>
             )}
