@@ -158,22 +158,23 @@ const ReportAnalytics = () => {
 
     const xAxisData = Array.isArray(dynamicReportTable)
     ? dynamicReportTable.map((item) => {
-            if (xAxisValue.toLowerCase().includes('date')) {
-                return moment(item[xAxisValue]).utcOffset(330).format('YYYY-MM-DD')
-            } else {
-                return item[xAxisValue]
-            }
-        })
-        .filter(Boolean)
-    const yAxisData = Array.isArray(dynamicReportTable)
+        if (xAxisValue.toLowerCase().includes('date')) {
+            return moment(item[xAxisValue]).utcOffset(330).format('YYYY-MM-DD');
+        } else {
+            return item[xAxisValue];
+        }
+    }).filter(Boolean)
+    : [];
+
+const yAxisData = Array.isArray(dynamicReportTable)
     ? dynamicReportTable.map((item) => {
-            if (yAxisValue.toLowerCase().includes('date')) {
-                return moment(item[yAxisValue]).utcOffset(330).format('YYYY-MM-DD')
-            } else {
-                return item[yAxisValue]
-            }
-        })
-        .filter(Boolean)
+        if (yAxisValue.toLowerCase().includes('date')) {
+            return moment(item[yAxisValue]).utcOffset(330).format('YYYY-MM-DD');
+        } else {
+            return item[yAxisValue];
+        }
+    }).filter(Boolean)
+    : [];
 
     console.log('XAxisData', yAxisData)
 
