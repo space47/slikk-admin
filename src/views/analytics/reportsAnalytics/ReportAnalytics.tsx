@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
@@ -204,174 +202,56 @@ const ReportAnalytics = () => {
                                             return (
                                                 <Select
                                                     placeholder="Select Target Page"
-                                                    options={Array.isArray(reportQueryNames) ? reportQueryNames : []}
-                                                    value={reportQueryNames?.find((option) => option.value === field.value)}
-                                                    onChange={(option: any) => {
-                                                        form.setFieldValue(field.name, option?.value)
-                                                        setStoreName(option?.value)
+                                                    {...field}
+                                                    {...form}
+                                                    options={reportQueryNames}
+                                                    onChange={(e) => {
+                                                        const targetPage = e?.target?.value
+                                                        setStoreName(targetPage)
                                                     }}
                                                 />
                                             )
                                         }}
                                     </Field>
                                 </FormItem>
+
+                                <div className="flex justify-between items-center w-full col-span-2">
+                                    <div className="flex space-x-5">
+                                        <Button type="submit">Generate Report</Button>
+                                    </div>
+                                    <div>
+                                        {showTable && dynamicReportTable.length && xAxisData.length && yAxisData.length ? (
+                                            <div>
+                                                <Button onClick={handleDownloadCsv}>Download CSV</Button>
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                </div>
                             </FormContainer>
                         </FormContainer>
-                        {showDataBelow && (
-                            <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
-                                <FieldArray name="required_fields">
-                                    {({ push, remove }) => (
-                                        <div>
-                                            {values.required_fields.map((item: any, index: number) => (
-                                                <div key={index} className="flex space-x-4 mt-2">
-                                                    <Field
-                                                        name={`required_fields[${index}].key`}
-                                                        placeholder="Key"
-                                                        component={Input}
-                                                        className="w-1/3"
-                                                    />
-                                                    <Field name={`required_fields[${index}].dataType`}>
-                                                        {({ field, form }: FieldProps) => (
-                                                            <Select
-                                                                className="w-1/4"
-                                                                placeholder="Select dataType"
-                                                                options={Array.isArray(reportQueryArray) ? reportQueryArray : []}
-                                                                value={reportQueryArray.find((option) => option.value === field.value)}
-                                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <Field
-                                                        name={`required_fields[${index}].value`}
-                                                        placeholder="Value"
-                                                        component={Input}
-                                                        className="w-1/4"
-                                                    />
-                                                    <MdCancel
-                                                        onClick={() => remove(index)}
-                                                        size={22}
-                                                        className="text-red-500 cursor-pointer"
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </FieldArray>
-                                <div>
-                                    <Button
-                                        variant="new"
-                                        className="mt-4"
-                                        onClick={() => push({ key: '', value: '', dataType: 'String' })}
-                                    >
-                                        Add
-                                    </Button>
-                                </div>
-                            </FormItem>
-                        )}
-
-                        <div className="flex justify-end mt-4">
-                            <Button variant="new" type="submit">
-                                Submit
-                            </Button>
-                        </div>
                     </Form>
                 )}
             </Formik>
 
-            {/* Render dynamic report tables with graphs for each table */}
-            {showTable && dynamicReportTable.length > 0 ? (
-                dynamicReportTable.map((table, index) => {
-                    const { name, data, total } = table
-                    const columns = data.length > 0 ? Object.keys(data[0]) : []
-                    const [localXAxisValue, setLocalXAxisValue] = useState<string>('') // Local state for X Axis for this table
-                    const [localYAxisValue, setLocalYAxisValue] = useState<string>('') // Local state for Y Axis for this table
-
-                    // Generate X and Y axis data for this specific table
-                    const xAxisData = data.map((item) => {
-                        if (localXAxisValue.toLowerCase().includes('date')) {
-                            return moment(item[localXAxisValue]).utcOffset(330).format('YYYY-MM-DD')
-                        } else {
-                            return item[localXAxisValue]
-                        }
-                    }).filter(Boolean)
-
-                    const yAxisData = data.map((item) => {
-                        if (localYAxisValue.toLowerCase().includes('date')) {
-                            return moment(item[localYAxisValue]).utcOffset(330).format('YYYY-MM-DD')
-                        } else {
-                            return item[localYAxisValue]
-                        }
-                    }).filter(Boolean)
-
-                    return (
-                        <div key={index} className="flex flex-col gap-7">
-                            <div className="font-semibold text-xl">{name} Table</div>
-
-                            {/* Table Data */}
-                            <div className="flex justify-start">
-                                <Button variant="new" onClick={handleDownloadCsv}>
-                                    Download CSV
-                                </Button>
-                            </div>
-
-                            <ReportTable
-                                tableData={data}
-                                page={page}
-                                pageSize={pageSize}
-                                onPaginationChange={onPaginationChange}
-                                orderCount={total}
-                                setPage={setPage}
-                                setPageSize={setPageSize}
-                            />
-
-                            {/* Graph for the current table */}
-                            <div className="flex flex-col gap-3 mt-5">
-                                <div className="font-semibold text-lg">Graph for {name}</div>
-
-                                {/* Dropdown for X-Axis */}
-                                <div className="flex gap-3">
-                                    <div className="flex flex-col gap-2">
-                                        <label htmlFor="">X-Axis</label>
-                                        <Select
-                                            className="w-[300px]"
-                                            placeholder="Select X-Axis Value"
-                                            options={columns.map((column) => ({
-                                                label: column,
-                                                value: column,
-                                            }))}
-                                            value={localXAxisValue ? { label: localXAxisValue, value: localXAxisValue } : null}
-                                            onChange={(option) => setLocalXAxisValue(option.value)}
-                                        />
-                                    </div>
-
-                                    {/* Dropdown for Y-Axis */}
-                                    <div className="flex flex-col gap-2">
-                                        <label>Y-Axis</label>
-                                        <Select
-                                            className="w-[300px]"
-                                            placeholder="Select Y-Axis Value"
-                                            options={columns.map((column) => ({
-                                                label: column,
-                                                value: column,
-                                            }))}
-                                            value={localYAxisValue ? { label: localYAxisValue, value: localYAxisValue } : null}
-                                            onChange={(option) => setLocalYAxisValue(option.value)}
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Render the line graph */}
-                                <ReportLineGraph 
-                                    xAxisData={xAxisData} 
-                                    yAxisData={yAxisData} 
+            <div className="mt-5">
+                {showDataBelow && (
+                    <div>
+                        {showTable && dynamicReportTable.length && xAxisData.length && yAxisData.length ? (
+                            <>
+                                <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} />
+                                <ReportTable
+                                    xAxisValue={xAxisValue}
+                                    yAxisValue={yAxisValue}
+                                    data={dynamicReportTable}
+                                    onPaginationChange={onPaginationChange}
                                 />
-                            </div>
-                        </div>
-                    )
-                })
-            ) : (
-                <div>No data available for the selected report.</div>
-            )}
+                            </>
+                        ) : (
+                            <div>No data to display</div>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
