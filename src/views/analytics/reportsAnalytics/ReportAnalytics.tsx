@@ -369,8 +369,6 @@ const yAxisData = Array.isArray(dynamicReportTable)
                     </div>
                 </div>
             )}
-        </div>
-    )
-}
+        
 
 export default ReportAnalytics
