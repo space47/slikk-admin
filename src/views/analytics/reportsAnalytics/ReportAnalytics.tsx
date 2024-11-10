@@ -38,6 +38,8 @@ const ReportAnalytics = () => {
     const [xAxisValue, setXAxisvalue] = useState('')
     const [yAxisValue, setYAxisvalue] = useState('')
     const [showSpinner, setShowSpinner] = useState(false)
+    const [localXAxisValues, setLocalXAxisValues] = useState<string[]>([]);
+    const [localYAxisValues, setLocalYAxisValues] = useState<string[]>([]);
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
@@ -198,21 +200,20 @@ const yAxisData = Array.isArray(dynamicReportTable)
     const handleDownloadCsv = () => {}
 
     return (
-        <div>
-            <Formik
-                enableReinitialize
-                initialValues={reportData}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ values, resetForm, setFieldValue }) => (
-                    <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
-                        <FormContainer>
-                            <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                                <FormItem label="Select Target Page" className="font-bold">
-                                    <Field name="target_page">
-                                        {({ field, form }: FieldProps) => {
-                                            return (
+            <div>
+                <Formik
+                    enableReinitialize
+                    initialValues={reportData}
+                    // validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ values, resetForm, setFieldValue }) => (
+                        <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
+                            <FormContainer>
+                                <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+                                    <FormItem label="Select Target Page" className="font-bold">
+                                        <Field name="target_page">
+                                            {({ field, form }: FieldProps) => (
                                                 <Select
                                                     placeholder="Select Target Page"
                                                     options={Array.isArray(reportQueryNames) ? reportQueryNames : []}
@@ -222,196 +223,190 @@ const yAxisData = Array.isArray(dynamicReportTable)
                                                         setStoreName(option?.value)
                                                     }}
                                                 />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
+                                            )}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
                             </FormContainer>
-                        </FormContainer>
-                        {showDataBelow && (
-                            <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
-                                <FieldArray name="required_fields">
-                                    {({ push, remove }) => (
-                                        <div>
-                                            {values.required_fields.map((item: any, index: number) => (
-                                                <div key={index} className="flex space-x-4 mt-2">
-                                                    <Field
-                                                        name={required_fields[${index}].key}
-                                                        placeholder="Key"
-                                                        component={Input}
-                                                        className="w-1/3"
-                                                    />
-                                                    <Field name={required_fields[${index}].dataType}>
-                                                        {({ field, form }: FieldProps) => (
-                                                            <Select
-                                                                className="w-1/4"
-                                                                placeholder="Select dataType"
-                                                                options={Array.isArray(reportQueryArray) ? reportQueryArray : []}
-                                                                value={reportQueryArray.find((option) => option.value === field.value)}
-                                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <Field name={required_fields[${index}].value}>
-                                                        {({ field, form }: FieldProps) => {
-                                                            const { dataType, key } = values.required_fields[index]
-                                                            const fieldValue = Array.isArray(field.value) ? field.value : []
-                                                            const options = optionDataMap[key]
-
-                                                            if ((dataType === 'Select' || dataType === 'MultiSelect') && options) {
-                                                                const selectedOption = options.find(
-                                                                    (option: any) =>
-                                                                        option.name.toLowerCase() === field.value.toLowerCase(),
-                                                                )
-
+                            {showDataBelow && (
+                                <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
+                                    <FieldArray name="required_fields">
+                                        {({ push, remove }) => (
+                                            <div>
+                                                {values.required_fields.map((item: any, index: number) => (
+                                                    <div key={index} className="flex space-x-4 mt-2">
+                                                        <Field
+                                                            name={`required_fields[${index}].key`}
+                                                            placeholder="Key"
+                                                            component={Input}
+                                                            className="w-1/3"
+                                                        />
+                                                        <Field name={`required_fields[${index}].dataType`}>
+                                                            {({ field, form }: FieldProps) => (
+                                                                <Select
+                                                                    className="w-1/4"
+                                                                    placeholder="Select dataType"
+                                                                    options={Array.isArray(reportQueryArray) ? reportQueryArray : []}
+                                                                    value={reportQueryArray.find((option) => option.value === field.value)}
+                                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                        <Field name={`required_fields[${index}].value`}>
+                                                            {({ field, form }: FieldProps) => {
+                                                                const { dataType, key } = values.required_fields[index]
+                                                                const options = optionDataMap[key]
+        
+                                                                if ((dataType === 'Select' || dataType === 'MultiSelect') && options) {
+                                                                    const selectedOption = options.find(
+                                                                        (option: any) =>
+                                                                            option.name.toLowerCase() === field.value.toLowerCase(),
+                                                                    )
+        
+                                                                    return (
+                                                                        <Select
+                                                                            className="w-1/3"
+                                                                            {...field}
+                                                                            options={options}
+                                                                            getOptionLabel={(option) => option.name}
+                                                                            getOptionValue={(option) => option.id.toString()}
+                                                                            value={selectedOption || null}
+                                                                            onChange={(newVal) => {
+                                                                                console.log('Data for Val', newVal?.name)
+                                                                                form.setFieldValue(
+                                                                                    `required_fields[${index}].value`,
+                                                                                    newVal?.name,
+                                                                                )
+                                                                            }}
+                                                                        />
+                                                                    )
+                                                                }
+        
                                                                 return (
-                                                                    <Select
-                                                                        className="w-1/3"
+                                                                    <Input
+                                                                        type={dataType === 'Date' ? 'date' : 'text'}
+                                                                        placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
                                                                         {...field}
-                                                                        options={options}
-                                                                        getOptionLabel={(option) => option.name}
-                                                                        getOptionValue={(option) => option.id.toString()}
-                                                                        value={selectedOption || null}
-                                                                        onChange={(newVal) => {
-                                                                            console.log('Data for Val', newVal?.name)
-                                                                            form.setFieldValue(
-                                                                                required_fields[${index}].value,
-                                                                                newVal?.name,
-                                                                            )
-                                                                        }}
+                                                                        className="w-1/3"
                                                                     />
                                                                 )
-                                                            }
-
-                                                            return (
-                                                                <Input
-                                                                    type={dataType === 'Date' ? 'date' : 'text'}
-                                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
-                                                                    {...field}
-                                                                    className="w-1/3"
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </FieldArray>
-                            </FormItem>
-                        )}
-                        {storeName !== null && storeName !== undefined && storeName !== '' && (
-                            <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
-                                {/* <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
-                                    Reset
-                                </Button> */}
-                                <Button variant="new" type="submit" className="text-white ">
-                                    Generate
-                                </Button>
-                            </FormContainer>
-                        )}
-                    </Form>
-                )}
-            </Formik>
-            <br />
-           {showTable && dynamicReportTable.length > 0 ? (
-                    dynamicReportTable.map((table, index) => {
-                        const { name, data, total } = table;
-                        const columns = data.length > 0 ? Object.keys(data[0]) : [];
-                        const [localXAxisValue, setLocalXAxisValue] = useState<string>(''); // Local state for X Axis for this table
-                        const [localYAxisValue, setLocalYAxisValue] = useState<string>(''); // Local state for Y Axis for this table
-                
-                        // Generate X and Y axis data for this specific table
-                        const xAxisData = data.map((item) => {
-                            if (localXAxisValue.toLowerCase().includes('date')) {
-                                return moment(item[localXAxisValue]).utcOffset(330).format('YYYY-MM-DD');
-                            } else {
-                                return item[localXAxisValue];
-                            }
-                        }).filter(Boolean);
-                
-                        const yAxisData = data.map((item) => {
-                            if (localYAxisValue.toLowerCase().includes('date')) {
-                                return moment(item[localYAxisValue]).utcOffset(330).format('YYYY-MM-DD');
-                            } else {
-                                return item[localYAxisValue];
-                            }
-                        }).filter(Boolean);
-                
-                        return (
-                            <div key={index} className="flex flex-col gap-7">
-                                <div className="font-semibold text-xl">{name} Table</div>
-                
-                                {/* Table Data */}
-                                <div className="flex justify-start">
-                                    <Button variant="new" onClick={handleDownloadCsv}>
-                                        Download CSV
+                                                            }}
+                                                        </Field>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </FieldArray>
+                                </FormItem>
+                            )}
+                            {storeName && (
+                                <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
+                                    {/* <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
+                                        Reset
+                                    </Button> */}
+                                    <Button variant="new" type="submit" className="text-white ">
+                                        Generate
                                     </Button>
-                                </div>
-                
-                                <ReportTable
-                                    tableData={data}
-                                    page={page}
-                                    pageSize={pageSize}
-                                    onPaginationChange={onPaginationChange}
-                                    orderCount={total}
-                                    setPage={setPage}
-                                    setPageSize={setPageSize}
-                                />
-                
-                                {/* Graph for the current table */}
-                                <div className="flex flex-col gap-3 mt-5">
-                                    <div className="font-semibold text-lg">Graph for {name}</div>
-                
-                                    {/* Dropdown for X-Axis */}
-                                    <div className="flex gap-3">
-                                        <div className="flex flex-col gap-2">
-                                            <label htmlFor="">X-Axis</label>
-                                            <Select
-                                                className="w-[300px]"
-                                                placeholder="Select X-Axis Value"
-                                                options={columns.map((column) => ({
-                                                    label: column,
-                                                    value: column,
-                                                }))}
-                                                value={localXAxisValue ? { label: localXAxisValue, value: localXAxisValue } : null}
-                                                onChange={(option) => setLocalXAxisValue(option.value)}
-                                            />
-                                        </div>
-                
-                                        {/* Dropdown for Y-Axis */}
-                                        <div className="flex flex-col gap-2">
-                                            <label>Y-Axis</label>
-                                            <Select
-                                                className="w-[300px]"
-                                                placeholder="Select Y-Axis Value"
-                                                options={columns.map((column) => ({
-                                                    label: column,
-                                                    value: column,
-                                                }))}
-                                                value={localYAxisValue ? { label: localYAxisValue, value: localYAxisValue } : null}
-                                                onChange={(option) => setLocalYAxisValue(option.value)}
-                                            />
-                                        </div>
+                                </FormContainer>
+                            )}
+                        </Form>
+                    )}
+                </Formik>
+                <br />
+               {showTable && dynamicReportTable.length > 0 ? (
+                        dynamicReportTable.map((table, index) => {
+                            const { name, data, total } = table;
+                            const columns = data.length > 0 ? Object.keys(data[0]) : [];
+        
+                            // Generate X and Y axis data for this specific table
+                            const xAxisData = data.map((item) => {
+                                if (localXAxisValue.toLowerCase().includes('date')) {
+                                    return moment(item[localXAxisValue]).utcOffset(330).format('YYYY-MM-DD');
+                                } else {
+                                    return item[localXAxisValue];
+                                }
+                            }).filter(Boolean);
+        
+                            const yAxisData = data.map((item) => {
+                                if (localYAxisValue.toLowerCase().includes('date')) {
+                                    return moment(item[localYAxisValue]).utcOffset(330).format('YYYY-MM-DD');
+                                } else {
+                                    return item[localYAxisValue];
+                                }
+                            }).filter(Boolean);
+        
+                            return (
+                                <div key={index} className="flex flex-col gap-7">
+                                    <div className="font-semibold text-xl">{name} Table</div>
+        
+                                    {/* Table Data */}
+                                    <div className="flex justify-start">
+                                        <Button variant="new" onClick={handleDownloadCsv}>
+                                            Download CSV
+                                        </Button>
                                     </div>
-                
-                                    {/* Render the line graph */}
-                                    <ReportLineGraph 
-                                        xAxisData={xAxisData} 
-                                        yAxisData={yAxisData} 
+        
+                                    <ReportTable
+                                        tableData={data}
+                                        page={page}
+                                        pageSize={pageSize}
+                                        onPaginationChange={onPaginationChange}
+                                        orderCount={total}
+                                        setPage={setPage}
+                                        setPageSize={setPageSize}
                                     />
+        
+                                    {/* Graph for the current table */}
+                                    <div className="flex flex-col gap-3 mt-5">
+                                        <div className="font-semibold text-lg">Graph for {name}</div>
+        
+                                        {/* Dropdown for X-Axis */}
+                                        <div className="flex gap-3">
+                                            <div className="flex flex-col gap-2">
+                                                <label htmlFor="">X-Axis</label>
+                                                <Select
+                                                    className="w-[300px]"
+                                                    placeholder="Select X-Axis Value"
+                                                    options={columns.map((column) => ({
+                                                        label: column,
+                                                        value: column,
+                                                    }))}
+                                                    value={localXAxisValue ? { label: localXAxisValue, value: localXAxisValue } : null}
+                                                    onChange={(option) => setLocalXAxisValue(option.value)}
+                                                />
+                                            </div>
+        
+                                            {/* Dropdown for Y-Axis */}
+                                            <div className="flex flex-col gap-2">
+                                                <label>Y-Axis</label>
+                                                <Select
+                                                    className="w-[300px]"
+                                                    placeholder="Select Y-Axis Value"
+                                                    options={columns.map((column) => ({
+                                                        label: column,
+                                                        value: column,
+                                                    }))}
+                                                    value={localYAxisValue ? { label: localYAxisValue, value: localYAxisValue } : null}
+                                                    onChange={(option) => setLocalYAxisValue(option.value)}
+                                                />
+                                            </div>
+                                        </div>
+        
+                                        {/* Render the line graph */}
+                                        <ReportLineGraph 
+                                            xAxisData={xAxisData} 
+                                            yAxisData={yAxisData} 
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })
-                ) : (
-                    <div>No data available for the selected report.</div> 
-                )}
-
-                    <br />
-                    
-                </div>
-            )}
+                            );
+                        })
+                    ) : (
+                        <div>No data available for the selected report.</div> 
+                    )}
+            </div>
+        )
+        }
         
 
 export default ReportAnalytics
