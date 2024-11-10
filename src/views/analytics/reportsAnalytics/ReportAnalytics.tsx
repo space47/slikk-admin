@@ -15,7 +15,6 @@ import { CATEGORY_STATE } from '@/store/types/category.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import moment from 'moment'
-import * as Yup from 'yup'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -23,7 +22,7 @@ const reportQueryArray = [
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },
-    { label: 'MultiSelect', value: 'MultiSelect' },
+    { label: 'MulltiSelect', value: 'MultiSelect' },
 ]
 
 const ReportAnalytics = () => {
@@ -35,9 +34,9 @@ const ReportAnalytics = () => {
     const [showTable, setShowTable] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(100)
-    const [totalCount, setTotalCount] = useState(0)
-    const [xAxisValue, setXAxisValue] = useState('')
-    const [yAxisValue, setYAxisValue] = useState('')
+    const [totalount, setTotalCount] = useState(0)
+    const [xAxisValue, setXAxisvalue] = useState('')
+    const [yAxisValue, setYAxisvalue] = useState('')
     const [showSpinner, setShowSpinner] = useState(false)
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
@@ -45,7 +44,7 @@ const ReportAnalytics = () => {
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.get('/query/config')
+            const response = await axioisInstance.get(/query/config)
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setReportQueryNames(
@@ -57,7 +56,6 @@ const ReportAnalytics = () => {
             setShowSpinner(false)
         } catch (error) {
             console.log(error)
-            setShowSpinner(false)
         }
     }
 
@@ -84,7 +82,7 @@ const ReportAnalytics = () => {
 
     const fetchApi = async () => {
         try {
-            const response = await axioisInstance.get(`/query/config?name=${storeName}`)
+            const response = await axioisInstance.get(/query/config?name=${storeName})
             const data = response?.data?.data
             const formattedData = {
                 name: data?.results[0]?.name || '',
@@ -101,57 +99,66 @@ const ReportAnalytics = () => {
         }
     }
 
+    console.log('ReportData', reportData)
+
     useEffect(() => {
         if (storeName) {
             fetchApi()
         }
     }, [storeName])
 
+    const initialValue = {}
+
+    const [currentValues, setCurrentValues] = useState<any>()
+
     const fetchTable = async (values?: any) => {
-        const offSetCount = (page - 1) * pageSize
+    const offSetCount = (page - 1) * pageSize;
 
-        let reportParameters = ''
-        if (values?.required_fields) {
-            reportParameters = values.required_fields
-                .map((field: { key: string; value: string }) => `${field.key}=${field.value}`)
-                .join('&')
-        }
-
-        try {
-            setShowSpinner(true)
-            const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
-            const data = response?.data?.data || {}
-
-            if (data) {
-                const tables = Object.keys(data) // Get the keys for each table (e.g., query, total, etc.)
-
-                // Store each table's data dynamically
-                const tableData = tables.map((tableName) => ({
-                    name: tableName,
-                    data: data[tableName], // Store the actual data for each table
-                    total: data[tableName]?.length || 0, // Calculate total count (based on the table's length)
-                }))
-
-                // Set dynamic report table data for all tables
-                setDynamicReportTable(tableData)
-            } else {
-                setDynamicReportTable([])
+            let reportParameters = '';
+            if (values?.required_fields) {
+                reportParameters = values.required_fields
+                    .map((field: { key: string; value: string }) => ${field.key}=${field.value})
+                    .join('&');
             }
-
-            setShowTable(true)
-            setShowSpinner(false)
-        } catch (error) {
-            console.log(error)
-            setShowSpinner(false)
-        }
-    }
+        
+            try {
+                setShowSpinner(true);
+                const response = await axioisInstance.get(/query/execute/${storeName}?${reportParameters});
+                const data = response?.data?.data || {};
+        
+                if (data) {
+                    const tables = Object.keys(data);  // Get the keys for each table (e.g., query, total, etc.)
+                    
+                    // Store each table's data dynamically
+                    const tableData = tables.map((tableName) => ({
+                        name: tableName,
+                        data: data[tableName], // Store the actual data for each table
+                        total: data[tableName]?.length || 0, // Calculate total count (based on the table's length)
+                    }));
+        
+                    // Set dynamic report table data for all tables
+                    setDynamicReportTable(tableData);
+                } else {
+                    setDynamicReportTable([]);
+                }
+        
+                setShowTable(true);
+                setShowSpinner(false);
+            } catch (error) {
+                console.log(error);
+                setShowSpinner(false);
+            }
+        };
 
     const handleSubmit = async (values: any) => {
+        setCurrentValues(values)
         fetchTable(values)
     }
 
     useEffect(() => {
-        fetchTable(reportData)
+        if (currentValues) {
+            fetchTable(currentValues)
+        }
     }, [page])
 
     const onPaginationChange = (page: number) => {
@@ -167,45 +174,36 @@ const ReportAnalytics = () => {
     }
 
     const xAxisData = Array.isArray(dynamicReportTable)
-        ? dynamicReportTable.map((item) => {
-            if (xAxisValue.toLowerCase().includes('date')) {
-                return moment(item[xAxisValue]).utcOffset(330).format('YYYY-MM-DD')
-            } else {
-                return item[xAxisValue]
-            }
-        }).filter(Boolean)
-        : []
+    ? dynamicReportTable.map((item) => {
+        if (xAxisValue.toLowerCase().includes('date')) {
+            return moment(item[xAxisValue]).utcOffset(330).format('YYYY-MM-DD');
+        } else {
+            return item[xAxisValue];
+        }
+    }).filter(Boolean)
+    : [];
 
-    const yAxisData = Array.isArray(dynamicReportTable)
-        ? dynamicReportTable.map((item) => {
-            if (yAxisValue.toLowerCase().includes('date')) {
-                return moment(item[yAxisValue]).utcOffset(330).format('YYYY-MM-DD')
-            } else {
-                return item[yAxisValue]
-            }
-        }).filter(Boolean)
-        : []
+const yAxisData = Array.isArray(dynamicReportTable)
+    ? dynamicReportTable.map((item) => {
+        if (yAxisValue.toLowerCase().includes('date')) {
+            return moment(item[yAxisValue]).utcOffset(330).format('YYYY-MM-DD');
+        } else {
+            return item[yAxisValue];
+        }
+    }).filter(Boolean)
+    : [];
+
+    console.log('XAxisData', yAxisData)
 
     const handleDownloadCsv = () => {}
-
-    // Formik validation schema
-    const validationSchema = Yup.object().shape({
-        required_fields: Yup.array().of(
-            Yup.object().shape({
-                key: Yup.string().required('Key is required'),
-                value: Yup.string().required('Value is required'),
-                dataType: Yup.string().required('Data type is required'),
-            })
-        ),
-    })
 
     return (
         <div>
             <Formik
                 enableReinitialize
                 initialValues={reportData}
+                // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
-                validationSchema={validationSchema}  // Add validation schema
             >
                 {({ values, resetForm, setFieldValue }) => (
                     <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
@@ -230,21 +228,20 @@ const ReportAnalytics = () => {
                                 </FormItem>
                             </FormContainer>
                         </FormContainer>
-
                         {showDataBelow && (
                             <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
                                 <FieldArray name="required_fields">
                                     {({ push, remove }) => (
                                         <div>
-                                            {values.required_fields?.map((item: any, index: number) => (
+                                            {values.required_fields.map((item: any, index: number) => (
                                                 <div key={index} className="flex space-x-4 mt-2">
                                                     <Field
-                                                        name={`required_fields[${index}].key`}  // Corrected field name
+                                                        name={required_fields[${index}].key}
                                                         placeholder="Key"
                                                         component={Input}
                                                         className="w-1/3"
                                                     />
-                                                    <Field name={`required_fields[${index}].dataType`}>
+                                                    <Field name={required_fields[${index}].dataType}>
                                                         {({ field, form }: FieldProps) => (
                                                             <Select
                                                                 className="w-1/4"
@@ -255,56 +252,166 @@ const ReportAnalytics = () => {
                                                             />
                                                         )}
                                                     </Field>
-                                                    <Field
-                                                        name={`required_fields[${index}].value`}  // Corrected field name
-                                                        placeholder="Value"
-                                                        component={Input}
-                                                        className="w-1/4"
-                                                    />
-                                                    <MdCancel
-                                                        onClick={() => remove(index)}
-                                                        size={22}
-                                                        className="text-red-500 cursor-pointer"
-                                                    />
+                                                    <Field name={required_fields[${index}].value}>
+                                                        {({ field, form }: FieldProps) => {
+                                                            const { dataType, key } = values.required_fields[index]
+                                                            const fieldValue = Array.isArray(field.value) ? field.value : []
+                                                            const options = optionDataMap[key]
+
+                                                            if ((dataType === 'Select' || dataType === 'MultiSelect') && options) {
+                                                                const selectedOption = options.find(
+                                                                    (option: any) =>
+                                                                        option.name.toLowerCase() === field.value.toLowerCase(),
+                                                                )
+
+                                                                return (
+                                                                    <Select
+                                                                        className="w-1/3"
+                                                                        {...field}
+                                                                        options={options}
+                                                                        getOptionLabel={(option) => option.name}
+                                                                        getOptionValue={(option) => option.id.toString()}
+                                                                        value={selectedOption || null}
+                                                                        onChange={(newVal) => {
+                                                                            console.log('Data for Val', newVal?.name)
+                                                                            form.setFieldValue(
+                                                                                required_fields[${index}].value,
+                                                                                newVal?.name,
+                                                                            )
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            }
+
+                                                            return (
+                                                                <Input
+                                                                    type={dataType === 'Date' ? 'date' : 'text'}
+                                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
+                                                                    {...field}
+                                                                    className="w-1/3"
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
                                 </FieldArray>
-                                <div>
-                                    <Button
-                                        variant="new"
-                                        className="mt-4"
-                                        onClick={() => push({ key: '', value: '', dataType: 'String' })}
-                                    >
-                                        Add
-                                    </Button>
-                                </div>
                             </FormItem>
                         )}
-
-                        <div className="mt-8">
-                            <Button className="w-full xl:w-1/4" variant="new" onClick={() => handleDownloadCsv()}>
-                                Download CSV
-                            </Button>
-                        </div>
+                        {storeName !== null && storeName !== undefined && storeName !== '' && (
+                            <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
+                                {/* <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
+                                    Reset
+                                </Button> */}
+                                <Button variant="new" type="submit" className="text-white ">
+                                    Generate
+                                </Button>
+                            </FormContainer>
+                        )}
                     </Form>
                 )}
             </Formik>
+            <br />
+           {showTable && dynamicReportTable.length > 0 ? (
+                    dynamicReportTable.map((table, index) => {
+                        const { name, data, total } = table;
+                        const columns = data.length > 0 ? Object.keys(data[0]) : [];
+                        const [localXAxisValue, setLocalXAxisValue] = useState<string>(''); // Local state for X Axis for this table
+                        const [localYAxisValue, setLocalYAxisValue] = useState<string>(''); // Local state for Y Axis for this table
+                
+                        // Generate X and Y axis data for this specific table
+                        const xAxisData = data.map((item) => {
+                            if (localXAxisValue.toLowerCase().includes('date')) {
+                                return moment(item[localXAxisValue]).utcOffset(330).format('YYYY-MM-DD');
+                            } else {
+                                return item[localXAxisValue];
+                            }
+                        }).filter(Boolean);
+                
+                        const yAxisData = data.map((item) => {
+                            if (localYAxisValue.toLowerCase().includes('date')) {
+                                return moment(item[localYAxisValue]).utcOffset(330).format('YYYY-MM-DD');
+                            } else {
+                                return item[localYAxisValue];
+                            }
+                        }).filter(Boolean);
+                
+                        return (
+                            <div key={index} className="flex flex-col gap-7">
+                                <div className="font-semibold text-xl">{name} Table</div>
+                
+                                {/* Table Data */}
+                                <div className="flex justify-start">
+                                    <Button variant="new" onClick={handleDownloadCsv}>
+                                        Download CSV
+                                    </Button>
+                                </div>
+                
+                                <ReportTable
+                                    tableData={data}
+                                    page={page}
+                                    pageSize={pageSize}
+                                    onPaginationChange={onPaginationChange}
+                                    orderCount={total}
+                                    setPage={setPage}
+                                    setPageSize={setPageSize}
+                                />
+                
+                                {/* Graph for the current table */}
+                                <div className="flex flex-col gap-3 mt-5">
+                                    <div className="font-semibold text-lg">Graph for {name}</div>
+                
+                                    {/* Dropdown for X-Axis */}
+                                    <div className="flex gap-3">
+                                        <div className="flex flex-col gap-2">
+                                            <label htmlFor="">X-Axis</label>
+                                            <Select
+                                                className="w-[300px]"
+                                                placeholder="Select X-Axis Value"
+                                                options={columns.map((column) => ({
+                                                    label: column,
+                                                    value: column,
+                                                }))}
+                                                value={localXAxisValue ? { label: localXAxisValue, value: localXAxisValue } : null}
+                                                onChange={(option) => setLocalXAxisValue(option.value)}
+                                            />
+                                        </div>
+                
+                                        {/* Dropdown for Y-Axis */}
+                                        <div className="flex flex-col gap-2">
+                                            <label>Y-Axis</label>
+                                            <Select
+                                                className="w-[300px]"
+                                                placeholder="Select Y-Axis Value"
+                                                options={columns.map((column) => ({
+                                                    label: column,
+                                                    value: column,
+                                                }))}
+                                                value={localYAxisValue ? { label: localYAxisValue, value: localYAxisValue } : null}
+                                                onChange={(option) => setLocalYAxisValue(option.value)}
+                                            />
+                                        </div>
+                                    </div>
+                
+                                    {/* Render the line graph */}
+                                    <ReportLineGraph 
+                                        xAxisData={xAxisData} 
+                                        yAxisData={yAxisData} 
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div>No data available for the selected report.</div> 
+                )}
 
-            {showTable && dynamicReportTable.length > 0 && (
-                <div className="flex justify-center items-center">
-                    <ReportTable
-                        tableData={dynamicReportTable}
-                        onPaginationChange={onPaginationChange}
-                        totalCount={totalCount}
-                        pageSize={pageSize}
-                        page={page}
-                    />
+                    <br />
+                    
                 </div>
             )}
-        </div>
-    )
-}
+        
 
 export default ReportAnalytics
