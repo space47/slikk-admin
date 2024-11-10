@@ -156,8 +156,8 @@ const ReportAnalytics = () => {
         )
     }
 
-    const xAxisData = dynamicReportTable
-        .map((item) => {
+    const xAxisData = Array.isArray(dynamicReportTable)
+    ? dynamicReportTable.map((item) => {
             if (xAxisValue.toLowerCase().includes('date')) {
                 return moment(item[xAxisValue]).utcOffset(330).format('YYYY-MM-DD')
             } else {
@@ -165,8 +165,8 @@ const ReportAnalytics = () => {
             }
         })
         .filter(Boolean)
-    const yAxisData = dynamicReportTable
-        .map((item) => {
+    const yAxisData = Array.isArray(dynamicReportTable)
+    ? dynamicReportTable.map((item) => {
             if (yAxisValue.toLowerCase().includes('date')) {
                 return moment(item[yAxisValue]).utcOffset(330).format('YYYY-MM-DD')
             } else {
@@ -197,7 +197,7 @@ const ReportAnalytics = () => {
                                             return (
                                                 <Select
                                                     placeholder="Select Target Page"
-                                                    options={reportQueryNames}
+                                                    options={Array.isArray(reportQueryNames) ? reportQueryNames : []}
                                                     value={reportQueryNames?.find((option) => option.value === field.value)}
                                                     onChange={(option: any) => {
                                                         form.setFieldValue(field.name, option?.value)
@@ -228,7 +228,7 @@ const ReportAnalytics = () => {
                                                             <Select
                                                                 className="w-1/4"
                                                                 placeholder="Select dataType"
-                                                                options={reportQueryArray}
+                                                                options={Array.isArray(reportQueryArray) ? reportQueryArray : []}
                                                                 value={reportQueryArray.find((option) => option.value === field.value)}
                                                                 onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                                             />
