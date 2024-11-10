@@ -123,13 +123,18 @@ const ReportAnalytics = () => {
         try {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
-            const data = response?.data?.data || []
-            setDynamicReportTable(data)
-            setTotalCount(data.length)
+            const data = response?.data?.data || {}
+            if (reportData.hasOwnProperty(storeName)) {
+            setDynamicReportTable(reportData[storeName])  // Set the specific report data
+        } else {
+                setDynamicReportTable([])
+        }
+            setTotalCount(reportData[storeName]?.length || 0)
             setShowTable(true)
             setShowSpinner(false)
         } catch (error) {
             console.log(error)
+            setShowSpinner(false)
         }
     }
 
@@ -297,26 +302,31 @@ const yAxisData = Array.isArray(dynamicReportTable)
                 )}
             </Formik>
             <br />
-            {showTable && (
-                <>
-                    <div className="flex flex-col gap-7">
-                        <div className="font-semibold text-xl"> Report Table</div>
-                        <div className="flex justify-start">
-                            <Button variant="new" onClick={handleDownloadCsv}>
-                                Download CSV
-                            </Button>
-                        </div>
+            {showTable && dynamicReportTable.length > 0 ? (
+                        <>
+                            <div className="flex flex-col gap-7">
+                                <div className="font-semibold text-xl">Report Table</div>
+                                <div className="flex justify-start">
+                                    <Button variant="new" onClick={handleDownloadCsv}>
+                                        Download CSV
+                                    </Button>
+                                </div>
+                    
+                                <ReportTable
+                                    tableData={dynamicReportTable}
+                                    page={page}
+                                    pageSize={pageSize}
+                                    onPaginationChange={onPaginationChange}
+                                    orderCount={totalCount} // Ensure this is named correctly
+                                    setPage={setPage}
+                                    setPageSize={setPageSize}
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <div>No data available for the selected report.</div> // A fallback message if no data is present
+                    )}
 
-                        <ReportTable
-                            tableData={dynamicReportTable}
-                            page={page}
-                            pageSize={pageSize}
-                            onPaginationChange={onPaginationChange}
-                            orderCount={totalount}
-                            setPage={setPage}
-                            setPageSize={setPageSize}
-                        />
-                    </div>
                     <br />
                     <div className="flex flex-col gap-2">
                         <div className="flex gap-3">
