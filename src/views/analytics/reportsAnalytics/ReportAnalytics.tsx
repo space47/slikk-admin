@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
@@ -13,6 +15,7 @@ import { CATEGORY_STATE } from '@/store/types/category.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import moment from 'moment'
+import * as Yup from 'yup'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -42,7 +45,7 @@ const ReportAnalytics = () => {
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.get(`/query/config`)
+            const response = await axioisInstance.get('/query/config')
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setReportQueryNames(
@@ -185,12 +188,24 @@ const ReportAnalytics = () => {
 
     const handleDownloadCsv = () => {}
 
+    // Formik validation schema
+    const validationSchema = Yup.object().shape({
+        required_fields: Yup.array().of(
+            Yup.object().shape({
+                key: Yup.string().required('Key is required'),
+                value: Yup.string().required('Value is required'),
+                dataType: Yup.string().required('Data type is required'),
+            })
+        ),
+    })
+
     return (
         <div>
             <Formik
                 enableReinitialize
                 initialValues={reportData}
                 onSubmit={handleSubmit}
+                validationSchema={validationSchema}  // Add validation schema
             >
                 {({ values, resetForm, setFieldValue }) => (
                     <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
@@ -202,56 +217,92 @@ const ReportAnalytics = () => {
                                             return (
                                                 <Select
                                                     placeholder="Select Target Page"
-                                                    {...field}
-                                                    {...form}
-                                                    options={reportQueryNames}
-                                                    onChange={(e) => {
-                                                        const targetPage = e?.target?.value
-                                                        setStoreName(targetPage)
+                                                    options={Array.isArray(reportQueryNames) ? reportQueryNames : []}
+                                                    value={reportQueryNames?.find((option) => option.value === field.value)}
+                                                    onChange={(option: any) => {
+                                                        form.setFieldValue(field.name, option?.value)
+                                                        setStoreName(option?.value)
                                                     }}
                                                 />
                                             )
                                         }}
                                     </Field>
                                 </FormItem>
-
-                                <div className="flex justify-between items-center w-full col-span-2">
-                                    <div className="flex space-x-5">
-                                        <Button type="submit">Generate Report</Button>
-                                    </div>
-                                    <div>
-                                        {showTable && dynamicReportTable.length && xAxisData.length && yAxisData.length ? (
-                                            <div>
-                                                <Button onClick={handleDownloadCsv}>Download CSV</Button>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                </div>
                             </FormContainer>
                         </FormContainer>
+
+                        {showDataBelow && (
+                            <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
+                                <FieldArray name="required_fields">
+                                    {({ push, remove }) => (
+                                        <div>
+                                            {values.required_fields?.map((item: any, index: number) => (
+                                                <div key={index} className="flex space-x-4 mt-2">
+                                                    <Field
+                                                        name={`required_fields[${index}].key`}  // Corrected field name
+                                                        placeholder="Key"
+                                                        component={Input}
+                                                        className="w-1/3"
+                                                    />
+                                                    <Field name={`required_fields[${index}].dataType`}>
+                                                        {({ field, form }: FieldProps) => (
+                                                            <Select
+                                                                className="w-1/4"
+                                                                placeholder="Select dataType"
+                                                                options={Array.isArray(reportQueryArray) ? reportQueryArray : []}
+                                                                value={reportQueryArray.find((option) => option.value === field.value)}
+                                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                    <Field
+                                                        name={`required_fields[${index}].value`}  // Corrected field name
+                                                        placeholder="Value"
+                                                        component={Input}
+                                                        className="w-1/4"
+                                                    />
+                                                    <MdCancel
+                                                        onClick={() => remove(index)}
+                                                        size={22}
+                                                        className="text-red-500 cursor-pointer"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </FieldArray>
+                                <div>
+                                    <Button
+                                        variant="new"
+                                        className="mt-4"
+                                        onClick={() => push({ key: '', value: '', dataType: 'String' })}
+                                    >
+                                        Add
+                                    </Button>
+                                </div>
+                            </FormItem>
+                        )}
+
+                        <div className="mt-8">
+                            <Button className="w-full xl:w-1/4" variant="new" onClick={() => handleDownloadCsv()}>
+                                Download CSV
+                            </Button>
+                        </div>
                     </Form>
                 )}
             </Formik>
 
-            <div className="mt-5">
-                {showDataBelow && (
-                    <div>
-                        {showTable && dynamicReportTable.length && xAxisData.length && yAxisData.length ? (
-                            <>
-                                <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} />
-                                <ReportTable
-                                    xAxisValue={xAxisValue}
-                                    yAxisValue={yAxisValue}
-                                    data={dynamicReportTable}
-                                    onPaginationChange={onPaginationChange}
-                                />
-                            </>
-                        ) : (
-                            <div>No data to display</div>
-                        )}
-                    </div>
-                )}
-            </div>
+            {showTable && dynamicReportTable.length > 0 && (
+                <div className="flex justify-center items-center">
+                    <ReportTable
+                        tableData={dynamicReportTable}
+                        onPaginationChange={onPaginationChange}
+                        totalCount={totalCount}
+                        pageSize={pageSize}
+                        page={page}
+                    />
+                </div>
+            )}
         </div>
     )
 }
