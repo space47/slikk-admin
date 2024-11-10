@@ -136,6 +136,8 @@ const ReportAnalytics = () => {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
+            console.log('Data', data)
+            console.log('Object Data', Object.values(data))
             const dynamicKey = Object.keys(data)[0]
             setDynamicReportTable(data[dynamicKey])
             setTotalCount(response?.data?.data?.total)
