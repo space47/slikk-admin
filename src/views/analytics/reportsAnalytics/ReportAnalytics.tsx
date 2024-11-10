@@ -326,7 +326,7 @@ const yAxisData = Array.isArray(dynamicReportTable)
                                     className="w-[300px]"
                                     placeholder="Select X-Axis Value"
                                     options={
-                                        dynamicReportTable.length > 0
+                                        Array.isArray(dynamicReportTable) && dynamicReportTable.length > 0 && typeof dynamicReportTable[0] === 'object'
                                             ? Object.keys(dynamicReportTable[0]).map((key) => ({
                                                   label: key,
                                                   value: key,
@@ -341,9 +341,9 @@ const yAxisData = Array.isArray(dynamicReportTable)
                                 <label>Y-Axis</label>
                                 <Select
                                     className="w-[300px]"
-                                    placeholder="Select Y-Axis value"
+                                    placeholder="Select Y-Axis Value"
                                     options={
-                                        dynamicReportTable.length > 0
+                                        Array.isArray(dynamicReportTable) && dynamicReportTable.length > 0 && typeof dynamicReportTable[0] === 'object'
                                             ? Object.keys(dynamicReportTable[0]).map((key) => ({
                                                   label: key,
                                                   value: key,
