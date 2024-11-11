@@ -18,9 +18,10 @@ interface TABLEPROPS {
     pageSize?: number
     mainData: any
     noPage?: boolean
+    overflow?: boolean
 }
 
-const EasyTable = ({ columns, page, pageSize, mainData, noPage }: TABLEPROPS) => {
+const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABLEPROPS) => {
     const table = useReactTable({
         data: mainData,
         columns,
@@ -41,7 +42,7 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage }: TABLEPROPS) =>
 
     return (
         <div>
-            <Table>
+            <Table overflow={overflow ? true : false}>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>

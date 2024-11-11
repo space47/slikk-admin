@@ -72,7 +72,7 @@ const GraphComponent = ({
 
     return (
         <div key={keyData.key}>
-            <h3>{keyData.key}</h3>
+            {/* <div className="font-bold text-2xl mb-5">{keyData.key ? keyData.key.toUpperCase() : ''}</div> */}
             {selectedOption === 'line' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="line" />}
             {selectedOption === 'bar' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="bar" />}
             {selectedOption === 'pie' && <ReportPieGraph xAxisData={xAxisData} yAxisData={yAxisData} />}

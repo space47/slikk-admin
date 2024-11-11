@@ -5,14 +5,21 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
+import { IoIosAddCircle } from 'react-icons/io'
+import { MdCancel } from 'react-icons/md'
 import ReportTable from './ReportTable'
+import ReportLineGraph from './reportGraphs/ReportLineGraph'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
+import moment from 'moment'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import ReportPieGraph from './reportGraphs/ReportPieChart'
+import ReportCompositeGraph from './reportGraphs/ReportCompositeGraph'
+import GraphComponent from './reportGraphs/GraphComponent'
 import ReportGraphInput from './ReportGraphInput'
-import ReportFields from './ReportFields'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -21,6 +28,13 @@ const reportQueryArray = [
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },
     { label: 'MulltiSelect', value: 'MultiSelect' },
+]
+const GRAPHARRAY = [
+    { label: 'Line', value: 'line' },
+    { label: 'Bar', value: 'bar' },
+    { label: 'Pie', value: 'pie' },
+    { label: 'heatmap', value: 'heatmap' },
+    { label: 'Composite', value: 'composite' },
 ]
 
 const ReportAnalytics = () => {
@@ -41,9 +55,6 @@ const ReportAnalytics = () => {
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [selectedOption, setSelectedOption] = useState('line')
-
-    const [accessDenied, setAccessDenied] = useState(false)
-
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
@@ -101,11 +112,16 @@ const ReportAnalytics = () => {
             console.log(error)
         }
     }
+
+    console.log('ReportData', reportData)
+
     useEffect(() => {
         if (storeName) {
             fetchApi()
         }
     }, [storeName])
+
+    const initialValue = {}
 
     const [currentValues, setCurrentValues] = useState<any>()
 
@@ -134,10 +150,7 @@ const ReportAnalytics = () => {
             setTotalCount(response?.data?.data?.total)
             setShowTable(true)
             setShowSpinner(false)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
+        } catch (error) {
             console.log(error)
         }
     }
@@ -228,67 +241,111 @@ const ReportAnalytics = () => {
                                         }}
                                     </Field>
                                 </FormItem>
+                                {storeName !== null && storeName !== undefined && storeName !== '' && (
+                                    <FormContainer className="flex  mt-8 mb-9">
+                                        <Button variant="new" type="submit" className="text-white ">
+                                            Generate
+                                        </Button>
+                                    </FormContainer>
+                                )}
                             </FormContainer>
                         </FormContainer>
                         {showDataBelow && (
-                            <ReportFields values={values} reportQueryArray={reportQueryArray} optionDataMap={optionDataMap} />
-                        )}
-                        {storeName !== null && storeName !== undefined && storeName !== '' && (
-                            <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
-                                <Button variant="new" type="submit" className="text-white ">
-                                    Generate
-                                </Button>
-                            </FormContainer>
+                            <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
+                                <FieldArray name="required_fields">
+                                    {({ push, remove }) => (
+                                        <div className="grid xl:grid-cols-1 grid-cols-2 gap-5  ">
+                                            {values.required_fields.map((item: any, index: number) => (
+                                                <div key={index} className="flex space-x-4 mt-2 xl:flex-row flex-col items-center">
+                                                    <Field
+                                                        name={`required_fields[${index}].key`}
+                                                        placeholder="Key"
+                                                        component={Input}
+                                                        className="xl:w-1/3 w-full"
+                                                    />
+                                                    <Field name={`required_fields[${index}].dataType`}>
+                                                        {({ field, form }: FieldProps) => (
+                                                            <Select
+                                                                className="xl:w-1/3 w-full"
+                                                                placeholder="Select dataType"
+                                                                options={reportQueryArray}
+                                                                value={reportQueryArray.find((option) => option.value === field.value)}
+                                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                    <Field name={`required_fields[${index}].value`}>
+                                                        {({ field, form }: FieldProps) => {
+                                                            const { dataType, key } = values.required_fields[index]
+                                                            const fieldValue = Array.isArray(field.value) ? field.value : []
+                                                            const options = optionDataMap[key]
+
+                                                            if ((dataType === 'Select' || dataType === 'MultiSelect') && options) {
+                                                                const selectedOption = options.find(
+                                                                    (option: any) =>
+                                                                        option.name.toLowerCase() === field.value.toLowerCase(),
+                                                                )
+
+                                                                return (
+                                                                    <Select
+                                                                        className="xl:w-1/3 w-full"
+                                                                        {...field}
+                                                                        options={options}
+                                                                        getOptionLabel={(option) => option.name}
+                                                                        getOptionValue={(option) => option.id.toString()}
+                                                                        value={selectedOption || null}
+                                                                        onChange={(newVal) => {
+                                                                            console.log('Data for Val', newVal?.name)
+                                                                            form.setFieldValue(
+                                                                                `required_fields[${index}].value`,
+                                                                                newVal?.name,
+                                                                            )
+                                                                        }}
+                                                                    />
+                                                                )
+                                                            }
+
+                                                            return (
+                                                                <Input
+                                                                    type={dataType === 'Date' ? 'date' : 'text'}
+                                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
+                                                                    {...field}
+                                                                    className="xl:w-1/3 w-full"
+                                                                />
+                                                            )
+                                                        }}
+                                                    </Field>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </FieldArray>
+                            </FormItem>
                         )}
                     </Form>
                 )}
             </Formik>
             <br />
-            {showTable &&
-                dynamicReportTable.map((table, index) => {
-                    console.log('key Name', table.key)
-                    return (
-                        <div key={index} className="mt-5 flex flex-col gap-4">
-                            <div className="flex justify-end ">
-                                <Button variant="new" onClick={() => handleDownloadCsv(table.key)}>
-                                    Download CSV
-                                </Button>
-                            </div>
 
-                            <ReportTable
-                                tableData={table.data}
-                                page={page}
-                                pageSize={pageSize}
-                                onPaginationChange={onPaginationChange}
-                                orderCount={totalount}
-                                setPage={setPage}
-                                setPageSize={setPageSize}
-                            />
-                        </div>
-                    )
-                })}
             {showTable && (
-                <>
-                    <ReportGraphInput
-                        selectedOption={selectedOption}
-                        xAxisValue={xAxisValue}
-                        yAxisValue={yAxisValue}
-                        yAxisValue2={yAxisValue2}
-                        setXAxisvalue={setXAxisvalue}
-                        setYAxisvalue={setYAxisvalue}
-                        setYAxisvalue2={setYAxisvalue2}
-                        handleSelect={handleSelect}
-                        dynamicReportTable={dynamicReportTable}
-                    />
-                </>
-            )}
-
-            {accessDenied && (
-                <>
-                    <div className="flex justify-center items-center h-screen">
-                        <h4>Access Denied</h4>
-                    </div>
-                </>
+                <ReportGraphInput
+                    dynamicReportTable={dynamicReportTable}
+                    xAxisValue={xAxisValue}
+                    yAxisValue={yAxisValue}
+                    yAxisValue2={yAxisValue2}
+                    selectedOption={selectedOption}
+                    setXAxisvalue={setXAxisvalue}
+                    setYAxisvalue={setYAxisvalue}
+                    setYAxisvalue2={setYAxisvalue2}
+                    handleSelect={handleSelect}
+                    handleDownloadCsv={handleDownloadCsv}
+                    page={page}
+                    pageSize={pageSize}
+                    onPaginationChange={onPaginationChange}
+                    setPage={setPage}
+                    setPageSize={setPageSize}
+                    totalount={totalount}
+                />
             )}
         </div>
     )

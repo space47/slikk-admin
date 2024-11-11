@@ -13,9 +13,10 @@ interface ReportTableProps {
     onPaginationChange: any
     setPageSize: any
     setPage: any
+    keyName?: aby
 }
 
-const ReportTable = ({ tableData, page, pageSize, orderCount, onPaginationChange, setPageSize }: ReportTableProps) => {
+const ReportTable = ({ tableData, page, pageSize, orderCount, onPaginationChange, setPageSize, keyName }: ReportTableProps) => {
     const columns = useMemo(() => {
         if (!tableData || tableData.length === 0) return []
 
@@ -34,7 +35,8 @@ const ReportTable = ({ tableData, page, pageSize, orderCount, onPaginationChange
 
     return (
         <div>
-            <EasyTable mainData={tableData} columns={columns} />
+            <div className="font-bold text-2xl mb-5">{keyName ? keyName.toUpperCase() : ''}</div>
+            <EasyTable mainData={tableData} columns={columns} noPage overflow />
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
