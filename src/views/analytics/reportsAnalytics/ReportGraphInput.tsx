@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import GraphComponent from './reportGraphs/GraphComponent'
 import { Button, Dropdown, Select } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -50,6 +50,31 @@ const ReportGraphInput = ({
     setPageSize,
     totalount,
 }: ReportGraphComponentProps) => {
+    const handleAxisValue = useCallback((axis: string, option: any, table: any) => {
+        if (axis === 'x') {
+            setXAxisvalue(() => ({
+                [table.key]: option?.value || '',
+            }))
+        } else if (axis === 'y') {
+            setYAxisvalue(() => ({
+                [table.key]: option?.value || '',
+            }))
+        } else if (axis === 'y2') {
+            setYAxisvalue2(() => ({
+                [table.key]: option?.value || '',
+            }))
+        }
+    }, [])
+
+    const Options = (table: any) => {
+        return useMemo(() => {
+            return Object.keys(table.data[0] || {}).map((key) => ({
+                label: key,
+                value: key,
+            }))
+        }, [table.data])
+    }
+
     return dynamicReportTable.map((table, index) => {
         return (
             <div key={index} className="mt-5 flex flex-col gap-4">
@@ -76,12 +101,9 @@ const ReportGraphInput = ({
                         <Select
                             className="w-[300px]"
                             placeholder={`Select X-Axis for ${table.key}`}
-                            options={Object.keys(table.data[0] || {}).map((key) => ({
-                                label: key,
-                                value: key,
-                            }))}
                             value={xAxisValue[table.key] ? { label: xAxisValue[table.key], value: xAxisValue[table.key] } : null}
-                            onChange={(option) => setXAxisvalue((prev) => ({ [table.key]: option?.value || '' }))}
+                            options={Options(table)}
+                            onChange={(option) => handleAxisValue('x', option, table)}
                         />
                     </div>
 
@@ -90,12 +112,9 @@ const ReportGraphInput = ({
                         <Select
                             className="w-[300px]"
                             placeholder={`Select Y-Axis for ${table.key}`}
-                            options={Object.keys(table.data[0] || {}).map((key) => ({
-                                label: key,
-                                value: key,
-                            }))}
                             value={yAxisValue[table.key] ? { label: yAxisValue[table.key], value: yAxisValue[table.key] } : null}
-                            onChange={(option) => setYAxisvalue((prev) => ({ [table.key]: option?.value || '' }))}
+                            options={Options(table)}
+                            onChange={(option) => handleAxisValue('y', option, table)}
                         />
                     </div>
 
@@ -105,12 +124,9 @@ const ReportGraphInput = ({
                             <Select
                                 className="w-[300px]"
                                 placeholder={`Select Y-Axis 2 for ${table.key}`}
-                                options={Object.keys(table.data[0] || {}).map((key) => ({
-                                    label: key,
-                                    value: key,
-                                }))}
                                 value={yAxisValue2[table.key] ? { label: yAxisValue2[table.key], value: yAxisValue2[table.key] } : null}
-                                onChange={(option) => setYAxisvalue2((prev) => ({ ...prev, [table.key]: option?.value || '' }))}
+                                options={Options(table)}
+                                onChange={(option) => handleAxisValue('y2', option, table)}
                             />
                         </div>
                     )}

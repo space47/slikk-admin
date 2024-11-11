@@ -5,21 +5,14 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { IoIosAddCircle } from 'react-icons/io'
-import { MdCancel } from 'react-icons/md'
-import ReportTable from './ReportTable'
-import ReportLineGraph from './reportGraphs/ReportLineGraph'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-import moment from 'moment'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import ReportPieGraph from './reportGraphs/ReportPieChart'
-import ReportCompositeGraph from './reportGraphs/ReportCompositeGraph'
-import GraphComponent from './reportGraphs/GraphComponent'
 import ReportGraphInput from './ReportGraphInput'
+import AccessDenied from '@/views/pages/AccessDenied'
+import InnternalError from '@/views/pages/InternalServerError/InternalError'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -28,13 +21,6 @@ const reportQueryArray = [
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },
     { label: 'MulltiSelect', value: 'MultiSelect' },
-]
-const GRAPHARRAY = [
-    { label: 'Line', value: 'line' },
-    { label: 'Bar', value: 'bar' },
-    { label: 'Pie', value: 'pie' },
-    { label: 'heatmap', value: 'heatmap' },
-    { label: 'Composite', value: 'composite' },
 ]
 
 const ReportAnalytics = () => {
@@ -55,6 +41,8 @@ const ReportAnalytics = () => {
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [selectedOption, setSelectedOption] = useState('line')
+    const [accessDenied, setAccessDenied] = useState(false)
+    const [serverError, setServerError] = useState(false)
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
@@ -108,26 +96,24 @@ const ReportAnalytics = () => {
             }
             setReportData(formattedData)
             setShowDataBelow(true)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            } else if (error.response && error.response.status === 500) {
+                setServerError(true)
+            }
             console.log(error)
         }
     }
-
-    console.log('ReportData', reportData)
-
     useEffect(() => {
         if (storeName) {
             fetchApi()
         }
     }, [storeName])
 
-    const initialValue = {}
-
     const [currentValues, setCurrentValues] = useState<any>()
 
     const fetchTable = async (values?: any) => {
-        const offSetCount = (page - 1) * pageSize
-
         let reportParameters = ''
         if (values?.required_fields) {
             reportParameters = values.required_fields
@@ -150,7 +136,12 @@ const ReportAnalytics = () => {
             setTotalCount(response?.data?.data?.total)
             setShowTable(true)
             setShowSpinner(false)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            } else if (error.response && error.response.status === 500) {
+                setServerError(true)
+            }
             console.log(error)
         }
     }
@@ -167,14 +158,6 @@ const ReportAnalytics = () => {
 
     const onPaginationChange = (page: number) => {
         setPage(page)
-    }
-
-    if (showSpinner) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <Spinner size={40} />
-            </div>
-        )
     }
 
     const handleSelect = (value: string) => {
@@ -209,6 +192,19 @@ const ReportAnalytics = () => {
         } catch (error) {
             console.log(error)
         }
+    }
+    if (accessDenied) {
+        return <AccessDenied />
+    }
+    if (serverError) {
+        return <InnternalError />
+    }
+    if (showSpinner) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner size={40} />
+            </div>
+        )
     }
 
     return (

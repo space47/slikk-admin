@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
 import React from 'react'
 import ReportLineGraph from './ReportLineGraph'
@@ -18,16 +19,7 @@ interface GraphProps {
     selectedOption: any
 }
 
-const GraphComponent = ({
-    keyData,
-    setXAxisValue,
-    setYAxisValue,
-    setYAxisValue2,
-    xAxisValue,
-    yAxisValue,
-    yAxisValue2,
-    selectedOption,
-}: GraphProps) => {
+const GraphComponent = ({ keyData, xAxisValue, yAxisValue, yAxisValue2, selectedOption }: GraphProps) => {
     console.log('KeyData Value', keyData.data)
 
     // Extracting xAxis and yAxis from xAxisValue and yAxisValue
