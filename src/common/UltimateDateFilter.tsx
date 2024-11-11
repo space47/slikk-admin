@@ -47,7 +47,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
                 break
             case 'YESTERDAY':
                 startDate = moment().subtract(1, 'days').format('YYYY-MM-DD')
-                endDate = startDate
+                endDate = moment().format('YYYY-MM-DD')
                 setShowingDatePicker(false)
                 break
             case 'CURRENT WEEK':
