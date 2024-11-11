@@ -9,6 +9,7 @@ import { MdAssignment } from 'react-icons/md'
 import { Option, pageSizeOptions, TaskDetails } from './TaskCommonType'
 
 import { useNavigate } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -20,6 +21,7 @@ const TaskTracking = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const [showAssignModal, setShowAssignModal] = useState(false)
     const [storeTaskId, setStoreTaskId] = useState()
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
     const fetchData = async () => {
@@ -30,7 +32,10 @@ const TaskTracking = () => {
 
             setData(data)
             setTotalData(total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -196,6 +201,10 @@ const TaskTracking = () => {
                 ),
         },
     ]
+
+    if (accessDenied) {
+        return <AccessDenied />
+    }
 
     return (
         <div>

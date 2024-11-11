@@ -3,8 +3,7 @@ import EasyTable from '@/common/EasyTable'
 import { Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import moment from 'moment'
-import React, { useMemo, useState } from 'react'
-import { useSSR } from 'react-i18next'
+import React, { useMemo } from 'react'
 
 interface ReportTableProps {
     tableData: any[]
@@ -16,17 +15,15 @@ interface ReportTableProps {
     setPage: any
 }
 
-const ReportTable = ({ tableData, page, pageSize, orderCount, onPaginationChange, setPage, setPageSize }: ReportTableProps) => {
+const ReportTable = ({ tableData, page, pageSize, orderCount, onPaginationChange, setPageSize }: ReportTableProps) => {
     const columns = useMemo(() => {
         if (!tableData || tableData.length === 0) return []
 
-        // Get keys from the first row of data to create column headers
         return Object.keys(tableData[0]).map((key) => ({
-            header: key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), // Convert header format (optional)
+            header: key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
             accessorKey: key,
             cell: ({ getValue }: any) => {
                 const value = getValue()
-                // Check if key is a date and format accordingly
                 if (key === 'date' || key === 'Order_Date') {
                     return <span>{moment(value).utcOffset(330).format('YYYY-MM-DD hh:mm:ss a')}</span>
                 }

@@ -22,6 +22,7 @@ import { TbCalendarStats } from 'react-icons/tb'
 import { FaDownload } from 'react-icons/fa'
 import { Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 interface Product {
     name: string
@@ -66,6 +67,7 @@ const Returns = () => {
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [showSpinner, setShowSpinner] = useState(false)
+    const [accessDenied, setAccessDenied] = useState(false)
 
     const fetchData = async (page: number, pageSize: number, from: string, to: string) => {
         try {
@@ -77,7 +79,10 @@ const Returns = () => {
             setData(data)
             setTotalData(total)
             setShowSpinner(false)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
             setShowSpinner(false)
         }
@@ -310,6 +315,11 @@ const Returns = () => {
                             />
                         </div>
                     </div>
+                    {accessDenied && (
+                        <>
+                            <AccessDenied />
+                        </>
+                    )}
                 </div>
             )}
         </>

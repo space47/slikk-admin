@@ -13,6 +13,7 @@ import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-tabl
 import { FaDownload } from 'react-icons/fa'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { MdCancel } from 'react-icons/md'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -30,7 +31,7 @@ const Remitance = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [fieldValue, setFieldValue] = useState([]) // Initialize fieldValue state
     const [companyData, setCompanyData] = useState(null)
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -44,7 +45,10 @@ const Remitance = () => {
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
             setRemitance(remitanceData)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error('Error fetching remitance:', error)
         }
     }
@@ -300,6 +304,11 @@ const Remitance = () => {
                     ''
                 )}
             </div>
+            {accessDenied && (
+                <>
+                    <AccessDenied />
+                </>
+            )}
         </div>
     )
 }

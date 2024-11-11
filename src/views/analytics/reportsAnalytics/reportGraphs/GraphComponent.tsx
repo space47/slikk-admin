@@ -33,7 +33,8 @@ const GraphComponent = ({
     // Extracting xAxis and yAxis from xAxisValue and yAxisValue
     const xAxis = Object.values(xAxisValue).join()
     const yAxis = Object.values(yAxisValue).join()
-    console.log('Values', yAxisValue)
+    const yAxis2 = Object.values(yAxisValue2).join()
+    console.log('Values', yAxis2)
 
     console.log('X and Y axis', xAxis, yAxis)
     // Process xAxisData
@@ -59,10 +60,10 @@ const GraphComponent = ({
     // Process yAxisData2
     const yAxisData2 = keyData.data
         .map((item) => {
-            if (yAxisValue2.toLowerCase().includes('date') && item[yAxisValue2]) {
-                return moment(item[yAxisValue2]).utcOffset(330).format('YYYY-MM-DD')
+            if (yAxis2.toLowerCase().includes('date') && item[yAxis2]) {
+                return moment(item[yAxis2]).utcOffset(330).format('YYYY-MM-DD')
             }
-            return item[yAxisValue2]
+            return item[yAxis2]
         })
         .filter((value) => value !== undefined)
 

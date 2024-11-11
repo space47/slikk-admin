@@ -5,20 +5,14 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { IoIosAddCircle } from 'react-icons/io'
-import { MdCancel } from 'react-icons/md'
 import ReportTable from './ReportTable'
-import ReportLineGraph from './reportGraphs/ReportLineGraph'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { CATEGORY_STATE } from '@/store/types/category.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-import moment from 'moment'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import ReportPieGraph from './reportGraphs/ReportPieChart'
-import ReportCompositeGraph from './reportGraphs/ReportCompositeGraph'
-import GraphComponent from './reportGraphs/GraphComponent'
+import ReportGraphInput from './ReportGraphInput'
+import ReportFields from './ReportFields'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -27,13 +21,6 @@ const reportQueryArray = [
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },
     { label: 'MulltiSelect', value: 'MultiSelect' },
-]
-const GRAPHARRAY = [
-    { label: 'Line', value: 'line' },
-    { label: 'Bar', value: 'bar' },
-    { label: 'Pie', value: 'pie' },
-    { label: 'heatmap', value: 'heatmap' },
-    { label: 'Composite', value: 'composite' },
 ]
 
 const ReportAnalytics = () => {
@@ -54,6 +41,9 @@ const ReportAnalytics = () => {
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [selectedOption, setSelectedOption] = useState('line')
+
+    const [accessDenied, setAccessDenied] = useState(false)
+
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
@@ -111,16 +101,11 @@ const ReportAnalytics = () => {
             console.log(error)
         }
     }
-
-    console.log('ReportData', reportData)
-
     useEffect(() => {
         if (storeName) {
             fetchApi()
         }
     }, [storeName])
-
-    const initialValue = {}
 
     const [currentValues, setCurrentValues] = useState<any>()
 
@@ -149,7 +134,10 @@ const ReportAnalytics = () => {
             setTotalCount(response?.data?.data?.total)
             setShowTable(true)
             setShowSpinner(false)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -243,82 +231,10 @@ const ReportAnalytics = () => {
                             </FormContainer>
                         </FormContainer>
                         {showDataBelow && (
-                            <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
-                                <FieldArray name="required_fields">
-                                    {({ push, remove }) => (
-                                        <div>
-                                            {values.required_fields.map((item: any, index: number) => (
-                                                <div key={index} className="flex space-x-4 mt-2">
-                                                    <Field
-                                                        name={`required_fields[${index}].key`}
-                                                        placeholder="Key"
-                                                        component={Input}
-                                                        className="w-1/3"
-                                                    />
-                                                    <Field name={`required_fields[${index}].dataType`}>
-                                                        {({ field, form }: FieldProps) => (
-                                                            <Select
-                                                                className="w-1/4"
-                                                                placeholder="Select dataType"
-                                                                options={reportQueryArray}
-                                                                value={reportQueryArray.find((option) => option.value === field.value)}
-                                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <Field name={`required_fields[${index}].value`}>
-                                                        {({ field, form }: FieldProps) => {
-                                                            const { dataType, key } = values.required_fields[index]
-                                                            const fieldValue = Array.isArray(field.value) ? field.value : []
-                                                            const options = optionDataMap[key]
-
-                                                            if ((dataType === 'Select' || dataType === 'MultiSelect') && options) {
-                                                                const selectedOption = options.find(
-                                                                    (option: any) =>
-                                                                        option.name.toLowerCase() === field.value.toLowerCase(),
-                                                                )
-
-                                                                return (
-                                                                    <Select
-                                                                        className="w-1/3"
-                                                                        {...field}
-                                                                        options={options}
-                                                                        getOptionLabel={(option) => option.name}
-                                                                        getOptionValue={(option) => option.id.toString()}
-                                                                        value={selectedOption || null}
-                                                                        onChange={(newVal) => {
-                                                                            console.log('Data for Val', newVal?.name)
-                                                                            form.setFieldValue(
-                                                                                `required_fields[${index}].value`,
-                                                                                newVal?.name,
-                                                                            )
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            }
-
-                                                            return (
-                                                                <Input
-                                                                    type={dataType === 'Date' ? 'date' : 'text'}
-                                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
-                                                                    {...field}
-                                                                    className="w-1/3"
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </FieldArray>
-                            </FormItem>
+                            <ReportFields values={values} reportQueryArray={reportQueryArray} optionDataMap={optionDataMap} />
                         )}
                         {storeName !== null && storeName !== undefined && storeName !== '' && (
                             <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
-                                {/* <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
-                                    Reset
-                                </Button> */}
                                 <Button variant="new" type="submit" className="text-white ">
                                     Generate
                                 </Button>
@@ -353,100 +269,24 @@ const ReportAnalytics = () => {
                 })}
             {showTable && (
                 <>
-                    <div className="flex flex-col gap-2">
-                        <div className="flex flex-col gap-4">
-                            {dynamicReportTable.map((table, index) => (
-                                <div key={table.key} className="flex gap-3">
-                                    <div className="flex flex-col gap-2">
-                                        <label>X-Axis ({table.key})</label>
-                                        <Select
-                                            className="w-[300px]"
-                                            placeholder={`Select X-Axis for ${table.key}`}
-                                            options={Object.keys(table.data[0] || {}).map((key) => ({
-                                                label: key,
-                                                value: key,
-                                            }))}
-                                            value={
-                                                xAxisValue[table.key]
-                                                    ? { label: xAxisValue[table.key], value: xAxisValue[table.key] }
-                                                    : null
-                                            }
-                                            onChange={(option) => setXAxisvalue((prev) => ({ [table.key]: option?.value || '' }))}
-                                        />
-                                    </div>
+                    <ReportGraphInput
+                        selectedOption={selectedOption}
+                        xAxisValue={xAxisValue}
+                        yAxisValue={yAxisValue}
+                        yAxisValue2={yAxisValue2}
+                        setXAxisvalue={setXAxisvalue}
+                        setYAxisvalue={setYAxisvalue}
+                        setYAxisvalue2={setYAxisvalue2}
+                        handleSelect={handleSelect}
+                        dynamicReportTable={dynamicReportTable}
+                    />
+                </>
+            )}
 
-                                    <div className="flex flex-col gap-2">
-                                        <label>Y-Axis ({table.key})</label>
-                                        <Select
-                                            className="w-[300px]"
-                                            placeholder={`Select Y-Axis for ${table.key}`}
-                                            options={Object.keys(table.data[0] || {}).map((key) => ({
-                                                label: key,
-                                                value: key,
-                                            }))}
-                                            value={
-                                                yAxisValue[table.key]
-                                                    ? { label: yAxisValue[table.key], value: yAxisValue[table.key] }
-                                                    : null
-                                            }
-                                            onChange={(option) => setYAxisvalue((prev) => ({ [table.key]: option?.value || '' }))}
-                                        />
-                                    </div>
-
-                                    {selectedOption === 'composite' && (
-                                        <div className="flex flex-col gap-2">
-                                            <label>Y-Axis 2 ({table.key})</label>
-                                            <Select
-                                                className="w-[300px]"
-                                                placeholder={`Select Y-Axis 2 for ${table.key}`}
-                                                options={Object.keys(table.data[0] || {}).map((key) => ({
-                                                    label: key,
-                                                    value: key,
-                                                }))}
-                                                value={
-                                                    yAxisValue2[table.key]
-                                                        ? { label: yAxisValue2[table.key], value: yAxisValue2[table.key] }
-                                                        : null
-                                                }
-                                                onChange={(option) =>
-                                                    setYAxisvalue2((prev) => ({ ...prev, [table.key]: option?.value || '' }))
-                                                }
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex justify-end items-center mb-7 mr-10">
-                            <div className="bg-black text-white w-auto rounded-[8px] items-center flex justify-center text-xl">
-                                <Dropdown
-                                    className="text-xl text-white bg-white font-bold border-2 border-blue-600"
-                                    title={selectedOption}
-                                    onSelect={(value) => handleSelect(value.toString())}
-                                >
-                                    {GRAPHARRAY.map((item) => (
-                                        <DropdownItem key={item.value} eventKey={item.value}>
-                                            <span>{item.label}</span>
-                                        </DropdownItem>
-                                    ))}
-                                </Dropdown>
-                            </div>
-                        </div>
-                        <div>
-                            {dynamicReportTable.map((keyData) => (
-                                <GraphComponent
-                                    key={keyData.key}
-                                    keyData={keyData}
-                                    selectedOption={selectedOption}
-                                    xAxisValue={xAxisValue}
-                                    yAxisValue={yAxisValue}
-                                    yAxisValue2={yAxisValue2}
-                                    setXAxisValue={setXAxisvalue}
-                                    setYAxisValue={setYAxisvalue}
-                                    setYAxisValue2={setYAxisvalue2}
-                                />
-                            ))}
-                        </div>
+            {accessDenied && (
+                <>
+                    <div className="flex justify-center items-center h-screen">
+                        <h4>Access Denied</h4>
                     </div>
                 </>
             )}

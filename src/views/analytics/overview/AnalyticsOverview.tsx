@@ -32,6 +32,7 @@ import ImageMODAL from '@/common/ImageModal'
 import AnalyticsOrderDrawer from './analyticsOrderDrawer/AnalyticsOrderDrawer'
 import { IoMdDownload } from 'react-icons/io'
 import { useLocation } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type SKU_DETAILS = {
     name: string
@@ -103,7 +104,7 @@ const AnalyticsOverview = () => {
     const [subCategoryList, setSubCategoryList] = useState([])
     const [brandList, setBrandList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
 
     const fetchData = async (
@@ -174,10 +175,15 @@ const AnalyticsOverview = () => {
             }))
 
             setDatewisedetails(dateWIseDetailArray)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
+
+    console.log('datewiseDetails', datewisedetails)
 
     useEffect(() => {
         fetchData(from, to)
@@ -525,6 +531,11 @@ const AnalyticsOverview = () => {
                     setIsOpen={setShowImageModal}
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
+            )}
+            {accessDenied && (
+                <>
+                    <AccessDenied />
+                </>
             )}
         </div>
     )
