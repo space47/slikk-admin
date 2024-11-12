@@ -8,6 +8,7 @@ import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, Product } from './sellerCommon'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const Seller = () => {
     const [data, setData] = useState<Product[]>([])
@@ -15,7 +16,7 @@ const Seller = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const filterValue = globalFilter ? `&name=${globalFilter}` : ''
@@ -24,7 +25,10 @@ const Seller = () => {
             const total = response.data.data.count
             setData(data)
             setTotalData(total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -140,6 +144,10 @@ const Seller = () => {
 
     const handleSeller = () => {
         navigate('/app/sellers/addnew')
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

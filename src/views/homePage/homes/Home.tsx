@@ -15,6 +15,7 @@ import { MdDeliveryDining, MdOutlineFullscreen } from 'react-icons/md'
 import { PiDevicesFill } from 'react-icons/pi'
 import { FaMoneyBillTrendUp } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -25,6 +26,7 @@ const Home = () => {
         customer: '',
         invoice_id: '',
     })
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -35,7 +37,10 @@ const Home = () => {
             const response = await axiosInstance.get(`/merchant/analytics/order?from=${from}&to=${To_Date}`)
             const data: SalesData = response.data.data
             setHomeData(data)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log('Error fetching data:', error)
         }
     }
@@ -47,7 +52,10 @@ const Home = () => {
 
             const ordersData = response.data?.data
             setOrders(ordersData)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -182,6 +190,10 @@ const Home = () => {
             p1Data: basketSize ? basketSize.toFixed(2) : 0,
         },
     ]
+
+    if (accessDenied) {
+        return <AccessDenied />
+    }
 
     return (
         <div className="flex flex-col gap-6 p-4">
