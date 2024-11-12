@@ -181,6 +181,10 @@ const Remitance = () => {
         setFieldValue([])
     }
 
+    if (accessDenied) {
+        return <AccessDenied />
+    }
+
     return (
         <div className="p-6 ">
             <div className="flex flex-col   gap-6">
@@ -304,11 +308,6 @@ const Remitance = () => {
                     ''
                 )}
             </div>
-            {accessDenied && (
-                <>
-                    <AccessDenied />
-                </>
-            )}
         </div>
     )
 }

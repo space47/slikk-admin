@@ -567,8 +567,8 @@ const OrderList = () => {
                                 className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1"
                                 onClick={handleDownload}
                             >
-                                <IoMdDownload className="text-xl md:text-xl" />
-                                Export
+                                <IoMdDownload className="text-xl md:text-xl font-extrabold" />
+                                EXPORT
                             </button>
                         </div>
 
@@ -586,7 +586,7 @@ const OrderList = () => {
                             </div>
                             <div className="xl:mt-7">
                                 <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
-                                    <CiFilter className="text-xl font-extrabold" /> Filter
+                                    <CiFilter className="text-xl font-extrabold" /> FILTER
                                 </Button>
 
                                 <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden mt-5">

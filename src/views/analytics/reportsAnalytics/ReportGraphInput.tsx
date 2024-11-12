@@ -50,7 +50,7 @@ const ReportGraphInput = ({
     setPageSize,
     totalount,
 }: ReportGraphComponentProps) => {
-    const handleAxisValue = useCallback((axis: string, option: any, table: any) => {
+    const handleAxisValue = (axis: string, option: any, table: any) => {
         if (axis === 'x') {
             setXAxisvalue(() => ({
                 [table.key]: option?.value || '',
@@ -64,15 +64,13 @@ const ReportGraphInput = ({
                 [table.key]: option?.value || '',
             }))
         }
-    }, [])
+    }
 
     const Options = (table: any) => {
-        return useMemo(() => {
-            return Object.keys(table.data[0] || {}).map((key) => ({
-                label: key,
-                value: key,
-            }))
-        }, [table.data])
+        return Object.keys(table.data[0] || {}).map((key) => ({
+            label: key,
+            value: key,
+        }))
     }
 
     return dynamicReportTable.map((table, index) => {
@@ -133,7 +131,7 @@ const ReportGraphInput = ({
                 </div>
 
                 <div className="flex justify-end items-center mb-7 mr-10">
-                    <div className="bg-black text-white w-auto rounded-[8px] items-center flex justify-center text-xl">
+                    <div className="bg-black text-white w-auto rounded-[8px] xl:mr-7 items-center flex justify-center text-xl">
                         <Dropdown
                             className="text-xl text-white bg-white font-bold border-2 border-blue-600"
                             title={selectedOption}
