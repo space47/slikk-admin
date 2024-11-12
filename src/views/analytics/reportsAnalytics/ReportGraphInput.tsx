@@ -30,6 +30,7 @@ interface ReportGraphComponentProps {
     setPage: any
     setPageSize: any
     totalount: any
+    showSpinner?: any
 }
 
 const ReportGraphInput = ({
@@ -49,6 +50,7 @@ const ReportGraphInput = ({
     setPage,
     setPageSize,
     totalount,
+    showSpinner,
 }: ReportGraphComponentProps) => {
     const handleAxisValue = (axis: string, option: any, table: any) => {
         if (axis === 'x') {
@@ -83,6 +85,7 @@ const ReportGraphInput = ({
                 </div>
 
                 <ReportTable
+                    showSpinner={showSpinner}
                     tableData={table.data}
                     keyName={table.key}
                     page={page}

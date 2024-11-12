@@ -10,7 +10,6 @@ interface LineGraphProps {
 }
 
 const ReportLineGraph = ({ xAxisData, yAxisData, type }: LineGraphProps) => {
-    console.log('Y axis data in graph', yAxisData)
     const data = [
         {
             data: yAxisData,

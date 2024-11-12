@@ -9,8 +9,6 @@ interface LineGraphProps {
 }
 
 const ReportPieGraph = ({ xAxisData, yAxisData }: LineGraphProps) => {
-    console.log('Y axis data in graph', yAxisData)
-
     // Ensure yAxisData represents values for each slice of the pie chart
     const data = yAxisData
 

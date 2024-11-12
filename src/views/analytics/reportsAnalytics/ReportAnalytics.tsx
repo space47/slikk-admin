@@ -31,7 +31,7 @@ const ReportAnalytics = () => {
     const [dynamicReportTable, setDynamicReportTable] = useState([])
     const [showTable, setShowTable] = useState(false)
     const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(100)
+    const [pageSize, setPageSize] = useState(10)
     const [totalount, setTotalCount] = useState(0)
     const [xAxisValue, setXAxisvalue] = useState('')
     const [yAxisValue, setYAxisvalue] = useState('')
@@ -125,7 +125,6 @@ const ReportAnalytics = () => {
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
-            console.log('Data', data)
 
             const tablesData = Object.keys(data).map((key) => ({
                 key,
@@ -133,7 +132,7 @@ const ReportAnalytics = () => {
             }))
 
             setDynamicReportTable(tablesData)
-            setTotalCount(response?.data?.data?.total)
+            setTotalCount(tablesData.length)
             setShowTable(true)
             setShowSpinner(false)
         } catch (error: any) {
@@ -154,7 +153,7 @@ const ReportAnalytics = () => {
         if (currentValues) {
             fetchTable(currentValues)
         }
-    }, [page])
+    }, [page, pageSize])
 
     const onPaginationChange = (page: number) => {
         setPage(page)
@@ -198,13 +197,6 @@ const ReportAnalytics = () => {
     }
     if (serverError) {
         return <InnternalError />
-    }
-    if (showSpinner) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <Spinner size={40} />
-            </div>
-        )
     }
 
     return (
@@ -291,7 +283,6 @@ const ReportAnalytics = () => {
                                                                         getOptionValue={(option) => option.id.toString()}
                                                                         value={selectedOption || null}
                                                                         onChange={(newVal) => {
-                                                                            console.log('Data for Val', newVal?.name)
                                                                             form.setFieldValue(
                                                                                 `required_fields[${index}].value`,
                                                                                 newVal?.name,
@@ -341,6 +332,7 @@ const ReportAnalytics = () => {
                     setPage={setPage}
                     setPageSize={setPageSize}
                     totalount={totalount}
+                    showSpinner={showSpinner}
                 />
             )}
         </div>

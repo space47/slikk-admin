@@ -13,10 +13,32 @@ interface ReportTableProps {
     onPaginationChange: any
     setPageSize: any
     setPage: any
-    keyName?: aby
+    keyName?: any
+    showSpinner?: any
 }
 
-const ReportTable = ({ tableData, page, pageSize, orderCount, onPaginationChange, setPageSize, keyName }: ReportTableProps) => {
+type Option = {
+    value: number
+    label: string
+}
+
+const ReportTable = ({
+    tableData,
+    page,
+    pageSize,
+    orderCount,
+    onPaginationChange,
+    setPage,
+    setPageSize,
+    keyName,
+    showSpinner,
+}: ReportTableProps) => {
+    const paginatedData = tableData.slice((page - 1) * pageSize, page * pageSize)
+    const totalPages = Math.ceil(tableData.length / pageSize)
+
+    console.log('pAginate', paginatedData)
+    console.log('Total', totalPages)
+
     const columns = useMemo(() => {
         if (!tableData || tableData.length === 0) return []
 
@@ -36,19 +58,19 @@ const ReportTable = ({ tableData, page, pageSize, orderCount, onPaginationChange
     return (
         <div>
             <div className="font-bold text-2xl mb-5">{keyName ? keyName.toUpperCase() : ''}</div>
-            <EasyTable mainData={tableData} columns={columns} noPage overflow />
+            <EasyTable mainData={paginatedData} columns={columns} noPage overflow />
 
-            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
-                <div className="w-full sm:w-auto min-w-[130px]">
-                    <Select
+            <div className="flex items-center justify-between mt-4">
+                <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
+                {/* <div style={{ minWidth: 130 }}>
+                    <Select<Option>
                         size="sm"
+                        isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => setPageSize(option?.value)}
-                        className="w-full flex justify-end"
+                        onChange={(option) => setPageSize(Number(option?.value))}
                     />
-                </div>
+                </div> */}
             </div>
         </div>
     )
