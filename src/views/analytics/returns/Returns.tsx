@@ -225,6 +225,10 @@ const Returns = () => {
         }
     }
 
+    if (accessDenied) {
+        return <AccessDenied />
+    }
+
     return (
         <>
             {showSpinner ? (
@@ -315,11 +319,6 @@ const Returns = () => {
                             />
                         </div>
                     </div>
-                    {accessDenied && (
-                        <>
-                            <AccessDenied />
-                        </>
-                    )}
                 </div>
             )}
         </>
