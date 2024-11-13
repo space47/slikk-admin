@@ -23,7 +23,7 @@ type Option = {
 }
 
 const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName }: ReportTableProps) => {
-    const paginatedData = tableData.slice((page - 1) * pageSize, page * pageSize)
+    const paginatedData = tableData ? tableData?.slice((page - 1) * pageSize, page * pageSize) : []
     const totalPages = Math.ceil(tableData.length / pageSize)
 
     console.log('pAginate', paginatedData)
