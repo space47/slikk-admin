@@ -8,6 +8,7 @@ import moment from 'moment'
 import { NOTIFYSTATS, pageSizeOptions } from './getNotiStats.common'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import EasyTable from '@/common/EasyTable'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type Option = {
     value: number
@@ -22,6 +23,7 @@ const GetNotificationStats = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [accessDenied, setAccessDenied] = useState(false)
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -31,7 +33,10 @@ const GetNotificationStats = () => {
             const total = response.data.data.count
             setData(data)
             setTotalData(total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -113,6 +118,10 @@ const GetNotificationStats = () => {
 
     const handleSeller = () => {
         navigate('/app/appsCommuncication/sendNotification/addNew')
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

@@ -8,12 +8,14 @@ import EasyTable from '@/common/EasyTable'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import { useNavigate } from 'react-router-dom'
 import { FaEdit } from 'react-icons/fa'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const GetReportConfiguratiions = () => {
     const [reportQueryData, setReportQueryData] = useState<ReportQueryData[]>([])
     const [totalCount, setTotalCount] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
     const fetchReportApi = async () => {
@@ -22,7 +24,10 @@ const GetReportConfiguratiions = () => {
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setTotalCount(data?.count)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -47,10 +52,18 @@ const GetReportConfiguratiions = () => {
                 ),
             },
             { header: 'Name', accessorKey: 'name' },
+            { header: 'Display Name', accessorKey: 'display_name' },
             {
                 header: 'Value',
                 accessorKey: 'value',
-                cell: ({ getValue }) => <div className="flex flex-wrap overflow-ellipsis w-[450px] line-clamp-3">{getValue()}</div>,
+                cell: ({ getValue }) =>
+                    Object.entries(getValue()).map(([key, value], index) => {
+                        return (
+                            <div key={index} className="flex flex-col gap-2">
+                                {`${key} :  ${value}`}
+                            </div>
+                        )
+                    }),
             },
             {
                 header: 'Required Fields',
@@ -118,6 +131,11 @@ const GetReportConfiguratiions = () => {
                     />
                 </div>
             </div>
+            {accessDenied && (
+                <>
+                    <AccessDenied />
+                </>
+            )}
         </div>
     )
 }

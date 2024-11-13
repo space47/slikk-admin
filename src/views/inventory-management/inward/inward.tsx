@@ -11,13 +11,14 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, TableData } from './inwardCommon'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const PaginationTable = () => {
     const [data, setData] = useState<TableData[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const fetchData = async (page: number, pageSize: number) => {
@@ -29,7 +30,10 @@ const PaginationTable = () => {
             const total = response.data.data.count
             setData(data)
             setTotalData(total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -159,6 +163,10 @@ const PaginationTable = () => {
 
     const handleGRN = () => {
         navigate('/app/goods/received/form')
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

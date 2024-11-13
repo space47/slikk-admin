@@ -286,28 +286,35 @@ const BrandReturns = () => {
                             </div>
                         </div>
                     </div>
-                    <Table>
-                        <THead>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <Tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => (
-                                        <Th key={header.id} colSpan={header.colSpan}>
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                        </Th>
-                                    ))}
-                                </Tr>
-                            ))}
-                        </THead>
-                        <TBody>
-                            {table.getRowModel().rows.map((row) => (
-                                <Tr key={row.id}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                                    ))}
-                                </Tr>
-                            ))}
-                        </TBody>
-                    </Table>
+                    {data && data.length === 0 ? (
+                        <div className="flex flex-col gap-1 justify-center items-center h-screen">
+                            <h3>No Data Available</h3>
+                            <p>Try changing the date </p>
+                        </div>
+                    ) : (
+                        <Table>
+                            <THead>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <Tr key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => (
+                                            <Th key={header.id} colSpan={header.colSpan}>
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                            </Th>
+                                        ))}
+                                    </Tr>
+                                ))}
+                            </THead>
+                            <TBody>
+                                {table.getRowModel().rows.map((row) => (
+                                    <Tr key={row.id}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                        ))}
+                                    </Tr>
+                                ))}
+                            </TBody>
+                        </Table>
+                    )}
                     <div className="flex items-center justify-between mt-4">
                         <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                         <div style={{ minWidth: 130 }}>

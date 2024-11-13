@@ -15,37 +15,47 @@ import { MdDeliveryDining, MdOutlineFullscreen } from 'react-icons/md'
 import { PiDevicesFill } from 'react-icons/pi'
 import { FaMoneyBillTrendUp } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
     const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const [inputValues, setInputValues] = useState({
         customer: '',
         invoice_id: '',
     })
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
+
+    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const fetchHome = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            // const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(`/merchant/analytics/order?from=${from}&to=${To_Date}`)
             const data: SalesData = response.data.data
             setHomeData(data)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log('Error fetching data:', error)
         }
     }
 
     const fetchOrderForLocation = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            // const to = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${To_Date}`)
 
             const ordersData = response.data?.data
             setOrders(ordersData)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -138,21 +148,21 @@ const Home = () => {
 
     const CARDDATA = [
         {
-            handleClick: () => handleReceived(from, to),
+            handleClick: () => handleReceived(from, To_Date),
             img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
             label: 'Received Orders',
             p1Data: homeData?.received.count,
             p2Data: homeData?.received.total_amount?.toFixed(2),
         },
         {
-            handleClick: () => handleCompleted(from, to),
+            handleClick: () => handleCompleted(from, To_Date),
             img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
             label: 'Completed Orders',
             p1Data: homeData?.completed.count,
             p2Data: homeData?.completed.total_amount?.toFixed(2),
         },
         {
-            handleClick: () => handleReturned(from, to),
+            handleClick: () => handleReturned(from, To_Date),
             img: <IoMdReturnLeft className="text-4xl mx-4 text-red-500" />,
             label: 'Returned Orders',
             p1Data: netReturn,
@@ -180,6 +190,10 @@ const Home = () => {
             p1Data: basketSize ? basketSize.toFixed(2) : 0,
         },
     ]
+
+    if (accessDenied) {
+        return <AccessDenied />
+    }
 
     return (
         <div className="flex flex-col gap-6 p-4">
@@ -299,7 +313,7 @@ const Home = () => {
             {/* CHART */}
 
             <div className="mt-5 w-[350px] xl:w-full">
-                {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} />}
+                {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}
             </div>
 
             <div className="flex justify-center items-start my-10 z-10">

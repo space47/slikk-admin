@@ -1,0 +1,75 @@
+import Chart from 'react-apexcharts'
+import { COLOR_2 } from '@/constants/chart.constant'
+import { useAppSelector } from '@/store'
+
+interface LineGraphProps {
+    xAxisData?: any
+    yAxisData1?: any // Data for the first y-axis (Bar chart)
+    yAxisData2?: any // Data for the first y-axis (Bar chart)
+    // Data for the second y-axis (Line chart)
+}
+
+const ReportCompositeGraph = ({ xAxisData, yAxisData1, yAxisData2 }: LineGraphProps) => {
+    const barChartData = [
+        {
+            name: 'Bar Data',
+            type: 'bar', // Type is bar for the first data series
+            data: yAxisData1,
+        },
+    ]
+
+    const lineChartData = [
+        {
+            name: 'Line Data',
+            type: 'line', // Type is line for the second data series
+            data: yAxisData2,
+        },
+    ]
+
+    return (
+        <Chart
+            options={{
+                chart: {
+                    type: 'line',
+                    zoom: {
+                        enabled: false,
+                    },
+                },
+                dataLabels: {
+                    enabled: false,
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3,
+                },
+                colors: [COLOR_2, '#FF5733'], // Adjust colors for both series
+                xaxis: {
+                    categories: xAxisData,
+                },
+                yaxis: [
+                    {
+                        title: {
+                            text: 'Bar Data',
+                        },
+                        labels: {
+                            formatter: (val: number) => val,
+                        },
+                    },
+                    {
+                        opposite: true, // This puts the second y-axis on the opposite side
+                        title: {
+                            text: 'Line Data',
+                        },
+                        labels: {
+                            formatter: (val: number) => val,
+                        },
+                    },
+                ],
+            }}
+            series={[...barChartData, ...lineChartData]}
+            height={300}
+        />
+    )
+}
+
+export default ReportCompositeGraph

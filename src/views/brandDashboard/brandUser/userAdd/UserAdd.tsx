@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { IoMdCloseCircle } from 'react-icons/io'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 interface GROUPS {
     id: number
@@ -65,12 +66,8 @@ const UserAdd = () => {
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
     const [getGroups, setGetGroups] = useState<GROUPS[]>([])
     const [selectedGroups, setSelectedGroups] = useState<number[]>([])
-    const [addedPermissions, setAddedPermissions] = useState<
-        { id: number; name: string }[]
-    >([])
-    const [addedGroups, setAddedGroups] = useState<
-        { id: number; name: string }[]
-    >([])
+    const [addedPermissions, setAddedPermissions] = useState<{ id: number; name: string }[]>([])
+    const [addedGroups, setAddedGroups] = useState<{ id: number; name: string }[]>([])
 
     const [searchInput, setSearchInput] = useState('')
 
@@ -80,9 +77,9 @@ const UserAdd = () => {
 
     const [addGroupInput, setAddGroupInput] = useState('')
 
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+
+    const [accessDenied, setAccessDenied] = useState(false)
 
     console.log('idddddddd', selectedCompany)
 
@@ -95,7 +92,10 @@ const UserAdd = () => {
             setGetGroups(grp)
             const group_id = getGroups?.map((item) => item.id)
             console.log('scscscscs', group_id)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response || error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -109,7 +109,10 @@ const UserAdd = () => {
             const response = await axioisInstance.get(`/permissions`)
             const perm = response.data?.permissions
             setGetPermission(perm)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response || error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -120,9 +123,7 @@ const UserAdd = () => {
 
     const handlePermissionSelect = (id: number) => {
         setSelectedPermissions((prevSelected) =>
-            prevSelected.includes(id)
-                ? prevSelected.filter((permId) => permId !== id)
-                : [...prevSelected, id],
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
         )
     }
 
@@ -131,9 +132,7 @@ const UserAdd = () => {
     }
 
     const handleAddPermissions = () => {
-        const alreadyAdded = selectedPermissions.filter((permId) =>
-            addedPermissions.some((added) => added.id === permId),
-        )
+        const alreadyAdded = selectedPermissions.filter((permId) => addedPermissions.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
             notification.warning({
@@ -142,9 +141,7 @@ const UserAdd = () => {
             })
         }
         const selected = getPermission?.filter(
-            (perm) =>
-                selectedPermissions.includes(perm.id) &&
-                !addedPermissions.some((added) => added.id === perm.id),
+            (perm) => selectedPermissions.includes(perm.id) && !addedPermissions.some((added) => added.id === perm.id),
         )
 
         setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
@@ -152,9 +149,7 @@ const UserAdd = () => {
     }
 
     const handleAddGroups = () => {
-        const alreadyAdded = selectedGroups.filter((permId) =>
-            addedGroups.some((added) => added.id === permId),
-        )
+        const alreadyAdded = selectedGroups.filter((permId) => addedGroups.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
             notification.warning({
@@ -162,26 +157,18 @@ const UserAdd = () => {
                 description: 'Group has already been added',
             })
         }
-        const selected = getGroups?.filter(
-            (perm) =>
-                selectedGroups.includes(perm.id) &&
-                !addedGroups.some((added) => added.id === perm.id),
-        )
+        const selected = getGroups?.filter((perm) => selectedGroups.includes(perm.id) && !addedGroups.some((added) => added.id === perm.id))
 
         setAddedGroups((prevAdded) => [...prevAdded, ...selected])
         setSelectedGroups([])
     }
 
     const handleRemovePermissions = (id: number) => {
-        setAddedPermissions((prevAdded) =>
-            prevAdded.filter((perm) => perm.id !== id),
-        )
+        setAddedPermissions((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
 
     const handleRemoveGroups = (id: number) => {
-        setAddedGroups((prevAdded) =>
-            prevAdded.filter((perm) => perm.id !== id),
-        )
+        setAddedGroups((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
 
     const handleAddUser = async (data: FormModel) => {
@@ -190,23 +177,20 @@ const UserAdd = () => {
             permission: data.permission,
         }
         try {
-            const response = await axioisInstance.post(
-                `company/${selectedCompany.id}/users/add`,
-                formdata,
-            )
+            const response = await axioisInstance.post(`company/${selectedCompany.id}/users/add`, formdata)
             const data = response.data
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message ||
-                    'User Successfully Added to Company',
+                description: response?.data?.message || 'User Successfully Added to Company',
             })
             return data
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response || error.response.status === 403) {
+                setAccessDenied(true)
+            }
             notification.error({
                 message: 'Failure',
-                description:
-                    'User Not Added to Company, All Fields are mandatory',
+                description: 'User Not Added to Company, All Fields are mandatory',
             })
             return 'Error'
         }
@@ -246,10 +230,7 @@ const UserAdd = () => {
         }
         console.log('body', bodyData)
         try {
-            const response = await axioisInstance.post(
-                `company/${selectedCompany.id}/users/add`,
-                bodyData,
-            )
+            const response = await axioisInstance.post(`company/${selectedCompany.id}/users/add`, bodyData)
             console.log('response of add users', response)
         } catch (error) {
             console.log(error)
@@ -269,16 +250,11 @@ const UserAdd = () => {
         }
 
         try {
-            const response = await axioisInstance.post(
-                `merchant/user/groups`,
-                addGroupData,
-            )
+            const response = await axioisInstance.post(`merchant/user/groups`, addGroupData)
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message ||
-                    'Groups successfully assigned to the user.',
+                description: response?.data?.message || 'Groups successfully assigned to the user.',
             })
         } catch (error) {
             notification.error({
@@ -300,24 +276,19 @@ const UserAdd = () => {
         }
 
         try {
-            const response = await axioisInstance.post(
-                `company/user/permission/${values.mobile}`,
-                formData,
-            )
+            const response = await axioisInstance.post(`company/user/permission/${values.mobile}`, formData)
 
             console.log(response)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'User Successfully Added',
+                description: response?.data?.message || 'User Successfully Added',
             })
             navigate('/app/vendor/users')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'User not created ',
+                description: error?.response?.data?.message || 'User not created ',
             })
         }
     }
@@ -332,13 +303,9 @@ const UserAdd = () => {
         groups: [],
     }
 
-    const filteredPermission = getPermission?.filter((item) =>
-        item.name.toLowerCase().includes(searchInput.toLowerCase()),
-    )
+    const filteredPermission = getPermission?.filter((item) => item.name.toLowerCase().includes(searchInput.toLowerCase()))
 
-    const filteredGroups = getGroups?.filter((item) =>
-        item.name.toLowerCase().includes(groupInput.toLowerCase()),
-    )
+    const filteredGroups = getGroups?.filter((item) => item.name.toLowerCase().includes(groupInput.toLowerCase()))
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -348,18 +315,18 @@ const UserAdd = () => {
         setGroupInput(e.target.value)
     }
 
-    const filteredAddPermission = addedPermissions?.filter((item) =>
-        item.name.toLowerCase().includes(addInput.toLowerCase()),
-    )
-    const filteredAddGroup = addedGroups?.filter((item) =>
-        item.name.toLowerCase().includes(addGroupInput.toLowerCase()),
-    )
+    const filteredAddPermission = addedPermissions?.filter((item) => item.name.toLowerCase().includes(addInput.toLowerCase()))
+    const filteredAddGroup = addedGroups?.filter((item) => item.name.toLowerCase().includes(addGroupInput.toLowerCase()))
 
     const handleAddPerm = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddInput(e.target.value)
     }
     const handleAddGroup = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddGroupInput(e.target.value)
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (
@@ -372,17 +339,13 @@ const UserAdd = () => {
             >
                 {({ values, touched, errors, resetForm }) => (
                     <Form className="w-full">
-                        <div className="text-xl mb-10 font-semibold">
-                            USER DETAILS
-                        </div>
+                        <div className="text-xl mb-10 font-semibold">USER DETAILS</div>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     asterisk
                                     label="First Name"
-                                    invalid={
-                                        errors.first_name && touched.first_name
-                                    }
+                                    invalid={errors.first_name && touched.first_name}
                                     errorMessage={errors.first_name}
                                     className="col-span-1 w-1/2"
                                 >
@@ -390,18 +353,13 @@ const UserAdd = () => {
                                         type="text"
                                         name="first_name"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Last Name"
-                                    invalid={
-                                        errors.last_name && touched.last_name
-                                    }
+                                    invalid={errors.last_name && touched.last_name}
                                     errorMessage={errors.last_name}
                                     className="col-span-1 w-1/2"
                                 >
@@ -409,10 +367,7 @@ const UserAdd = () => {
                                         type="text"
                                         name="last_name"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
                             </FormContainer>
@@ -430,10 +385,7 @@ const UserAdd = () => {
                                         type="text"
                                         name="mobile"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
                                 <FormItem
@@ -447,19 +399,13 @@ const UserAdd = () => {
                                         type="text"
                                         name="email"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Work Email"
-                                    invalid={
-                                        errors.business_email &&
-                                        touched.business_email
-                                    }
+                                    invalid={errors.business_email && touched.business_email}
                                     errorMessage={errors.business_email}
                                     className="col-span-1 w-1/2"
                                 >
@@ -467,18 +413,13 @@ const UserAdd = () => {
                                         type="text"
                                         name="business_email"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
                             </FormContainer>
                             {/* ........................................................................................ */}
 
-                            <div className="text-xl font-semibold mt-4">
-                                USER GROUPS
-                            </div>
+                            <div className="text-xl font-semibold mt-4">USER GROUPS</div>
                             <br />
 
                             <FormContainer className="mb-7">
@@ -499,34 +440,20 @@ const UserAdd = () => {
                                                     }
                                                 />
                                             </div> */}
-                                            <label
-                                                htmlFor="All Groups"
-                                                className="font-bold bg-white"
-                                            >
+                                            <label htmlFor="All Groups" className="font-bold bg-white">
                                                 All Groups
                                             </label>
                                         </div>
                                         <div className="">
                                             {filteredGroups?.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className="flex flex-col"
-                                                >
+                                                <div key={item.id} className="flex flex-col">
                                                     <label className="bg-gray-100 px-2 py-2 flex items-center">
                                                         <input
                                                             type="radio"
-                                                            checked={selectedGroups.includes(
-                                                                item.id,
-                                                            )}
-                                                            onChange={() =>
-                                                                handleGroupSelect(
-                                                                    item.id,
-                                                                )
-                                                            }
+                                                            checked={selectedGroups.includes(item.id)}
+                                                            onChange={() => handleGroupSelect(item.id)}
                                                         />
-                                                        <span className="ml-2">
-                                                            {item.name}
-                                                        </span>
+                                                        <span className="ml-2">{item.name}</span>
                                                     </label>
                                                 </div>
                                             ))}
@@ -535,12 +462,7 @@ const UserAdd = () => {
 
                                     {/* Buttons */}
                                     <div className="flex justify-center items-center flex-col gap-4">
-                                        <Button
-                                            type="button"
-                                            variant="accept"
-                                            className="w-32 px-8"
-                                            onClick={handleAddGroups}
-                                        >
+                                        <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddGroups}>
                                             ADD {'>>'}
                                         </Button>
                                     </div>
@@ -557,29 +479,16 @@ const UserAdd = () => {
                                                     placeholder="Search Permissions"
                                                 />
                                             </div> */}
-                                            <label
-                                                htmlFor="Added Permissions"
-                                                className="font-bold bg-white"
-                                            >
+                                            <label htmlFor="Added Permissions" className="font-bold bg-white">
                                                 Added Groups
                                             </label>
                                         </div>
                                         <div className="">
                                             {filteredAddGroup?.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className="flex flex-col"
-                                                >
+                                                <div key={item.id} className="flex flex-col">
                                                     <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
                                                         <span>{item.name}</span>
-                                                        <button
-                                                            className="text-red-500 ml-2"
-                                                            onClick={() =>
-                                                                handleRemoveGroups(
-                                                                    item.id,
-                                                                )
-                                                            }
-                                                        >
+                                                        <button className="text-red-500 ml-2" onClick={() => handleRemoveGroups(item.id)}>
                                                             <IoMdCloseCircle className="text-red-400" />
                                                         </button>
                                                     </div>
@@ -592,9 +501,7 @@ const UserAdd = () => {
 
                             {/* ............................................................................................ */}
 
-                            <div className="text-xl font-semibold">
-                                USER PERMISSIONS
-                            </div>
+                            <div className="text-xl font-semibold">USER PERMISSIONS</div>
                             <br />
 
                             <FormContainer className="">
@@ -609,40 +516,23 @@ const UserAdd = () => {
                                                     placeholder="Search Permissions"
                                                     value={searchInput}
                                                     onChange={handleSearch}
-                                                    onKeyDown={(e: any) =>
-                                                        e.key === 'Enter' &&
-                                                        e.preventDefault()
-                                                    }
+                                                    onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                                 />
                                             </div>
-                                            <label
-                                                htmlFor="All Permissions"
-                                                className="font-bold bg-white"
-                                            >
+                                            <label htmlFor="All Permissions" className="font-bold bg-white">
                                                 All Permissions
                                             </label>
                                         </div>
                                         <div className="">
                                             {filteredPermission?.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className="flex flex-col"
-                                                >
+                                                <div key={item.id} className="flex flex-col">
                                                     <label className="bg-gray-100 px-2 py-2 flex items-center">
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedPermissions.includes(
-                                                                item.id,
-                                                            )}
-                                                            onChange={() =>
-                                                                handlePermissionSelect(
-                                                                    item.id,
-                                                                )
-                                                            }
+                                                            checked={selectedPermissions.includes(item.id)}
+                                                            onChange={() => handlePermissionSelect(item.id)}
                                                         />
-                                                        <span className="ml-2">
-                                                            {item.name}
-                                                        </span>
+                                                        <span className="ml-2">{item.name}</span>
                                                     </label>
                                                 </div>
                                             ))}
@@ -651,12 +541,7 @@ const UserAdd = () => {
 
                                     {/* Buttons */}
                                     <div className="flex justify-center items-center flex-col gap-4">
-                                        <Button
-                                            type="button"
-                                            variant="accept"
-                                            className="w-32 px-8"
-                                            onClick={handleAddPermissions}
-                                        >
+                                        <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddPermissions}>
                                             ADD {'>>'}
                                         </Button>
                                     </div>
@@ -673,49 +558,31 @@ const UserAdd = () => {
                                                     placeholder="Search Permissions"
                                                 />
                                             </div>
-                                            <label
-                                                htmlFor="Added Permissions"
-                                                className="font-bold bg-white"
-                                            >
+                                            <label htmlFor="Added Permissions" className="font-bold bg-white">
                                                 Added Permissions
                                             </label>
                                         </div>
                                         <div className="">
-                                            {filteredAddPermission.map(
-                                                (item) => (
-                                                    <div
-                                                        key={item.id}
-                                                        className="flex flex-col"
-                                                    >
-                                                        <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                                            <span>
-                                                                {item.name}
-                                                            </span>
-                                                            <button
-                                                                className="text-red-500 ml-2"
-                                                                onClick={() =>
-                                                                    handleRemovePermissions(
-                                                                        item.id,
-                                                                    )
-                                                                }
-                                                            >
-                                                                <IoMdCloseCircle className="text-red-400" />
-                                                            </button>
-                                                        </div>
+                                            {filteredAddPermission.map((item) => (
+                                                <div key={item.id} className="flex flex-col">
+                                                    <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
+                                                        <span>{item.name}</span>
+                                                        <button
+                                                            className="text-red-500 ml-2"
+                                                            onClick={() => handleRemovePermissions(item.id)}
+                                                        >
+                                                            <IoMdCloseCircle className="text-red-400" />
+                                                        </button>
                                                     </div>
-                                                ),
-                                            )}
+                                                </div>
+                                            ))}
                                         </div>
                                     </Card>
                                 </FormContainer>
                             </FormContainer>
 
                             <FormItem className="mt-10 ">
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button variant="new" type="submit">

@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { STORETABLE } from './commonStores'
 import { FaEdit } from 'react-icons/fa'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type Option = {
     value: number
@@ -31,6 +32,7 @@ const Stores = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('') //1
+    const [accessDenied, setAccessDenied] = useState(false)
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -39,7 +41,10 @@ const Stores = () => {
             const total = response.data.data.count
             setData(data)
             setTotalData(total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -246,6 +251,10 @@ const Stores = () => {
 
     const handleStore = () => {
         navigate('/app/stores/addNew')
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

@@ -10,6 +10,7 @@ import Select from '@/components/ui/Select'
 // import { MdAssignment } from 'react-icons/md'
 import { TaskDetails } from '../taskTracking/TaskCommonType'
 import { useNavigate, useParams } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type Option = {
     value: number
@@ -33,6 +34,7 @@ const RiderTracking = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const navigate = useNavigate()
     const { task_id } = useParams()
+    const [accessDenied, setAccessDenied] = useState(false)
 
     const fetchData = async () => {
         try {
@@ -42,8 +44,10 @@ const RiderTracking = () => {
 
             setRiderData(data)
             setTotalData(total)
-            console.log('tttttt', total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -102,6 +106,10 @@ const RiderTracking = () => {
         navigate(`/app/orders/${order_id}`)
     }
 
+    if (accessDenied) {
+        return <AccessDenied />
+    }
+
     return (
         <div>
             <div className="mb-4">
@@ -122,7 +130,7 @@ const RiderTracking = () => {
                     </Tr>
                 </THead>
                 <TBody>
-                    {paginatedData.map((row) => (
+                    {paginatedData.map((row: any) => (
                         <Tr key={row.task_id}>
                             {columns.map((column, index) => (
                                 <Td key={index}>{column.format ? column.format(row[column.accessor], row) : row[column.accessor] || ''}</Td>

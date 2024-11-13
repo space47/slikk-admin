@@ -18,6 +18,7 @@ import { Button, Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/views/category-management/category/categoryTable/categoryCommon'
 import { MdAssignment, MdUpdate } from 'react-icons/md'
 import AssignTrackerModal from './createReverseTrip/AssignTrackerModal'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -29,6 +30,7 @@ const ReverseTrip = () => {
     const [showAssignModal, setShowAssignModal] = useState(false)
     const [storeTaskId, setStoreTaskId] = useState()
     const navigate = useNavigate()
+    const [accessDenied, setAccessDenied] = useState(false)
 
     const fetchReverseTask = async () => {
         try {
@@ -36,7 +38,10 @@ const ReverseTrip = () => {
             const data = response.data.data
             setReverseTaskDetail(data.results)
             setTotalCount(data.count)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -142,6 +147,10 @@ const ReverseTrip = () => {
     }
     const handleCloseModal = () => {
         setShowAssignModal(false)
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

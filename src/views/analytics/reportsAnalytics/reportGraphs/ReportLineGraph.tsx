@@ -4,21 +4,15 @@ import { MONTHLYREPORTTYPES } from '@/store/types/monthlyReport.types'
 import { useAppSelector } from '@/store'
 
 interface LineGraphProps {
-    xAxisData: any
-    yAxisData: any
+    xAxisData?: any
+    yAxisData?: any
+    type?: string
 }
 
-const ReportLineGraph = () => {
-    const { monthlyReport } = useAppSelector((state: { monthlyReport: MONTHLYREPORTTYPES }) => state.monthlyReport)
-
-    const sortedData = [...(monthlyReport?.order_by_date || [])].sort(
-        (a, b) => new Date(a.create_at_date).getTime() - new Date(b.create_at_date).getTime(),
-    )
-
+const ReportLineGraph = ({ xAxisData, yAxisData, type }: LineGraphProps) => {
     const data = [
         {
-            name: 'TOTAL',
-            data: sortedData.map((item) => item.total),
+            data: yAxisData,
         },
     ]
 
@@ -40,11 +34,12 @@ const ReportLineGraph = () => {
                 },
                 colors: [COLOR_2],
                 xaxis: {
-                    categories: sortedData.map((item) => item.create_at_date),
+                    categories: xAxisData,
                 },
             }}
             series={data}
             height={300}
+            type={type ? type : 'line'}
         />
     )
 }

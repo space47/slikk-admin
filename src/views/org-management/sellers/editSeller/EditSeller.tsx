@@ -10,6 +10,7 @@ import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './editCommon'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type FormModel = {
     account_holder_name: string
@@ -76,6 +77,7 @@ const SegmentOptions = () => {
 
 const EditSeller = () => {
     const [sellerData, setSellerData] = useState<FormModel>()
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
     const { id } = useParams()
@@ -86,7 +88,10 @@ const EditSeller = () => {
             const data = response.data.data
             console.log('ssdssdsd', data)
             setSellerData(data)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -168,6 +173,10 @@ const EditSeller = () => {
                 description: error?.response?.data?.message || 'Seller not created',
             })
         }
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

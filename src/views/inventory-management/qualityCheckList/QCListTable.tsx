@@ -15,10 +15,7 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-// import moment from 'moment'
-// import { useAppSelector } from '@/store'
-// import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-// import DatePicker from '@/components/ui/DatePicker'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type QUALITY_CHECK = {
     quantity_sent: number
@@ -42,16 +39,6 @@ type QC_DONE_BY = {
 
 type QualityData = {
     [quantity_id: string]: QUALITY_CHECK
-
-    // status: string
-    // total_quantity: number
-    // total_amount: number
-    // sku_wise_sales_data: {
-    //     [sku: string]: QUALITY_CHECK
-    // }
-    // date_wise_sales_data: {
-    //     date: DATA_WISE_SALES
-    // }
 }
 
 type Option = {
@@ -70,48 +57,37 @@ const pageSizeOptions = [
 
 const QCListTable = () => {
     const [data, setData] = useState<QualityData>()
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    // const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-    //     (store) => store.company.currCompany,
-    // )
-    // const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    // const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
 
-    const [quantityId, setQuantityId] = useState<
-        Array<{ key: string; value: QUALITY_CHECK }>
-    >([])
+    const [quantityId, setQuantityId] = useState<Array<{ key: string; value: QUALITY_CHECK }>>([])
 
-    const fetchData = async () =>
-        // page: number,
-        // pageSize: number,
-        // from: string,
-        // to: string,
-        {
-            try {
-                const response = await axiosInstance.get(`goods/qc/summary`)
-                const data = response.data
+    const fetchData = async () => {
+        try {
+            const response = await axiosInstance.get(`goods/qc/summary`)
+            const data = response.data
 
-                setData(data)
-                console.log('ssssssssssssssss', data)
-                const QCData = data.data
+            setData(data)
+            console.log('ssssssssssssssss', data)
+            const QCData = data.data
 
-                console.log('tttttttttttttt', QCData)
+            console.log('tttttttttttttt', QCData)
 
-                const skuDetailsArray = Object.entries(QCData).map(
-                    ([key, value]) => ({
-                        key,
-                        value,
-                    }),
-                )
+            const skuDetailsArray = Object.entries(QCData).map(([key, value]) => ({
+                key,
+                value,
+            }))
 
-                setQuantityId(skuDetailsArray)
-            } catch (error) {
-                console.error(error)
+            setQuantityId(skuDetailsArray)
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
             }
+            console.error(error)
         }
+    }
 
     useEffect(() => {
         fetchData()
@@ -119,9 +95,7 @@ const QCListTable = () => {
 
     console.log('SKU Details:', quantityId)
 
-    const columns = useMemo<
-        ColumnDef<{ key: QUALITY_CHECK; value: QUALITY_CHECK }>[]
-    >(
+    const columns = useMemo<ColumnDef<{ key: QUALITY_CHECK; value: QUALITY_CHECK }>[]>(
         () => [
             {
                 header: 'ID',
@@ -188,10 +162,7 @@ const QCListTable = () => {
             globalFilter,
         },
         onPaginationChange: (updater: Updater<PaginationState>) => {
-            const newPagination =
-                typeof updater === 'function'
-                    ? updater({ pageIndex: page - 1, pageSize })
-                    : updater
+            const newPagination = typeof updater === 'function' ? updater({ pageIndex: page - 1, pageSize }) : updater
 
             setPage(newPagination.pageIndex + 1)
             setPageSize(newPagination.pageSize)
@@ -206,21 +177,9 @@ const QCListTable = () => {
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
     }
-    // const handleFromChange = (date: Date | null) => {
-    //     if (date) {
-    //         setFrom(moment(date).format('YYYY-MM-DD'))
-    //     } else {
-    //         setFrom(moment().format('YYYY-MM-DD'))
-    //     }
-    // }
-
-    // const handleToChange = (date: Date | null) => {
-    //     if (date) {
-    //         setTo(moment(date).format('YYYY-MM-DD'))
-    //     } else {
-    //         setTo(moment().format('YYYY-MM-DD'))
-    //     }
-    // }
+    if (accessDenied) {
+        return <AccessDenied />
+    }
 
     return (
         <div className="overflow-x-auto">
@@ -234,36 +193,6 @@ const QCListTable = () => {
                         className="p-2 border rounded"
                     />
                 </div>
-
-                {/* <div className="flex gap-5">
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            FROM DATE:
-                        </div>
-                        <DatePicker
-                            inputPrefix={
-                                <HiOutlineCalendar className="text-lg" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
-                        />
-                    </div>
-                    <div>
-                        <div className="mb-1 font-semibold text-sm">
-                            TO DATE:
-                        </div>
-                        <DatePicker
-                            inputSuffix={
-                                <TbCalendarStats className="text-xl" />
-                            }
-                            defaultValue={new Date()}
-                            value={new Date(to)}
-                            onChange={handleToChange}
-                            minDate={moment(from).toDate()}
-                        />
-                    </div>
-                </div> */}
             </div>
 
             <Table>
@@ -272,10 +201,7 @@ const QCListTable = () => {
                         <Tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
                                 </Th>
                             ))}
                         </Tr>
@@ -285,31 +211,19 @@ const QCListTable = () => {
                     {table.getRowModel().rows.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
+                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
                             ))}
                         </Tr>
                     ))}
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={quantityId && quantityId.length}
-                    onChange={onPaginationChange}
-                />
+                <Pagination pageSize={pageSize} currentPage={page} total={quantityId && quantityId.length} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
-                        value={pageSizeOptions.find(
-                            (option) => option.value === pageSize,
-                        )}
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => onSelectChange(option?.value)}
                     />

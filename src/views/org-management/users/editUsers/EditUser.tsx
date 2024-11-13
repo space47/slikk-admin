@@ -17,6 +17,7 @@ import { USER_EDIT_FROM } from './UserEditForm'
 import CardComponent from './cardComponents/CardComponent'
 import CardAnother from './cardComponents/CardAnother'
 import { Spinner } from '@/components/ui'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type FormModel = {
     first_name: string
@@ -53,7 +54,7 @@ const BrandUserEdit = () => {
     const [selectedCompany, setSelectedCompany] = useState<number[]>([])
     const [addedCompany, setAddedCompany] = useState<{ id: number; name: string }[]>([])
     const [loadingEdit, setLoadingEdit] = useState(false)
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const { mobile } = useParams()
 
     const navigate = useNavigate()
@@ -75,7 +76,10 @@ const BrandUserEdit = () => {
                 })),
             )
             setLoadingEdit(false)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
             setLoadingEdit(false)
         }
@@ -90,7 +94,10 @@ const BrandUserEdit = () => {
             const response = await axioisInstance.get(`/permissions`) // For left side Card
             const perm = response.data?.permissions
             setGetPermission(perm)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -100,7 +107,10 @@ const BrandUserEdit = () => {
             const response = await axioisInstance.get(`/groups`)
             const grp = response.data?.groups
             setGetGroups(grp)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -112,7 +122,10 @@ const BrandUserEdit = () => {
             const user = response.data
             const userPermissions = response.data.user_permissions
             setAddedPermissions(userPermissions) // For right side card
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -124,7 +137,10 @@ const BrandUserEdit = () => {
             const user = response.data
             const userPermissions = response.data.user_groups
             setAddedGroups(userPermissions) // For right side card
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -263,6 +279,11 @@ const BrandUserEdit = () => {
             console.log(error)
         }
     }
+
+    if (accessDenied) {
+        return <AccessDenied />
+    }
+
     return (
         <div>
             {loadingEdit ? (
