@@ -8,6 +8,7 @@ import Pending from './pending/Pending'
 import Accepted from './accepted/Accepted'
 import Rejected from './rejected/Rejected'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+import AccessDenied from '../pages/AccessDenied'
 
 const { TabNav, TabList, TabContent } = Tabs
 
@@ -65,7 +66,7 @@ const CreatorPost = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const fetchData = async (status: string, page = 1, pageSize = 10, filter: string = '') => {
         try {
             const response = await axiosInstance.get(`userposts/approval?status=${status}&p=${page}&page_size=${pageSize}&name=${filter}`)
@@ -73,7 +74,10 @@ const CreatorPost = () => {
             const total = response.data.data.count
             setTableData(data)
             setTotalData(total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -95,6 +99,10 @@ const CreatorPost = () => {
 
         fetchData(status, page, pageSize, globalFilter)
     }, [activeTab, page, pageSize, globalFilter])
+
+    if (accessDenied) {
+        return <AccessDenied />
+    }
 
     return (
         <div>

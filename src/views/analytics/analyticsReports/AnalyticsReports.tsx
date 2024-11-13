@@ -12,6 +12,7 @@ import { Item, REMITANCE } from '@/store/types/remitance.types'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -23,6 +24,7 @@ const AnalyticsReports = () => {
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showOneMonthBack, setShowOneMonthBack] = useState(true)
     const [brandValue, setBrandValue] = useState<any | null>(null)
+    const [accessDenied, setAccessDenied] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
 
@@ -41,7 +43,10 @@ const AnalyticsReports = () => {
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
             setRemitance(remitanceData)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error('Error fetching remitance:', error)
         }
     }
@@ -152,6 +157,9 @@ const AnalyticsReports = () => {
     // const onPaginationChange = (page: number) => {
     //     setPage(page)
     // }
+    if (accessDenied) {
+        return <AccessDenied />
+    }
 
     return (
         <div className="p-6 ">

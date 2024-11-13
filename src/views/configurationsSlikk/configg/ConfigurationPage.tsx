@@ -6,10 +6,12 @@ import { ConfigInterface } from './componentsConfigg/commonConfigTypes'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
 import _ from 'lodash'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const ConfigurationPage = () => {
     const [configurationData, setConfigurationData] = useState<ConfigInterface[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
     const fetchConfigurationApi = async () => {
@@ -19,7 +21,10 @@ const ConfigurationPage = () => {
             const apiData = response.data?.data
             setConfigurationData(apiData?.results)
             setShowSpinner(false)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -98,6 +103,11 @@ const ConfigurationPage = () => {
                     </Card>
                 ))}
             </div>
+            {accessDenied && (
+                <>
+                    <AccessDenied />
+                </>
+            )}
         </div>
     )
 }

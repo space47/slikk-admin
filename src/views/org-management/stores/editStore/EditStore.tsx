@@ -15,6 +15,7 @@ import { notification } from 'antd'
 
 import { StoreTypes } from '../commonStores'
 import { useParams } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 // import EditCustomerProfile from '@/views/crm/CustomerDetail/components/EditCustomerProfile'
 
 const MAX_UPLOAD = 8
@@ -57,6 +58,7 @@ const EditCustomerProfile = () => {
     const [imagview, setImageView] = useState<string[]>([])
     const [descriptiontextarea, setDescriptiontextarea] = useState()
     const [instructiontextarea, setInstructiontextarea] = useState()
+    const [accessDenied, setAccessDenied] = useState(false)
     const [address, setAddress] = useState({
         area: '',
         pincode: '',
@@ -109,9 +111,7 @@ const EditCustomerProfile = () => {
 
     const fetchStoreData = async () => {
         try {
-            const response = await axioisInstance.get(
-                `merchant/store?store_id=${id}`,
-            )
+            const response = await axioisInstance.get(`merchant/store?store_id=${id}`)
             const data = response.data.data
             console.log('ssdssdsd', data)
             setStoreData(data)
@@ -121,7 +121,10 @@ const EditCustomerProfile = () => {
                 state: data?.state || '',
                 city: data?.city || '',
             })
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -219,16 +222,14 @@ const EditCustomerProfile = () => {
             setImageView(newData)
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'File Not uploaded',
+                description: error?.response?.data?.message || 'File Not uploaded',
             })
             return 'Error'
         }
@@ -253,31 +254,28 @@ const EditCustomerProfile = () => {
         console.log('formDaata', formData)
 
         try {
-            const response = await axioisInstance.patch(
-                'merchant/store',
-                formData,
-            )
+            const response = await axioisInstance.patch('merchant/store', formData)
 
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Store created successfully',
+                description: response?.data?.message || 'Store created successfully',
             })
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description:
-                    error?.response?.data?.message || 'Failed to create Store',
+                description: error?.response?.data?.message || 'Failed to create Store',
             })
         }
     }
 
+    if (accessDenied) {
+        return <AccessDenied />
+    }
+
     return (
         <div>
-            <div className="text-xl mb-10 font-bold">
-                Add Fullfillment Center
-            </div>
+            <div className="text-xl mb-10 font-bold">Add Fullfillment Center</div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
@@ -285,12 +283,7 @@ const EditCustomerProfile = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form
-                        className="w-2/3"
-                        onKeyDown={(e) =>
-                            e.key === 'Enter' && e.preventDefault()
-                        }
-                    >
+                    <Form className="w-2/3" onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
@@ -304,10 +297,7 @@ const EditCustomerProfile = () => {
                                         type="text"
                                         name="company"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
                                 <FormItem
@@ -321,10 +311,7 @@ const EditCustomerProfile = () => {
                                         type="text"
                                         name="code"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
 
@@ -339,10 +326,7 @@ const EditCustomerProfile = () => {
                                         type="text"
                                         name="name"
                                         component={Input}
-                                        onKeyDown={(e: any) =>
-                                            e.key === 'Enter' &&
-                                            e.preventDefault()
-                                        }
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                                     />
                                 </FormItem>
                             </FormContainer>
@@ -353,10 +337,7 @@ const EditCustomerProfile = () => {
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     label="Instruction"
-                                    invalid={
-                                        errors.instruction &&
-                                        touched.description
-                                    }
+                                    invalid={errors.instruction && touched.description}
                                     errorMessage={errors.instruction}
                                     className="col-span-1 w-full"
                                 >
@@ -375,14 +356,7 @@ const EditCustomerProfile = () => {
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <div className=" image w-[10%] h-[20%] mt-5  ">
                                     {imagview && imagview.length > 0 ? (
-                                        imagview.map((img, index) => (
-                                            <img
-                                                key={index}
-                                                src={img}
-                                                alt="img"
-                                                className="rounded-xl"
-                                            />
-                                        ))
+                                        imagview.map((img, index) => <img key={index} src={img} alt="img" className="rounded-xl" />)
                                     ) : (
                                         <p>No image</p>
                                     )}
@@ -390,47 +364,24 @@ const EditCustomerProfile = () => {
                                 <FormContainer className="mt-5">
                                     <FormItem
                                         label="ADD NEW IMAGE"
-                                        invalid={Boolean(
-                                            errors.image && touched.image,
-                                        )}
+                                        invalid={Boolean(errors.image && touched.image)}
                                         errorMessage={errors.image as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="images_array">
-                                            {({
-                                                form,
-                                            }: FieldProps<StoreTypes>) => (
+                                            {({ form }: FieldProps<StoreTypes>) => (
                                                 <>
                                                     <Upload
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
-                                                        fileList={
-                                                            values.images_array
-                                                        }
-                                                        onChange={async (
-                                                            files,
-                                                        ) => {
-                                                            const uploadedImage =
-                                                                await handleFileupload(
-                                                                    files,
-                                                                )
+                                                        beforeUpload={beforeUpload}
+                                                        fileList={values.images_array}
+                                                        onChange={async (files) => {
+                                                            const uploadedImage = await handleFileupload(files)
                                                             {
-                                                                form.setFieldValue(
-                                                                    'images_array',
-                                                                    uploadedImage,
-                                                                )
-                                                                setImageView([
-                                                                    uploadedImage,
-                                                                ])
+                                                                form.setFieldValue('images_array', uploadedImage)
+                                                                setImageView([uploadedImage])
                                                             }
                                                         }}
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'images_array',
-                                                                files,
-                                                            )
-                                                        }
+                                                        onFileRemove={(files) => form.setFieldValue('images_array', files)}
                                                         showList={false}
                                                     />
                                                 </>
@@ -446,10 +397,7 @@ const EditCustomerProfile = () => {
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem
                                     label="Description"
-                                    invalid={
-                                        errors.description &&
-                                        touched.description
-                                    }
+                                    invalid={errors.description && touched.description}
                                     errorMessage={errors.description}
                                     className="col-span-1 w-full"
                                 >
@@ -469,43 +417,27 @@ const EditCustomerProfile = () => {
                                 <FormItem
                                     asterisk
                                     label="Latitude"
-                                    invalid={
-                                        errors.latitude && touched.latitude
-                                    }
+                                    invalid={errors.latitude && touched.latitude}
                                     errorMessage={errors.latitude}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="latitude"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="latitude" component={Input} />
                                 </FormItem>
                                 <FormItem
                                     asterisk
                                     label="Longitude"
-                                    invalid={
-                                        errors.longitude && touched.longitude
-                                    }
+                                    invalid={errors.longitude && touched.longitude}
                                     errorMessage={errors.longitude}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="longitude"
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="longitude" component={Input} />
                                 </FormItem>
 
-                                <FormItem
-                                    label="Type"
-                                    invalid={errors.type && touched.type}
-                                >
+                                <FormItem label="Type" invalid={errors.type && touched.type}>
                                     <Field
                                         name="type"
                                         onKeyDown={(e: any) => {
-                                            e.key === 'Enter' &&
-                                                e.preventDefault()
+                                            e.key === 'Enter' && e.preventDefault()
                                         }}
                                     >
                                         {({ field, form }: FieldProps<any>) => (
@@ -514,17 +446,8 @@ const EditCustomerProfile = () => {
                                                 className="text-black"
                                                 form={form}
                                                 options={options}
-                                                value={options.find(
-                                                    (option) =>
-                                                        option.value ===
-                                                        field.value,
-                                                )}
-                                                onChange={(option) =>
-                                                    form.setFieldValue(
-                                                        field.name,
-                                                        option?.value,
-                                                    )
-                                                }
+                                                value={options.find((option) => option.value === field.value)}
+                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                             />
                                         )}
                                     </Field>
@@ -541,13 +464,7 @@ const EditCustomerProfile = () => {
                                     errorMessage={errors.area}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="area"
-                                        value={address.area}
-                                        onChange={handleAddress}
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="area" value={address.area} onChange={handleAddress} component={Input} />
                                 </FormItem>
 
                                 <FormItem
@@ -557,13 +474,7 @@ const EditCustomerProfile = () => {
                                     errorMessage={errors.pincode}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="pincode"
-                                        value={address.pincode}
-                                        onChange={handleAddress}
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="pincode" value={address.pincode} onChange={handleAddress} component={Input} />
                                 </FormItem>
 
                                 <FormItem
@@ -573,13 +484,7 @@ const EditCustomerProfile = () => {
                                     errorMessage={errors.city}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        type="text"
-                                        name="city"
-                                        value={address.city}
-                                        onChange={handleAddress}
-                                        component={Input}
-                                    />
+                                    <Field type="text" name="city" value={address.city} onChange={handleAddress} component={Input} />
                                 </FormItem>
 
                                 <FormItem
@@ -589,13 +494,7 @@ const EditCustomerProfile = () => {
                                     errorMessage={errors.state}
                                     className="col-span-1 w-1/2"
                                 >
-                                    <Field
-                                        name="state"
-                                        type="text"
-                                        value={address.state}
-                                        onChange={handleAddress}
-                                        component={Input}
-                                    />
+                                    <Field name="state" type="text" value={address.state} onChange={handleAddress} component={Input} />
                                 </FormItem>
                             </FormContainer>
 
@@ -605,17 +504,11 @@ const EditCustomerProfile = () => {
                             <FormItem
                                 asterisk
                                 label="Return Area"
-                                invalid={
-                                    errors.return_area && touched.return_area
-                                }
+                                invalid={errors.return_area && touched.return_area}
                                 errorMessage={errors.return_area}
                                 className="col-span-1 w-1/2"
                             >
-                                <Field
-                                    name="return_area"
-                                    component={Checkbox}
-                                    onClick={handleCheckbox}
-                                >
+                                <Field name="return_area" component={Checkbox} onClick={handleCheckbox}>
                                     {' '}
                                     Check to add same address as above{' '}
                                 </Field>
@@ -625,10 +518,7 @@ const EditCustomerProfile = () => {
                                 <FormItem
                                     asterisk
                                     label="Return Area"
-                                    invalid={
-                                        errors.return_area &&
-                                        touched.return_area
-                                    }
+                                    invalid={errors.return_area && touched.return_area}
                                     errorMessage={errors.return_area}
                                     className="col-span-1 w-1/2"
                                 >
@@ -644,10 +534,7 @@ const EditCustomerProfile = () => {
                                 <FormItem
                                     asterisk
                                     label="Return Pincode"
-                                    invalid={
-                                        errors.return_pincode &&
-                                        touched.return_pincode
-                                    }
+                                    invalid={errors.return_pincode && touched.return_pincode}
                                     errorMessage={errors.return_pincode}
                                     className="col-span-1 w-1/2"
                                 >
@@ -663,10 +550,7 @@ const EditCustomerProfile = () => {
                                 <FormItem
                                     asterisk
                                     label="Return City"
-                                    invalid={
-                                        errors.return_city &&
-                                        touched.return_city
-                                    }
+                                    invalid={errors.return_city && touched.return_city}
                                     errorMessage={errors.return_city}
                                     className="col-span-1 w-1/2"
                                 >
@@ -682,10 +566,7 @@ const EditCustomerProfile = () => {
                                 <FormItem
                                     asterisk
                                     label="Return State"
-                                    invalid={
-                                        errors.return_state &&
-                                        touched.return_state
-                                    }
+                                    invalid={errors.return_state && touched.return_state}
                                     errorMessage={errors.return_state}
                                     className="col-span-1 w-1/2"
                                 >
@@ -702,59 +583,25 @@ const EditCustomerProfile = () => {
                             {/* Select boxes......................................................................... */}
 
                             <FormContainer className="flex flex-row gap-7">
-                                <FormItem
-                                    label="Number"
-                                    invalid={
-                                        errors.contactNumber &&
-                                        touched.contactNumber
-                                    }
-                                >
-                                    <Field
-                                        name="contactNumber"
-                                        type="text"
-                                        component={Input}
-                                    />
+                                <FormItem label="Number" invalid={errors.contactNumber && touched.contactNumber}>
+                                    <Field name="contactNumber" type="text" component={Input} />
                                 </FormItem>
 
-                                <FormItem
-                                    label="POC"
-                                    invalid={errors.poc && touched.poc}
-                                >
+                                <FormItem label="POC" invalid={errors.poc && touched.poc}>
                                     <Field name="poc" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    label="POC Designation"
-                                    invalid={
-                                        errors.poc_designation &&
-                                        touched.poc_designation
-                                    }
-                                >
-                                    <Field
-                                        name="poc_designation"
-                                        component={Input}
-                                    />
+                                <FormItem label="POC Designation" invalid={errors.poc_designation && touched.poc_designation}>
+                                    <Field name="poc_designation" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    label="GSTIN"
-                                    invalid={errors.gstin && touched.gstin}
-                                >
+                                <FormItem label="GSTIN" invalid={errors.gstin && touched.gstin}>
                                     <Field name="gstin" component={Input} />
                                 </FormItem>
                             </FormContainer>
 
                             {/* ............................. */}
 
-                            <FormItem
-                                label="FulFillment Center"
-                                invalid={
-                                    errors.is_fulfillment_center &&
-                                    touched.is_fulfillment_center
-                                }
-                            >
-                                <Field
-                                    name="is_fulfillment_center"
-                                    component={Checkbox}
-                                >
+                            <FormItem label="FulFillment Center" invalid={errors.is_fulfillment_center && touched.is_fulfillment_center}>
+                                <Field name="is_fulfillment_center" component={Checkbox}>
                                     Require fulfillment center
                                 </Field>
                             </FormItem>
@@ -762,11 +609,7 @@ const EditCustomerProfile = () => {
                             {/* Handle Submit........................... */}
 
                             <FormItem>
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button variant="solid" type="submit">

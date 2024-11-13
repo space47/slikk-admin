@@ -455,7 +455,7 @@ const DeliveryOrders = () => {
 
                     <div className="mt-7">
                         <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
-                            <CiFilter className="text-xl font-extrabold" /> Filter
+                            <CiFilter className="text-xl font-extrabold" /> FILTER
                         </Button>
 
                         <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">

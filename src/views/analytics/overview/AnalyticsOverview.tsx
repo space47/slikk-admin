@@ -31,6 +31,8 @@ import ImageMODAL from '@/common/ImageModal'
 // import AnalyticsQuantityGraph from './AnalyticsQuantityGraph/AnalyticsQuantityGraph'
 import AnalyticsOrderDrawer from './analyticsOrderDrawer/AnalyticsOrderDrawer'
 import { IoMdDownload } from 'react-icons/io'
+import { useLocation } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type SKU_DETAILS = {
     name: string
@@ -73,14 +75,18 @@ const pageSizeOptions = [
 ]
 
 const AnalyticsOverview = () => {
+    const location = useLocation()
+    const { var1, var2, stateName } = location.state || {}
+
+    console.log('object', var1, var2, stateName)
     const [data, setData] = useState<SalesData>()
 
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-    const [from, setFrom] = useState(moment().subtract(6, 'days').format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
+    const [from, setFrom] = useState(var1 ? var1 : moment().subtract(6, 'days').format('YYYY-MM-DD'))
+    const [to, setTo] = useState(var2 ? var2 : moment().add(1, 'days').format('YYYY-MM-DD'))
     const [showLastSevenDays, setShowLastSevenDays] = useState(true)
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState([])
@@ -98,7 +104,7 @@ const AnalyticsOverview = () => {
     const [subCategoryList, setSubCategoryList] = useState([])
     const [brandList, setBrandList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
 
     const fetchData = async (
@@ -110,8 +116,12 @@ const AnalyticsOverview = () => {
         try {
             setSkuWiseDetails([])
             setDatewisedetails([])
+            let stateBrand = ''
+            if (stateName && !typeFetch) {
+                stateBrand = `brand=${stateName}`
+            }
 
-            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}`)
+            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}${stateBrand}`)
             const data = response.data
 
             setData(data)
@@ -165,10 +175,15 @@ const AnalyticsOverview = () => {
             }))
 
             setDatewisedetails(dateWIseDetailArray)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
+
+    console.log('datewiseDetails', datewisedetails)
 
     useEffect(() => {
         fetchData(from, to)
@@ -247,7 +262,12 @@ const AnalyticsOverview = () => {
 
     const handleDownload = async () => {
         try {
-            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}&download=true`, {
+            let stateBrand = ''
+            if (stateName && !typeFetch) {
+                stateBrand = `brand=${stateName}`
+            }
+
+            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}${stateBrand}&download=true`, {
                 responseType: 'blob',
             })
 
@@ -351,6 +371,7 @@ const AnalyticsOverview = () => {
             if (query) query += '&'
             query += `subcategory=${subCategoryIds}`
         }
+
         if (brandList.length > 0) {
             const brandIds = brandList.map((item: any) => item.id).join(',')
             if (query) query += '&'
@@ -510,6 +531,11 @@ const AnalyticsOverview = () => {
                     setIsOpen={setShowImageModal}
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
+            )}
+            {accessDenied && (
+                <>
+                    <AccessDenied />
+                </>
             )}
         </div>
     )

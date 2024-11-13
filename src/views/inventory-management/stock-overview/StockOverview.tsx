@@ -15,6 +15,7 @@ import ImageMODAL from '@/common/ImageModal'
 import { FaSync } from 'react-icons/fa'
 import StockOverviewFilter from './stockOverviewComponents/StockOverviewFilter'
 import { useNavigate } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 interface LastUpdatedBy {
     name: string
@@ -92,7 +93,7 @@ const StockOverview = () => {
     const [productTypeList, setProductTypeList] = useState([])
     const [brandList, setBrandList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
-
+    const [accessDenied, setAccessDenied] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
 
     const fetchAndFilterData = async (page: number, pageSize: number, filter: string = '') => {
@@ -118,7 +119,10 @@ const StockOverview = () => {
 
             setData(data)
             setTotalData(total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.error('Error fetching data:', error)
         }
     }
@@ -402,6 +406,10 @@ const StockOverview = () => {
 
     const hanldeUpdateInventory = () => {
         navigate(`/app/updateInventory`)
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

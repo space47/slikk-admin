@@ -1,14 +1,18 @@
 import Chart from 'react-apexcharts'
 import { COLOR_6 } from '@/constants/chart.constant'
+import { useNavigate } from 'react-router-dom'
 
 interface BRANDWISEDATA {
     brandData: Record<string, number>
+    from: any
+    to: any
 }
 
-const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
+const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
+    const brandName = Object.keys(brandData).map((key) => key)
     const categories = Object.keys(brandData).map((key) => `${key} (${brandData[key]})`)
     const dataValues = Object.values(brandData)
-
+    const navigate = useNavigate()
     const sum = dataValues.reduce((acc, value) => acc + value, 0)
 
     const data = [
@@ -24,6 +28,21 @@ const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
             </div>
             <Chart
                 options={{
+                    chart: {
+                        events: {
+                            dataPointSelection: (event, chartContext, config) => {
+                                const label = brandName[config.dataPointIndex]
+                                console.log('Clicked label:', label, from, to)
+                                navigate(`/app/analytics/orders`, {
+                                    state: {
+                                        stateName: label,
+                                        var1: from,
+                                        var2: to,
+                                    },
+                                })
+                            },
+                        },
+                    },
                     plotOptions: {
                         bar: {
                             horizontal: true,
@@ -41,7 +60,6 @@ const BrandDataChart = ({ brandData }: BRANDWISEDATA) => {
                             colors: ['#fff'],
                         },
                     },
-
                     xaxis: {
                         categories: categories,
                     },

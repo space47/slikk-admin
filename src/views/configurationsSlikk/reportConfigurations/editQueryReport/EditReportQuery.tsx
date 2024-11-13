@@ -16,6 +16,8 @@ const reportQueryNames = [
     { label: 'Number', value: 'Number' },
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
+    { label: 'Select', value: 'Select' },
+    { label: 'MulltiSelect', value: 'MultiSelect' },
 ]
 
 const EditReportQuery = () => {
@@ -24,7 +26,8 @@ const EditReportQuery = () => {
 
     const [reportData, setReportData] = useState({
         name: '',
-        value: '',
+        display_name: '',
+        value: [{ key: '', value: '' }],
         required_fields: [{ key: '', value: '', dataType: 'String' }],
     })
 
@@ -34,7 +37,10 @@ const EditReportQuery = () => {
             const data = response?.data?.data
             const formattedData = {
                 name: data?.results[0]?.name || '',
-                value: data?.results[0]?.value || '',
+                value: Object.entries(data?.results[0]?.value || {}).map(([key, value]) => {
+                    return { key, value }
+                }),
+                display_name: data?.results[0]?.display_name || '',
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
                     const [dataType, value] = fullValue.split('_')
                     return { key, value, dataType: dataType || 'String' }
@@ -51,23 +57,24 @@ const EditReportQuery = () => {
     }, [id])
 
     const handleSubmit = async (values: any) => {
-        const parser = new DOMParser()
-        const htmlDoc = parser.parseFromString(values.value, 'text/html')
-        const plainTextMessage = htmlDoc.body.textContent || ''
-
-        console.log('FieldArray', values?.required_fields)
-        const formatedRequiredFields = values.required_fields.reduce((obj: any, item: { key: string; value: any; dataType: string }) => {
+        const formattedRequiredFields = values.required_fields.reduce((obj: any, item: { key: string; value: any; dataType: string }) => {
             obj[item.key] = `${item.dataType}_${item.value}`
+            return obj
+        }, {})
+
+        const formattedValue = values.value.reduce((obj: any, item: { key: string; value: any }) => {
+            const parser = new DOMParser()
+            const htmlDoc = parser.parseFromString(item.value, 'text/html')
+            const plainTextValue = htmlDoc.body.textContent || ''
+            obj[item.key] = plainTextValue
             return obj
         }, {})
 
         const body = {
             ...values,
-            value: plainTextMessage || '',
-            required_fields: formatedRequiredFields,
+            value: formattedValue,
+            required_fields: formattedRequiredFields,
         }
-
-        console.log('Value of body', body)
 
         try {
             const response = await axioisInstance.patch(`/query/config/${id}`, body)
@@ -89,15 +96,46 @@ const EditReportQuery = () => {
                 {({ values, resetForm }) => (
                     <Form className="w-2/3">
                         <FormContainer>
-                            <FormItem label="Name" className="col-span-1 w-1/2">
+                            <FormItem label="Unique Report Name" className="col-span-1 w-1/2">
                                 <Field type="text" name="name" placeholder="Enter Name" component={Input} />
                             </FormItem>
-                            <FormItem label="Value" labelClass="!justify-start" className="col-span-1 w-full">
-                                <Field name="value">
-                                    {({ field, form }: FieldProps) => (
-                                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                            <FormItem label="Report Display Name" className="col-span-1 w-1/2">
+                                <Field type="text" name="display_name" placeholder="Enter Display Name" component={Input} />
+                            </FormItem>
+                            <FormItem label="Query List" labelClass="!justify-start" className="col-span-1 w-full">
+                                <FieldArray name="value">
+                                    {({ push, remove }) => (
+                                        <div>
+                                            {values.value.map((item: any, index: number) => (
+                                                <div key={index} className="flex items-center space-x-4 mt-2">
+                                                    <div className="flex flex-col gap-2 w-full">
+                                                        <Field
+                                                            name={`value[${index}].key`}
+                                                            placeholder="Enter Query Name"
+                                                            component={Input}
+                                                            className="w-1/2"
+                                                        />
+                                                        <Field name={`value[${index}].value`}>
+                                                            {({ field, form }: FieldProps) => (
+                                                                <RichTextEditor
+                                                                    className="w-full"
+                                                                    value={field.value}
+                                                                    onChange={(val) => form.setFieldValue(field.name, val)}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </div>
+                                                    <button type="button" onClick={() => remove(index)}>
+                                                        <MdCancel className="text-xl text-red-600" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button type="button" onClick={() => push({ key: '', value: '' })} className="mt-3">
+                                                <IoIosAddCircle className="text-green-600 text-xl" />
+                                            </button>
+                                        </div>
                                     )}
-                                </Field>
+                                </FieldArray>
                             </FormItem>
                             <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
                                 <FieldArray name="required_fields">
@@ -114,6 +152,7 @@ const EditReportQuery = () => {
                                                     <Field name={`required_fields[${index}].dataType`}>
                                                         {({ field, form }: FieldProps) => (
                                                             <Select
+                                                                className="w-1/4"
                                                                 placeholder="Select dataType"
                                                                 options={reportQueryNames}
                                                                 value={reportQueryNames.find((option) => option.value === field.value)}
@@ -134,7 +173,7 @@ const EditReportQuery = () => {
                                                             )
                                                         }}
                                                     </Field>
-                                                    <button type="button" className="bg-none border-none" onClick={() => remove(index)}>
+                                                    <button type="button" onClick={() => remove(index)}>
                                                         <MdCancel className="text-xl text-red-600" />
                                                     </button>
                                                 </div>
@@ -142,7 +181,7 @@ const EditReportQuery = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => push({ key: '', value: '', dataType: 'String' })}
-                                                className="mt-3 bg-none border-none"
+                                                className="mt-3"
                                             >
                                                 <IoIosAddCircle className="text-green-600 text-xl" />
                                             </button>
