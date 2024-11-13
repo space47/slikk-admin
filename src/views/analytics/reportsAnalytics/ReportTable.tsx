@@ -9,8 +9,8 @@ interface ReportTableProps {
     tableData: any[]
     page: number
     pageSize: number
-    orderCount: number
-    onPaginationChange: any
+    orderCount?: number
+    onPaginationChange?: any
     setPageSize: any
     setPage: any
     keyName?: any
@@ -22,17 +22,7 @@ type Option = {
     label: string
 }
 
-const ReportTable = ({
-    tableData,
-    page,
-    pageSize,
-    orderCount,
-    onPaginationChange,
-    setPage,
-    setPageSize,
-    keyName,
-    showSpinner,
-}: ReportTableProps) => {
+const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName }: ReportTableProps) => {
     const paginatedData = tableData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(tableData.length / pageSize)
 
