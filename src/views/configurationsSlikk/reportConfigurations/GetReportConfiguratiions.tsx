@@ -57,16 +57,8 @@ const GetReportConfiguratiions = () => {
                 header: 'Value',
                 accessorKey: 'value',
                 cell: ({ getValue }) => {
-                    return typeof getValue() === 'object' ? (
-                        Object.entries(getValue()).map(([key, value], index) => {
-                            return (
-                                <div key={index} className="flex flex-col gap-2">
-                                    {`${key} :  ${value}`}
-                                </div>
-                            )
-                        })
-                    ) : (
-                        <>
+                    return (
+                        <div className="flex flex-col gap-2">
                             {getValue().map((item, index) => {
                                 console.log('items', item.name)
                                 return (
@@ -76,10 +68,11 @@ const GetReportConfiguratiions = () => {
                                         <p>Position: {item.position}</p>
                                         <p>Display Name: {item.display_name}</p>
                                         <hr />
+                                        <hr />
                                     </div>
                                 )
                             })}
-                        </>
+                        </div>
                     )
                 },
             },

@@ -93,7 +93,7 @@ const ReverseTrip = () => {
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
-                header: 'Action',
+                header: 'Assign Trip',
                 accessorKey: 'trip_id',
                 cell: ({ getValue, row }) => (
                     <button onClick={() => handleAssignClick(getValue())} className="bg-none border-none">
@@ -102,7 +102,7 @@ const ReverseTrip = () => {
                 ),
             },
             {
-                header: 'Update',
+                header: 'Update Trip',
                 accessorKey: 'trip_id',
                 cell: ({ getValue, row }) => (
                     <button onClick={() => handleUpdateClick(getValue())} className="bg-none border-none">
