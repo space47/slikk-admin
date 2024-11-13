@@ -25,7 +25,14 @@ const AddReportQuery = () => {
     const initialValue = {
         name: '',
         display_name: '',
-        value: [{ key: '', value: '' }],
+        value: [
+            {
+                name: '',
+                display_name: '',
+                position: 0,
+                query: '',
+            },
+        ],
         required_fields: [{ key: '', value: '', dataType: 'String' }],
     }
 
@@ -34,18 +41,21 @@ const AddReportQuery = () => {
             obj[item.key] = `${item.dataType}_${item.value}`
             return obj
         }, {})
-
-        const formattedValue = values.value.reduce((obj: any, item: { key: string; value: any }) => {
+        const updatedValues = values.value.map((item: any) => {
             const parser = new DOMParser()
-            const htmlDoc = parser.parseFromString(item.value, 'text/html')
+            const htmlDoc = parser.parseFromString(item.query, 'text/html')
             const plainTextValue = htmlDoc.body.textContent || ''
-            obj[item.key] = plainTextValue
-            return obj
-        }, {})
+            return {
+                ...item,
+                query: plainTextValue,
+            }
+        })
+
+        console.log('value.value', updatedValues)
 
         const body = {
             ...values,
-            value: formattedValue,
+            value: updatedValues,
             required_fields: formattedRequiredFields,
         }
 
@@ -80,15 +90,36 @@ const AddReportQuery = () => {
                                     {({ push, remove }) => (
                                         <div>
                                             {values.value.map((item, index) => (
-                                                <div key={index} className="flex space-x-4 mt-2 items-center">
-                                                    <div className="flex flex-col gap-2 w-full lg:w-2/3">
-                                                        <Field
-                                                            name={`value[${index}].key`}
-                                                            placeholder="Enter Query Name"
-                                                            component={Input}
-                                                            className="w-1/4"
-                                                        />
-                                                        <Field name={`value[${index}].value`}>
+                                                <div key={index} className="flex flex-col gap-4 mt-2">
+                                                    <div className="flex space-x-4 items-center">
+                                                        <FormItem label="name">
+                                                            <Field
+                                                                name={`value[${index}].name`}
+                                                                placeholder="Enter Query Name"
+                                                                component={Input}
+                                                                className="w-auto"
+                                                            />
+                                                        </FormItem>
+                                                        <FormItem label="Display Name">
+                                                            <Field
+                                                                name={`value[${index}].display_name`}
+                                                                placeholder="Enter Display Name"
+                                                                component={Input}
+                                                                className="w-auto"
+                                                            />
+                                                        </FormItem>
+                                                        <FormItem label="Position">
+                                                            <Field
+                                                                name={`value[${index}].position`}
+                                                                type="number"
+                                                                placeholder="Position"
+                                                                component={Input}
+                                                                className="w-1/4"
+                                                            />
+                                                        </FormItem>
+                                                    </div>
+                                                    <FormItem label="Query">
+                                                        <Field name={`value[${index}].query`}>
                                                             {({ field, form }: FieldProps) => (
                                                                 <RichTextEditor
                                                                     value={field.value}
@@ -97,20 +128,27 @@ const AddReportQuery = () => {
                                                                 />
                                                             )}
                                                         </Field>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        className="text-red-600 hover:text-red-800 transition"
-                                                        onClick={() => remove(index)}
-                                                    >
-                                                        <MdCancel className="text-2xl" />
-                                                    </button>
+                                                        <button
+                                                            type="button"
+                                                            className="text-red-600 hover:text-red-800 transition"
+                                                            onClick={() => remove(index)}
+                                                        >
+                                                            <MdCancel className="text-2xl" />
+                                                        </button>
+                                                    </FormItem>
                                                 </div>
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => push({ key: '', value: '' })}
-                                                className="mt-3 flex items-center text-green-600 hover:text-green-800 transition"
+                                                onClick={() =>
+                                                    push({
+                                                        name: '',
+                                                        display_name: '',
+                                                        position: 0,
+                                                        query: '',
+                                                    })
+                                                }
+                                                className="mt-3 flex items-center text-white bg-black px-2 py-2 rounded-lg hover:text-gray-200 transition"
                                             >
                                                 <IoIosAddCircle className="text-2xl mr-1" />
                                                 Add Query

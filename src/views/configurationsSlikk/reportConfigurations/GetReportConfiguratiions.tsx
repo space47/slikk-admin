@@ -56,14 +56,32 @@ const GetReportConfiguratiions = () => {
             {
                 header: 'Value',
                 accessorKey: 'value',
-                cell: ({ getValue }) =>
-                    Object.entries(getValue()).map(([key, value], index) => {
-                        return (
-                            <div key={index} className="flex flex-col gap-2">
-                                {`${key} :  ${value}`}
-                            </div>
-                        )
-                    }),
+                cell: ({ getValue }) => {
+                    return typeof getValue() === 'object' ? (
+                        Object.entries(getValue()).map(([key, value], index) => {
+                            return (
+                                <div key={index} className="flex flex-col gap-2">
+                                    {`${key} :  ${value}`}
+                                </div>
+                            )
+                        })
+                    ) : (
+                        <>
+                            {getValue().map((item, index) => {
+                                console.log('items', item.name)
+                                return (
+                                    <div key={index}>
+                                        <p>Name: {item.name}</p>
+                                        <p>Query: {item.query}</p>
+                                        <p>Position: {item.position}</p>
+                                        <p>Display Name: {item.display_name}</p>
+                                        <hr />
+                                    </div>
+                                )
+                            })}
+                        </>
+                    )
+                },
             },
             {
                 header: 'Required Fields',

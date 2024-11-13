@@ -13,6 +13,7 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 import ReportGraphInput from './ReportGraphInput'
 import AccessDenied from '@/views/pages/AccessDenied'
 import InnternalError from '@/views/pages/InternalServerError/InternalError'
+import { table } from 'console'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -29,6 +30,7 @@ const ReportAnalytics = () => {
     const [reportQueryNames, setReportQueryNames] = useState<{ label: string; value: string }[]>([])
     const [showDataBelow, setShowDataBelow] = useState(false)
     const [dynamicReportTable, setDynamicReportTable] = useState([])
+    const [displayTableName, setDisplayTableName] = useState('')
     const [showTable, setShowTable] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -126,13 +128,25 @@ const ReportAnalytics = () => {
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
 
-            const tablesData = Object.keys(data).map((key) => ({
+            const displayTable = Object.keys(data).map((key) => ({
                 key,
-                data: data[key],
+                data,
             }))
 
-            setDynamicReportTable(tablesData)
-            setTotalCount(tablesData.length)
+            const tab = Object.keys(data).map((key) => {
+                return {
+                    key,
+                    data: data[key], //?.data
+                }
+            })
+
+            console.log(
+                'Data for DRT',
+                tab.map((item) => item.data.data),
+            )
+
+            setDynamicReportTable(tab)
+            setTotalCount(tab.length)
             setShowTable(true)
             setShowSpinner(false)
         } catch (error: any) {
@@ -158,6 +172,8 @@ const ReportAnalytics = () => {
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
+
+    console.log('dymanic', dynamicReportTable)
 
     const handleSelect = (value: string) => {
         setSelectedOption(value)

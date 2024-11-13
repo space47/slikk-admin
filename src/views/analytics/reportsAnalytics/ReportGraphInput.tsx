@@ -86,8 +86,8 @@ const ReportGraphInput = ({
 
                 <ReportTable
                     showSpinner={showSpinner}
-                    tableData={table.data}
-                    keyName={table.key}
+                    tableData={table?.data?.data}
+                    keyName={table?.data.display_name}
                     page={page}
                     pageSize={pageSize}
                     onPaginationChange={onPaginationChange}
@@ -103,7 +103,7 @@ const ReportGraphInput = ({
                             className="w-[300px]"
                             placeholder={`Select X-Axis for ${table.key}`}
                             value={xAxisValue[table.key] ? { label: xAxisValue[table.key], value: xAxisValue[table.key] } : null}
-                            options={Options(table)}
+                            options={Options(table?.data)}
                             onChange={(option) => handleAxisValue('x', option, table)}
                         />
                     </div>
@@ -114,7 +114,7 @@ const ReportGraphInput = ({
                             className="w-[300px]"
                             placeholder={`Select Y-Axis for ${table.key}`}
                             value={yAxisValue[table.key] ? { label: yAxisValue[table.key], value: yAxisValue[table.key] } : null}
-                            options={Options(table)}
+                            options={Options(table?.data)}
                             onChange={(option) => handleAxisValue('y', option, table)}
                         />
                     </div>
@@ -126,7 +126,7 @@ const ReportGraphInput = ({
                                 className="w-[300px]"
                                 placeholder={`Select Y-Axis 2 for ${table.key}`}
                                 value={yAxisValue2[table.key] ? { label: yAxisValue2[table.key], value: yAxisValue2[table.key] } : null}
-                                options={Options(table)}
+                                options={Options(table?.data)}
                                 onChange={(option) => handleAxisValue('y2', option, table)}
                             />
                         </div>
@@ -151,7 +151,7 @@ const ReportGraphInput = ({
 
                 <GraphComponent
                     key={table.key}
-                    keyData={table}
+                    keyData={table?.data}
                     selectedOption={selectedOption}
                     xAxisValue={xAxisValue}
                     yAxisValue={yAxisValue}
