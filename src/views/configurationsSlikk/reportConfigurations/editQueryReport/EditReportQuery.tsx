@@ -50,14 +50,14 @@ const EditReportQuery = () => {
             const formattedData = {
                 name: data?.results[0]?.name || '',
                 display_name: data?.results[0]?.display_name || '',
-                // value:
-                //     data?.results[0]?.value.map((item) => ({
-                //         name: item.name,
-                //         display_name: item.display_name,
-                //         position: item.position,
-                //         query: item.query,
-                //     })) || [],
-                value: [],
+                value:
+                    data?.results[0]?.value.map((item) => ({
+                        name: item.name,
+                        display_name: item.display_name,
+                        position: item.position,
+                        query: item.query,
+                    })) || [],
+                // value: [],
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
                     const [dataType, value] = fullValue.split('_')
                     return { key, value, dataType: dataType || 'String' }
@@ -103,6 +103,7 @@ const EditReportQuery = () => {
             notification.success({
                 message: response?.data.message || 'Successfully updated query',
             })
+            navigate(`/app/reportConfigurations`)
         } catch (error) {
             console.log(error)
             notification.error({
