@@ -66,6 +66,16 @@ const TaskTracking = () => {
 
     const columns = [
         {
+            header: 'Assign Task',
+            accessor: 'task_id',
+            format: (value: any, row: TaskDetails) =>
+                row.status == 'CREATED' && (
+                    <button onClick={() => handleAssignClick(row.task_id)} className="bg-none border-none">
+                        <MdAssignment className="text-3xl text-yellow-500" />
+                    </button>
+                ),
+        },
+        {
             header: 'Task ID',
             accessor: 'task_id',
             format: (_: any, row: TaskDetails) => {
@@ -77,6 +87,7 @@ const TaskTracking = () => {
             },
         },
         { header: 'Status', accessor: 'status' },
+        { header: 'Task Type', accessor: 'task_type' },
         { header: 'Runner Latitude', accessor: 'runner_latitude' },
         { header: 'Runner Longitude', accessor: 'runner_longitude' },
         {
@@ -189,16 +200,6 @@ const TaskTracking = () => {
             header: 'Client Order ID',
             accessor: 'client_order_id',
             format: (_: any, row: TaskDetails) => row.client_order_id || '',
-        },
-        {
-            header: 'Action',
-            accessor: 'task_id',
-            format: (value: any, row: TaskDetails) =>
-                row.status == 'CREATED' && (
-                    <button onClick={() => handleAssignClick(row.task_id)} className="bg-none border-none">
-                        <MdAssignment className="text-3xl text-yellow-500" />
-                    </button>
-                ),
         },
     ]
 
