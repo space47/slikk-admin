@@ -37,9 +37,15 @@ const EditReportQuery = () => {
             const data = response?.data?.data
             const formattedData = {
                 name: data?.results[0]?.name || '',
-                value: Object.entries(data?.results[0]?.value || {}).map(([key, value]) => {
-                    return { key, value }
-                }),
+                value: Array.isArray(data?.results[0]?.value)
+                    ? data.results[0].value.map((item: any) => ({
+                          key: item.name || '',
+                          value: item.query || '',
+                      }))
+                    : Object.entries(data?.results[0]?.value || {}).map(([key, value]) => ({
+                          key,
+                          value,
+                      })),
                 display_name: data?.results[0]?.display_name || '',
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
                     const [dataType, value] = fullValue.split('_')
@@ -55,6 +61,8 @@ const EditReportQuery = () => {
     useEffect(() => {
         fetchReportApi()
     }, [id])
+
+    console.log('ReportData', reportData.value)
 
     const handleSubmit = async (values: any) => {
         const formattedRequiredFields = values.required_fields.reduce((obj: any, item: { key: string; value: any; dataType: string }) => {
