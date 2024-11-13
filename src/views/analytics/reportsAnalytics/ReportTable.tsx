@@ -58,11 +58,11 @@ const ReportTable = ({
     return (
         <div>
             <div className="font-bold text-2xl mb-5">{keyName ? keyName.toUpperCase() : ''}</div>
-            <EasyTable mainData={paginatedData} columns={columns} noPage overflow />
+            <EasyTable mainData={paginatedData} columns={columns} overflow />
 
             <div className="flex items-center justify-between mt-4">
                 <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
-                {/* <div style={{ minWidth: 130 }}>
+                <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
@@ -70,7 +70,7 @@ const ReportTable = ({
                         options={pageSizeOptions}
                         onChange={(option) => setPageSize(Number(option?.value))}
                     />
-                </div> */}
+                </div>
             </div>
         </div>
     )
