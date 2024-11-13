@@ -27,7 +27,17 @@ const EditReportQuery = () => {
     const [reportData, setReportData] = useState({
         name: '',
         display_name: '',
-        value: [{ key: '', value: '' }],
+        value: [
+            {
+                key: '',
+                value: {
+                    name: '',
+                    display_name: '',
+                    position: 0,
+                    query: '',
+                },
+            },
+        ],
         required_fields: [{ key: '', value: '', dataType: 'String' }],
     })
 
@@ -35,17 +45,25 @@ const EditReportQuery = () => {
         try {
             const response = await axioisInstance.get(`/query/config?id=${id}`)
             const data = response?.data?.data
+            console.log('Value of Data', data.results[0].value)
+
             const formattedData = {
                 name: data?.results[0]?.name || '',
-                value: Object.entries(data?.results[0]?.value || {}).map(([key, value]) => {
-                    return { key, value }
-                }),
                 display_name: data?.results[0]?.display_name || '',
+                // value:
+                //     data?.results[0]?.value.map((item) => ({
+                //         name: item.name,
+                //         display_name: item.display_name,
+                //         position: item.position,
+                //         query: item.query,
+                //     })) || [],
+                value: [],
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
                     const [dataType, value] = fullValue.split('_')
                     return { key, value, dataType: dataType || 'String' }
                 }),
             }
+
             setReportData(formattedData)
         } catch (error) {
             console.log(error)
@@ -56,25 +74,29 @@ const EditReportQuery = () => {
         fetchReportApi()
     }, [id])
 
-    const handleSubmit = async (values: any) => {
-        const formattedRequiredFields = values.required_fields.reduce((obj: any, item: { key: string; value: any; dataType: string }) => {
+    const handleSubmit = async (values) => {
+        const formattedRequiredFields = values.required_fields.reduce((obj, item) => {
             obj[item.key] = `${item.dataType}_${item.value}`
             return obj
         }, {})
 
-        const formattedValue = values.value.reduce((obj: any, item: { key: string; value: any }) => {
+        console.log('ok the final stage', values.value)
+        const updatedValues = values.value.map((item: any) => {
             const parser = new DOMParser()
-            const htmlDoc = parser.parseFromString(item.value, 'text/html')
+            const htmlDoc = parser.parseFromString(item.query, 'text/html')
             const plainTextValue = htmlDoc.body.textContent || ''
-            obj[item.key] = plainTextValue
-            return obj
-        }, {})
+            return {
+                ...item,
+                query: plainTextValue,
+            }
+        })
 
         const body = {
             ...values,
-            value: formattedValue,
+            value: updatedValues,
             required_fields: formattedRequiredFields,
         }
+        console.log('Body', body)
 
         try {
             const response = await axioisInstance.patch(`/query/config/${id}`, body)
@@ -106,42 +128,80 @@ const EditReportQuery = () => {
                                 <FieldArray name="value">
                                     {({ push, remove }) => (
                                         <div>
-                                            {values.value.map((item: any, index: number) => (
-                                                <div key={index} className="flex items-center space-x-4 mt-2">
-                                                    <div className="flex flex-col gap-2 w-full">
-                                                        <Field
-                                                            name={`value[${index}].key`}
-                                                            placeholder="Enter Query Name"
-                                                            component={Input}
-                                                            className="w-1/2"
-                                                        />
-                                                        <Field name={`value[${index}].value`}>
-                                                            {({ field, form }: FieldProps) => (
+                                            {values.value.map((item, index) => (
+                                                <div key={index} className="flex flex-col gap-4 mt-2">
+                                                    <div className="flex space-x-4 items-center">
+                                                        <FormItem label="name">
+                                                            <Field
+                                                                name={`value[${index}].name`}
+                                                                placeholder="Enter Query Name"
+                                                                component={Input}
+                                                                className="w-auto"
+                                                            />
+                                                        </FormItem>
+                                                        <FormItem label="Display Name">
+                                                            <Field
+                                                                name={`value[${index}].display_name`}
+                                                                placeholder="Enter Display Name"
+                                                                component={Input}
+                                                                className="w-auto"
+                                                            />
+                                                        </FormItem>
+                                                        <FormItem label="Position">
+                                                            <Field
+                                                                name={`value[${index}].position`}
+                                                                type="number"
+                                                                placeholder="Position"
+                                                                component={Input}
+                                                                className="w-1/4"
+                                                            />
+                                                        </FormItem>
+                                                    </div>
+                                                    <FormItem label="Query">
+                                                        <Field name={`value[${index}].query`}>
+                                                            {({ field, form }) => (
                                                                 <RichTextEditor
-                                                                    className="w-full"
                                                                     value={field.value}
                                                                     onChange={(val) => form.setFieldValue(field.name, val)}
+                                                                    className="w-full"
                                                                 />
                                                             )}
                                                         </Field>
-                                                    </div>
-                                                    <button type="button" onClick={() => remove(index)}>
-                                                        <MdCancel className="text-xl text-red-600" />
-                                                    </button>
+                                                        <button
+                                                            type="button"
+                                                            className="text-red-600 hover:text-red-800 transition"
+                                                            onClick={() => remove(index)}
+                                                        >
+                                                            <MdCancel className="text-2xl" />
+                                                        </button>
+                                                    </FormItem>
                                                 </div>
                                             ))}
-                                            <button type="button" onClick={() => push({ key: '', value: '' })} className="mt-3">
-                                                <IoIosAddCircle className="text-green-600 text-xl" />
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    push({
+                                                        name: '',
+                                                        display_name: '',
+                                                        position: 0,
+                                                        query: '',
+                                                    })
+                                                }
+                                                className="mt-3 flex items-center text-white bg-black px-2 py-2 rounded-lg hover:text-gray-200 transition"
+                                            >
+                                                <IoIosAddCircle className="text-2xl mr-1" />
+                                                Add Query
                                             </button>
                                         </div>
                                     )}
                                 </FieldArray>
                             </FormItem>
+
                             <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
                                 <FieldArray name="required_fields">
                                     {({ push, remove }) => (
                                         <div>
-                                            {values.required_fields.map((item: any, index: number) => (
+                                            {values.required_fields.map((item, index) => (
                                                 <div key={index} className="flex space-x-4 mt-2">
                                                     <Field
                                                         name={`required_fields[${index}].key`}
@@ -150,7 +210,7 @@ const EditReportQuery = () => {
                                                         className="w-1/3"
                                                     />
                                                     <Field name={`required_fields[${index}].dataType`}>
-                                                        {({ field, form }: FieldProps) => (
+                                                        {({ field, form }) => (
                                                             <Select
                                                                 className="w-1/4"
                                                                 placeholder="Select dataType"
@@ -161,7 +221,7 @@ const EditReportQuery = () => {
                                                         )}
                                                     </Field>
                                                     <Field name={`required_fields[${index}].value`}>
-                                                        {({ field, form }: FieldProps) => {
+                                                        {({ field, form }) => {
                                                             const dataType = values.required_fields[index].dataType
                                                             return (
                                                                 <Input
