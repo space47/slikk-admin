@@ -78,15 +78,16 @@ const BrandOrder = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-    const [from, setFrom] = useState(moment().subtract(6, 'days').format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
+    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showLastSevenDays, setShowLastSevenDays] = useState(true)
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState([])
 
     const [skuWiseDetails, setSkuWiseDetails] = useState<Array<{ key: string; value: SKU_DETAILS }>>([])
     const [datewisedetails, setDatewisedetails] = useState<Array<{ key: string; value: DATA_WISE_SALES }>>([])
-
+    const [noDateData, setNoDateData] = useState(false)
+    const [noSkuData, setNoSkuData] = useState(false)
     const [divisionArray, setDivisionArray] = useState([])
     const [categoryArray, setCategoryArray] = useState([])
     const [subCategoryArray, setSubCategoryArray] = useState([])
@@ -98,6 +99,8 @@ const BrandOrder = () => {
 
     const [showDrawer, setShowDrawer] = useState(false)
 
+    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+
     const fetchData = async (
         // page: number,
         // pageSize: number,
@@ -108,15 +111,27 @@ const BrandOrder = () => {
             setSkuWiseDetails([])
             setDatewisedetails([])
 
-            const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&company_id=${selectedCompany.id}&${typeFetch}`)
+            const response = await axiosInstance.get(
+                `/merchant/sales?from=${from}&to=${To_Date}&company_id=${selectedCompany.id}&${typeFetch}`,
+            )
             const data = response.data
 
             setData(data)
 
-            console.log('ssssssssssssssss', data)
             const skuData = data.sku_wise_sales_data
 
             const dateWiseData = data.date_wise_sales_data
+
+            if (!data.date_wise_sales_data || Object.keys(data.date_wise_sales_data).length === 0) {
+                setNoDateData(true)
+            } else {
+                setNoDateData(false)
+            }
+            if (!data.sku_wise_sales_data || Object.keys(data.sku_wise_sales_data).length === 0) {
+                setNoSkuData(true)
+            } else {
+                setNoSkuData(false)
+            }
 
             console.log('SKUDATA', skuData, dateWiseData)
             const div = data.tags.division.map((item: any) => ({
@@ -239,7 +254,7 @@ const BrandOrder = () => {
     const handleDownload = async () => {
         try {
             const response = await axiosInstance.get(
-                `/merchant/sales?from=${from}&to=${to}&brand_data=true&&company_id=${selectedCompany.id}&${typeFetch}&download=true`,
+                `/merchant/sales?from=${from}&to=${To_Date}&brand_data=true&&company_id=${selectedCompany.id}&${typeFetch}&download=true`,
                 {
                     responseType: 'blob',
                 },
@@ -416,61 +431,75 @@ const BrandOrder = () => {
                 </div>
             </div>
 
-            <div className="mb-10 flex flex-col lg:flex-row gap-10 justify-center">
-                <BrandOrderGraph
-                    data={datewisedetails.map((item) => ({
-                        dateKey: item.key,
-                        total_amount: item.value.total_amount,
-                    }))}
-                />
-                <BrandQuantityGraph
-                    data={datewisedetails.map((item) => ({
-                        dateKey: item.key,
-                        total_quantity: item.value.total_quantity,
-                    }))}
-                />
-            </div>
-
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-
-            <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
-                <Pagination
-                    pageSize={pageSize}
-                    currentPage={page}
-                    total={skuWiseDetails && skuWiseDetails.length}
-                    onChange={onPaginationChange}
-                />
-                <div className="mt-3 sm:mt-0" style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+            {noDateData ? (
+                <div className="flex flex-col justify-center items-center h-auto">
+                    <div className="font-bold text-xl">No Data To Preview</div>
+                    <p>Try changig the date</p>
+                </div>
+            ) : (
+                <div className="mb-10 flex flex-col lg:flex-row gap-10 justify-center">
+                    <BrandOrderGraph
+                        data={datewisedetails.map((item) => ({
+                            dateKey: item.key,
+                            total_amount: item.value.total_amount,
+                        }))}
+                    />
+                    <BrandQuantityGraph
+                        data={datewisedetails.map((item) => ({
+                            dateKey: item.key,
+                            total_quantity: item.value.total_quantity,
+                        }))}
                     />
                 </div>
-            </div>
+            )}
+
+            {noSkuData ? (
+                <div className="flex flex-col justify-center items-center mt-40">-</div>
+            ) : (
+                <>
+                    <Table>
+                        <THead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <Tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <Th key={header.id} colSpan={header.colSpan}>
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                        </Th>
+                                    ))}
+                                </Tr>
+                            ))}
+                        </THead>
+                        <TBody>
+                            {table.getRowModel().rows.map((row) => (
+                                <Tr key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                    ))}
+                                </Tr>
+                            ))}
+                        </TBody>
+                    </Table>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
+                        <Pagination
+                            pageSize={pageSize}
+                            currentPage={page}
+                            total={skuWiseDetails && skuWiseDetails.length}
+                            onChange={onPaginationChange}
+                        />
+                        <div className="mt-3 sm:mt-0" style={{ minWidth: 130 }}>
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                options={pageSizeOptions}
+                                onChange={(option) => onSelectChange(option?.value)}
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
+
             {showDrawer && (
                 <BrandOrderDrawer
                     divisionArray={divisionArray}
