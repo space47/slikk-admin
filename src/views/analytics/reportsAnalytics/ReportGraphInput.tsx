@@ -79,7 +79,7 @@ const ReportGraphInput = ({
         return (
             <div key={index} className="mt-5 flex flex-col gap-4">
                 <div className="flex justify-end ">
-                    <Button variant="new" onClick={() => handleDownloadCsv(table.key)}>
+                    <Button variant="new" onClick={() => handleDownloadCsv(table?.data?.name)}>
                         Download CSV
                     </Button>
                 </div>
