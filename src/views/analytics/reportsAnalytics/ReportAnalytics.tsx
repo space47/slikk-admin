@@ -180,6 +180,7 @@ const ReportAnalytics = () => {
     }
 
     const handleDownloadCsv = async (queryName: any) => {
+        console.log('queryName', queryName)
         let reportParameters = ''
         if (currentValues?.required_fields) {
             reportParameters = currentValues.required_fields
