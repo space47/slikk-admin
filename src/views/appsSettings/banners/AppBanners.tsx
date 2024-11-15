@@ -69,16 +69,10 @@ const AppBanners = () => {
                     </button>
                 ),
             },
-            { header: 'ID', accessorKey: 'id' },
+
             { header: 'Name', accessorKey: 'name' },
             { header: 'Position', accessorKey: 'position' },
             { header: 'Section Heading', accessorKey: 'section_heading' },
-            { header: 'Parent Banner', accessorKey: 'parent_banner' },
-            {
-                header: 'Quick Filter Tags',
-                accessorKey: 'quick_filter_tags',
-                cell: (info: any) => info.getValue().join(', '),
-            },
             {
                 header: 'Brand Name',
                 accessorKey: 'brand.name',
@@ -123,25 +117,8 @@ const AppBanners = () => {
                     info.getValue() ? <img src={info.getValue()?.split(',')[0]} alt="" className=" object-contain w-[100px]  " /> : '',
             },
 
-            { header: 'Offers', accessorKey: 'offers' },
-            { header: 'Offer ID', accessorKey: 'offer_id' },
-            { header: 'Page', accessorKey: 'page' },
-            {
-                header: 'From Date',
-                accessorKey: 'from_date',
-                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD')}</span>,
-            },
-            {
-                header: 'To Date',
-                accessorKey: 'to_date',
-                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD')}</span>,
-            },
             { header: 'Upto Off', accessorKey: 'uptoff' },
-            // {
-            //     header: 'Tags',
-            //     accessorKey: 'tags',
-            //     cell: (info: any) => info.getValue(),
-            // },
+
             { header: 'Footer', accessorKey: 'footer' },
             { header: 'Coupon Code', accessorKey: 'coupon_code' },
             { header: 'Is Clickable', accessorKey: 'is_clickable' },
@@ -155,15 +132,7 @@ const AppBanners = () => {
                     return <img src={imageUrl} alt="Image" style={{ width: '100px', height: 'auto' }} />
                 },
             },
-            {
-                header: 'Section Background Mobile',
-                accessorKey: 'section_background_mobile',
-                cell: ({ getValue }) => (
-                    <a href={getValue()}>
-                        <img src={getValue()} alt="" />
-                    </a>
-                ),
-            },
+
             { header: 'Max Price', accessorKey: 'max_price' },
             { header: 'Min Price', accessorKey: 'min_price' },
             { header: 'Barcodes', accessorKey: 'barcodes' },

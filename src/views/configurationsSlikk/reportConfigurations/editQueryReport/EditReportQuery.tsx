@@ -23,6 +23,7 @@ const reportQueryNames = [
 const EditReportQuery = () => {
     const navigate = useNavigate()
     const { id } = useParams()
+    console.log('edit Report')
 
     const [reportData, setReportData] = useState({
         name: '',
@@ -34,6 +35,7 @@ const EditReportQuery = () => {
                     name: '',
                     display_name: '',
                     position: 0,
+                    is_graph: false,
                     query: '',
                 },
             },
@@ -45,7 +47,6 @@ const EditReportQuery = () => {
         try {
             const response = await axioisInstance.get(`/query/config?id=${id}`)
             const data = response?.data?.data
-            console.log('Value of Data', data.results[0].value)
 
             const formattedData = {
                 name: data?.results[0]?.name || '',
@@ -56,8 +57,10 @@ const EditReportQuery = () => {
                         display_name: item.display_name,
                         position: item.position,
                         query: item.query,
+                        is_graph: item.is_graph,
                     })) || [],
                 // value: [],
+
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
                     const [dataType, value] = fullValue.split('_')
                     return { key, value, dataType: dataType || 'String' }
@@ -154,7 +157,14 @@ const EditReportQuery = () => {
                                                                 type="number"
                                                                 placeholder="Position"
                                                                 component={Input}
-                                                                className="w-1/4"
+                                                                className="w-full"
+                                                            />
+                                                        </FormItem>
+                                                        <FormItem label="Graph">
+                                                            <Field
+                                                                name={`value[${index}].is_graph`}
+                                                                type="Checkbox"
+                                                                placeholder="Is graph required"
                                                             />
                                                         </FormItem>
                                                     </div>
@@ -185,6 +195,7 @@ const EditReportQuery = () => {
                                                         name: '',
                                                         display_name: '',
                                                         position: 0,
+                                                        is_graph: false,
                                                         query: '',
                                                     })
                                                 }

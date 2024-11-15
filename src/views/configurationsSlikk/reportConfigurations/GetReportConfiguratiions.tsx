@@ -17,28 +17,11 @@ const GetReportConfiguratiions = () => {
     const [pageSize, setPageSize] = useState(10)
     const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
-
-    const fetchReportApi = async () => {
-        try {
-            const response = await axioisInstance.get(`/query/config?p=${page}&page_size=${pageSize}`)
-            const data = response?.data?.data
-            setReportQueryData(data?.results)
-            setTotalCount(data?.count)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.log(error)
-        }
-    }
+    console.log('get Report')
 
     useEffect(() => {
         fetchReportApi()
     }, [page, pageSize])
-
-    const handleEditQuery = (id: string) => {
-        navigate(`/app/reportConfigurations/${id}`)
-    }
 
     const columns = useMemo(
         () => [
@@ -103,17 +86,6 @@ const GetReportConfiguratiions = () => {
         [],
     )
 
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const handleNewQuery = () => {
-        navigate(`/app/reportConfigurations/addNew`)
-    }
-
     return (
         <div className="flex flex-col gap-4">
             <div className="flex justify-end">
@@ -149,6 +121,34 @@ const GetReportConfiguratiions = () => {
             )}
         </div>
     )
+
+    async function fetchReportApi() {
+        try {
+            const response = await axioisInstance.get(`/query/config?p=${page}&page_size=${pageSize}`)
+            const data = response?.data?.data
+            setReportQueryData(data?.results)
+            setTotalCount(data?.count)
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
+            console.log(error)
+        }
+    }
+
+    function onSelectChange(value = 0) {
+        setPageSize(Number(value))
+    }
+    function onPaginationChange(page: number) {
+        setPage(page)
+    }
+
+    function handleNewQuery() {
+        navigate(`/app/reportConfigurations/addNew`)
+    }
+    function handleEditQuery(id: string) {
+        navigate(`/app/reportConfigurations/${id}`)
+    }
 }
 
 export default GetReportConfiguratiions

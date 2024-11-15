@@ -28,6 +28,7 @@ import { MdCancel } from 'react-icons/md'
 import ImageComponent from './component/ImageComponent'
 import SectionsComponent from './component/SectionsComponent'
 import * as Yup from 'yup'
+import { Spinner } from '@/components/ui'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -42,6 +43,7 @@ const EditBanner = () => {
     const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const [showSpinner, setShowSpinner] = useState(false)
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -264,13 +266,14 @@ const EditBanner = () => {
         console.log('dATA', formData)
 
         try {
+            setShowSpinner(true)
             const response = await axioisInstance.patch(`banners`, formData)
 
             notification.success({
                 message: 'Success',
                 description: response?.data?.message || 'Banner Edited Successfully',
             })
-
+            setShowSpinner(false)
             navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
@@ -285,6 +288,14 @@ const EditBanner = () => {
     const [filteredCategories, setFilteredCategories] = useState([])
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
+
+    if (showSpinner) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner size={40} />
+            </div>
+        )
+    }
 
     return (
         <div>
