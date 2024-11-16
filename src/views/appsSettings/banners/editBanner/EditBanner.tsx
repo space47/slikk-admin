@@ -3,9 +3,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
-import DatePicker from '@/components/ui/DatePicker'
 import { Field, Form, Formik, FieldProps, ErrorMessage } from 'formik'
-// import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -13,22 +11,19 @@ import { BANNER_FIELDS_TYPE } from './EditCommon'
 import { BANNERMODEL } from '../BannerCommon'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
-import { CATEGORY_STATE } from '@/store/types/category.types'
-import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
-import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
-import Upload from '@/components/ui/Upload'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import moment from 'moment'
 import { formatDate } from '@/common/date'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
-import { MdCancel } from 'react-icons/md'
 import ImageComponent from './component/ImageComponent'
 import SectionsComponent from './component/SectionsComponent'
 import * as Yup from 'yup'
-import { Spinner } from '@/components/ui'
+import LoadingSpinner from '@/common/LoadingSpinner'
+import { beforeUpload } from '@/common/beforeUpload'
+import BannerCategories from './component/BannerCategories'
+import { handleimage } from '@/common/handleImage'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -38,12 +33,12 @@ const EditBanner = () => {
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
     const navigate = useNavigate()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
-    const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
-    const subCategory = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
-    const product_type = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [showSpinner, setShowSpinner] = useState(false)
+    const [filteredCategories, setFilteredCategories] = useState([])
+    const [filteredSubCategories, setFilteredSubCategories] = useState([])
+    const [filteredProductTypes, setFilteredProductTypes] = useState([])
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -54,49 +49,7 @@ const EditBanner = () => {
     useEffect(() => {
         dispatch(getAllBrandsAPI())
         dispatch(getAllFiltersAPI())
-    }, [])
-
-    const MAX_UPLOAD = 8
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
-
-    console.log(
-        'CAATEGORY',
-        category.categories.map((item) => item.name),
-    )
-    console.log('FILTERS', filters.filters)
+    }, [dispatch])
 
     const { id } = useParams()
 
@@ -158,48 +111,6 @@ const EditBanner = () => {
         position: bannerData?.position || null,
     }
 
-    console.log(
-        'DIVISION',
-        initialValue.division.map((item) => item.name),
-    )
-
-    const handleimage = async (files: File[]) => {
-        const formData = new FormData()
-
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'product')
-
-        try {
-            console.log(formData.get('file'))
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            console.log(response)
-            const newData = response.data.url
-
-            console.log(newData)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            // notification.error({
-            //     message: 'Failure',
-            //     description:
-            //         error?.response?.data?.message || 'File Not uploaded',
-            // })
-            return 'Error'
-        }
-    }
-
-    console.log('DIVISIONDATA', initialValue.division)
-
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
             setMobileImageView((item) => item.filter((_, id) => id !== index))
@@ -216,27 +127,13 @@ const EditBanner = () => {
     }
 
     const handleSubmit = async (values: BANNERMODEL) => {
-        let webImageUpload = values.image_web
-        let mobileImageUpload = values.image_mobile
-        let sectiioBgWebUpload = values.section_background_web
-        let sectionBgMobileUpload = values.section_background_mobile
-
-        if (values.image_web_array.length > 0) {
-            webImageUpload = await handleimage(values.image_web_array)
+        const processImageUpload = async (imageArray: any[], currentImage: string) => {
+            return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
         }
-
-        if (values.image_mobile_array.length > 0) {
-            mobileImageUpload = await handleimage(values.image_mobile_array)
-        }
-        if (values.section_background_mobile_array.length > 0) {
-            sectionBgMobileUpload = await handleimage(values.section_background_mobile_array)
-        }
-        if (values.section_background_web_array.length > 0) {
-            sectiioBgWebUpload = await handleimage(values.section_background_web_array)
-        }
-
-        console.log('tags', values)
-
+        const webImageUpload = await processImageUpload(values.image_web_array, values.image_web)
+        const mobileImageUpload = await processImageUpload(values.image_mobile_array, values.image_mobile)
+        const sectionBgWebUpload = await processImageUpload(values.section_background_web_array, values.section_background_web)
+        const sectionBgMobileUpload = await processImageUpload(values.section_background_mobile_array, values.section_background_mobile)
         const { max_off, min_off, ...rest } = values
         console.log(max_off, min_off)
 
@@ -245,7 +142,7 @@ const EditBanner = () => {
             banner_id: values.id || '',
             image_web: webImageUpload || '',
             image_mobile: mobileImageUpload || '',
-            section_background_web: sectiioBgWebUpload || '',
+            section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
             image_web_array: null,
             image_mobile_array: null,
@@ -263,8 +160,6 @@ const EditBanner = () => {
             ].filter((item) => item),
         }
 
-        console.log('dATA', formData)
-
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`banners`, formData)
@@ -273,34 +168,25 @@ const EditBanner = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Banner Edited Successfully',
             })
-            setShowSpinner(false)
             navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
                 description: error?.response?.data?.message || 'Banner not Edited',
             })
+        } finally {
+            setShowSpinner(false)
         }
     }
 
-    console.log('DIVVVIU', divisions.divisions)
-
-    const [filteredCategories, setFilteredCategories] = useState([])
-    const [filteredSubCategories, setFilteredSubCategories] = useState([])
-    const [filteredProductTypes, setFilteredProductTypes] = useState([])
-
     if (showSpinner) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <Spinner size={40} />
-            </div>
-        )
+        return <LoadingSpinner />
     }
 
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">Edit Banner</h3>
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit} validationSchema={validationSchema}>
+            <Formik enableReinitialize initialValues={initialValue} validationSchema={validationSchema} onSubmit={handleSubmit}>
                 {({ values, setFieldValue }) => (
                     <Form className="w-2/3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
@@ -359,159 +245,18 @@ const EditBanner = () => {
                             />
 
                             {/* ...................................................................... */}
-                            <FormContainer className="grid grid-cols-2 gap-10">
-                                {/* <SectionsComponent
-                                    name="division"
-                                    label="Division"
-                                    defaultValue={initialValue.division}
-                                    setFieldValue={setFieldValue}
+                            <FormContainer className="">
+                                <BannerCategories
+                                    initialValue={initialValue}
                                     options={divisions.divisions}
-                                    fieldValues="division"
-                                /> */}
-
-                                <FormContainer>
-                                    <FormItem asterisk label="Division" className="col-span-1 w-full">
-                                        <Field name="division">
-                                            {({ field }: FieldProps<any>) => {
-                                                const fieldValue = Array.isArray(field.value) ? field.value : []
-
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.division.filter((option) =>
-                                                            fieldValue.some((item) => item.name === option.name),
-                                                        )}
-                                                        options={divisions.divisions}
-                                                        getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id.toString()}
-                                                        onChange={(newVal) => {
-                                                            setFieldValue('division', newVal ? newVal : [])
-
-                                                            // Get selected division's categories
-                                                            const selectedDivision = newVal
-                                                                ? newVal.map((division) => division.categories).flat()
-                                                                : []
-
-                                                            // Reset category, sub-category, and product type fields
-                                                            setFieldValue('category', [])
-                                                            setFieldValue('sub_category', [])
-                                                            setFieldValue('product_type', [])
-
-                                                            // Update the filtered categories
-                                                            setFilteredCategories(selectedDivision)
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* CATEGORY ...................................... */}
-                                <FormContainer>
-                                    <FormItem asterisk label="Category" className="col-span-1 w-full">
-                                        <Field name="category">
-                                            {({ field }: FieldProps<any>) => {
-                                                const fieldValue = Array.isArray(field.value) ? field.value : []
-
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.category.filter((option) =>
-                                                            fieldValue.some((item) => item.name === option.name),
-                                                        )}
-                                                        options={filteredCategories} // Use the filtered categories here
-                                                        getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id.toString()}
-                                                        onChange={(newVal) => {
-                                                            setFieldValue('category', newVal ? newVal : [])
-
-                                                            // Get selected categories' sub-categories
-                                                            const selectedSubCategories = newVal
-                                                                ? newVal.map((category) => category.sub_categories).flat()
-                                                                : []
-
-                                                            // Reset sub-category and product type fields
-                                                            setFieldValue('sub_category', [])
-                                                            setFieldValue('product_type', [])
-
-                                                            // Update the filtered sub-categories
-                                                            setFilteredSubCategories(selectedSubCategories)
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* SUB-CATEGORY ...................................... */}
-                                <FormContainer>
-                                    <FormItem asterisk label="Sub-Category" className="col-span-1 w-full">
-                                        <Field name="sub_category">
-                                            {({ field }: FieldProps<any>) => {
-                                                const fieldValue = Array.isArray(field.value) ? field.value : []
-
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.sub_category.filter((option) =>
-                                                            fieldValue.some((item) => item.name === option.name),
-                                                        )}
-                                                        options={filteredSubCategories} // Use the filtered sub-categories here
-                                                        getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id.toString()}
-                                                        onChange={(newVal) => {
-                                                            setFieldValue('sub_category', newVal ? newVal : [])
-
-                                                            // Get selected sub-categories' product types
-                                                            const selectedProductTypes = newVal
-                                                                ? newVal.map((sub_category) => sub_category.product_types).flat()
-                                                                : []
-
-                                                            // Reset product type field
-                                                            setFieldValue('product_type', [])
-
-                                                            // Update the filtered product types
-                                                            setFilteredProductTypes(selectedProductTypes)
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* PRODUCT TYPE ...................................... */}
-                                <FormContainer>
-                                    <FormItem asterisk label="Product Type" className="col-span-1 w-full">
-                                        <Field name="product_type">
-                                            {({ field }: FieldProps<any>) => {
-                                                const fieldValue = Array.isArray(field.value) ? field.value : []
-
-                                                return (
-                                                    <Select
-                                                        isMulti
-                                                        field={field}
-                                                        defaultValue={initialValue.product_type.filter((option) =>
-                                                            fieldValue.some((item) => item.name === option.name),
-                                                        )}
-                                                        options={filteredProductTypes} // Use the filtered product types here
-                                                        getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id.toString()}
-                                                        onChange={(newVal) => {
-                                                            setFieldValue('product_type', newVal ? newVal : [])
-                                                        }}
-                                                    />
-                                                )
-                                            }}
-                                        </Field>
-                                    </FormItem>
-                                </FormContainer>
-
+                                    setFieldValue={setFieldValue}
+                                    filteredCategories={filteredCategories}
+                                    filteredProductTypes={filteredProductTypes}
+                                    filteredSubCategories={filteredSubCategories}
+                                    setFilteredCategories={setFilteredCategories}
+                                    setFilteredProductTypes={setFilteredProductTypes}
+                                    setFilteredSubCategories={setFilteredSubCategories}
+                                />
                                 {/* BRAND   */}
 
                                 <SectionsComponent
@@ -547,7 +292,7 @@ const EditBanner = () => {
                                                         value={selectedTags}
                                                         getOptionLabel={(option) => option.label}
                                                         getOptionValue={(option) => option.value}
-                                                        onChange={(newVal, actionMeta) => {
+                                                        onChange={(newVal) => {
                                                             const newValues = newVal ? newVal.map((val) => val.value) : []
                                                             form.setFieldValue(field.name, newValues)
                                                         }}

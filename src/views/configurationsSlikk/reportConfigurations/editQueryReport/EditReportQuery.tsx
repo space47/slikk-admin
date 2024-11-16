@@ -10,6 +10,7 @@ import Select from '@/components/ui/Select'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
+import { Checkbox } from '@/components/ui'
 
 const reportQueryNames = [
     { label: 'Date', value: 'Date' },
@@ -163,8 +164,9 @@ const EditReportQuery = () => {
                                                         <FormItem label="Graph">
                                                             <Field
                                                                 name={`value[${index}].is_graph`}
-                                                                type="Checkbox"
+                                                                type="checkbox"
                                                                 placeholder="Is graph required"
+                                                                component={Checkbox}
                                                             />
                                                         </FormItem>
                                                     </div>
