@@ -30,6 +30,7 @@ const AddReportQuery = () => {
                 name: '',
                 display_name: '',
                 position: 0,
+                is_graph: false,
                 query: '',
             },
         ],
@@ -114,7 +115,14 @@ const AddReportQuery = () => {
                                                                 type="number"
                                                                 placeholder="Position"
                                                                 component={Input}
-                                                                className="w-1/4"
+                                                                className="w-3/4"
+                                                            />
+                                                        </FormItem>
+                                                        <FormItem label="Graph">
+                                                            <Field
+                                                                name={`value[${index}].is_graph`}
+                                                                type="Checkbox"
+                                                                placeholder="Is graph required"
                                                             />
                                                         </FormItem>
                                                     </div>
@@ -145,6 +153,7 @@ const AddReportQuery = () => {
                                                         name: '',
                                                         display_name: '',
                                                         position: 0,
+                                                        is_graph: false,
                                                         query: '',
                                                     })
                                                 }

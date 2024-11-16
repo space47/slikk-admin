@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Dropdown, FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
+import { FormContainer, FormItem, Input, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { ReportQueryData } from '@/views/configurationsSlikk/reportConfigurations/reportCommon'
-import { Field, FieldArray, FieldProps, Form, Formik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { Field, FieldProps, Form, Formik } from 'formik'
+import { useEffect, useState } from 'react'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { CATEGORY_STATE } from '@/store/types/category.types'
@@ -13,7 +13,7 @@ import { getAllBrandsAPI } from '@/store/action/brand.action'
 import ReportGraphInput from './ReportGraphInput'
 import AccessDenied from '@/views/pages/AccessDenied'
 import InnternalError from '@/views/pages/InternalServerError/InternalError'
-import { table } from 'console'
+import ReportFields from './ReportFields'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -30,7 +30,6 @@ const ReportAnalytics = () => {
     const [reportQueryNames, setReportQueryNames] = useState<{ label: string; value: string }[]>([])
     const [showDataBelow, setShowDataBelow] = useState(false)
     const [dynamicReportTable, setDynamicReportTable] = useState([])
-    const [displayTableName, setDisplayTableName] = useState('')
     const [showTable, setShowTable] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -136,7 +135,7 @@ const ReportAnalytics = () => {
             const tab = Object.keys(data).map((key) => {
                 return {
                     key,
-                    data: data[key], //?.data
+                    data: data[key],
                 }
             })
 
@@ -180,7 +179,6 @@ const ReportAnalytics = () => {
     }
 
     const handleDownloadCsv = async (queryName: any) => {
-        console.log('queryName', queryName)
         let reportParameters = ''
         if (currentValues?.required_fields) {
             reportParameters = currentValues.required_fields
@@ -197,7 +195,6 @@ const ReportAnalytics = () => {
 
             const blob = new Blob([response.data], { type: 'text/csv' })
             const url = window.URL.createObjectURL(blob)
-
             const link = document.createElement('a')
             link.href = url
             link.download = `${queryName}.csv`
@@ -218,12 +215,7 @@ const ReportAnalytics = () => {
 
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={reportData}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
                     <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                         <FormContainer>
@@ -246,92 +238,26 @@ const ReportAnalytics = () => {
                                         }}
                                     </Field>
                                 </FormItem>
-                                {storeName !== null && storeName !== undefined && storeName !== '' && (
-                                    <FormContainer className="flex  mt-8 mb-9">
-                                        <Button variant="new" type="submit" className="text-white ">
-                                            Generate
-                                        </Button>
-                                    </FormContainer>
-                                )}
                             </FormContainer>
                         </FormContainer>
                         {showDataBelow && (
-                            <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
-                                <FieldArray name="required_fields">
-                                    {({ push, remove }) => (
-                                        <div className="grid xl:grid-cols-1 grid-cols-2 gap-5  ">
-                                            {values.required_fields.map((item: any, index: number) => (
-                                                <div key={index} className="flex space-x-4 mt-2 xl:flex-row flex-col items-center">
-                                                    <Field
-                                                        name={`required_fields[${index}].key`}
-                                                        placeholder="Key"
-                                                        component={Input}
-                                                        className="xl:w-1/3 w-full"
-                                                    />
-                                                    <Field name={`required_fields[${index}].dataType`}>
-                                                        {({ field, form }: FieldProps) => (
-                                                            <Select
-                                                                className="xl:w-1/3 w-full"
-                                                                placeholder="Select dataType"
-                                                                options={reportQueryArray}
-                                                                value={reportQueryArray.find((option) => option.value === field.value)}
-                                                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                    <Field name={`required_fields[${index}].value`}>
-                                                        {({ field, form }: FieldProps) => {
-                                                            const { dataType, key } = values.required_fields[index]
-                                                            const fieldValue = Array.isArray(field.value) ? field.value : []
-                                                            const options = optionDataMap[key]
-
-                                                            if ((dataType === 'Select' || dataType === 'MultiSelect') && options) {
-                                                                const selectedOption = options.find(
-                                                                    (option: any) =>
-                                                                        option.name.toLowerCase() === field.value.toLowerCase(),
-                                                                )
-
-                                                                return (
-                                                                    <Select
-                                                                        className="xl:w-1/3 w-full"
-                                                                        {...field}
-                                                                        options={options}
-                                                                        getOptionLabel={(option) => option.name}
-                                                                        getOptionValue={(option) => option.id.toString()}
-                                                                        value={selectedOption || null}
-                                                                        onChange={(newVal) => {
-                                                                            form.setFieldValue(
-                                                                                `required_fields[${index}].value`,
-                                                                                newVal?.name,
-                                                                            )
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            }
-
-                                                            return (
-                                                                <Input
-                                                                    type={dataType === 'Date' ? 'date' : 'text'}
-                                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
-                                                                    {...field}
-                                                                    className="xl:w-1/3 w-full"
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </FieldArray>
-                            </FormItem>
+                            <ReportFields
+                                storeName={storeName}
+                                optionDataMap={optionDataMap}
+                                values={values.required_fields}
+                                reportQueryArray={reportQueryArray}
+                            />
                         )}
                     </Form>
                 )}
             </Formik>
             <br />
 
-            {showTable && (
+            {showSpinner ? (
+                <div className="flex justify-center items-center h-auto">
+                    <Spinner size={40} />
+                </div>
+            ) : showTable ? (
                 <ReportGraphInput
                     dynamicReportTable={dynamicReportTable}
                     xAxisValue={xAxisValue}
@@ -351,6 +277,8 @@ const ReportAnalytics = () => {
                     totalount={totalount}
                     showSpinner={showSpinner}
                 />
+            ) : (
+                ''
             )}
         </div>
     )

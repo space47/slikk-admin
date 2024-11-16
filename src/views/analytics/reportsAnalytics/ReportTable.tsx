@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import EasyTable from '@/common/EasyTable'
-import { Pagination, Select } from '@/components/ui'
+import { Button, Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import moment from 'moment'
 import React, { useMemo } from 'react'
@@ -15,6 +15,8 @@ interface ReportTableProps {
     setPage: any
     keyName?: any
     showSpinner?: any
+    tableName?: any
+    handleDownloadCsv: any
 }
 
 type Option = {
@@ -22,12 +24,9 @@ type Option = {
     label: string
 }
 
-const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName }: ReportTableProps) => {
+const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName, tableName, handleDownloadCsv }: ReportTableProps) => {
     const paginatedData = tableData ? tableData?.slice((page - 1) * pageSize, page * pageSize) : []
     const totalPages = Math.ceil(tableData.length / pageSize)
-
-    console.log('pAginate', paginatedData)
-    console.log('Total', totalPages)
 
     const columns = useMemo(() => {
         if (!tableData || tableData.length === 0) return []
@@ -47,7 +46,14 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName 
 
     return (
         <div>
-            <div className="font-bold text-2xl mb-5">{keyName ? keyName.toUpperCase() : ''}</div>
+            <div className="flex justify-between mb-5">
+                <div className="font-bold text-2xl ">{keyName ? keyName.toUpperCase() : ''}</div>
+                <div className="flex justify-end ">
+                    <Button variant="new" onClick={() => handleDownloadCsv(tableName)}>
+                        Download CSV
+                    </Button>
+                </div>
+            </div>
             <EasyTable mainData={paginatedData} columns={columns} overflow />
 
             <div className="flex items-center justify-between mt-4">
