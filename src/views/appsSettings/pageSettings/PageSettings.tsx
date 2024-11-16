@@ -20,36 +20,9 @@ import { FormikProps } from 'formik'
 import PageAddModal from './PageAddModal'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import { WebType } from './PageSettingsCommon'
 
 const { Tr, Th, Td, THead, TBody } = Table
-
-interface DataType {
-    type: string
-    filters: any[]
-    barcodes: string
-    posts: string
-    brands: string
-    handles: string
-}
-
-interface Config {
-    icon: string
-    text: string
-    image: string
-    style: string
-    position: string
-}
-
-type WebType = {
-    data_type: DataType
-    footer_config: Config
-    header_config: Config
-    component_type: string
-    section_heading: string
-    background_image: string
-    sub_header_config: Config
-    mobile_background_image: string
-}
 
 const PageSettings = () => {
     const [data, setData] = useState<WebType[]>([])
@@ -160,16 +133,6 @@ const PageSettings = () => {
 
     const columns: ColumnDef<WebType>[] = useMemo(
         () => [
-            // {
-            //     id: 'dragger',
-            //     header: '',
-            //     accessorKey: 'dragger',
-            //     cell: (props) => (
-            //         <span {...(props as any).dragHandleProps}>
-            //             <MdDragIndicator />
-            //         </span>
-            //     ),
-            // },
             {
                 header: 'Edit',
                 accessorKey: '',
@@ -192,87 +155,29 @@ const PageSettings = () => {
             {
                 header: 'Background Image',
                 accessorKey: 'background_config.background_image',
-                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
+                cell: (info) => <img src={info.getValue() as string} alt="" className=" object-contain bg-black" />,
             },
             {
                 header: 'Mobile Background Image',
                 accessorKey: 'background_config.mobile_background_image',
-                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
+                cell: (info) => <img src={info.getValue() as string} alt="" className=" object-contain bg-black" />,
             },
-            {
-                header: 'Header Icon',
-                accessorKey: 'header_config.icon',
-                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
-            },
+
             {
                 header: 'Header Text',
                 accessorKey: 'header_config.text',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Header Image',
-                accessorKey: 'header_config.image',
-                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
-            },
-            {
-                header: 'Header Style',
-                accessorKey: 'header_config.style',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Header Position',
-                accessorKey: 'header_config.position',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Footer Icon',
-                accessorKey: 'footer_config.icon',
-                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
-            },
+
             {
                 header: 'Footer Text',
                 accessorKey: 'footer_config.text',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Footer Image',
-                accessorKey: 'footer_config.image',
-                cell: (info) => <img src={info.getValue() as string} alt="" className=" object-contain bg-black" />,
-            },
-            {
-                header: 'Footer Style',
-                accessorKey: 'footer_config.style',
-                cell: (info) => info.getValue(),
-            },
 
-            {
-                header: 'Footer Position',
-                accessorKey: 'footer_config.position',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Sub Header Icon',
-                accessorKey: 'sub_header_config.icon',
-                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
-            },
             {
                 header: 'Sub Header Text',
                 accessorKey: 'sub_header_config.text',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Sub Header Image',
-                accessorKey: 'sub_header_config.image',
-                cell: (info) => <img src={info.getValue()} alt="" className=" object-contain bg-black" />,
-            },
-            {
-                header: 'Sub Header Style',
-                accessorKey: 'sub_header_config.style',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Sub Header Position',
-                accessorKey: 'sub_header_config.position',
                 cell: (info) => info.getValue(),
             },
             {
@@ -343,16 +248,12 @@ const PageSettings = () => {
             return acc
         }, {})
 
-        console.log('webbbbbbbbbbbbb', webData)
-
         const body = {
             page_name: `${currentSelectedPage.value}`,
             value: {
                 Web: webData,
             },
         }
-
-        console.log('boooooooooooooooo', body)
 
         try {
             const response = await axioisInstance.post(`page/config`, body)

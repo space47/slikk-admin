@@ -8,7 +8,7 @@ import type { FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { Dropdown, Button } from '@/components/ui'
+import { Dropdown, Button, Spinner } from '@/components/ui'
 import Select from '@/components/ui/Select'
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import Checkbox from '@/components/ui/Checkbox'
@@ -257,6 +257,7 @@ const PageModal: React.FC<modalProps> = ({
 
             console.log('New Row below', row.interval)
 
+            setShowSpinner(true)
             const newRow = {
                 ...row,
                 background_image: imageUpload || row?.background_image,
@@ -296,6 +297,7 @@ const PageModal: React.FC<modalProps> = ({
                 },
                 section_filters: row?.data_type?.filters || '',
             }
+            setShowSpinner(false)
 
             setParticularRow(newRow)
             console.log('Barecode THAT HAS BEEN UPDATED', newRow.data_type.barcodes)
@@ -344,17 +346,13 @@ const PageModal: React.FC<modalProps> = ({
     const [webFooterAlignForm, setWebFooterAlignForm] = useState(initialValue.web_name_footer)
     const [sectionBorderShow, setSectioBorderShow] = useState(initialValue.section_border)
     const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue.web_section_border)
+    const [showSpinner, setShowSpinner] = useState(false)
 
     console.log('Checking for section border ', sectionBorderShow, 'and web section border', webSectionBorderShow)
 
     const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInitialDataType(e.target.value)
     }
-
-    const borderArray = [
-        { label: 'YES', value: 'yes' },
-        { label: 'NO', value: 'no' },
-    ]
 
     const borderStyleArray = [
         { label: 'Dotted', value: 'dotted' },
@@ -441,6 +439,14 @@ const PageModal: React.FC<modalProps> = ({
         { label: 'Underline', value: 'underline' },
         { label: 'Italic', value: 'italic' },
     ]
+
+    if (showSpinner) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner size={40} />
+            </div>
+        )
+    }
 
     return (
         <>

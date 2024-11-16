@@ -16,6 +16,9 @@ import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { IoMdCloseCircle } from 'react-icons/io'
+import { USERCOMMUNICATION, USERDETAILS } from './addUserCommon'
+import { Spinner } from '@/components/ui'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 interface GROUPS {
     id: number
@@ -46,21 +49,15 @@ const AddUser = () => {
     const [addedPermissions, setAddedPermissions] = useState<{ id: number; name: string }[]>([])
     const [addedGroups, setAddedGroups] = useState<{ id: number; name: string }[]>([])
     const [addedCompanyList, setAddedCompanyList] = useState<{ id: number; name: string }[]>([])
-
     const [searchInput, setSearchInput] = useState('')
-
     const [addInput, setAddInput] = useState('')
-
     const [groupInput, setGroupInput] = useState('')
-
     const [addGroupInput, setAddGroupInput] = useState('')
-
     const [companyInput, setCompanyInput] = useState('')
     const [addcompanyInput, setAddCompanyInput] = useState('')
-
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
-
-    console.log('Company', companyList)
+    const [showSpinner, setShowSpinner] = useState(false)
+    const [accessDenied, setAccessDenied] = useState(false)
 
     const navigate = useNavigate()
 
@@ -71,7 +68,10 @@ const AddUser = () => {
             setGetGroups(grp)
             const group_id = getGroups?.map((item) => item.id)
             console.log('scscscscs', group_id)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response || error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -85,7 +85,10 @@ const AddUser = () => {
             const response = await axioisInstance.get(`/permissions`)
             const perm = response.data?.permissions
             setGetPermission(perm)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response || error.response.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -192,11 +195,13 @@ const AddUser = () => {
         }
         console.log('body', bodyData)
         try {
+            setShowSpinner(true)
             const response = await axioisInstance.post(
                 `company/users/add`, //-companyid
                 bodyData,
             )
             console.log('response of add users', response)
+            setShowSpinner(false)
             navigate('/app/users')
         } catch (error) {
             console.log(error)
@@ -237,12 +242,17 @@ const AddUser = () => {
     const handleAddPerm = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddInput(e.target.value)
     }
-    const handleAddGroup = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAddGroupInput(e.target.value)
+
+    if (showSpinner) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Spinner size={40} />
+            </div>
+        )
     }
 
-    const handleAddCompanyList = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAddCompanyInput(e.target.value)
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (
@@ -258,80 +268,30 @@ const AddUser = () => {
                         <div className="text-xl mb-10 font-semibold">USER DETAILS</div>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
-                                <FormItem
-                                    asterisk
-                                    label="First Name"
-                                    invalid={errors.first_name && touched.first_name}
-                                    errorMessage={errors.first_name}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="first_name"
-                                        component={Input}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Last Name"
-                                    invalid={errors.last_name && touched.last_name}
-                                    errorMessage={errors.last_name}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="last_name"
-                                        component={Input}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    />
-                                </FormItem>
+                                {USERDETAILS.map((item, index) => (
+                                    <FormItem key={index} label={item.label} className="col-span-1 w-1/2">
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            component={Input}
+                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                        />
+                                    </FormItem>
+                                ))}
                             </FormContainer>
                             {/* Mobile email work email */}
 
                             <FormContainer className="flex flex-row gap-7 ">
-                                <FormItem
-                                    asterisk
-                                    label="Mobile"
-                                    invalid={errors.mobile && touched.mobile}
-                                    errorMessage={errors.mobile}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="mobile"
-                                        component={Input}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Email"
-                                    invalid={errors.email && touched.email}
-                                    errorMessage={errors.email}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="email"
-                                        component={Input}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Work Email"
-                                    invalid={errors.business_email && touched.business_email}
-                                    errorMessage={errors.business_email}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        type="text"
-                                        name="business_email"
-                                        component={Input}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    />
-                                </FormItem>
+                                {USERCOMMUNICATION.map((item, index) => (
+                                    <FormItem key={index} label={item.label} className="col-span-1 w-1/2">
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            component={Input}
+                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                        />
+                                    </FormItem>
+                                ))}
                             </FormContainer>
                             {/* ........................................................................................ */}
 

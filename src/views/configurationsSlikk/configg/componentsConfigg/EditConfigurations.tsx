@@ -2,14 +2,16 @@
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface, EDITFIELDSARRAY } from './commonConfigTypes'
 import { Field, Form, Formik } from 'formik'
-import { Button, FormContainer, FormItem, Input } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input, Spinner } from '@/components/ui'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { notification } from 'antd'
 import _ from 'lodash'
 
 const EditConfigurations = () => {
+    const navigate = useNavigate()
     const [editConfigData, setEditConfigData] = useState<ConfigInterface | null>(null)
+    const [showSpinner, setShowSpinner] = useState(false)
     const { id } = useParams()
 
     const fetchConfigurationApi = async () => {
@@ -63,16 +65,27 @@ const EditConfigurations = () => {
         console.log('BODY', body)
 
         try {
+            setShowSpinner(true)
             const response = await axiosInstance.post(`/app/configuration`, body)
             notification.success({
                 message: response?.data?.message || 'Successfully Configured',
             })
+            navigate(`/app/configurations`)
+            setShowSpinner(false)
         } catch (error) {
             console.log(error)
             notification.error({
                 message: 'Failed to configure ',
             })
         }
+    }
+
+    if (showSpinner) {
+        return (
+            <div className="flex justify-center items-center  h-screen">
+                <Spinner size={40} />
+            </div>
+        )
     }
 
     return (

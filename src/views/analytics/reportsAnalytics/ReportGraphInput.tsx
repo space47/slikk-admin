@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useMemo } from 'react'
 import GraphComponent from './reportGraphs/GraphComponent'
-import { Button, Dropdown, Select } from '@/components/ui'
+import { Dropdown, Select } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import ReportTable from './ReportTable'
 
@@ -78,22 +77,18 @@ const ReportGraphInput = ({
     return dynamicReportTable.map((table, index) => {
         return (
             <div key={index} className="mt-5 flex flex-col gap-4">
-                <div className="flex justify-end ">
-                    <Button variant="new" onClick={() => handleDownloadCsv(table?.data?.name)}>
-                        Download CSV
-                    </Button>
-                </div>
-
                 <ReportTable
                     showSpinner={showSpinner}
                     tableData={table?.data?.data}
                     keyName={table?.data.display_name}
                     page={page}
+                    tableName={table?.data?.name}
                     pageSize={pageSize}
                     onPaginationChange={onPaginationChange}
                     orderCount={totalount}
                     setPage={setPage}
                     setPageSize={setPageSize}
+                    handleDownloadCsv={handleDownloadCsv}
                 />
 
                 <div key={table.key} className="flex gap-3">

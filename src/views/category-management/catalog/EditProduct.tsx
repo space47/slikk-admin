@@ -4,19 +4,16 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { Field, Form, Formik, FieldProps } from 'formik'
-import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
-import Upload from '@/components/ui/Upload'
 import Product from '@/views/category-management/catalog/CommonType'
-import { Checkbox } from '@/components/ui'
+import { Checkbox, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { IoMdCloseCircle } from 'react-icons/io'
 import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from './ProductCommon'
-import { MdCancel } from 'react-icons/md'
 import ImageCommonProduct from './ImageCommonProduct'
 import { handleimage, handleVideo } from './handlingProductImage'
+import { InitialValues } from './EditCommonProduct'
 
 const EditProduct = () => {
     const navigate = useNavigate()
@@ -24,6 +21,7 @@ const EditProduct = () => {
     const [allImage, setAllImage] = useState<string[]>([])
     const [allVideo, setAllVideo] = useState<string[]>([])
     const [allColor, setAllColor] = useState<string[]>([])
+    const [showSpinner, setShowSpinner] = useState(false)
 
     const { barcode } = useParams()
 
@@ -32,11 +30,8 @@ const EditProduct = () => {
             const response = await axioisInstance.get(`product/${barcode}`) //.........................................................
 
             const userData = response.data.data
-            console.log('DATASSS', userData)
+
             setProductData(userData)
-
-            console.log('user Objeccct....', userData.image)
-
             const colorList = userData.color_code_link ? userData.color_code_link.split(',') : []
             const imageList = userData.image.split(',')
             const videoList = userData.video_link ? userData.video_link.split(',') : []
@@ -54,84 +49,6 @@ const EditProduct = () => {
     useEffect(() => {
         fetchUser()
     }, [])
-
-    const initialValue = {
-        company: productData?.company,
-        brand_name: productData?.brand,
-        name: productData?.name,
-        description: productData?.description,
-        about: productData?.about,
-        benefits: productData?.benefits,
-        includes: productData?.includes,
-        other_product_info: productData?.other_product_info,
-        variant_type: productData?.variant_type,
-        variant_id: productData?.variant_id,
-        tax_rate: productData?.tax_rate,
-        mrp: productData?.mrp,
-        sp: productData?.sp,
-        barcode: productData?.barcode,
-        hsn: productData?.hsn,
-        sku: productData?.sku,
-        usage: productData?.usage,
-        imported_by: productData?.imported_by,
-        shelf_life: productData?.shelf_life,
-        height: productData?.height,
-        width: productData?.width,
-        depth: productData?.depth,
-        video_link: productData?.video_link,
-        video: productData?.video,
-        minimum_quantity: productData?.minimum_quantity || 1,
-        reserve_quantity: productData?.reserve_quantity || 1,
-        Status: productData?.status || 'Available', //
-        image: productData?.image,
-        images: [],
-        color_code: productData?.color_code,
-        category_name: productData?.category,
-        is_premium: productData?.is_premium || false,
-        is_try_and_buy: productData?.is_try_and_buy || false,
-        is_returnable: productData?.is_returnable || false,
-        sub_category_name: productData?.sub_category,
-        product_type_name: productData?.product_type,
-        division_name: productData?.division,
-        color: productData?.color,
-        colorshade: productData?.colorshade,
-        skinType: productData?.skintype,
-        formulation: productData?.formulation,
-        hairType: productData?.hairtype,
-        gender: productData?.gender,
-        finish: productData?.finish,
-        skintone: productData?.skintone,
-        coverage: productData?.coverage,
-        sunprotection: productData?.sunprotection,
-        concious: productData?.concious,
-        productHexCode: productData?.productHexCode,
-        packsize: productData?.size,
-        size: productData?.filter_tags?.size?.join('/'),
-        ingrediants: productData?.ingredients,
-        vegnonveg: productData?.vegnonveg,
-        ingrediantsPreferences: productData?.ingrediantsPreferences,
-        concern: productData?.concerns,
-        recommendationfor: productData?.recommendationfor,
-        scenttopnotes: productData?.scenttopnotes,
-        scentheartnotes: productData?.scentheartnotes,
-        scentbasenotes: productData?.scentbasenotes,
-        color_code_link: productData?.color_code_link,
-        origincountry: productData?.origincountry || 'India',
-        careinstruction: productData?.careinstructions,
-        antiodour: productData?.antiodour,
-        pattern: productData?.pattern,
-        closuretype: productData?.closuretype,
-        length: productData?.length,
-        necktype: productData?.necktype,
-        risetype: productData?.risetype,
-        colorfamily: productData?.filter_tags.colorfamily?.map((item) => item).join(','),
-
-        sleevtype: productData?.sleevtype,
-        trend: productData?.filter_tags?.trend?.join('/'),
-        trendtype: productData?.filter_tags?.trendtype?.join('/'),
-        fit: productData?.filter_tags?.fit?.join('/'),
-        fabric: productData?.filter_tags?.fabric?.join('/'),
-    }
 
     const handleRemoveImage = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault()
@@ -195,9 +112,8 @@ const EditProduct = () => {
             video_link: video_url,
         }
 
-        console.log('FORMDATA', formData)
-
         try {
+            setShowSpinner(true)
             const response = await axioisInstance.patch(`product/${barcode}`, formData)
 
             console.log(response)
@@ -205,7 +121,8 @@ const EditProduct = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Product Edited Successfully',
             })
-            // navigate('/app/catalog/products')
+            setShowSpinner(false)
+            navigate('/app/catalog/products')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -220,6 +137,14 @@ const EditProduct = () => {
         }
     }
 
+    if (showSpinner) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <Spinner size={40} />
+            </div>
+        )
+    }
+
     return (
         <div>
             <h3 className="mb-5 text-neutral-900">
@@ -227,7 +152,7 @@ const EditProduct = () => {
             </h3>
             <Formik
                 enableReinitialize
-                initialValues={initialValue}
+                initialValues={InitialValues(productData)}
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >

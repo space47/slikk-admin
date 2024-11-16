@@ -42,3 +42,31 @@ export const PAGEARRAY = [
         placeholder: '',
     },
 ]
+
+interface DataType {
+    type: string
+    filters: any[]
+    barcodes: string
+    posts: string
+    brands: string
+    handles: string
+}
+
+interface Config {
+    icon: string
+    text: string
+    image: string
+    style: string
+    position: string
+}
+
+export type WebType = {
+    data_type: DataType
+    footer_config: Config
+    header_config: Config
+    component_type: string
+    section_heading: string
+    background_image: string
+    sub_header_config: Config
+    mobile_background_image: string
+}
