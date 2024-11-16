@@ -60,16 +60,16 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     }
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="lex flex-col gap-6 p-6  rounded-lg ">
             <div className="font-bold text-2xl mb-4">Active User Stats</div>
-            <div className="flex items-center gap-5 overflow-auto justify-center ">
+            <div className="flex items-center gap-1 overflow-auto justify-center">
                 {columns.map((col, index) => (
-                    <div key={col.accessorKey} className="flex items-center gap-2">
-                        <Card className="text-center shadow-lg ">
+                    <div key={col.accessorKey} className="flex items-center py-2 rounded-lg shadow-md  ">
+                        <Card className="text-center shadow-xl shadow-gray-400/50 cursor-pointer ">
                             <div className="font-bold text-xl text-gray-500 mb-2">{col.header}</div>
-                            <div className=" text-green-500 text-xl font-semibold">{userData[0]?.[col.accessorKey] ?? ''}</div>
+                            <div className="text-green-500 text-xl font-semibold">{userData[0]?.[col.accessorKey] ?? ''}</div>
                         </Card>
-                        {index < columns.length - 1 && <div className="text-4xl text-red-300">{'➔'}</div>}
+                        {index < columns.length - 1 && <div className="text-4xl text-red-400  ">{'➔'}</div>}
                     </div>
                 ))}
             </div>
