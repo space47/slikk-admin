@@ -44,6 +44,7 @@ const ReportAnalytics = () => {
     const [selectedOption, setSelectedOption] = useState('line')
     const [accessDenied, setAccessDenied] = useState(false)
     const [serverError, setServerError] = useState(false)
+    const [reportValue, setReportValue] = useState()
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
@@ -96,6 +97,7 @@ const ReportAnalytics = () => {
                 }),
             }
             setReportData(formattedData)
+            setReportValue(formattedData?.value)
             setShowDataBelow(true)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
@@ -112,6 +114,8 @@ const ReportAnalytics = () => {
         }
     }, [storeName])
 
+    console.log('reportValue', reportValue)
+
     const [currentValues, setCurrentValues] = useState<any>()
 
     const fetchTable = async (values?: any) => {
@@ -127,11 +131,6 @@ const ReportAnalytics = () => {
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
 
-            const displayTable = Object.keys(data).map((key) => ({
-                key,
-                data,
-            }))
-
             const tab = Object.keys(data).map((key) => {
                 return {
                     key,
@@ -139,15 +138,9 @@ const ReportAnalytics = () => {
                 }
             })
 
-            console.log(
-                'Data for DRT',
-                tab.map((item) => item.data.data),
-            )
-
             setDynamicReportTable(tab)
             setTotalCount(tab.length)
             setShowTable(true)
-            setShowSpinner(false)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
@@ -155,6 +148,8 @@ const ReportAnalytics = () => {
                 setServerError(true)
             }
             console.log(error)
+        } finally {
+            setShowSpinner(false)
         }
     }
     const handleSubmit = async (values: any) => {
@@ -171,8 +166,6 @@ const ReportAnalytics = () => {
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
-
-    console.log('dymanic', dynamicReportTable)
 
     const handleSelect = (value: string) => {
         setSelectedOption(value)
@@ -220,7 +213,7 @@ const ReportAnalytics = () => {
                     <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                                <FormItem label="Select Target Page" className="font-bold">
+                                <FormItem label="Select Report" className="font-bold">
                                     <Field name="target_page">
                                         {({ field, form }: FieldProps) => {
                                             return (

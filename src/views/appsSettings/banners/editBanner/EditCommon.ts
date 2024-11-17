@@ -1,5 +1,7 @@
 import Input from '@/components/ui/Input'
 import Checkbox from '@/components/ui/Checkbox'
+import { formatDate } from '@/common/date'
+import { BANNERMODEL } from '../BannerCommon'
 
 export const BANNER_FIELDS_TYPE = [
     {
@@ -226,3 +228,43 @@ export const BANNER_FIELDS_TYPE = [
         status: 'to_date',
     },
 ]
+
+export const getInitialBannerValue = (bannerData: BANNERMODEL) => ({
+    id: bannerData?.id || 0,
+    name: bannerData?.name || '',
+    section_heading: bannerData?.section_heading || '',
+    parent_banner: bannerData?.parent_banner || null,
+    quick_filter_tags: bannerData?.quick_filter_tags || [],
+    brand: bannerData?.brand || [],
+    division: bannerData?.division || [],
+    category: bannerData?.category || [],
+    image_web_array: [],
+    image_mobile_array: [],
+    sub_category: bannerData?.sub_category || [],
+    product_type: bannerData?.product_type || [],
+    type: bannerData?.type || null,
+    image_web: bannerData?.image_web || '',
+    image_mobile: bannerData?.image_mobile || '',
+    offers: bannerData?.offers || false,
+    offer_id: bannerData?.offer_id || '',
+    page: bannerData?.page || '',
+    from_date: formatDate(bannerData?.from_date || ''),
+    to_date: formatDate(bannerData?.to_date || ''),
+    uptooff: bannerData?.uptooff || '',
+    tags: bannerData?.tags || [],
+    footer: bannerData?.footer || null,
+    coupon_code: bannerData?.coupon_code || null,
+    is_clickable: bannerData?.is_clickable || false,
+    section_background_web: bannerData?.section_background_web || '',
+    section_background_web_array: [],
+    section_background_mobile_array: [],
+    section_background_mobile: bannerData?.section_background_mobile || '',
+    max_price: bannerData?.max_price || 0,
+    min_price: bannerData?.min_price || 0,
+    max_off: bannerData?.max_off || 0,
+    min_off: bannerData?.min_off || 0,
+    barcodes: bannerData?.barcodes || '',
+    redirection_url: bannerData?.redirection_url || null,
+    tags_input: bannerData?.tags?.join(',') || '',
+    position: bannerData?.position || null,
+})
