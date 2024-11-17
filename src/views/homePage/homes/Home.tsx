@@ -16,6 +16,7 @@ import { PiDevicesFill } from 'react-icons/pi'
 import { FaMoneyBillTrendUp } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import AccessDenied from '@/views/pages/AccessDenied'
+import ActiveUserTable from './componentsHomes/ActiveUserTable'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -201,7 +202,7 @@ const Home = () => {
 
             <div className="flex flex-col xl:flex-row  xl:justify-between  mb-4 gap-5 ">
                 <div className="w-full xl:w-[50%]">
-                    <h5 className="font-sans">Search By</h5>
+                    <div className="font-bold text-2xl">Search By</div>
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
                         <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[400px] bg-white shadow-md">
                             <input
@@ -298,7 +299,7 @@ const Home = () => {
                 <Card className="shadow-lg">
                     <div className="flex gap-10 items-center">
                         <div>
-                            <PiDevicesFill className="text-5xl mx-4  " />
+                            <PiDevicesFill className="text-5xl mx-4 " />
                         </div>
                         <div>
                             <h2 className="text-xl font-semibold">Device Type</h2>
@@ -311,6 +312,9 @@ const Home = () => {
             </div>
 
             {/* CHART */}
+            <div className="mt-4">
+                <ActiveUserTable from={from} to={to} />
+            </div>
 
             <div className="mt-5 w-[350px] xl:w-full">
                 {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}

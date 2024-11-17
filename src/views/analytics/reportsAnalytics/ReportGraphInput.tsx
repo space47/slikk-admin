@@ -155,7 +155,7 @@ const ReportGraphInput = ({
                     setYAxisValue={setYAxisvalue}
                     setYAxisValue2={setYAxisvalue2}
                 />
-                <hr className="font-bold text-xl" />
+
                 <hr className="font-bold text-xl" />
             </div>
         )

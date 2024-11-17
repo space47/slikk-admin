@@ -7,6 +7,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useParams } from 'react-router-dom'
 import { notification } from 'antd'
 import _ from 'lodash'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 const EditConfigurations = () => {
     const navigate = useNavigate()
@@ -31,7 +32,7 @@ const EditConfigurations = () => {
     const renderFields = (obj: any, parentKey: string, setFieldValue: any) => {
         return Object.entries(obj).map(([key, val]) => {
             const fieldName = parentKey ? `${parentKey}.${key}` : key
-            console.log('keyParent', fieldName)
+
             if (_.isPlainObject(val)) {
                 return (
                     <div key={fieldName} className="col-span-2">
@@ -57,12 +58,10 @@ const EditConfigurations = () => {
     }
 
     const handleSubmit = async (values: ConfigInterface) => {
-        console.log('All values', values)
         const body = {
             config_name: values.name,
             config_value: values.value,
         }
-        console.log('BODY', body)
 
         try {
             setShowSpinner(true)
@@ -71,21 +70,18 @@ const EditConfigurations = () => {
                 message: response?.data?.message || 'Successfully Configured',
             })
             navigate(`/app/configurations`)
-            setShowSpinner(false)
         } catch (error) {
             console.log(error)
             notification.error({
                 message: 'Failed to configure ',
             })
+        } finally {
+            setShowSpinner(false)
         }
     }
 
     if (showSpinner) {
-        return (
-            <div className="flex justify-center items-center  h-screen">
-                <Spinner size={40} />
-            </div>
-        )
+        return <LoadingSpinner />
     }
 
     return (

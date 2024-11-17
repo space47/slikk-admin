@@ -46,10 +46,18 @@ const GetReportConfiguratiions = () => {
                                 console.log('items', item.name)
                                 return (
                                     <div key={index}>
-                                        <p>Name: {item.name}</p>
-                                        <p>Query: {item.query}</p>
-                                        <p>Position: {item.position}</p>
-                                        <p>Display Name: {item.display_name}</p>
+                                        <p>
+                                            <span className="font-bold">Name:</span> {item.name}
+                                        </p>
+                                        <p>
+                                            <span className="font-bold">Query:</span> {item.query}
+                                        </p>
+                                        <p>
+                                            <span className="font-bold">Position:</span> {item.position}
+                                        </p>
+                                        <p>
+                                            <span className="font-bold">Display Name:</span> {item.display_name}
+                                        </p>
                                         <hr />
                                         <hr />
                                     </div>
