@@ -460,7 +460,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                 {/* Generic Fields........................................................ */}
 
                                 <div className=" grid grid-cols-2">
-                                    {genericComponentArray.slice(0, 18).map((item, key) => (
+                                    <div className="font-bold mt-1">Mobile Configurations :</div>
+                                    {genericComponentArray.slice(0, 19).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
@@ -497,7 +498,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
                                 <FormContainer className=" grid grid-cols-2">
                                     <div className="font-bold mt-1">Web Configurations :</div>
-                                    {genericComponentArray.slice(18).map((item, key) => (
+                                    {genericComponentArray.slice(19).map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-2/3">
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>

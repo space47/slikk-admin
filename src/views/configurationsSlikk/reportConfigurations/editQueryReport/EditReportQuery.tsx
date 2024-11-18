@@ -12,6 +12,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { Checkbox } from '@/components/ui'
+import { ExtraAttributes } from './ExtraAttributes'
 
 const reportQueryNames = [
     { label: 'Date', value: 'Date' },
@@ -39,6 +40,10 @@ const EditReportQuery = () => {
                     position: 0,
                     extra_attributes: {
                         is_graph: false,
+                        x_axis: '',
+                        y_axis: '',
+                        secondary_y_axis: '',
+                        graph_type: '',
                     },
                     query: '',
                 },
@@ -63,6 +68,10 @@ const EditReportQuery = () => {
                         query: item.query,
                         extra_attributes: {
                             is_graph: item.extra_attributes?.is_graph || false,
+                            x_axis: item?.extra_attributes?.x_axis || '',
+                            y_axis: item?.extra_attributes?.y_axis || '',
+                            secondary_y_axis: item?.extra_attributes?.secondary_y_axis || '',
+                            graph_type: item?.extra_attributes?.graph_type || '',
                         },
                     })) || [],
                 // value: [],
@@ -98,7 +107,11 @@ const EditReportQuery = () => {
                 ...item,
                 query: plainTextValue,
                 extra_attributes: {
-                    is_graph: item.extra_attributes.is_graph,
+                    is_graph: item?.extra_attributes?.is_graph,
+                    x_axis: item?.extra_attributes?.x_axis,
+                    y_axis: item?.extra_attributes?.y_axis,
+                    secondary_y_axis: item?.extra_attributes?.secondary_y_axis,
+                    graph_type: item?.extra_attributes?.graph_type,
                 },
             }
         })
@@ -169,15 +182,21 @@ const EditReportQuery = () => {
                                                                 className="w-full"
                                                             />
                                                         </FormItem>
-                                                        <FormItem label="Graph">
-                                                            <Field
-                                                                name={`value[${index}].extra_attributes.is_graph`}
-                                                                type="checkbox"
-                                                                placeholder="Is graph required"
-                                                                component={Checkbox}
-                                                            />
-                                                        </FormItem>
                                                     </div>
+                                                    <FormContainer className="flex gap-5 ">
+                                                        {ExtraAttributes.map((item, key) => (
+                                                            <FormContainer key={key} className="">
+                                                                <FormItem label={item.label}>
+                                                                    <Field
+                                                                        name={`value[${index}].${item.name}`}
+                                                                        type={item.type}
+                                                                        placeholder={`Enter ${item.label}`}
+                                                                        component={item.component}
+                                                                    />
+                                                                </FormItem>
+                                                            </FormContainer>
+                                                        ))}
+                                                    </FormContainer>
                                                     <FormItem label="Query">
                                                         <Field name={`value[${index}].query`}>
                                                             {({ field, form }: any) => (
