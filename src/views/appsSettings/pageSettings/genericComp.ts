@@ -136,6 +136,13 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter Web Font Color',
     },
+    {
+        label: 'Aspect Ratio',
+        name: 'component_config.aspect_ratio',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Aspect Ratio',
+    },
 
     // Web Versions below
     {
@@ -270,6 +277,13 @@ export const genericComponentArray = [
         type: 'number',
         component: { Input },
         placeholder: 'Enter Web Font Color',
+    },
+    {
+        label: 'Web Aspect Ratio',
+        name: 'component_config.web_aspect_ratio',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Aspect Ratio',
     },
 ]
 
