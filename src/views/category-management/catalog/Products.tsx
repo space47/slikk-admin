@@ -4,14 +4,10 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { IoMdDownload } from 'react-icons/io'
-import { DROPDOWNARRAY } from './CommonType'
-import { Dropdown } from '@/components/ui'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import ImageMODAL from '@/common/ImageModal'
 import { FaEdit, FaFilter } from 'react-icons/fa'
 import StockOverviewFilter from '@/views/inventory-management/stock-overview/stockOverviewComponents/StockOverviewFilter'
@@ -72,8 +68,6 @@ const Products = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const navigate = useNavigate()
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
-
     const [filterInput, setFilterInput] = useState('')
     const [searchType, setSearchType] = useState<string>('')
     const [showImageModal, setShowImageModal] = useState(false)
@@ -87,11 +81,6 @@ const Products = () => {
     const [typeFetch, setTypeFetch] = useState('')
 
     const [showDrawer, setShowDrawer] = useState(false)
-
-    console.log(
-        'main Data',
-        data.map((item) => item.filter_to_display_map.colorfamily),
-    )
 
     const fetchData = async (page: number, pageSize: number, filter: string = '') => {
         try {
@@ -133,12 +122,6 @@ const Products = () => {
     useEffect(() => {
         fetchData(page, pageSize, globalFilter)
     }, [page, pageSize, typeFetch, globalFilter, searchType])
-
-    console.log('FILTERE', filterInput)
-
-    // const handleActionClick = (barcode: any) => {
-    //     navigate(`/app/catalog/products/${barcode}`)
-    // }
 
     const hanldeFilter = () => {
         setShowDrawer(true)
@@ -344,12 +327,7 @@ const Products = () => {
         navigate('/app/catalog/products/addNew')
     }
 
-    const handleSearchType = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchType(event.target.value)
-    }
-
     const handleOpenModal = (img: any) => {
-        console.log('sdsds', img)
         setParticularROwImage(img)
         setShowImageModal(true)
     }

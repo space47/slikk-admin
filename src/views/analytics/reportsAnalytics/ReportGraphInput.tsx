@@ -75,7 +75,7 @@ const ReportGraphInput = ({
     }
 
     return dynamicReportTable.map((table, index) => {
-        console.log('Checking is_graph', table?.data?.extra_attributes?.is_graph)
+        console.log(`Checking is_graph1 : ${index}`, table?.data?.extra_attributes?.is_graph)
         return (
             <div key={index} className="mt-5 flex flex-col gap-4">
                 <ReportTable
@@ -92,9 +92,7 @@ const ReportGraphInput = ({
                     handleDownloadCsv={handleDownloadCsv}
                 />
 
-                {table?.data?.extra_attributes?.is_graph === undefined || false ? (
-                    ''
-                ) : (
+                {table?.data?.extra_attributes?.is_graph === true ? (
                     <div>
                         <div key={table.key} className="flex gap-3">
                             <div className="flex flex-col gap-2">
@@ -152,7 +150,7 @@ const ReportGraphInput = ({
                         </div>
 
                         <GraphComponent
-                            key={table.key}
+                            key={`${table.key}-${index}`}
                             keyData={table?.data}
                             selectedOption={selectedOption}
                             xAxisValue={xAxisValue}
@@ -161,9 +159,10 @@ const ReportGraphInput = ({
                             setXAxisValue={setXAxisvalue}
                             setYAxisValue={setYAxisvalue}
                             setYAxisValue2={setYAxisvalue2}
+                            graphType={table?.data?.extra_attributes?.graphType}
                         />
                     </div>
-                )}
+                ) : null}
 
                 <hr className="font-bold text-xl" />
             </div>

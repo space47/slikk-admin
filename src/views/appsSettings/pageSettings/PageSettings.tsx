@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState, useRef } from 'react'
-import Table from '@/components/ui/Table'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { DragDropContext, Draggable } from 'react-beautiful-dnd'
-import { MdDragIndicator } from 'react-icons/md'
-
-import { StrictModeDroppable } from '@/components/shared'
-
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { DropResult } from 'react-beautiful-dnd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -14,40 +8,31 @@ import { Dropdown, Button } from '@/components/ui'
 import { BANNER_PAGE_NAME } from '@/common/banner'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { notification } from 'antd'
-// import { AnyCnameRecord } from 'dns'
 import PageModal from './PageModal'
 import { FormikProps } from 'formik'
 import PageAddModal from './PageAddModal'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { WebType } from './PageSettingsCommon'
-
-const { Tr, Th, Td, THead, TBody } = Table
+import PageDraggavleTable from './PageDraggavleTable'
 
 const PageSettings = () => {
     const [data, setData] = useState<WebType[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(BANNER_PAGE_NAME[0])
     const [yesModal, setYesModal] = useState(false)
-    const [particularRow, setParticularRow] = useState()
-    const formikRef = useRef<FormikProps<any>>(null)
+    const [particularRow, setParticularRow] = useState<WebType | undefined>()
     const [addModal, setAddModal] = useState(false)
+    const formikRef = useRef<FormikProps<any>>(null)
     const navigate = useNavigate()
+
     const fetchData = async () => {
-        console.log('starting api')
         try {
-            axioisInstance
-                .get(`/page/config?page_name=${currentSelectedPage.value}`)
-                .then((response) => {
-                    const responsedata = response.data.data.value.Web
-                    setData(Object.values(responsedata))
-                    console.log('ending api call', responsedata)
-                })
-                .catch((error) => {
-                    console.log(error)
-                    setData([])
-                })
+            const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage.value}`)
+            const responsedata = response.data?.data?.value?.Web || {}
+            setData(Object.values(responsedata))
         } catch (error) {
-            console.log(error)
+            console.error('Error fetching data:', error)
+            setData([])
         }
     }
 
@@ -57,79 +42,64 @@ const PageSettings = () => {
 
     const reorderData = (startIndex: number, endIndex: number) => {
         const newData = [...data]
-
         const [movedRow] = newData.splice(startIndex, 1)
         newData.splice(endIndex, 0, movedRow)
         setData(newData)
     }
 
     const handleDragEnd = (result: DropResult) => {
-        console.log('resultDrag', result)
         const { source, destination } = result
-        if (!destination) return
-        reorderData(source.index, destination.index)
+        if (destination) reorderData(source.index, destination.index)
     }
 
-    const getDataType = (data: DataType): { key: string; value: string } => {
-        if (data?.barcodes) {
-            return { key: 'Barcode', value: data.barcodes }
-        } else if (data?.posts) {
-            return { key: 'Posts', value: data.posts }
-        } else if (data?.brands) {
-            return { key: 'Brands', value: data.brands }
-        } else if (data?.handles) {
-            return { key: 'Handles', value: data.handles }
-        }
+    const getDataType = (data: any): { key: string; value: string } => {
+        if (data?.barcodes) return { key: 'Barcode', value: data.barcodes }
+        if (data?.posts) return { key: 'Posts', value: data.posts }
+        if (data?.brands) return { key: 'Brands', value: data.brands }
+        if (data?.handles) return { key: 'Handles', value: data.handles }
         return { key: '', value: '' }
     }
 
-    const handleCancel = () => {
-        setYesModal(false)
-    }
-    const handleOk = () => {
-        formikRef.current?.submitForm()
-        setYesModal(false)
-        console.log('pppppppppppppppppp', particularRow)
+    const updateRowData = (updatedRow: WebType) => {
+        setData((prev) => prev.map((item) => (item === particularRow ? updatedRow : item)))
     }
 
-    useEffect(() => {
-        if (particularRow) {
-            console.log('Updated particularRow:', particularRow)
-        }
-    }, [particularRow])
-
-    const handleADDCancel = () => {
-        setAddModal(false)
-    }
-
-    const handleADDOk = () => {
-        formikRef.current?.submitForm()
-        setAddModal(false)
-        console.log('pppppppppppppppppp', particularRow)
-    }
-
-    const handleActionClick = (row: any) => {
-        setYesModal(true)
-        setParticularRow(row)
-        console.log('ssssss', particularRow)
-    }
-
-    const handleAddPageClick = () => {
-        setAddModal(true)
-        // setParticularRow(row)
-    }
-
-    const newRowData = (data: any) => {
-        setData((prev) => prev.map((item) => (item === particularRow ? data : item)))
-        console.log('object------------', data)
-    }
-    const handleRemoveButton = (row: WebType) => {
+    const handleRemoveRow = (row: WebType) => {
         setData((prev) => prev.filter((item) => item !== row))
     }
 
-    useEffect(() => {
-        console.log('Updated particularRow:', particularRow)
-    }, [particularRow])
+    const handlePageUpdate = async () => {
+        const webData = data.reduce(
+            (acc, item, index) => {
+                const { mobile_background_array, ...rest } = item
+                acc[index + 1] = {
+                    ...rest,
+                    mobile_background_image: item.mobile_background_image || '',
+                }
+                return acc
+            },
+            {} as Record<number, WebType>,
+        )
+
+        const body = {
+            page_name: currentSelectedPage.value,
+            value: { Web: webData },
+        }
+
+        try {
+            const response = await axioisInstance.post(`/page/config`, body)
+            notification.success({
+                message: 'Success',
+                description: response?.data?.message || 'Page updated successfully.',
+            })
+        } catch (error) {
+            console.error('Error updating page:', error)
+            notification.error({
+                message: 'Failure',
+                description: 'Page update failed.',
+            })
+        }
+    }
 
     const columns: ColumnDef<WebType>[] = useMemo(
         () => [
@@ -137,72 +107,44 @@ const PageSettings = () => {
                 header: 'Edit',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original)} className="border-none bg-none">
+                    <button
+                        onClick={() => {
+                            setYesModal(true)
+                            setParticularRow(row.original)
+                        }}
+                        className="border-none bg-none"
+                    >
                         <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
             },
-            {
-                header: 'Section Heading',
-                accessorKey: 'section_heading',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Component Type',
-                accessorKey: 'component_type',
-                cell: (info) => info.getValue(),
-            },
+            { header: 'Section Heading', accessorKey: 'section_heading' },
+            { header: 'Component Type', accessorKey: 'component_type' },
             {
                 header: 'Background Image',
                 accessorKey: 'background_config.background_image',
-                cell: (info) => <img src={info.getValue() as string} alt="" className=" object-contain bg-black" />,
+                cell: (info) => <img src={info.getValue() as string} alt="" className="object-contain bg-black" />,
             },
             {
                 header: 'Mobile Background Image',
                 accessorKey: 'background_config.mobile_background_image',
-                cell: (info) => <img src={info.getValue() as string} alt="" className=" object-contain bg-black" />,
+                cell: (info) => <img src={info.getValue() as string} alt="" className="object-contain bg-black" />,
             },
-
-            {
-                header: 'Header Text',
-                accessorKey: 'header_config.text',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'Footer Text',
-                accessorKey: 'footer_config.text',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'Sub Header Text',
-                accessorKey: 'sub_header_config.text',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Data Type',
-                accessorKey: 'data_type.type',
-                cell: (info) => info.getValue(),
-            },
+            { header: 'Header Text', accessorKey: 'header_config.text' },
+            { header: 'Footer Text', accessorKey: 'footer_config.text' },
+            { header: 'Sub Header Text', accessorKey: 'sub_header_config.text' },
+            { header: 'Data Type', accessorKey: 'data_type.type' },
             {
                 header: 'Section',
                 accessorKey: 'is_section_clickable',
                 cell: (info) => (info.getValue() ? 'Yes' : 'No'),
             },
-            {
-                header: 'Section Filter',
-                accessorKey: 'section_filters',
-                cell: (info) => info.getValue(),
-            },
+            { header: 'Section Filter', accessorKey: 'section_filters' },
             {
                 header: 'Data Type Values',
-                accessorFn: (row: WebType) => getDataType(row.data_type),
+                accessorFn: (row) => getDataType(row.data_type),
                 cell: (info) => {
-                    const { key, value } = info.getValue() as {
-                        key: string
-                        value: string
-                    }
+                    const { key, value } = info.getValue() as { key: string; value: string }
                     return (
                         <div className="w-[180px] text-overflow:ellipsis">
                             {key}-{value}
@@ -210,18 +152,17 @@ const PageSettings = () => {
                     )
                 },
             },
-
             {
                 header: 'Delete',
                 accessorKey: '',
                 cell: ({ row }) => (
-                    <button onClick={() => handleRemoveButton(row.original)} className="border-none bg-none">
+                    <button onClick={() => handleRemoveRow(row.original)} className="border-none bg-none">
                         <FaTrash className="text-xl text-red-500" />
                     </button>
                 ),
             },
         ],
-        [],
+        [data],
     )
 
     const table = useReactTable({
@@ -230,85 +171,49 @@ const PageSettings = () => {
         getCoreRowModel: getCoreRowModel(),
     })
 
-    const handleSelect = (a: any, b: any) => {
-        console.log('data.....................', a, b)
-        setCurrentSelectedPage({
-            value: a,
-            name: BANNER_PAGE_NAME.find((p) => p.value == a)?.name || '',
-        })
+    const handleSelectPage = (value: string) => {
+        const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
+        if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
-
-    const handleButton = async () => {
-        const webData = data.reduce((acc, item, index) => {
-            const { mobile_background_array, ...allData } = item
-            acc[index + 1] = {
-                ...allData,
-                mobile_background_image: item.mobile_background_image || '',
-            }
-            return acc
-        }, {})
-
-        const body = {
-            page_name: `${currentSelectedPage.value}`,
-            value: {
-                Web: webData,
-            },
-        }
-
-        try {
-            const response = await axioisInstance.post(`page/config`, body)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Page Updated successfully',
-            })
-            // navigate(0)
-        } catch (error) {
-            console.log(error)
-            notification.error({
-                message: 'Failure',
-                description: 'Page Failure',
-            })
-        }
-    }
-    console.log('PPPPPPPPPPPPPP', particularRow)
 
     return (
         <div>
-            <div className=" flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="buttons flex gap-3 mb-7 ">
-                    <div className="drop border  bg-gray-200 text-black text-lg font-semibold ">
-                        <Dropdown className=" text-xl text-black " title={currentSelectedPage.name} onSelect={handleSelect}>
-                            {BANNER_PAGE_NAME?.map((item, key) => {
-                                return (
-                                    <DropdownItem key={key} eventKey={item.value}>
-                                        <span>{item.name}</span>
-                                    </DropdownItem>
-                                )
-                            })}
-                        </Dropdown>
-                    </div>
-                    <Button variant="new" size="md" onClick={handleButton}>
+            <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
+                <div className="buttons flex gap-3 mb-7">
+                    <Dropdown
+                        className="border bg-gray-200 text-black text-lg font-semibold"
+                        title={currentSelectedPage.name}
+                        onSelect={handleSelectPage}
+                    >
+                        {BANNER_PAGE_NAME.map((item) => (
+                            <DropdownItem key={item.value} eventKey={item.value}>
+                                {item.name}
+                            </DropdownItem>
+                        ))}
+                    </Dropdown>
+                    <Button variant="new" size="md" onClick={handlePageUpdate}>
                         UPDATE PAGE SETTINGS
                     </Button>
                 </div>
-
-                <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    <Button variant="new" size="md" onClick={handleAddPageClick}>
-                        ADD PAGE SETTINGS
-                    </Button>
-                </div>
+                <Button variant="new" size="md" onClick={() => setAddModal(true)}>
+                    ADD PAGE SETTINGS
+                </Button>
             </div>
+
             {yesModal && (
                 <PageModal
                     formikRef={formikRef}
                     isModalOpen={yesModal}
                     setIsModalOpen={setYesModal}
-                    handleCancel={handleCancel}
-                    handleOk={handleOk}
+                    handleCancel={() => setYesModal(false)}
+                    handleOk={() => {
+                        formikRef.current?.submitForm()
+                        setYesModal(false)
+                    }}
                     particularRow={particularRow}
                     setParticularRow={(row) => {
                         setParticularRow(row)
-                        newRowData(row)
+                        updateRowData(row)
                     }}
                 />
             )}
@@ -318,66 +223,17 @@ const PageSettings = () => {
                     formikRef={formikRef}
                     isModalOpen={addModal}
                     setIsModalOpen={setAddModal}
-                    handleCancel={handleADDCancel}
-                    handleOk={handleADDOk}
+                    handleCancel={() => setAddModal(false)}
+                    handleOk={() => {
+                        formikRef.current?.submitForm()
+                        setAddModal(false)
+                    }}
                     data={data}
                     setData={setData}
                 />
             )}
 
-            <Table className="w-full">
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => {
-                        console.log('object', headerGroup)
-                        return (
-                            <Tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <Th key={header.id} colSpan={header.colSpan}>
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                        </Th>
-                                    )
-                                })}
-                            </Tr>
-                        )
-                    })}
-                </THead>
-                <DragDropContext onDragEnd={handleDragEnd}>
-                    <StrictModeDroppable droppableId="table-body">
-                        {(provided) => (
-                            <TBody ref={provided.innerRef} {...provided.droppableProps}>
-                                {table.getRowModel().rows.map((row) => {
-                                    return (
-                                        <Draggable key={row.id} draggableId={row.id} index={row.index}>
-                                            {(provided, snapshot) => {
-                                                const { style } = provided.draggableProps
-                                                return (
-                                                    <Tr
-                                                        ref={provided.innerRef}
-                                                        className={snapshot.isDragging ? 'table' : ''}
-                                                        style={style}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                    >
-                                                        {row.getVisibleCells().map((cell) => {
-                                                            return (
-                                                                <Td key={cell.id}>
-                                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                                </Td>
-                                                            )
-                                                        })}
-                                                    </Tr>
-                                                )
-                                            }}
-                                        </Draggable>
-                                    )
-                                })}
-                                {provided.placeholder}
-                            </TBody>
-                        )}
-                    </StrictModeDroppable>
-                </DragDropContext>
-            </Table>
+            <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />
         </div>
     )
 }
