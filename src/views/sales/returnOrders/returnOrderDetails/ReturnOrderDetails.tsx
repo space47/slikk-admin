@@ -9,18 +9,9 @@ import ReturnProductsDetails from './components/ReturnProductsDetails'
 import ReturnSummary from './components/ReturnSummary'
 import ReturnUserInfo from './components/ReturnUserInfo'
 import ReturnRunnerDetails from './components/ReturnRunnerDetails'
-import { Button } from '@/components/ui'
-import { Modal } from 'antd'
-import RiderActivity from '@/views/slikkLogistics/riderTracking/riderDetails/RiderActivity'
 import RefundActivity from './components/RefundActivity'
 
 const ReturnOrderDetails = () => {
-    // const [showRefundModal, setShowRefundModal] = useState(false)
-    // const [valueInsideModal, setValueInsideModal] = useState({
-    //     refundAmount: '',
-    //     refundId: '',
-    // })
-
     const { return_order_id } = useParams()
     const dispatch = useAppDispatch()
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
@@ -37,7 +28,7 @@ const ReturnOrderDetails = () => {
                     <div className="flex gap-2 font-bold text-xl">
                         Return Order: #<span className="font-normal">{returnDetails?.return_order_id}</span>
                     </div>
-                    <div>
+                    <div className="">
                         Original Order:
                         <a href={`/app/orders/${returnDetails?.order.invoice_id}`} className="text-blue-500 hover:underline">
                             {returnDetails?.order.invoice_id}
@@ -49,6 +40,26 @@ const ReturnOrderDetails = () => {
                             <span className="ltr:ml-1 rtl:mr-1">{moment(returnDetails?.create_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
                         </span>
                     </div>
+                    {returnDetails?.pickup_schedule_date ? (
+                        <>
+                            <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
+                                <span className="font-bold ">Pickup Date:</span>
+                                <span className="ml-2 ">{returnDetails?.pickup_schedule_date}</span>
+                            </span>
+                        </>
+                    ) : (
+                        ''
+                    )}
+                    {returnDetails?.pickup_schedule_slot ? (
+                        <>
+                            <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
+                                <span className="font-bold ">Pickup Slot:</span>
+                                <span className="ml-2 ">{returnDetails?.pickup_schedule_slot}</span>
+                            </span>
+                        </>
+                    ) : (
+                        ''
+                    )}
                 </div>
             </div>
 
@@ -64,36 +75,6 @@ const ReturnOrderDetails = () => {
                     <ReturnSummary />
                 </div>
             </div>
-            {/* For Modal */}
-            {/* {showRefundModal && (
-                <Modal
-                    open={showRefundModal}
-                    onOk={refundItem}
-                    onCancel={handleCloseModal}
-                    okText="Refund"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                >
-                    <h1>INPUTS</h1>
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <input
-                            type="text"
-                            name="refundAmount"
-                            value={valueInsideModal.refundAmount}
-                            placeholder="Enter Refund Amount"
-                            onChange={handleInputChange}
-                        />
-                        <input
-                            type="text"
-                            name="refundId"
-                            value={valueInsideModal.refundId}
-                            placeholder="Enter Refund Id"
-                            onChange={handleInputChange}
-                        />
-                    </div>
-                </Modal>
-            )} */}
         </div>
     )
 }

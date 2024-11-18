@@ -49,6 +49,9 @@ const AddReportQuery = () => {
             return {
                 ...item,
                 query: plainTextValue,
+                extra_attributes: {
+                    is_graph: item.extra_attributes.is_graph,
+                },
             }
         })
 
@@ -120,7 +123,7 @@ const AddReportQuery = () => {
                                                         </FormItem>
                                                         <FormItem label="Graph">
                                                             <Field
-                                                                name={`value[${index}].is_graph`}
+                                                                name={`value[${index}].extra_attributes.is_graph`}
                                                                 type="Checkbox"
                                                                 placeholder="Is graph required"
                                                             />

@@ -36,7 +36,8 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName,
             accessorKey: key,
             cell: ({ getValue }: any) => {
                 const value = getValue()
-                if (key === 'date' || key === 'Order_Date') {
+                if (key.toLowerCase().includes('%date%') || key === 'Order_Date' || key === 'Launch_Date') {
+                    console.log('Date identified')
                     return <span>{moment(value).utcOffset(330).format('YYYY-MM-DD hh:mm:ss a')}</span>
                 }
                 return <span>{value}</span>
