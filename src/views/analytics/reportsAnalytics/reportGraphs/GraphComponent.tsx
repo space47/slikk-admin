@@ -17,19 +17,17 @@ interface GraphProps {
     yAxisValue: any
     yAxisValue2: any
     selectedOption: any
+    graphType?: any
 }
 
-const GraphComponent = ({ keyData, xAxisValue, yAxisValue, yAxisValue2, selectedOption }: GraphProps) => {
+const GraphComponent = ({ keyData, xAxisValue, yAxisValue, yAxisValue2, selectedOption, graphType }: GraphProps) => {
     console.log('KeyData Value', keyData.data)
 
-    // Extracting xAxis and yAxis from xAxisValue and yAxisValue
     const xAxis = Object.values(xAxisValue).join()
     const yAxis = Object.values(yAxisValue).join()
     const yAxis2 = Object.values(yAxisValue2).join()
     console.log('Values', yAxis2)
 
-    console.log('X and Y axis', xAxis, yAxis)
-    // Process xAxisData
     const xAxisData = keyData.data
         .map((item) => {
             if (xAxis.toLowerCase().includes('date') && item[xAxis]) {
@@ -39,7 +37,6 @@ const GraphComponent = ({ keyData, xAxisValue, yAxisValue, yAxisValue2, selected
         })
         .filter((value) => value !== undefined)
 
-    // Process yAxisData
     const yAxisData = keyData.data
         .map((item) => {
             if (yAxis.toLowerCase().includes('date') && item[yAxis]) {
@@ -49,7 +46,6 @@ const GraphComponent = ({ keyData, xAxisValue, yAxisValue, yAxisValue2, selected
         })
         .filter((value) => value !== undefined)
 
-    // Process yAxisData2
     const yAxisData2 = keyData.data
         .map((item) => {
             if (yAxis2.toLowerCase().includes('date') && item[yAxis2]) {
@@ -59,18 +55,27 @@ const GraphComponent = ({ keyData, xAxisValue, yAxisValue, yAxisValue2, selected
         })
         .filter((value) => value !== undefined)
 
-    console.log('XAxisDatashow', xAxisData)
-    console.log('YAxisDatashow', yAxisData)
-
     return (
         <div key={keyData.key}>
             {/* <div className="font-bold text-2xl mb-5">{keyData.key ? keyData.key.toUpperCase() : ''}</div> */}
-            {selectedOption === 'line' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="line" />}
-            {selectedOption === 'bar' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="bar" />}
-            {selectedOption === 'pie' && <ReportPieGraph xAxisData={xAxisData} yAxisData={yAxisData} />}
-            {selectedOption === 'heatmap' && <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="heatmap" />}
-            {selectedOption === 'composite' && (
-                <ReportCompositeGraph xAxisData={xAxisData} yAxisData1={yAxisData} yAxisData2={yAxisData2} />
+            {(graphType || graphType === undefined || graphType === '') && selectedOption && (
+                <>
+                    {selectedOption === 'line' && (graphType === 'line' || graphType === undefined || graphType === '') && (
+                        <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="line" />
+                    )}
+                    {selectedOption === 'bar' && (graphType === 'bar' || graphType === undefined || graphType === '') && (
+                        <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="bar" />
+                    )}
+                    {selectedOption === 'pie' && (graphType === 'pie' || graphType === undefined || graphType === '') && (
+                        <ReportPieGraph xAxisData={xAxisData} yAxisData={yAxisData} />
+                    )}
+                    {selectedOption === 'heatmap' && (graphType === 'heatmap' || graphType === undefined || graphType === '') && (
+                        <ReportLineGraph xAxisData={xAxisData} yAxisData={yAxisData} type="heatmap" />
+                    )}
+                    {selectedOption === 'composite' && (graphType === 'composite' || graphType === undefined || graphType === '') && (
+                        <ReportCompositeGraph xAxisData={xAxisData} yAxisData1={yAxisData} yAxisData2={yAxisData2} />
+                    )}
+                </>
             )}
         </div>
     )

@@ -4,16 +4,15 @@ import { useAppSelector } from '@/store'
 
 interface LineGraphProps {
     xAxisData?: any
-    yAxisData1?: any // Data for the first y-axis (Bar chart)
-    yAxisData2?: any // Data for the first y-axis (Bar chart)
-    // Data for the second y-axis (Line chart)
+    yAxisData1?: any
+    yAxisData2?: any
 }
 
 const ReportCompositeGraph = ({ xAxisData, yAxisData1, yAxisData2 }: LineGraphProps) => {
     const barChartData = [
         {
             name: 'Bar Data',
-            type: 'bar', // Type is bar for the first data series
+            type: 'bar',
             data: yAxisData1,
         },
     ]
@@ -21,7 +20,7 @@ const ReportCompositeGraph = ({ xAxisData, yAxisData1, yAxisData2 }: LineGraphPr
     const lineChartData = [
         {
             name: 'Line Data',
-            type: 'line', // Type is line for the second data series
+            type: 'line',
             data: yAxisData2,
         },
     ]

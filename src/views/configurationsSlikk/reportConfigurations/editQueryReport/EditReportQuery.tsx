@@ -111,7 +111,7 @@ const EditReportQuery = () => {
                     x_axis: item?.extra_attributes?.x_axis,
                     y_axis: item?.extra_attributes?.y_axis,
                     secondary_y_axis: item?.extra_attributes?.secondary_y_axis,
-                    graph_type: item?.extra_attributes?.graph_type,
+                    graph_type: item?.extra_attributes?.graph_type ? item?.extra_attributes?.graph_type : 'line',
                 },
             }
         })
