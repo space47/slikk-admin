@@ -115,11 +115,11 @@ const OrderDetails = () => {
                                 <div className="flex flex-col md:flex-row items-center mb-4 xl:justify-between justify-center w-full">
                                     <div className="text-3xl font-bold text-gray-800 text-center md:text-left flex gap-2">
                                         <span>Order</span>
-                                        <span className="ml-2 text-gray-600 flex gap-3">
+                                        <span className="ml-2 text-red-600 flex gap-3">
                                             #{data.invoice_id}{' '}
                                             <div>
                                                 <button className="bg-none border-none text-md mt-1" onClick={handleDownload}>
-                                                    <FaDownload className="bg-none" />
+                                                    <FaDownload className="bg-none text-gray-700" />
                                                 </button>
                                             </div>
                                         </span>
@@ -129,10 +129,31 @@ const OrderDetails = () => {
                                     <HiOutlineCalendar className="text-2xl" />
                                     <span className="ml-2">{moment(data.create_date).format('MM/DD/YYYY hh:mm:ss a')}</span>
                                 </span>
+                                <br />
+                                {data?.delivery_schedule_date ? (
+                                    <>
+                                        <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
+                                            <span className="font-bold text-xl">Schedule Date:</span>
+                                            <span className="ml-2 text-xl">{data?.delivery_schedule_date}</span>
+                                        </span>
+                                    </>
+                                ) : (
+                                    ''
+                                )}
+                                {data?.delivery_schedule_slot ? (
+                                    <>
+                                        <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
+                                            <span className="font-bold text-xl">Schedule Slot:</span>
+                                            <span className="ml-2 text-xl">{data?.delivery_schedule_slot}</span>
+                                        </span>
+                                    </>
+                                ) : (
+                                    ''
+                                )}
                             </div>
                             <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
                                 <div className="flex gap-4">
-                                    {data.status === 'COMPLETED' &&
+                                    {/* {data.status === 'COMPLETED' &&
                                         (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') && (
                                             <button
                                                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
@@ -148,8 +169,8 @@ const OrderDetails = () => {
                                         >
                                             CANCEL ORDER
                                         </button>
-                                    )}
-                                    {/* {data.status === 'COMPLETED' &&
+                                    )} */}
+                                    {data.status === 'COMPLETED' &&
                                     (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') ? (
                                         <button
                                             className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
@@ -169,7 +190,7 @@ const OrderDetails = () => {
                                                 CANCEL ORDER
                                             </button>
                                         )
-                                    )} */}
+                                    )}
                                 </div>
                                 {data.return_order.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">

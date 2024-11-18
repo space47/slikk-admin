@@ -100,6 +100,8 @@ export interface ReturnOrder {
     create_date: string
     update_date: string
     logistic: Logistic
+    pickup_schedule_date: string
+    pickup_schedule_slot: number
 }
 
 export interface ReturnOrderState {
@@ -109,9 +111,5 @@ export interface ReturnOrderState {
 }
 
 export const getAllReturnOrdersRequest = 'getAllReturnOrdersRequest'
-export const getAllReturnOrdersSuccess = createAction<ReturnOrderState>(
-    'getAllReturnOrdersSuccess',
-)
-export const getAllReturnOrdersFailure = createAction<ReturnOrderState>(
-    'getAllReturnOrdersFailure',
-)
+export const getAllReturnOrdersSuccess = createAction<ReturnOrderState>('getAllReturnOrdersSuccess')
+export const getAllReturnOrdersFailure = createAction<ReturnOrderState>('getAllReturnOrdersFailure')

@@ -27,6 +27,8 @@ export type SalesOrderDetailsResponse = {
     delivery: string
     delivery_discount: number
     delivery_type: string
+    delivery_schedule_slot: number
+    delivery_schedule_date: string
     tax: string | number
     address_name: string
     logistic?: {
