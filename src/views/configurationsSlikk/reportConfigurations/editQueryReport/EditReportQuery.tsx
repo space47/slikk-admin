@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import { Field, Form, Formik, FieldArray, FieldProps } from 'formik'
+import { Field, Form, Formik, FieldArray } from 'formik'
 import { useNavigate, useParams } from 'react-router-dom'
 import { IoIosAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
@@ -36,7 +37,9 @@ const EditReportQuery = () => {
                     name: '',
                     display_name: '',
                     position: 0,
-                    is_graph: false,
+                    extra_attributes: {
+                        is_graph: false,
+                    },
                     query: '',
                 },
             },
@@ -53,12 +56,14 @@ const EditReportQuery = () => {
                 name: data?.results[0]?.name || '',
                 display_name: data?.results[0]?.display_name || '',
                 value:
-                    data?.results[0]?.value.map((item) => ({
+                    data?.results[0]?.value.map((item: any) => ({
                         name: item.name,
                         display_name: item.display_name,
                         position: item.position,
                         query: item.query,
-                        is_graph: item.is_graph,
+                        extra_attributes: {
+                            is_graph: item.extra_attributes?.is_graph || false,
+                        },
                     })) || [],
                 // value: [],
 
@@ -79,7 +84,7 @@ const EditReportQuery = () => {
     }, [id])
 
     const handleSubmit = async (values) => {
-        const formattedRequiredFields = values.required_fields.reduce((obj, item) => {
+        const formattedRequiredFields = values.required_fields.reduce((obj: any, item: any) => {
             obj[item.key] = `${item.dataType}_${item.value}`
             return obj
         }, {})
@@ -92,6 +97,9 @@ const EditReportQuery = () => {
             return {
                 ...item,
                 query: plainTextValue,
+                extra_attributes: {
+                    is_graph: item.extra_attributes.is_graph,
+                },
             }
         })
 
@@ -107,7 +115,7 @@ const EditReportQuery = () => {
             notification.success({
                 message: response?.data.message || 'Successfully updated query',
             })
-            navigate(`/app/reportConfigurations`)
+            // navigate(`/app/reportConfigurations`)
         } catch (error) {
             console.log(error)
             notification.error({
@@ -163,7 +171,7 @@ const EditReportQuery = () => {
                                                         </FormItem>
                                                         <FormItem label="Graph">
                                                             <Field
-                                                                name={`value[${index}].is_graph`}
+                                                                name={`value[${index}].extra_attributes.is_graph`}
                                                                 type="checkbox"
                                                                 placeholder="Is graph required"
                                                                 component={Checkbox}
@@ -172,7 +180,7 @@ const EditReportQuery = () => {
                                                     </div>
                                                     <FormItem label="Query">
                                                         <Field name={`value[${index}].query`}>
-                                                            {({ field, form }) => (
+                                                            {({ field, form }: any) => (
                                                                 <RichTextEditor
                                                                     value={field.value}
                                                                     onChange={(val) => form.setFieldValue(field.name, val)}
@@ -224,7 +232,7 @@ const EditReportQuery = () => {
                                                         className="w-1/3"
                                                     />
                                                     <Field name={`required_fields[${index}].dataType`}>
-                                                        {({ field, form }) => (
+                                                        {({ field, form }: any) => (
                                                             <Select
                                                                 className="w-1/4"
                                                                 placeholder="Select dataType"
@@ -235,7 +243,7 @@ const EditReportQuery = () => {
                                                         )}
                                                     </Field>
                                                     <Field name={`required_fields[${index}].value`}>
-                                                        {({ field, form }) => {
+                                                        {({ field }: any) => {
                                                             const dataType = values.required_fields[index].dataType
                                                             return (
                                                                 <Input

@@ -124,6 +124,7 @@ export const DELEIVERYOPTIONS = [
     { label: 'Express', value: 'EXPRESS' },
     { label: 'Standard', value: 'STANDARD' },
     { label: 'Try&Buy', value: 'TRY_AND_BUY' },
+    { label: 'Exchange', value: 'EXCHANGE' },
 ]
 
 export const PAYMENTOPTIONS = [
