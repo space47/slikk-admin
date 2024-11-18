@@ -12,6 +12,9 @@ import ImageMODAL from '@/common/ImageModal'
 import { FaEdit, FaFilter } from 'react-icons/fa'
 import StockOverviewFilter from '@/views/inventory-management/stock-overview/stockOverviewComponents/StockOverviewFilter'
 import EasyTable from '@/common/EasyTable'
+import ProductFilterNest from './ProductFilter'
+import { useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
 
 type ProductVariant = {
     name: string
@@ -52,8 +55,6 @@ type Option = {
     label: string
 }
 
-const { Tr, Th, Td, THead, TBody } = Table
-
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
     { value: 25, label: '25 / page' },
@@ -79,8 +80,13 @@ const Products = () => {
     const [productTypeList, setProductTypeList] = useState([])
     const [brandList, setBrandList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
+    const [filteredCategories, setFilteredCategories] = useState([])
+    const [filteredSubCategories, setFilteredSubCategories] = useState([])
+    const [filteredProductTypes, setFilteredProductTypes] = useState([])
 
     const [showDrawer, setShowDrawer] = useState(false)
+
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
 
     const fetchData = async (page: number, pageSize: number, filter: string = '') => {
         try {
@@ -404,7 +410,7 @@ const Products = () => {
                 />
             )}
             {showDrawer && (
-                <StockOverviewFilter
+                <ProductFilterNest
                     showDrawer={showDrawer}
                     handleCloseDrawer={handleCloseDrawer}
                     handleMultiSelect={handleMultiSelect}
@@ -420,6 +426,13 @@ const Products = () => {
                     setProductTypeList={setProductTypeList}
                     setSubCategoryList={setSubCategoryList}
                     setTypeFetch={setTypeFetch}
+                    filteredCategories={filteredCategories}
+                    filteredProductTypes={filteredProductTypes}
+                    filteredSubCategories={filteredSubCategories}
+                    setFilteredCategories={setFilteredCategories}
+                    setFilteredProductTypes={setFilteredProductTypes}
+                    setFilteredSubCategories={setFilteredSubCategories}
+                    options={divisions.divisions}
                 />
             )}
         </div>
