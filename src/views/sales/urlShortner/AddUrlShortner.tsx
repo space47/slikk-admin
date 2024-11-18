@@ -179,7 +179,7 @@ const AddUrlShortner = () => {
                                             name={item.name}
                                             placeholder={item.placeholder}
                                             className="w-full"
-                                            disabled={filterShow}
+                                            // disabled={filterShow}
                                         />
                                     </FormItem>
                                 ))}

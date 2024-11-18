@@ -9,6 +9,7 @@ import { RichTextEditor } from '@/components/shared'
 import Select from '@/components/ui/Select'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import { ExtraAttributes } from '../editQueryReport/ExtraAttributes'
 
 const reportQueryNames = [
     { label: 'Date', value: 'Date' },
@@ -32,6 +33,7 @@ const AddReportQuery = () => {
                 position: 0,
                 is_graph: false,
                 query: '',
+                extra_attributes: {},
             },
         ],
         required_fields: [{ key: '', value: '', dataType: 'String' }],
@@ -51,6 +53,10 @@ const AddReportQuery = () => {
                 query: plainTextValue,
                 extra_attributes: {
                     is_graph: item.extra_attributes.is_graph,
+                    x_axis: item?.extra_attributes?.x_axis,
+                    y_axis: item?.extra_attributes?.y_axis,
+                    secondary_y_axis: item?.extra_attributes?.secondary_y_axis,
+                    graph_type: item?.extra_attributes?.graph_type,
                 },
             }
         })
@@ -121,14 +127,21 @@ const AddReportQuery = () => {
                                                                 className="w-3/4"
                                                             />
                                                         </FormItem>
-                                                        <FormItem label="Graph">
-                                                            <Field
-                                                                name={`value[${index}].extra_attributes.is_graph`}
-                                                                type="Checkbox"
-                                                                placeholder="Is graph required"
-                                                            />
-                                                        </FormItem>
                                                     </div>
+                                                    <FormContainer className="flex gap-5 ">
+                                                        {ExtraAttributes.map((item, key) => (
+                                                            <FormContainer key={key} className="">
+                                                                <FormItem label={item.label}>
+                                                                    <Field
+                                                                        name={`value[${index}].${item.name}`}
+                                                                        type={item.type}
+                                                                        placeholder={`Enter ${item.label}`}
+                                                                        component={item.component}
+                                                                    />
+                                                                </FormItem>
+                                                            </FormContainer>
+                                                        ))}
+                                                    </FormContainer>
                                                     <FormItem label="Query">
                                                         <Field name={`value[${index}].query`}>
                                                             {({ field, form }: FieldProps) => (
