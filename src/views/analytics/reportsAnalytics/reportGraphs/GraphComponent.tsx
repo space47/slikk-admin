@@ -61,6 +61,9 @@ const GraphComponent = ({
         })
         .filter((value) => value !== undefined)
 
+    console.log('YAixsData', yAxisData)
+    console.log('xAixsData', xAxisData)
+
     const yAxisData2 = keyData.data
         .map((item) => {
             if (yAxis2.toLowerCase().includes('date') && item[yAxis2]) {

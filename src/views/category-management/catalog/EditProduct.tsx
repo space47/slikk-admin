@@ -121,7 +121,7 @@ const EditProduct = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Product Edited Successfully',
             })
-            setShowSpinner(false)
+
             navigate('/app/catalog/products')
         } catch (error: any) {
             console.error('Error submitting form:', error)
@@ -129,6 +129,8 @@ const EditProduct = () => {
                 message: 'Failure',
                 description: error?.response?.data?.message || 'Product not Updated ',
             })
+        } finally {
+            setShowSpinner(false)
         }
     }
     const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {

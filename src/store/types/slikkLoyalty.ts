@@ -8,6 +8,7 @@ type TierUpgradeOffer = {
     type: 'percent_off' | 'amount_off' | string
     value: number
     max_discount: number | null
+    min_discount: number | null
     max_order_value: number | null
     min_order_value: number
 }
