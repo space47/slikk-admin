@@ -5,6 +5,7 @@ import { fetchLoyalty, setPage, setPageSize } from '@/store/slices/slikkLoyalty/
 import { LoyaltyType } from '@/store/types/slikkLoyalty'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 type Option = {
     value: number
@@ -62,6 +63,7 @@ const columns = [
 ]
 
 const LoyaltyTable = () => {
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const { loyalty, page, pageSize } = useAppSelector<LoyaltyType>((state) => state.loyalty)
     const totalPages = loyalty.length
@@ -73,7 +75,7 @@ const LoyaltyTable = () => {
     return (
         <div>
             <div className="flex justify-end mb-6">
-                <Button variant="new" size="sm">
+                <Button variant="new" size="sm" onClick={handleLoyaltyAdd}>
                     ADD LOYALITY
                 </Button>
             </div>
@@ -92,6 +94,10 @@ const LoyaltyTable = () => {
             </div>
         </div>
     )
+
+    function handleLoyaltyAdd() {
+        navigate(`/app/loyality/addNew`)
+    }
 }
 
 export default LoyaltyTable

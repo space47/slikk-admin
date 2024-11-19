@@ -959,6 +959,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/slikkLoyalty/loyaltyTable/LoyaltyTable')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsConfiguration.loyality',
+        path: `${APP_PREFIX_PATH}/loyality/addNew`,
+        component: lazy(() => import('@/views/slikkLoyalty/addLoyalty/AddLoyalty')),
+        authority: [ADMIN, USER],
+    },
 ]
 
 export default appsRoute

@@ -55,10 +55,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                         getOptionValue={(option) => option.id.toString()}
                                                         value={selectedOption || null}
                                                         onChange={(newVal) => {
-                                                            form.setFieldValue(
-                                                                `required_fields[${index}].value`,
-                                                                newVal?.name?.toLowerCase(),
-                                                            )
+                                                            form.setFieldValue(`required_fields[${index}].value`, newVal?.name)
                                                         }}
                                                     />
                                                 )

@@ -324,6 +324,11 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         { label: 'Space Evenly', value: 'space-evenly' },
     ]
 
+    const SectionTypeArray = [
+        { label: 'Generic', value: 'generic' },
+        { label: 'Personalized', value: 'personalized' },
+    ]
+
     const handleSubmit = async (row: any) => {
         console.log('satrt')
         const imageUpload = await handleimage(row.background_image_array)
@@ -377,6 +382,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...row.component_config,
             },
             section_filters: row.data_type?.filters || '',
+            section_type: row.section_type || '',
         }
 
         console.log('End of row')
@@ -597,6 +603,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                                             ))}
                                         </FormContainer>
                                     )}
+                                    <CommonSelect
+                                        name="section_type"
+                                        label="Section Type"
+                                        options={SectionTypeArray}
+                                        needClassName
+                                        className=" col-span-1 w-1/2"
+                                    />
                                 </FormItem>
                                 <FormItem label="Web Border" className="col-span-1 w-1/4">
                                     <Field
