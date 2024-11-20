@@ -9,8 +9,8 @@ import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers'
 interface DateAndTimePickerProps {
     fromDate: string
     toDate: string
-    onFromChange?: (newValue: moment.Moment | null) => void
-    onToChange?: (newValue: moment.Moment | null) => void
+    onFromChange?: any
+    onToChange?: any
     shortSpace?: boolean
 }
 
@@ -22,7 +22,7 @@ export default function DateAndTimePicker({ fromDate, toDate, onFromChange, onTo
                     <DateTimePicker
                         label="Start Date"
                         value={moment(fromDate)}
-                        onChange={(newValue) => onFromChange && onFromChange(newValue)}
+                        onChange={(newValue) => onFromChange(newValue)}
                         viewRenderers={{
                             hours: renderTimeViewClock,
                             minutes: renderTimeViewClock,
@@ -32,7 +32,7 @@ export default function DateAndTimePicker({ fromDate, toDate, onFromChange, onTo
                     <DateTimePicker
                         label="End Date"
                         value={moment(toDate)}
-                        onChange={(newValue) => onToChange && onToChange(newValue)}
+                        onChange={(newValue) => onToChange(newValue)}
                         viewRenderers={{
                             hours: renderTimeViewClock,
                             minutes: renderTimeViewClock,
