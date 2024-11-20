@@ -15,7 +15,6 @@ interface DateAndTimePickerProps {
 }
 
 export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime, setToDateAndTime, shortSpace }: DateAndTimePickerProps) {
-    // Fallback to current date and time if fromDate or toDate is empty
     const parsedFromDate = fromDate ? moment(fromDate) : moment()
     const parsedToDate = toDate ? moment(toDate) : moment()
 

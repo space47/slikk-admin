@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps, ErrorMessage } from 'formik'
 import { useEffect, useState } from 'react'
-import { notification } from 'antd'
+import { DatePicker, notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BANNER_FIELDS_TYPE } from './EditCommon'
 import { BANNERMODEL } from '../BannerCommon'
@@ -157,8 +157,8 @@ const EditBanner = () => {
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
             image_web_array: null,
-            from_date: fromDateAndTime,
-            to_date: toDateAndTime,
+            // from_date: fromDateAndTime,
+            // to_date: toDateAndTime,
             image_mobile_array: null,
             division: values.division ? values.division.map((item) => item.name).join(',') : '',
             category: values.category ? values.category.map((item) => item.name).join(',') : '',
@@ -213,13 +213,42 @@ const EditBanner = () => {
                                         <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
-                                <DateAndTimePicker
+                                {/* <DateAndTimePicker
                                     fromDate={fromDateAndTime}
                                     toDate={toDateAndTime}
                                     setFromDateAndTime={setFromDateAndTime}
                                     setToDateAndTime={setToDateAndTime}
-                                />
+                                /> */}
+                                <FormItem label="From date" className="col-span-1 w-full">
+                                    <Field name="from_date">
+                                        {({ field, form }: any) => (
+                                            <DatePicker
+                                                showTime
+                                                placeholder=""
+                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                onChange={(value) => {
+                                                    form.setFieldValue('from_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                                <FormItem label="To date" className="col-span-1 w-full">
+                                    <Field name="to_date">
+                                        {({ field, form }: any) => (
+                                            <DatePicker
+                                                showTime
+                                                placeholder=""
+                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                onChange={(value) => {
+                                                    form.setFieldValue('to_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
                             </FormContainer>
+
                             {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>
                             <ImageComponent
