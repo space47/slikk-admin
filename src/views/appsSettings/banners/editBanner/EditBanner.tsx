@@ -13,7 +13,6 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { formatDate } from '@/common/date'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
@@ -41,6 +40,8 @@ const EditBanner = () => {
     const [filteredCategories, setFilteredCategories] = useState([])
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
+    const [fromDateAndTime, setFromDateAndTime] = useState('')
+    const [toDateAndTime, setToDateAndTime] = useState('')
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -55,11 +56,13 @@ const EditBanner = () => {
 
     const { id } = useParams()
 
-    const fetchsellerData = async () => {
+    const fetchBannerData = async () => {
         try {
             const response = await axioisInstance.get(`banners?banner_id=${id}`)
             const data = response.data.data
             setBannerData(data)
+            setFromDateAndTime(moment(data?.from_date).format('YYYY-MM-DD HH:mm:ss'))
+            setToDateAndTime(moment(data?.to_date).format('YYYY-MM-DD HH:mm:ss'))
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
             setSectionBGweb(data.section_background_web ? [data.section_background_web] : [])
@@ -70,7 +73,7 @@ const EditBanner = () => {
     }
 
     useEffect(() => {
-        fetchsellerData()
+        fetchBannerData()
     }, [id])
 
     const initialValue: BANNERMODEL = {
@@ -92,8 +95,8 @@ const EditBanner = () => {
         offers: bannerData?.offers || false,
         offer_id: bannerData?.offer_id || '',
         page: bannerData?.page || '',
-        from_date: moment(bannerData?.from_date || '').format('YYYY-MM-DD') || '',
-        to_date: moment(bannerData?.to_date || '').format('YYYY-MM-DD') || '',
+        from_date: moment(bannerData?.from_date).format('YYYY-MM-DD HH:mm:ss') || '',
+        to_date: moment(bannerData?.to_date).format('YYYY-MM-DD HH:mm:ss') || '',
         uptooff: bannerData?.uptooff || '',
         tags: bannerData?.tags || [],
         footer: bannerData?.footer || null,
@@ -113,8 +116,10 @@ const EditBanner = () => {
         position: bannerData?.position || null,
     }
 
-    const [fromDateAndTime, setFromDateAndTime] = useState(moment(bannerData?.from_date).format('YYYY-MM-DD'))
-    const [toDateAndTime, setToDateAndTime] = useState(moment(bannerData?.to_date).format('YYYY-MM-DD'))
+    console.log('InitialValue', initialValue?.from_date)
+    console.log('InitialValue To', initialValue?.to_date)
+
+    console.log('fromDate from Edit', fromDateAndTime)
 
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
@@ -129,15 +134,6 @@ const EditBanner = () => {
         if (type === 'SecMob') {
             setSectionBGmobile((item) => item.filter((_, id) => id !== index))
         }
-    }
-
-    const handleFromTimeChange = (value: any) => {
-        console.log('HandleTimeChange', value)
-        setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
-    }
-
-    const handleToTimeChange = (value: any) => {
-        setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
     console.log('fromDate', fromDateAndTime)
@@ -218,10 +214,10 @@ const EditBanner = () => {
                                     </FormItem>
                                 ))}
                                 <DateAndTimePicker
-                                    fromDate={initialValue?.from_date || ''}
-                                    toDate={initialValue?.to_date || ''}
-                                    onFromChange={handleFromTimeChange}
-                                    onToChange={handleToTimeChange}
+                                    fromDate={fromDateAndTime}
+                                    toDate={toDateAndTime}
+                                    setFromDateAndTime={setFromDateAndTime}
+                                    setToDateAndTime={setToDateAndTime}
                                 />
                             </FormContainer>
                             {/* ................I.....M......A.....G.....E....S.................... */}
