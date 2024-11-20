@@ -18,14 +18,14 @@ export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime
     console.log('formDate d$T', fromDate)
     console.log('formDate moment', moment(fromDate))
 
-    const handleFromTimeChange = (value: any) => {
-        console.log('HandleTimeChange', value)
-        setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
-    }
+    // const handleFromTimeChange = (value: any) => {
+    //     console.log('HandleTimeChange', value)
+    //     setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+    // }
 
-    const handleToTimeChange = (value: any) => {
-        setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
-    }
+    // const handleToTimeChange = (value: any) => {
+    //     setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+    // }
 
     return (
         <LocalizationProvider dateAdapter={AdapterMoment}>
@@ -34,7 +34,7 @@ export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime
                     <DateTimePicker
                         label="Start Date"
                         value={moment(fromDate)}
-                        onChange={(newValue) => handleFromTimeChange(newValue)}
+                        // onChange={(newValue) => handleFromTimeChange(newValue)}
                         viewRenderers={{
                             hours: renderTimeViewClock,
                             minutes: renderTimeViewClock,
@@ -44,7 +44,7 @@ export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime
                     <DateTimePicker
                         label="End Date"
                         value={moment(toDate)}
-                        onChange={(newValue) => handleToTimeChange(newValue)}
+                        // onChange={(newValue) => handleToTimeChange(newValue)}
                         viewRenderers={{
                             hours: renderTimeViewClock,
                             minutes: renderTimeViewClock,
