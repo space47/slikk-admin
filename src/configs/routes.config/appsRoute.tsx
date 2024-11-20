@@ -971,6 +971,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/slikkLoyalty/editLoyalty/EditLoyalty')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsConfiguration.tasksAndSchedular',
+        path: `${APP_PREFIX_PATH}/tasksAndSchedular`,
+        component: lazy(() => import('@/views/configurationsSlikk/taskAndSchedular/TaskAndSchedular')),
+        authority: [ADMIN, USER],
+    },
 ]
 
 export default appsRoute
