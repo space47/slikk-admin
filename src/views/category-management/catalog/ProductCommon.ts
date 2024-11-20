@@ -324,7 +324,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
         classname: 'w-full',
     },
     {
-        name: 'is_free_ittem',
+        name: 'free_ittem',
         type: 'checkbox',
         label: 'Is Free Item ',
         component: Checkbox,

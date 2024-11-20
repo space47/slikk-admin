@@ -44,6 +44,13 @@ const LoyaltyTable = () => {
         { header: 'Max Discount', accessorKey: 'max_discount' },
         { header: 'Max Yearly Discount', accessorKey: 'max_yearly_discount' },
         {
+            header: 'Image',
+            accessorKey: 'image',
+            cell: ({ getValue, row }) => (
+                <img src={getValue()?.split(',')[0]} alt="Image" className="w-24 h-20 object-cover cursor-pointer" />
+            ),
+        },
+        {
             header: 'Tier Upgrade Type',
             accessorKey: 'tier_upgrade_offer',
             cell: ({ getValue }) => {
@@ -56,7 +63,7 @@ const LoyaltyTable = () => {
             accessorKey: 'tier_upgrade_offer',
             cell: ({ getValue }) => {
                 const value = getValue()
-                return <div>{value?.map((item, key) => <div key={key}>{item.value}</div>)}</div>
+                return <div className="w-[200px] line-clamp-3">{value?.map((item, key) => <div key={key}>{item.value}</div>)}</div>
             },
         },
         {
