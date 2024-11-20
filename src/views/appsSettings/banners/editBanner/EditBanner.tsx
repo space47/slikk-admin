@@ -24,6 +24,8 @@ import LoadingSpinner from '@/common/LoadingSpinner'
 import { beforeUpload } from '@/common/beforeUpload'
 import BannerCategories from './component/BannerCategories'
 import { handleimage } from '@/common/handleImage'
+import moment from 'moment'
+import DateAndTimePicker from '@/common/DateAndTime'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -52,6 +54,8 @@ const EditBanner = () => {
     }, [dispatch])
 
     const { id } = useParams()
+
+    console.log('Moment Date select', moment())
 
     const fetchsellerData = async () => {
         try {
@@ -90,8 +94,8 @@ const EditBanner = () => {
         offers: bannerData?.offers || false,
         offer_id: bannerData?.offer_id || '',
         page: bannerData?.page || '',
-        from_date: formatDate(bannerData?.from_date || ''),
-        to_date: formatDate(bannerData?.to_date || ''),
+        from_date: moment(bannerData?.from_date || '').format('YYYY-MM-DD'),
+        to_date: moment(bannerData?.to_date || '').format('YYYY-MM-DD'),
         uptooff: bannerData?.uptooff || '',
         tags: bannerData?.tags || [],
         footer: bannerData?.footer || null,
@@ -111,6 +115,9 @@ const EditBanner = () => {
         position: bannerData?.position || null,
     }
 
+    const [fromDateAndTime, setFromDateAndTime] = useState('')
+    const [toDateAndTime, setToDateAndTime] = useState('')
+
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
             setMobileImageView((item) => item.filter((_, id) => id !== index))
@@ -125,6 +132,17 @@ const EditBanner = () => {
             setSectionBGmobile((item) => item.filter((_, id) => id !== index))
         }
     }
+
+    const handleFromTimeChange = (value: any) => {
+        console.log('HandleTimeChange', value)
+        setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+    }
+
+    const handleToTimeChange = (value: any) => {
+        setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+    }
+
+    console.log('fromDate', fromDateAndTime)
 
     const handleSubmit = async (values: BANNERMODEL) => {
         const processImageUpload = async (imageArray: any[], currentImage: string) => {
@@ -145,6 +163,8 @@ const EditBanner = () => {
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
             image_web_array: null,
+            from_date: fromDateAndTime ? fromDateAndTime : initialValue?.from_date,
+            to_date: fromDateAndTime ? toDateAndTime : initialValue?.to_date,
             image_mobile_array: null,
             division: values.division ? values.division.map((item) => item.name).join(',') : '',
             category: values.category ? values.category.map((item) => item.name).join(',') : '',
@@ -160,6 +180,8 @@ const EditBanner = () => {
             ].filter((item) => item),
         }
 
+        console.log('FormData', formData)
+
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`banners`, formData)
@@ -168,7 +190,7 @@ const EditBanner = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Banner Edited Successfully',
             })
-            navigate('/app/appSettings/banners')
+            // navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
@@ -197,6 +219,12 @@ const EditBanner = () => {
                                         <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
+                                <DateAndTimePicker
+                                    fromDate={initialValue?.from_date}
+                                    toDate={initialValue?.to_date}
+                                    onFromChange={handleFromTimeChange}
+                                    onToChange={handleToTimeChange}
+                                />
                             </FormContainer>
                             {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>
