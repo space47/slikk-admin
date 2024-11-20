@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps, ErrorMessage } from 'formik'
 import { useEffect, useState } from 'react'
-import { notification } from 'antd'
+import { DatePicker, notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { BANNER_FIELDS_TYPE } from './EditCommon'
 import { BANNERMODEL } from '../BannerCommon'
@@ -13,7 +13,6 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { formatDate } from '@/common/date'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
@@ -41,6 +40,8 @@ const EditBanner = () => {
     const [filteredCategories, setFilteredCategories] = useState([])
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
+    const [fromDateAndTime, setFromDateAndTime] = useState<string>('')
+    const [toDateAndTime, setToDateAndTime] = useState<string>('')
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -55,13 +56,13 @@ const EditBanner = () => {
 
     const { id } = useParams()
 
-    console.log('Moment Date select', moment())
-
-    const fetchsellerData = async () => {
+    const fetchBannerData = async () => {
         try {
             const response = await axioisInstance.get(`banners?banner_id=${id}`)
             const data = response.data.data
             setBannerData(data)
+            setFromDateAndTime(moment(data?.from_date).format('YYYY-MM-DD HH:mm:ss'))
+            setToDateAndTime(moment(data?.to_date).format('YYYY-MM-DD HH:mm:ss'))
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
             setSectionBGweb(data.section_background_web ? [data.section_background_web] : [])
@@ -72,7 +73,7 @@ const EditBanner = () => {
     }
 
     useEffect(() => {
-        fetchsellerData()
+        fetchBannerData()
     }, [id])
 
     const initialValue: BANNERMODEL = {
@@ -94,8 +95,8 @@ const EditBanner = () => {
         offers: bannerData?.offers || false,
         offer_id: bannerData?.offer_id || '',
         page: bannerData?.page || '',
-        from_date: moment(bannerData?.from_date || '').format('YYYY-MM-DD'),
-        to_date: moment(bannerData?.to_date || '').format('YYYY-MM-DD'),
+        from_date: moment(bannerData?.from_date).format('YYYY-MM-DD HH:mm:ss') || '',
+        to_date: moment(bannerData?.to_date).format('YYYY-MM-DD HH:mm:ss') || '',
         uptooff: bannerData?.uptooff || '',
         tags: bannerData?.tags || [],
         footer: bannerData?.footer || null,
@@ -115,8 +116,10 @@ const EditBanner = () => {
         position: bannerData?.position || null,
     }
 
-    const [fromDateAndTime, setFromDateAndTime] = useState('')
-    const [toDateAndTime, setToDateAndTime] = useState('')
+    console.log('InitialValue', initialValue?.from_date)
+    console.log('InitialValue To', initialValue?.to_date)
+
+    console.log('fromDate from Edit', fromDateAndTime)
 
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
@@ -131,15 +134,6 @@ const EditBanner = () => {
         if (type === 'SecMob') {
             setSectionBGmobile((item) => item.filter((_, id) => id !== index))
         }
-    }
-
-    const handleFromTimeChange = (value: any) => {
-        console.log('HandleTimeChange', value)
-        setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
-    }
-
-    const handleToTimeChange = (value: any) => {
-        setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
     }
 
     console.log('fromDate', fromDateAndTime)
@@ -163,8 +157,8 @@ const EditBanner = () => {
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
             image_web_array: null,
-            from_date: fromDateAndTime ? fromDateAndTime : initialValue?.from_date,
-            to_date: fromDateAndTime ? toDateAndTime : initialValue?.to_date,
+            // from_date: fromDateAndTime,
+            // to_date: toDateAndTime,
             image_mobile_array: null,
             division: values.division ? values.division.map((item) => item.name).join(',') : '',
             category: values.category ? values.category.map((item) => item.name).join(',') : '',
@@ -219,13 +213,42 @@ const EditBanner = () => {
                                         <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
-                                <DateAndTimePicker
-                                    fromDate={initialValue?.from_date}
-                                    toDate={initialValue?.to_date}
-                                    onFromChange={handleFromTimeChange}
-                                    onToChange={handleToTimeChange}
-                                />
+                                {/* <DateAndTimePicker
+                                    fromDate={fromDateAndTime}
+                                    toDate={toDateAndTime}
+                                    setFromDateAndTime={setFromDateAndTime}
+                                    setToDateAndTime={setToDateAndTime}
+                                /> */}
+                                <FormItem label="From date" className="col-span-1 w-full">
+                                    <Field name="from_date">
+                                        {({ field, form }: any) => (
+                                            <DatePicker
+                                                showTime
+                                                placeholder=""
+                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                onChange={(value) => {
+                                                    form.setFieldValue('from_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                                <FormItem label="To date" className="col-span-1 w-full">
+                                    <Field name="to_date">
+                                        {({ field, form }: any) => (
+                                            <DatePicker
+                                                showTime
+                                                placeholder=""
+                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                onChange={(value) => {
+                                                    form.setFieldValue('to_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
                             </FormContainer>
+
                             {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>
                             <ImageComponent
