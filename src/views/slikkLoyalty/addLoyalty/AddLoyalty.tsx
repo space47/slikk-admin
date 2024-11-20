@@ -2,7 +2,7 @@
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import { Field, Form, Formik } from 'formik'
+import { Field, FieldProps, Form, Formik } from 'formik'
 import { notification } from 'antd'
 // import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -11,6 +11,9 @@ import { IconArray, LoyaltyFieldArray, TierCondition, TierUpgradeConditionArray 
 import LoyaltyAddoffer from './LoyaltyAddoffer'
 import { useState } from 'react'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import { beforeUpload } from '@/common/beforeUpload'
+import { handleimage } from '@/common/handleImage'
+import { Upload } from '@/components/ui'
 
 const AddLoyalty = () => {
     // const navigate = useNavigate()
@@ -22,11 +25,18 @@ const AddLoyalty = () => {
         tier_upgrade_condition: {},
         discount: null,
         level: null,
+        imageArray: [],
     }
 
     const handleSubmit = async (values: any) => {
+        let imageUpload
+        if (values.imageArray && values?.imageArray.length > 0) {
+            imageUpload = await handleimage('product', values?.imageArray)
+        }
+
         const body = {
             ...values,
+            image: imageUpload,
             tier_upgrade_condition: {
                 type: values?.tier_upgrade_condition.type,
                 duration: values?.tier_upgrade_condition.duration || '',
@@ -115,6 +125,22 @@ const AddLoyalty = () => {
                                     </div>
                                 </FormContainer>
                             </FormContainer>
+
+                            <h3>Image:</h3>
+
+                            <FormItem label="" className="mt-4">
+                                <Field name="imageArray">
+                                    {({ form }: FieldProps<any>) => (
+                                        <Upload
+                                            multiple
+                                            beforeUpload={beforeUpload}
+                                            fileList={values.imageArray}
+                                            onChange={(files) => form.setFieldValue('imageArray', files)}
+                                            onFileRemove={(files) => form.setFieldValue('imageArray', files)}
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
 
                             <LoyaltyAddoffer values={values} />
 

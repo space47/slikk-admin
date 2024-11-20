@@ -34,6 +34,7 @@ export const InitialValues = (productData: any) => ({
     is_premium: productData?.is_premium || false,
     is_try_and_buy: productData?.is_try_and_buy || false,
     is_returnable: productData?.is_returnable || false,
+    free_item: productData?.free_item || false,
     sub_category_name: productData?.sub_category,
     product_type_name: productData?.product_type,
     division_name: productData?.division,
