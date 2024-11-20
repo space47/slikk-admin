@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BANNER_UPLOAD_DATA } from '@/common/banner'
-import { Button, Select, Upload } from '@/components/ui'
+import { Button, FormItem, Select, Upload } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import React, { useEffect, useState } from 'react'
@@ -8,9 +8,10 @@ import { FaWindowClose } from 'react-icons/fa'
 import { ADD_BANNER_BASIC_FIELDS } from './generalFields'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
-import { notification } from 'antd'
+import { DatePicker, notification } from 'antd'
 import DateAndTimePicker from '@/common/DateAndTime'
 import moment from 'moment'
+import { Field } from 'formik'
 
 function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
@@ -217,13 +218,28 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 ))}
             </form>
 
-            <DateAndTimePicker
-                shortSpace
-                fromDate={fromDateAndTime}
-                toDate={toDateAndTime}
-                onFromChange={handleFromTimeChange}
-                onToChange={handleToTimeChange}
-            />
+            <div className="flex flex-col gap-2">
+                <div>Start Date:</div>
+                <DatePicker
+                    showTime
+                    placeholder=""
+                    onChange={(value) => {
+                        handleFromTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                    }}
+                />
+            </div>
+
+            <div className="flex flex-col gap-2">
+                <div>End Date:</div>
+
+                <DatePicker
+                    showTime
+                    placeholder=""
+                    onChange={(value) => {
+                        handleToTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                    }}
+                />
+            </div>
 
             <div className="flex flex-col">
                 <div>Division</div>

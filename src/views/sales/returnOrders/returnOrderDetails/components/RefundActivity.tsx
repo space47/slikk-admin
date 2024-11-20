@@ -14,6 +14,7 @@ import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
+import ReturnOrderDetails from '../ReturnOrderDetails'
 
 const RefundActivity = () => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
@@ -143,6 +144,8 @@ const RefundActivity = () => {
         }
     }, [triggerAction])
 
+    console.log('Return', returnDetails?.status)
+
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
@@ -168,7 +171,7 @@ const RefundActivity = () => {
                 )}
             </Timeline>
             {/* buttons........................................................................................................ */}
-            {buttonText && (
+            {buttonText && returnDetails?.status && returnDetails.status !== 'CANCELLED' && (
                 <Button variant="solid" onClick={() => showModal(content)}>
                     {buttonText}
                 </Button>

@@ -7,22 +7,37 @@ import moment from 'moment'
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers'
 
 interface DateAndTimePickerProps {
-    fromDate: string
-    toDate: string
-    onFromChange?: (newValue: moment.Moment | null) => void
-    onToChange?: (newValue: moment.Moment | null) => void
+    fromDate?: string
+    toDate?: string
+    setFromDateAndTime: (date: string) => void
+    setToDateAndTime: (date: string) => void
     shortSpace?: boolean
 }
 
-export default function DateAndTimePicker({ fromDate, toDate, onFromChange, onToChange, shortSpace }: DateAndTimePickerProps) {
+export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime, setToDateAndTime, shortSpace }: DateAndTimePickerProps) {
+    const parsedFromDate = fromDate ? moment(fromDate) : moment()
+    const parsedToDate = toDate ? moment(toDate) : moment()
+
+    const handleFromTimeChange = (value: any) => {
+        if (value) {
+            setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+        }
+    }
+
+    const handleToTimeChange = (value: any) => {
+        if (value) {
+            setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+        }
+    }
+
     return (
         <LocalizationProvider dateAdapter={AdapterMoment}>
             <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>
                 <div className={shortSpace ? `flex gap-4` : 'flex justify-between'}>
                     <DateTimePicker
                         label="Start Date"
-                        value={moment(fromDate)}
-                        onChange={(newValue) => onFromChange && onFromChange(newValue)}
+                        value={parsedFromDate}
+                        onChange={(newValue) => handleFromTimeChange(newValue)}
                         viewRenderers={{
                             hours: renderTimeViewClock,
                             minutes: renderTimeViewClock,
@@ -31,8 +46,8 @@ export default function DateAndTimePicker({ fromDate, toDate, onFromChange, onTo
                     />
                     <DateTimePicker
                         label="End Date"
-                        value={moment(toDate)}
-                        onChange={(newValue) => onToChange && onToChange(newValue)}
+                        value={parsedToDate}
+                        onChange={(newValue) => handleToTimeChange(newValue)}
                         viewRenderers={{
                             hours: renderTimeViewClock,
                             minutes: renderTimeViewClock,
