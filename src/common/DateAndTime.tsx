@@ -7,24 +7,28 @@ import moment from 'moment'
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers'
 
 interface DateAndTimePickerProps {
-    fromDate: string
-    toDate: string
-    setFromDateAndTime: any
-    setToDateAndTime: any
+    fromDate?: string
+    toDate?: string
+    setFromDateAndTime: (date: string) => void
+    setToDateAndTime: (date: string) => void
     shortSpace?: boolean
 }
 
 export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime, setToDateAndTime, shortSpace }: DateAndTimePickerProps) {
-    console.log('formDate d$T', fromDate)
-    console.log('formDate moment', moment(fromDate))
+    // Fallback to current date and time if fromDate or toDate is empty
+    const parsedFromDate = fromDate ? moment(fromDate) : moment()
+    const parsedToDate = toDate ? moment(toDate) : moment()
 
     const handleFromTimeChange = (value: any) => {
-        console.log('HandleTimeChange', value)
-        setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+        if (value) {
+            setFromDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+        }
     }
 
     const handleToTimeChange = (value: any) => {
-        setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+        if (value) {
+            setToDateAndTime(moment(value).format('YYYY-MM-DD HH:mm:ss'))
+        }
     }
 
     return (
@@ -33,7 +37,7 @@ export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime
                 <div className={shortSpace ? `flex gap-4` : 'flex justify-between'}>
                     <DateTimePicker
                         label="Start Date"
-                        value={moment(fromDate)}
+                        value={parsedFromDate}
                         onChange={(newValue) => handleFromTimeChange(newValue)}
                         viewRenderers={{
                             hours: renderTimeViewClock,
@@ -43,7 +47,7 @@ export default function DateAndTimePicker({ fromDate, toDate, setFromDateAndTime
                     />
                     <DateTimePicker
                         label="End Date"
-                        value={moment(toDate)}
+                        value={parsedToDate}
                         onChange={(newValue) => handleToTimeChange(newValue)}
                         viewRenderers={{
                             hours: renderTimeViewClock,

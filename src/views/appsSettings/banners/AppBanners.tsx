@@ -66,7 +66,7 @@ const AppBanners = () => {
                         {/* <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
                             <FaEdit className="text-xl text-blue-600" />
                         </a> */}
-                        Edit
+                        <FaEdit className="text-xl text-blue-600" />
                     </button>
                 ),
             },
