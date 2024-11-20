@@ -15,6 +15,9 @@ interface DateAndTimePickerProps {
 }
 
 export default function DateAndTimePicker({ fromDate, toDate, onFromChange, onToChange, shortSpace }: DateAndTimePickerProps) {
+    console.log('formDate', fromDate)
+    console.log('formDate moment', moment(fromDate))
+
     return (
         <LocalizationProvider dateAdapter={AdapterMoment}>
             <DemoContainer components={['DateTimePicker', 'DateTimePicker']}>

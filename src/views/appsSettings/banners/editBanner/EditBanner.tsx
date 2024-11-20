@@ -113,8 +113,8 @@ const EditBanner = () => {
         position: bannerData?.position || null,
     }
 
-    const [fromDateAndTime, setFromDateAndTime] = useState('')
-    const [toDateAndTime, setToDateAndTime] = useState('')
+    const [fromDateAndTime, setFromDateAndTime] = useState(moment(bannerData?.from_date).format('YYYY-MM-DD'))
+    const [toDateAndTime, setToDateAndTime] = useState(moment(bannerData?.to_date).format('YYYY-MM-DD'))
 
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
@@ -161,8 +161,8 @@ const EditBanner = () => {
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
             image_web_array: null,
-            from_date: fromDateAndTime ? fromDateAndTime : initialValue?.from_date,
-            to_date: fromDateAndTime ? toDateAndTime : initialValue?.to_date,
+            from_date: fromDateAndTime,
+            to_date: toDateAndTime,
             image_mobile_array: null,
             division: values.division ? values.division.map((item) => item.name).join(',') : '',
             category: values.category ? values.category.map((item) => item.name).join(',') : '',
