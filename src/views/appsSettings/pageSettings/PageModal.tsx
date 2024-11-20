@@ -149,7 +149,7 @@ const PageModal: React.FC<modalProps> = ({
         web_border_style: particularRow.web_border_style,
         name: particularRow.name,
         section_border: particularRow?.section_border,
-
+        section_type: particularRow?.section_type,
         web_name: particularRow.web_name,
         name_footer: particularRow.name_footer,
         web_name_footer: particularRow.web_name_footer,
@@ -296,6 +296,7 @@ const PageModal: React.FC<modalProps> = ({
                     ...row?.component_config,
                 },
                 section_filters: row?.data_type?.filters || '',
+                section_type: row.section_type || '',
             }
             setShowSpinner(false)
 
@@ -378,6 +379,11 @@ const PageModal: React.FC<modalProps> = ({
         { label: 'brands', value: 'brands' },
         { label: 'post', value: 'post' },
         { label: 'creator', value: 'creator' },
+    ]
+
+    const SectionTypeArray = [
+        { label: 'Generic', value: 'generic' },
+        { label: 'Personalized', value: 'personalized' },
     ]
 
     const handleRemoveSubImage = (e: any) => {
@@ -818,6 +824,13 @@ const PageModal: React.FC<modalProps> = ({
                                             )}
                                         </FormItem>
                                     </FormItem>
+                                    <CommonSelect
+                                        name="section_type"
+                                        label="Section Type"
+                                        options={SectionTypeArray}
+                                        needClassName
+                                        className=" col-span-1 w-full"
+                                    />
                                 </div>
 
                                 {/* )} */}

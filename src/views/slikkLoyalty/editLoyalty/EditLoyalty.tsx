@@ -7,21 +7,54 @@ import { notification } from 'antd'
 // import { useNavigate } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import { IconArray, LoyaltyFieldArray, TierCondition, TierUpgradeConditionArray } from './LoyaltyCommon'
-import LoyaltyAddoffer from './LoyaltyAddoffer'
-import { useState } from 'react'
+import { IconArray, LoyaltyFieldArray, TierCondition, TierUpgradeConditionArray } from '../addLoyalty/LoyaltyCommon'
+import LoyaltyAddoffer from '../addLoyalty/LoyaltyAddoffer'
+import { useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { TierData } from '@/store/types/slikkLoyalty'
 import LoadingSpinner from '@/common/LoadingSpinner'
 
-const AddLoyalty = () => {
+const EditLoyalty = () => {
     // const navigate = useNavigate()
+    const [loyalityData, setLoyalityData] = useState<TierData>()
     const [showSpinner, setShowSpinner] = useState(false)
+    const { name } = useParams()
+
+    console.log('Name is', name)
+
+    const fetchLoyalty = async () => {
+        try {
+            const response = await axioisInstance.get(`/loyalty?name=${name}`)
+            const data = response?.data?.data
+            setLoyalityData(data[0])
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchLoyalty()
+    }, [])
+
+    console.log('Loyality Ftaa', loyalityData)
 
     const initialValue = {
-        name: '',
-        tier_upgrade_offer: [{ type: '', value: '', max_discount: '', min_discount: '', max_order_value: '', min_order_value: '' }],
-        tier_upgrade_condition: {},
-        discount: null,
-        level: null,
+        name: loyalityData?.name,
+        tier_upgrade_offer: loyalityData?.tier_upgrade_offer?.map((item) => ({
+            type: item?.type || '',
+            value: item?.value || null,
+            max_discount: item?.max_discount || null,
+            min_discount: item?.min_discount || null,
+            max_order_value: item?.max_order_value || null,
+            min_order_value: item?.min_order_value || null,
+        })),
+        tier_upgrade_condition: {
+            type: loyalityData?.tier_upgrade_condition?.type || '',
+            duration: loyalityData?.tier_upgrade_condition?.duration || '',
+            value: loyalityData?.tier_upgrade_condition?.value || null,
+        },
+        discount: loyalityData?.discount || null,
+        level: loyalityData?.level || null,
     }
 
     const handleSubmit = async (values: any) => {
@@ -100,7 +133,7 @@ const AddLoyalty = () => {
                                             className="w-1/2 mb-4"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         {TierUpgradeConditionArray.map((item, key) => (
                                             <FormItem key={key} label={item.label} className="w-full">
                                                 <Field
@@ -134,4 +167,4 @@ const AddLoyalty = () => {
     )
 }
 
-export default AddLoyalty
+export default EditLoyalty

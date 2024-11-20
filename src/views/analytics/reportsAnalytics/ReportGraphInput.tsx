@@ -67,6 +67,8 @@ const ReportGraphInput = ({
         }
     }
 
+    console.log('x_axis alues are', xAxisValue, yAxisValue)
+
     const Options = (table: any) => {
         return Object.keys(table.data[0] || {}).map((key) => ({
             label: key,
@@ -75,7 +77,6 @@ const ReportGraphInput = ({
     }
 
     return dynamicReportTable.map((table, index) => {
-        console.log(`Checking is_graph1 : ${index}`, table?.data?.extra_attributes?.is_graph)
         return (
             <div key={index} className="mt-5 flex flex-col gap-4">
                 <ReportTable
@@ -100,7 +101,13 @@ const ReportGraphInput = ({
                                 <Select
                                     className="w-[300px]"
                                     placeholder={`Select X-Axis for ${table.key}`}
-                                    value={xAxisValue[table.key] ? { label: xAxisValue[table.key], value: xAxisValue[table.key] } : null}
+                                    defaultValue={
+                                        table?.data?.extra_attributes?.x_axis
+                                            ? { label: table?.data?.extra_attributes?.x_axis, value: table?.data?.extra_attributes?.x_axis }
+                                            : xAxisValue[table.key]
+                                              ? { label: xAxisValue[table.key], value: xAxisValue[table.key] }
+                                              : null
+                                    }
                                     options={Options(table?.data)}
                                     onChange={(option) => handleAxisValue('x', option, table)}
                                 />
@@ -111,7 +118,13 @@ const ReportGraphInput = ({
                                 <Select
                                     className="w-[300px]"
                                     placeholder={`Select Y-Axis for ${table.key}`}
-                                    value={yAxisValue[table.key] ? { label: yAxisValue[table.key], value: yAxisValue[table.key] } : null}
+                                    defaultValue={
+                                        table?.data?.extra_attributes?.y_axis
+                                            ? { label: table?.data?.extra_attributes?.y_axis, value: table?.data?.extra_attributes?.y_axis }
+                                            : yAxisValue[table.key]
+                                              ? { label: yAxisValue[table.key], value: yAxisValue[table.key] }
+                                              : null
+                                    }
                                     options={Options(table?.data)}
                                     onChange={(option) => handleAxisValue('y', option, table)}
                                 />
@@ -160,6 +173,8 @@ const ReportGraphInput = ({
                             setYAxisValue={setYAxisvalue}
                             setYAxisValue2={setYAxisvalue2}
                             graphType={table?.data?.extra_attributes?.graphType}
+                            xAxisResponse={table?.data?.extra_attributes?.x_axis}
+                            yAxisResponse={table?.data?.extra_attributes?.y_axis}
                         />
                     </div>
                 ) : null}
