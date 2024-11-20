@@ -213,12 +213,12 @@ const EditBanner = () => {
                                         <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
-                                <DateAndTimePicker
+                                {/* <DateAndTimePicker
                                     fromDate={fromDateAndTime}
                                     toDate={toDateAndTime}
                                     setFromDateAndTime={setFromDateAndTime}
                                     setToDateAndTime={setToDateAndTime}
-                                />
+                                /> */}
                             </FormContainer>
                             {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>
