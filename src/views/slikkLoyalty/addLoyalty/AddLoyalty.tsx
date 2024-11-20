@@ -34,8 +34,11 @@ const AddLoyalty = () => {
             imageUpload = await handleimage('product', values?.imageArray)
         }
 
+        const { imageArray, ...rest } = values
+        console.log(imageArray)
+
         const body = {
-            ...values,
+            ...rest,
             image: imageUpload,
             tier_upgrade_condition: {
                 type: values?.tier_upgrade_condition.type,

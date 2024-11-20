@@ -15,6 +15,7 @@ import { TierData } from '@/store/types/slikkLoyalty'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import ImageComponent from '@/views/appsSettings/banners/editBanner/component/ImageComponent'
 import { beforeUpload } from '@/common/beforeUpload'
+import { handleimage } from '@/common/handleImage'
 
 const EditLoyalty = () => {
     // const navigate = useNavigate()
@@ -61,8 +62,16 @@ const EditLoyalty = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        let imageUpload
+        if (values.imageArray && values?.imageArray.length > 0) {
+            imageUpload = await handleimage('product', values?.imageArray)
+        }
+
+        const { imageArray, ...rest } = values
+        console.log(imageArray)
         const body = {
-            ...values,
+            ...rest,
+            image: imageUpload,
             tier_upgrade_condition: {
                 type: values?.tier_upgrade_condition?.type,
                 duration: values?.tier_upgrade_condition?.duration || '',
@@ -94,14 +103,13 @@ const EditLoyalty = () => {
         }
     }
 
-    if (showSpinner) {
-        return <LoadingSpinner />
-    }
-
-    const handleImageRemove = (index: number, type: string) => {
+    const handleImageRemove = (index: number) => {
         setImageView((item) => item.filter((_, id) => id !== index))
     }
 
+    if (showSpinner) {
+        return <LoadingSpinner />
+    }
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">ADD Loyalty</h3>

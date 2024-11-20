@@ -63,12 +63,10 @@ export const CustomModal: React.FC<Props> = ({
             <p>{modalContent}</p>
             <div className="flex flex-col">
                 <h1 className="text-[20px]">
-                    Invoice Id:{' '}
-                    <span className="font-normal">{invoice_id}</span>
+                    Invoice Id: <span className="font-normal">{invoice_id}</span>
                 </h1>
                 <h1 className="text-[16px]">
-                    Total Amount:{' '}
-                    <span className="font-normal">Rs.{payment?.amount}</span>
+                    Total Amount: <span className="font-normal">Rs.{payment?.amount}</span>
                 </h1>
             </div>
             {product && product.length > 0 && (
@@ -87,37 +85,22 @@ export const CustomModal: React.FC<Props> = ({
                             <tr key={pdts.id} className="border-t">
                                 <td className="px-4 py-2">{pdts.sku}</td>
                                 <td className="px-4 py-2">
-                                    <img
-                                        src={pdts.image}
-                                        alt=""
-                                        className="w-20 h-30 object-cover"
-                                    />
+                                    <img src={pdts.image} alt="" className="w-20 h-30 object-cover" />
                                 </td>
                                 <td className="px-4 py-2">{pdts.name}</td>
                                 <td className="px-4 py-2">{pdts.quantity}</td>
                                 <td className="px-4 py-2">
                                     <Select
-                                        value={
-                                            fulfilledQuantities[pdts.id] || 0
-                                        }
+                                        value={fulfilledQuantities[pdts.id] || 0}
                                         className="w-full"
-                                        onChange={(value) =>
-                                            handleSelectChange(pdts.id, value)
-                                        }
+                                        onChange={(value) => handleSelectChange(pdts.id, value)}
                                     >
                                         {Array.from(
                                             {
-                                                length:
-                                                    parseInt(
-                                                        pdts.quantity,
-                                                        10,
-                                                    ) + 1,
+                                                length: parseInt(pdts.quantity, 10) + 1,
                                             },
                                             (_, i) => (
-                                                <Option
-                                                    key={i}
-                                                    value={i.toString()}
-                                                >
+                                                <Option key={i} value={i.toString()}>
                                                     {i}
                                                 </Option>
                                             ),
@@ -129,9 +112,7 @@ export const CustomModal: React.FC<Props> = ({
                     </tbody>
                 </table>
             )}
-            {errorMessage && (
-                <div className="text-red-500 mb-4">{errorMessage}</div>
-            )}
+            {errorMessage && <div className="text-red-500 mb-4">{errorMessage}</div>}
         </Modal>
     )
 }
@@ -144,13 +125,7 @@ type props2 = {
     status: string
 }
 
-export const CustomModal2: React.FC<props2> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal2: React.FC<props2> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             title=""
@@ -193,13 +168,7 @@ type props3 = {
     status: string
 }
 
-export const CustomModal3: React.FC<props3> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             title=""
@@ -242,13 +211,7 @@ type props4 = {
     status: string
 }
 
-export const CustomModal4: React.FC<props4> = ({
-    isModalOpen,
-    handlePack,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const CustomModal4: React.FC<props4> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
     return (
         <Modal
             title=""

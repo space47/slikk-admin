@@ -1,64 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState, useEffect } from 'react'
-import Table from '@/components/ui/Table'
 import Input from '@/components/ui/Input'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    flexRender,
-} from '@tanstack/react-table'
-import { rankItem } from '@tanstack/match-sorter-utils'
-import type { ColumnDef, FilterFn, ColumnFiltersState } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import type { InputHTMLAttributes } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
+import EasyTable from '@/common/EasyTable'
+import { grn_quality_check, pageSizeOptions, qctable } from './QCTableCommon'
 
 interface DebouncedInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'prefix'> {
     value: string | number
     onChange: (value: string | number) => void
     debounce?: number
 }
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
-
-type grn_quality_check = {
-    batch_number: string
-    create_date: string
-    grn: number
-    id: number
-    images: string
-    last_updated_by: {
-        email: string
-        mobile: string
-        name: string
-    }
-    qc_done_by: {
-        email: string
-        mobile: string
-        name: string
-    }
-    qc_failed: number
-    qc_passed: number
-    quantity_received: number
-    quantity_sent: number
-    sent_to_inventory: boolean
-    sku: string
-    update_date: Date
-}
-
-type qctable = {
-    data: grn_quality_check[]
-    totalData: number
-}
-
-const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
 function DebouncedInput({ value: initialValue, onChange, debounce = 500, ...props }: DebouncedInputProps) {
     const [value, setValue] = useState(initialValue)
@@ -88,20 +42,11 @@ function DebouncedInput({ value: initialValue, onChange, debounce = 500, ...prop
     )
 }
 
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    const itemRank = rankItem(row.getValue(columnId), value)
-    addMeta({ itemRank })
-    return itemRank.passed
-}
-
 const QCtable = ({ data = [], totalData }: qctable) => {
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [paginatedData, setPaginatedData] = useState<grn_quality_check[]>([])
-
-    console.log('sssssssssssss', data, totalData)
 
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
@@ -117,7 +62,7 @@ const QCtable = ({ data = [], totalData }: qctable) => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+                cell: (info) => new Date(info.getValue() as string).toLocaleDateString(),
             },
             {
                 header: 'QC done by',
@@ -155,6 +100,25 @@ const QCtable = ({ data = [], totalData }: qctable) => {
                 cell: (info) => info.getValue(),
             },
             {
+                header: 'Sync to Inventory',
+                accessorKey: 'sent_to_inventory',
+                cell: ({ getValue }: any) => {
+                    const value = getValue()
+
+                    return (
+                        <div>
+                            {value === true ? (
+                                <div>true</div>
+                            ) : (
+                                <>
+                                    <div>false</div>
+                                </>
+                            )}
+                        </div>
+                    )
+                },
+            },
+            {
                 header: 'Images',
                 accessorKey: 'images',
                 cell: (info) => <img src={info.getValue() as string} alt="Image" style={{ width: '50px', height: '50px' }} />,
@@ -162,7 +126,7 @@ const QCtable = ({ data = [], totalData }: qctable) => {
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+                cell: (info) => new Date(info.getValue() as string).toLocaleDateString(),
             },
             {
                 header: 'Updated By',
@@ -183,30 +147,6 @@ const QCtable = ({ data = [], totalData }: qctable) => {
         setPage(page)
     }
 
-    const table = useReactTable({
-        data: paginatedData,
-        columns,
-        filterFns: {
-            fuzzy: fuzzyFilter,
-        },
-        state: {
-            columnFilters,
-            globalFilter,
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-        },
-        onGlobalFilterChange: setGlobalFilter,
-        globalFilterFn: fuzzyFilter,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: true,
-        pageCount: Math.ceil(totalData / pageSize),
-    })
-
     return (
         <>
             <DebouncedInput
@@ -216,38 +156,7 @@ const QCtable = ({ data = [], totalData }: qctable) => {
                 onChange={(value) => setGlobalFilter(String(value))}
             />
 
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            {...{
-                                                className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
-                                                onClick: header.column.getToggleSortingHandler(),
-                                            }}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                            <Sorter sort={header.column.getIsSorted()} />
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={paginatedData} columns={columns} page={page} pageSize={pageSize} />
 
             <div className="flex xl:justify-between xl:flex-row flex-col gap-3 justify-center items-center mt-3 ">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
@@ -257,8 +166,8 @@ const QCtable = ({ data = [], totalData }: qctable) => {
                     isSearchable={true}
                     value={pageSizeOptions.find((option) => option.value === pageSize)}
                     options={pageSizeOptions}
-                    onChange={(option) => onSelectChange(option?.value)}
                     className="xl:w-[10%] w-[50%]"
+                    onChange={(option) => onSelectChange(option?.value)}
                 />
             </div>
         </>
