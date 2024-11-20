@@ -55,8 +55,6 @@ const EditBanner = () => {
 
     const { id } = useParams()
 
-    console.log('Moment Date select', moment())
-
     const fetchsellerData = async () => {
         try {
             const response = await axioisInstance.get(`banners?banner_id=${id}`)
@@ -94,8 +92,8 @@ const EditBanner = () => {
         offers: bannerData?.offers || false,
         offer_id: bannerData?.offer_id || '',
         page: bannerData?.page || '',
-        from_date: moment(bannerData?.from_date || '').format('YYYY-MM-DD'),
-        to_date: moment(bannerData?.to_date || '').format('YYYY-MM-DD'),
+        from_date: moment(bannerData?.from_date || '').format('YYYY-MM-DD') || '',
+        to_date: moment(bannerData?.to_date || '').format('YYYY-MM-DD') || '',
         uptooff: bannerData?.uptooff || '',
         tags: bannerData?.tags || [],
         footer: bannerData?.footer || null,
@@ -220,8 +218,8 @@ const EditBanner = () => {
                                     </FormItem>
                                 ))}
                                 <DateAndTimePicker
-                                    fromDate={initialValue?.from_date}
-                                    toDate={initialValue?.to_date}
+                                    fromDate={initialValue?.from_date || ''}
+                                    toDate={initialValue?.to_date || ''}
                                     onFromChange={handleFromTimeChange}
                                     onToChange={handleToTimeChange}
                                 />
