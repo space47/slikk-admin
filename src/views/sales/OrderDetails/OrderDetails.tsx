@@ -153,7 +153,7 @@ const OrderDetails = () => {
                             </div>
                             <div className="mt-4 md:mt-0 flex flex-col items-center xl:items-end gap-5 justify-center w-full xl:w-1/2">
                                 <div className="flex gap-4">
-                                    {/* {data.status === 'COMPLETED' &&
+                                    {data.status === 'COMPLETED' &&
                                         (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') && (
                                             <button
                                                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
@@ -169,8 +169,8 @@ const OrderDetails = () => {
                                         >
                                             CANCEL ORDER
                                         </button>
-                                    )} */}
-                                    {data.status === 'COMPLETED' &&
+                                    )}
+                                    {/* {data.status === 'COMPLETED' &&
                                     (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') ? (
                                         <button
                                             className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
@@ -190,7 +190,7 @@ const OrderDetails = () => {
                                                 CANCEL ORDER
                                             </button>
                                         )
-                                    )}
+                                    )} */}
                                 </div>
                                 {data.return_order.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">

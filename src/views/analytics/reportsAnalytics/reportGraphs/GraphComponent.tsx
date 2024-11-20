@@ -18,15 +18,30 @@ interface GraphProps {
     yAxisValue2: any
     selectedOption: any
     graphType?: any
+    xAxisResponse: any
+    yAxisResponse: any
 }
 
-const GraphComponent = ({ keyData, xAxisValue, yAxisValue, yAxisValue2, selectedOption, graphType }: GraphProps) => {
-    console.log('KeyData Value', keyData.data)
+const GraphComponent = ({
+    keyData,
+    xAxisValue,
+    yAxisValue,
+    yAxisValue2,
+    selectedOption,
+    graphType,
+    xAxisResponse,
+    yAxisResponse,
+}: GraphProps) => {
+    console.log('xAxisApi response', xAxisResponse, yAxisResponse)
 
-    const xAxis = Object.values(xAxisValue).join()
-    const yAxis = Object.values(yAxisValue).join()
-    const yAxis2 = Object.values(yAxisValue2).join()
-    console.log('Values', yAxis2)
+    const getAxisValue = (defaultValue: any, conditionalValue: any) =>
+        conditionalValue ? Object.values(conditionalValue).join() : defaultValue
+
+    const xAxis = getAxisValue(xAxisResponse, xAxisValue)
+    const yAxis = getAxisValue(yAxisResponse, yAxisValue)
+    const yAxis2 = getAxisValue(yAxisResponse, selectedOption ? yAxisValue2 : null)
+
+    console.log('Values of yAxis in graph is', xAxis, yAxis)
 
     const xAxisData = keyData.data
         .map((item) => {
@@ -45,6 +60,9 @@ const GraphComponent = ({ keyData, xAxisValue, yAxisValue, yAxisValue2, selected
             return item[yAxis]
         })
         .filter((value) => value !== undefined)
+
+    console.log('YAixsData', yAxisData)
+    console.log('xAixsData', xAxisData)
 
     const yAxisData2 = keyData.data
         .map((item) => {
