@@ -101,10 +101,7 @@ const MixedFormControl = () => {
         }
     }
 
-    console.log('COMPANY DATA', companyData)
-
     const handleSubmit = async (values: FormModel) => {
-        console.log('handleSubmit')
         let docsUpload = null
         if (values.files && values.files.length > 0) {
             docsUpload = await handleUpload(values.files)
