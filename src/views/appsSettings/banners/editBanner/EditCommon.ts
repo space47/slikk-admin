@@ -211,22 +211,22 @@ export const BANNER_FIELDS_TYPE = [
         component: { Checkbox },
         status: 'is_clickable',
     },
-    {
-        label: 'From Date',
-        classname: '',
-        type: 'date',
-        name: 'from_date',
-        component: { Input },
-        status: 'from_date',
-    },
-    {
-        label: 'To Date',
-        classname: '',
-        type: 'date',
-        name: 'to_date',
-        component: { Input },
-        status: 'to_date',
-    },
+    // {
+    //     label: 'From Date',
+    //     classname: '',
+    //     type: 'date',
+    //     name: 'from_date',
+    //     component: { Input },
+    //     status: 'from_date',
+    // },
+    // {
+    //     label: 'To Date',
+    //     classname: '',
+    //     type: 'date',
+    //     name: 'to_date',
+    //     component: { Input },
+    //     status: 'to_date',
+    // },
 ]
 
 export const getInitialBannerValue = (bannerData: BANNERMODEL) => ({
