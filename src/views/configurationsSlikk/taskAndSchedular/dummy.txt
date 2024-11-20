@@ -1,0 +1,15 @@
+try {
+            setShowSpinner(true)
+            const response = await axioisInstance.get('/api/generate-sitemap')
+
+            if (response.status === 200) {
+                setMessage('Site map generated successfully!')
+            } else {
+                setMessage('Failed to generate the site map. Please try again.')
+            }
+        } catch (error) {
+            console.error('Error generating site map:', error)
+            setMessage('An error occurred. Please try again.')
+        } finally {
+            setShowSpinner(false)
+        }
