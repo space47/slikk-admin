@@ -40,8 +40,8 @@ const EditBanner = () => {
     const [filteredCategories, setFilteredCategories] = useState([])
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
-    const [fromDateAndTime, setFromDateAndTime] = useState('')
-    const [toDateAndTime, setToDateAndTime] = useState('')
+    const [fromDateAndTime, setFromDateAndTime] = useState<string>('')
+    const [toDateAndTime, setToDateAndTime] = useState<string>('')
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -213,12 +213,12 @@ const EditBanner = () => {
                                         <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
-                                {/* <DateAndTimePicker
+                                <DateAndTimePicker
                                     fromDate={fromDateAndTime}
                                     toDate={toDateAndTime}
                                     setFromDateAndTime={setFromDateAndTime}
                                     setToDateAndTime={setToDateAndTime}
-                                /> */}
+                                />
                             </FormContainer>
                             {/* ................I.....M......A.....G.....E....S.................... */}
                             <div>Mobile Image</div>

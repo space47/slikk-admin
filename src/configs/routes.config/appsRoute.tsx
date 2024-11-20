@@ -810,12 +810,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/sales/urlShortner/GetUrlShortner')),
         authority: [ADMIN, USER],
     },
-    {
-        key: 'appsCommuncication.urlShortner',
-        path: `${APP_PREFIX_PATH}/appsCommuncication/urlShortner/:shortCode`,
-        component: lazy(() => import('@/views/sales/urlShortner/EditUrlShortner')),
-        authority: [ADMIN, USER],
-    },
+    // {
+    //     key: 'appsCommuncication.urlShortner',
+    //     path: `${APP_PREFIX_PATH}/appsCommuncication/urlShortner/:shortCode`,
+    //     component: lazy(() => import('@/views/sales/urlShortner/EditUrlShortner')),
+    //     authority: [ADMIN, USER],
+    // },
 
     {
         key: 'appsCommuncication.urlShortner',
