@@ -65,18 +65,18 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         defVal: '',
         placeHolder: 'Enter Redirection URL',
     },
-    from_date: {
-        label: 'From',
-        type: 'date',
-        defVal: '',
-        placeHolder: 'Enter From Date',
-    },
-    to_date: {
-        label: 'To',
-        type: 'date',
-        defVal: '',
-        placeHolder: 'Enter To Date',
-    },
+    // from_date: {
+    //     label: 'From',
+    //     type: 'date',
+    //     defVal: '',
+    //     placeHolder: 'Enter From Date',
+    // },
+    // to_date: {
+    //     label: 'To',
+    //     type: 'date',
+    //     defVal: '',
+    //     placeHolder: 'Enter To Date',
+    // },
     is_clickable: {
         label: '',
         type: 'checkbox',

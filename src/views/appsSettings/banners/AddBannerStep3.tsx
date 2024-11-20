@@ -9,6 +9,8 @@ import { ADD_BANNER_BASIC_FIELDS } from './generalFields'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { notification } from 'antd'
+import DateAndTimePicker from '@/common/DateAndTime'
+import moment from 'moment'
 
 function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
@@ -106,6 +108,35 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const [filteredSubCategories, setFilteredSubCategories] = useState<string[]>([])
     const [filteredProductTypes, setFilteredProductTypes] = useState<string[]>([])
     const [sortOrder, setSortOrder] = useState<string | undefined>('')
+    const [fromDateAndTime, setFromDateAndTime] = useState('')
+    const [toDateAndTime, setToDateAndTime] = useState('')
+
+    const handleFromTimeChange = (value: any) => {
+        console.log('HandleTimeChange', value)
+        const formattedValue = moment(value).format('YYYY-MM-DD HH:mm:ss')
+        setFromDateAndTime(formattedValue)
+
+        // Update the bannerForm with from_date
+        const updatedBannerForm = [...bannerForm]
+        updatedBannerForm[index] = {
+            ...updatedBannerForm[index],
+            from_date: formattedValue,
+        }
+        setBannerForm(updatedBannerForm)
+    }
+
+    const handleToTimeChange = (value: any) => {
+        const formattedValue = moment(value).format('YYYY-MM-DD HH:mm:ss')
+        setToDateAndTime(formattedValue)
+
+        // Update the bannerForm with to_date
+        const updatedBannerForm = [...bannerForm]
+        updatedBannerForm[index] = {
+            ...updatedBannerForm[index],
+            to_date: formattedValue,
+        }
+        setBannerForm(updatedBannerForm)
+    }
 
     console.log('Fillfillters', filters)
     console.log('BBBrand', brands)
@@ -185,6 +216,14 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     </div>
                 ))}
             </form>
+
+            <DateAndTimePicker
+                shortSpace
+                fromDate={fromDateAndTime}
+                toDate={toDateAndTime}
+                onFromChange={handleFromTimeChange}
+                onToChange={handleToTimeChange}
+            />
 
             <div className="flex flex-col">
                 <div>Division</div>
