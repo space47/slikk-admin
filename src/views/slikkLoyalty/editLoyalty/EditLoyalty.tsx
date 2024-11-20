@@ -13,10 +13,13 @@ import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { TierData } from '@/store/types/slikkLoyalty'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import ImageComponent from '@/views/appsSettings/banners/editBanner/component/ImageComponent'
+import { beforeUpload } from '@/common/beforeUpload'
 
 const EditLoyalty = () => {
     // const navigate = useNavigate()
     const [loyalityData, setLoyalityData] = useState<TierData>()
+    const [imageView, setImageView] = useState<string[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const { name } = useParams()
 
@@ -27,6 +30,7 @@ const EditLoyalty = () => {
             const response = await axioisInstance.get(`/loyalty?name=${name}`)
             const data = response?.data?.data
             setLoyalityData(data[0])
+            setImageView(data[0]?.image ? [data[0].image] : [])
         } catch (error) {
             console.error(error)
         }
@@ -35,8 +39,6 @@ const EditLoyalty = () => {
     useEffect(() => {
         fetchLoyalty()
     }, [])
-
-    console.log('Loyality Ftaa', loyalityData)
 
     const initialValue = {
         name: loyalityData?.name,
@@ -55,29 +57,30 @@ const EditLoyalty = () => {
         },
         discount: loyalityData?.discount || null,
         level: loyalityData?.level || null,
+        imageArray: [],
     }
 
     const handleSubmit = async (values: any) => {
         const body = {
             ...values,
             tier_upgrade_condition: {
-                type: values?.tier_upgrade_condition.type,
-                duration: values?.tier_upgrade_condition.duration || '',
-                value: Number(values?.tier_upgrade_condition.value) || null,
+                type: values?.tier_upgrade_condition?.type,
+                duration: values?.tier_upgrade_condition?.duration || '',
+                value: Number(values?.tier_upgrade_condition?.value) || null,
             },
             tier_upgrade_offer:
                 values.tier_upgrade_offer?.map((offer: any) => ({
-                    type: offer.type || '',
-                    value: Number(offer.value) || null,
-                    max_discount: offer.max_discount !== undefined ? Number(offer.max_discount) : null,
-                    min_order_value: Number(offer.min_order_value) || 0,
-                    max_order_value: Number(offer.max_order_value) || null,
+                    type: offer?.type || '',
+                    value: Number(offer?.value) || null,
+                    max_discount: offer?.max_discount !== undefined ? Number(offer?.max_discount) : null,
+                    min_order_value: Number(offer?.min_order_value) || 0,
+                    max_order_value: Number(offer?.max_order_value) || null,
                 })) || [],
         }
 
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.post(`/loyalty`, body)
+            const response = await axioisInstance.patch(`/loyalty`, body)
             notification.success({
                 message: response?.data?.message || 'Successfully added loyalty',
             })
@@ -95,6 +98,10 @@ const EditLoyalty = () => {
         return <LoadingSpinner />
     }
 
+    const handleImageRemove = (index: number, type: string) => {
+        setImageView((item) => item.filter((_, id) => id !== index))
+    }
+
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">ADD Loyalty</h3>
@@ -109,11 +116,11 @@ const EditLoyalty = () => {
                                         <CommonSelect name="name" label="Select Name" options={IconArray} className="w-full" />
                                     </div>
 
-                                    {LoyaltyFieldArray.map((item, key) => (
-                                        <FormItem key={key} label={item.label} className="col-span-1 w-full">
+                                    {LoyaltyFieldArray?.map((item, key) => (
+                                        <FormItem key={key} label={item?.label} className="col-span-1 w-full">
                                             <Field
                                                 type={item?.type}
-                                                name={item.name}
+                                                name={item?.name}
                                                 placeholder={`Enter ${item.label}`}
                                                 component={Input}
                                                 className="w-1/2"
@@ -134,12 +141,12 @@ const EditLoyalty = () => {
                                         />
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                        {TierUpgradeConditionArray.map((item, key) => (
+                                        {TierUpgradeConditionArray?.map((item, key) => (
                                             <FormItem key={key} label={item.label} className="w-full">
                                                 <Field
                                                     type={item?.type}
-                                                    name={item.name}
-                                                    placeholder={`Enter ${item.label}`}
+                                                    name={item?.name}
+                                                    placeholder={`Enter ${item?.label}`}
                                                     component={Input}
                                                     className="w-1/2"
                                                 />
@@ -148,6 +155,15 @@ const EditLoyalty = () => {
                                     </div>
                                 </FormContainer>
                             </FormContainer>
+                            <h3 className="text-lg font-medium mb-4">Image:</h3>
+                            <ImageComponent
+                                imageView={imageView}
+                                imageremove="imageArray"
+                                handleImageRemove={handleImageRemove}
+                                name="imageArray"
+                                beforeUpload={beforeUpload}
+                                fileList={values.imageArray}
+                            />
 
                             <LoyaltyAddoffer values={values} />
 
