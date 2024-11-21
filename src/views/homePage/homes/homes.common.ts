@@ -17,6 +17,7 @@ export type SalesData = {
         EXPRESS: number
         STANDARD: number
         TRY_AND_BUY: number
+        EXCHANGE: number
     }
     cancelled: {
         count: number

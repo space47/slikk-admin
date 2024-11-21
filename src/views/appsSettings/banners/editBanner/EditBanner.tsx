@@ -6,8 +6,8 @@ import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps, ErrorMessage } from 'formik'
 import { useEffect, useState } from 'react'
 import { DatePicker, notification } from 'antd'
-import { useNavigate, useParams } from 'react-router-dom'
-import { BANNER_FIELDS_TYPE } from './EditCommon'
+import { useParams } from 'react-router-dom'
+import { BANNER_FIELDS_TYPE, getInitialBannerValue } from './EditCommon'
 import { BANNERMODEL } from '../BannerCommon'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
@@ -24,7 +24,6 @@ import { beforeUpload } from '@/common/beforeUpload'
 import BannerCategories from './component/BannerCategories'
 import { handleimage } from '@/common/handleImage'
 import moment from 'moment'
-import DateAndTimePicker from '@/common/DateAndTime'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -32,7 +31,7 @@ const EditBanner = () => {
     const [mobileImagview, setMobileImageView] = useState<string[]>([])
     const [sectionBGweb, setSectionBGweb] = useState<string[]>([])
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -40,8 +39,6 @@ const EditBanner = () => {
     const [filteredCategories, setFilteredCategories] = useState([])
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
-    const [fromDateAndTime, setFromDateAndTime] = useState<string>('')
-    const [toDateAndTime, setToDateAndTime] = useState<string>('')
 
     const validationSchema = Yup.object().shape({
         min_off: Yup.number().max(Yup.ref('max_off'), 'min_off must be less than or equal to max_off'),
@@ -61,8 +58,6 @@ const EditBanner = () => {
             const response = await axioisInstance.get(`banners?banner_id=${id}`)
             const data = response.data.data
             setBannerData(data)
-            setFromDateAndTime(moment(data?.from_date).format('YYYY-MM-DD HH:mm:ss'))
-            setToDateAndTime(moment(data?.to_date).format('YYYY-MM-DD HH:mm:ss'))
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
             setSectionBGweb(data.section_background_web ? [data.section_background_web] : [])
@@ -75,51 +70,6 @@ const EditBanner = () => {
     useEffect(() => {
         fetchBannerData()
     }, [id])
-
-    const initialValue: BANNERMODEL = {
-        id: bannerData?.id || 0,
-        name: bannerData?.name || '',
-        section_heading: bannerData?.section_heading || '',
-        parent_banner: bannerData?.parent_banner || null,
-        quick_filter_tags: bannerData?.quick_filter_tags || [],
-        brand: bannerData?.brand || [],
-        division: bannerData?.division || [],
-        category: bannerData?.category || [],
-        image_web_array: [],
-        image_mobile_array: [],
-        sub_category: bannerData?.sub_category || [],
-        product_type: bannerData?.product_type || [],
-        type: bannerData?.type || null,
-        image_web: bannerData?.image_web || '',
-        image_mobile: bannerData?.image_mobile || '',
-        offers: bannerData?.offers || false,
-        offer_id: bannerData?.offer_id || '',
-        page: bannerData?.page || '',
-        from_date: moment(bannerData?.from_date).format('YYYY-MM-DD HH:mm:ss') || '',
-        to_date: moment(bannerData?.to_date).format('YYYY-MM-DD HH:mm:ss') || '',
-        uptooff: bannerData?.uptooff || '',
-        tags: bannerData?.tags || [],
-        footer: bannerData?.footer || null,
-        coupon_code: bannerData?.coupon_code || null,
-        is_clickable: bannerData?.is_clickable || false,
-        section_background_web: bannerData?.section_background_web || '',
-        section_background_web_array: [],
-        section_background_mobile_array: [],
-        section_background_mobile: bannerData?.section_background_mobile || '',
-        max_price: bannerData?.max_price || 0,
-        min_price: bannerData?.min_price || 0,
-        max_off: bannerData?.max_off || 0,
-        min_off: bannerData?.min_off || 0,
-        barcodes: bannerData?.barcodes || '',
-        redirection_url: bannerData?.redirection_url || null,
-        tags_input: bannerData?.tags.join(',') || '',
-        position: bannerData?.position || null,
-    }
-
-    console.log('InitialValue', initialValue?.from_date)
-    console.log('InitialValue To', initialValue?.to_date)
-
-    console.log('fromDate from Edit', fromDateAndTime)
 
     const handleImageRemove = (index: number, type: string) => {
         if (type === 'mobile') {
@@ -135,8 +85,6 @@ const EditBanner = () => {
             setSectionBGmobile((item) => item.filter((_, id) => id !== index))
         }
     }
-
-    console.log('fromDate', fromDateAndTime)
 
     const handleSubmit = async (values: BANNERMODEL) => {
         const processImageUpload = async (imageArray: any[], currentImage: string) => {
@@ -157,8 +105,6 @@ const EditBanner = () => {
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
             image_web_array: null,
-            // from_date: fromDateAndTime,
-            // to_date: toDateAndTime,
             image_mobile_array: null,
             division: values.division ? values.division.map((item) => item.name).join(',') : '',
             category: values.category ? values.category.map((item) => item.name).join(',') : '',
@@ -173,9 +119,6 @@ const EditBanner = () => {
                 BANNER_FIELDS_TYPE.map((item) => item.name).includes('min_off') && values?.min_off && `minoff_${values?.min_off}`,
             ].filter((item) => item),
         }
-
-        console.log('FormData', formData)
-
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`banners`, formData)
@@ -202,7 +145,12 @@ const EditBanner = () => {
     return (
         <div>
             <h3 className="mb-5 from-neutral-900">Edit Banner</h3>
-            <Formik enableReinitialize initialValues={initialValue} validationSchema={validationSchema} onSubmit={handleSubmit}>
+            <Formik
+                enableReinitialize
+                initialValues={getInitialBannerValue(bannerData)}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+            >
                 {({ values, setFieldValue }) => (
                     <Form className="w-2/3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
@@ -213,12 +161,6 @@ const EditBanner = () => {
                                         <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
-                                {/* <DateAndTimePicker
-                                    fromDate={fromDateAndTime}
-                                    toDate={toDateAndTime}
-                                    setFromDateAndTime={setFromDateAndTime}
-                                    setToDateAndTime={setToDateAndTime}
-                                /> */}
                                 <FormItem label="From date" className="col-span-1 w-full">
                                     <Field name="from_date">
                                         {({ field, form }: any) => (
@@ -298,7 +240,7 @@ const EditBanner = () => {
                             {/* ...................................................................... */}
                             <FormContainer className="">
                                 <BannerCategories
-                                    initialValue={initialValue}
+                                    initialValue={getInitialBannerValue(bannerData)}
                                     options={divisions.divisions}
                                     setFieldValue={setFieldValue}
                                     filteredCategories={filteredCategories}
@@ -313,7 +255,7 @@ const EditBanner = () => {
                                 <SectionsComponent
                                     name="brand"
                                     label="Brand"
-                                    defaultValue={initialValue.brand}
+                                    defaultValue={getInitialBannerValue(bannerData).brand}
                                     setFieldValue={setFieldValue}
                                     options={brands.brands}
                                     fieldValues="brand"
