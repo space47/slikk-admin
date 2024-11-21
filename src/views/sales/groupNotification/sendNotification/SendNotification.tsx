@@ -34,7 +34,7 @@ const SendNotification = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const [groupValue, setGroupValue] = useState('')
     const [groupDatatoSend, setGroupDataToSend] = useState([])
-    const [clickedGuarantee, setClickedGuarantee] = useState({})
+    const [clickedGuarantee, setClickedGuarantee] = useState<any>({})
     const [groupId, setgroupId] = useState<string[]>([])
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -102,12 +102,12 @@ const SendNotification = () => {
         const plainTextMessage = htmlDoc.body.textContent || ''
         const { image_url_array, utm_medium, utm_source, utm_campaign, minprice, maxprice, minoff, maxoff, utm_tags, ...formData } = values
         console.log(utm_medium, utm_source, utm_campaign, utm_tags, maxoff, maxprice, minoff, minprice)
-        const imageUpload = values.image_url_array.length > 0 ? await handleimage(image_url_array) : values.image_url
+        const imageUpload = values.image_url_array.length > 0 ? await handleimage('product', image_url_array) : values.image_url
 
         const data = {
             ...formData,
-            image_url: imageUpload,
-            notification_group_id: groupId.join(','),
+            image_url: imageUpload || '',
+            notification_group_id: groupId.join(',') || '',
             filters: [
                 ...(values.filters || []),
                 ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -116,17 +116,17 @@ const SendNotification = () => {
                 ...MAXMINARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
                 ...OFFARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
                 ...(values.discountTags || []),
-                `filterId_${filterId}`,
+                ...(filterId ? [`filterId_${filterId}`] : []),
             ]
                 .filter((filter) => filter)
                 .join(','),
-            message: plainTextMessage,
+            message: plainTextMessage || '',
         }
 
         if (values.users_all) {
             data.users = ''
         } else {
-            data.users = values.users.replace(/\s+/g, '')
+            data.users = values.users?.replace(/\s+/g, '') || ''
         }
 
         setValueForSchedule(data)
@@ -155,7 +155,7 @@ const SendNotification = () => {
         setShowAddFilter((prev) => prev.filter((item) => item !== index))
     }
 
-    const [filtersData, setFiltersData] = useState([])
+    const [filtersData, setFiltersData] = useState<any[]>([])
 
     const handleAddFilters = async (values: any) => {
         console.log('Values', values)
@@ -163,7 +163,7 @@ const SendNotification = () => {
             return values.filtersAdd[index] || []
         })
 
-        setFiltersData((prev) => {
+        setFiltersData((prev: any) => {
             const updatedFilters = [...prev, newFilterData]
 
             const lastElement = updatedFilters.at(-1)
@@ -225,7 +225,7 @@ const SendNotification = () => {
 
         const imageUpload =
             valueForSchedule?.image_url_array?.length > 0
-                ? await handleimage(valueForSchedule.image_url_array)
+                ? await handleimage('product', valueForSchedule.image_url_array)
                 : (valueForSchedule?.image_url ?? '')
 
         const { expiry_date, ...schedulerConfigs } = rest ?? {}
@@ -324,13 +324,13 @@ const SendNotification = () => {
                                                 <div key={key} className="flex items-center justify-center">
                                                     <div
                                                         className={
-                                                            clickedGuarantee[item.name]
+                                                            clickedGuarantee[item?.name]
                                                                 ? 'px-6 py-2 bg-gray-500 text-green-200 font-semibold rounded-lg shadow-md transition duration-300 ease-in-out cursor-pointer'
                                                                 : 'px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 ease-in-out cursor-pointer'
                                                         }
-                                                        onClick={() => hanldeGroupSearch(item.name)}
+                                                        onClick={() => hanldeGroupSearch(item?.name)}
                                                     >
-                                                        {item.name}
+                                                        {item?.name}
                                                     </div>
                                                 </div>
                                             ))}
