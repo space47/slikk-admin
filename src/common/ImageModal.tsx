@@ -6,7 +6,7 @@ import type { MouseEvent } from 'react'
 type ImageProps = {
     dialogIsOpen: boolean
     setIsOpen: (isOpen: boolean) => void
-    image: string[] | ''
+    image: string[] | []
 }
 
 const ImageMODAL = ({ dialogIsOpen, setIsOpen, image }: ImageProps) => {
@@ -17,26 +17,14 @@ const ImageMODAL = ({ dialogIsOpen, setIsOpen, image }: ImageProps) => {
 
     return (
         <div>
-            <Dialog
-                isOpen={dialogIsOpen}
-                onClose={onDialogClose}
-                onRequestClose={onDialogClose}
-                className=""
-            >
+            <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose} className="">
                 {Array.isArray(image) && image.length > 0 ? (
-                    <Splide
-                        options={{ rewind: true }}
-                        aria-label="Image carousel"
-                    >
+                    <Splide options={{ rewind: true }} aria-label="Image carousel">
                         {image.map((item, key) =>
                             item ? (
                                 <SplideSlide key={key}>
                                     <div className="flex items-center justify-center h-[600px]">
-                                        <img
-                                            src={item}
-                                            alt={`Image ${key}`}
-                                            className="w-[550px] h-[550px] object-contain "
-                                        />
+                                        <img src={item} alt={`Image ${key}`} className="w-[550px] h-[550px] object-contain " />
                                     </div>
                                 </SplideSlide>
                             ) : null,
