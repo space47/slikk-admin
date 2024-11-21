@@ -185,6 +185,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/org-management/users/editUsers/EditUser')), //p3
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsOrgManagement.accessManagement',
+        path: `${APP_PREFIX_PATH}/accessManagement`,
+        component: lazy(() => import('@/views/org-management/accessManagement/getAccessManagentt/GetAccessManagement')), //p3
+        authority: [ADMIN, USER],
+    },
 
     //   Brand dashBoared.........................................................................................
 
@@ -832,7 +838,13 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'appstryAndBuy.taskTracking',
+        key: 'appstryAndBuy.reverseTracking',
+        path: `${APP_PREFIX_PATH}/tryAndBuy/reverseTracking`,
+        component: lazy(() => import('@/views/slikkLogistics/taskTracking/ReverseTracking')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.tryAndBuy',
         path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking/:task_id`,
         component: lazy(() => import('@/views/slikkLogistics/taskTracking/trackingTaskComponents/TaskDetails')),
         authority: [ADMIN, USER],

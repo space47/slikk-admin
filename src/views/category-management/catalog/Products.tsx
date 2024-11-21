@@ -392,7 +392,7 @@ const Products = () => {
                             <span className="font-bold">Sync</span> <FaFacebook className="text-xl" />
                         </button>
                         <button
-                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-green-400 rounded-lg"
+                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-green-400 rounded-lg font-bold"
                             onClick={handleDownload}
                         >
                             <IoMdDownload className="text-xl" /> Export
@@ -401,7 +401,7 @@ const Products = () => {
                         <Button
                             variant="new"
                             onClick={hanldeFilter}
-                            className=" text-white px-4 py-2 hidden items-center gap-2 xl:flex rounded-lg "
+                            className=" text-white px-4 py-2 hidden items-center gap-2 xl:flex rounded-lg font-bold "
                         >
                             <FaFilter className="text-md" /> Filter
                         </Button>
@@ -412,10 +412,10 @@ const Products = () => {
                             <FaFilter className="text-md" />
                         </Button>
                         <button
-                            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-700 w-full md:w-auto text-center"
+                            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-700 w-full md:w-auto text-center font-bold"
                             onClick={handleProduct}
                         >
-                            ADD NEW PRODUCT
+                            + Product
                         </button>
                     </div>
                 </div>

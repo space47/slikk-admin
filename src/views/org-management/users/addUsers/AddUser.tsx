@@ -251,9 +251,9 @@ const AddUser = () => {
         )
     }
 
-    if (accessDenied) {
-        return <AccessDenied />
-    }
+    // if (accessDenied) {
+    //     return <AccessDenied />
+    // }
 
     return (
         <div>
