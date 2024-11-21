@@ -9,12 +9,14 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { IoMdDownload } from 'react-icons/io'
 import ImageMODAL from '@/common/ImageModal'
-import { FaEdit, FaFilter } from 'react-icons/fa'
+import { FaEdit, FaFacebook, FaFacebookF, FaFilter } from 'react-icons/fa'
 import StockOverviewFilter from '@/views/inventory-management/stock-overview/stockOverviewComponents/StockOverviewFilter'
 import EasyTable from '@/common/EasyTable'
 import ProductFilterNest from './ProductFilter'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
+import { notification } from 'antd'
+import DialogConfirm from '@/common/DialogConfirm'
 
 type ProductVariant = {
     name: string
@@ -72,7 +74,7 @@ const Products = () => {
     const [filterInput, setFilterInput] = useState('')
     const [searchType, setSearchType] = useState<string>('')
     const [showImageModal, setShowImageModal] = useState(false)
-    const [particularRowImage, setParticularROwImage] = useState([])
+    const [particularRowImage, setParticularROwImage] = useState<string[]>([])
 
     const [divisionList, setDivisionList] = useState<string[]>([])
     const [categoryList, setCategoryList] = useState([])
@@ -83,6 +85,7 @@ const Products = () => {
     const [filteredCategories, setFilteredCategories] = useState([])
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
+    const [showFacebookDialog, setShowFacebookDialog] = useState(false)
 
     const [showDrawer, setShowDrawer] = useState(false)
 
@@ -153,7 +156,7 @@ const Products = () => {
     }
 
     const handleApply = () => {
-        let query = ''
+        let query = '&'
 
         if (divisionList.length > 0) {
             const divisionIds = divisionList.map((item: any) => item).join(',')
@@ -212,7 +215,7 @@ const Products = () => {
             {
                 header: 'Image',
                 accessorKey: 'image',
-                cell: ({ getValue, row }) => (
+                cell: ({ getValue, row }: any) => (
                     <img
                         src={getValue().split(',')[0]}
                         alt="Image"
@@ -269,7 +272,7 @@ const Products = () => {
                     return (
                         <div>
                             {getValue()
-                                ?.map((item) => item)
+                                ?.map((item: any) => item)
                                 .join(',')}
                         </div>
                     )
@@ -313,7 +316,7 @@ const Products = () => {
                 filterParam = `&sku=${globalFilter}`
             }
             console.log('filterParam', filterParam)
-            const downloadUrl = `merchant/products?download=true&${typeFetch}${filterParam}`
+            const downloadUrl = `merchant/products?download=true${typeFetch}${filterParam}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
@@ -328,6 +331,27 @@ const Products = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading the file:', error)
+        }
+    }
+
+    const handleFacebookSync = async () => {
+        notification.info({
+            message: 'SYNC IN PROCESS',
+        })
+        const body = {
+            task_name: 'update_facebook_catalog_full',
+        }
+        setShowFacebookDialog(false)
+        try {
+            const response = await axiosInstance.post(`/backend/task/process`, body)
+            notification.success({
+                message: response?.data?.message || 'SYNCED TO FB',
+            })
+        } catch (error: any) {
+            console.error(error)
+            notification.error({
+                message: error.response?.data?.message || 'FAILED TO SYNC TO FB',
+            })
         }
     }
 
@@ -362,7 +386,13 @@ const Products = () => {
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                     <div className="flex gap-3">
                         <button
-                            className="bg-gray-100 text-black px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-gray-200 rounded-lg"
+                            className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-blue-600 rounded-lg text-white bg-blue-700"
+                            onClick={() => setShowFacebookDialog(true)}
+                        >
+                            <span className="font-bold">Sync</span> <FaFacebook className="text-xl" />
+                        </button>
+                        <button
+                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-green-400 rounded-lg"
                             onClick={handleDownload}
                         >
                             <IoMdDownload className="text-xl" /> Export
@@ -435,6 +465,15 @@ const Products = () => {
                     setFilteredProductTypes={setFilteredProductTypes}
                     setFilteredSubCategories={setFilteredSubCategories}
                     options={divisions.divisions}
+                />
+            )}
+            {showFacebookDialog && (
+                <DialogConfirm
+                    IsOpen={showFacebookDialog}
+                    setIsOpen={setShowFacebookDialog}
+                    onDialogOk={handleFacebookSync}
+                    IsConfirm
+                    headingName="SYNC TO FACEBOOK"
                 />
             )}
         </div>

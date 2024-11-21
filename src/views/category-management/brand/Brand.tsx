@@ -1,22 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender,
-    useGlobalFilter,
-} from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaSync } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
+import { notification } from 'antd'
 
 interface Brand {
     id: number
@@ -43,8 +37,6 @@ type Option = {
     value: number
     label: string
 }
-
-const { Tr, Th, Td, THead, TBody } = Table
 
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
@@ -164,7 +156,7 @@ const Brand = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Action',
+                header: 'Edit',
                 accessorKey: 'id',
                 cell: ({ row }) => (
                     <Button className="bg-none border-none">
@@ -172,6 +164,15 @@ const Brand = () => {
                             {' '}
                             <FaEdit className="text-xl text-blue-600" />
                         </a>
+                    </Button>
+                ),
+            },
+            {
+                header: 'Sync',
+                accessorKey: 'name',
+                cell: ({ row }) => (
+                    <Button className="bg-none border-none" onClick={() => handleSyncBrand(row?.original?.name)}>
+                        <FaSync className="text-yellow-500 text-xl" />
                     </Button>
                 ),
             },
@@ -187,7 +188,29 @@ const Brand = () => {
         setPageSize(Number(value))
     }
 
-    const navigate = useNavigate()
+    const handleSyncBrand = async (name: string) => {
+        notification.info({
+            message: 'SYNC IN PROCESS',
+        })
+        const body = {
+            task_name: 'resize_product_images',
+            brand: name,
+        }
+
+        try {
+            const response = await axiosInstance.post(`/backend/task/process`, body)
+            notification.success({
+                message: response?.data?.message || 'SYNCED TO FB',
+            })
+        } catch (error: any) {
+            console.error(error)
+            notification.success({
+                message: error.response?.data?.message || 'FAILED TO SYNC TO FB',
+            })
+        }
+    }
+
+    // const navigate = useNavigate()
 
     return (
         <div>
