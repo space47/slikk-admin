@@ -94,13 +94,14 @@ const Products = () => {
 
             if (filter) {
                 searchInputType = `&sku=${filter}`
-
+                setFilterInput(searchInputType)
                 let response = await axiosInstance.get(
                     `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
                 )
 
                 if (response.data.data.results.length === 0) {
                     searchInputType = `&name=${filter}`
+                    setFilterInput(searchInputType)
                     response = await axiosInstance.get(
                         `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
                     )
@@ -156,6 +157,7 @@ const Products = () => {
 
         if (divisionList.length > 0) {
             const divisionIds = divisionList.map((item: any) => item).join(',')
+
             query += `division=${divisionIds}`
         }
 
@@ -310,7 +312,7 @@ const Products = () => {
             } else if (filterInput.includes('&sku=')) {
                 filterParam = `&sku=${globalFilter}`
             }
-
+            console.log('filterParam', filterParam)
             const downloadUrl = `merchant/products?download=true&${typeFetch}${filterParam}`
 
             const response = await axiosInstance.get(downloadUrl, {
