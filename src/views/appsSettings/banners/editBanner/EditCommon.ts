@@ -229,7 +229,7 @@ export const BANNER_FIELDS_TYPE = [
     // },
 ]
 
-export const getInitialBannerValue = (bannerData: BANNERMODEL) => ({
+export const getInitialBannerValue = (bannerData: BANNERMODEL | undefined) => ({
     id: bannerData?.id || 0,
     name: bannerData?.name || '',
     section_heading: bannerData?.section_heading || '',
@@ -238,8 +238,8 @@ export const getInitialBannerValue = (bannerData: BANNERMODEL) => ({
     brand: bannerData?.brand || [],
     division: bannerData?.division || [],
     category: bannerData?.category || [],
-    image_web_array: [],
-    image_mobile_array: [],
+    image_web_array: bannerData?.image_web_array || [],
+    image_mobile_array: bannerData?.image_mobile_array || [],
     sub_category: bannerData?.sub_category || [],
     product_type: bannerData?.product_type || [],
     type: bannerData?.type || null,
@@ -256,8 +256,8 @@ export const getInitialBannerValue = (bannerData: BANNERMODEL) => ({
     coupon_code: bannerData?.coupon_code || null,
     is_clickable: bannerData?.is_clickable || false,
     section_background_web: bannerData?.section_background_web || '',
-    section_background_web_array: [],
-    section_background_mobile_array: [],
+    section_background_web_array: bannerData?.section_background_web_array || [],
+    section_background_mobile_array: bannerData?.section_background_mobile_array || [],
     section_background_mobile: bannerData?.section_background_mobile || '',
     max_price: bannerData?.max_price || 0,
     min_price: bannerData?.min_price || 0,

@@ -293,6 +293,7 @@ const Home = () => {
                             <p>Express: {homeData?.delivery_type.EXPRESS ? homeData?.delivery_type.EXPRESS : 0}</p>
                             <p>Standard: {homeData?.delivery_type.STANDARD ? homeData?.delivery_type.STANDARD : 0}</p>
                             <p>Try&Buy: {homeData?.delivery_type.TRY_AND_BUY ? homeData?.delivery_type.TRY_AND_BUY : 0}</p>
+                            <p>Exchange: {homeData?.delivery_type.EXCHANGE ? homeData?.delivery_type.EXCHANGE : 0}</p>
                         </div>
                     </div>
                 </Card>
