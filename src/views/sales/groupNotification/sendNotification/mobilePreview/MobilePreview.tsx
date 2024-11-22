@@ -39,7 +39,7 @@ const MobilePreview = ({ title, message, image }: MobilePreviewProps) => {
                     <h4 className="font-bold text-lg text-gray-800">{title}</h4>
                     <p className="text-sm text-gray-600 mt-2">{plainTextMessage}</p>
                     <div className="flex justify-center items-center">
-                        <img src={imageView} alt="Notification" className="w-12 h-12 object-cover" />
+                        <img src={imageView} alt="Notification" className="w-full object-cover" />
                     </div>
                 </div>
             </div>
