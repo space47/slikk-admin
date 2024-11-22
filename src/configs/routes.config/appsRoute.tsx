@@ -174,6 +174,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.accessManagement',
+        path: `${APP_PREFIX_PATH}/accessManagement/addNew`,
+        component: lazy(() => import('@/views/org-management/accessManagement/createAccessManagement/CreateGroups')), //p3
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.users',
         path: `${APP_PREFIX_PATH}/users/addNew`,
         component: lazy(() => import('@/views/org-management/users/addUsers/AddUser')), //p3

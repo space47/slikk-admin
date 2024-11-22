@@ -4,7 +4,8 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import PermCardComponent from './componentsManagement/PermCardComponent'
 import { notification } from 'antd'
 import UserGroupTable from './componentsManagement/UserGroupTable'
-import { Spinner } from '@/components/ui'
+import { Button, Spinner } from '@/components/ui'
+import { useNavigate } from 'react-router-dom'
 
 const GetAccessManagement = () => {
     const [getGroups, setGetGroups] = useState<GROUPTYPES[]>([])
@@ -17,6 +18,7 @@ const GetAccessManagement = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [showTableSpinner, setShowTableSpinner] = useState(false)
+    const navigate = useNavigate()
 
     const fetchGroupsData = async () => {
         try {
@@ -76,7 +78,6 @@ const GetAccessManagement = () => {
             prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
         )
     }
-
     const handleAddPermissions = () => {
         const alreadyAdded = selectedPermissions.filter((permId) => addedPermissions.some((added) => added.id === permId))
         if (alreadyAdded.length > 0) {
@@ -91,17 +92,42 @@ const GetAccessManagement = () => {
         setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
         setSelectedPermissions([])
     }
-
     const handleRemovePermissions = (id: number) => {
         setAddedPermissions((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
-
     const filteredPermission = getPermission?.filter((item) => item.name.toLowerCase().includes(searchInput.toLowerCase()))
 
+    const handleAddGroup = () => {
+        navigate(`/app/accessManagement/addNew`)
+    }
+    const handleUpdatePermission = async () => {
+        const permissionIds = addedPermissions.map((item) => item.id)
+        const body = {
+            group_id: activeGroup,
+            permissions: permissionIds,
+        }
+        try {
+            const response = await axioisInstance.patch(`/groups`, body)
+            notification.success({
+                message: response?.data?.message || 'SUCCESSFULLY ADDED PERMISSION',
+            })
+            navigate(0)
+        } catch (error: any) {
+            console.error(error)
+            notification.error({
+                message: 'Failed to add permission',
+            })
+        }
+    }
     return (
         <div className="p-6">
+            <div className="flex justify-end">
+                <Button variant="new" onClick={handleAddGroup}>
+                    Add Groups
+                </Button>
+            </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Group Names</h2>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap mb-5">
                 {getGroups.map((group) => (
                     <div
                         key={group.id}
@@ -114,9 +140,8 @@ const GetAccessManagement = () => {
                     </div>
                 ))}
             </div>
-            <br />
-            <br />
-            {activeGroup && (
+
+            {activeGroup ? (
                 <>
                     {showTableSpinner ? (
                         <div className="flex justify-center items-center h-screen">
@@ -136,6 +161,7 @@ const GetAccessManagement = () => {
                                     handleRemove={handleRemovePermissions}
                                     searchInput={searchInput}
                                     handleSearch={handleSearch}
+                                    handleUpdatePermission={handleUpdatePermission}
                                 />
                             </div>
 
@@ -153,6 +179,12 @@ const GetAccessManagement = () => {
                             </div>
                         </div>
                     )}
+                </>
+            ) : (
+                <>
+                    <div className="flex justify-center items-center h-auto xl:mt-20">
+                        <h3>Select Groups To Display Data </h3>
+                    </div>
                 </>
             )}
         </div>

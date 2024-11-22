@@ -15,6 +15,7 @@ interface CARDPROPS {
     handleSelectAll?: any
     searchInput?: any
     handleSearch?: any
+    handleUpdatePermission: any
 }
 
 const PermCardComponent = ({
@@ -29,6 +30,7 @@ const PermCardComponent = ({
     handleSelectAll,
     searchInput,
     handleSearch,
+    handleUpdatePermission,
 }: CARDPROPS) => {
     return (
         <div className="flex justify-around">
@@ -71,6 +73,10 @@ const PermCardComponent = ({
             <div className="flex justify-center items-center flex-col gap-4">
                 <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAdd}>
                     ADD {'>>'}
+                </Button>
+
+                <Button variant="yellow" size="sm" className="w-32 px-8" onClick={handleUpdatePermission}>
+                    UPDATE
                 </Button>
             </div>
 
