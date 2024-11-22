@@ -1,77 +1,105 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
-import Button from '@/components/ui/Button'
-import Dialog from '@/components/ui/Dialog'
 import { Formik, Form, Field } from 'formik'
 import { FormContainer, FormItem, Input } from '@/components/ui'
 import { SchedulerARRAY } from './sendNotify.common'
+import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
+import { DatePicker } from 'antd'
+import moment from 'moment'
+import Button from '@/components/ui/Button'
 
-interface SchedularModalProps {
-    dialogIsOpen: boolean
-    handleClose: () => void
+const REPEATARRAY = [
+    { label: 'Day', value: 'day' },
+    { label: 'Hour', value: 'hour' },
+]
+
+interface SchedularPageProps {
     handleOk: (values: any) => void
     scheduleValues: any
 }
 
-const SchedularModal = ({ dialogIsOpen, handleClose, handleOk, scheduleValues }: SchedularModalProps) => {
+const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
     console.log('Schedule values', scheduleValues)
     const initialValues = {}
 
     return (
-        <Dialog isOpen={dialogIsOpen} onClose={handleClose} onRequestClose={handleClose}>
-            <h5 className="mb-4">Schedular Config</h5>
+        <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mb-6 w-1/2">
+            <h2 className="text-2xl font-bold mb-6">Schedular Configuration</h2>
             <Formik
                 initialValues={initialValues}
                 onSubmit={(values: any) => {
-                    const modifiedValues = { ...values }
-                    SchedulerARRAY.forEach((item) => {
-                        if (values[`checkBox_${item.name}`]) {
-                            modifiedValues[item.name] = `*/${modifiedValues[item.name]}`
-                        }
-                    })
+                    const dateTime = moment(values?.get_date, 'YYYY-MM-DD HH:mm:ss')
+                    const modifiedValues: Record<string, string> = {
+                        month: dateTime.format('MM'),
+                        minute: dateTime.format('mm'),
+                        day: dateTime.format('DD'),
+                        year: dateTime.format('YYYY'),
+                        hour: dateTime.format('HH'),
+                        ...values,
+                    }
 
+                    switch (values.repeat_data) {
+                        case 'day':
+                            modifiedValues.day = `*/${dateTime.format('DD')}`
+                            break
+                        case 'hour':
+                            modifiedValues.hour = `*/${dateTime.format('HH')}`
+                            break
+                        default:
+                            break
+                    }
                     handleOk(modifiedValues)
                 }}
             >
                 {({ errors, touched }) => (
                     <Form>
-                        <FormContainer className="grid grid-cols-3 gap-2">
-                            {SchedulerARRAY.map((item, key) => (
-                                <FormItem key={key} label={item.label} className="flex gap-3">
-                                    <div>Frequent</div>
-                                    <Field
-                                        type="checkbox"
-                                        name={`checkBox_${item.name}`}
-                                        placeholder={`Enter ${item.label}`}
-                                        component={Input}
-                                    />
-
-                                    <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
-                                </FormItem>
-                            ))}
+                        <FormContainer className="grid grid-cols-3 gap-4 items-center">
+                            <div>
+                                <FormContainer>
+                                    <FormItem label="Start Date" className="mt-4">
+                                        <Field name="get_date">
+                                            {({ field, form }: any) => (
+                                                <DatePicker
+                                                    showTime
+                                                    placeholder=""
+                                                    value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                    onChange={(value) => {
+                                                        form.setFieldValue('get_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                                    }}
+                                                />
+                                            )}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+                            </div>
+                            <FormItem className="mt-4" label="Expiry Date">
+                                <Field name="expiry_date">
+                                    {({ field, form }: any) => (
+                                        <DatePicker
+                                            showTime
+                                            placeholder=""
+                                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                            onChange={(value) => {
+                                                form.setFieldValue('expiry_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                            }}
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
                         </FormContainer>
-                        <FormItem className="" label="Expiry Date">
-                            <Field
-                                type="text"
-                                name="expiry_date"
-                                placeholder="Enter Expiry Date"
-                                component={Input}
-                                className="col-span-1 w-1/2"
-                            />
-                        </FormItem>
-                        <div className="text-right mt-6">
-                            <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={handleClose}>
-                                Cancel
-                            </Button>
+                        <div>
+                            <CommonSelect name="repeat_data" label="Repeat" options={REPEATARRAY} needClassName className="w-1/4" />
+                        </div>
+
+                        <div className="text-right mt-6 flex justify-end">
                             <Button variant="solid" type="submit">
-                                Okay
+                                Send
                             </Button>
                         </div>
                     </Form>
                 )}
             </Formik>
-        </Dialog>
+        </div>
     )
 }
 
-export default SchedularModal
+export default SchedularPage

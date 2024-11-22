@@ -156,6 +156,24 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
                 </>
             ) : (
                 <div className="p-4 bg-gray-50 min-h-screen">
+                    <div className="mb-10">
+                        <div className="font-semibold text-gray-600 text-center sm:text-left sm:col-span-1 items-center flex gap-2">
+                            <span className="fonnt-bold text-xl">SELECT RETURN TYPE:</span>
+                            <div className="sm:col-span-1 text-md bg-green-600 rounded-lg text-white">
+                                <Dropdown
+                                    className="text-black w-full border border-gray-300 rounded-lg"
+                                    title={currentReturnType || 'Return Type'}
+                                    onSelect={(value) => handleReturnType(value)}
+                                >
+                                    {returnType?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item.value}>
+                                            <span>{item.value}</span>
+                                        </DropdownItem>
+                                    ))}
+                                </Dropdown>
+                            </div>
+                        </div>
+                    </div>
                     {product && product.length > 0 && (
                         <div>
                             {product.map((pdts) => (
@@ -254,22 +272,6 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
 
                     {/* Return Button */}
                     <div className="flex justify-end mt-6 gap-10">
-                        <div className="font-semibold text-gray-600 text-center sm:text-left sm:col-span-1 items-center">
-                            RETURN TYPE:
-                            <div className="sm:col-span-1">
-                                <Dropdown
-                                    className="text-black w-full border border-gray-300 rounded-lg"
-                                    title={currentReturnType || 'Return Type'}
-                                    onSelect={(value) => handleReturnType(value)}
-                                >
-                                    {returnType?.map((item, key) => (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.value}</span>
-                                        </DropdownItem>
-                                    ))}
-                                </Dropdown>
-                            </div>
-                        </div>
                         <button
                             className="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-200"
                             onClick={handleReturnClick}

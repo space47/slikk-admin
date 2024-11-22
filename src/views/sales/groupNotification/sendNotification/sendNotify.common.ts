@@ -12,6 +12,20 @@ export interface sendNotificationType {
     image_url_array: File[]
 }
 
+export const initialValue: sendNotificationType = {
+    page: '',
+    notification_type: '',
+    title: '',
+    message: '',
+    target_page: '',
+    key: '',
+    users: '9818454888,8310903174',
+    page_title: '',
+    filters: '',
+    image_url: '',
+    image_url_array: [],
+}
+
 export const SchedulerARRAY = [
     {
         label: 'Month',
@@ -48,52 +62,38 @@ export const SchedulerARRAY = [
 export const SendNotificationARRAY = [
     {
         label: 'Event Name',
-        classname: 'col-span-1 w-full',
+        classname: 'col-span-1 w-1/2',
         type: 'text',
         name: 'event_name',
         placeholder: 'Enter Event name',
     },
     {
         label: 'Key',
-        classname: 'col-span-1 w-full',
+        classname: 'col-span-1 w-1/2',
         type: 'text',
         name: 'key',
         placeholder: 'Place your key',
     },
     {
         label: 'Title',
-        classname: 'col-span-1 w-full',
+        classname: 'col-span-1 w-1/2',
         type: 'text',
         name: 'title',
         placeholder: 'Place your Title',
     },
     {
         label: 'Page',
-        classname: 'col-span-1 w-full',
+        classname: 'col-span-1 w-1/2',
         type: 'text',
         name: 'page',
         placeholder: 'Place page',
     },
     {
         label: 'Page Title',
-        classname: 'col-span-1 w-full',
+        classname: 'col-span-1 w-1/2',
         type: 'text',
         name: 'page_title',
         placeholder: 'Enter Page Title',
-    },
-    {
-        label: 'Mobile Numbers (Enter comma separated Values)',
-        classname: 'col-span-1 w-full',
-        type: 'text',
-        name: 'users',
-        placeholder: 'Enter Users',
-    },
-    {
-        label: 'Send to all Users',
-        classname: 'col-span-1 w-full',
-        type: 'checkbox',
-        name: 'users_all',
-        placeholder: 'Enter Users',
     },
 ]
 
@@ -181,4 +181,21 @@ export const DISCOUNTOPTIONS = [
     { value: 'sort_lowtohigh', label: 'Low to High' },
     { value: 'sort_hightolow', label: 'High to Low' },
     { value: 'sort_discount', label: 'DISCOUNT' },
+]
+
+export const USERNOTFARRAY = [
+    {
+        label: 'Mobile Numbers (Enter comma separated Values)',
+        classname: 'col-span-1 w-1/2',
+        type: 'text',
+        name: 'users',
+        placeholder: 'Enter Users',
+    },
+    {
+        label: 'Send to all Users',
+        classname: 'col-span-1 w-full',
+        type: 'checkbox',
+        name: 'users_all',
+        placeholder: 'Enter Users',
+    },
 ]
