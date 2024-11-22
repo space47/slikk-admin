@@ -19,7 +19,7 @@ export interface ButtonProps extends CommonProps, Omit<ComponentPropsWithRef<'bu
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void
     shape?: TypeAttributes.Shape
     size?: TypeAttributes.Size
-    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending'
+    variant?: 'solid' | 'twoTone' | 'plain' | 'default' | 'new' | 'accept' | 'reject' | 'pending' | 'yellow'
 }
 
 type ButtonColor = {
@@ -132,6 +132,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         }
         return getBtnColor(btn)
     }
+    const yellowColor = () => {
+        const btn = {
+            bgColor: `bg-yellow-600 border border-yellow-700 dark:bg-yellow-600 dark:border-yellow-800`,
+            textColor: `text-white dark:text-white`,
+            hoverColor: `hover:bg-yellow-800 dark:hover:bg-yellow-700`,
+            activeColor: `active:bg-yellow-400 dark:active:bg-yellow-500 dark:active:border-yellow-700`,
+        }
+        return getBtnColor(btn)
+    }
 
     const rejectColor = () => {
         const btn = {
@@ -193,6 +202,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 return newColor()
             case 'accept':
                 return acceptColor()
+            case 'yellow':
+                return yellowColor()
             case 'reject':
                 return rejectColor()
             case 'pending':

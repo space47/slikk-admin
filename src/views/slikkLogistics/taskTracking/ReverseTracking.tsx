@@ -13,7 +13,7 @@ import AccessDenied from '@/views/pages/AccessDenied'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const TaskTracking = () => {
+const ReverseTracking = () => {
     const [data, setData] = useState<TaskDetails[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
@@ -26,7 +26,7 @@ const TaskTracking = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(`logistic/slikk/task?task_type=FORWARD&page_size=100`)
+            const response = await axiosInstance.get(`logistic/slikk/task?task_type=REVERSE&page_size=100`)
             const data = response.data.data.results
             const total = response.data.data.count
 
@@ -258,4 +258,4 @@ const TaskTracking = () => {
     )
 }
 
-export default TaskTracking
+export default ReverseTracking

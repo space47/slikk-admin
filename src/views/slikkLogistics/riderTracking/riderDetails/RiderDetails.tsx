@@ -27,6 +27,7 @@ const RiderDetails = () => {
         const fetchOrders = async () => {
             try {
                 const response = await axiosInstance.get(`logistic/rider/task?task_id=${task_id}`)
+                console.log('object', response?.data?.data)
                 const riderData = response.data.data.results
                 setData(riderData)
                 setStatus(riderData?.[0]?.status || '')
