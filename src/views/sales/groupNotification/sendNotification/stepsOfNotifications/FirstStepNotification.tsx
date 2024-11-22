@@ -8,13 +8,25 @@ import { notificationTypeArray } from '../sendNotify.common'
 interface FirstStepProps {
     SendNotificationARRAY: any[]
     values: any
+    setMessagePreview?: any
+    setImagePreview: any
+    setTitleView?: any
 }
 
-const FirstStepNotification = ({ SendNotificationARRAY, values }: FirstStepProps) => {
+const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePreview, setImagePreview, setTitleView }: FirstStepProps) => {
     return (
         <div className="space-y-6 shadow-lg rounded-lg px-14 py-9">
             <div className="text-xl font-bold">Basic Information for Sending Notifications</div>
             <div className="grid grid-cols-2 gap-6">
+                <FormItem label="title" className={`w-full rounded-[10px] `}>
+                    <Field
+                        type="text"
+                        name="Title"
+                        placeholder="Enter Title"
+                        component={Input}
+                        onChange={(e: any) => setTitleView(e.target.value)}
+                    />
+                </FormItem>
                 {SendNotificationARRAY.map((item, key) => (
                     <FormItem key={key} label={item.label} className={`w-full rounded-[10px] ${item.classname || ''}`}>
                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
@@ -40,7 +52,13 @@ const FirstStepNotification = ({ SendNotificationARRAY, values }: FirstStepProps
             <FormItem label="Scheduler Message" labelClass="!justify-start" className="w-full">
                 <Field name="message">
                     {({ field, form }: FieldProps) => (
-                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                        <RichTextEditor
+                            value={field.value}
+                            onChange={(val) => {
+                                form.setFieldValue(field.name, val)
+                                setMessagePreview(val)
+                            }}
+                        />
                     )}
                 </Field>
             </FormItem>
@@ -55,7 +73,10 @@ const FirstStepNotification = ({ SendNotificationARRAY, values }: FirstStepProps
                                 multiple
                                 beforeUpload={beforeUpload}
                                 fileList={values.image_url_array}
-                                onChange={(files) => form.setFieldValue('image_url_array', files)}
+                                onChange={(files) => {
+                                    form.setFieldValue('image_url_array', files)
+                                    setImagePreview(files)
+                                }}
                                 onFileRemove={(files) => form.setFieldValue('image_url_array', files)}
                             />
                         )}

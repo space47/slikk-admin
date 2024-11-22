@@ -74,13 +74,13 @@ export const SendNotificationARRAY = [
         name: 'key',
         placeholder: 'Place your key',
     },
-    {
-        label: 'Title',
-        classname: 'col-span-1 w-1/2',
-        type: 'text',
-        name: 'title',
-        placeholder: 'Place your Title',
-    },
+    // {
+    //     label: 'Title',
+    //     classname: 'col-span-1 w-1/2',
+    //     type: 'text',
+    //     name: 'title',
+    //     placeholder: 'Place your Title',
+    // },
     {
         label: 'Page',
         classname: 'col-span-1 w-1/2',
@@ -185,17 +185,17 @@ export const DISCOUNTOPTIONS = [
 
 export const USERNOTFARRAY = [
     {
-        label: 'Mobile Numbers (Enter comma separated Values)',
-        classname: 'col-span-1 w-1/2',
+        label: 'Test Numbers (Enter comma separated Values)',
+        classname: 'col-span-1 w-full',
         type: 'text',
         name: 'users',
         placeholder: 'Enter Users',
     },
-    {
-        label: 'Send to all Users',
-        classname: 'col-span-1 w-full',
-        type: 'checkbox',
-        name: 'users_all',
-        placeholder: 'Enter Users',
-    },
+    // {
+    //     label: 'Send to all Users',
+    //     classname: 'col-span-1 w-full',
+    //     type: 'checkbox',
+    //     name: 'users_all',
+    //     placeholder: 'Enter Users',
+    // },
 ]

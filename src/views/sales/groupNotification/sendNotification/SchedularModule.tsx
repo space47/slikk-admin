@@ -22,7 +22,7 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
     const initialValues = {}
 
     return (
-        <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mb-6 w-1/2">
+        <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mb-6 w-[80%] h-1/2">
             <h2 className="text-2xl font-bold mb-6">Schedular Configuration</h2>
             <Formik
                 initialValues={initialValues}
@@ -52,7 +52,7 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
             >
                 {({ errors, touched }) => (
                     <Form>
-                        <FormContainer className="grid grid-cols-3 gap-4 items-center">
+                        <FormContainer className="grid grid-cols-2 gap-10 items-center">
                             <div>
                                 <FormContainer>
                                     <FormItem label="Start Date" className="mt-4">
@@ -65,6 +65,7 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
                                                     onChange={(value) => {
                                                         form.setFieldValue('get_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                                     }}
+                                                    className="xl:w-full"
                                                 />
                                             )}
                                         </Field>
@@ -81,18 +82,19 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
                                             onChange={(value) => {
                                                 form.setFieldValue('expiry_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                             }}
+                                            className="xl:w-full"
                                         />
                                     )}
                                 </Field>
                             </FormItem>
                         </FormContainer>
                         <div>
-                            <CommonSelect name="repeat_data" label="Repeat" options={REPEATARRAY} needClassName className="w-1/4" />
+                            <CommonSelect name="repeat_data" label="Repeat" options={REPEATARRAY} needClassName className="w-1/2" />
                         </div>
 
                         <div className="text-right mt-6 flex justify-end">
                             <Button variant="solid" type="submit">
-                                Send
+                                Schedule
                             </Button>
                         </div>
                     </Form>

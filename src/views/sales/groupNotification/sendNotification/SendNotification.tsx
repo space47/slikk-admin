@@ -20,7 +20,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { Spinner, Upload } from '@/components/ui'
+import { Checkbox, Spinner, Upload } from '@/components/ui'
 import { handleimage } from '@/common/handleImage'
 import SchedularModal from './SchedularModule'
 import FirstStepNotification from './stepsOfNotifications/FirstStepNotification'
@@ -28,6 +28,8 @@ import SecondStepNotification from './stepsOfNotifications/SecondStepNotificatio
 import ThirdStepNotification from './stepsOfNotifications/ThirdStepNotification'
 import Steps from '@/components/ui/Steps'
 import FourthStep from './stepsOfNotifications/FourthStep'
+import MobilePreview from './mobilePreview/MobilePreview'
+import { useNavigate } from 'react-router-dom'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -43,6 +45,10 @@ const SendNotification = () => {
     const [storeSchedular, setStoreSchedular] = useState({})
     const [valueForSchedule, setValueForSchedule] = useState<any>()
     const [submitvalue, setSubmitValue] = useState<any>(null)
+    const [messagePreview, setMessagePreview] = useState('')
+    const [imagePreview, setImagePreview] = useState('')
+    const [titleView, setTitleView] = useState('')
+    const navigate = useNavigate()
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -100,6 +106,7 @@ const SendNotification = () => {
             ...formData
         } = values
         console.log(utm_medium, utm_source, utm_campaign, utm_tags, maxoff, maxprice, minoff, minprice, filtersAdd)
+
         const imageUpload = values.image_url_array.length > 0 ? await handleimage('product', image_url_array) : values.image_url
 
         const data = {
@@ -195,7 +202,7 @@ const SendNotification = () => {
 
     const hanldeSchedule = (value: any) => {
         setValueForSchedule(value)
-        setScheduleModal(true)
+        setScheduleModal((prev) => !prev)
     }
 
     const handleClose = () => {
@@ -267,9 +274,10 @@ const SendNotification = () => {
             notification.error({
                 message: 'Failed to schedule',
             })
+        } finally {
+            setScheduleModal(false)
+            navigate(`/app/appsCommuncication/sendNotification`)
         }
-
-        setScheduleModal(false)
     }
 
     const handleNext = () => {
@@ -303,84 +311,104 @@ const SendNotification = () => {
                 </Steps>
             </div>
 
-            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                {({ values, resetForm }) => (
-                    <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
-                        <FormContainer>
-                            {currentStep === 0 && <FirstStepNotification SendNotificationARRAY={SendNotificationARRAY} values={values} />}
+            <div className={currentStep === 3 ? (showScheduleModal ? 'grid grid-cols-3 ' : 'flex gap-4 ') : 'flex gap-10'}>
+                <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+                    {({ values, resetForm }) => (
+                        <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
+                            <FormContainer>
+                                {currentStep === 0 && (
+                                    <FirstStepNotification
+                                        SendNotificationARRAY={SendNotificationARRAY}
+                                        values={values}
+                                        setImagePreview={setImagePreview}
+                                        setMessagePreview={setMessagePreview}
+                                        setTitleView={setTitleView}
+                                    />
+                                )}
 
-                            {currentStep === 1 && (
-                                <SecondStepNotification
-                                    notificationTypeArray={notificationTypeArray}
-                                    groupValue={groupValue}
-                                    setGroupValue={setGroupValue}
-                                    groupDatatoSend={groupDatatoSend}
-                                    clickedGuarantee={clickedGuarantee}
-                                    hanldeGroupSearch={hanldeGroupSearch}
-                                    handleAddFilter={handleAddFilter}
-                                    showAddFilter={showAddFilter}
-                                    filters={filters}
-                                    handleRemoveFilter={handleRemoveFilter}
-                                    MAXMINARRAY={MAXMINARRAY}
-                                    DISCOUNTOPTIONS={DISCOUNTOPTIONS}
-                                    targetPageArray={targetPageArray}
-                                    handleAddFilters={handleAddFilters}
-                                />
-                            )}
+                                {currentStep === 1 && (
+                                    <SecondStepNotification
+                                        notificationTypeArray={notificationTypeArray}
+                                        groupValue={groupValue}
+                                        setGroupValue={setGroupValue}
+                                        groupDatatoSend={groupDatatoSend}
+                                        clickedGuarantee={clickedGuarantee}
+                                        hanldeGroupSearch={hanldeGroupSearch}
+                                        handleAddFilter={handleAddFilter}
+                                        showAddFilter={showAddFilter}
+                                        filters={filters}
+                                        handleRemoveFilter={handleRemoveFilter}
+                                        MAXMINARRAY={MAXMINARRAY}
+                                        DISCOUNTOPTIONS={DISCOUNTOPTIONS}
+                                        targetPageArray={targetPageArray}
+                                        handleAddFilters={handleAddFilters}
+                                    />
+                                )}
 
-                            {currentStep === 2 && <ThirdStepNotification />}
-                            {currentStep === 3 && (
-                                <FourthStep
-                                    handleOk={handleOk}
-                                    handleSchedule={hanldeSchedule}
-                                    valueForSchedule={valueForSchedule}
-                                    scheduleModal={showScheduleModal}
-                                />
-                            )}
-                        </FormContainer>
-
-                        <FormContainer className="flex justify-between mt-5 mb-9 xl:mb-0">
-                            {currentStep > 0 && currentStep < 3 && (
-                                <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
-                                    Previous
-                                </Button>
-                            )}
-                            {currentStep < 3 && currentStep > 0 && (
-                                <Button type="button" variant="solid" onClick={handleNext} className="mr-2 bg-gray-600">
-                                    Next
-                                </Button>
-                            )}
-                        </FormContainer>
-
-                        {currentStep === 0 && (
-                            <FormContainer className="flex justify-end">
-                                <Button type="button" variant="solid" onClick={handleNext} className="mr-2 bg-gray-600">
-                                    Next
-                                </Button>
+                                {currentStep === 2 && <ThirdStepNotification />}
+                                {currentStep === 3 && (
+                                    <FourthStep
+                                        values={values}
+                                        handleSchedule={hanldeSchedule}
+                                        valueForSchedule={valueForSchedule}
+                                        scheduleModal={showScheduleModal}
+                                    />
+                                )}
                             </FormContainer>
-                        )}
-                    </Form>
+
+                            <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
+                                {currentStep > 0 && currentStep < 3 && (
+                                    <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                        Previous
+                                    </Button>
+                                )}
+                                {currentStep < 3 && currentStep > 0 && (
+                                    <Button type="button" variant="solid" onClick={handleNext} className="mr-2 bg-gray-600">
+                                        Next
+                                    </Button>
+                                )}
+                            </FormContainer>
+
+                            {currentStep === 0 && (
+                                <FormContainer className="flex justify-end">
+                                    <Button type="button" variant="solid" onClick={handleNext} className="mr-2 bg-gray-600">
+                                        Next
+                                    </Button>
+                                </FormContainer>
+                            )}
+
+                            <FormContainer className="flex justify-start">
+                                {currentStep === 3 && (
+                                    <div className="flex">
+                                        <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                            Previous
+                                        </Button>
+                                        <div className="flex gap-20">
+                                            <Button variant="solid" type="submit" className=" text-white">
+                                                Submit
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                            </FormContainer>
+                        </Form>
+                    )}
+                </Formik>
+
+                {showScheduleModal && currentStep === 3 ? (
+                    <SchedularModal handleOk={handleOk} scheduleValues={valueForSchedule} />
+                ) : (
+                    <>
+                        <div></div>
+                    </>
                 )}
-            </Formik>
 
-            {showScheduleModal && currentStep === 3 && <SchedularModal handleOk={handleOk} scheduleValues={valueForSchedule} />}
-
-            <div className="">
-                {currentStep === 3 && (
-                    <div className="flex justify-between">
-                        <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
-                            Previous
-                        </Button>
-                        <div className="flex gap-4">
-                            <Button variant="solid" type="button" className=" text-white" onClick={() => hanldeSchedule(values)}>
-                                Schedule
-                            </Button>
-                            <Button variant="solid" type="submit" className=" text-white">
-                                Submit
-                            </Button>
-                        </div>
+                <div className="w-[450px] bg-contain h-[780px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative">
+                    <img src="/img/logo/mobilePreview.jpeg" alt="" className="w-full h-full object-cover" />
+                    <div className="absolute top-20 left-1 right-1">
+                        <MobilePreview message={messagePreview} image={imagePreview} title={titleView} />
                     </div>
-                )}
+                </div>
             </div>
         </div>
     )
