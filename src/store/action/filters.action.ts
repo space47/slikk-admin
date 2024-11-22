@@ -8,7 +8,7 @@ export const getAllFiltersAPI = () => async (dispatch: any) => {
             type: 'getAllFiltersRequest',
         })
 
-        const response = await axiosInstance.get('search/product?page_size=1&dashboard=true')
+        const response = await axiosInstance.get('search/product/filters')
 
         console.log('FFFFFFFFFFFFFFi', response.data?.filters)
 
