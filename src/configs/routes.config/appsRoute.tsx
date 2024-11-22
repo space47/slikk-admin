@@ -174,6 +174,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrgManagement.accessManagement',
+        path: `${APP_PREFIX_PATH}/accessManagement/addNew`,
+        component: lazy(() => import('@/views/org-management/accessManagement/createAccessManagement/CreateGroups')), //p3
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrgManagement.users',
         path: `${APP_PREFIX_PATH}/users/addNew`,
         component: lazy(() => import('@/views/org-management/users/addUsers/AddUser')), //p3
@@ -183,6 +189,12 @@ const appsRoute: Routes = [
         key: 'appsOrgManagement.users',
         path: `${APP_PREFIX_PATH}/users/edit/:mobile`,
         component: lazy(() => import('@/views/org-management/users/editUsers/EditUser')), //p3
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOrgManagement.accessManagement',
+        path: `${APP_PREFIX_PATH}/accessManagement`,
+        component: lazy(() => import('@/views/org-management/accessManagement/getAccessManagentt/GetAccessManagement')), //p3
         authority: [ADMIN, USER],
     },
 
@@ -832,7 +844,13 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: 'appstryAndBuy.taskTracking',
+        key: 'appstryAndBuy.reverseTracking',
+        path: `${APP_PREFIX_PATH}/tryAndBuy/reverseTracking`,
+        component: lazy(() => import('@/views/slikkLogistics/taskTracking/ReverseTracking')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appstryAndBuy.tryAndBuy',
         path: `${APP_PREFIX_PATH}/tryAndBuy/taskTracking/:task_id`,
         component: lazy(() => import('@/views/slikkLogistics/taskTracking/trackingTaskComponents/TaskDetails')),
         authority: [ADMIN, USER],
