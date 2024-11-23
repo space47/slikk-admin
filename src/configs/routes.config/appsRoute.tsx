@@ -24,12 +24,6 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
-        key: '',
-        path: `/bad-request`,
-        component: lazy(() => import('@/views/pages/BadRequest/BadRequest')),
-        authority: [ADMIN, USER],
-    },
-    {
         key: 'apps.homePage',
         path: `${APP_PREFIX_PATH}/homePage/fullMap`,
         component: lazy(() => import('@/views/homePage/fullMapComponent/FullMap')),

@@ -1,22 +1,18 @@
 import Container from '@/components/shared/Container'
-import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
+import { FaExclamationTriangle } from 'react-icons/fa' // Import an error icon from react-icons
 
-const InnternalError = () => {
+const InternalError = () => {
     return (
         <Container className="h-full">
-            <div className="h-full flex flex-col items-center justify-center">
-                {/* <DoubleSidedImage
-                    src="/img/others/img-2.png"
-                    darkModeSrc="/img/others/img-2-dark.png"
-                    alt="Access Denied!"
-                /> */}
-                <div className="mt-6 text-center">
-                    <h3 className="mb-2 text-xl text-red-600">Internal Server Error</h3>
-                    <p className="text-base">Sorry, but we have an Error...please wait till we manage it</p>
+            <div className="flex h-full flex-col items-center justify-center space-y-6">
+                <FaExclamationTriangle className="text-red-500 text-6xl" aria-hidden="true" />
+                <div className="text-center">
+                    <h3 className="mb-2 text-2xl font-semibold text-red-600">Internal Server Error</h3>
+                    <p className="text-base text-gray-600">Sorry, but we encountered an error. Please wait while we resolve it.</p>
                 </div>
             </div>
         </Container>
     )
 }
 
-export default InnternalError
+export default InternalError
