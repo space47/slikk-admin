@@ -78,12 +78,9 @@ const Returns = () => {
             const total = response.data.data.count
             setData(data)
             setTotalData(total)
-            setShowSpinner(false)
         } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
             console.error(error)
+        } finally {
             setShowSpinner(false)
         }
     }

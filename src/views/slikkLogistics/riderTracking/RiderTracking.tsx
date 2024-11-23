@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+
 // import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -11,6 +11,7 @@ import Select from '@/components/ui/Select'
 import { TaskDetails } from '../taskTracking/TaskCommonType'
 import { useNavigate, useParams } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 type Option = {
     value: number
@@ -38,7 +39,7 @@ const RiderTracking = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(`logistic/rider/task`)
+            const response = await axioisInstance.get(`logistic/rider/task`)
             const data = response.data.data.results
             const total = response.data.data.count
 

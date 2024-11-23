@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
@@ -10,6 +9,7 @@ import { Option, pageSizeOptions, TaskDetails } from './TaskCommonType'
 
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -26,7 +26,7 @@ const TaskTracking = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(`logistic/slikk/task?task_type=FORWARD&page_size=100`)
+            const response = await axioisInstance.get(`logistic/slikk/task?task_type=FORWARD&page_size=100`)
             const data = response.data.data.results
             const total = response.data.data.count
 

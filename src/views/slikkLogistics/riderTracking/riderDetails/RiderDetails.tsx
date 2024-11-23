@@ -3,12 +3,12 @@ import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import isEmpty from 'lodash/isEmpty'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { TaskDetails } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import RiderInfo from './RiderInfo'
 import RiderActivity from './RiderActivity'
 import { useParams } from 'react-router-dom'
 import MapComponent from '@/common/mapLocation'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const RiderDetails = () => {
     const [loading, setLoading] = useState(true)
@@ -26,7 +26,7 @@ const RiderDetails = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axiosInstance.get(`logistic/rider/task?task_id=${task_id}`)
+                const response = await axioisInstance.get(`logistic/rider/task?task_id=${task_id}`)
                 console.log('object', response?.data?.data)
                 const riderData = response.data.data.results
                 setData(riderData)
