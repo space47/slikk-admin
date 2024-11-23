@@ -111,6 +111,7 @@ const SendNotification = () => {
 
         const data = {
             ...formData,
+            title: titleView ?? '',
             image_url: imageUpload || '',
             notification_group_id: groupId.join(',') || '',
             filters: [
@@ -235,7 +236,7 @@ const SendNotification = () => {
         const { expiry_date, ...schedulerConfigs } = rest ?? {}
 
         const body = {
-            title: valueForSchedule?.title ?? '',
+            title: titleView ?? '',
             message: plainTextMessage,
             name: valueForSchedule?.event_name ?? '',
             image: imageUpload,
