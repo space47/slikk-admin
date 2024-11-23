@@ -41,9 +41,9 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                             const fieldValue = Array.isArray(field.value) ? field.value : []
                                             const options = optionDataMap[key]
 
-                                            if ((dataType === 'Select' || dataType === 'MultiSelect') && options) {
+                                            if (dataType === 'Select' && options) {
                                                 const selectedOption = options.find(
-                                                    (option: any) => option.name.toLowerCase() === field.value.toLowerCase(),
+                                                    (option: any) => option.name?.toLowerCase() === field.value?.toLowerCase(),
                                                 )
 
                                                 return (
@@ -51,15 +51,18 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                         className=" w-full"
                                                         {...field}
                                                         options={options}
-                                                        getOptionLabel={(option) => option.name}
-                                                        getOptionValue={(option) => option.id.toString()}
+                                                        getOptionLabel={(option) => option?.name}
+                                                        getOptionValue={(option) => option?.id?.toString()}
                                                         value={selectedOption || null}
+                                                        isClearable
                                                         onChange={(newVal) => {
                                                             form.setFieldValue(`required_fields[${index}].value`, newVal?.name)
                                                         }}
                                                     />
                                                 )
                                             }
+
+                                            // if((dataType === 'MultiSelcet') &&)
 
                                             return (
                                                 <Input

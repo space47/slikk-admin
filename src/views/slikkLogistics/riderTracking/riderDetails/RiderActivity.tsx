@@ -7,15 +7,11 @@ import moment from 'moment'
 import Button from '@/components/ui/Button'
 import React, { useState, useEffect } from 'react'
 import { notification } from 'antd'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+
 import { useNavigate } from 'react-router-dom'
-import {
-    CustomModal1,
-    CustomModal2,
-    CustomModal3,
-    CustomModal4,
-} from './RiderModal'
+import { CustomModal1, CustomModal2, CustomModal3, CustomModal4 } from './RiderModal'
 import { TaskDetails } from '../../taskTracking/TaskCommonType'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 // type Event = {
 //     timestamp: string
@@ -29,13 +25,7 @@ type RIDERACTIVITYPROPS = {
     longitude: any
 }
 
-const RiderActivity = ({
-    data = [],
-    status,
-    task_id,
-    latitude,
-    longitude,
-}: RIDERACTIVITYPROPS) => {
+const RiderActivity = ({ data = [], status, task_id, latitude, longitude }: RIDERACTIVITYPROPS) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [action, setAction] = useState('')
     const [triggerAccept, settriggerAccept] = useState<boolean>(false)
@@ -60,25 +50,18 @@ const RiderActivity = ({
                         action,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `logistic/rider/task/${task_id}`,
-                        body,
-                    )
+                    const response = await axioisInstance.patch(`logistic/rider/task/${task_id}`, body)
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     settriggerAccept(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -117,25 +100,18 @@ const RiderActivity = ({
                         longitude: longitude,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `logistic/rider/task/${task_id}`,
-                        body,
-                    )
+                    const response = await axioisInstance.patch(`logistic/rider/task/${task_id}`, body)
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerpickupCall(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -164,25 +140,18 @@ const RiderActivity = ({
                         longitude: longitude,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `logistic/rider/task/${task_id}`,
-                        body,
-                    )
+                    const response = await axioisInstance.patch(`logistic/rider/task/${task_id}`, body)
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerOutDelivery(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -213,25 +182,18 @@ const RiderActivity = ({
                         longitude: longitude,
                     }
 
-                    const response = await axiosInstance.patch(
-                        `logistic/rider/task/${task_id}`,
-                        body,
-                    )
+                    const response = await axioisInstance.patch(`logistic/rider/task/${task_id}`, body)
                     navigate(0)
                     console.log(response.data)
                     setIsModalOpen(false)
                     setTriggerDelivery(false)
                     notification.success({
                         message: 'Success',
-                        description:
-                            response?.data?.message ||
-                            'Rider status updated successfully.',
+                        description: response?.data?.message || 'Rider status updated successfully.',
                     })
                 } catch (error: any) {
                     console.error(error)
-                    const errorMessage =
-                        error.response?.data?.message ||
-                        'There was an error updating the order status. Please try again.'
+                    const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
 
                     notification.error({
                         message: 'Error',
@@ -280,8 +242,7 @@ const RiderActivity = ({
         }
     }
 
-    const { buttonText, modalContent: content } =
-        getButtonAndModalContent(status)
+    const { buttonText, modalContent: content } = getButtonAndModalContent(status)
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
@@ -294,24 +255,12 @@ const RiderActivity = ({
                             key={activity.status + i}
                             media={
                                 <div className="flex mt-1.5">
-                                    <Badge
-                                        innerClass={classNames(
-                                            activity.update_date
-                                                ? 'bg-emerald-500'
-                                                : 'bg-blue-500',
-                                        )}
-                                    />
+                                    <Badge innerClass={classNames(activity.update_date ? 'bg-emerald-500' : 'bg-blue-500')} />
                                 </div>
                             }
                         >
-                            <div className="font-bold text-md">
-                                {activity.status}
-                            </div>
-                            <div>
-                                {moment(activity.update_date).format(
-                                    'DD:MM:YYYY hh:mm',
-                                )}
-                            </div>
+                            <div className="font-bold text-md">{activity.status}</div>
+                            <div>{moment(activity.update_date).format('DD:MM:YYYY hh:mm')}</div>
                         </Timeline.Item>
                     ))
                 )}
