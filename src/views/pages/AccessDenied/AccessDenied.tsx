@@ -1,18 +1,14 @@
 import Container from '@/components/shared/Container'
-import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
+import { FaLock } from 'react-icons/fa' // Import a lock icon from react-icons
 
 const AccessDenied = () => {
     return (
         <Container className="h-full">
-            <div className="h-full flex flex-col items-center justify-center">
-                {/* <DoubleSidedImage
-                    src="/img/others/img-2.png"
-                    darkModeSrc="/img/others/img-2-dark.png"
-                    alt="Access Denied!"
-                /> */}
-                <div className="mt-6 text-center">
-                    <h3 className="mb-2">Access Denied!</h3>
-                    <p className="text-base">You have no permission to visit this page</p>
+            <div className="flex h-full flex-col items-center justify-center space-y-6">
+                <FaLock className="text-red-600 text-6xl" aria-hidden="true" />
+                <div className="text-center">
+                    <h3 className="mb-2 text-2xl font-semibold text-gray-800">Access Denied!</h3>
+                    <p className="text-base text-gray-600">You don't have permission to view this page.</p>
                 </div>
             </div>
         </Container>
