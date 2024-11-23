@@ -1,17 +1,7 @@
-import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
-import { Field, Form, Formik } from 'formik'
+import { Checkbox, FormItem, Input } from '@/components/ui'
+import { Field } from 'formik'
 import React from 'react'
-import { SchedulerARRAY, USERNOTFARRAY } from '../sendNotify.common'
-import { DatePicker } from 'antd'
-import moment from 'moment'
-import Button from '@/components/ui/Button'
-import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
-import SchedularModal from '../SchedularModule'
-
-const REPEATARRAY = [
-    { label: 'Day', value: 'day' },
-    { label: 'Hour', value: 'hour' },
-]
+import { USERNOTFARRAY } from '../sendNotify.common'
 
 interface FourthStepProps {
     handleSchedule: any
@@ -22,10 +12,14 @@ interface FourthStepProps {
 }
 
 const FourthStep = ({ valueForSchedule, scheduleModal, handleSchedule, values }: FourthStepProps) => {
-    const initialValues = {}
-
     return (
-        <div className="pace-y-6 shadow-lg rounded-lg px-14 py-9 xl:w-[500px] xl:h-[390px]">
+        <div
+            className={
+                scheduleModal
+                    ? 'pace-y-6 shadow-lg rounded-lg px-14 py-9 xl:w-[500px] xl:h-[390px] '
+                    : 'pace-y-6 shadow-lg rounded-lg px-14 py-9 xl:w-2/3 xl:h-[390px] '
+            }
+        >
             {USERNOTFARRAY.map((item, key) => (
                 <FormItem key={key} label={item.label} className={item.classname}>
                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
@@ -41,9 +35,6 @@ const FourthStep = ({ valueForSchedule, scheduleModal, handleSchedule, values }:
                 <Checkbox className=" " onChange={() => handleSchedule(values)}></Checkbox>
                 <div className="font-bold">Schedule Notification for Later</div>
             </div>
-
-            {/* <Button onClick={handleSchedule}>Schedule Notification</Button> */}
-            {/* {scheduleModal && <SchedularModal handleOk={handleOk} scheduleValues={valueForSchedule} />} */}
         </div>
     )
 }
