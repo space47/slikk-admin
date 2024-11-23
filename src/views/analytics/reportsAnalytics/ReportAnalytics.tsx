@@ -14,6 +14,7 @@ import ReportGraphInput from './ReportGraphInput'
 import AccessDenied from '@/views/pages/AccessDenied'
 import InnternalError from '@/views/pages/InternalServerError/InternalError'
 import ReportFields from './ReportFields'
+import moment from 'moment'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -93,7 +94,18 @@ const ReportAnalytics = () => {
                 value: data?.results[0]?.value || '',
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
                     const [dataType, value] = fullValue?.split('_')
-                    return { key, value, dataType: dataType || 'String' }
+                    let transformedValue = value
+                    if (key === 'start_date') {
+                        transformedValue = moment().startOf('month').format('YYYY-MM-DD')
+                    } else if (key === 'end_date') {
+                        transformedValue = moment().endOf('month').format('YYYY-MM-DD')
+                    }
+
+                    return {
+                        key,
+                        value: transformedValue,
+                        dataType: dataType || 'String',
+                    }
                 }),
             }
             setReportData(formattedData)

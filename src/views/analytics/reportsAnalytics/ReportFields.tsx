@@ -45,7 +45,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                 const selectedOption = options.find(
                                                     (option: any) => option.name?.toLowerCase() === field.value?.toLowerCase(),
                                                 )
-
+                                                console.log('Selected for single', selectedOption)
                                                 return (
                                                     <Select
                                                         className=" w-full"
@@ -62,7 +62,28 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                 )
                                             }
 
-                                            // if((dataType === 'MultiSelcet') &&)
+                                            if (dataType === 'MultiSelect' && options) {
+                                                const selectedOptions = options.filter((option: any) => fieldValue.includes(option.id))
+
+                                                console.log('Selected options', selectedOptions)
+
+                                                return (
+                                                    <Select
+                                                        className="w-full"
+                                                        {...field}
+                                                        options={options}
+                                                        getOptionLabel={(option) => option?.name}
+                                                        getOptionValue={(option) => option?.id?.toString()}
+                                                        value={selectedOptions}
+                                                        isMulti
+                                                        isClearable
+                                                        onChange={(newVals) => {
+                                                            const selectedValues = newVals?.map((val: any) => val.id) || []
+                                                            form.setFieldValue(`required_fields[${index}].value`, selectedValues)
+                                                        }}
+                                                    />
+                                                )
+                                            }
 
                                             return (
                                                 <Input
