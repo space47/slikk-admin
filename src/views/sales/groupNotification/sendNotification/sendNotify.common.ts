@@ -186,7 +186,7 @@ export const DISCOUNTOPTIONS = [
 export const USERNOTFARRAY = [
     {
         label: 'Test Numbers (Enter comma separated Values)',
-        classname: 'col-span-1 w-full',
+        classname: 'col-span-1 w-auto',
         type: 'text',
         name: 'users',
         placeholder: 'Enter Users',

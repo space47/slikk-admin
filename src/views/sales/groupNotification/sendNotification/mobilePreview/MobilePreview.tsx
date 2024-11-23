@@ -1,5 +1,8 @@
 import { handleimage } from '@/common/handleImage'
 import React, { useEffect, useState } from 'react'
+import { BiSolidBellRing } from 'react-icons/bi'
+import { GoDotFill } from 'react-icons/go'
+import { PiBellRingingFill } from 'react-icons/pi'
 
 interface MobilePreviewProps {
     title?: string
@@ -35,11 +38,17 @@ const MobilePreview = ({ title, message, image }: MobilePreviewProps) => {
                             <img src="/img/logo/logo-dark-streamline.png" alt="" />
                         </div>
                         <div className="font-semibold text-gray-700 text-[18px]">Slikk</div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm flex items-center gap-1">
+                                <GoDotFill /> <span className="font-bold">now</span>
+                            </span>{' '}
+                            <BiSolidBellRing className="text-xl" />
+                        </div>
                     </div>
                     <h4 className="font-bold text-lg text-gray-800">{title}</h4>
                     <p className="text-sm text-gray-600 mt-2">{plainTextMessage}</p>
                     <div className="flex justify-center items-center">
-                        <img src={imageView} alt="Notification" className="mt-1 rounded-[15px] w-full object-cover" />
+                        {image && <img src={imageView} alt="Notification" className="mt-1 rounded-[15px] w-full object-cover" />}
                     </div>
                 </div>
             </div>
