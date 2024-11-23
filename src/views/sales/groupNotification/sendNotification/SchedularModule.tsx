@@ -76,16 +76,17 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
                                 <Field name="expiry_date">
                                     {({ field, form }: any) => (
                                         <DatePicker
-                                            showTime
                                             placeholder=""
-                                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                            value={field.value ? moment(field.value, 'YYYY-MM-DD') : null}
                                             onChange={(value) => {
-                                                form.setFieldValue('expiry_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                                form.setFieldValue('expiry_date', value ? value.format('YYYY-MM-DD') : '')
                                             }}
                                             className="xl:w-full"
                                         />
                                     )}
                                 </Field>
+                                {/* <Field type="date" name="expiry_date" placeholder="Enter expiry date" component={Input}
+                                 /> */}
                             </FormItem>
                         </FormContainer>
                         <div>
