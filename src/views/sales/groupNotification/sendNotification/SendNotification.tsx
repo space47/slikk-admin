@@ -237,7 +237,7 @@ const SendNotification = () => {
 
         const body = {
             title: titleView ?? '',
-            message: plainTextMessage,
+            message: plainTextMessage ?? '',
             name: valueForSchedule?.event_name ?? '',
             image: imageUpload,
             scheduler_config: schedulerConfigs,
