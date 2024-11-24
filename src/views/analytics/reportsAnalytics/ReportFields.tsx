@@ -63,7 +63,10 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                             }
 
                                             if (dataType === 'MultiSelect' && options) {
-                                                const selectedOptions = options.filter((option: any) => fieldValue.includes(option.id))
+                                                // Ensure field.value is an array
+                                                const fieldValueArray = Array.isArray(field?.value) ? field?.value : [field?.value]
+
+                                                const selectedOptions = options.filter((option: any) => fieldValueArray.includes(option.id))
 
                                                 console.log('Selected options', selectedOptions)
 
@@ -78,7 +81,9 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                         isMulti
                                                         isClearable
                                                         onChange={(newVals) => {
+                                                            console.log('multiselect values', newVals)
                                                             const selectedValues = newVals?.map((val: any) => val.id) || []
+
                                                             form.setFieldValue(`required_fields[${index}].value`, selectedValues)
                                                         }}
                                                     />
