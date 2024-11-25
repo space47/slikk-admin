@@ -21,7 +21,9 @@ const SkuOrderHistory = () => {
     }
 
     useEffect(() => {
-        fetchData()
+        if (globalFilter) {
+            fetchData()
+        }
     }, [globalFilter])
 
     const columns = useMemo<ColumnDef<SKUhistory>[]>(
