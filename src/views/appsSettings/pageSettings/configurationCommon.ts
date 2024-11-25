@@ -19,20 +19,20 @@ export const HEADERCONFIGARRAY = [
         name: 'header_config.web_font_size',
         type: 'text',
     },
-    {
-        label: 'Header Position',
-        name: 'header_config.position',
-        type: 'text',
-    },
+    // {
+    //     label: 'Header Position',
+    //     name: 'header_config.position',
+    //     type: 'text',
+    // },
     {
         label: 'Header BG Color',
         name: 'header_config.background_color',
-        type: 'text',
+        type: 'color',
     },
     {
         label: 'Header Font Color',
         name: 'header_config.font_color',
-        type: 'text',
+        type: 'color',
     },
 ]
 
@@ -57,20 +57,20 @@ export const SUBHEADERCONFIGARRAY = [
         name: 'sub_header_config.web_font_size',
         type: 'text',
     },
-    {
-        label: 'Sub-Header Position',
-        name: 'sub_header_config.position',
-        type: 'text',
-    },
+    // {
+    //     label: 'Sub-Header Position',
+    //     name: 'sub_header_config.position',
+    //     type: 'text',
+    // },
     {
         label: 'Sub-Header BG Color',
         name: 'sub_header_config.background_color',
-        type: 'text',
+        type: 'color',
     },
     {
         label: 'Sub-Header Font Color',
         name: 'sub_header_config.font_color',
-        type: 'text',
+        type: 'color',
     },
 ]
 
@@ -95,20 +95,20 @@ export const FOOTERCONFIGARRAY = [
         name: 'footer_config.web_font_size',
         type: 'text',
     },
-    {
-        label: 'Footer Position',
-        name: 'footer_config.position',
-        type: 'text',
-    },
+    // {
+    //     label: 'Footer Position',
+    //     name: 'footer_config.position',
+    //     type: 'text',
+    // },
     {
         label: 'Footer BG Color',
         name: 'footer_config.background_color',
-        type: 'text',
+        type: 'color',
     },
     {
         label: 'Footer Font Color',
         name: 'footer_config.font_color',
-        type: 'text',
+        type: 'color',
     },
 ]
 

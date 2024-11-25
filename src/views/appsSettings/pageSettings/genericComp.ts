@@ -111,14 +111,14 @@ export const genericComponentArray = [
     {
         label: 'Font Color',
         name: 'component_config.font_color',
-        type: 'text',
+        type: 'color',
         component: { Input },
         placeholder: 'Enter Font Color',
     },
     {
         label: 'Footer Font Color',
         name: 'component_config.footer_font_color',
-        type: 'text',
+        type: 'color',
         component: { Input },
         placeholder: 'Enter Font Color',
     },
@@ -253,14 +253,14 @@ export const genericComponentArray = [
     {
         label: 'Web Font Color',
         name: 'component_config.web_font_color',
-        type: 'text',
+        type: 'color',
         component: { Input },
         placeholder: 'Enter Web Font Color',
     },
     {
         label: 'Web Footer Font Color',
         name: 'component_config.web_footer_font_color',
-        type: 'text',
+        type: 'color',
         component: { Input },
         placeholder: 'Enter Web Font Color',
     },
@@ -298,7 +298,7 @@ export const borrderStyleArray = [
     {
         label: 'Color',
         name: 'component_config.border_color',
-        type: 'text',
+        type: 'color',
         component: { Input },
         placeholder: 'Enter color hexcode',
     },
@@ -315,7 +315,7 @@ export const sectionBorrderStyleArray = [
     {
         label: 'Section Color',
         name: 'component_config.section_border_color',
-        type: 'text',
+        type: 'color',
         component: { Input },
         placeholder: 'Enter color hexcode',
     },
@@ -332,7 +332,7 @@ export const WebSectionBorrderStyleArray = [
     {
         label: 'Web Section Color',
         name: 'component_config.web_section_border_color',
-        type: 'text',
+        type: 'color',
         component: { Input },
         placeholder: 'Enter color hexcode',
     },
@@ -349,14 +349,14 @@ export const webBorrderStyleArray = [
     {
         label: 'Web Color',
         name: 'component_config.web_border_color',
-        type: 'text',
+        type: 'color',
         component: { Input },
         placeholder: 'Enter color hexcode',
     },
 ]
 
 export const BackGroundArray = [
-    { label: 'Background Color', type: 'text', name: 'background_config.background_color', placeholder: 'Place bg color in hex' },
+    { label: 'Background Color', type: 'color', name: 'background_config.background_color', placeholder: 'Place bg color in hex' },
     { label: 'Background TopMargin', type: 'number', name: 'background_config.background_topMargin', placeholder: 'Place Top Margin' },
     {
         label: 'Background BottomMargin',
@@ -364,18 +364,18 @@ export const BackGroundArray = [
         name: 'background_config.background_bottomMargin',
         placeholder: 'Place bottom Margin',
     },
-    {
-        label: 'Desktop Position',
-        type: 'text',
-        name: 'background_config.desktop_position',
-        placeholder: 'Place Desktop Position',
-    },
-    {
-        label: 'Mobile Position',
-        type: 'text',
-        name: 'background_config.mobile_position',
-        placeholder: 'Place Mobile Position',
-    },
+    // {
+    //     label: 'Desktop Position',
+    //     type: 'text',
+    //     name: 'background_config.desktop_position',
+    //     placeholder: 'Place Desktop Position',
+    // },
+    // {
+    //     label: 'Mobile Position',
+    //     type: 'text',
+    //     name: 'background_config.mobile_position',
+    //     placeholder: 'Place Mobile Position',
+    // },
     {
         label: 'Mobile Width',
         type: 'number',
@@ -413,5 +413,23 @@ export const ALIGNVALUES = [
     {
         label: 'Left',
         value: 'left',
+    },
+]
+export const MobileAndDesktopPositions = [
+    {
+        label: 'Right',
+        value: 'right',
+    },
+    {
+        label: 'Center',
+        value: 'center',
+    },
+    {
+        label: 'Left',
+        value: 'left',
+    },
+    {
+        label: 'Bottom',
+        value: 'bottom',
     },
 ]

@@ -1,86 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react'
 import { Modal, notification } from 'antd'
-import { Field, Form, Formik } from 'formik'
-import Upload from '@/components/ui/Upload'
-import type { FieldProps } from 'formik'
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { Dropdown, Button, Spinner } from '@/components/ui'
-import Select from '@/components/ui/Select'
-import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
-import Checkbox from '@/components/ui/Checkbox'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
+import { Spinner } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
-import { MdCancel } from 'react-icons/md'
-import {
-    ALIGNVALUES,
-    BackGroundArray,
-    borrderStyleArray,
-    genericComponentArray,
-    NAMEPOSITION,
-    sectionBorrderStyleArray,
-    webBorrderStyleArray,
-    WebSectionBorrderStyleArray,
-} from './genericComp'
-import { width } from '@mui/system'
-import PageEditImage from './PageEditImage'
-import PageSettingsPostTable from './PageSettingsPostTable'
-import CommonSelect from './CommonSelect'
-import { beforeUpload } from '@/common/beforeUpload'
-import { FOOTERCONFIGARRAY, HEADERCONFIGARRAY, SUBHEADERCONFIGARRAY } from './configurationCommon'
-import TagsEdit from './TagsEdit'
-
-interface DataType {
-    type: string
-    filters: any[]
-    barcodes: string
-    posts: string
-    brands: string
-    handles: string
-}
-
-interface Config {
-    icon: string
-    text: string
-    image: string
-    style: string
-    position: string
-}
-
-type ProductTable = {
-    sku: string
-    barcode: string
-    product: string
-    image: string[]
-    brand: string
-}
-
-export type WebType = {
-    data_type: DataType
-    footer_config: Config
-    header_config: Config
-    component_type: string
-    section_heading: string
-    background_image: string
-    sub_header_config: Config
-    mobile_background_image: string
-    background_image_array: File[]
-    mobile_background_array: File[]
-    footer_config_icon_Array: File[] //.........
-    footer_config_image_Array: File[]
-    header_config_icon_Array: File[]
-    header_config_image_Array: File[]
-    sub_header_config_icon_Array: File[]
-    sub_header_config_image_Array: File[]
-    is_section_clickable: boolean
-    section_filters: string[]
-}
+import CommonMainPageSettings from './CommonMainPageSettings'
+import { ProductTable } from './pageSettings.types'
 
 type modalProps = {
     isModalOpen: boolean
@@ -97,15 +24,7 @@ const DROPDOWNARRAY = [
     { label: 'SKU', value: 'sku' },
 ]
 
-const PageModal: React.FC<modalProps> = ({
-    isModalOpen,
-    setIsModalOpen,
-    handleOk,
-    handleCancel,
-    formikRef,
-    particularRow,
-    setParticularRow,
-}) => {
+const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, formikRef, particularRow, setParticularRow }) => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
@@ -324,20 +243,6 @@ const PageModal: React.FC<modalProps> = ({
         }
     }
 
-    const getDataType = (data: DataType): { key: string; value: string } => {
-        if (data.barcodes) {
-            return { key: 'Barcode', value: data.barcodes }
-        } else if (data.posts) {
-            return { key: 'Posts', value: data.posts }
-        } else if (data.brands) {
-            return { key: 'Brands', value: data.brands }
-        } else if (data.handles) {
-            return { key: 'Handles', value: data.handles }
-        }
-        return { key: '', value: '' }
-    }
-
-    const [initialDataType, setInitialDataType] = useState(getDataType(particularRow.data_type).value)
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
     const [borderForm, setBorderForm] = useState(initialValue.border)
     const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue.web_border)
@@ -348,43 +253,6 @@ const PageModal: React.FC<modalProps> = ({
     const [sectionBorderShow, setSectioBorderShow] = useState(initialValue.section_border)
     const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue.web_section_border)
     const [showSpinner, setShowSpinner] = useState(false)
-
-    console.log('Checking for section border ', sectionBorderShow, 'and web section border', webSectionBorderShow)
-
-    const handleChangeDtata = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInitialDataType(e.target.value)
-    }
-
-    const borderStyleArray = [
-        { label: 'Dotted', value: 'dotted' },
-        { label: 'Solid', value: 'solid' },
-        { label: 'Dashed', value: 'dashed' },
-    ]
-
-    const SECTIONARRAY = [
-        { label: 'Flex Start', value: 'flex-start' },
-        { label: 'Flex End', value: 'flex-end' },
-        { label: 'Center', value: 'center' },
-        { label: 'Space Between', value: 'space-between' },
-        { label: 'Space Around', value: 'space-around' },
-        { label: 'Space Evenly', value: 'space-evenly' },
-    ]
-    const dataTypeArray = [
-        { label: 'banner', value: 'banner' },
-        { label: 'wishlist', value: 'wishlist' },
-        { label: 'purchases', value: 'purchases' },
-        { label: 'searches', value: 'searches' },
-        { label: 'spotlight', value: 'spotlight' },
-        { label: 'products', value: 'products' },
-        { label: 'brands', value: 'brands' },
-        { label: 'post', value: 'post' },
-        { label: 'creator', value: 'creator' },
-    ]
-
-    const SectionTypeArray = [
-        { label: 'Generic', value: 'generic' },
-        { label: 'Personalized', value: 'personalized' },
-    ]
 
     const handleRemoveSubImage = (e: any) => {
         e.preventDefault()
@@ -398,17 +266,6 @@ const PageModal: React.FC<modalProps> = ({
         }))
     }
 
-    const handleRemoveHeaderIconImage = (e: any) => {
-        e.preventDefault()
-
-        setInitalValue((prev: any) => ({
-            ...prev,
-            header_config: {
-                ...prev.header_config,
-                icon: null,
-            },
-        }))
-    }
     const handleRemoveHeaderImage = (e: any) => {
         e.preventDefault()
 
@@ -422,13 +279,13 @@ const PageModal: React.FC<modalProps> = ({
     }
 
     const handleActionClick = (value: any) => {
-        setProductData((prev) => (prev ? [...prev, value] : [value]))
+        setProductData((prev: any) => (prev ? [...prev, value] : [value]))
         setShowTable(false)
         setSearchInput('')
     }
 
     // POSTS...............
-    const handlePOSTSearch = (e) => {
+    const handlePOSTSearch = (e: any) => {
         setPOstInput(e.target.value)
         setShowPostTable(true)
     }
@@ -438,13 +295,6 @@ const PageModal: React.FC<modalProps> = ({
         setShowPostTable(false)
         setPOstInput('')
     }
-
-    const FontSizeArray = [
-        { label: 'Bold', value: 'bold' },
-        { label: 'Regular', value: 'regular' },
-        { label: 'Underline', value: 'underline' },
-        { label: 'Italic', value: 'italic' },
-    ]
 
     if (showSpinner) {
         return (
@@ -457,690 +307,50 @@ const PageModal: React.FC<modalProps> = ({
     return (
         <>
             <Modal title="EDIT SECTION" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={1500} okText="Edit">
-                <Formik
-                    enableReinitialize
-                    initialValues={initialValue}
-                    innerRef={formikRef}
-                    // validationSchema={validationSchema}
-
-                    onSubmit={handleSubmit}
-                >
-                    {({ values, touched, errors, resetForm, setFieldValue }) => (
-                        <Form className="w-full">
-                            <FormContainer className="grid grid-cols-2 gap-3 ">
-                                <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="section_heading" placeholder="Place your Section heading" component={Input} />
-                                </FormItem>
-                                <FormItem asterisk label="Component Types" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field name="component_type">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            const componentOptions = COMPONENT_CATEGORY_TYPES
-
-                                            return (
-                                                <Select
-                                                    field={field}
-                                                    form={form}
-                                                    options={componentOptions}
-                                                    value={componentOptions.find((option) => option.value === field.value)}
-                                                    onChange={(option) => {
-                                                        const value = option ? option.value : ''
-                                                        form.setFieldValue(field.name, value)
-                                                        setComponentOptions(value)
-                                                    }}
-                                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                                {/* 
-                                {componentOption === 'Generic' && ( */}
-
-                                <FormContainer className="grid grid-cols-2">
-                                    <div className="font-bold mt-1">Mobile Configurations :</div>
-                                    {genericComponentArray.slice(0, 19).map((item, key) => (
-                                        <FormItem key={key} label={item.label} className="w-1/2">
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                        </FormItem>
-                                    ))}
-                                    <CommonSelect
-                                        name="component_config.font_style"
-                                        label="Font Style"
-                                        options={FontSizeArray}
-                                        needClassName
-                                        className="col-span-1 w-1/2"
-                                    />
-                                    <CommonSelect
-                                        name="component_config.footer_font_style"
-                                        label="Footer Font Style"
-                                        options={FontSizeArray}
-                                        needClassName
-                                        className="col-span-1 w-1/2"
-                                    />
-                                    <CommonSelect
-                                        name="component_config.section_alignment"
-                                        label="Section Alignment"
-                                        options={SECTIONARRAY}
-                                    />
-                                    <CommonSelect
-                                        name="component_config.content_alignment"
-                                        label="Content Alignment"
-                                        options={SECTIONARRAY}
-                                    />
-                                </FormContainer>
-
-                                <FormContainer className="grid grid-cols-2">
-                                    <div className="font-bold mt-1">Web Configurations :</div>
-                                    {genericComponentArray.slice(19).map((item, key) => (
-                                        <FormItem key={key} label={item.label} className="w-1/2">
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                        </FormItem>
-                                    ))}
-                                    <CommonSelect
-                                        name="component_config.web_font_style"
-                                        label="Font Style"
-                                        options={FontSizeArray}
-                                        needClassName
-                                        className="col-span-1 w-1/2"
-                                    />
-                                    <CommonSelect
-                                        name="component_config.web_footer_font_style"
-                                        label="Footer Font Style"
-                                        options={FontSizeArray}
-                                        needClassName
-                                        className="col-span-1 w-1/2"
-                                    />
-                                    <CommonSelect
-                                        name="component_config.web_section_alignment"
-                                        label="Web Section Alignment"
-                                        options={SECTIONARRAY}
-                                    />
-                                    <CommonSelect
-                                        name="component_config.web_content_alignment"
-                                        label="Web Content Alignment"
-                                        options={SECTIONARRAY}
-                                    />
-                                </FormContainer>
-
-                                <div className="flex gap-14 ">
-                                    <FormItem label="Border" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="border"
-                                            placeholder="Enter border"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('border', isChecked)
-                                                setBorderForm(isChecked) // Set borderForm to 'yes' or 'no'
-                                            }}
-                                        />{' '}
-                                        <br />
-                                        <br />
-                                        {borderForm === true && (
-                                            <FormContainer>
-                                                <FormItem label="Border Style" className="col-span-1 w-2/3">
-                                                    <Field name="border_style">
-                                                        {({ field, form }: FieldProps<any>) => {
-                                                            return (
-                                                                <Select
-                                                                    field={field}
-                                                                    form={form}
-                                                                    options={borderStyleArray}
-                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
-                                                                    onChange={(option) => {
-                                                                        const value = option?.value || '' // Safely handle null/undefined option
-                                                                        form.setFieldValue(field.name, value) // Update the form field value
-                                                                    }}
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </FormItem>
-                                                {borrderStyleArray.map((item, key) => (
-                                                    <FormItem key={key} label={item.label} className="w-1/2">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item.name}
-                                                            placeholder={item.placeholder}
-                                                            component={Input}
-                                                        />
-                                                    </FormItem>
-                                                ))}
-                                            </FormContainer>
-                                        )}
-                                    </FormItem>
-                                    <FormItem label="Section Border" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="section_border"
-                                            placeholder="Enter section border"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('section_border', isChecked)
-                                                setSectioBorderShow(isChecked ? true : false)
-                                            }}
-                                        />
-                                        {sectionBorderShow === true && (
-                                            <FormContainer>
-                                                <CommonSelect
-                                                    name="component_config.section_border_style"
-                                                    label="Section Border Style"
-                                                    options={borderStyleArray}
-                                                />
-                                                {sectionBorrderStyleArray.map((item, key) => (
-                                                    <FormItem key={key} label={item.label} className="w-full">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item.name}
-                                                            placeholder={item.placeholder}
-                                                            component={Input}
-                                                        />
-                                                    </FormItem>
-                                                ))}
-                                            </FormContainer>
-                                        )}
-                                    </FormItem>
-
-                                    <FormItem label="Web Border" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="web_border"
-                                            placeholder="Enter border"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('web_border', isChecked)
-                                                setWebBorderForm(isChecked)
-                                            }}
-                                        />{' '}
-                                        <br />
-                                        <br />
-                                        {webBorderForm === true && (
-                                            <FormContainer>
-                                                <FormItem label="Web Border Style" className="col-span-1 w-2/3">
-                                                    <Field name="web_border_style">
-                                                        {({ field, form }: FieldProps<any>) => {
-                                                            return (
-                                                                <Select
-                                                                    field={field}
-                                                                    form={form}
-                                                                    options={borderStyleArray}
-                                                                    value={borderStyleArray.find((option) => option.value === field.value)}
-                                                                    onChange={(option) => {
-                                                                        const value = option?.value || ''
-                                                                        form.setFieldValue(field.name, value)
-                                                                    }}
-                                                                />
-                                                            )
-                                                        }}
-                                                    </Field>
-                                                </FormItem>
-                                                {webBorrderStyleArray.map((item, key) => (
-                                                    <FormItem key={key} label={item.label} className="w-1/2">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item.name}
-                                                            placeholder={item.placeholder}
-                                                            component={Input}
-                                                        />
-                                                    </FormItem>
-                                                ))}
-                                            </FormContainer>
-                                        )}
-                                    </FormItem>
-
-                                    <FormItem label="Web Section Border" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="web_section_border"
-                                            placeholder="Enter web section border"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('web_section_border', isChecked)
-                                                setWebSectioBorderShow(isChecked ? true : false)
-                                            }}
-                                        />
-                                        {webSectionBorderShow === true && (
-                                            <FormContainer>
-                                                <CommonSelect
-                                                    name="component_config.web_section_border_style"
-                                                    label="Web Section Border Style"
-                                                    options={borderStyleArray}
-                                                />
-                                                {WebSectionBorrderStyleArray.map((item, key) => (
-                                                    <FormItem key={key} label={item.label} className="w-full">
-                                                        <Field
-                                                            type={item.type}
-                                                            name={item.name}
-                                                            placeholder={item.placeholder}
-                                                            component={Input}
-                                                        />
-                                                    </FormItem>
-                                                ))}
-                                            </FormContainer>
-                                        )}
-                                    </FormItem>
-                                </div>
-
-                                <div className="flex gap-14 ">
-                                    <FormItem label="Name" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="name"
-                                            placeholder="Enter name"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('name', isChecked)
-                                                setNameForm(isChecked) // Set borderForm to 'yes' or 'no'
-                                            }}
-                                        />{' '}
-                                        <br />
-                                        <br />
-                                        {nameForm && (
-                                            <>
-                                                <CommonSelect
-                                                    label="Position"
-                                                    name="component_config.name_position"
-                                                    options={NAMEPOSITION}
-                                                />
-                                                <CommonSelect label="Align" name="component_config.name_align" options={ALIGNVALUES} />
-                                            </>
-                                        )}
-                                        <FormItem label="Footer" className="w-1/2">
-                                            <Field
-                                                type="checkbox"
-                                                name="name_footer"
-                                                component={Input}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    const isChecked = e.target.checked
-                                                    setFieldValue('name_footer', isChecked)
-                                                    setFooterAlignForm(isChecked)
-                                                }}
-                                            />
-
-                                            {footerAlignForm && (
-                                                <>
-                                                    <CommonSelect
-                                                        label="Align Footer"
-                                                        name="component_config.name_footer_align"
-                                                        options={ALIGNVALUES}
-                                                    />
-                                                </>
-                                            )}
-                                        </FormItem>
-                                    </FormItem>
-
-                                    <FormItem label="Web Name" className="col-span-1 w-1/4">
-                                        <Field
-                                            type="checkbox"
-                                            name="web_name"
-                                            component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const isChecked = e.target.checked
-                                                setFieldValue('web_name', isChecked)
-                                                setWebNameForm(isChecked)
-                                            }}
-                                        />{' '}
-                                        <br />
-                                        <br />
-                                        {webNameForm === true && (
-                                            <>
-                                                <CommonSelect
-                                                    label="Web position"
-                                                    name="component_config.web_name_position"
-                                                    options={NAMEPOSITION}
-                                                />
-                                                <CommonSelect
-                                                    label="Web Align"
-                                                    name="component_config.web_name_align"
-                                                    options={ALIGNVALUES}
-                                                />
-                                            </>
-                                        )}
-                                        <FormItem label="Web Footer" className="w-1/2">
-                                            <Field
-                                                type="checkbox"
-                                                name="web_name_footer"
-                                                component={Input}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    const isChecked = e.target.checked
-                                                    setFieldValue('web_name_footer', isChecked)
-                                                    setWebFooterAlignForm(isChecked)
-                                                }}
-                                            />
-
-                                            {webFooterAlignForm && (
-                                                <>
-                                                    <CommonSelect
-                                                        label="Web Align Footer"
-                                                        name="component_config.web_name_footer_align"
-                                                        options={ALIGNVALUES}
-                                                    />
-                                                </>
-                                            )}
-                                        </FormItem>
-                                    </FormItem>
-                                    <CommonSelect
-                                        name="section_type"
-                                        label="Section Type"
-                                        options={SectionTypeArray}
-                                        needClassName
-                                        className=" col-span-1 w-full"
-                                    />
-                                </div>
-
-                                {/* )} */}
-
-                                {/* image */}
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    {initialValue.background_image ? (
-                                        <div className="flex flex-col items-center justify-center w-[150px]">
-                                            <img
-                                                src={initialValue.background_image}
-                                                alt={`Image `}
-                                                className="w-[150px] h-[40px] flex object-contain "
-                                            />
-                                            <button className="text-red-500 text-md " onClick={() => handleRemoveImage('background_image')}>
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        'No Image'
-                                    )}
-                                    <FormContainer className=" ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="background_image_array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <div className="font-semibold flex justify-center">Background Image</div>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.background_image_array} // uploadedd the file
-                                                            onChange={(files) => form.setFieldValue('background_image_array', files)}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('background_image_array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    {initialValue.mobile_background_image ? (
-                                        <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                            <img
-                                                src={initialValue.mobile_background_image}
-                                                alt={`Image `}
-                                                className="w-[100px] h-[40px] flex object-contain "
-                                            />
-                                            <button
-                                                className="text-red-500 text-md "
-                                                onClick={() => handleRemoveImage('mobile_background_image')}
-                                            >
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        'No Image'
-                                    )}
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="mobile_background_array">
-                                                {({ field, form }: FieldProps<WebType>) => (
-                                                    <>
-                                                        <div className="font-semibold flex justify-center">Mobile Background Image</div>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.mobile_background_array} // uploadedd the file
-                                                            onChange={(files) => form.setFieldValue('mobile_background_array', files)}
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('mobile_background_array', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
-                                {BackGroundArray.map((item, key) => (
-                                    <FormItem asterisk label={item.label} className="w-1/2" key={key}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-
-                                {/* ............Header Config................................................. */}
-                                <CommonSelect
-                                    name="header_config.style"
-                                    label="Header config Style"
-                                    options={FontSizeArray}
-                                    needClassName
-                                    className="col-span-1 w-1/2"
-                                />
-                                {HEADERCONFIGARRAY.map((item, key) => (
-                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
-                                    </FormItem>
-                                ))}
-                                <PageEditImage
-                                    label="Header Icon Image"
-                                    rowName={particularRow.header_config.icon}
-                                    removeName="header_icon_image"
-                                    handleRemoveImage={handleRemoveHeaderIconImage}
-                                    name="header_config_icon_Array"
-                                    beforeUpload={beforeUpload}
-                                    fileList={values.header_config_icon_Array}
-                                    fieldName="header_config_icon_Array"
-                                />
-
-                                {/* .................................................................... */}
-                                <PageEditImage
-                                    label="Header Image"
-                                    rowName={particularRow.header_config.image}
-                                    removeName="header_image_image"
-                                    handleRemoveImage={handleRemoveHeaderImage}
-                                    name="header_config_image_Array"
-                                    beforeUpload={beforeUpload}
-                                    fileList={values.header_config_image_Array}
-                                    fieldName="header_config_image_Array"
-                                />
-
-                                {/* .......sub_header....................... */}
-                                <CommonSelect
-                                    name="sub_header_config.style"
-                                    label="Sub-Header config Style"
-                                    options={FontSizeArray}
-                                    needClassName
-                                    className="col-span-1 w-1/2"
-                                />
-                                {SUBHEADERCONFIGARRAY.map((item, key) => (
-                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
-                                    </FormItem>
-                                ))}
-                                <PageEditImage
-                                    label="Sub_Header Image"
-                                    rowName={particularRow.sub_header_config.image}
-                                    removeName="sub_header_image"
-                                    handleRemoveImage={handleRemoveSubImage}
-                                    name="sub_header_config_image_Array"
-                                    beforeUpload={beforeUpload}
-                                    fileList={values.sub_header_config_image_Array}
-                                    fieldName="sub_header_config_image_Array"
-                                />
-
-                                {/* ............Footer COnfig>>>>>>>>>>>>>>>>>>>>>> */}
-                                <CommonSelect
-                                    name="footer_config.style"
-                                    label="Footer config Style"
-                                    options={FontSizeArray}
-                                    needClassName
-                                    className="col-span-1 w-1/2"
-                                />
-                                {FOOTERCONFIGARRAY.map((item, key) => (
-                                    <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                                        <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
-                                    </FormItem>
-                                ))}
-                                <PageEditImage
-                                    label="Footer Image"
-                                    rowName={particularRow.footer_config.image}
-                                    removeName="footer_image"
-                                    handleRemoveImage={handleRemoveImage}
-                                    name="footer_config_image_Array"
-                                    beforeUpload={beforeUpload}
-                                    fileList={values.footer_config_image_Array}
-                                    fieldName="footer_config_image_Array"
-                                />
-
-                                {/* Data Types.......................................... */}
-
-                                <FormItem asterisk label="Data Type" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field name="data_type.type">
-                                        {({ field, form }: FieldProps<any>) => {
-                                            return (
-                                                <Select
-                                                    field={field}
-                                                    form={form}
-                                                    options={dataTypeArray}
-                                                    value={dataTypeArray.find((option) => option.value === field.value)}
-                                                    onChange={(option) => {
-                                                        const value = option?.value || ''
-                                                        form.setFieldValue(field.name, value)
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-                                <FormItem asterisk label="Filters" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} />
-                                </FormItem>
-                                <FormContainer className="flex flex-col gap-4 ">
-                                    <div className="text-xl">Barcode</div>
-                                    <div className="flex gap-10">
-                                        <div className="flex justify-start ">
-                                            <input
-                                                type="search"
-                                                name="search"
-                                                id=""
-                                                placeholder="search SKU for product"
-                                                value={searchInput}
-                                                className=" w-[250px] rounded-[10px]"
-                                                onChange={handleSearch}
-                                            />
-                                        </div>
-                                        <div className="bg-gray-200 rounded-[10px] font-bold text-lg ">
-                                            <Dropdown
-                                                className=" text-xl text-black bg-gray-200 font-bold "
-                                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                                onSelect={handleSelect}
-                                            >
-                                                {DROPDOWNARRAY?.map((item, key) => {
-                                                    return (
-                                                        <DropdownItem key={key} eventKey={item.value}>
-                                                            <span>{item.label}</span>
-                                                        </DropdownItem>
-                                                    )
-                                                })}
-                                            </Dropdown>
-                                        </div>
-                                    </div>
-
-                                    {showTable && searchInput && <CreatePostTable data={tableData} handleActionClick={handleActionClick} />}
-
-                                    <FormItem label="Barcodes" className="w-full flex gap-7">
-                                        <Field
-                                            type="text"
-                                            name="data_type.barcodes"
-                                            value={productData}
-                                            onChange={(e: any) => {
-                                                setProductData(e.target.value)
-                                                setFieldValue('data_type.barcodes', e.target.value)
-                                            }}
-                                            placeholder="Enter product barcode"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setProductData([])
-                                                setFieldValue('products', '')
-                                            }}
-                                        >
-                                            <MdCancel className="text-red-500 text-xl" />
-                                        </button>
-                                    </FormItem>
-                                </FormContainer>
-                                {/* POSTS */}
-
-                                <FormContainer className="flex flex-col gap-4 ">
-                                    <div className="text-xl">Posts</div>
-                                    <div className="flex gap-10">
-                                        <div className="flex justify-start ">
-                                            <input
-                                                type="search"
-                                                name="search"
-                                                id=""
-                                                placeholder="search SKU for product"
-                                                value={postInput}
-                                                className=" w-[250px] rounded-[10px]"
-                                                onChange={handlePOSTSearch}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {showPostTable && postInput && (
-                                        <PageSettingsPostTable data={postTableData} handleActionClick={handlePostClick} />
-                                    )}
-
-                                    <FormItem label="Posts" className="w-full flex gap-7">
-                                        <input
-                                            type="text"
-                                            name="data_type.posts"
-                                            value={postData}
-                                            onChange={(e: any) => {
-                                                setPostData(e.target.value)
-                                                setFieldValue('data_type.posts', e.target.value)
-                                            }}
-                                            placeholder="Enter product barcode"
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setPostData([])
-                                                setFieldValue('products', '')
-                                            }}
-                                        >
-                                            <MdCancel className="text-red-500 text-xl" />
-                                        </button>
-                                    </FormItem>
-                                </FormContainer>
-
-                                <FormItem label="Data Type Posts" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.posts" placeholder="Place your dataType" component={Input} />
-                                </FormItem>
-                                <FormItem label="Data Type Brands" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.brands" placeholder="Place your dataType" component={Input} />
-                                </FormItem>
-                                <FormItem label="Data Type Handles" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field type="text" name="data_type.handles" placeholder="Place your dataType" component={Input} />
-                                </FormItem>
-                                <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
-                                    <Field name="is_section_clickable" component={Checkbox} />
-                                </FormItem>
-                                <TagsEdit filterOptions={filters.filters} isValue />
-
-                                {/* ..................................................... */}
-                            </FormContainer>
-                        </Form>
-                    )}
-                </Formik>
+                <CommonMainPageSettings
+                    setComponentOptions={setComponentOptions}
+                    initialValue={initialValue}
+                    formikRef={formikRef}
+                    handleSubmit={handleSubmit}
+                    setBorderForm={setBorderForm}
+                    borderForm={borderForm}
+                    setSectioBorderShow={setSectioBorderShow}
+                    sectionBorderShow={sectionBorderShow}
+                    setWebBorderForm={setWebBorderForm}
+                    webBorderForm={webBorderForm}
+                    setWebSectioBorderShow={setWebSectioBorderShow}
+                    webSectionBorderShow={webSectionBorderShow}
+                    setNameForm={setNameForm}
+                    nameForm={nameForm}
+                    setFooterAlignForm={setFooterAlignForm}
+                    footerAlignForm={footerAlignForm}
+                    setWebNameForm={setWebNameForm}
+                    webNameForm={webNameForm}
+                    setWebFooterAlignForm={setWebFooterAlignForm}
+                    webFooterAlignForm={webFooterAlignForm}
+                    searchInput={searchInput}
+                    handleSearch={handleSearch}
+                    currentSelectedPage={currentSelectedPage}
+                    handleSelect={handleSelect}
+                    showTable={showTable}
+                    handleActionClick={handleActionClick}
+                    productData={productData}
+                    setProductData={setProductData}
+                    postInput={postInput}
+                    handlePOSTSearch={handlePOSTSearch}
+                    showPostTable={showPostTable}
+                    postTableData={postTableData}
+                    handlePostClick={handlePostClick}
+                    postData={postData}
+                    setPostData={setPostData}
+                    filters={filters}
+                    tableData={tableData}
+                    editMode
+                    handleRemoveImage={handleRemoveImage}
+                    particularRow={particularRow}
+                    handleRemoveHeaderImage={handleRemoveHeaderImage}
+                    handleRemoveSubImage={handleRemoveSubImage}
+                />
             </Modal>
         </>
     )
