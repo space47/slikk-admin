@@ -23,9 +23,10 @@ const onResponse = (response: AxiosResponse): AxiosResponse => {
 const onResponseError = (error: AxiosError): Promise<AxiosError> => {
     if (error.response?.status === 403) {
         window.location.href = '/access-denied'
-    } else if (error.response?.status === 500) {
-        window.location.href = '/internal-error'
     }
+    // else if (error.response?.status === 500) {
+    //     window.location.href = '/internal-error'
+    // }
     return Promise.reject(error)
 }
 
