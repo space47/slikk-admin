@@ -22,7 +22,7 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
     const initialValues = {}
 
     return (
-        <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mb-6 w-[80%] h-1/2">
+        <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mb-6 xl:w-[80%] w-full xl:h-1/2 h-full">
             <h2 className="text-2xl font-bold mb-6">Schedular Configuration</h2>
             <Formik
                 initialValues={initialValues}

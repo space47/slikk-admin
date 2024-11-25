@@ -42,7 +42,7 @@ const SecondStepNotification = ({
     return (
         <div className="space-y-6 shadow-lg rounded-lg px-14 py-9 mt-10">
             <div className="text-xl font-bold">Select Filters</div>
-            <div className="grid grid-cols-2 gap-10">
+            <div className="grid xl:grid-cols-2 grid-cols-1  gap-10">
                 <FormItem label="Group Name" className="w-full xl:w-2/3 items-center">
                     <input
                         type="text"
@@ -136,7 +136,7 @@ const SecondStepNotification = ({
                 ))}
             </FormContainer>
 
-            <div className="grid grid-cols-2 gap-10 ">
+            <div className="grid xl:grid-cols-2 grid-cols-1 gap-10 ">
                 <div className="flex flex-col">
                     <div className="font-bold mb-2">Sort By</div>
                     <Field name="discountTags">
