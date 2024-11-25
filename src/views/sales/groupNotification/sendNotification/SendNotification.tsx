@@ -30,6 +30,7 @@ import Steps from '@/components/ui/Steps'
 import FourthStep from './stepsOfNotifications/FourthStep'
 import MobilePreview from './mobilePreview/MobilePreview'
 import { useNavigate } from 'react-router-dom'
+import MobileDrawer from './MobileDrawer'
 
 const SendNotification = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -48,6 +49,7 @@ const SendNotification = () => {
     const [messagePreview, setMessagePreview] = useState('')
     const [imagePreview, setImagePreview] = useState('')
     const [titleView, setTitleView] = useState('')
+    const [showMobileView, setShowMobileView] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -292,7 +294,7 @@ const SendNotification = () => {
     return (
         <div>
             <div className="mb-10">
-                <Steps current={currentStep}>
+                <Steps current={currentStep} className="flex flex-col items-start xl:flex-row">
                     {['Basic', 'Assign Filters', 'UTM', 'Scheduler & User'].map((stepTitle, index) => (
                         <Steps.Item
                             key={index}
@@ -312,7 +314,21 @@ const SendNotification = () => {
                 </Steps>
             </div>
 
-            <div className={currentStep === 3 ? (showScheduleModal ? 'grid grid-cols-3 ' : 'flex gap-4 ') : 'flex gap-10'}>
+            <div className="flex justify-center items-center xl:hidden">
+                <Button variant="new" className=" xl:hidden" onClick={() => setShowMobileView(true)}>
+                    Mobile View
+                </Button>
+            </div>
+
+            <div
+                className={
+                    currentStep === 3
+                        ? showScheduleModal
+                            ? 'grid xl:grid-cols-3 grid-cols-1 gap-7 xl:gap-0 '
+                            : 'flex gap-4 '
+                        : 'flex gap-10'
+                }
+            >
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                     {({ values, resetForm }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
@@ -404,13 +420,24 @@ const SendNotification = () => {
                     </>
                 )}
 
-                <div className="w-[450px] bg-contain h-[780px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative">
+                <div className="w-[450px] bg-contain h-[780px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative hidden xl:inline">
                     <img src="/img/logo/mobilePreview.jpeg" alt="" className="w-full h-full object-cover" />
                     <div className="absolute top-20 left-1 right-1">
                         <MobilePreview message={messagePreview} image={imagePreview} title={titleView} />
                     </div>
                 </div>
             </div>
+            {showMobileView && (
+                <>
+                    <MobileDrawer
+                        dialogIsOpen={showMobileView}
+                        setIsOpen={setShowMobileView}
+                        messagePreview={messagePreview}
+                        image={imagePreview}
+                        title={titleView}
+                    />
+                </>
+            )}
         </div>
     )
 }
