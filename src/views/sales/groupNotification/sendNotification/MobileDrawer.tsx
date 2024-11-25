@@ -21,9 +21,9 @@ const MobileDrawer = ({ messagePreview, image, title, dialogIsOpen, setIsOpen }:
     return (
         <div className="h-[500px]">
             <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose} className="h-screen">
-                <div className="w-[350px] bg-contain h-[680px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative sm:inline xl:inline">
+                <div className="w-[300px] bg-contain h-[530px] rounded-[24px] shadow-2xl overflow-hidden bg-gray-100 relative sm:inline xl:inline flex justify-center">
                     <img src="/img/logo/mobilePreview.jpeg" alt="" className="w-full h-full object-cover" />
-                    <div className="absolute top-20 left-1 right-1">
+                    <div className="absolute top-10 left-1 right-1">
                         <MobilePreview message={messagePreview} image={image} title={title} />
                     </div>
                 </div>

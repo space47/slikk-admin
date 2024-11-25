@@ -52,7 +52,7 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
             >
                 {({ errors, touched }) => (
                     <Form>
-                        <FormContainer className="grid grid-cols-2 gap-10 items-center">
+                        <FormContainer className="xl:grid xl:grid-cols-2 xl:gap-10  flex flex-col   items-center">
                             <div>
                                 <FormContainer>
                                     <FormItem label="Start Date" className="mt-4">
@@ -65,7 +65,7 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
                                                     onChange={(value) => {
                                                         form.setFieldValue('get_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                                     }}
-                                                    className="xl:w-full"
+                                                    className=" md:w-2/3 lg:w-1/2 xl:w-full"
                                                 />
                                             )}
                                         </Field>
@@ -81,7 +81,7 @@ const SchedularPage = ({ handleOk, scheduleValues }: SchedularPageProps) => {
                                             onChange={(value) => {
                                                 form.setFieldValue('expiry_date', value ? value.format('YYYY-MM-DD') : '')
                                             }}
-                                            className="xl:w-full"
+                                            className="xl:w-full w-full"
                                         />
                                     )}
                                 </Field>
