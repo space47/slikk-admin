@@ -17,12 +17,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/pages/AccessDenied/AccessDenied')),
         authority: [ADMIN, USER],
     },
-    {
-        key: '',
-        path: `/internal-error`,
-        component: lazy(() => import('@/views/pages/InternalServerError/InternalError')),
-        authority: [ADMIN, USER],
-    },
+    // {
+    //     key: '',
+    //     path: `/internal-error`,
+    //     component: lazy(() => import('@/views/pages/InternalServerError/InternalError')),
+    //     authority: [ADMIN, USER],
+    // },
     {
         key: 'apps.homePage',
         path: `${APP_PREFIX_PATH}/homePage/fullMap`,
