@@ -198,7 +198,7 @@ const CommonMainPageSettings = ({
                             <div className="font-bold mt-1">Mobile Configurations :</div>
                             {genericComponentArray.slice(0, 19).map((item, key) => (
                                 <FormItem key={key} label={item.label} className="w-2/3">
-                                    <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                    <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
                                 </FormItem>
                             ))}
                             <CommonSelect
@@ -235,7 +235,7 @@ const CommonMainPageSettings = ({
                             <div className="font-bold mt-1">Web Configurations :</div>
                             {genericComponentArray.slice(19).map((item, key) => (
                                 <FormItem key={key} label={item.label} className="w-2/3">
-                                    <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                    <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
                                 </FormItem>
                             ))}
                             <CommonSelect
@@ -285,7 +285,13 @@ const CommonMainPageSettings = ({
                                     <CommonSelect name="component_config.border_style" label="Border Style" options={borderStyleArray} />
                                     {borrderStyleArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                placeholder={item.placeholder}
+                                                component={Input}
+                                                min="0"
+                                            />
                                         </FormItem>
                                     ))}
                                 </FormContainer>
@@ -313,7 +319,13 @@ const CommonMainPageSettings = ({
                                     />
                                     {sectionBorrderStyleArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                placeholder={item.placeholder}
+                                                component={Input}
+                                                min="0"
+                                            />
                                         </FormItem>
                                     ))}
                                 </FormContainer>
@@ -349,7 +361,13 @@ const CommonMainPageSettings = ({
                                     />
                                     {webBorrderStyleArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                placeholder={item.placeholder}
+                                                component={Input}
+                                                min="0"
+                                            />
                                         </FormItem>
                                     ))}
                                 </FormContainer>
@@ -377,7 +395,13 @@ const CommonMainPageSettings = ({
                                     />
                                     {webBorrderStyleArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                placeholder={item.placeholder}
+                                                component={Input}
+                                                min="0"
+                                            />
                                         </FormItem>
                                     ))}
                                 </FormContainer>
@@ -602,7 +626,7 @@ const CommonMainPageSettings = ({
 
                         {BackGroundArray.map((item, key) => (
                             <FormItem asterisk label={item.label} className="w-1/2" key={key}>
-                                <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
                             </FormItem>
                         ))}
                         <CommonSelect
@@ -631,7 +655,7 @@ const CommonMainPageSettings = ({
                         />
                         {HEADERCONFIGARRAY.map((item, key) => (
                             <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                                <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
+                                <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
                             </FormItem>
                         ))}
 
@@ -679,7 +703,7 @@ const CommonMainPageSettings = ({
                         />
                         {SUBHEADERCONFIGARRAY.map((item, key) => (
                             <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                                <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
+                                <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
                             </FormItem>
                         ))}
                         <CommonSelect
@@ -725,7 +749,7 @@ const CommonMainPageSettings = ({
                         />
                         {FOOTERCONFIGARRAY.map((item, key) => (
                             <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                                <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} />
+                                <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
                             </FormItem>
                         ))}
 
@@ -782,7 +806,7 @@ const CommonMainPageSettings = ({
                         </FormItem>
 
                         <FormItem asterisk label="Filters" className="col-span-1 w-[60%] h-[80%]">
-                            <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} />
+                            <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} min="0" />
                         </FormItem>
 
                         <FormContainer className="flex flex-col gap-4 ">
