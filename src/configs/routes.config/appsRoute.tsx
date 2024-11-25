@@ -11,12 +11,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
 
-    {
-        key: '',
-        path: `/access-denied`,
-        component: lazy(() => import('@/views/pages/AccessDenied/AccessDenied')),
-        authority: [ADMIN, USER],
-    },
+    // {
+    //     key: '',
+    //     path: `/access-denied`,
+    //     component: lazy(() => import('@/views/pages/AccessDenied/AccessDenied')),
+    //     authority: [ADMIN, USER],
+    // },
     // {
     //     key: '',
     //     path: `/internal-error`,

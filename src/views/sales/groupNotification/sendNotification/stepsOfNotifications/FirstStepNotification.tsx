@@ -15,10 +15,10 @@ interface FirstStepProps {
 
 const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePreview, setImagePreview, setTitleView }: FirstStepProps) => {
     return (
-        <div className="space-y-6 shadow-lg rounded-lg px-14 py-9">
-            <div className="text-xl font-bold">Basic Information for Sending Notifications</div>
-            <div className="grid grid-cols-2 gap-6">
-                <FormItem label="title" className={`w-full rounded-[10px] `}>
+        <div className="space-y-6 shadow-lg rounded-lg px-6 py-4 xl:px-14 xl:py-9">
+            <div className="text-lg font-bold xl:text-xl">Basic Information for Sending Notifications</div>
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
+                <FormItem label="Title" className="w-full rounded-[10px]">
                     <Field
                         type="text"
                         name="Title"
@@ -32,19 +32,17 @@ const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePrevie
                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                     </FormItem>
                 ))}
-                <FormItem label="Notification Type" className="col-span-1 w-full xl:w-1/2">
+                <FormItem label="Notification Type" className="col-span-1 w-full xl:col-span-2 xl:w-1/2">
                     <Field name="notification_type">
-                        {({ field, form }: FieldProps<any>) => {
-                            return (
-                                <Select
-                                    field={field}
-                                    form={form}
-                                    options={notificationTypeArray}
-                                    value={notificationTypeArray.find((option) => option.value === field.value)}
-                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                />
-                            )
-                        }}
+                        {({ field, form }: FieldProps<any>) => (
+                            <Select
+                                field={field}
+                                form={form}
+                                options={notificationTypeArray}
+                                value={notificationTypeArray.find((option) => option.value === field.value)}
+                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                            />
+                        )}
                     </Field>
                 </FormItem>
             </div>
@@ -63,8 +61,8 @@ const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePrevie
                 </Field>
             </FormItem>
 
-            <FormContainer className="bg-gray-100 p-6 rounded-xl shadow-md space-y-4">
-                <h3 className="text-lg font-medium text-center mb-4">Image Upload</h3>
+            <FormContainer className="bg-gray-100 p-4 rounded-xl shadow-md space-y-4 xl:p-6">
+                <h3 className="text-md font-medium text-center mb-2 xl:text-lg xl:mb-4">Image Upload</h3>
                 <FormItem className="w-full">
                     <Field name="image">
                         {({ form }: FieldProps) => (
