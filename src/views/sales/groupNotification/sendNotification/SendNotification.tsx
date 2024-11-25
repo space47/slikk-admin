@@ -208,10 +208,6 @@ const SendNotification = () => {
         setScheduleModal((prev) => !prev)
     }
 
-    const handleClose = () => {
-        setScheduleModal(false)
-    }
-
     const handleOk = async (val: any) => {
         console.log('clicked', val)
         const {
