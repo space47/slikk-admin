@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
-import { Dropdown, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import { Button, Dropdown, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
 import { Field, FieldProps, Form, Formik } from 'formik'
-import React from 'react'
+import React, { useState } from 'react'
 import {
     ALIGNVALUES,
     BackGroundArray,
@@ -144,6 +144,8 @@ const CommonMainPageSettings = ({
     handleRemoveHeaderImage,
     handleRemoveSubImage,
 }: CommonProps) => {
+    const [configFields, setConfigFields] = useState(false)
+
     return (
         <Formik
             enableReinitialize
@@ -186,27 +188,35 @@ const CommonMainPageSettings = ({
                         </FormContainer>
                         {/* Generic Fields........................................................ */}
 
-                        <PageComponentConfig
-                            FontSizeArray={FontSizeArray}
-                            SECTIONARRAY={SECTIONARRAY}
-                            borderForm={borderForm}
-                            setBorderForm={setBorderForm}
-                            setFieldValue={setFieldValue}
-                            setSectioBorderShow={setSectioBorderShow}
-                            sectionBorderShow={sectionBorderShow}
-                            setWebBorderForm={setWebBorderForm}
-                            webBorderForm={webBorderForm}
-                            setWebSectioBorderShow={setWebSectioBorderShow}
-                            webSectionBorderShow={webSectionBorderShow}
-                            setNameForm={setNameForm}
-                            nameForm={nameForm}
-                            setFooterAlignForm={setFooterAlignForm}
-                            footerAlignForm={footerAlignForm}
-                            setWebNameForm={setWebNameForm}
-                            webNameForm={webNameForm}
-                            setWebFooterAlignForm={setWebFooterAlignForm}
-                            webFooterAlignForm={webFooterAlignForm}
-                        />
+                        <div className="flex justify-center items-center mt-10 mb-10">
+                            <Button variant="new" onClick={() => setConfigFields((prev) => !prev)}>
+                                Component Configs
+                            </Button>
+                        </div>
+
+                        {configFields && (
+                            <PageComponentConfig
+                                FontSizeArray={FontSizeArray}
+                                SECTIONARRAY={SECTIONARRAY}
+                                borderForm={borderForm}
+                                setBorderForm={setBorderForm}
+                                setFieldValue={setFieldValue}
+                                setSectioBorderShow={setSectioBorderShow}
+                                sectionBorderShow={sectionBorderShow}
+                                setWebBorderForm={setWebBorderForm}
+                                webBorderForm={webBorderForm}
+                                setWebSectioBorderShow={setWebSectioBorderShow}
+                                webSectionBorderShow={webSectionBorderShow}
+                                setNameForm={setNameForm}
+                                nameForm={nameForm}
+                                setFooterAlignForm={setFooterAlignForm}
+                                footerAlignForm={footerAlignForm}
+                                setWebNameForm={setWebNameForm}
+                                webNameForm={webNameForm}
+                                setWebFooterAlignForm={setWebFooterAlignForm}
+                                webFooterAlignForm={webFooterAlignForm}
+                            />
+                        )}
 
                         <FormContainer className="grid grid-cols-2 gap-3">
                             {editMode ? (
