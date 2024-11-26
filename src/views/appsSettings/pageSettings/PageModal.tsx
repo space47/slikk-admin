@@ -306,7 +306,15 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
 
     return (
         <>
-            <Modal title="EDIT SECTION" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={1500} okText="Edit">
+            <Modal
+                title="EDIT SECTION"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                width={1500}
+                okText="Edit"
+                className="z-50"
+            >
                 <CommonMainPageSettings
                     setComponentOptions={setComponentOptions}
                     initialValue={initialValue}
