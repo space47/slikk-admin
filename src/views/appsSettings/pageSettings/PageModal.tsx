@@ -75,7 +75,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         component_config: particularRow.component_config,
         web_section_border: particularRow?.web_section_border,
     })
-    console.log('The initial value that I got ', particularRow.section_border)
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)

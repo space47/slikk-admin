@@ -3,28 +3,13 @@ import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import { Button, Dropdown, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
 import { Field, FieldProps, Form, Formik } from 'formik'
 import React, { useState } from 'react'
-import {
-    ALIGNVALUES,
-    BackGroundArray,
-    borrderStyleArray,
-    genericComponentArray,
-    MobileAndDesktopPositions,
-    NAMEPOSITION,
-    sectionBorrderStyleArray,
-    webBorrderStyleArray,
-} from './genericComp'
-import CommonSelect from './CommonSelect'
-import PageAddCommonImage from './PageAddCommonImage'
-import { beforeUpload } from '@/common/beforeUpload'
 import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 import PageSettingsPostTable from './PageSettingsPostTable'
 import { MdCancel } from 'react-icons/md'
-import { DATATYPEVALUES, FOOTERCONFIGARRAY, HEADERCONFIGARRAY, SUBHEADERCONFIGARRAY } from './configurationCommon'
+import { DATATYPEVALUES } from './configurationCommon'
 import TagsEdit from './TagsEdit'
-import { WebType } from './pageSettings.types'
-import PageEditImage from './PageEditImage'
 import PageComponentConfig from './PageComponentConfig'
 import OtherConfigs from './OtherConfigs'
 import BackGroundImages from './BackGroundImages'
