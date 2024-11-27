@@ -50,50 +50,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         dispatch(getAllFiltersAPI())
     }, [])
 
-    const [initialValue, setInitalValue] = useState<any>({
-        data_type: {
-            type: '',
-            filters: [],
-            barcodes: '',
-            posts: '',
-            brands: '',
-            handles: '',
-        },
-        footer_config: {
-            icon: '',
-            text: '',
-            image: '',
-            style: '',
-            position: '',
-        },
-        header_config: {
-            icon: '',
-            text: '',
-            image: '',
-            style: '',
-            position: '',
-        },
-        component_type: '',
-        section_heading: '',
-        background_image: '',
-        sub_header_config: {
-            icon: '',
-            text: '',
-            image: '',
-            style: '',
-            position: '',
-        },
-        background_image_array: [],
-        footer_config_icon_Array: [],
-        footer_config_image_Array: [],
-        header_config_icon_Array: [],
-        header_config_image_Array: [],
-        sub_header_config_icon_Array: [],
-        sub_header_config_image_Array: [],
-        headerIcon_image_array: [],
-        is_section_clickable: false,
-        section_filters: '',
-    })
+    const initialValue = {}
     const [selectedType, setSelectedType] = useState('')
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -251,7 +208,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
         setData((prevData: WebType[]) => [...prevData, newRowAdd])
         setSelectedType('')
-        setInitalValue('')
+        // setInitalValue('')
 
         console.log('Main Data That is to be send in the API', newRowAdd)
         console.log('The row which is set', row)
