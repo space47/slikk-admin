@@ -255,7 +255,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
         console.log('Main Data That is to be send in the API', newRowAdd)
         console.log('The row which is set', row)
-        setIsModalOpen(false)
+        // setIsModalOpen(false)
     }
     console.log('compo', componentOption)
 
