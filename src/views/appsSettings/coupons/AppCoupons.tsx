@@ -12,6 +12,7 @@ import { COUPON_STATE } from '@/store/types/coupons.types'
 import Spinner from '@/components/ui/Spinner'
 import { ImSpinner9 } from 'react-icons/im'
 import { FaEdit } from 'react-icons/fa'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 type Option = {
     value: number
@@ -33,7 +34,7 @@ const AppCoupons = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const [loading, setLoading] = useState(true)
 
-    const { coupons } = useAppSelector<COUPON_STATE>((state) => state.coupon)
+    const { coupons, accessDenied } = useAppSelector<COUPON_STATE>((state) => state.coupon)
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -46,16 +47,16 @@ const AppCoupons = () => {
         fetchData()
     }, [dispatch])
 
-    console.log('CURRENT STATE', loading)
+    console.log('AccessDenied', accessDenied)
 
-    const filteredData = coupons.filter((item) =>
-        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
+    const filteredData = coupons?.filter((item) =>
+        Object.values(item).some((val) => (val ? val?.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
 
     const navigate = useNavigate()
 
     // Paginate filtered data
-    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
+    const paginatedData = filteredData?.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
     const columns = [
@@ -108,6 +109,10 @@ const AppCoupons = () => {
 
     const handleCoupons = () => {
         navigate(`/app/appSettings/coupons/addNew`)
+    }
+
+    if (accessDenied === true) {
+        return <AccessDenied />
     }
 
     return (

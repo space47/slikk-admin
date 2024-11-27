@@ -14,6 +14,7 @@ const initialState: USERANALYTICS_TYPE = {
     message: '',
     page: 1,
     page_size: 10,
+    accessDenied: false,
 }
 
 export const fetchUserAnalytics = createAsyncThunk('userAnalytics/fetchUserAnalytics', async (_, { getState, rejectWithValue }) => {
@@ -31,6 +32,11 @@ export const fetchUserAnalytics = createAsyncThunk('userAnalytics/fetchUserAnaly
             userData: response.data,
         }
     } catch (error: any) {
+        if (error.response && error?.response.status === 403) {
+            return {
+                accessDenied: true,
+            }
+        }
         return rejectWithValue(error.response?.data || 'Failed to fetch data')
     }
 })
@@ -57,9 +63,11 @@ export const userAnalyticsSlice = createSlice({
             .addCase(fetchUserAnalytics.pending, (state) => {
                 state.loading = true
                 state.message = ''
+                state.accessDenied = false
             })
             .addCase(fetchUserAnalytics.fulfilled, (state, action) => {
                 state.loading = false
+                state.accessDenied = false
                 state.data = action.payload.userData.data
                 state.total_logged_in = action.payload.userData.total_logged_in || 0
                 state.total_otp_verified = action.payload.userData.total_otp_verified || 0
@@ -67,6 +75,7 @@ export const userAnalyticsSlice = createSlice({
             .addCase(fetchUserAnalytics.rejected, (state, action) => {
                 state.loading = false
                 state.message = (action.payload as string) || 'Failed to fetch data'
+                state.accessDenied = action?.payload?.accessDenied
             })
     },
 })
