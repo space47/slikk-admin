@@ -135,6 +135,8 @@ const CommonMainPageSettings = ({
     const [otherFields, setOtherFields] = useState(false)
     const [bgFields, setBgFields] = useState(false)
 
+    console.log('fields check', configFields, otherFields, bgFields)
+
     return (
         <Formik
             enableReinitialize
