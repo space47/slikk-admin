@@ -135,9 +135,7 @@ const ReportAnalytics = () => {
         if (values?.required_fields) {
             reportParameters = values.required_fields
                 .map((field: { key: string; value: string }) => {
-                    if (field?.value) {
-                        return `${field.key}=${field.value}`
-                    }
+                    return `${field.key}=${field.value}`
                 })
                 .join('&')
         }

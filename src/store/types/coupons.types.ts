@@ -29,6 +29,7 @@ export interface COUPON_STATE {
     page: number
     loading: boolean
     message: string
+    accessDenied: boolean
 }
 
 export const getAllDivisionRequest = 'getAllDivisionRequest'

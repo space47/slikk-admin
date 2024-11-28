@@ -787,6 +787,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsAppSettings.seoSettings',
+        path: `${APP_PREFIX_PATH}/appSettings/seoSettings/addNew`,
+        component: lazy(() => import('@/views/appsSettings/seoSettings/createSeoSettings/CreateSeoSettings')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCommuncication.notification',
         path: `${APP_PREFIX_PATH}/appSettings/addNotification`,
         component: lazy(() => import('@/views/sales/Notification/createNotification/AddNotification')),

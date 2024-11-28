@@ -180,17 +180,19 @@ const PageSettings = () => {
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="buttons flex gap-3 mb-7">
-                    <Dropdown
-                        className="border bg-gray-200 text-black text-lg font-semibold"
-                        title={currentSelectedPage.name}
-                        onSelect={handleSelectPage}
-                    >
-                        {BANNER_PAGE_NAME.map((item) => (
-                            <DropdownItem key={item.value} eventKey={item.value}>
-                                {item.name}
-                            </DropdownItem>
-                        ))}
-                    </Dropdown>
+                    <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                        <Dropdown
+                            className="border bg-gray-200 text-black text-lg font-semibold"
+                            title={currentSelectedPage.name}
+                            onSelect={handleSelectPage}
+                        >
+                            {BANNER_PAGE_NAME.map((item) => (
+                                <DropdownItem key={item.value} eventKey={item.value}>
+                                    {item.name}
+                                </DropdownItem>
+                            ))}
+                        </Dropdown>
+                    </div>
                     <Button variant="new" size="md" onClick={handlePageUpdate}>
                         UPDATE PAGE SETTINGS
                     </Button>
