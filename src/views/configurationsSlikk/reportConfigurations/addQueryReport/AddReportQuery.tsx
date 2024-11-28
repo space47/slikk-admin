@@ -37,7 +37,7 @@ const AddReportQuery = () => {
                 extra_attributes: {},
             },
         ],
-        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '' }],
+        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '', suffixL: '' }],
     }
 
     const handleSubmit = async (values: any) => {
@@ -48,14 +48,13 @@ const AddReportQuery = () => {
                 if (item.key) {
                     if (item.dataType === 'MultiSelect') {
                         const multiSelectValues = item.value.split(',')
-                        // obj[item.key] = multiSelectValues.map((val: string) => (item.prefix ? `${item.prefix}_${val.trim()}` : val.trim()))
-                        if (item?.prefix) {
-                            obj[item.key] = multiSelectValues.map((val: string) => `${item.prefix}_${val.trim()}`)
-                        } else {
-                            obj[item.key] = multiSelectValues.map((val: string) => val.trim())
-                        }
+                        obj[item.key] = multiSelectValues.map((val: string) => {
+                            val = val.trim()
+                            return `${item.prefix || ''}${val}${item.suffix || ''}`
+                        })
                     } else {
-                        obj[item.key] = `${item.dataType}_${item.value}`
+                        const value = item.value.trim()
+                        obj[item.key] = `${item.prefix || ''}${value}${item.suffix || ''}`
                     }
                 }
                 return obj
@@ -245,6 +244,12 @@ const AddReportQuery = () => {
                                                         component={Input}
                                                         className="w-1/3"
                                                     />
+                                                    <Field
+                                                        name={`required_fields[${index}].suffix`}
+                                                        placeholder="Enter Prefix"
+                                                        component={Input}
+                                                        className="w-1/3"
+                                                    />
                                                     <button
                                                         type="button"
                                                         className="text-red-600 hover:text-red-800 transition"
@@ -256,7 +261,7 @@ const AddReportQuery = () => {
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '' })}
+                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '', suffix: '' })}
                                                 className="mt-3 flex items-center text-green-600 hover:text-green-800 transition"
                                             >
                                                 <IoIosAddCircle className="text-2xl mr-1" />
