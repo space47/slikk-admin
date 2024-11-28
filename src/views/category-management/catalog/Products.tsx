@@ -17,6 +17,9 @@ import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { notification } from 'antd'
 import DialogConfirm from '@/common/DialogConfirm'
+import axios from 'axios'
+import CatalogActions from './CalatogActions'
+import { FILTER_STATE } from '@/store/types/filters.types'
 
 type ProductVariant = {
     name: string
@@ -75,7 +78,7 @@ const Products = () => {
     const [searchType, setSearchType] = useState<string>('')
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState<string[]>([])
-
+    const [showActionButtons, setShowActionButtons] = useState(false)
     const [divisionList, setDivisionList] = useState<string[]>([])
     const [categoryList, setCategoryList] = useState([])
     const [subCategoryList, setSubCategoryList] = useState([])
@@ -90,6 +93,7 @@ const Products = () => {
     const [showDrawer, setShowDrawer] = useState(false)
 
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const fetchData = async (page: number, pageSize: number, filter: string = '') => {
         try {
@@ -155,7 +159,8 @@ const Products = () => {
         }
     }
 
-    const handleApply = () => {
+    const handleApply = (values: any) => {
+        console.log('value inside  apply', values)
         let query = '&'
 
         if (divisionList.length > 0) {
@@ -355,6 +360,27 @@ const Products = () => {
         }
     }
 
+    const handleGenerateSiteMap = async () => {
+        notification.info({
+            message: 'SiteMap generate in process',
+        })
+        try {
+            const response = await axios.get('https://zgvm8zgvld.execute-api.ap-south-1.amazonaws.com/api/generate-sitemap')
+
+            if (response.status === 200) {
+                notification.success({
+                    message: response?.data?.message || 'Successfully Created sitemap',
+                })
+            } else {
+                notification.error({
+                    message: 'Failed to Created sitemap',
+                })
+            }
+        } catch (error) {
+            console.error('Error generating site map:', error)
+        }
+    }
+
     const handleProduct = () => {
         navigate('/app/catalog/products/addNew')
     }
@@ -385,18 +411,9 @@ const Products = () => {
 
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                     <div className="flex gap-3">
-                        <button
-                            className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-blue-600 rounded-lg text-white bg-blue-700"
-                            onClick={() => setShowFacebookDialog(true)}
-                        >
-                            <span className="font-bold">Sync</span> <FaFacebook className="text-xl" />
-                        </button>
-                        <button
-                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-green-400 rounded-lg font-bold"
-                            onClick={handleDownload}
-                        >
-                            <IoMdDownload className="text-xl" /> Export
-                        </button>
+                        <Button variant="new" onClick={() => setShowActionButtons(true)}>
+                            Actions
+                        </Button>
 
                         <Button
                             variant="new"
@@ -465,6 +482,7 @@ const Products = () => {
                     setFilteredProductTypes={setFilteredProductTypes}
                     setFilteredSubCategories={setFilteredSubCategories}
                     options={divisions.divisions}
+                    filters={filters}
                 />
             )}
             {showFacebookDialog && (
@@ -474,6 +492,15 @@ const Products = () => {
                     onDialogOk={handleFacebookSync}
                     IsConfirm
                     headingName="SYNC TO FACEBOOK"
+                />
+            )}
+            {showActionButtons && (
+                <CatalogActions
+                    isOpen={showActionButtons}
+                    setIsOpen={setShowActionButtons}
+                    handleDownload={handleDownload}
+                    handleGenerateSiteMap={handleGenerateSiteMap}
+                    setShowFacebookDialog={setShowFacebookDialog}
                 />
             )}
         </div>

@@ -177,11 +177,19 @@ const CommonMainPageSettings = ({
                         </FormContainer>
                         {/* Generic Fields........................................................ */}
 
-                        <div className="flex justify-center items-center mt-10 mb-10">
-                            <Button variant="new" onClick={() => setConfigFields((prev) => !prev)}>
-                                Component Configs
-                            </Button>
-                        </div>
+                        {configFields ? (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="reject" onClick={() => setConfigFields(false)}>
+                                    Component Configs
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="new" onClick={() => setConfigFields(true)}>
+                                    Component Configs
+                                </Button>
+                            </div>
+                        )}
 
                         {configFields && (
                             <PageComponentConfig
@@ -207,11 +215,19 @@ const CommonMainPageSettings = ({
                             />
                         )}
 
-                        <div className="flex justify-center items-center mt-10 mb-10">
-                            <Button variant="new" onClick={() => setBgFields((prev) => !prev)}>
-                                Background Fields
-                            </Button>
-                        </div>
+                        {bgFields ? (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="reject" onClick={() => setBgFields(false)}>
+                                    Background Fields
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="new" onClick={() => setBgFields(true)}>
+                                    Background Fields
+                                </Button>
+                            </div>
+                        )}
                         {bgFields && (
                             <BackGroundImages
                                 editMode={editMode}
@@ -223,11 +239,19 @@ const CommonMainPageSettings = ({
 
                         {/* ............Header Config................................................. */}
 
-                        <div className="flex justify-center items-center mt-10 mb-10">
-                            <Button variant="new" onClick={() => setOtherFields((prev) => !prev)}>
-                                Other Configs
-                            </Button>
-                        </div>
+                        {otherFields ? (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="reject" onClick={() => setOtherFields(false)}>
+                                    Other Configs
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="new" onClick={() => setOtherFields(true)}>
+                                    Other Field Configs
+                                </Button>
+                            </div>
+                        )}
                         {otherFields && (
                             <OtherConfigs
                                 editMode={editMode}

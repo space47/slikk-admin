@@ -112,6 +112,8 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
     const [fromDateAndTime, setFromDateAndTime] = useState('')
     const [toDateAndTime, setToDateAndTime] = useState('')
 
+    console.log('Here the filtered categories form add banner', filteredCategories)
+
     const handleFromTimeChange = (value: any) => {
         console.log('HandleTimeChange', value)
         const formattedValue = moment(value).format('YYYY-MM-DD HH:mm:ss')

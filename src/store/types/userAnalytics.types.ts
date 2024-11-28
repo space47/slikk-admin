@@ -22,4 +22,5 @@ export type USERANALYTICS_TYPE = {
     message: string
     page: any
     page_size: any
+    accessDenied: boolean
 }

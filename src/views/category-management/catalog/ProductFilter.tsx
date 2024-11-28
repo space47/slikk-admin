@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
-import { Field, Form, Formik, FieldProps } from 'formik'
+import { Field, Form, Formik, FieldProps, FieldArray } from 'formik'
 import Select from '@/components/ui/Select'
 import { Button, Drawer } from '@/components/ui'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
+import { IoMdAddCircle } from 'react-icons/io'
+import { MdCancel } from 'react-icons/md'
 
 interface PROPS {
     showDrawer: boolean
@@ -31,6 +33,7 @@ interface PROPS {
     filteredProductTypes: any
     filteredSubCategories: any
     options: any
+    filters: any
 }
 
 const ProductFilterNest = ({
@@ -56,6 +59,7 @@ const ProductFilterNest = ({
     filteredProductTypes,
     filteredSubCategories,
     options,
+    filters,
 }: PROPS) => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
 
@@ -258,6 +262,52 @@ const ProductFilterNest = ({
                                     )
                                 }}
                             </Field>
+
+                            <FormItem label="SEARCH FILTER STRINGS">
+                                <FieldArray name="filtersAdd">
+                                    {({ push, remove, form }) => (
+                                        <>
+                                            <FormContainer className="items-center mt-4">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => push([])} // Add a new empty array for multi-select values
+                                                >
+                                                    <IoMdAddCircle className="text-3xl text-green-500" />
+                                                </button>
+                                            </FormContainer>
+
+                                            {form.values.filtersAdd?.map((_, index) => (
+                                                <FormItem key={index} className="flex gap-2">
+                                                    <div className="flex gap-3 items-center">
+                                                        <Field name={`filtersAdd[${index}]`}>
+                                                            {({ field, form }: FieldProps<any>) => (
+                                                                <Select
+                                                                    isMulti
+                                                                    placeholder="Select Filter Tags"
+                                                                    options={filters.filters}
+                                                                    getOptionLabel={(option: any) => option.label}
+                                                                    getOptionValue={(option: any) => option.value}
+                                                                    onChange={(newVal) => {
+                                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                                        form.setFieldValue(field.name, newValues)
+                                                                    }}
+                                                                    className="w-3/4"
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => remove(index)} // Remove the specific index
+                                                        >
+                                                            <MdCancel className="text-xl text-red-500" />
+                                                        </button>
+                                                    </div>
+                                                </FormItem>
+                                            ))}
+                                        </>
+                                    )}
+                                </FieldArray>
+                            </FormItem>
 
                             <FormContainer className="flex gap-5 justify-end ">
                                 <Button type="submit" variant="new" className="mt-4 bg-blue-500 text-white p-2 rounded">

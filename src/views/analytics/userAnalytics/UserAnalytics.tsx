@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from 'react'
-
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import Table from '@/components/ui/Table'
 import { USERANALYTICS_TYPE } from '@/store/types/userAnalytics.types'
@@ -11,12 +10,13 @@ import { TbCalendarStats } from 'react-icons/tb'
 import { FaCheckCircle, FaUsers } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { Pagination } from '@/components/ui'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const UserAnalyticsTable = () => {
     const dispatch = useAppDispatch()
-    const { data, loading, from, to, total_logged_in, total_otp_verified, page, page_size } = useAppSelector(
+    const { data, from, to, total_logged_in, total_otp_verified, page, page_size, accessDenied } = useAppSelector(
         (state: { userAnalytics: USERANALYTICS_TYPE }) => state.userAnalytics,
     )
 
@@ -47,13 +47,7 @@ const UserAnalyticsTable = () => {
         // },
     })
 
-    // if (data?.results && data?.results.length === 0) {
-    //     return (
-    //         <>
-    //             <div>No Data</div>
-    //         </>
-    //     )
-    // }
+    console.log('AccessDenied', accessDenied)
 
     const handleFromChange = (date: Date | null) => {
         dispatch(setFrom(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
@@ -67,7 +61,9 @@ const UserAnalyticsTable = () => {
         dispatch(setPage(page))
     }
 
-    console.log('PAGES', page, page_size)
+    if (accessDenied === true) {
+        return <AccessDenied />
+    }
 
     return (
         <div className="p-4 md:p-6 lg:p-8">

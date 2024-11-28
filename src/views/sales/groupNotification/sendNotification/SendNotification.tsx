@@ -145,11 +145,11 @@ const SendNotification = () => {
                 message: 'SUCCESS',
                 description: response.data.message || 'Notification has been added',
             })
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
             notification.error({
                 message: 'FAILURE',
-                description: 'Failed to create notification',
+                description: error?.response?.data?.message || error?.response?.message || 'Failed to send',
             })
         }
     }
@@ -268,10 +268,10 @@ const SendNotification = () => {
             notification.success({
                 message: 'Scheduled successfully',
             })
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
             notification.error({
-                message: 'Failed to schedule',
+                message: error?.response?.data?.message || error?.response?.message || 'Failed to schedule',
             })
         } finally {
             setScheduleModal(false)

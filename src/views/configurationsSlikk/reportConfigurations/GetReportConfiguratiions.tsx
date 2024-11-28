@@ -94,6 +94,10 @@ const GetReportConfiguratiions = () => {
         [],
     )
 
+    if (accessDenied) {
+        return <AccessDenied />
+    }
+
     return (
         <div className="flex flex-col gap-4">
             <div className="flex justify-end">
@@ -122,11 +126,6 @@ const GetReportConfiguratiions = () => {
                     />
                 </div>
             </div>
-            {accessDenied && (
-                <>
-                    <AccessDenied />
-                </>
-            )}
         </div>
     )
 
