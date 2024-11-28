@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { Field, FieldArray, FieldProps } from 'formik'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface ReportFieldsProps {
     values: any[]
@@ -11,6 +11,19 @@ interface ReportFieldsProps {
 }
 
 const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: ReportFieldsProps) => {
+    const [showInfo, setShowInfo] = useState(false)
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowInfo(true)
+            const hideTimer = setTimeout(() => {
+                setShowInfo(false)
+            }, 6000)
+            return () => clearTimeout(hideTimer)
+        }, 1000)
+
+        return () => clearTimeout(timer)
+    }, [])
     return (
         <FormContainer>
             <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
@@ -20,7 +33,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                             {values?.map((item: any, index: number) => (
                                 <div
                                     key={index}
-                                    className="flex space-x-4 mt-2 xl:flex-row flex-col items-center
+                                    className="flex space-x-4 mt-2 xl:flex-row flex-col  items-center
                                                     rounded-lg px-4 py-2"
                                 >
                                     <Field name={`required_fields[${index}].key`} placeholder="Key" component={Input} className="w-full" />
@@ -30,6 +43,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                 className=" w-full"
                                                 placeholder="Select dataType"
                                                 options={reportQueryArray}
+                                                isDisabled
                                                 value={reportQueryArray.find((option) => option.value === field.value)}
                                                 onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                             />
@@ -47,18 +61,23 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                 )
 
                                                 return (
-                                                    <Select
-                                                        className=" w-full"
-                                                        {...field}
-                                                        options={options}
-                                                        getOptionLabel={(option) => option?.name}
-                                                        getOptionValue={(option) => option?.id?.toString()}
-                                                        value={selectedOption || null}
-                                                        isClearable
-                                                        onChange={(newVal) => {
-                                                            form.setFieldValue(`required_fields[${index}].value`, newVal?.name)
-                                                        }}
-                                                    />
+                                                    <div className="w-full">
+                                                        <Select
+                                                            className="w-full"
+                                                            {...field}
+                                                            options={options}
+                                                            getOptionLabel={(option) => option?.name}
+                                                            getOptionValue={(option) => option?.id?.toString()}
+                                                            value={selectedOption || null}
+                                                            isClearable
+                                                            onChange={(newVal) => {
+                                                                form.setFieldValue(`required_fields[${index}].value`, newVal?.name)
+                                                            }}
+                                                        />
+                                                        {showInfo && (
+                                                            <p className="mt-2 text-sm text-yellow-500">Leave empty to select all</p>
+                                                        )}
+                                                    </div>
                                                 )
                                             }
 

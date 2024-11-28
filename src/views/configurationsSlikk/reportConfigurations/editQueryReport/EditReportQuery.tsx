@@ -49,7 +49,7 @@ const EditReportQuery = () => {
                 },
             },
         ],
-        required_fields: [{ key: '', value: '', dataType: 'String' }],
+        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '' }],
     })
 
     const fetchReportApi = async () => {
@@ -274,6 +274,12 @@ const EditReportQuery = () => {
                                                             )
                                                         }}
                                                     </Field>
+                                                    <Field
+                                                        name={`required_fields[${index}].prefix`}
+                                                        placeholder="Enter Prefix"
+                                                        component={Input}
+                                                        className="w-1/3"
+                                                    />
                                                     <button type="button" onClick={() => remove(index)}>
                                                         <MdCancel className="text-xl text-red-600" />
                                                     </button>
@@ -281,7 +287,7 @@ const EditReportQuery = () => {
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => push({ key: '', value: '', dataType: 'String' })}
+                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '' })}
                                                 className="mt-3"
                                             >
                                                 <IoIosAddCircle className="text-green-600 text-xl" />

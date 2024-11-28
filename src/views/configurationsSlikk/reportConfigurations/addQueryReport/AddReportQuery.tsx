@@ -36,7 +36,7 @@ const AddReportQuery = () => {
                 extra_attributes: {},
             },
         ],
-        required_fields: [{ key: '', value: '', dataType: 'String' }],
+        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '' }],
     }
 
     const handleSubmit = async (values: any) => {
@@ -218,6 +218,12 @@ const AddReportQuery = () => {
                                                             )
                                                         }}
                                                     </Field>
+                                                    <Field
+                                                        name={`required_fields[${index}].prefix`}
+                                                        placeholder="Enter Prefix"
+                                                        component={Input}
+                                                        className="w-1/3"
+                                                    />
                                                     <button
                                                         type="button"
                                                         className="text-red-600 hover:text-red-800 transition"
@@ -229,7 +235,7 @@ const AddReportQuery = () => {
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => push({ key: '', value: '', dataType: 'String' })}
+                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '' })}
                                                 className="mt-3 flex items-center text-green-600 hover:text-green-800 transition"
                                             >
                                                 <IoIosAddCircle className="text-2xl mr-1" />

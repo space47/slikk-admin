@@ -39,13 +39,13 @@ const SendNotification = () => {
     const [groupDatatoSend, setGroupDataToSend] = useState([])
     const [clickedGuarantee, setClickedGuarantee] = useState<any>({})
     const [groupId, setgroupId] = useState<string[]>([])
+    const [groupName, setgroupName] = useState<string[]>([])
     const dispatch = useAppDispatch()
     const [currentStep, setCurrentStep] = useState(0)
     const [filterId, setFilterId] = useState()
     const [showScheduleModal, setScheduleModal] = useState(false)
     const [storeSchedular, setStoreSchedular] = useState({})
     const [valueForSchedule, setValueForSchedule] = useState<any>()
-    const [submitvalue, setSubmitValue] = useState<any>(null)
     const [messagePreview, setMessagePreview] = useState('')
     const [imagePreview, setImagePreview] = useState('')
     const [titleView, setTitleView] = useState('')
@@ -81,8 +81,11 @@ const SendNotification = () => {
         try {
             const response = await axioisInstance.get(`/notification/groups?group_name=${groupName}`)
             const Gdata = response?.data?.data.results
-            const groupID = Gdata?.map((item: any) => item.id).join(',')
+            console.log('data from groups', Gdata)
+            const groupID = Gdata?.map((item: any) => item.id).join(',') // name is there in api.....if required add here
+            const groupNameData = Gdata?.map((item: any) => item.name).join(',') // name is there in api.....if required add here
             setgroupId((prev) => [...prev, groupID])
+            setgroupName((prev) => [...prev, groupNameData])
             // setGroupValue(groupName)
             // setGroupDataToSend([])
         } catch (error) {
@@ -103,6 +106,7 @@ const SendNotification = () => {
             maxprice,
             minoff,
             maxoff,
+            event_name,
             utm_tags,
             filtersAdd,
             ...formData
@@ -114,6 +118,7 @@ const SendNotification = () => {
         const data = {
             ...formData,
             title: titleView ?? '',
+            name: values?.event_name ?? '',
             image_url: imageUpload || '',
             notification_group_id: groupId.join(',') || '',
             filters: [
@@ -260,7 +265,7 @@ const SendNotification = () => {
             },
             expiry_date: expiry_date ?? '',
             mobiles: valueForSchedule?.users ?? [],
-            groups: groupId.join(',') ?? '',
+            group_name: groupName.join(',') ?? '',
         }
 
         try {
