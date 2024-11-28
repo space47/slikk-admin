@@ -94,7 +94,19 @@ const EditReportQuery = () => {
 
     const handleSubmit = async (values) => {
         const formattedRequiredFields = values.required_fields.reduce((obj: any, item: any) => {
-            obj[item.key] = `${item.dataType}_${item.value}`
+            if (item.key) {
+                if (item.dataType === 'MultiSelect') {
+                    const multiSelectValues = item.value.split(',')
+                    // obj[item.key] = multiSelectValues.map((val: string) => (item.prefix ? `${item.prefix}_${val.trim()}` : val.trim()))
+                    if (item?.prefix) {
+                        obj[item.key] = multiSelectValues.map((val: string) => `${item.prefix}_${val.trim()}`)
+                    } else {
+                        obj[item.key] = multiSelectValues.map((val: string) => val.trim()).join(',')
+                    }
+                } else {
+                    obj[item.key] = `${item.dataType}_${item.value}`
+                }
+            }
             return obj
         }, {})
 

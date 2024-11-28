@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -40,44 +41,64 @@ const AddReportQuery = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        const formattedRequiredFields = values.required_fields.reduce((obj: any, item: { key: string; value: any; dataType: string }) => {
-            obj[item.key] = `${item.dataType}_${item.value}`
-            return obj
-        }, {})
-        const updatedValues = values.value.map((item: any) => {
-            const parser = new DOMParser()
-            const htmlDoc = parser.parseFromString(item.query, 'text/html')
-            const plainTextValue = htmlDoc.body.textContent || ''
-            return {
-                ...item,
-                query: plainTextValue,
-                extra_attributes: {
-                    is_graph: item.extra_attributes.is_graph,
-                    x_axis: item?.extra_attributes?.x_axis,
-                    y_axis: item?.extra_attributes?.y_axis,
-                    secondary_y_axis: item?.extra_attributes?.secondary_y_axis,
-                    graph_type: item?.extra_attributes?.graph_type,
-                },
-            }
-        })
-
-        console.log('value.value', updatedValues)
-
-        const body = {
-            ...values,
-            value: updatedValues,
-            required_fields: formattedRequiredFields,
-        }
+        console.log('Submitting form...', values)
 
         try {
+            const formattedRequiredFields = values.required_fields.reduce((obj: any, item: any) => {
+                if (item.key) {
+                    if (item.dataType === 'MultiSelect') {
+                        const multiSelectValues = item.value.split(',')
+                        // obj[item.key] = multiSelectValues.map((val: string) => (item.prefix ? `${item.prefix}_${val.trim()}` : val.trim()))
+                        if (item?.prefix) {
+                            obj[item.key] = multiSelectValues.map((val: string) => `${item.prefix}_${val.trim()}`)
+                        } else {
+                            obj[item.key] = multiSelectValues.map((val: string) => val.trim()).join(',')
+                        }
+                    } else {
+                        obj[item.key] = `${item.dataType}_${item.value}`
+                    }
+                }
+                return obj
+            }, {})
+
+            const updatedValues = values.value.map((item: any, index: number) => {
+                if (!item.query) {
+                    throw new Error(`Missing query for value at index ${index}`)
+                }
+                const parser = new DOMParser()
+                const htmlDoc = parser.parseFromString(item.query, 'text/html')
+                const plainTextValue = htmlDoc.body.textContent || ''
+                return {
+                    ...item,
+                    query: plainTextValue.trim(),
+                    extra_attributes: {
+                        is_graph: item.extra_attributes?.is_graph || false,
+                        x_axis: item.extra_attributes?.x_axis || null,
+                        y_axis: item.extra_attributes?.y_axis || null,
+                        secondary_y_axis: item.extra_attributes?.secondary_y_axis || null,
+                        graph_type: item.extra_attributes?.graph_type || null,
+                    },
+                }
+            })
+
+            const body = {
+                ...values,
+                value: updatedValues,
+                required_fields: formattedRequiredFields,
+            }
+
+            console.log('API payload:', body)
+
             const response = await axioisInstance.post(`/query/config`, body)
+
             notification.success({
                 message: response?.data?.message || 'Successfully added query',
             })
-        } catch (error) {
-            console.log(error)
+            console.log('API response:', response)
+        } catch (error: any) {
+            console.error('Error during API call:', error.message || error)
             notification.error({
-                message: 'Failed to add query',
+                message: error?.message || 'Failed to add query',
             })
         }
     }
@@ -206,7 +227,7 @@ const AddReportQuery = () => {
                                                         )}
                                                     </Field>
                                                     <Field name={`required_fields[${index}].value`}>
-                                                        {({ field, form }: FieldProps) => {
+                                                        {({ field }: FieldProps) => {
                                                             const dataType = values.required_fields[index].dataType
                                                             return (
                                                                 <Input
