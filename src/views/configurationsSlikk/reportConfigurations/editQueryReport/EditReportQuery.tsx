@@ -93,20 +93,20 @@ const EditReportQuery = () => {
     }, [id])
 
     const handleSubmit = async (values: any) => {
-        const formattedRequiredFields = values.required_fields.reduce((obj: any, item: any) => {
+        const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
             if (item.key) {
                 if (item.dataType === 'MultiSelect') {
-                    const multiSelectValues = item.value.split(',')
-                    obj[item.key] = multiSelectValues.map((val: string) => {
+                    const multiSelectValues = item.value.split(',').map((val: string) => {
                         val = val.trim()
-                        return `${item.prefix || ''}${val}${item.suffix || ''}`
+                        return `'${item.prefix || ''}${val}${item.suffix || ''}'`
                     })
+                    result[item.key] = `(${multiSelectValues.join(',')})`
                 } else {
                     const value = item.value.trim()
-                    obj[item.key] = `${item.prefix || ''}${value}${item.suffix || ''}`
+                    result[item.key] = `${item.prefix || ''}${value}${item.suffix || ''}`
                 }
             }
-            return obj
+            return result
         }, {})
 
         console.log('ok the final stage', values.value)

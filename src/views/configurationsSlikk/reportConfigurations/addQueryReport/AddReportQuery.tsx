@@ -44,20 +44,20 @@ const AddReportQuery = () => {
         console.log('Submitting form...', values)
 
         try {
-            const formattedRequiredFields = values.required_fields.reduce((obj: any, item: any) => {
+            const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
                 if (item.key) {
                     if (item.dataType === 'MultiSelect') {
-                        const multiSelectValues = item.value.split(',')
-                        obj[item.key] = multiSelectValues.map((val: string) => {
+                        const multiSelectValues = item.value.split(',').map((val: string) => {
                             val = val.trim()
-                            return `${item.prefix || ''}${val}${item.suffix || ''}`
+                            return `'${item.prefix || ''}${val}${item.suffix || ''}'`
                         })
+                        result[item.key] = `(${multiSelectValues.join(',')})`
                     } else {
                         const value = item.value.trim()
-                        obj[item.key] = `${item.prefix || ''}${value}${item.suffix || ''}`
+                        result[item.key] = `${item.prefix || ''}${value}${item.suffix || ''}`
                     }
                 }
-                return obj
+                return result
             }, {})
 
             const updatedValues = values.value.map((item: any, index: number) => {
@@ -246,7 +246,7 @@ const AddReportQuery = () => {
                                                     />
                                                     <Field
                                                         name={`required_fields[${index}].suffix`}
-                                                        placeholder="Enter Prefix"
+                                                        placeholder="Enter Suffix"
                                                         component={Input}
                                                         className="w-1/3"
                                                     />
