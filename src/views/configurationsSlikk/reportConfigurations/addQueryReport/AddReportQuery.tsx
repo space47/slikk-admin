@@ -52,7 +52,7 @@ const AddReportQuery = () => {
                         if (item?.prefix) {
                             obj[item.key] = multiSelectValues.map((val: string) => `${item.prefix}_${val.trim()}`)
                         } else {
-                            obj[item.key] = multiSelectValues.map((val: string) => val.trim()).join(',')
+                            obj[item.key] = multiSelectValues.map((val: string) => val.trim())
                         }
                     } else {
                         obj[item.key] = `${item.dataType}_${item.value}`
