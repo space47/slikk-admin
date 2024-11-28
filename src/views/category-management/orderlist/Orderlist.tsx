@@ -19,6 +19,7 @@ import PendingNotification from '@/common/pendingNotification'
 import { notification } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import EasyTable from '@/common/EasyTable'
+import RedMarkTable from '@/common/RedMarkTable'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -245,7 +246,6 @@ const OrderList = () => {
                     const createDate = moment(row.original.create_date)
                     const currentDate = moment()
                     const differenceInSeconds = currentDate.diff(createDate, 'seconds')
-                    console.log(`opoop-${row.original.id}`, differenceInSeconds)
 
                     if (row.original.status === 'PENDING' && differenceInSeconds > 120) {
                         setPendingSound(true)
@@ -329,7 +329,6 @@ const OrderList = () => {
                     )
                 },
             },
-            // { header: 'Store Address', accessorKey: 'store.address' },
             {
                 header: 'Customer Address',
                 accessorKey: 'location_url',
@@ -598,7 +597,7 @@ const OrderList = () => {
                 </div>
                 <br />
 
-                <EasyTable mainData={orders} page={page} pageSize={pageSize} columns={columns} />
+                <RedMarkTable mainData={orders} page={page} pageSize={pageSize} columns={columns} />
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                     {numberClick !== true && (

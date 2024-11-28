@@ -49,7 +49,7 @@ const EditReportQuery = () => {
                 },
             },
         ],
-        required_fields: [{ key: '', value: '', dataType: 'String' }],
+        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '' }],
     })
 
     const fetchReportApi = async () => {
@@ -94,7 +94,19 @@ const EditReportQuery = () => {
 
     const handleSubmit = async (values) => {
         const formattedRequiredFields = values.required_fields.reduce((obj: any, item: any) => {
-            obj[item.key] = `${item.dataType}_${item.value}`
+            if (item.key) {
+                if (item.dataType === 'MultiSelect') {
+                    const multiSelectValues = item.value.split(',')
+                    // obj[item.key] = multiSelectValues.map((val: string) => (item.prefix ? `${item.prefix}_${val.trim()}` : val.trim()))
+                    if (item?.prefix) {
+                        obj[item.key] = multiSelectValues.map((val: string) => `${item.prefix}_${val.trim()}`)
+                    } else {
+                        obj[item.key] = multiSelectValues.map((val: string) => val.trim()).join(',')
+                    }
+                } else {
+                    obj[item.key] = `${item.dataType}_${item.value}`
+                }
+            }
             return obj
         }, {})
 
@@ -274,6 +286,12 @@ const EditReportQuery = () => {
                                                             )
                                                         }}
                                                     </Field>
+                                                    <Field
+                                                        name={`required_fields[${index}].prefix`}
+                                                        placeholder="Enter Prefix"
+                                                        component={Input}
+                                                        className="w-1/3"
+                                                    />
                                                     <button type="button" onClick={() => remove(index)}>
                                                         <MdCancel className="text-xl text-red-600" />
                                                     </button>
@@ -281,7 +299,7 @@ const EditReportQuery = () => {
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => push({ key: '', value: '', dataType: 'String' })}
+                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '' })}
                                                 className="mt-3"
                                             >
                                                 <IoIosAddCircle className="text-green-600 text-xl" />

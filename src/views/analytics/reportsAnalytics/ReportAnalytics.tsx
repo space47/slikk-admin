@@ -22,7 +22,6 @@ const reportQueryArray = [
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },
-    { label: 'MulltiSelect', value: 'MultiSelect' },
 ]
 
 const ReportAnalytics = () => {
@@ -135,6 +134,9 @@ const ReportAnalytics = () => {
         if (values?.required_fields) {
             reportParameters = values.required_fields
                 .map((field: { key: string; value: string }) => {
+                    if (field?.value === undefined || null) {
+                        return `${field.key}=`
+                    }
                     return `${field.key}=${field.value}`
                 })
                 .join('&')

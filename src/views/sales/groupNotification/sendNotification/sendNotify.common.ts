@@ -61,7 +61,7 @@ export const SchedulerARRAY = [
 
 export const SendNotificationARRAY = [
     {
-        label: 'Event Name',
+        label: 'Name',
         classname: 'col-span-1 w-1/2',
         type: 'text',
         name: 'event_name',

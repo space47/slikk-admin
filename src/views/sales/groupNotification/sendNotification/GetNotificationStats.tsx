@@ -1,19 +1,13 @@
-import React, { useEffect, useState, useMemo } from 'react'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
-import type { ColumnDef } from '@tanstack/react-table'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useState } from 'react'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
-import { NOTIFYSTATS, pageSizeOptions } from './getNotiStats.common'
+import { NOTIFYSTATS, SchedularTypes } from './getNotiStats.common'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import EasyTable from '@/common/EasyTable'
 import AccessDenied from '@/views/pages/AccessDenied'
-
-type Option = {
-    value: number
-    label: string
-}
+import SentNotif from './GetNotificationComponents/SentNotif'
+import SchedularTable from './GetNotificationComponents/SchedularTable'
 
 const GetNotificationStats = () => {
     const [data, setData] = useState<NOTIFYSTATS[]>([])
@@ -22,6 +16,10 @@ const GetNotificationStats = () => {
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [Scheduledata, setScheduleData] = useState<SchedularTypes[]>([])
+    const [totalScheduleData, setTotalScheduleData] = useState(0)
+    const [schedulePage, setSchedulePage] = useState(1)
+    const [schedulePageSize, setSchedulePageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [accessDenied, setAccessDenied] = useState(false)
 
@@ -40,71 +38,46 @@ const GetNotificationStats = () => {
             console.error(error)
         }
     }
+    const fetchSchedularData = async (schedulePage: number, schedulePageSize: number) => {
+        try {
+            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            const response = await axiosInstance.get(
+                `/user_notification?p=${schedulePage}&page_size=${schedulePageSize}&from=${from}&to=${To_Date}`,
+            )
+            const data = response.data.message.results
+            const total = response.data.message.count
+            setScheduleData(data)
+            setTotalScheduleData(total)
+        } catch (error: any) {
+            if (error.response && error.response.status === 403) {
+                setAccessDenied(true)
+            }
+            console.error(error)
+        }
+    }
 
     useEffect(() => {
         fetchData(page, pageSize)
     }, [page, pageSize, globalFilter, from, to])
 
-    const columns = useMemo<ColumnDef<NOTIFYSTATS>[]>(
-        () => [
-            {
-                header: 'Name',
-                accessorKey: 'name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Title',
-                accessorKey: 'title',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Message',
-                accessorKey: 'message',
-                cell: (info) => info.getValue(),
-            },
+    useEffect(() => {
+        fetchSchedularData(schedulePage, schedulePageSize)
+    }, [schedulePage, schedulePageSize, globalFilter, from, to])
 
-            {
-                header: 'Total users',
-                accessorKey: 'total_users',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Success',
-                accessorKey: 'success',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Failure',
-                accessorKey: 'failure',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Create Date',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-
-            {
-                header: 'Notification',
-                accessorKey: 'notification',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'Update Date',
-                accessorKey: 'update_date',
-                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
-            },
-        ],
-        [],
-    )
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
+    const onPaginationChange = (type: string, page: number) => {
+        if (type === 'sent') {
+            setPage(page)
+        } else if (type === 'schedule') {
+            setSchedulePage(page)
+        }
     }
 
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
+    const onSelectChange = (type: string, value = 0) => {
+        if (type === 'sent') {
+            setPageSize(Number(value))
+        } else if (type === 'schedule') {
+            setSchedulePageSize(Number(value))
+        }
     }
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
@@ -138,14 +111,6 @@ const GetNotificationStats = () => {
                             className="p-2 border rounded"
                         />
                     </div>
-                    {/* <div className="mt-4">
-                        <button
-                            className="bg-black text-white px-5 py-2 items-center justify-center rounded-md hover:bg-gray-700 xl:hidden  flex"
-                            onClick={handleSeller}
-                        >
-                            Add New
-                        </button>
-                    </div> */}
                 </div>
 
                 <div className="flex gap-1 items-center flex-row mb-4">
@@ -159,18 +124,27 @@ const GetNotificationStats = () => {
                     </div>
                 </div>
             </div>
-            <EasyTable mainData={data} page={page} pageSize={pageSize} columns={columns} />
-            <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+            <div className="flex flex-col gap-10 mt-6">
+                {data?.length > 0 && (
+                    <SentNotif
+                        data={data}
+                        page={page}
+                        pageSize={pageSize}
+                        onPaginationChange={onPaginationChange}
+                        onSelectChange={onSelectChange}
+                        totalData={totalData}
                     />
-                </div>
+                )}
+                {Scheduledata?.length > 0 && (
+                    <SchedularTable
+                        data={Scheduledata}
+                        page={schedulePage}
+                        pageSize={schedulePageSize}
+                        onPaginationChange={onPaginationChange}
+                        onSelectChange={onSelectChange}
+                        totalData={totalScheduleData}
+                    />
+                )}
             </div>
         </div>
     )
