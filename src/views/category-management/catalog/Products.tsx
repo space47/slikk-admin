@@ -19,6 +19,7 @@ import { notification } from 'antd'
 import DialogConfirm from '@/common/DialogConfirm'
 import axios from 'axios'
 import CatalogActions from './CalatogActions'
+import { FILTER_STATE } from '@/store/types/filters.types'
 
 type ProductVariant = {
     name: string
@@ -92,6 +93,7 @@ const Products = () => {
     const [showDrawer, setShowDrawer] = useState(false)
 
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const fetchData = async (page: number, pageSize: number, filter: string = '') => {
         try {
@@ -157,7 +159,8 @@ const Products = () => {
         }
     }
 
-    const handleApply = () => {
+    const handleApply = (values: any) => {
+        console.log('value inside  apply', values)
         let query = '&'
 
         if (divisionList.length > 0) {
@@ -479,6 +482,7 @@ const Products = () => {
                     setFilteredProductTypes={setFilteredProductTypes}
                     setFilteredSubCategories={setFilteredSubCategories}
                     options={divisions.divisions}
+                    filters={filters}
                 />
             )}
             {showFacebookDialog && (
