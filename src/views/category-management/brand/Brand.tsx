@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { FaEdit, FaSync } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
@@ -68,10 +66,6 @@ const Brand = () => {
     useEffect(() => {
         fetchData(page, pageSize)
     }, [page, pageSize, globalFilter])
-
-    // const handleActionClick = (id: any) => {
-    //     navigate(`/app/category/brand/${id}`)
-    // }
 
     const columns = useMemo<ColumnDef<Brand & Action>[]>(
         () => [
@@ -180,10 +174,6 @@ const Brand = () => {
         [],
     )
 
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
     }
@@ -198,19 +188,17 @@ const Brand = () => {
         }
 
         try {
-            const response = await axiosInstance.post(`/backend/task/process`, body)
+            const response = await axiosInstance.post(`/backend/task/create`, body)
             notification.success({
-                message: response?.data?.message || 'SYNCED TO FB',
+                message: response?.data?.message || 'SYNCED TO Brand',
             })
         } catch (error: any) {
             console.error(error)
             notification.success({
-                message: error.response?.data?.message || 'FAILED TO SYNC TO FB',
+                message: error.response?.data?.message || 'FAILED TO SYNC Brand',
             })
         }
     }
-
-    // const navigate = useNavigate()
 
     return (
         <div>
@@ -219,13 +207,13 @@ const Brand = () => {
                     type="text"
                     placeholder="Search here"
                     value={globalFilter}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
                     className="p-2 border rounded"
+                    onChange={(e) => setGlobalFilter(e.target.value)}
                 />
             </div>
             <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
+                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(e) => setPage(e)} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"

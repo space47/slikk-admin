@@ -46,16 +46,15 @@ const AddReportQuery = () => {
         try {
             const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
                 if (item.key) {
+                    let valueArray: [string, string | string[], string, string]
                     if (item.dataType === 'MultiSelect') {
-                        const multiSelectValues = item.value.split(',').map((val: string) => {
-                            val = val.trim()
-                            return `'${item.prefix || ''}${val}${item.suffix || ''}'`
-                        })
-                        result[item.key] = `(${multiSelectValues.join(',')})`
+                        const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
+                        valueArray = [item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
                     } else {
                         const value = item.value.trim()
-                        result[item.key] = `${item.prefix || ''}${value}${item.suffix || ''}`
+                        valueArray = [item.dataType, value, item.prefix || '', item.suffix || '']
                     }
+                    result[item.key] = valueArray
                 }
                 return result
             }, {})

@@ -83,18 +83,13 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
 
                                             if (dataType === 'MultiSelect' && options) {
                                                 const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
-                                                console.log('FieldValueArray', fieldValueArray)
 
                                                 const selectedOptions = fieldValueArray.map((item) => {
-                                                    console.log('item inside fieldArray', item)
                                                     const selectedOption = options?.find((options) => {
-                                                        console.log('inside selected options', options?.name.toLowerCase())
                                                         return options?.name.toLowerCase() === item.toLowerCase()
                                                     })
                                                     return selectedOption
                                                 })
-
-                                                console.log('Selected options', selectedOptions)
 
                                                 return (
                                                     <Select
@@ -126,6 +121,21 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                             )
                                         }}
                                     </Field>
+
+                                    <FormContainer className="hidden">
+                                        <Field
+                                            name={`required_fields[${index}].prefix`}
+                                            placeholder="Key"
+                                            component={Input}
+                                            className="w-full"
+                                        />
+                                        <Field
+                                            name={`required_fields[${index}].suffix`}
+                                            placeholder="Key"
+                                            component={Input}
+                                            className="w-full"
+                                        />
+                                    </FormContainer>
                                 </div>
                             ))}
                         </div>

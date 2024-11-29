@@ -77,8 +77,14 @@ const EditReportQuery = () => {
                 // value: [],
 
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
-                    const [dataType, value] = fullValue.split('_')
-                    return { key, value, dataType: dataType || 'String' }
+                    const [dataType, value, prefix = '', suffix = ''] = fullValue
+                    return {
+                        key,
+                        value: Array.isArray(value) ? value.join(', ') : value,
+                        dataType: dataType || 'String',
+                        prefix,
+                        suffix,
+                    }
                 }),
             }
 
@@ -93,18 +99,18 @@ const EditReportQuery = () => {
     }, [id])
 
     const handleSubmit = async (values: any) => {
+        console.log('start')
         const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
             if (item.key) {
+                let valueArray: [string, string | string[], string, string]
                 if (item.dataType === 'MultiSelect') {
-                    const multiSelectValues = item.value.split(',').map((val: string) => {
-                        val = val.trim()
-                        return `'${item.prefix || ''}${val}${item.suffix || ''}'`
-                    })
-                    result[item.key] = `(${multiSelectValues.join(',')})`
+                    const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
+                    valueArray = [item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
                 } else {
                     const value = item.value.trim()
-                    result[item.key] = `${item.prefix || ''}${value}${item.suffix || ''}`
+                    valueArray = [item.dataType, value, item.prefix || '', item.suffix || '']
                 }
+                result[item.key] = valueArray
             }
             return result
         }, {})
@@ -132,7 +138,6 @@ const EditReportQuery = () => {
             value: updatedValues,
             required_fields: formattedRequiredFields,
         }
-        console.log('Body', body)
 
         try {
             const response = await axioisInstance.patch(`/query/config/${id}`, body)
@@ -253,7 +258,7 @@ const EditReportQuery = () => {
                                 <FieldArray name="required_fields">
                                     {({ push, remove }) => (
                                         <div>
-                                            {values.required_fields.map((item, index) => (
+                                            {values.required_fields?.map((item, index) => (
                                                 <div key={index} className="flex space-x-4 mt-2">
                                                     <Field
                                                         name={`required_fields[${index}].key`}
