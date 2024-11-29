@@ -31,7 +31,22 @@ const GetUrlShortner = () => {
 
     const columns = useMemo(
         () => [
-            { header: 'MARKETING TITLE', accessorKey: 'short_code' },
+            {
+                header: 'Edit',
+                accessorKey: 'short_code',
+                cell: ({ getValue }) => (
+                    <span className="">
+                        <FaEdit className="text-xl text-blue-500 cursor-pointer" onClick={() => handleEditUrlShortner(getValue())} />
+                    </span>
+                ),
+            },
+            {
+                header: 'MARKETING TITLE',
+                accessorKey: 'short_code',
+                cell: ({ getValue }) => {
+                    return <div className="w-[100px]">{getValue()}</div>
+                },
+            },
             { header: 'Short Url', accessorKey: 'short_url' },
             { header: 'WEB URL', accessorKey: 'web_url' },
             { header: 'ANDROID URL', accessorKey: 'android_url' },
@@ -45,20 +60,6 @@ const GetUrlShortner = () => {
                 header: 'Update Date',
                 accessorKey: 'update_date',
                 cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-            {
-                header: 'Update Date',
-                accessorKey: 'update_date',
-                cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-            {
-                header: 'Edit',
-                accessorKey: 'short_code',
-                cell: ({ getValue }) => (
-                    <span className="">
-                        <FaEdit className="text-xl text-blue-500 cursor-pointer" onClick={() => handleEditUrlShortner(getValue())} />
-                    </span>
-                ),
             },
         ],
         [],

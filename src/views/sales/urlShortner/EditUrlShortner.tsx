@@ -146,7 +146,7 @@ const EditUrlShortner = () => {
         }
 
         try {
-            const response = await axioisInstance.post('/short_url/create', formData)
+            const response = await axioisInstance.patch(`/short_url/create/${short_code}`, formData)
             notification.success({
                 message: 'Success',
                 description: response?.data?.message || 'Url Shortener created successfully',
