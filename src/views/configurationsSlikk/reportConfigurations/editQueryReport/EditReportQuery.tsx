@@ -158,7 +158,7 @@ const EditReportQuery = () => {
             <h3 className="mb-5 from-neutral-900">Edit Report Query</h3>
             <Formik initialValues={reportData} enableReinitialize onSubmit={handleSubmit}>
                 {({ values, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-full">
                         <FormContainer>
                             <FormItem label="Unique Report Name" className="col-span-1 w-1/2">
                                 <Field type="text" name="name" placeholder="Enter Name" component={Input} />

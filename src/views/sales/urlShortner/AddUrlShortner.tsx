@@ -72,23 +72,31 @@ const AddUrlShortner = () => {
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
+        const { page_title, ...rest } = values
+        let pageTitle = ''
+
+        if (values.page_title) {
+            pageTitle = `page_title=${values?.page_title}`
+        }
+
         const formData = {
+            ...rest,
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}?${noSelectFilters}`
+                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}`
                     : ''
-                : `https://slikk.club/${values?.target_page}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}?${noSelectFilters}`
+                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}`
                     : ''
-                : `https://slikk.club/${values?.target_page}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}?${noSelectFilters}`
+                    ? `${values.android_url}/${pageTitle}?${noSelectFilters}`
                     : ''
-                : `https://slikk.club/${values?.target_page}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
         }
 
         try {
@@ -134,7 +142,7 @@ const AddUrlShortner = () => {
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(0, 1).map((item, key) => (
+                                {URLARRAY.slice(0, 2).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
@@ -172,7 +180,7 @@ const AddUrlShortner = () => {
                             )}
 
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(1).map((item, key) => (
+                                {URLARRAY.slice(2).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field
                                             type={item.type}

@@ -41,6 +41,7 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: !noPage,
     })
+    console.log('DeliveryType', selectedDeliveryType)
 
     const getRowClassName = (row: any) => {
         const createDate = moment(row.original.create_date)
