@@ -143,16 +143,22 @@ const ReportAnalytics = () => {
                     const { key, value, prefix = '', suffix = '', dataType } = field
 
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
+                        console.log('value for muktiselect ', value)
+                        if (value.length === 0 || value[0] === '') {
+                            return `${key}= NOT IN ('')`
+                        }
+
                         const formattedValues = value.map((item: any) => {
-                            const transformedValue =
-                                item && !['Date', 'Number', 'Boolean'].includes(dataType!)
+                            const transformedValue = item
+                                ? !['Date', 'Number', 'Boolean'].includes(dataType!)
                                     ? `${prefix.toUpperCase()}${item.toString().toUpperCase()}${suffix.toUpperCase()}`
                                     : `${prefix.toUpperCase()}${item}${suffix.toUpperCase()}`
+                                : ''
+
                             return `'${transformedValue}'`
                         })
-                        console.log('Formatted values to check if there is data present:', formattedValues)
 
-                        return `${key}=(${formattedValues.join(',')})`
+                        return `${key}= IN (${formattedValues.join(',')})`
                     }
 
                     if (value === undefined || value === null || value === '') {
