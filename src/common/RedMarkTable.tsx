@@ -45,7 +45,8 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
     const getRowClassName = (row: any) => {
         const createDate = moment(row.original.create_date)
         const currentDate = moment()
-        const differenceInSeconds = currentDate.diff(createDate, 'seconds')
+        const diffInMinutes = currentDate.diff(createDate, 'minutes')
+        console.log('Diff', diffInMinutes)
 
         const deliveryType = selectedDeliveryType || ''
 
@@ -55,7 +56,7 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
             row.original.status !== 'DECLINED' &&
             deliveryType !== 'EXCHANGE' &&
             deliveryType !== 'STANDARD' &&
-            differenceInSeconds > 3600
+            diffInMinutes > 60
         ) {
             return 'bg-red-200 font-bold'
         }
