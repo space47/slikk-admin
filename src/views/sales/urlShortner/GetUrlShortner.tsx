@@ -1,14 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo } from 'react'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import Table from '@/components/ui/Table'
-
 import { useAppDispatch, useAppSelector } from '@/store'
-
 import moment from 'moment'
 import { Button, Pagination, Select } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import { URLSHORTNERTYPE } from '@/store/types/shortUrl.types'
 import { fetchUrlShortner, setPage, setPageSize } from '@/store/slices/urlShortner/urlShortner.slice'
+import { FaEdit } from 'react-icons/fa'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -39,16 +39,34 @@ const GetUrlShortner = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+            {
+                header: 'Update Date',
+                accessorKey: 'update_date',
+                cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+            },
+            {
+                header: 'Edit',
+                accessorKey: 'short_code',
+                cell: ({ getValue }) => (
+                    <span className="">
+                        <FaEdit className="text-xl text-blue-500 cursor-pointer" onClick={() => handleEditUrlShortner(getValue())} />
+                    </span>
+                ),
             },
         ],
         [],
     )
+
+    const handleEditUrlShortner = (value: string) => {
+        navigate(`/app/appsCommuncication/urlShortner/${value}`)
+    }
 
     const table = useReactTable({
         data: result || [],

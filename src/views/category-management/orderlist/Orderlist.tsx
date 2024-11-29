@@ -597,7 +597,13 @@ const OrderList = () => {
                 </div>
                 <br />
 
-                <RedMarkTable mainData={orders} page={page} pageSize={pageSize} columns={columns} />
+                <RedMarkTable
+                    mainData={orders}
+                    page={page}
+                    pageSize={pageSize}
+                    columns={columns}
+                    selectedDeliveryType={selectedDeliveryType}
+                />
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                     {numberClick !== true && (

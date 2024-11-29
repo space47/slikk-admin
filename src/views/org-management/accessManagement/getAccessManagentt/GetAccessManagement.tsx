@@ -128,17 +128,19 @@ const GetAccessManagement = () => {
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Group Names</h2>
             <div className="flex gap-2 flex-wrap mb-5">
-                {getGroups.map((group) => (
-                    <div
-                        key={group.id}
-                        className={`cursor-pointer px-4 py-2 rounded-md shadow-md transition font-bold
+                {getGroups
+                    .filter((group) => group.id !== 1)
+                    .map((group) => (
+                        <div
+                            key={group.id}
+                            className={`cursor-pointer px-4 py-2 rounded-md shadow-md transition font-bold
               ${activeGroup === group.id ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
             `}
-                        onClick={() => handleClick(group.id)}
-                    >
-                        {group.name.toUpperCase()}
-                    </div>
-                ))}
+                            onClick={() => handleClick(group.id)}
+                        >
+                            {group.name.toUpperCase()}
+                        </div>
+                    ))}
             </div>
 
             {activeGroup ? (

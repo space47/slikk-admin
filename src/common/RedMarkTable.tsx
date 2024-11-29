@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     flexRender,
     getCoreRowModel,
@@ -19,9 +20,10 @@ interface TABLEPROPS {
     mainData: any
     noPage?: boolean
     overflow?: boolean
+    selectedDeliveryType?: any
 }
 
-const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABLEPROPS) => {
+const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, selectedDeliveryType }: TABLEPROPS) => {
     const table = useReactTable({
         data: mainData,
         columns,
@@ -45,7 +47,14 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow }: T
         const currentDate = moment()
         const differenceInSeconds = currentDate.diff(createDate, 'seconds')
 
-        if (row.original.status !== 'COMPLETED' && differenceInSeconds > 60) {
+        if (
+            row.original.status !== 'COMPLETED' &&
+            row.original.status !== 'CANCELLED' &&
+            row.original.status !== 'DECLINED' &&
+            selectedDeliveryType !== 'EXCHANGE' &&
+            selectedDeliveryType !== 'STANDARD' &&
+            differenceInSeconds > 3600
+        ) {
             return 'bg-red-200 font-bold'
         }
         return ''

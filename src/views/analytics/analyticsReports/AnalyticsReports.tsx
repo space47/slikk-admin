@@ -27,7 +27,7 @@ const AnalyticsReports = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
-
+    const ToDate = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const dispatch = useAppDispatch()
@@ -39,7 +39,7 @@ const AnalyticsReports = () => {
     const fetchRemitance = async () => {
         try {
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
-            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${to}${brandData}`)
+            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}`)
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
             setRemitance(remitanceData)
@@ -75,14 +75,14 @@ const AnalyticsReports = () => {
     const handleDownload = async () => {
         try {
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
-            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${to}${brandData}&download=true`, {
+            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}&download=true`, {
                 responseType: 'blob',
             })
 
             const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${to}.csv`
+            link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${ToDate}.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -95,7 +95,7 @@ const AnalyticsReports = () => {
         try {
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
-                `/merchant/order_items?download=true&download_type=master&from=${from}&to=${to}${brandData}&company_id=${selectedCompany.id}`,
+                `/merchant/order_items?download=true&download_type=master&from=${from}&to=${ToDate}${brandData}&company_id=${selectedCompany.id}`,
                 {
                     responseType: 'blob',
                 },
@@ -104,7 +104,7 @@ const AnalyticsReports = () => {
             const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${to}.csv`
+            link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${ToDate}.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -117,7 +117,7 @@ const AnalyticsReports = () => {
         try {
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
-                `/merchant/return_order_items?download=true&download_type=master&from=${from}&to=${to}${brandData}&company_id=${selectedCompany.id}`,
+                `/merchant/return_order_items?download=true&download_type=master&from=${from}&to=${ToDate}${brandData}&company_id=${selectedCompany.id}`,
                 {
                     responseType: 'blob',
                 },
@@ -126,7 +126,7 @@ const AnalyticsReports = () => {
             const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${to}.csv`
+            link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${ToDate}.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)

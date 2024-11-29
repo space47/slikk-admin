@@ -36,6 +36,7 @@ const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePrevie
                     <Field name="notification_type">
                         {({ field, form }: FieldProps<any>) => (
                             <Select
+                                isClearable
                                 field={field}
                                 form={form}
                                 options={notificationTypeArray}

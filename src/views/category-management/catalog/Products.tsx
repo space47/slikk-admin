@@ -89,6 +89,7 @@ const Products = () => {
     const [filteredSubCategories, setFilteredSubCategories] = useState([])
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
     const [showFacebookDialog, setShowFacebookDialog] = useState(false)
+    const [showRandomizeDialog, setShowRandomizeDialog] = useState(false)
 
     const [showDrawer, setShowDrawer] = useState(false)
 
@@ -240,11 +241,6 @@ const Products = () => {
                 cell: (info) => info.getValue(),
             },
 
-            // {
-            //     header: 'Active',
-            //     accessorKey: 'is_active',
-            //     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            // },
             {
                 header: 'Division',
                 accessorKey: 'division',
@@ -348,7 +344,7 @@ const Products = () => {
         }
         setShowFacebookDialog(false)
         try {
-            const response = await axiosInstance.post(`/backend/task/process`, body)
+            const response = await axiosInstance.post(`/backend/task/create`, body)
             notification.success({
                 message: response?.data?.message || 'SYNCED TO FB',
             })
@@ -356,6 +352,26 @@ const Products = () => {
             console.error(error)
             notification.error({
                 message: error.response?.data?.message || 'FAILED TO SYNC TO FB',
+            })
+        }
+    }
+    const handleRandomize = async () => {
+        notification.info({
+            message: 'SYNC IN PROCESS',
+        })
+        const body = {
+            task_name: 'randomize_product_listing',
+        }
+        setShowRandomizeDialog(false)
+        try {
+            const response = await axiosInstance.post(`/backend/task/create`, body)
+            notification.success({
+                message: response?.data?.message || 'product is randomized',
+            })
+        } catch (error: any) {
+            console.error(error)
+            notification.error({
+                message: error.response?.data?.message || 'FAILED TO ranodmize product',
             })
         }
     }
@@ -411,9 +427,30 @@ const Products = () => {
 
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
                     <div className="flex gap-3">
-                        <Button variant="new" onClick={() => setShowActionButtons(true)}>
-                            Actions
-                        </Button>
+                        <button
+                            className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-purple-600 rounded-lg text-white bg-purple-700"
+                            onClick={() => setShowRandomizeDialog(true)}
+                        >
+                            <span className="font-bold">Randomize</span>
+                        </button>
+                        <button
+                            className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-yellow-500 rounded-lg text-white bg-yellow-600"
+                            onClick={handleGenerateSiteMap}
+                        >
+                            <span className="font-bold">SiteMap</span>
+                        </button>
+                        <button
+                            className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-blue-600 rounded-lg text-white bg-blue-700"
+                            onClick={() => setShowFacebookDialog(true)}
+                        >
+                            <span className="font-bold">Sync</span> <FaFacebook className="text-xl" />
+                        </button>
+                        <button
+                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-green-400 rounded-lg font-bold"
+                            onClick={handleDownload}
+                        >
+                            <IoMdDownload className="text-xl" /> Export
+                        </button>
 
                         <Button
                             variant="new"
@@ -494,13 +531,13 @@ const Products = () => {
                     headingName="SYNC TO FACEBOOK"
                 />
             )}
-            {showActionButtons && (
-                <CatalogActions
-                    isOpen={showActionButtons}
-                    setIsOpen={setShowActionButtons}
-                    handleDownload={handleDownload}
-                    handleGenerateSiteMap={handleGenerateSiteMap}
-                    setShowFacebookDialog={setShowFacebookDialog}
+            {showRandomizeDialog && (
+                <DialogConfirm
+                    IsOpen={showRandomizeDialog}
+                    setIsOpen={setShowRandomizeDialog}
+                    onDialogOk={handleRandomize}
+                    IsConfirm
+                    headingName="Randomize Product Listing"
                 />
             )}
         </div>

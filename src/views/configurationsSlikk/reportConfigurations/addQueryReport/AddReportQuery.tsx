@@ -37,28 +37,26 @@ const AddReportQuery = () => {
                 extra_attributes: {},
             },
         ],
-        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '' }],
+        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '', suffixL: '' }],
     }
 
     const handleSubmit = async (values: any) => {
         console.log('Submitting form...', values)
 
         try {
-            const formattedRequiredFields = values.required_fields.reduce((obj: any, item: any) => {
+            const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
                 if (item.key) {
+                    let valueArray: [string, string | string[], string, string]
                     if (item.dataType === 'MultiSelect') {
-                        const multiSelectValues = item.value.split(',')
-                        // obj[item.key] = multiSelectValues.map((val: string) => (item.prefix ? `${item.prefix}_${val.trim()}` : val.trim()))
-                        if (item?.prefix) {
-                            obj[item.key] = multiSelectValues.map((val: string) => `${item.prefix}_${val.trim()}`)
-                        } else {
-                            obj[item.key] = multiSelectValues.map((val: string) => val.trim()).join(',')
-                        }
+                        const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
+                        valueArray = [item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
                     } else {
-                        obj[item.key] = `${item.dataType}_${item.value}`
+                        const value = item.value.trim()
+                        valueArray = [item.dataType, value, item.prefix || '', item.suffix || '']
                     }
+                    result[item.key] = valueArray
                 }
-                return obj
+                return result
             }, {})
 
             const updatedValues = values.value.map((item: any, index: number) => {
@@ -245,6 +243,12 @@ const AddReportQuery = () => {
                                                         component={Input}
                                                         className="w-1/3"
                                                     />
+                                                    <Field
+                                                        name={`required_fields[${index}].suffix`}
+                                                        placeholder="Enter Suffix"
+                                                        component={Input}
+                                                        className="w-1/3"
+                                                    />
                                                     <button
                                                         type="button"
                                                         className="text-red-600 hover:text-red-800 transition"
@@ -256,7 +260,7 @@ const AddReportQuery = () => {
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '' })}
+                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '', suffix: '' })}
                                                 className="mt-3 flex items-center text-green-600 hover:text-green-800 transition"
                                             >
                                                 <IoIosAddCircle className="text-2xl mr-1" />
