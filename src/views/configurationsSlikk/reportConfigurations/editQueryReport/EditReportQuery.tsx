@@ -49,7 +49,7 @@ const EditReportQuery = () => {
                 },
             },
         ],
-        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '' }],
+        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '', suffix: '' }],
     })
 
     const fetchReportApi = async () => {
@@ -77,8 +77,14 @@ const EditReportQuery = () => {
                 // value: [],
 
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
-                    const [dataType, value] = fullValue.split('_')
-                    return { key, value, dataType: dataType || 'String' }
+                    const [dataType, value, prefix = '', suffix = ''] = fullValue
+                    return {
+                        key,
+                        value: Array.isArray(value) ? value.join(', ') : value,
+                        dataType: dataType || 'String',
+                        prefix,
+                        suffix,
+                    }
                 }),
             }
 
@@ -92,22 +98,21 @@ const EditReportQuery = () => {
         fetchReportApi()
     }, [id])
 
-    const handleSubmit = async (values) => {
-        const formattedRequiredFields = values.required_fields.reduce((obj: any, item: any) => {
+    const handleSubmit = async (values: any) => {
+        console.log('start')
+        const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
             if (item.key) {
+                let valueArray: [string, string | string[], string, string]
                 if (item.dataType === 'MultiSelect') {
-                    const multiSelectValues = item.value.split(',')
-                    // obj[item.key] = multiSelectValues.map((val: string) => (item.prefix ? `${item.prefix}_${val.trim()}` : val.trim()))
-                    if (item?.prefix) {
-                        obj[item.key] = multiSelectValues.map((val: string) => `${item.prefix}_${val.trim()}`)
-                    } else {
-                        obj[item.key] = multiSelectValues.map((val: string) => val.trim()).join(',')
-                    }
+                    const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
+                    valueArray = [item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
                 } else {
-                    obj[item.key] = `${item.dataType}_${item.value}`
+                    const value = item.value.trim()
+                    valueArray = [item.dataType, value, item.prefix || '', item.suffix || '']
                 }
+                result[item.key] = valueArray
             }
-            return obj
+            return result
         }, {})
 
         console.log('ok the final stage', values.value)
@@ -133,7 +138,6 @@ const EditReportQuery = () => {
             value: updatedValues,
             required_fields: formattedRequiredFields,
         }
-        console.log('Body', body)
 
         try {
             const response = await axioisInstance.patch(`/query/config/${id}`, body)
@@ -254,7 +258,7 @@ const EditReportQuery = () => {
                                 <FieldArray name="required_fields">
                                     {({ push, remove }) => (
                                         <div>
-                                            {values.required_fields.map((item, index) => (
+                                            {values.required_fields?.map((item, index) => (
                                                 <div key={index} className="flex space-x-4 mt-2">
                                                     <Field
                                                         name={`required_fields[${index}].key`}
@@ -292,6 +296,12 @@ const EditReportQuery = () => {
                                                         component={Input}
                                                         className="w-1/3"
                                                     />
+                                                    <Field
+                                                        name={`required_fields[${index}].suffix`}
+                                                        placeholder="Enter suffix"
+                                                        component={Input}
+                                                        className="w-1/3"
+                                                    />
                                                     <button type="button" onClick={() => remove(index)}>
                                                         <MdCancel className="text-xl text-red-600" />
                                                     </button>
@@ -299,7 +309,7 @@ const EditReportQuery = () => {
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '' })}
+                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '', suffix: '' })}
                                                 className="mt-3"
                                             >
                                                 <IoIosAddCircle className="text-green-600 text-xl" />

@@ -86,6 +86,7 @@ const SecondStepNotification = ({
                                     {({ field, form }: FieldProps<any>) => (
                                         <Select
                                             isMulti
+                                            isClearable
                                             placeholder={`Select Filter Tags `}
                                             options={filters.filters}
                                             getOptionLabel={(option: any) => option.label}
@@ -143,6 +144,7 @@ const SecondStepNotification = ({
                         {({ field, form }: FieldProps<any>) => {
                             return (
                                 <Select
+                                    isClearable
                                     isMulti
                                     placeholder="Discount Tags"
                                     options={DISCOUNTOPTIONS}
@@ -163,6 +165,7 @@ const SecondStepNotification = ({
                         {({ field, form }: FieldProps<any>) => {
                             return (
                                 <Select
+                                    isClearable
                                     placeholder="Select Target Page"
                                     options={targetPageArray}
                                     value={targetPageArray.find((option: any) => option.value === field.value)}

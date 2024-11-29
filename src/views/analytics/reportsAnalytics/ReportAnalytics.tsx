@@ -22,6 +22,7 @@ const reportQueryArray = [
     { label: 'String', value: 'String' },
     { label: 'Boolean', value: 'Boolean' },
     { label: 'Select', value: 'Select' },
+    { label: 'MultiSelect', value: 'MultiSelect' },
 ]
 
 const ReportAnalytics = () => {
@@ -92,8 +93,11 @@ const ReportAnalytics = () => {
                 name: data?.results[0]?.name || '',
                 value: data?.results[0]?.value || '',
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
-                    const [dataType, value] = fullValue?.split('_')
-                    let transformedValue = value
+                    const [dataType, valueArray, prefix, suffix] = fullValue || []
+                    console.log('Prefix', prefix)
+
+                    let transformedValue = valueArray
+
                     if (key === 'start_date') {
                         transformedValue = moment().startOf('month').format('YYYY-MM-DD')
                     } else if (key === 'end_date') {
@@ -103,6 +107,8 @@ const ReportAnalytics = () => {
                     return {
                         key,
                         value: transformedValue,
+                        prefix: prefix || '',
+                        suffix: suffix || '',
                         dataType: dataType || 'String',
                     }
                 }),
@@ -133,14 +139,29 @@ const ReportAnalytics = () => {
         let reportParameters = ''
         if (values?.required_fields) {
             reportParameters = values.required_fields
-                .map((field: { key: string; value: string }) => {
-                    if (field?.value === undefined || null) {
-                        return `${field.key}=`
+                .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string }) => {
+                    const { key, value, prefix = '', suffix = '', dataType } = field
+                    if (dataType === 'MultiSelect' && Array.isArray(value)) {
+                        // if (!value || value.length === 0) {
+                        //     return `${key}= ()`
+                        // }
+
+                        const formattedValues = value.map((item: string) => {
+                            return item ? `'${prefix}${encodeURIComponent(item)}${suffix}'` : `'${prefix}${suffix}'`
+                        })
+                        console.log('Formatted values to check if there is data present:', formattedValues)
+
+                        return `${key}=(${formattedValues.join(',')})`
                     }
-                    return `${field.key}=${field.value}`
+                    if (value === undefined || value === null) {
+                        return `${key}=`
+                    }
+                    return `${key}=${prefix}${value}${suffix}`
                 })
                 .join('&')
         }
+
+        console.log('object required for', reportParameters)
 
         try {
             setShowSpinner(true)

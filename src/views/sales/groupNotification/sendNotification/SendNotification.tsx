@@ -381,7 +381,7 @@ const SendNotification = () => {
                                     </Button>
                                 )}
                                 {currentStep < 3 && currentStep > 0 && (
-                                    <Button type="button" variant="solid" onClick={handleNext} className="mr-2 bg-gray-600">
+                                    <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
                                         Next
                                     </Button>
                                 )}
@@ -389,7 +389,7 @@ const SendNotification = () => {
 
                             {currentStep === 0 && (
                                 <FormContainer className="flex justify-end">
-                                    <Button type="button" variant="solid" onClick={handleNext} className="mr-2 bg-gray-600">
+                                    <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
                                         Next
                                     </Button>
                                 </FormContainer>
@@ -402,7 +402,7 @@ const SendNotification = () => {
                                             Previous
                                         </Button>
                                         <div className="flex gap-20">
-                                            <Button variant="solid" type="submit" className=" text-white">
+                                            <Button variant="accept" type="submit" className=" text-white">
                                                 Submit
                                             </Button>
                                         </div>

@@ -13,6 +13,8 @@ interface CARDPROPS {
     handleRemove: any
     selectAll?: boolean
     handleSelectAll?: any
+    handleSearch: any
+    searchInput: any
 }
 
 const CardComponent = ({
@@ -25,19 +27,24 @@ const CardComponent = ({
     handleRemove,
     selectAll,
     handleSelectAll,
+    handleSearch,
+    searchInput,
 }: CARDPROPS) => {
     return (
         <div className="flex justify-around">
             {/* All Permissions */}
             <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                 <div className="sticky top-0 z-10 bg-white">
-                    {/* <div className="mb-3 bg-white">
+                    <div className="mb-3 bg-white">
                         <input
                             type="text"
                             className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                            placeholder="Search Permissions"
+                            placeholder={`Search ${label}`}
+                            value={searchInput}
+                            onChange={handleSearch}
+                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
                         />
-                    </div> */}
+                    </div>
                     <label htmlFor="All Permissions" className="font-bold bg-white">
                         ALL {label}
                     </label>

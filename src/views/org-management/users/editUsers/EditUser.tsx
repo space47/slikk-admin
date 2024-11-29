@@ -44,20 +44,35 @@ const BrandUserEdit = () => {
     const [getPermission, setGetPermission] = useState<permission[]>()
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([])
     const [addedPermissions, setAddedPermissions] = useState<permission[]>([])
+    const [searchInput, setSearchInput] = useState('')
     // for Groups.............
-    const [getGroups, setGetGroups] = useState([])
+    const [getGroups, setGetGroups] = useState<any[]>([])
     const [selectedGroups, setSelectedGroups] = useState<number[]>([])
     const [addedGroups, setAddedGroups] = useState<Groups[]>([])
-
+    const [groupSearchInput, setGroupSearchInput] = useState('')
     // for company
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [selectedCompany, setSelectedCompany] = useState<number[]>([])
     const [addedCompany, setAddedCompany] = useState<{ id: number; name: string }[]>([])
+    const [companySearchInput, setCompanySearchInput] = useState('')
     const [loadingEdit, setLoadingEdit] = useState(false)
     const [accessDenied, setAccessDenied] = useState(false)
     const { mobile } = useParams()
 
     const navigate = useNavigate()
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value)
+    }
+    const handleGroupSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setGroupSearchInput(e.target.value)
+    }
+    const handleCompanySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCompanySearchInput(e.target.value)
+    }
+    const filteredPermission = getPermission?.filter((item) => item.name.toLowerCase().includes(searchInput.toLowerCase()))
+    const filteredGroup = getGroups?.filter((item) => item?.name.toLowerCase().includes(groupSearchInput.toLowerCase()))
+    const filteredCompany = companyList?.filter((item) => item.name.toLowerCase().includes(companySearchInput.toLowerCase()))
 
     const selectedCurrentCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
@@ -317,13 +332,15 @@ const BrandUserEdit = () => {
                                     <CardComponent
                                         label="Company"
                                         selectedValue={selectedCompany}
-                                        getValue={companyList}
+                                        getValue={filteredCompany}
                                         handleSelect={handleCompanySelect}
                                         addedValue={addedCompany}
                                         handleAdd={handleAddCompany}
                                         handleRemove={handleRemoveCompany}
                                         selectAll
                                         handleSelectAll={handleSelectAll}
+                                        searchInput={companySearchInput}
+                                        handleSearch={handleCompanySearch}
                                     />
                                 </FormContainer>
                                 <br />
@@ -332,11 +349,13 @@ const BrandUserEdit = () => {
                                     <CardComponent
                                         label="Groups"
                                         selectedValue={selectedGroups}
-                                        getValue={getGroups}
+                                        getValue={filteredGroup}
                                         handleSelect={handleGroupSelect}
                                         addedValue={addedGroups}
                                         handleAdd={handleAddGroup}
                                         handleRemove={handleRemoveGroups}
+                                        searchInput={groupSearchInput}
+                                        handleSearch={handleGroupSearch}
                                     />
                                 </FormContainer>
                                 <br />
@@ -345,11 +364,13 @@ const BrandUserEdit = () => {
                                     <CardComponent
                                         label="Permissions"
                                         selectedValue={selectedPermissions}
-                                        getValue={getPermission}
+                                        getValue={filteredPermission}
                                         handleSelect={handlePermissionSelect}
                                         addedValue={addedPermissions}
                                         handleAdd={handleAddPermissions}
                                         handleRemove={handleRemovePermissions}
+                                        searchInput={searchInput}
+                                        handleSearch={handleSearch}
                                     />
                                 </FormContainer>
 
