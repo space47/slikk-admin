@@ -83,6 +83,7 @@ const OrderList = () => {
     }>({})
 
     const previousOrders = useRef<Order[]>([])
+    const [deliveryForTable, setDeliveryForTable] = useState('')
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
@@ -307,6 +308,7 @@ const OrderList = () => {
                     const Rowid = row?.original.invoice_id
                     const selectedDeliveryType = deliveryChangeType[Rowid]?.label || row.original?.delivery_type || 'SELECT'
                     console.log('OKOKOKOKK', selectedDeliveryType)
+                    setDeliveryForTable(selectedDeliveryType)
 
                     return (
                         <Dropdown
@@ -602,7 +604,7 @@ const OrderList = () => {
                     page={page}
                     pageSize={pageSize}
                     columns={columns}
-                    selectedDeliveryType={selectedDeliveryType}
+                    selectedDeliveryType={deliveryForTable ?? ''}
                 />
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">

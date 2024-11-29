@@ -47,12 +47,14 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
         const currentDate = moment()
         const differenceInSeconds = currentDate.diff(createDate, 'seconds')
 
+        const deliveryType = selectedDeliveryType || ''
+
         if (
             row.original.status !== 'COMPLETED' &&
             row.original.status !== 'CANCELLED' &&
             row.original.status !== 'DECLINED' &&
-            selectedDeliveryType !== 'EXCHANGE' &&
-            selectedDeliveryType !== 'STANDARD' &&
+            deliveryType !== 'EXCHANGE' &&
+            deliveryType !== 'STANDARD' &&
             differenceInSeconds > 3600
         ) {
             return 'bg-red-200 font-bold'

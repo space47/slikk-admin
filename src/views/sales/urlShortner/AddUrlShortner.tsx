@@ -189,7 +189,7 @@ const AddUrlShortner = () => {
                                 <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button variant="solid" type="submit" className="text-white">
+                                <Button variant="accept" type="submit" className="text-white">
                                     Submit
                                 </Button>
                             </FormContainer>
