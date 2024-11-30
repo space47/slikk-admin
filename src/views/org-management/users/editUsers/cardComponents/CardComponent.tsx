@@ -15,6 +15,8 @@ interface CARDPROPS {
     handleSelectAll?: any
     handleSearch: any
     searchInput: any
+    forPermission?: any
+    handlePermissionEdit?: any
 }
 
 const CardComponent = ({
@@ -29,6 +31,8 @@ const CardComponent = ({
     handleSelectAll,
     handleSearch,
     searchInput,
+    forPermission,
+    handlePermissionEdit,
 }: CARDPROPS) => {
     return (
         <div className="flex justify-around">
@@ -72,6 +76,11 @@ const CardComponent = ({
                 <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAdd}>
                     ADD {'>>'}
                 </Button>
+                {forPermission && (
+                    <Button type="button" variant="pending" className="w-32 px-8" onClick={handlePermissionEdit}>
+                        update
+                    </Button>
+                )}
             </div>
 
             {/* Added Permissions */}
