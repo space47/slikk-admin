@@ -40,6 +40,9 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName,
                     console.log('Date identified')
                     return <span>{moment(value).utcOffset(330).format('YYYY-MM-DD hh:mm:ss a')}</span>
                 }
+                if (key.toLowerCase().includes('image')) {
+                    return <img src={value?.split(',')[0] || value} alt="Image" className="w-24 h-20 object-cover cursor-pointer" />
+                }
                 return <span>{value}</span>
             },
         }))
