@@ -192,6 +192,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 mobile_position: row.background_config?.mobile_position || '',
                 background_topMargin: Number(row.background_config?.background_topMargin) || 0,
                 background_bottomMargin: Number(row.background_config?.background_bottomMargin) || 0,
+                web_background_topMargin: Number(row.background_config?.web_background_topMargin) || 0,
+                web_background_bottomMargin: Number(row.background_config?.web_background_bottomMargin) || 0,
                 mobile_width: Number(row.background_config?.mobile_width) || 0,
                 web_width: Number(row.background_config?.web_width) || 0,
                 background_image: imageUpload || null,
