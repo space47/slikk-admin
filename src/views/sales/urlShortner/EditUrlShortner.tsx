@@ -168,9 +168,9 @@ const EditUrlShortner = () => {
             const response = await axioisInstance.patch(`/short_url/update/${short_code}`, formData)
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Url Shortener Updated successfully',
+                description: response?.data?.message || response?.data?.data?.message || 'Url Shortener Updated successfully',
             })
-            setShortUrlData(response.data.short_url)
+            setShortUrlData(response?.data?.data?.short_url)
             setShowGeneratedUrl(true)
         } catch (error: any) {
             notification.error({
