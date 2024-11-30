@@ -28,3 +28,18 @@ export const pageSizeOptions = [
     { value: 50, label: '50 / page' },
     { value: 100, label: '100 / page' },
 ]
+
+export const UpdateCartArray = [
+    {
+        name: 'barcodes',
+        label: 'Barcode',
+        type: 'text',
+        Placeholder: 'Enter Barcode',
+    },
+    {
+        name: 'update_quantity',
+        label: 'Update Quantity',
+        type: 'checkbox',
+        Placeholder: 'Enter Quantity',
+    },
+]

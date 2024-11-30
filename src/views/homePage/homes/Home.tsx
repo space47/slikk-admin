@@ -102,6 +102,8 @@ const Home = () => {
 
     const basketSize = homeData ? sum / (homeData?.received?.count - homeData?.delivery_type?.EXCHANGE) : 0
 
+    const receiverOrderValue = homeData ? homeData?.received.count - homeData?.delivery_type?.EXCHANGE : 0
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setInputValues((prevValues) => ({
@@ -154,7 +156,7 @@ const Home = () => {
             handleClick: () => handleReceived(from, To_Date),
             img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
             label: 'Received Orders',
-            p1Data: homeData?.received.count,
+            p1Data: receiverOrderValue ?? 0,
             p2Data: homeData?.received.total_amount?.toFixed(2),
         },
         {
