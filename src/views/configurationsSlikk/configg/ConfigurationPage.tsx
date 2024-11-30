@@ -94,7 +94,7 @@ const ConfigurationPage = () => {
                                 </span>
                             </div>
                             <div className="text-lg font-medium text-gray-700">
-                                Name: <span className="text-green-600">{item?.name}</span>
+                                Name: <span className="text-green-600 break-words">{item?.name}</span>
                             </div>
                             <div className="text-sm text-gray-600 mt-2">{renderValue(item?.value)}</div>
                             <div className="text-sm text-gray-500 mt-2">
