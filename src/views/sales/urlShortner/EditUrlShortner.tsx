@@ -19,7 +19,7 @@ const EditUrlShortner = () => {
     const [urlFieldDatas, setUrlFieldDatas] = useState<any>()
     const [shortUrlData, setShortUrlData] = useState('')
     const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
-    const [filterShow, setFilterShow] = useState(false)
+
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState([])
@@ -42,21 +42,24 @@ const EditUrlShortner = () => {
 
     const initialValues: any = {
         short_code: urlFieldDatas?.short_code || '',
-        web_url: urlFieldDatas?.web_url?.split('?')[0] || '',
-        android_url: urlFieldDatas?.android_url?.split('?')[0] || '',
-        ios_url: urlFieldDatas?.ios_url?.split('?')[0] || '',
+        web_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
+        android_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
+        ios_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
+        select_filter:
+            urlFieldDatas?.web_url?.split('https://slikk.club/')[1]?.length > 0 ||
+            urlFieldDatas?.android_url?.split('https://slikk.club/')[1]?.length > 0,
     }
 
+    const [filterShow, setFilterShow] = useState(initialValues?.select_filter)
+
     const extractFilters = (url: string) => {
-        // Extract filters from the URL (assuming format like 'filter1_value,filter2_value')
         const filterParams: Record<string, any> = {}
 
-        // Match patterns like `utm-medium_marketing`, `minprice_10`, etc.
         const filterRegex = /([a-zA-Z0-9-_]+)_([a-zA-Z0-9-_]+)/g
         let match
         while ((match = filterRegex.exec(url)) !== null) {
             const [_, key, value] = match
-            // Map the keys to the corresponding fields, e.g., minprice -> min_price
+
             if (key === 'minprice') filterParams['minprice'] = value
             if (key === 'maxprice') filterParams['maxprice'] = value
             if (key === 'utm-medium') filterParams['utm_medium'] = value
@@ -109,7 +112,6 @@ const EditUrlShortner = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('page_Tuile value', values?.page_title)
         const filters = [
             ...(values.filters || []),
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -118,7 +120,7 @@ const EditUrlShortner = () => {
             ...MAXMINARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
             ...OFFARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
             ...(values.discountTags || []),
-            `filterId_${filterId}`,
+            ...(filterId ? [`filterId_${filterId}`] : []),
         ]
             .filter(Boolean)
             .join(',')
@@ -127,27 +129,25 @@ const EditUrlShortner = () => {
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
-        const { page_title, ...rest } = values
+        const { page_title } = values
 
         let pageTitle = ''
 
-        if (values.page_title) {
-            pageTitle = `page_title=${values?.page_title}`
+        if (page_title) {
+            pageTitle = `page_title=${page_title}`
         }
 
-        console.log('pageTitle', pageTitle)
+        console.log('Target Page', values?.target_page)
 
         const formData = {
-            ...rest,
-            short_code: values?.short_code,
-            ios_url: !values.select_filter
-                ? values.ios_url
-                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}`
-                    : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
             web_url: !values.select_filter
                 ? values.web_url
                     ? `${values.web_url}/${pageTitle}?${noSelectFilters}`
+                    : ''
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
+            ios_url: !values.select_filter
+                ? values.ios_url
+                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}`
                     : ''
                 : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
             android_url: !values.select_filter
@@ -155,6 +155,7 @@ const EditUrlShortner = () => {
                     ? `${values.android_url}/${pageTitle}?${noSelectFilters}`
                     : ''
                 : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
+            short_code: values?.short_code,
         }
 
         try {
@@ -180,11 +181,6 @@ const EditUrlShortner = () => {
     const handleFilterChange = (e: any, setFieldValue: any) => {
         const isChecked = e.target.checked
         setFieldValue('select_filter', isChecked)
-        setFilterShow(isChecked)
-
-        if (isChecked) {
-            URLARRAY.slice(1).forEach((item) => setFieldValue(item.name, ''))
-        }
     }
 
     return (
@@ -196,7 +192,7 @@ const EditUrlShortner = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ resetForm, setFieldValue }) => (
+                {({ resetForm, setFieldValue, values }) => (
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
@@ -228,7 +224,7 @@ const EditUrlShortner = () => {
                                 />
                             </FormItem>
 
-                            {filterShow && (
+                            {values.select_filter && (
                                 <FilterSelect
                                     handleAddFilter={handleAddFilter}
                                     showAddFilter={showAddFilter}
@@ -240,13 +236,7 @@ const EditUrlShortner = () => {
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {URLARRAY.slice(2).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            className="w-full"
-                                            // disabled={filterShow}
-                                        />
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} className="w-full" />
                                     </FormItem>
                                 ))}
                             </FormContainer>
