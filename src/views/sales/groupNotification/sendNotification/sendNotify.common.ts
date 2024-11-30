@@ -171,7 +171,7 @@ export const notificationTypeArray = [
 
 export const targetPageArray = [
     { label: 'product', value: 'product' },
-    { label: 'productListing', value: 'products' },
+    { label: 'productListing', value: 'productListing' },
     { label: 'wishlist', value: 'wishlist' },
     { label: 'order', value: 'order' },
     { label: 'cart', value: 'cart' },
