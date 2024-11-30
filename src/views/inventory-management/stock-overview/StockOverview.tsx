@@ -202,6 +202,28 @@ const StockOverview = () => {
                     )
                 },
             },
+            //
+            {
+                header: 'Quantity Ordered',
+                accessorKey: 'quantity_ordered',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Quantity Received',
+                accessorKey: 'quantity_received',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Quantity Returned',
+                accessorKey: 'quantity_returned',
+                cell: (info) => info.getValue(),
+            },
+            {
+                header: 'Quantity Sold',
+                accessorKey: 'quantity_sold',
+                cell: (info) => info.getValue(),
+            },
+            //
             {
                 header: 'Expiry',
                 accessorKey: 'expiry_date',

@@ -42,9 +42,9 @@ const EditUrlShortner = () => {
 
     const initialValues: any = {
         short_code: urlFieldDatas?.short_code || '',
-        web_url: urlFieldDatas?.web_url || '',
-        android_url: urlFieldDatas?.android_url || '',
-        ios_url: urlFieldDatas?.ios_url || '',
+        web_url: urlFieldDatas?.web_url?.split('?')[0] || '',
+        android_url: urlFieldDatas?.android_url?.split('?')[0] || '',
+        ios_url: urlFieldDatas?.ios_url?.split('?')[0] || '',
     }
 
     const extractFilters = (url: string) => {
@@ -109,6 +109,7 @@ const EditUrlShortner = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        console.log('page_Tuile value', values?.page_title)
         const filters = [
             ...(values.filters || []),
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -126,23 +127,34 @@ const EditUrlShortner = () => {
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
+        const { page_title, ...rest } = values
+
+        let pageTitle = ''
+
+        if (values.page_title) {
+            pageTitle = `page_title=${values?.page_title}`
+        }
+
+        console.log('pageTitle', pageTitle)
+
         const formData = {
+            ...rest,
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}?${noSelectFilters}`
+                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}`
                     : ''
-                : `https://slikk.club/${values?.target_page}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}?${noSelectFilters}`
+                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}`
                     : ''
-                : `https://slikk.club/${values?.target_page}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}?${noSelectFilters}`
+                    ? `${values.android_url}/${pageTitle}?${noSelectFilters}`
                     : ''
-                : `https://slikk.club/${values?.target_page}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
         }
 
         try {
@@ -188,7 +200,7 @@ const EditUrlShortner = () => {
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(0, 1).map((item, key) => (
+                                {URLARRAY.slice(0, 2).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
@@ -226,7 +238,7 @@ const EditUrlShortner = () => {
                             )}
 
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(1).map((item, key) => (
+                                {URLARRAY.slice(2).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field
                                             type={item.type}
@@ -243,7 +255,7 @@ const EditUrlShortner = () => {
                                 <Button type="reset" className="mr-2 bg-gray-600" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button variant="solid" type="submit" className="text-white">
+                                <Button variant="accept" type="submit" className="text-white">
                                     Submit
                                 </Button>
                             </FormContainer>

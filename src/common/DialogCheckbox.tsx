@@ -11,16 +11,19 @@ interface ConfirmationDialogProps {
     IsConfirm?: boolean
     headingName?: string
     checkBox?: boolean
+    onDialogClose: any
 }
 
-const DialogConfirm = ({ IsOpen, setIsOpen, onDialogOk, IsDelete, IsConfirm, headingName, checkBox }: ConfirmationDialogProps) => {
-    const onDialogClose = () => {
-        if (checkBox) {
-            onDialogOk(false)
-        }
-        setIsOpen(false)
-    }
-
+const DialogcheckBox = ({
+    IsOpen,
+    setIsOpen,
+    onDialogOk,
+    IsDelete,
+    IsConfirm,
+    headingName,
+    checkBox,
+    onDialogClose,
+}: ConfirmationDialogProps) => {
     return (
         <div>
             <Dialog isOpen={IsOpen} onClose={onDialogClose} onRequestClose={onDialogClose}>
@@ -53,4 +56,4 @@ const DialogConfirm = ({ IsOpen, setIsOpen, onDialogOk, IsDelete, IsConfirm, hea
     )
 }
 
-export default DialogConfirm
+export default DialogcheckBox

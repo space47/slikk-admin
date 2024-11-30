@@ -141,23 +141,37 @@ const ReportAnalytics = () => {
             reportParameters = values.required_fields
                 .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string }) => {
                     const { key, value, prefix = '', suffix = '', dataType } = field
+
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
-                        // if (!value || value.length === 0) {
-                        //     return `${key}= ()`
-                        // }
+                        console.log('value for muktiselect ', value)
+                        if (value.length === 0 || value[0] === '') {
+                            return `${key}= NOT IN ('')`
+                        }
 
-                        const formattedValues = value.map((item: string) => {
-                            return item ? `'${prefix}${encodeURIComponent(item)}${suffix}'` : `'${prefix}${suffix}'`
+                        const formattedValues = value.map((item: any) => {
+                            const transformedValue = item
+                                ? !['Date', 'Number', 'Boolean'].includes(dataType!)
+                                    ? `${prefix.toUpperCase()}${item.toString().toUpperCase()}${suffix.toUpperCase()}`
+                                    : `${prefix.toUpperCase()}${item}${suffix.toUpperCase()}`
+                                : ''
+
+                            return `'${transformedValue}'`
                         })
-                        console.log('Formatted values to check if there is data present:', formattedValues)
 
-                        return `${key}=(${formattedValues.join(',')})`
+                        return `${key}= IN (${formattedValues.join(',')})`
                     }
-                    if (value === undefined || value === null) {
-                        return `${key}=`
+
+                    if (value === undefined || value === null || value === '') {
+                        return null
                     }
-                    return `${key}=${prefix}${value}${suffix}`
+
+                    const transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
+                        ? `${prefix.toUpperCase()}${value.toString().toUpperCase()}${suffix.toUpperCase()}`
+                        : `${prefix.toUpperCase()}${value}${suffix.toUpperCase()}`
+
+                    return `${key}=${transformedValue}`
                 })
+                .filter(Boolean)
                 .join('&')
         }
 
