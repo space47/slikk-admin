@@ -93,16 +93,21 @@ const Home = () => {
         (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
 
     const averageOrderValue = homeData
-        ? homeData?.received?.total_amount / (homeData?.received?.count - homeData?.delivery_type?.EXCHANGE)
+        ? homeData?.received?.total_amount /
+          (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
         : 0
 
     const dataValues = Object.values(homeData?.brand_wise_sale ?? {})
 
     const sum = dataValues.reduce((acc, value) => acc + value, 0)
 
-    const basketSize = homeData ? sum / (homeData?.received?.count - homeData?.delivery_type?.EXCHANGE) : 0
+    const basketSize = homeData
+        ? sum / (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
+        : 0
 
-    const receiverOrderValue = homeData ? homeData?.received.count - homeData?.delivery_type?.EXCHANGE : 0
+    const receiverOrderValue = homeData
+        ? homeData?.received.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0)
+        : 0
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
