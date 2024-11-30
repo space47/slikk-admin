@@ -19,10 +19,10 @@ const UpdateInventory = () => {
                     <span className="text-xl font-bold">Update Inventory</span>
                 </div>
                 <div
-                    className={`flex   cursor-pointer  ${tabSelect === 'update_cart' ? ' border-b-4 border-black' : ''}`}
-                    onClick={() => handleSelectTab('update_cart')}
+                    className={`flex   cursor-pointer  ${tabSelect === 'update_task' ? ' border-b-4 border-black' : ''}`}
+                    onClick={() => handleSelectTab('update_task')}
                 >
-                    <span className="text-xl font-bold">Update Cart</span>
+                    <span className="text-xl font-bold">Update Task</span>
                 </div>
             </div>
             {tabSelect === 'update_inventory' && (
@@ -36,7 +36,7 @@ const UpdateInventory = () => {
                 </>
             )}
 
-            {tabSelect === 'update_cart' && (
+            {tabSelect === 'update_task' && (
                 <>
                     <UpdateCartItems />
                 </>
