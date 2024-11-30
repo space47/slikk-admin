@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import Table from '@/components/ui/Table'
 import { useAppDispatch, useAppSelector } from '@/store'
@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { URLSHORTNERTYPE } from '@/store/types/shortUrl.types'
 import { fetchUrlShortner, setPage, setPageSize } from '@/store/slices/urlShortner/urlShortner.slice'
 import { FaEdit } from 'react-icons/fa'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -20,6 +21,8 @@ const pageSizeOptions = [
 ]
 
 const GetUrlShortner = () => {
+    const [globalFilter, setGlobalFilter] = useState('')
+    const [urlData, setUrlData] = useState([])
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
@@ -28,6 +31,22 @@ const GetUrlShortner = () => {
     useEffect(() => {
         dispatch(fetchUrlShortner())
     }, [dispatch, page, pageSize])
+
+    const fetchForGlobalFilter = async () => {
+        try {
+            const response = await axioisInstance.get(`/short_urls?short_code=${globalFilter}`)
+            const data = response?.data?.message
+            setUrlData(data?.results)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        if (globalFilter) {
+            fetchForGlobalFilter()
+        }
+    }, [globalFilter])
 
     const columns = useMemo(
         () => [
@@ -69,8 +88,9 @@ const GetUrlShortner = () => {
         navigate(`/app/appsCommuncication/urlShortner/${value}`)
     }
 
+    const tableData = globalFilter ? urlData : result || []
     const table = useReactTable({
-        data: result || [],
+        data: tableData || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         manualPagination: false,
@@ -93,10 +113,15 @@ const GetUrlShortner = () => {
     return (
         <div className="flex flex-col gap-5">
             {' '}
-            <div className="flex justify-end">
-                <Button variant="new" onClick={handleCreateUrl}>
-                    CREATE URL
-                </Button>
+            <div>
+                <div>
+                    <input placeholder="Search by short code" value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} />
+                </div>
+                <div className="flex justify-end">
+                    <Button variant="new" onClick={handleCreateUrl}>
+                        CREATE URL
+                    </Button>
+                </div>
             </div>
             <div className="overflow-x-auto">
                 <Table className="min-w-full">

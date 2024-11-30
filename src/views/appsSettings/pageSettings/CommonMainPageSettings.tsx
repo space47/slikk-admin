@@ -13,6 +13,12 @@ import TagsEdit from './TagsEdit'
 import PageComponentConfig from './PageComponentConfig'
 import OtherConfigs from './OtherConfigs'
 import BackGroundImages from './BackGroundImages'
+import CommonSelect from './CommonSelect'
+
+const SectionTypeArray = [
+    { label: 'Generic', value: 'generic' },
+    { label: 'Personalized', value: 'personalized' },
+]
 
 const dataTypeArray = [
     { label: 'banner', value: 'banner' },
@@ -395,6 +401,13 @@ const CommonMainPageSettings = ({
                                 </FormItem>
                             </FormContainer>
                         </FormContainer>
+                        <CommonSelect
+                            name="section_type"
+                            label="Section Type"
+                            options={SectionTypeArray}
+                            needClassName
+                            className=" col-span-1 w-1/4"
+                        />
 
                         <FormContainer className="grid grid-cols-2 gap-3">
                             {DATATYPEVALUES.map((item, key) => (

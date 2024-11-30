@@ -357,11 +357,23 @@ export const webBorrderStyleArray = [
 
 export const BackGroundArray = [
     { label: 'Background Color', type: 'color', name: 'background_config.background_color', placeholder: 'Place bg color in hex' },
+    {
+        label: 'Web Background Color',
+        type: 'color',
+        name: 'background_config.web_background_color',
+        placeholder: 'Place Web bg color in hex',
+    },
     { label: 'Background TopMargin', type: 'number', name: 'background_config.background_topMargin', placeholder: 'Place Top Margin' },
     {
-        label: 'Background BottomMargin',
+        label: 'Web Background TopMargin',
         type: 'number',
-        name: 'background_config.background_bottomMargin',
+        name: 'background_config.web_background_topMargin',
+        placeholder: 'Place web Top Margin',
+    },
+    {
+        label: 'Web Background BottomMargin',
+        type: 'number',
+        name: 'background_config.web_background_bottomMargin',
         placeholder: 'Place bottom Margin',
     },
     // {

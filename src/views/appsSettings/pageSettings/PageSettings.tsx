@@ -74,6 +74,7 @@ const PageSettings = () => {
                 const { mobile_background_array, ...rest } = item
                 acc[index + 1] = {
                     ...rest,
+                    component_config: item?.component_config,
                     mobile_background_image: item.mobile_background_image || '',
                 }
                 return acc

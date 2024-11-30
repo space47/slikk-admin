@@ -32,11 +32,6 @@ const borderStyleArray = [
     { label: 'Dashed', value: 'dashed' },
 ]
 
-const SectionTypeArray = [
-    { label: 'Generic', value: 'generic' },
-    { label: 'Personalized', value: 'personalized' },
-]
-
 interface PageCompProps {
     FontSizeArray: FontSize[]
     SECTIONARRAY: FontSize[]
@@ -214,13 +209,6 @@ const PageComponentConfig = ({
                                 ))}
                             </FormContainer>
                         )}
-                        <CommonSelect
-                            name="section_type"
-                            label="Section Type"
-                            options={SectionTypeArray}
-                            needClassName
-                            className=" col-span-1 w-1/2"
-                        />
                     </FormItem>
                 </FormContainer>
 
