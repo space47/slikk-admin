@@ -49,7 +49,13 @@ const AddUrlShortner = () => {
         try {
             const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
             setFilterId(response.data?.data?.id)
+            notification.success({
+                message: 'Filter Id Added',
+            })
         } catch (error) {
+            notification.error({
+                message: 'Failed to Add Filter ID',
+            })
             console.error(error)
         }
     }
@@ -76,7 +82,7 @@ const AddUrlShortner = () => {
         let pageTitle = ''
 
         if (values.page_title) {
-            pageTitle = `page_title=${values?.page_title}`
+            pageTitle = `${values?.page_title}`
         }
 
         const formData = {

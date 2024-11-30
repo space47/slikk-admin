@@ -106,7 +106,13 @@ const EditUrlShortner = () => {
         try {
             const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
             setFilterId(response.data?.data?.id)
+            notification.success({
+                message: 'Filter Id Added',
+            })
         } catch (error) {
+            notification.error({
+                message: 'Failed to Add Filter ID',
+            })
             console.error(error)
         }
     }
@@ -134,7 +140,7 @@ const EditUrlShortner = () => {
         let pageTitle = ''
 
         if (page_title) {
-            pageTitle = `page_title=${page_title}`
+            pageTitle = `${page_title}`
         }
 
         console.log('Target Page', values?.target_page)
@@ -159,17 +165,17 @@ const EditUrlShortner = () => {
         }
 
         try {
-            const response = await axioisInstance.patch(`/short_url/create/${short_code}`, formData)
+            const response = await axioisInstance.patch(`/short_url/update/${short_code}`, formData)
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Url Shortener created successfully',
+                description: response?.data?.message || 'Url Shortener Updated successfully',
             })
             setShortUrlData(response.data.short_url)
             setShowGeneratedUrl(true)
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
-                description: error?.response?.data?.message || 'Failed to create Url Shortener',
+                description: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to update Url Shortener',
             })
         }
     }
