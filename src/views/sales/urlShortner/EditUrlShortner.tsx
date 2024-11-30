@@ -182,6 +182,9 @@ const EditUrlShortner = () => {
 
     const handleCopy = (data: string) => {
         navigator.clipboard.writeText(data)
+        notification.success({
+            message: 'Copied',
+        })
     }
 
     const handleFilterChange = (e: any, setFieldValue: any) => {
