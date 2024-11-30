@@ -51,6 +51,16 @@ const ConfigurationPage = () => {
                     ))}
                 </div>
             )
+        } else if (_.isArray(value)) {
+            return (
+                <div className="flex flex-col h-36 overflow-y-auto bg-gray-100 p-3 rounded-lg shadow-inner scrollbar-hide">
+                    {value.map((item, index) => (
+                        <div key={index} className="text-sm text-gray-700 space-y-1">
+                            <span className="text-indigo-600">{JSON.stringify(item)}</span>
+                        </div>
+                    ))}
+                </div>
+            )
         }
         return <span className="text-indigo-600">{value}</span>
     }
@@ -69,7 +79,7 @@ const ConfigurationPage = () => {
     return (
         <div className="flex flex-col gap-6 p-8  min-h-screen">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {configurationData.map((item) => (
+                {configurationData?.map((item) => (
                     <Card
                         key={item.id}
                         className="bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex flex-col gap-4 h-full"
