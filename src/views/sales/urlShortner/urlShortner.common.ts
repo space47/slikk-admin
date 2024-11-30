@@ -16,9 +16,16 @@ export const initialValueForUrl: URLTYPES = {
 
 export const URLARRAY = [
     {
-        label: 'Link TITLE(Enter unique titlw)',
+        label: 'Link TITLE(Enter unique title)',
         name: 'short_code',
         placeholder: 'Enter short code',
+        type: 'text',
+        classname: 'w-full',
+    },
+    {
+        label: 'Page Title',
+        name: 'page_title',
+        placeholder: 'Enter app page display name',
         type: 'text',
         classname: 'w-full',
     },

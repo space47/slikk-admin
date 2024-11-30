@@ -106,7 +106,7 @@ const AddReportQuery = () => {
             <h3 className="mb-5 text-xl font-semibold text-neutral-900">Add Report Query</h3>
             <Formik initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, resetForm }) => (
-                    <Form className="w-full lg:w-2/3">
+                    <Form className="w-full ">
                         <FormContainer>
                             <FormItem label="Name" className="col-span-1 w-full lg:w-1/2 mb-4">
                                 <Field type="text" name="name" placeholder="Enter Name" component={Input} />
