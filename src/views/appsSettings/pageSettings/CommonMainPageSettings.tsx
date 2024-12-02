@@ -186,13 +186,13 @@ const CommonMainPageSettings = ({
 
                         {configFields ? (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setConfigFields(false)}>
+                                <Button variant="reject" onClick={() => setConfigFields(false)} type="button">
                                     Component Configs
                                 </Button>
                             </div>
                         ) : (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setConfigFields(true)}>
+                                <Button variant="new" onClick={() => setConfigFields(true)} type="button">
                                     Component Configs
                                 </Button>
                             </div>
@@ -224,13 +224,13 @@ const CommonMainPageSettings = ({
 
                         {bgFields ? (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setBgFields(false)}>
+                                <Button variant="reject" onClick={() => setBgFields(false)} type="button">
                                     Background Fields
                                 </Button>
                             </div>
                         ) : (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setBgFields(true)}>
+                                <Button variant="new" onClick={() => setBgFields(true)} type="button">
                                     Background Fields
                                 </Button>
                             </div>
@@ -248,13 +248,13 @@ const CommonMainPageSettings = ({
 
                         {otherFields ? (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setOtherFields(false)}>
+                                <Button variant="reject" onClick={() => setOtherFields(false)} type="button">
                                     Other Configs
                                 </Button>
                             </div>
                         ) : (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setOtherFields(true)}>
+                                <Button variant="new" onClick={() => setOtherFields(true)} type="button">
                                     Other Field Configs
                                 </Button>
                             </div>
@@ -412,7 +412,7 @@ const CommonMainPageSettings = ({
                                     <Field
                                         type={item.type}
                                         name={item.name}
-                                        placeholder={`place ${item.label.toUpperCase()}`}
+                                        placeholder={`PLACE ${item.label.toUpperCase()}`}
                                         component={Input}
                                     />
                                 </FormItem>

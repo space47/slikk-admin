@@ -15,6 +15,7 @@ import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { WebType } from './PageSettingsCommon'
 import PageDraggavleTable from './PageDraggavleTable'
+import PreviousConfiguration from './PreviousConfiguration'
 
 const PageSettings = () => {
     const [data, setData] = useState<WebType[]>([])
@@ -23,13 +24,17 @@ const PageSettings = () => {
     const [particularRow, setParticularRow] = useState<WebType | undefined>()
     const [addModal, setAddModal] = useState(false)
     const formikRef = useRef<FormikProps<any>>(null)
+    const [showPreviousConfigDrawer, setShowPreviousConfigDrawer] = useState(false)
     const navigate = useNavigate()
+
+    const [previousConfigs, setPreviousConfigs] = useState<any[]>([])
 
     const fetchData = async () => {
         try {
             const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage.value}`)
             const responsedata = response.data?.data?.value?.Web || {}
             setData(Object.values(responsedata))
+            setPreviousConfigs(response.data?.data?.previous_configs || [])
         } catch (error) {
             console.error('Error fetching data:', error)
             setData([])
@@ -39,6 +44,16 @@ const PageSettings = () => {
     useEffect(() => {
         fetchData()
     }, [currentSelectedPage])
+
+    console.log(previousConfigs, 'is data')
+
+    const handlePreviousConfigClick = (index: number) => {
+        const oppIndex = previousConfigs.length - 1 - index
+        const selectedConfig = previousConfigs[oppIndex]?.Web || {}
+        console.log('Selecting the number button', selectedConfig)
+        setData(Object.values(selectedConfig))
+        setShowPreviousConfigDrawer(false)
+    }
 
     const reorderData = (startIndex: number, endIndex: number) => {
         const newData = [...data]
@@ -74,7 +89,7 @@ const PageSettings = () => {
                 const { mobile_background_array, ...rest } = item
                 acc[index + 1] = {
                     ...rest,
-                    component_config: item?.component_config,
+                    // component_config: item?.component_config,
                     mobile_background_image: item.mobile_background_image || '',
                 }
                 return acc
@@ -198,9 +213,14 @@ const PageSettings = () => {
                         UPDATE PAGE SETTINGS
                     </Button>
                 </div>
-                <Button variant="new" size="md" onClick={() => setAddModal(true)}>
-                    ADD PAGE SETTINGS
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="new" onClick={() => setShowPreviousConfigDrawer(true)}>
+                        PREVIOUS CONFIGS
+                    </Button>
+                    <Button variant="new" size="md" onClick={() => setAddModal(true)}>
+                        ADD PAGE SETTINGS
+                    </Button>
+                </div>
             </div>
 
             {yesModal && (
@@ -233,6 +253,14 @@ const PageSettings = () => {
                     }}
                     data={data}
                     setData={setData}
+                />
+            )}
+
+            {showPreviousConfigDrawer && (
+                <PreviousConfiguration
+                    isOpen={showPreviousConfigDrawer}
+                    setIsOpen={setShowPreviousConfigDrawer}
+                    handlePreviousConfigClick={handlePreviousConfigClick}
                 />
             )}
 

@@ -27,12 +27,12 @@ export const HEADERCONFIGARRAY = [
     {
         label: 'Header BG Color',
         name: 'header_config.background_color',
-        type: 'color',
+        type: 'text',
     },
     {
         label: 'Header Font Color',
         name: 'header_config.font_color',
-        type: 'color',
+        type: 'text',
     },
 ]
 
@@ -65,12 +65,12 @@ export const SUBHEADERCONFIGARRAY = [
     {
         label: 'Sub-Header BG Color',
         name: 'sub_header_config.background_color',
-        type: 'color',
+        type: 'text',
     },
     {
         label: 'Sub-Header Font Color',
         name: 'sub_header_config.font_color',
-        type: 'color',
+        type: 'text',
     },
 ]
 
@@ -103,12 +103,12 @@ export const FOOTERCONFIGARRAY = [
     {
         label: 'Footer BG Color',
         name: 'footer_config.background_color',
-        type: 'color',
+        type: 'text',
     },
     {
         label: 'Footer Font Color',
         name: 'footer_config.font_color',
-        type: 'color',
+        type: 'text',
     },
 ]
 
@@ -121,6 +121,11 @@ export const DATATYPEVALUES = [
     {
         label: 'Data Type Brands',
         name: 'data_type.brands',
+        type: 'text',
+    },
+    {
+        label: 'Data Type Sub Category',
+        name: 'data_type.sub_category',
         type: 'text',
     },
     {

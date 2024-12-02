@@ -7,6 +7,9 @@ import { WebType } from './pageSettings.types'
 import { beforeUpload } from '@/common/beforeUpload'
 import { BackGroundArray, MobileAndDesktopPositions } from './genericComp'
 import CommonSelect from './CommonSelect'
+import PageEditVideo from './PageEditVideo'
+import PageAddVideo from './PageAddVideo'
+import { beforeVideoUpload } from '@/common/beforUploadVideo'
 
 interface BGprops {
     editMode: any
@@ -136,6 +139,56 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values }:
                         </FormItem>
                     </FormContainer>
                 </FormContainer>
+            )}
+
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        label="background Video"
+                        rowName={initialValue.background_video}
+                        removeName="background_video"
+                        // handleRemoveImage={handleRemoveSubImage}
+                        name="background_video_array"
+                        beforeVideoUpload={beforeVideoUpload}
+                        fileList={values.background_video_array}
+                        fieldName="background_video_array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Background video"
+                        name="background_video_array"
+                        fieldName="background_video_array"
+                        fileList={values.background_video_array}
+                        beforeUpload={beforeVideoUpload}
+                    />
+                </>
+            )}
+
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        label="Mobile background Video"
+                        rowName={initialValue.mobile_background_video}
+                        removeName="mobile_background_video"
+                        // handleRemoveImage={handleRemoveSubImage}
+                        name="mobile_background_video_array"
+                        beforeVideoUpload={beforeVideoUpload}
+                        fileList={values.mobile_background_video_array}
+                        fieldName="mobile_background_video_array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Mobile Background video"
+                        name="mobile_background_video_array"
+                        fieldName="mobile_background_video_array"
+                        fileList={values.mobile_background_video_array}
+                        beforeUpload={beforeVideoUpload}
+                    />
+                </>
             )}
 
             {BackGroundArray.map((item, key) => (

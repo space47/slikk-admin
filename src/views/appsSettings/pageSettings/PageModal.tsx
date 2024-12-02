@@ -115,51 +115,120 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         fetchPost()
     }, [postInput])
 
+    const handleSelect = (value: any) => {
+        const selected = DROPDOWNARRAY.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
+    }
+
+    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
+        if (!files || files.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+                image.onerror = () => {
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+        }
+        return aspectRatios
+    }
+
     const handleimage = async (files: File[]) => {
-        if (!files || files?.length == 0) {
+        if (!files || files.length === 0) {
             return
         }
 
         const formData = new FormData()
 
-        files.forEach((file) => {
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    console.log('Image width:', image.width, 'Image height:', image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+
             formData.append('file', file)
-        })
+        }
+
         formData.append('file_type', 'banners')
 
         try {
-            return await axioisInstance
-                .post('fileupload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
-                .then((response) => {
-                    const newData = response.data.url
-                    notification.success({
-                        message: 'Success',
-                        description: response?.data?.message || 'Image uploaded successfully',
-                    })
-                    return newData
-                })
-                .catch((error) => {
-                    console.error(error)
-                    notification.error({
-                        message: 'Upload Failed',
-                        description: error?.response?.data?.message || 'Image upload failed',
-                    })
-                    return ''
-                })
+            const response = await axioisInstance.post('fileupload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+
+            const newData = response.data.url
+            notification.success({
+                message: 'Success',
+                description: response?.data?.message || 'Image uploaded successfully',
+            })
+
+            return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
+            notification.error({
+                message: 'Upload Failed',
+                description: error?.response?.data?.message || 'Image upload failed',
+            })
+
             return ''
         }
     }
 
-    const handleSelect = (value: any) => {
-        const selected = DROPDOWNARRAY.find((item) => item.value === value)
-        if (selected) {
-            setCurrentSelectedPage(selected)
+    const handleVideo = async (files: File[]) => {
+        if (!files || files.length === 0) {
+            console.error('No files provided for upload')
+            return 'Error'
+        }
+
+        const formData = new FormData()
+        files.forEach((file, index) => {
+            formData.append(`file[${index}]`, file)
+        })
+        formData.append('file_type', 'product')
+
+        try {
+            console.log('Uploading video files:', files)
+            const response = await axioisInstance.post('fileupload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            console.log('Upload successful:', response)
+            const newData = response.data.url
+            return newData
+        } catch (error: any) {
+            console.error('Error uploading video files:', error)
+            notification.error({
+                message: 'Failure',
+                description: error?.response?.data?.message || 'Video not uploaded',
+            })
+            return 'Error'
         }
     }
 
@@ -173,7 +242,16 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
             const headerIconUpload = await handleimage(row.header_config_icon_Array)
 
-            console.log('New Row below', row.interval)
+            const footervideoUpload = await handleVideo(row.footer_config_video_Array)
+            const headerVideoUpload = await handleVideo(row.header_config_video_Array)
+            const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
+            const backgroundVideoUpload = await handleVideo(row?.background_video_array)
+            console.log('New Row below')
+            const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
+            const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
+            const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
+            const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
+            const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
 
             setShowSpinner(true)
             const newRow = {
@@ -181,36 +259,46 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 background_image: imageUpload || row?.background_image,
                 mobile_background_image: mobileimageUpload || row?.mobile_background_image,
                 background_config: {
-                    background_color: row?.background_config?.background_color || '',
-                    desktop_position: row?.background_config?.desktop_position || '',
-                    mobile_position: row?.background_config?.mobile_position || '',
-                    background_topMargin: Number(row?.background_config?.background_topMargin) || 0,
-                    background_bottomMargin: Number(row?.background_config?.background_bottomMargin) || 0,
-                    web_background_topMargin: Number(row.background_config?.web_background_topMargin) || 0,
-                    web_background_bottomMargin: Number(row.background_config?.web_background_bottomMargin) || 0,
-                    mobile_width: Number(row?.background_config?.mobile_width) || 0,
-                    web_width: Number(row?.background_config?.web_width) || 0,
+                    background_color: row?.background_config?.background_color || undefined,
+                    desktop_position: row?.background_config?.desktop_position || undefined,
+                    mobile_position: row?.background_config?.mobile_position || undefined,
+                    background_topMargin: Number(row?.background_config?.background_topMargin) || undefined,
+                    background_bottomMargin: Number(row?.background_config?.background_bottomMargin) || undefined,
+                    web_background_topMargin: Number(row.background_config?.web_background_topMargin) || undefined,
+                    web_background_bottomMargin: Number(row.background_config?.web_background_bottomMargin) || undefined,
+                    mobile_width: Number(row?.background_config?.mobile_width) || undefined,
+                    web_width: Number(row?.background_config?.web_width) || undefined,
                     background_image: imageUpload || row?.background_image,
                     mobile_background_image: mobileimageUpload || row?.mobile_background_image,
+                    background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) || undefined,
+                    mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) || undefined,
+                    is_background_video: row?.background_config.bg_video || false,
+                    background_video: backgroundVideoUpload || row?.background_video,
                 },
                 footer_config: {
                     ...row?.footer_config,
-                    image: footerImageUpload || '',
+                    image: footerImageUpload || undefined,
+                    aspect_ratio: footerImageAspectRatios[0].toFixed(2) || undefined,
+                    video: footervideoUpload || undefined,
                 },
                 header_config: {
                     ...row?.header_config,
-                    icon: headerIconUpload || '',
-                    image: headerImageUpload || '',
+                    icon: headerIconUpload || undefined,
+                    image: headerImageUpload || undefined,
+                    aspect_ratio: headerImageAspectRatios[0].toFixed(2) || undefined,
+                    video: headerVideoUpload || undefined,
                 },
                 sub_header_config: {
                     ...row?.sub_header_config,
-                    image: subHeaderImageUpload || '',
+                    image: subHeaderImageUpload || undefined,
+                    aspect_ratio: subHeaderImageAspectRatios[0].toFixed(2) || undefined,
+                    video: subHeaderVideoUpload || undefined,
                 },
                 data_type: {
                     ...row?.data_type,
-                    type: row?.data_type?.type || '',
-                    posts: Array.isArray(postData) ? postData.join(',') : row?.data_type?.posts || '',
-                    barcodes: Array.isArray(productData) ? productData.join(',') : row?.data_type?.barcodes || '',
+                    type: row?.data_type?.type || undefined,
+                    posts: Array.isArray(postData) ? postData.join(',') : row?.data_type?.posts || undefined,
+                    barcodes: Array.isArray(productData) ? productData.join(',') : row?.data_type?.barcodes || undefined,
                 },
                 component_config: {
                     ...row?.component_config,
@@ -223,8 +311,8 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     web_name_footer: row?.web_name_footer || false,
                     web_section_border: row?.web_section_border || false,
                 },
-                section_filters: row?.data_type?.filters || '',
-                section_type: row.section_type || '',
+                section_filters: row?.data_type?.filters || undefined,
+                section_type: row.section_type || undefined,
             }
             setShowSpinner(false)
 

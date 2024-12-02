@@ -118,14 +118,14 @@ export const genericComponentArray = [
     {
         label: 'Font Color',
         name: 'component_config.font_color',
-        type: 'color',
+        type: 'text',
         component: { Input },
         placeholder: 'Enter Font Color',
     },
     {
         label: 'Footer Font Color',
         name: 'component_config.footer_font_color',
-        type: 'color',
+        type: 'text',
         component: { Input },
         placeholder: 'Enter Font Color',
     },
@@ -267,14 +267,14 @@ export const genericComponentArray = [
     {
         label: 'Web Font Color',
         name: 'component_config.web_font_color',
-        type: 'color',
+        type: 'text',
         component: { Input },
         placeholder: 'Enter Web Font Color',
     },
     {
         label: 'Web Footer Font Color',
         name: 'component_config.web_footer_font_color',
-        type: 'color',
+        type: 'text',
         component: { Input },
         placeholder: 'Enter Web Font Color',
     },
@@ -312,7 +312,7 @@ export const borrderStyleArray = [
     {
         label: 'Color',
         name: 'component_config.border_color',
-        type: 'color',
+        type: 'text',
         component: { Input },
         placeholder: 'Enter color hexcode',
     },
@@ -329,7 +329,7 @@ export const sectionBorrderStyleArray = [
     {
         label: 'Section Color',
         name: 'component_config.section_border_color',
-        type: 'color',
+        type: 'text',
         component: { Input },
         placeholder: 'Enter color hexcode',
     },
@@ -346,7 +346,7 @@ export const WebSectionBorrderStyleArray = [
     {
         label: 'Web Section Color',
         name: 'component_config.web_section_border_color',
-        type: 'color',
+        type: 'text',
         component: { Input },
         placeholder: 'Enter color hexcode',
     },
@@ -363,17 +363,17 @@ export const webBorrderStyleArray = [
     {
         label: 'Web Color',
         name: 'component_config.web_border_color',
-        type: 'color',
+        type: 'text',
         component: { Input },
         placeholder: 'Enter color hexcode',
     },
 ]
 
 export const BackGroundArray = [
-    { label: 'Background Color', type: 'color', name: 'background_config.background_color', placeholder: 'Place bg color in hex' },
+    { label: 'Background Color', type: 'text', name: 'background_config.background_color', placeholder: 'Place bg color in hex' },
     {
         label: 'Web Background Color',
-        type: 'color',
+        type: 'text',
         name: 'background_config.web_background_color',
         placeholder: 'Place Web bg color in hex',
     },
@@ -419,6 +419,12 @@ export const BackGroundArray = [
         type: 'number',
         name: 'background_config.web_width',
         placeholder: 'Place Mobile width',
+    },
+    {
+        label: 'Video',
+        type: 'checkbox',
+        name: 'background_config.bg_video',
+        placeholder: '',
     },
 ]
 
