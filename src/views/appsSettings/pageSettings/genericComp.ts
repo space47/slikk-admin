@@ -81,6 +81,13 @@ export const genericComponentArray = [
         placeholder: 'Enter Corner Radius',
     },
     {
+        label: 'Section Corner Radius',
+        name: 'component_config.section_corner_radius',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Section Corner Radius',
+    },
+    {
         label: 'Gap',
         name: 'component_config.gap',
         type: 'number',
@@ -221,6 +228,13 @@ export const genericComponentArray = [
         type: 'number',
         component: { Input },
         placeholder: 'Enter Web Corner Radius',
+    },
+    {
+        label: 'Web Section Corner Radius',
+        name: 'component_config.web_section_corner_radius',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Corner Radius',
     },
     {
         label: 'Web Gap',
