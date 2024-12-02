@@ -14,6 +14,7 @@ import PageComponentConfig from './PageComponentConfig'
 import OtherConfigs from './OtherConfigs'
 import BackGroundImages from './BackGroundImages'
 import CommonSelect from './CommonSelect'
+import { SubDataTypeArray } from './PageSettingsCommon'
 
 const SectionTypeArray = [
     { label: 'Generic', value: 'generic' },
@@ -269,26 +270,22 @@ const CommonMainPageSettings = ({
                             />
                         )}
                         <FormContainer className="grid grid-cols-2 gap-3">
-                            <FormItem asterisk label="Data Type" className="col-span-1 w-[60%] h-[80%]">
-                                <Field name="data_type.type">
-                                    {({ field, form }: FieldProps<any>) => {
-                                        return (
-                                            <Select
-                                                field={field}
-                                                form={form}
-                                                options={dataTypeArray}
-                                                value={dataTypeArray.find((option) => option.value === field.value)}
-                                                onChange={(option) => {
-                                                    const value = option?.value || ''
-                                                    form.setFieldValue(field.name, value)
-                                                }}
-                                            />
-                                        )
-                                    }}
-                                </Field>
-                            </FormItem>
+                            <CommonSelect
+                                needClassName
+                                label="Data Types"
+                                name="data_type.type"
+                                options={dataTypeArray}
+                                className="w-2/3"
+                            />
+                            <CommonSelect
+                                needClassName
+                                label="Sub Data Types"
+                                name="data_type.sub_data_type"
+                                options={SubDataTypeArray}
+                                className="w-2/3"
+                            />
 
-                            <FormItem asterisk label="Filters" className="col-span-1 w-[60%] h-[80%]">
+                            <FormItem label="Filters" className="col-span-1 w-[60%] h-[80%]">
                                 <Field
                                     type="text"
                                     name="data_type.filters"

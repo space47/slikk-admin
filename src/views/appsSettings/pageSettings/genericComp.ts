@@ -363,7 +363,13 @@ export const BackGroundArray = [
         name: 'background_config.web_background_color',
         placeholder: 'Place Web bg color in hex',
     },
-    { label: 'Background TopMargin', type: 'number', name: 'background_config.background_topMargin', placeholder: 'Place Top Margin' },
+    { label: 'Background Top Margin', type: 'number', name: 'background_config.background_topMargin', placeholder: 'Place Top Margin' },
+    {
+        label: 'Background Bottom Margin',
+        type: 'number',
+        name: 'background_config.background_bottomMargin',
+        placeholder: 'Place Bottom Margin',
+    },
     {
         label: 'Web Background TopMargin',
         type: 'number',

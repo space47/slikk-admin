@@ -5,8 +5,6 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import { Field, Form, Formik } from 'formik'
-import * as Yup from 'yup'
-import type { FieldProps } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { Card, notification } from 'antd'
@@ -15,7 +13,6 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { USER_EDIT_FROM } from './UserEditForm'
 import CardComponent from './cardComponents/CardComponent'
-import CardAnother from './cardComponents/CardAnother'
 import { Spinner } from '@/components/ui'
 import AccessDenied from '@/views/pages/AccessDenied'
 
@@ -61,6 +58,9 @@ const BrandUserEdit = () => {
 
     const navigate = useNavigate()
 
+    const currentCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+
+    // For Search Input.....
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
     }
@@ -70,16 +70,17 @@ const BrandUserEdit = () => {
     const handleCompanySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCompanySearchInput(e.target.value)
     }
+
+    //Filtered Search INputs
     const filteredPermission = getPermission?.filter((item) => item.name.toLowerCase().includes(searchInput.toLowerCase()))
     const filteredGroup = getGroups?.filter((item) => item?.name.toLowerCase().includes(groupSearchInput.toLowerCase()))
     const filteredCompany = companyList?.filter((item) => item.name.toLowerCase().includes(companySearchInput.toLowerCase()))
 
-    const selectedCurrentCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-
+    // Get API CAlls to get Initial value
     const fetchUserData = async () => {
         try {
             setLoadingEdit(true)
-            const response = await axioisInstance.get(`/company/1/users?mobile=${mobile}`)
+            const response = await axioisInstance.get(`/company/${currentCompany.id}/users?mobile=${mobile}`)
             const usersInfo = response.data.data
 
             setUserData(usersInfo)
@@ -102,7 +103,7 @@ const BrandUserEdit = () => {
 
     useEffect(() => {
         fetchUserData()
-    }, [])
+    }, [currentCompany])
 
     const fetchData = async () => {
         try {
@@ -173,7 +174,7 @@ const BrandUserEdit = () => {
             prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
         )
     }
-    const handleAddPermissions = () => {
+    const handleAddPermissions = async () => {
         const alreadyAdded = selectedPermissions.filter((permId) => addedPermissions.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
@@ -187,23 +188,42 @@ const BrandUserEdit = () => {
             (perm) => selectedPermissions.includes(perm.id) && !addedPermissions.some((added) => added.id === perm.id),
         )
 
+        console.log('Permission Data', selected)
+
         setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
         setSelectedPermissions([])
+    }
+
+    const handlePermissionEdit = async () => {
+        const body = {
+            action: 'update_permission',
+            permission_id: addedPermissions.map((item) => item.id).join(','),
+        }
+
+        try {
+            const response = await axioisInstance.patch(`/company/user/permission/${mobile}`, body)
+            notification.success({
+                message: 'Permission Added',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failed to add Permission',
+            })
+            console.log(error)
+        }
     }
 
     const handleRemovePermissions = (id: number) => {
         setAddedPermissions((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
-
-    //.........................................................................................................................
     // Groups..................................................................
-
+    // Id store karne ke liye maine iha changes kia...........
     const handleGroupSelect = (id: number) => {
-        setSelectedGroups((prevSelected) =>
-            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
-        )
+        setSelectedGroups((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [id]))
     }
-    const handleAddGroup = () => {
+
+    console.log('GroupSelect Id', selectedGroups)
+    const handleAddGroup = async () => {
         const alreadyAdded = selectedGroups.filter((permId) => addedGroups.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
@@ -216,21 +236,53 @@ const BrandUserEdit = () => {
         const selected = getGroups?.filter((perm) => selectedGroups.includes(perm.id) && !addedGroups.some((added) => added.id === perm.id))
 
         setAddedGroups((prevAdded) => [...prevAdded, ...selected])
+
+        const body = {
+            mobile: mobile,
+            group_id: selectedGroups.join(','),
+            action: 'add',
+        }
+        try {
+            const response = await axioisInstance.patch(`/merchant/user/groups`, body)
+            notification.success({
+                message: 'Group Added',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failed to Add Group',
+            })
+            console.log(error)
+        }
         setSelectedGroups([])
     }
 
-    const handleRemoveGroups = (id: number) => {
+    const handleRemoveGroups = async (id: number) => {
         setAddedGroups((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
+
+        const body = {
+            mobile: mobile,
+            group_id: id,
+            action: 'remove',
+        }
+        try {
+            const response = await axioisInstance.patch(`/merchant/user/groups`, body)
+            notification.success({
+                message: 'Group Removed',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failed to remove Group',
+            })
+            console.log(error)
+        }
     }
 
     // comapny................................................................
-
+    // Id store karne ke liye maine iha changes kia...........
     const handleCompanySelect = (id: number) => {
-        setSelectedCompany((prevSelected) =>
-            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
-        )
+        setSelectedCompany((prevSelected) => (prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [id]))
     }
-    const handleAddCompany = () => {
+    const handleAddCompany = async () => {
         const alreadyAdded = selectedCompany.filter((permId) => addedCompany.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
@@ -245,11 +297,44 @@ const BrandUserEdit = () => {
         )
 
         setAddedCompany((prevAdded) => [...prevAdded, ...selected])
+
+        const body = {
+            company_id: selectedCompany.join(','),
+            action: 'add',
+        }
+        try {
+            const response = await axioisInstance.patch(`/company/user/${mobile}`, body)
+            notification.success({
+                message: 'Company Added',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failed to Add company',
+            })
+            console.log(error)
+        }
+
         setSelectedCompany([])
     }
 
-    const handleRemoveCompany = (id: number) => {
+    const handleRemoveCompany = async (id: number) => {
         setAddedCompany((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
+
+        const body = {
+            company_id: id,
+            action: 'remove',
+        }
+        try {
+            const response = await axioisInstance.patch(`/company/user/${mobile}`, body)
+            notification.success({
+                message: 'Company Removed',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failed to remove company',
+            })
+            console.log(error)
+        }
     }
 
     const handleSelectAll = (e) => {
@@ -282,17 +367,21 @@ const BrandUserEdit = () => {
             group_id: `${groupIds.join(',')}`,
             permission_id: `${permissionIds.join(',')}`,
         }
-        console.log('body', bodyData)
-        try {
-            const response = await axioisInstance.patch(
-                `company/user/${mobile}`, //-companyid
-                bodyData,
-            )
-            console.log('response of add users', response)
-            navigate('/app/users')
-        } catch (error) {
-            console.log(error)
-        }
+        navigate(`/app/users`)
+        notification.success({
+            message: 'User has been successfully updated',
+        })
+
+        // try {
+        //     const response = await axioisInstance.patch(
+        //         `company/user/${mobile}`, //-companyid
+        //         bodyData,
+        //     )
+        //     console.log('response of add users', response)
+        //     navigate('/app/users')
+        // } catch (error) {
+        //     console.log(error)
+        // }
     }
 
     if (accessDenied) {
@@ -337,7 +426,6 @@ const BrandUserEdit = () => {
                                         addedValue={addedCompany}
                                         handleAdd={handleAddCompany}
                                         handleRemove={handleRemoveCompany}
-                                        selectAll
                                         handleSelectAll={handleSelectAll}
                                         searchInput={companySearchInput}
                                         handleSearch={handleCompanySearch}
@@ -371,6 +459,8 @@ const BrandUserEdit = () => {
                                         handleRemove={handleRemovePermissions}
                                         searchInput={searchInput}
                                         handleSearch={handleSearch}
+                                        forPermission
+                                        handlePermissionEdit={handlePermissionEdit}
                                     />
                                 </FormContainer>
 

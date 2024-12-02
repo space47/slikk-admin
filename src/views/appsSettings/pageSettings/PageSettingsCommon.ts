@@ -70,3 +70,9 @@ export type WebType = {
     sub_header_config: Config
     mobile_background_image: string
 }
+
+export const SubDataTypeArray = [
+    { label: 'Top Seller', value: 'top_seller' },
+    { label: 'Top Searched', value: 'top_searched' },
+    { label: 'Favourite', value: 'favourite' },
+]
