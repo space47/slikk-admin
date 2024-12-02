@@ -102,7 +102,7 @@ const CardComponent = ({
                         <div key={key} className="flex flex-col">
                             <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
                                 <span className="text-black">{item.name}</span>
-                                <button className="text-red-500 ml-2" onClick={() => handleRemove(item.id)}>
+                                <button className="text-red-500 ml-2" onClick={() => handleRemove(item.id)} type="button">
                                     Remove
                                 </button>
                             </div>

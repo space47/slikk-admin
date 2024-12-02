@@ -365,6 +365,10 @@ const BrandUserEdit = () => {
             group_id: `${groupIds.join(',')}`,
             permission_id: `${permissionIds.join(',')}`,
         }
+        navigate(`/app/users`)
+        notification.success({
+            message: 'User has been successfully updated',
+        })
 
         // try {
         //     const response = await axioisInstance.patch(
