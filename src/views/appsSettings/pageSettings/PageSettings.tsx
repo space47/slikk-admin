@@ -26,8 +26,10 @@ const PageSettings = () => {
     const formikRef = useRef<FormikProps<any>>(null)
     const [showPreviousConfigDrawer, setShowPreviousConfigDrawer] = useState(false)
     const navigate = useNavigate()
-
+    const [storePrevIndex, setStorePrevIndex] = useState<number>()
     const [previousConfigs, setPreviousConfigs] = useState<any[]>([])
+    const [currentConfig, setCurentConfigs] = useState<any[]>([])
+    const [isPreviousConfig, setIsPreviousConfig] = useState(false)
 
     const fetchData = async () => {
         try {
@@ -35,6 +37,7 @@ const PageSettings = () => {
             const responsedata = response.data?.data?.value?.Web || {}
             setData(Object.values(responsedata))
             setPreviousConfigs(response.data?.data?.previous_configs || [])
+            setCurentConfigs(Object.values(responsedata))
         } catch (error) {
             console.error('Error fetching data:', error)
             setData([])
@@ -48,11 +51,21 @@ const PageSettings = () => {
     console.log(previousConfigs, 'is data')
 
     const handlePreviousConfigClick = (index: number) => {
+        setStorePrevIndex(index + 1)
         const oppIndex = previousConfigs.length - 1 - index
         const selectedConfig = previousConfigs[oppIndex]?.Web || {}
         console.log('Selecting the number button', selectedConfig)
         setData(Object.values(selectedConfig))
+        setIsPreviousConfig(true)
         setShowPreviousConfigDrawer(false)
+    }
+
+    const handleCurrentConfig = () => {
+        setData(currentConfig)
+        setIsPreviousConfig(false)
+        notification.success({
+            message: 'Set to current configurations',
+        })
     }
 
     const reorderData = (startIndex: number, endIndex: number) => {
@@ -209,14 +222,19 @@ const PageSettings = () => {
                             ))}
                         </Dropdown>
                     </div>
-                    <Button variant="new" size="md" onClick={handlePageUpdate}>
+                    <Button variant="new" size="md" onClick={handlePageUpdate} type="button">
                         UPDATE PAGE SETTINGS
                     </Button>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="new" onClick={() => setShowPreviousConfigDrawer(true)}>
-                        PREVIOUS CONFIGS
+                    <Button variant="reject" onClick={() => setShowPreviousConfigDrawer(true)} type="button">
+                        OLD CONFIGS
                     </Button>
+                    {isPreviousConfig && (
+                        <Button variant="accept" onClick={handleCurrentConfig} type="button">
+                            CURRENT CONFIGS
+                        </Button>
+                    )}
                     <Button variant="new" size="md" onClick={() => setAddModal(true)}>
                         ADD PAGE SETTINGS
                     </Button>
@@ -263,6 +281,8 @@ const PageSettings = () => {
                     handlePreviousConfigClick={handlePreviousConfigClick}
                 />
             )}
+
+            {isPreviousConfig && <div className="font-bold text-xl text-red-500 mb-6">Previous Configuration : {storePrevIndex ?? +1}</div>}
 
             <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />
         </div>
