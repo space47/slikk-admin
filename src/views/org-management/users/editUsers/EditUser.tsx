@@ -58,6 +58,8 @@ const BrandUserEdit = () => {
 
     const navigate = useNavigate()
 
+    const currentCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+
     // For Search Input.....
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -78,7 +80,7 @@ const BrandUserEdit = () => {
     const fetchUserData = async () => {
         try {
             setLoadingEdit(true)
-            const response = await axioisInstance.get(`/company/1/users?mobile=${mobile}`)
+            const response = await axioisInstance.get(`/company/${currentCompany.id}/users?mobile=${mobile}`)
             const usersInfo = response.data.data
 
             setUserData(usersInfo)
@@ -101,7 +103,7 @@ const BrandUserEdit = () => {
 
     useEffect(() => {
         fetchUserData()
-    }, [])
+    }, [currentCompany])
 
     const fetchData = async () => {
         try {
