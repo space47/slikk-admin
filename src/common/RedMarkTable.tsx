@@ -51,12 +51,14 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
 
         const deliveryType = selectedDeliveryType || ''
 
+        if (deliveryType === 'EXCHANGE' || deliveryType === 'STANDARD') {
+            return ''
+        }
+
         if (
             row.original.status !== 'COMPLETED' &&
             row.original.status !== 'CANCELLED' &&
             row.original.status !== 'DECLINED' &&
-            deliveryType !== 'EXCHANGE' &&
-            deliveryType !== 'STANDARD' &&
             diffInMinutes > 60
         ) {
             return 'bg-red-200 font-bold'
