@@ -214,6 +214,14 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 },
                 component_config: {
                     ...row?.component_config,
+                    border: row?.border,
+                    name: row?.name,
+                    name_footer: row?.name_footer,
+                    section_border: row?.section_border,
+                    web_border: row?.web_border,
+                    web_name: row?.web_name,
+                    web_name_footer: row?.web_name_footer,
+                    web_section_border: row?.web_section_border,
                 },
                 section_filters: row?.data_type?.filters || '',
                 section_type: row.section_type || '',
@@ -245,14 +253,14 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
-    const [borderForm, setBorderForm] = useState(initialValue.border)
-    const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue.web_border)
-    const [nameForm, setNameForm] = useState(initialValue.name)
-    const [webNameForm, setWebNameForm] = useState(initialValue.web_name)
-    const [footerAlignForm, setFooterAlignForm] = useState(initialValue.name_footer)
-    const [webFooterAlignForm, setWebFooterAlignForm] = useState(initialValue.web_name_footer)
-    const [sectionBorderShow, setSectioBorderShow] = useState(initialValue.section_border)
-    const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue.web_section_border)
+    const [borderForm, setBorderForm] = useState(initialValue?.border)
+    const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue?.web_border)
+    const [nameForm, setNameForm] = useState(initialValue?.name)
+    const [webNameForm, setWebNameForm] = useState(initialValue?.web_name)
+    const [footerAlignForm, setFooterAlignForm] = useState(initialValue?.name_footer)
+    const [webFooterAlignForm, setWebFooterAlignForm] = useState(initialValue?.web_name_footer)
+    const [sectionBorderShow, setSectioBorderShow] = useState(initialValue?.section_border)
+    const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue?.web_section_border)
     const [showSpinner, setShowSpinner] = useState(false)
 
     const handleRemoveSubImage = (e: any) => {

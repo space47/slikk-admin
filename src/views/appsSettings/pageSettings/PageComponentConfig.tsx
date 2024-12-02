@@ -171,7 +171,7 @@ const PageComponentConfig = ({
                                 setBorderForm(isChecked ? 'yes' : 'no')
                             }}
                         />
-                        {borderForm === 'yes' && (
+                        {borderForm === true && (
                             <FormContainer>
                                 <CommonSelect name="component_config.border_style" label="Border Style" options={borderStyleArray} />
                                 {borrderStyleArray.map((item, key) => (
@@ -195,7 +195,7 @@ const PageComponentConfig = ({
                                 setSectioBorderShow(isChecked ? 'yes' : 'no')
                             }}
                         />
-                        {sectionBorderShow === 'yes' && (
+                        {sectionBorderShow === true && (
                             <FormContainer>
                                 <CommonSelect
                                     name="component_config.section_border_style"
@@ -286,7 +286,7 @@ const PageComponentConfig = ({
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                 const isChecked = e.target.checked
                                 setFieldValue('name', isChecked)
-                                setNameForm(isChecked) // Set borderForm to 'yes' or 'no'
+                                setNameForm(isChecked)
                             }}
                         />{' '}
                         <br />

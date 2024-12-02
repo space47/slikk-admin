@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { RichTextEditor } from '@/components/shared'
+import { RichTextEditor } from '@/components/shared'
 
 type FormModel = {
     id: number | undefined
