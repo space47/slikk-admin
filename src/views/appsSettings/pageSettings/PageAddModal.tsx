@@ -189,7 +189,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         console.log('satrt')
         const imageUpload = await handleimage(row.background_image_array)
 
-        const mobileImageUpload = await handleimage(row.mobile_background_array)
+        const mobileimageUpload = await handleimage(row.mobile_background_array)
 
         const footerImageUpload = await handleimage(row.footer_config_image_Array)
 
@@ -197,7 +197,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
         const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
 
-        const headerIconImageUpload = await handleimage(row.header_config_icon_Array)
+        const headerIconUpload = await handleimage(row.header_config_icon_Array)
 
         const footervideoUpload = await handleVideo(row.footer_config_video_Array)
         const headerVideoUpload = await handleVideo(row.header_config_video_Array)
@@ -216,70 +216,85 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
         const newRowAdd = {
             ...row,
-            background_image: imageUpload ?? undefined,
-            mobile_background_image: mobileImageUpload ?? undefined,
+            ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+            ...(mobileimageUpload || row?.mobile_background_image
+                ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                : {}),
+            background_config: {
+                ...(row?.background_config?.background_color ? { background_color: row?.background_config?.background_color } : {}),
+                ...(row?.background_config?.desktop_position ? { desktop_position: row?.background_config?.desktop_position } : {}),
+                ...(row?.background_config?.mobile_position ? { mobile_position: row?.background_config?.mobile_position } : {}),
+                ...(row?.background_config?.background_topMargin
+                    ? { background_topMargin: Number(row?.background_config?.background_topMargin) }
+                    : {}),
+                ...(row?.background_config?.background_bottomMargin
+                    ? { background_bottomMargin: Number(row?.background_config?.background_bottomMargin) }
+                    : {}),
+                ...(row?.background_config?.web_background_topMargin
+                    ? { web_background_topMargin: Number(row?.background_config?.web_background_topMargin) }
+                    : {}),
+                ...(row?.background_config?.web_background_bottomMargin
+                    ? { web_background_bottomMargin: Number(row?.background_config?.web_background_bottomMargin) }
+                    : {}),
+                ...(row?.background_config?.mobile_width ? { mobile_width: Number(row?.background_config?.mobile_width) } : {}),
+                ...(row?.background_config?.web_width ? { web_width: Number(row?.background_config?.web_width) } : {}),
+                ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+                ...(mobileimageUpload || row?.mobile_background_image
+                    ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                    : {}),
+                ...(backgroundImageAspectRatios?.[0] ? { background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) } : {}),
+                ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) } : {}),
+                ...(row?.background_config?.bg_video ? { is_background_video: row?.background_config?.bg_video } : {}),
+                ...(backgroundVideoUpload || row?.background_video
+                    ? { background_video: backgroundVideoUpload || row?.background_video }
+                    : {}),
+            },
             footer_config: {
-                ...row.footer_config,
-                image: row.footer_config_image_Array?.length > 0 ? footerImageUpload : undefined,
-                aspect_ratio: footerImageAspectRatios[0].toFixed(2) ?? undefined,
-                video: footervideoUpload ?? undefined,
+                ...row?.footer_config,
+                ...(footerImageUpload ? { image: footerImageUpload } : {}),
+                ...(footerImageAspectRatios?.[0] ? { aspect_ratio: footerImageAspectRatios[0].toFixed(2) } : {}),
+                ...(footervideoUpload ? { video: footervideoUpload } : {}),
             },
             header_config: {
-                ...row.header_config,
-                icon: row.header_config_icon_Array?.length > 0 ? headerIconImageUpload : undefined,
-                image: row.header_config_image_Array?.length > 0 ? headerImageUpload : undefined,
-                aspect_ratio: headerImageAspectRatios[0].toFixed(2) ?? undefined,
-                video: headerVideoUpload ?? undefined,
+                ...row?.header_config,
+                ...(headerIconUpload ? { icon: headerIconUpload } : {}),
+                ...(headerImageUpload ? { image: headerImageUpload } : {}),
+                ...(headerImageAspectRatios?.[0] ? { aspect_ratio: headerImageAspectRatios[0].toFixed(2) } : {}),
+                ...(headerVideoUpload ? { video: headerVideoUpload } : {}),
             },
             sub_header_config: {
-                ...row.sub_header_config,
-                image: row.sub_header_config_image_Array?.length > 0 ? subHeaderImageUpload : undefined,
-                aspect_ratio: subHeaderImageAspectRatios[0].toFixed(2) ?? undefined,
-                video: subHeaderVideoUpload ?? undefined,
+                ...row?.sub_header_config,
+                ...(subHeaderImageUpload ? { image: subHeaderImageUpload } : {}),
+                ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: subHeaderImageAspectRatios[0].toFixed(2) } : {}),
+                ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
             },
             data_type: {
-                ...row.data_type,
-                posts: Array.isArray(postData) ? postData.join(',') : (row.data_type?.posts ?? undefined),
-                barcodes: Array.isArray(productData) ? productData.join(',') : (row.data_type?.barcodes ?? undefined),
-            },
-            background_config: {
-                background_color: row.background_config?.background_color ?? undefined,
-                desktop_position: row.background_config?.desktop_position ?? undefined,
-                mobile_position: row.background_config?.mobile_position ?? undefined,
-                background_topMargin: row.background_config?.background_topMargin
-                    ? Number(row.background_config?.background_topMargin)
-                    : undefined,
-                background_bottomMargin: row.background_config?.background_bottomMargin
-                    ? Number(row.background_config?.background_bottomMargin)
-                    : undefined,
-                web_background_topMargin: row.background_config?.web_background_topMargin
-                    ? Number(row.background_config?.web_background_topMargin)
-                    : undefined,
-                web_background_bottomMargin: row.background_config?.web_background_bottomMargin
-                    ? Number(row.background_config?.web_background_bottomMargin)
-                    : undefined,
-                mobile_width: row.background_config?.mobile_width ? Number(row.background_config?.mobile_width) : undefined,
-                web_width: row.background_config?.web_width ? Number(row.background_config?.web_width) : undefined,
-                background_image: imageUpload ?? null,
-                mobile_background_image: mobileImageUpload ?? null,
-                background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) ?? undefined,
-                mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) ?? undefined,
-                is_background_video: row?.background_config?.bg_video ?? false,
-                background_video: backgroundVideoUpload ?? row?.background_video,
+                ...row?.data_type,
+                ...(row?.data_type?.type ? { type: row?.data_type?.type } : {}),
+                ...(Array.isArray(postData)
+                    ? { posts: postData.join(',') }
+                    : row?.data_type?.posts
+                      ? { posts: row?.data_type?.posts }
+                      : {}),
+                ...(Array.isArray(productData)
+                    ? { barcodes: productData.join(',') }
+                    : row?.data_type?.barcodes
+                      ? { barcodes: row?.data_type?.barcodes }
+                      : {}),
             },
             component_config: {
-                ...row.component_config,
-                border: row?.component_config?.border ?? false,
-                name: row?.component_config?.name ?? false,
-                name_footer: row?.component_config?.name_footer ?? false,
-                section_border: row?.component_config?.section_border ?? false,
-                web_border: row?.component_config?.web_border ?? false,
-                web_name: row?.component_config?.web_name ?? false,
-                web_name_footer: row?.component_config?.web_name_footer ?? false,
-                web_section_border: row?.component_config?.web_section_border ?? false,
+                ...row?.component_config,
+                ...(row?.component_config?.border ? { border: row?.component_config?.border } : {}),
+                ...(row?.component_config?.name ? { name: row?.component_config?.name } : {}),
+                ...(row?.component_config?.name_footer ? { name_footer: row?.component_config?.name_footer } : {}),
+                ...(row?.component_config?.section_border ? { section_border: row?.component_config?.section_border } : {}),
+                ...(row?.component_config?.web_border ? { web_border: row?.component_config?.web_border } : {}),
+                ...(row?.component_config?.web_name ? { web_name: row?.component_config?.web_name } : {}),
+                ...(row?.component_config?.web_name_footer ? { web_name_footer: row?.component_config?.web_name_footer } : {}),
+                ...(row?.component_config?.web_section_border ? { web_section_border: row?.component_config?.web_section_border } : {}),
             },
-            section_filters: row.data_type?.filters ?? undefined,
-            section_type: row.section_type ?? undefined,
+            ...(row?.data_type?.filters ? { section_filters: row?.data_type?.filters } : {}),
+            ...(row?.section_type ? { section_type: row?.section_type } : {}),
         }
 
         console.log('End of row')

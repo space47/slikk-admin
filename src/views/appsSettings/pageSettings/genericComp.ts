@@ -31,6 +31,13 @@ export const genericComponentArray = [
         placeholder: 'Enter Interval in secs',
     },
     {
+        label: 'Timestamp',
+        name: 'component_config.timestamp',
+        component: { Input },
+        type: 'Date',
+        placeholder: 'Enter Timestamp',
+    },
+    {
         label: 'Show Dots',
         name: 'component_config.show_dots',
         component: { Checkbox }, // Updated component to match type

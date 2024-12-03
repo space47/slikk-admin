@@ -4,7 +4,7 @@ import { notification } from 'antd'
 export const handleVideo = async (files: File[]) => {
     if (!files || files.length === 0) {
         console.error('No files provided for upload')
-        return 'Error'
+        return ''
     }
 
     const formData = new FormData()

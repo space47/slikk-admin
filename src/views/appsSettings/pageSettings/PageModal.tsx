@@ -203,7 +203,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const handleVideo = async (files: File[]) => {
         if (!files || files.length === 0) {
             console.error('No files provided for upload')
-            return 'Error'
+            return ''
         }
 
         const formData = new FormData()
@@ -228,7 +228,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 message: 'Failure',
                 description: error?.response?.data?.message || 'Video not uploaded',
             })
-            return 'Error'
+            return ''
         }
     }
 
@@ -256,64 +256,89 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             setShowSpinner(true)
             const newRow = {
                 ...row,
-                background_image: imageUpload || row?.background_image,
-                mobile_background_image: mobileimageUpload || row?.mobile_background_image,
+                ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+                ...(mobileimageUpload || row?.mobile_background_image
+                    ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                    : {}),
                 background_config: {
-                    background_color: row?.background_config?.background_color || undefined,
-                    desktop_position: row?.background_config?.desktop_position || undefined,
-                    mobile_position: row?.background_config?.mobile_position || undefined,
-                    background_topMargin: Number(row?.background_config?.background_topMargin) || undefined,
-                    background_bottomMargin: Number(row?.background_config?.background_bottomMargin) || undefined,
-                    web_background_topMargin: Number(row.background_config?.web_background_topMargin) || undefined,
-                    web_background_bottomMargin: Number(row.background_config?.web_background_bottomMargin) || undefined,
-                    mobile_width: Number(row?.background_config?.mobile_width) || undefined,
-                    web_width: Number(row?.background_config?.web_width) || undefined,
-                    background_image: imageUpload || row?.background_image,
-                    mobile_background_image: mobileimageUpload || row?.mobile_background_image,
-                    background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) || undefined,
-                    mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) || undefined,
-                    is_background_video: row?.background_config.bg_video || false,
-                    background_video: backgroundVideoUpload || row?.background_video,
+                    ...(row?.background_config?.background_color ? { background_color: row?.background_config?.background_color } : {}),
+                    ...(row?.background_config?.desktop_position ? { desktop_position: row?.background_config?.desktop_position } : {}),
+                    ...(row?.background_config?.mobile_position ? { mobile_position: row?.background_config?.mobile_position } : {}),
+                    ...(row?.background_config?.background_topMargin
+                        ? { background_topMargin: Number(row?.background_config?.background_topMargin) }
+                        : {}),
+                    ...(row?.background_config?.background_bottomMargin
+                        ? { background_bottomMargin: Number(row?.background_config?.background_bottomMargin) }
+                        : {}),
+                    ...(row?.background_config?.web_background_topMargin
+                        ? { web_background_topMargin: Number(row?.background_config?.web_background_topMargin) }
+                        : {}),
+                    ...(row?.background_config?.web_background_bottomMargin
+                        ? { web_background_bottomMargin: Number(row?.background_config?.web_background_bottomMargin) }
+                        : {}),
+                    ...(row?.background_config?.mobile_width ? { mobile_width: Number(row?.background_config?.mobile_width) } : {}),
+                    ...(row?.background_config?.web_width ? { web_width: Number(row?.background_config?.web_width) } : {}),
+                    ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+                    ...(mobileimageUpload || row?.mobile_background_image
+                        ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                        : {}),
+                    ...(backgroundImageAspectRatios?.[0]
+                        ? { background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) }
+                        : {}),
+                    ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) } : {}),
+                    ...(row?.background_config?.bg_video ? { is_background_video: row?.background_config?.bg_video } : {}),
+                    ...(backgroundVideoUpload || row?.background_video
+                        ? { background_video: backgroundVideoUpload || row?.background_video }
+                        : {}),
                 },
                 footer_config: {
                     ...row?.footer_config,
-                    image: footerImageUpload || undefined,
-                    aspect_ratio: footerImageAspectRatios[0].toFixed(2) || undefined,
-                    video: footervideoUpload || undefined,
+                    ...(footerImageUpload ? { image: footerImageUpload } : {}),
+                    ...(footerImageAspectRatios?.[0] ? { aspect_ratio: footerImageAspectRatios[0].toFixed(2) } : {}),
+                    ...(footervideoUpload ? { video: footervideoUpload } : {}),
                 },
                 header_config: {
                     ...row?.header_config,
-                    icon: headerIconUpload || undefined,
-                    image: headerImageUpload || undefined,
-                    aspect_ratio: headerImageAspectRatios[0].toFixed(2) || undefined,
-                    video: headerVideoUpload || undefined,
+                    ...(headerIconUpload ? { icon: headerIconUpload } : {}),
+                    ...(headerImageUpload ? { image: headerImageUpload } : {}),
+                    ...(headerImageAspectRatios?.[0] ? { aspect_ratio: headerImageAspectRatios[0].toFixed(2) } : {}),
+                    ...(headerVideoUpload ? { video: headerVideoUpload } : {}),
                 },
                 sub_header_config: {
                     ...row?.sub_header_config,
-                    image: subHeaderImageUpload || undefined,
-                    aspect_ratio: subHeaderImageAspectRatios[0].toFixed(2) || undefined,
-                    video: subHeaderVideoUpload || undefined,
+                    ...(subHeaderImageUpload ? { image: subHeaderImageUpload } : {}),
+                    ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: subHeaderImageAspectRatios[0].toFixed(2) } : {}),
+                    ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
                 },
                 data_type: {
                     ...row?.data_type,
-                    type: row?.data_type?.type || undefined,
-                    posts: Array.isArray(postData) ? postData.join(',') : row?.data_type?.posts || undefined,
-                    barcodes: Array.isArray(productData) ? productData.join(',') : row?.data_type?.barcodes || undefined,
+                    ...(row?.data_type?.type ? { type: row?.data_type?.type } : {}),
+                    ...(Array.isArray(postData)
+                        ? { posts: postData.join(',') }
+                        : row?.data_type?.posts
+                          ? { posts: row?.data_type?.posts }
+                          : {}),
+                    ...(Array.isArray(productData)
+                        ? { barcodes: productData.join(',') }
+                        : row?.data_type?.barcodes
+                          ? { barcodes: row?.data_type?.barcodes }
+                          : {}),
                 },
                 component_config: {
                     ...row?.component_config,
-                    border: row?.border || false,
-                    name: row?.name || false,
-                    name_footer: row?.name_footer || false,
-                    section_border: row?.section_border || false,
-                    web_border: row?.web_border || false,
-                    web_name: row?.web_name || false,
-                    web_name_footer: row?.web_name_footer || false,
-                    web_section_border: row?.web_section_border || false,
+                    ...(row?.component_config?.border ? { border: row?.component_config?.border } : {}),
+                    ...(row?.component_config?.name ? { name: row?.component_config?.name } : {}),
+                    ...(row?.component_config?.name_footer ? { name_footer: row?.component_config?.name_footer } : {}),
+                    ...(row?.component_config?.section_border ? { section_border: row?.component_config?.section_border } : {}),
+                    ...(row?.component_config?.web_border ? { web_border: row?.component_config?.web_border } : {}),
+                    ...(row?.component_config?.web_name ? { web_name: row?.component_config?.web_name } : {}),
+                    ...(row?.component_config?.web_name_footer ? { web_name_footer: row?.component_config?.web_name_footer } : {}),
+                    ...(row?.component_config?.web_section_border ? { web_section_border: row?.component_config?.web_section_border } : {}),
                 },
-                section_filters: row?.data_type?.filters || undefined,
-                section_type: row.section_type || undefined,
+                ...(row?.data_type?.filters ? { section_filters: row?.data_type?.filters } : {}),
+                ...(row?.section_type ? { section_type: row?.section_type } : {}),
             }
+
             setShowSpinner(false)
 
             setParticularRow(newRow)
