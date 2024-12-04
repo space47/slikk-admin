@@ -539,7 +539,7 @@ const OrderList = () => {
                                 id=""
                                 placeholder="search here"
                                 value={searchInput}
-                                className="xl:w-[250px] rounded-[10px] w-[130px]"
+                                className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
                                 onChange={handleSearch}
                             />
                         </div>
@@ -565,7 +565,7 @@ const OrderList = () => {
                     <div className="flex gap-4">
                         <div className="flex flex-col md:flex-row items-end justify-end ">
                             <button
-                                className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1"
+                                className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
                                 onClick={handleDownload}
                             >
                                 <IoMdDownload className="text-xl md:text-xl font-extrabold" />

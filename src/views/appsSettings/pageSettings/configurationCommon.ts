@@ -27,12 +27,12 @@ export const HEADERCONFIGARRAY = [
     {
         label: 'Header BG Color',
         name: 'header_config.background_color',
-        type: 'color',
+        type: 'text',
     },
     {
         label: 'Header Font Color',
         name: 'header_config.font_color',
-        type: 'color',
+        type: 'text',
     },
 ]
 
@@ -65,12 +65,12 @@ export const SUBHEADERCONFIGARRAY = [
     {
         label: 'Sub-Header BG Color',
         name: 'sub_header_config.background_color',
-        type: 'color',
+        type: 'text',
     },
     {
         label: 'Sub-Header Font Color',
         name: 'sub_header_config.font_color',
-        type: 'color',
+        type: 'text',
     },
 ]
 
@@ -103,12 +103,12 @@ export const FOOTERCONFIGARRAY = [
     {
         label: 'Footer BG Color',
         name: 'footer_config.background_color',
-        type: 'color',
+        type: 'text',
     },
     {
         label: 'Footer Font Color',
         name: 'footer_config.font_color',
-        type: 'color',
+        type: 'text',
     },
 ]
 
@@ -124,6 +124,11 @@ export const DATATYPEVALUES = [
         type: 'text',
     },
     {
+        label: 'Data Type Sub Category',
+        name: 'data_type.sub_category',
+        type: 'text',
+    },
+    {
         label: 'Data Type Handles',
         name: 'data_type.handles',
         type: 'text',
@@ -132,5 +137,53 @@ export const DATATYPEVALUES = [
         label: 'is_section_clickable',
         name: 'is_section_clickable',
         type: 'checkbox',
+    },
+]
+
+export const TimeFieldsArray = [
+    {
+        label: 'Timer Text',
+        name: 'extra_info.timer_text',
+        type: 'text',
+    },
+    {
+        label: 'Timer Color',
+        name: 'extra_info.timer_color',
+        type: 'text',
+    },
+    {
+        label: 'Timer Text color',
+        name: 'extra_info.timer_text_color',
+        type: 'text',
+    },
+    {
+        label: 'Timer Text Font',
+        name: 'extra_info.timer_text_font',
+        type: 'checkbox',
+    },
+    {
+        label: 'Timer Font Size',
+        name: 'extra_info.timer_font_size',
+        type: 'number',
+    },
+    {
+        label: 'Timer Background Color',
+        name: 'extra_info.timer_bg_color',
+        type: 'text',
+    },
+    {
+        label: 'Timer Gap',
+        name: 'extra_info.timer_gap',
+        type: 'number',
+    },
+    {
+        label: 'Timer Type',
+        name: 'extra_info.timer_type',
+        type: 'text',
+    },
+    {
+        label: 'Background Color',
+        name: 'extra_info.bg_color',
+        type: 'text',
     },
 ]

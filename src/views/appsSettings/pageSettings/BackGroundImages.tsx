@@ -7,15 +7,21 @@ import { WebType } from './pageSettings.types'
 import { beforeUpload } from '@/common/beforeUpload'
 import { BackGroundArray, MobileAndDesktopPositions } from './genericComp'
 import CommonSelect from './CommonSelect'
+import PageEditVideo from './PageEditVideo'
+import PageAddVideo from './PageAddVideo'
+import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import { DatePicker } from 'antd'
+import moment from 'moment'
 
 interface BGprops {
     editMode: any
     initialValue: any
     handleRemoveImage: any
     values: any
+    handleRemoveVideo: any
 }
 
-const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values }: BGprops) => {
+const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, handleRemoveVideo }: BGprops) => {
     return (
         <FormContainer className="grid grid-cols-2 gap-3">
             {editMode ? (
@@ -138,6 +144,56 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values }:
                 </FormContainer>
             )}
 
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        label="background Video"
+                        rowName={initialValue.background_video}
+                        removeName="background_video"
+                        handleRemoveVideo={() => handleRemoveVideo('background_video')}
+                        name="background_video_array"
+                        beforeVideoUpload={beforeVideoUpload}
+                        fileList={values.background_video_array}
+                        fieldName="background_video_array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Background video"
+                        name="background_video_array"
+                        fieldName="background_video_array"
+                        fileList={values.background_video_array}
+                        beforeUpload={beforeVideoUpload}
+                    />
+                </>
+            )}
+
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        label="Mobile background Video"
+                        rowName={initialValue.mobile_background_video}
+                        removeName="mobile_background_video"
+                        handleRemoveVideo={() => handleRemoveVideo('mobile_background_video')}
+                        name="mobile_background_video_array"
+                        beforeVideoUpload={beforeVideoUpload}
+                        fileList={values.mobile_background_video_array}
+                        fieldName="mobile_background_video_array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Mobile Background video"
+                        name="mobile_background_video_array"
+                        fieldName="mobile_background_video_array"
+                        fileList={values.mobile_background_video_array}
+                        beforeUpload={beforeVideoUpload}
+                    />
+                </>
+            )}
+
             {BackGroundArray.map((item, key) => (
                 <FormItem asterisk label={item.label} className="w-1/2" key={key}>
                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
@@ -158,6 +214,22 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values }:
                 needClassName
                 className="w-1/2"
             />
+
+            {/* <FormItem label="TimeStamp" className="mt-4">
+                <Field name="background_config.timeout">
+                    {({ field, form }: any) => (
+                        <DatePicker
+                            showTime
+                            placeholder=""
+                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                            onChange={(value) => {
+                                form.setFieldValue('background_config.timeout', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                            }}
+                            className=" md:w-2/3 lg:w-1/2 xl:w-1/2"
+                        />
+                    )}
+                </Field>
+            </FormItem> */}
         </FormContainer>
     )
 }

@@ -383,7 +383,7 @@ const OrderList = () => {
         <div className="overflow-x-auto">
             <div className="flex justify-end">
                 <button
-                    className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden"
+                    className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden dark:bg-slate-700 dark:text-gray-200"
                     onClick={handleDownload}
                 >
                     <IoMdDownload className="text-xl md:text-xl" />
@@ -398,13 +398,13 @@ const OrderList = () => {
                             id=""
                             placeholder="search here"
                             value={searchInput}
-                            className=" xl:w-[250px] rounded-[10px] w-[130px]"
+                            className=" xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
                             onChange={handleSearch}
                         />
                     </div>
-                    <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md">
+                    <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
                         <Dropdown
-                            className=" text-xl text-black bg-gray-200 font-bold "
+                            className=" text-xl text-black bg-gray-200 font-bold  "
                             title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
                             onSelect={handleSelect}
                         >

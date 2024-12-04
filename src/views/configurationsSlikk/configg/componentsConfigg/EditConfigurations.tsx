@@ -1,13 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface, EDITFIELDSARRAY } from './commonConfigTypes'
-import { Field, Form, Formik } from 'formik'
-import { Button, FormContainer, FormItem, Input, Spinner } from '@/components/ui'
+import { Field, FieldProps, Form, Formik } from 'formik'
+import { Button, FormContainer, FormItem, Input, Spinner, Upload } from '@/components/ui'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useParams } from 'react-router-dom'
 import { notification } from 'antd'
 import _ from 'lodash'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import { beforeUpload } from '@/common/beforeUpload'
+import { handleimage } from '@/common/handleImage'
 
 const EditConfigurations = () => {
     const navigate = useNavigate()
@@ -40,17 +41,44 @@ const EditConfigurations = () => {
                         <div className="grid grid-cols-2 gap-4">{renderFields(val, fieldName, setFieldValue)}</div>
                     </div>
                 )
+            } else if (_.isArray(val)) {
+                val.map((item) => {
+                    console.log(item)
+                })
             } else {
                 return (
                     <FormItem key={fieldName} label={key} className="col-span-1 w-full">
-                        <Field
-                            component={Input}
-                            type="text"
-                            placeholder={`Enter ${key}`}
-                            name={fieldName}
-                            value={val}
-                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
-                        />
+                        {key.toLowerCase().includes('image') ? (
+                            <div>
+                                <Field name={fieldName}>
+                                    {({ form }: FieldProps) => (
+                                        <Upload
+                                            beforeUpload={beforeUpload}
+                                            onChange={(files) => form.setFieldValue(fieldName, files)}
+                                            onFileRemove={(files) => form.setFieldValue(fieldName, files)}
+                                            className="flex justify-center"
+                                        />
+                                    )}
+                                </Field>
+                                <Field
+                                    component={Input}
+                                    type="text"
+                                    placeholder={`Enter ${key}`}
+                                    name={fieldName}
+                                    value={val}
+                                    onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                                />
+                            </div>
+                        ) : (
+                            <Field
+                                component={Input}
+                                type="text"
+                                placeholder={`Enter ${key}`}
+                                name={fieldName}
+                                value={val}
+                                onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                            />
+                        )}
                     </FormItem>
                 )
             }
@@ -58,9 +86,26 @@ const EditConfigurations = () => {
     }
 
     const handleSubmit = async (values: ConfigInterface) => {
+        const handlingValueForAll = async (obj: any): Promise<any> => {
+            const entries = await Promise.all(
+                Object.entries(obj).map(async ([key, val]) => {
+                    if (key.toLowerCase().includes('image') && Array.isArray(val)) {
+                        const processedImage = await handleimage(key, val)
+                        return [key, processedImage]
+                    } else if (_.isPlainObject(val)) {
+                        const nestedValue = await handlingValueForAll(val)
+                        return [key, nestedValue]
+                    } else {
+                        return [key, val]
+                    }
+                }),
+            )
+            return Object.fromEntries(entries)
+        }
+
         const body = {
             config_name: values.name,
-            config_value: values.value,
+            config_value: await handlingValueForAll(values.value),
         }
 
         try {
@@ -69,11 +114,11 @@ const EditConfigurations = () => {
             notification.success({
                 message: response?.data?.message || 'Successfully Configured',
             })
-            navigate(`/app/configurations`)
+            // navigate(`/app/configurations`)
         } catch (error) {
-            console.log(error)
+            console.error(error)
             notification.error({
-                message: 'Failed to configure ',
+                message: 'Failed to configure',
             })
         } finally {
             setShowSpinner(false)

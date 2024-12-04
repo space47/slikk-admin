@@ -15,6 +15,7 @@ import OtherConfigs from './OtherConfigs'
 import BackGroundImages from './BackGroundImages'
 import CommonSelect from './CommonSelect'
 import { SubDataTypeArray } from './PageSettingsCommon'
+import ExtraConfigFileds from './ExtraConfigFileds'
 
 const SectionTypeArray = [
     { label: 'Generic', value: 'generic' },
@@ -92,6 +93,7 @@ interface CommonProps {
     particularRow?: any
     handleRemoveHeaderImage?: any
     handleRemoveSubImage?: any
+    handleRemoveVideo?: any
 }
 
 const CommonMainPageSettings = ({
@@ -137,10 +139,12 @@ const CommonMainPageSettings = ({
     particularRow,
     handleRemoveHeaderImage,
     handleRemoveSubImage,
+    handleRemoveVideo,
 }: CommonProps) => {
     const [configFields, setConfigFields] = useState(false)
     const [otherFields, setOtherFields] = useState(false)
     const [bgFields, setBgFields] = useState(false)
+    const [extraConfigFields, setExtraConfigFields] = useState(false)
 
     return (
         <Formik
@@ -186,13 +190,13 @@ const CommonMainPageSettings = ({
 
                         {configFields ? (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setConfigFields(false)}>
+                                <Button variant="reject" onClick={() => setConfigFields(false)} type="button">
                                     Component Configs
                                 </Button>
                             </div>
                         ) : (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setConfigFields(true)}>
+                                <Button variant="new" onClick={() => setConfigFields(true)} type="button">
                                     Component Configs
                                 </Button>
                             </div>
@@ -224,13 +228,13 @@ const CommonMainPageSettings = ({
 
                         {bgFields ? (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setBgFields(false)}>
+                                <Button variant="reject" onClick={() => setBgFields(false)} type="button">
                                     Background Fields
                                 </Button>
                             </div>
                         ) : (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setBgFields(true)}>
+                                <Button variant="new" onClick={() => setBgFields(true)} type="button">
                                     Background Fields
                                 </Button>
                             </div>
@@ -241,6 +245,7 @@ const CommonMainPageSettings = ({
                                 initialValue={initialValue}
                                 handleRemoveImage={handleRemoveImage}
                                 values={values}
+                                handleRemoveVideo={handleRemoveVideo}
                             />
                         )}
 
@@ -248,13 +253,13 @@ const CommonMainPageSettings = ({
 
                         {otherFields ? (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setOtherFields(false)}>
+                                <Button variant="reject" onClick={() => setOtherFields(false)} type="button">
                                     Other Configs
                                 </Button>
                             </div>
                         ) : (
                             <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setOtherFields(true)}>
+                                <Button variant="new" onClick={() => setOtherFields(true)} type="button">
                                     Other Field Configs
                                 </Button>
                             </div>
@@ -269,6 +274,25 @@ const CommonMainPageSettings = ({
                                 handleRemoveSubImage={handleRemoveSubImage}
                             />
                         )}
+
+                        {/* Extra Configs */}
+
+                        {extraConfigFields ? (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="reject" onClick={() => setExtraConfigFields(false)} type="button">
+                                    Extra Field Configs
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="new" onClick={() => setExtraConfigFields(true)} type="button">
+                                    Extra Field Configs
+                                </Button>
+                            </div>
+                        )}
+                        {extraConfigFields && <ExtraConfigFileds />}
+
+                        {/*  */}
                         <FormContainer className="grid grid-cols-2 gap-3">
                             <CommonSelect
                                 needClassName
@@ -412,7 +436,7 @@ const CommonMainPageSettings = ({
                                     <Field
                                         type={item.type}
                                         name={item.name}
-                                        placeholder={`place ${item.label.toUpperCase()}`}
+                                        placeholder={`PLACE ${item.label.toUpperCase()}`}
                                         component={Input}
                                     />
                                 </FormItem>

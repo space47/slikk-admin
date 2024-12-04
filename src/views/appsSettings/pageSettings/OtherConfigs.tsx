@@ -8,6 +8,9 @@ import PageEditImage from './PageEditImage'
 import PageAddCommonImage from './PageAddCommonImage'
 import { ALIGNVALUES } from './genericComp'
 import { beforeUpload } from '@/common/beforeUpload'
+import PageEditVideo from './PageEditVideo'
+import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import PageAddVideo from './PageAddVideo'
 const FontSizeArray = [
     { label: 'Bold', value: 'bold' },
     { label: 'Regular', value: 'regular' },
@@ -72,6 +75,31 @@ const OtherConfigs = ({
                 </>
             )}
 
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        label="header Video"
+                        rowName={particularRow.header_config.video}
+                        removeName="header_video"
+                        // handleRemoveImage={handleRemoveSubImage}
+                        name="header_config_video_Array"
+                        beforeVideoUpload={beforeVideoUpload}
+                        fileList={values.header_config_video_Array}
+                        fieldName="header_config_video_Array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Header video"
+                        name="header_config_video_Array"
+                        fieldName="header_config_video_Array"
+                        fileList={values.header_config_video_Array}
+                        beforeUpload={beforeVideoUpload}
+                    />
+                </>
+            )}
+
             <CommonSelect
                 name="header_config.position"
                 label="Header  position"
@@ -125,6 +153,31 @@ const OtherConfigs = ({
                 </>
             )}
 
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        label="Sub_Header Video"
+                        rowName={particularRow.sub_header_config.video}
+                        removeName="sub_header_video"
+                        // handleRemoveImage={handleRemoveSubImage}
+                        name="sub_header_config_video_Array"
+                        beforeVideoUpload={beforeVideoUpload}
+                        fileList={values.sub_header_config_video_Array}
+                        fieldName="sub_header_config_video_Array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Sub Header video"
+                        name="sub_header_config_video_Array"
+                        fieldName="sub_header_config_video_Array"
+                        fileList={values.sub_header_config_video_Array}
+                        beforeUpload={beforeVideoUpload}
+                    />
+                </>
+            )}
+
             {/* FOOOTER.......................................................... */}
             <CommonSelect
                 name="footer_config.style"
@@ -160,6 +213,31 @@ const OtherConfigs = ({
                         fieldName="footer_config_image_Array"
                         fileList={values.footer_config_image_Array}
                         beforeUpload={beforeUpload}
+                    />
+                </>
+            )}
+
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        label="Footer Video"
+                        rowName={particularRow.footer_config.video}
+                        removeName="footer_video"
+                        // handleRemoveImage={handleRemoveSubImage}
+                        name="footer_config_video_Array"
+                        beforeVideoUpload={beforeVideoUpload}
+                        fileList={values.footer_config_video_Array}
+                        fieldName="footer_config_video_Array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Footer video"
+                        name="footer_config_video_Array"
+                        fieldName="footer_config_video_Array"
+                        fileList={values.footer_config_video_Array}
+                        beforeUpload={beforeVideoUpload}
                     />
                 </>
             )}
