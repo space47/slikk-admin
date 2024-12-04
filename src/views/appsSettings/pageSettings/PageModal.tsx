@@ -56,8 +56,10 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         component_type: particularRow.component_type,
         section_heading: particularRow.section_heading,
         background_image: particularRow.background_config?.background_image,
+        background_video: particularRow.background_config?.background_video,
         sub_header_config: particularRow.sub_header_config,
         mobile_background_image: particularRow.background_config?.mobile_background_image,
+        mobile_background_video: particularRow.background_config?.mobile_background_video,
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
@@ -73,6 +75,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         name_footer: particularRow.name_footer,
         web_name_footer: particularRow.web_name_footer,
         component_config: particularRow.component_config,
+        extra_info: particularRow.extra_info,
         web_section_border: particularRow?.web_section_border,
     })
 
@@ -115,47 +118,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         fetchPost()
     }, [postInput])
 
-    const handleimage = async (files: File[]) => {
-        if (!files || files?.length == 0) {
-            return
-        }
-
-        const formData = new FormData()
-
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'banners')
-
-        try {
-            return await axioisInstance
-                .post('fileupload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
-                .then((response) => {
-                    const newData = response.data.url
-                    notification.success({
-                        message: 'Success',
-                        description: response?.data?.message || 'Image uploaded successfully',
-                    })
-                    return newData
-                })
-                .catch((error) => {
-                    console.error(error)
-                    notification.error({
-                        message: 'Upload Failed',
-                        description: error?.response?.data?.message || 'Image upload failed',
-                    })
-                    return ''
-                })
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            return ''
-        }
-    }
-
     const handleSelect = (value: any) => {
         const selected = DROPDOWNARRAY.find((item) => item.value === value)
         if (selected) {
@@ -163,7 +125,127 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }
     }
 
+    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
+        if (!files || files.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+                image.onerror = () => {
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+        }
+        return aspectRatios
+    }
+
+    const handleimage = async (files: File[]) => {
+        console.log('Images of mobile for checking', files)
+        if (!files || files.length === 0) {
+            return
+        }
+
+        const formData = new FormData()
+
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    console.log('Image width:', image.width, 'Image height:', image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+
+            formData.append('file', file)
+        }
+
+        formData.append('file_type', 'banners')
+
+        try {
+            const response = await axioisInstance.post('fileupload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+
+            const newData = response.data.url
+            notification.success({
+                message: 'Success',
+                description: response?.data?.message || 'Image uploaded successfully',
+            })
+
+            return newData
+        } catch (error: any) {
+            console.error('Error uploading files:', error)
+            notification.error({
+                message: 'Upload Failed',
+                description: error?.response?.data?.message || 'Image upload failed',
+            })
+
+            return ''
+        }
+    }
+
+    const handleVideo = async (files: File[]) => {
+        if (files) {
+            const formData = new FormData()
+
+            files.forEach((file) => {
+                formData.append('file', file)
+            })
+            formData.append('file_type', 'product')
+
+            notification.info({
+                message: 'Video Upload In Process',
+            })
+            try {
+                setShowSpinner(true)
+                console.log(formData.get('file'))
+                const response = await axioisInstance.post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                console.log(response)
+                notification.success({
+                    message: 'Video Updated',
+                })
+                const newData = response.data.url
+                return newData
+            } catch (error: any) {
+                console.error('Error uploading files:', error)
+                notification.error({
+                    message: 'Failure',
+                    description: error?.response?.data?.message || 'Video Not uploaded',
+                })
+                return 'Error'
+            } finally {
+                setShowSpinner(false)
+            }
+        }
+    }
+
     const handleSubmit = async (row: any) => {
+        console.log('Mobile Upload video', row?.mobile_background_video_array)
+        console.log('Mobile Upload Image', row?.mobile_background_array)
         try {
             console.log('handleSubmit called')
             const imageUpload = await handleimage(row.background_image_array)
@@ -173,51 +255,115 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
             const headerIconUpload = await handleimage(row.header_config_icon_Array)
 
-            console.log('New Row below', row.interval)
+            const footervideoUpload = await handleVideo(row.footer_config_video_Array)
+            const headerVideoUpload = await handleVideo(row.header_config_video_Array)
+            const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
+            const backgroundVideoUpload = await handleVideo(row?.background_video_array)
+            const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+            console.log('New Row below')
+            const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
+            const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
+            const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
+            const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
+            const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+
+            console.log('Image Url', mobileimageUpload)
+            console.log('video Url', mobileBackgroundVideoUpload)
 
             setShowSpinner(true)
+            console.log('Start New Row')
             const newRow = {
                 ...row,
-                background_image: imageUpload || row?.background_image,
-                mobile_background_image: mobileimageUpload || row?.mobile_background_image,
+                ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+                ...(mobileimageUpload || row?.mobile_background_image
+                    ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                    : {}),
                 background_config: {
-                    background_color: row?.background_config?.background_color || '',
-                    desktop_position: row?.background_config?.desktop_position || '',
-                    mobile_position: row?.background_config?.mobile_position || '',
-                    background_topMargin: Number(row?.background_config?.background_topMargin) || 0,
-                    background_bottomMargin: Number(row?.background_config?.background_bottomMargin) || 0,
-                    web_background_topMargin: Number(row.background_config?.web_background_topMargin) || 0,
-                    web_background_bottomMargin: Number(row.background_config?.web_background_bottomMargin) || 0,
-                    mobile_width: Number(row?.background_config?.mobile_width) || 0,
-                    web_width: Number(row?.background_config?.web_width) || 0,
-                    background_image: imageUpload || row?.background_image,
-                    mobile_background_image: mobileimageUpload || row?.mobile_background_image,
+                    ...(row?.background_config?.background_color ? { background_color: row?.background_config?.background_color } : {}),
+                    ...(row?.background_config?.desktop_position ? { desktop_position: row?.background_config?.desktop_position } : {}),
+                    ...(row?.background_config?.mobile_position ? { mobile_position: row?.background_config?.mobile_position } : {}),
+                    ...(row?.background_config?.background_topMargin
+                        ? { background_topMargin: Number(row?.background_config?.background_topMargin) }
+                        : {}),
+                    ...(row?.background_config?.background_bottomMargin
+                        ? { background_bottomMargin: Number(row?.background_config?.background_bottomMargin) }
+                        : {}),
+                    ...(row?.background_config?.web_background_topMargin
+                        ? { web_background_topMargin: Number(row?.background_config?.web_background_topMargin) }
+                        : {}),
+                    ...(row?.background_config?.web_background_bottomMargin
+                        ? { web_background_bottomMargin: Number(row?.background_config?.web_background_bottomMargin) }
+                        : {}),
+                    ...(row?.background_config?.mobile_width ? { mobile_width: Number(row?.background_config?.mobile_width) } : {}),
+                    ...(row?.background_config?.web_width ? { web_width: Number(row?.background_config?.web_width) } : {}),
+                    ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+                    ...(mobileimageUpload || row?.mobile_background_image
+                        ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                        : {}),
+                    ...(backgroundImageAspectRatios?.[0]
+                        ? { background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) }
+                        : {}),
+                    ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) } : {}),
+                    ...(row?.background_config?.bg_video ? { is_background_video: row?.background_config?.bg_video } : {}),
+                    ...(backgroundVideoUpload || row?.background_video
+                        ? { background_video: backgroundVideoUpload || row?.background_video }
+                        : {}),
+                    ...(mobileBackgroundVideoUpload || row?.mobile_background_video
+                        ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
+                        : {}),
                 },
                 footer_config: {
                     ...row?.footer_config,
-                    image: footerImageUpload || '',
+                    ...(footerImageUpload ? { image: footerImageUpload } : {}),
+                    ...(footerImageAspectRatios?.[0] ? { aspect_ratio: footerImageAspectRatios[0].toFixed(2) } : {}),
+                    ...(footervideoUpload ? { video: footervideoUpload } : {}),
                 },
                 header_config: {
                     ...row?.header_config,
-                    icon: headerIconUpload || '',
-                    image: headerImageUpload || '',
+                    ...(headerIconUpload ? { icon: headerIconUpload } : {}),
+                    ...(headerImageUpload ? { image: headerImageUpload } : {}),
+                    ...(headerImageAspectRatios?.[0] ? { aspect_ratio: headerImageAspectRatios[0].toFixed(2) } : {}),
+                    ...(headerVideoUpload ? { video: headerVideoUpload } : {}),
                 },
                 sub_header_config: {
                     ...row?.sub_header_config,
-                    image: subHeaderImageUpload || '',
+                    ...(subHeaderImageUpload ? { image: subHeaderImageUpload } : {}),
+                    ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: subHeaderImageAspectRatios[0].toFixed(2) } : {}),
+                    ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
                 },
                 data_type: {
                     ...row?.data_type,
-                    type: row?.data_type?.type || '',
-                    posts: Array.isArray(postData) ? postData.join(',') : row?.data_type?.posts || '',
-                    barcodes: Array.isArray(productData) ? productData.join(',') : row?.data_type?.barcodes || '',
+                    ...(row?.data_type?.type ? { type: row?.data_type?.type } : {}),
+                    ...(Array.isArray(postData)
+                        ? { posts: postData.join(',') }
+                        : row?.data_type?.posts
+                          ? { posts: row?.data_type?.posts }
+                          : {}),
+                    ...(Array.isArray(productData)
+                        ? { barcodes: productData.join(',') }
+                        : row?.data_type?.barcodes
+                          ? { barcodes: row?.data_type?.barcodes }
+                          : {}),
                 },
                 component_config: {
                     ...row?.component_config,
+                    ...(row?.component_config?.border ? { border: row?.component_config?.border } : {}),
+                    ...(row?.component_config?.name ? { name: row?.component_config?.name } : {}),
+                    ...(row?.component_config?.name_footer ? { name_footer: row?.component_config?.name_footer } : {}),
+                    ...(row?.component_config?.section_border ? { section_border: row?.component_config?.section_border } : {}),
+                    ...(row?.component_config?.web_border ? { web_border: row?.component_config?.web_border } : {}),
+                    ...(row?.component_config?.web_name ? { web_name: row?.component_config?.web_name } : {}),
+                    ...(row?.component_config?.web_name_footer ? { web_name_footer: row?.component_config?.web_name_footer } : {}),
+                    ...(row?.component_config?.web_section_border ? { web_section_border: row?.component_config?.web_section_border } : {}),
                 },
-                section_filters: row?.data_type?.filters || '',
-                section_type: row.section_type || '',
+                extra_info: {
+                    ...row?.extra_info,
+                    ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
+                },
+                ...(row?.data_type?.filters ? { section_filters: row?.data_type?.filters } : {}),
+                ...(row?.section_type ? { section_type: row?.section_type } : {}),
             }
+
             setShowSpinner(false)
 
             setParticularRow(newRow)
@@ -227,8 +373,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             console.error('Error in handleSubmit:', error)
         }
     }
-
-    console.log('ppppppproduct DDDDDDDDDatata', productData)
 
     const handleRemoveImage = (val: string) => {
         if (val === 'background_image') {
@@ -243,16 +387,29 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             }))
         }
     }
+    const handleRemoveVideo = (val: string) => {
+        if (val === 'background_video') {
+            setInitalValue((prev: any) => ({
+                ...prev,
+                background_video: null,
+            }))
+        } else if (val === 'mobile_background_video') {
+            setInitalValue((prev: any) => ({
+                ...prev,
+                mobile_background_video: null,
+            }))
+        }
+    }
 
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
-    const [borderForm, setBorderForm] = useState(initialValue.border)
-    const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue.web_border)
-    const [nameForm, setNameForm] = useState(initialValue.name)
-    const [webNameForm, setWebNameForm] = useState(initialValue.web_name)
-    const [footerAlignForm, setFooterAlignForm] = useState(initialValue.name_footer)
-    const [webFooterAlignForm, setWebFooterAlignForm] = useState(initialValue.web_name_footer)
-    const [sectionBorderShow, setSectioBorderShow] = useState(initialValue.section_border)
-    const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue.web_section_border)
+    const [borderForm, setBorderForm] = useState(initialValue?.border)
+    const [webBorderForm, setWebBorderForm] = useState<boolean>(initialValue?.web_border)
+    const [nameForm, setNameForm] = useState(initialValue?.name)
+    const [webNameForm, setWebNameForm] = useState(initialValue?.web_name)
+    const [footerAlignForm, setFooterAlignForm] = useState(initialValue?.name_footer)
+    const [webFooterAlignForm, setWebFooterAlignForm] = useState(initialValue?.web_name_footer)
+    const [sectionBorderShow, setSectioBorderShow] = useState(initialValue?.section_border)
+    const [webSectionBorderShow, setWebSectioBorderShow] = useState(initialValue?.web_section_border)
     const [showSpinner, setShowSpinner] = useState(false)
 
     const handleRemoveSubImage = (e: any) => {
@@ -359,6 +516,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     particularRow={particularRow}
                     handleRemoveHeaderImage={handleRemoveHeaderImage}
                     handleRemoveSubImage={handleRemoveSubImage}
+                    handleRemoveVideo={handleRemoveVideo}
                 />
             </Modal>
         </>

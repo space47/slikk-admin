@@ -8,29 +8,22 @@ import { MdCancel } from 'react-icons/md'
 
 interface IMAGEPROPS {
     label: string
-    rowName?: any
-    removeName?: string
-    handleRemoveImage?: any
+
     beforeUpload: any
     name: string
     fileList: any
     // setFieldValue: any
     // className: string
     fieldName: string
-    noImage?: boolean
 }
 
-const PageEditImage = ({
+const PageAddVideo = ({
     label,
-    rowName,
-    removeName,
-    handleRemoveImage,
     beforeUpload,
     name,
     // className,
     fieldName,
     fileList,
-    noImage = true,
     // setFieldValue,
 }: IMAGEPROPS) => {
     return (
@@ -38,14 +31,7 @@ const PageEditImage = ({
             {' '}
             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
                 <div className="font-semibold mb-1">{label}</div>
-                {noImage && rowName && (
-                    <div className="flex flex-col items-center justify-center min-w-[100px]">
-                        <img src={rowName} alt={`Image `} className="w-[100px] h-[40px] flex object-contain " />
-                        <button className="text-red-500 text-md " onClick={() => handleRemoveImage(removeName)} type="button">
-                            <MdCancel className="text-red-500 bg-none text-lg" />
-                        </button>
-                    </div>
-                )}
+
                 <FormContainer className=" mt-5 ">
                     <FormItem
                         label=""
@@ -74,4 +60,4 @@ const PageEditImage = ({
     )
 }
 
-export default PageEditImage
+export default PageAddVideo

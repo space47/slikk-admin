@@ -213,14 +213,14 @@ const Home = () => {
                 <div className="w-full xl:w-[50%]">
                     <div className="font-bold text-2xl">Search By</div>
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
-                        <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[400px] bg-white shadow-md">
+                        <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[400px] bg-white shadow-md dark:bg-gray-900">
                             <input
                                 type="text"
                                 name="customer"
                                 value={inputValues.customer}
                                 onChange={handleInputChange}
                                 placeholder="Customer Number"
-                                className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2"
+                                className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleCustomerFunction(inputValues.customer)
@@ -234,14 +234,14 @@ const Home = () => {
                                 <FaSearch />
                             </button>
                         </div>
-                        <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md">
+                        <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md dark:bg-gray-900">
                             <input
                                 type="text"
                                 name="invoice_id"
                                 value={inputValues.invoice_id}
                                 onChange={handleInputChange}
                                 placeholder="Invoice ID"
-                                className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2"
+                                className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleInvoiceFunction(inputValues.invoice_id)

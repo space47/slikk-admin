@@ -90,7 +90,7 @@ const Products = () => {
     const [filteredProductTypes, setFilteredProductTypes] = useState([])
     const [showFacebookDialog, setShowFacebookDialog] = useState(false)
     const [showRandomizeDialog, setShowRandomizeDialog] = useState(false)
-
+    const [selectFilterString, setFilterString] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
 
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
@@ -190,6 +190,9 @@ const Products = () => {
             const brandIds = brandList.map((item: any) => item).join(',')
             if (query) query += '&'
             query += `brand=${brandIds}`
+        }
+        if (selectFilterString) {
+            query = selectFilterString
         }
 
         setTypeFetch(query)
@@ -520,6 +523,7 @@ const Products = () => {
                     setFilteredSubCategories={setFilteredSubCategories}
                     options={divisions.divisions}
                     filters={filters}
+                    setFilterString={setFilterString}
                 />
             )}
             {showFacebookDialog && (

@@ -47,6 +47,7 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
             { header: 'Add To Cart', accessorKey: 'Add_To_Cart' },
             { header: 'Begin Checkout', accessorKey: 'Begin_Checkout' },
             { header: 'Total Orders', accessorKey: 'Total_Orders' },
+            { header: 'Orders by New User', accessorKey: 'Orders_By_New_Users' },
         ],
         [userData],
     )

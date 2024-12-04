@@ -11,6 +11,8 @@ import {
 import { FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
 import CommonSelect from './CommonSelect'
+import { DatePicker } from 'antd'
+import moment from 'moment'
 
 interface FontSize {
     label: string
@@ -81,6 +83,7 @@ const PageComponentConfig = ({
                 <div className="font-bold mt-1 bg-gray-300 px rounded-lg w-1/4 h-1/2 flex items-center justify-center ">
                     <span className="bg-gray-300  rounded-lg ">Mobile Configurations :</span>
                 </div>
+
                 {genericComponentArray.slice(0, 19).map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-2/3">
                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
@@ -122,6 +125,7 @@ const PageComponentConfig = ({
                 <div className="font-bold mt-1 bg-gray-300 px rounded-lg w-1/4 h-1/2 flex items-center justify-center ">
                     <span className="bg-gray-300  rounded-lg ">Web Configurations :</span>
                 </div>
+
                 {genericComponentArray.slice(19).map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-2/3">
                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
@@ -171,7 +175,7 @@ const PageComponentConfig = ({
                                 setBorderForm(isChecked ? 'yes' : 'no')
                             }}
                         />
-                        {borderForm === 'yes' && (
+                        {borderForm === true && (
                             <FormContainer>
                                 <CommonSelect name="component_config.border_style" label="Border Style" options={borderStyleArray} />
                                 {borrderStyleArray.map((item, key) => (
@@ -195,7 +199,7 @@ const PageComponentConfig = ({
                                 setSectioBorderShow(isChecked ? 'yes' : 'no')
                             }}
                         />
-                        {sectionBorderShow === 'yes' && (
+                        {sectionBorderShow === true && (
                             <FormContainer>
                                 <CommonSelect
                                     name="component_config.section_border_style"
@@ -286,7 +290,7 @@ const PageComponentConfig = ({
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                 const isChecked = e.target.checked
                                 setFieldValue('name', isChecked)
-                                setNameForm(isChecked) // Set borderForm to 'yes' or 'no'
+                                setNameForm(isChecked)
                             }}
                         />{' '}
                         <br />

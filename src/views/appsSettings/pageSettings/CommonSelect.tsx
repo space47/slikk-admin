@@ -18,6 +18,7 @@ const CommonSelect = ({ label, name, options, className, needClassName = false }
                     {({ field, form }: FieldProps<any>) => {
                         return (
                             <Select
+                                isClearable
                                 field={field}
                                 form={form}
                                 options={options}

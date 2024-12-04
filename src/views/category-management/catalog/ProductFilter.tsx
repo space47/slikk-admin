@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
+import { getAllFiltersAPI } from '@/store/action/filters.action'
 
 interface PROPS {
     showDrawer: boolean
@@ -34,6 +35,7 @@ interface PROPS {
     filteredSubCategories: any
     options: any
     filters: any
+    setFilterString: any
 }
 
 const ProductFilterNest = ({
@@ -60,13 +62,14 @@ const ProductFilterNest = ({
     filteredSubCategories,
     options,
     filters,
+    setFilterString,
 }: PROPS) => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
 
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllBrandsAPI())
-        // dispatch(getAllFiltersAPI())
+        dispatch(getAllFiltersAPI())
     }, [])
 
     useEffect(() => {
@@ -288,13 +291,34 @@ const ProductFilterNest = ({
                                                                     getOptionLabel={(option: any) => option.label}
                                                                     getOptionValue={(option: any) => option.value}
                                                                     onChange={(newVal) => {
-                                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                                        form.setFieldValue(field.name, newValues)
+                                                                        const selectedValues = newVal ? newVal.map((val) => val.value) : []
+                                                                        console.log('Selected Values:', selectedValues)
+                                                                        const groupedValues: Record<string, string[]> =
+                                                                            selectedValues.reduce(
+                                                                                (acc, curr) => {
+                                                                                    const [prefix, ...rest] = curr.split('_')
+                                                                                    const key = prefix.toLowerCase()
+                                                                                    const value = rest.join('_')
+                                                                                    acc[key] = acc[key] ? [...acc[key], value] : [value]
+                                                                                    return acc
+                                                                                },
+                                                                                {} as Record<string, string[]>,
+                                                                            )
+
+                                                                        const queryString = Object.entries(groupedValues)
+                                                                            .map(([key, values]) => `${key}=${values.join(',')}`)
+                                                                            .join('&')
+
+                                                                        console.log('Transformed Query String:', queryString)
+
+                                                                        form.setFieldValue(field.name, queryString)
+                                                                        setFilterString(queryString)
                                                                     }}
-                                                                    className="w-3/4"
+                                                                    className="xl:w-[300px]"
                                                                 />
                                                             )}
                                                         </Field>
+
                                                         <button
                                                             type="button"
                                                             onClick={() => remove(index)} // Remove the specific index

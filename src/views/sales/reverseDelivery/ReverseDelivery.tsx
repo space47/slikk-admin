@@ -365,7 +365,7 @@ const ReverseDelivery = () => {
                             id=""
                             placeholder="search here"
                             value={searchInput}
-                            className="xl:w-[250px] rounded-[10px] w-[130px]"
+                            className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
                             onChange={handleSearch}
                         />
                     </div>
