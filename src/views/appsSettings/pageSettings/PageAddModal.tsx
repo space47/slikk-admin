@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import React, { useEffect, useState } from 'react'
 import { Modal, notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -31,7 +30,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState<string[]>([])
-
     const [postInput, setPOstInput] = useState('')
     const [showPostTable, setShowPostTable] = useState(false)
     const [postTableData, setPostTableData] = useState([])
@@ -105,15 +103,11 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         if (!files || files.length === 0) {
             return
         }
-
         const formData = new FormData()
-
         for (const file of files) {
             const image = new Image()
             const fileURL = URL.createObjectURL(file)
-
             image.src = fileURL
-
             await new Promise<void>((resolve) => {
                 image.onload = () => {
                     console.log('Image width:', image.width, 'Image height:', image.height)
@@ -124,9 +118,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
             formData.append('file', file)
         }
-
         formData.append('file_type', 'banners')
-
         try {
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
@@ -188,24 +180,19 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const handleSubmit = async (row: any) => {
         console.log('satrt')
         const imageUpload = await handleimage(row.background_image_array)
-
         const mobileimageUpload = await handleimage(row.mobile_background_array)
-
         const footerImageUpload = await handleimage(row.footer_config_image_Array)
-
         const headerImageUpload = await handleimage(row.header_config_image_Array)
-
         const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
-
         const headerIconUpload = await handleimage(row.header_config_icon_Array)
-
+        //videos hanlde
         const footervideoUpload = await handleVideo(row.footer_config_video_Array)
         const headerVideoUpload = await handleVideo(row.header_config_video_Array)
         const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
         const backgroundVideoUpload = await handleVideo(row?.background_video_array)
 
         console.log('headerIconImage')
-
+        // Aspect Ratio handles
         const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
         const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
         const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
@@ -213,7 +200,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
 
         console.log('Start Api')
-
+        //Fields
         const newRowAdd = {
             ...row,
             ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
@@ -293,6 +280,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...(row?.component_config?.web_name_footer ? { web_name_footer: row?.component_config?.web_name_footer } : {}),
                 ...(row?.component_config?.web_section_border ? { web_section_border: row?.component_config?.web_section_border } : {}),
             },
+            extra_config: {
+                ...row?.extra_config,
+                ...(row?.extra_config?.timeout ? { timeout: row?.extra_config?.timeout } : {}),
+            },
             ...(row?.data_type?.filters ? { section_filters: row?.data_type?.filters } : {}),
             ...(row?.section_type ? { section_type: row?.section_type } : {}),
         }
@@ -301,11 +292,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
         setData((prevData: WebType[]) => [...prevData, newRowAdd])
         setSelectedType('')
-        // setInitalValue('')
 
         console.log('Main Data That is to be send in the API', newRowAdd)
         console.log('The row which is set', row)
-        // setIsModalOpen(false)
     }
     console.log('compo', componentOption)
 

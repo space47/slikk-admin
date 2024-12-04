@@ -30,13 +30,13 @@ export const genericComponentArray = [
         type: 'number',
         placeholder: 'Enter Interval in secs',
     },
-    {
-        label: 'Timestamp',
-        name: 'component_config.timestamp',
-        component: { Input },
-        type: 'Date',
-        placeholder: 'Enter Timestamp',
-    },
+    // {
+    //     label: 'Timestamp',
+    //     name: 'component_config.timestamp',
+    //     component: { Input },
+    //     type: 'Date',
+    //     placeholder: 'Enter Timestamp',
+    // },
     {
         label: 'Show Dots',
         name: 'component_config.show_dots',

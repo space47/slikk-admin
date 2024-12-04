@@ -15,6 +15,7 @@ import OtherConfigs from './OtherConfigs'
 import BackGroundImages from './BackGroundImages'
 import CommonSelect from './CommonSelect'
 import { SubDataTypeArray } from './PageSettingsCommon'
+import ExtraConfigFileds from './ExtraConfigFileds'
 
 const SectionTypeArray = [
     { label: 'Generic', value: 'generic' },
@@ -141,6 +142,7 @@ const CommonMainPageSettings = ({
     const [configFields, setConfigFields] = useState(false)
     const [otherFields, setOtherFields] = useState(false)
     const [bgFields, setBgFields] = useState(false)
+    const [extraConfigFields, setExtraConfigFields] = useState(false)
 
     return (
         <Formik
@@ -269,6 +271,25 @@ const CommonMainPageSettings = ({
                                 handleRemoveSubImage={handleRemoveSubImage}
                             />
                         )}
+
+                        {/* Extra Configs */}
+
+                        {extraConfigFields ? (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="reject" onClick={() => setExtraConfigFields(false)} type="button">
+                                    Extra Field Configs
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="new" onClick={() => setExtraConfigFields(true)} type="button">
+                                    Extra Field Configs
+                                </Button>
+                            </div>
+                        )}
+                        {extraConfigFields && <ExtraConfigFileds />}
+
+                        {/*  */}
                         <FormContainer className="grid grid-cols-2 gap-3">
                             <CommonSelect
                                 needClassName

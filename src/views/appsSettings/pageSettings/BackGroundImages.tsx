@@ -10,6 +10,8 @@ import CommonSelect from './CommonSelect'
 import PageEditVideo from './PageEditVideo'
 import PageAddVideo from './PageAddVideo'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import { DatePicker } from 'antd'
+import moment from 'moment'
 
 interface BGprops {
     editMode: any
@@ -211,6 +213,22 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values }:
                 needClassName
                 className="w-1/2"
             />
+
+            {/* <FormItem label="TimeStamp" className="mt-4">
+                <Field name="background_config.timeout">
+                    {({ field, form }: any) => (
+                        <DatePicker
+                            showTime
+                            placeholder=""
+                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                            onChange={(value) => {
+                                form.setFieldValue('background_config.timeout', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                            }}
+                            className=" md:w-2/3 lg:w-1/2 xl:w-1/2"
+                        />
+                    )}
+                </Field>
+            </FormItem> */}
         </FormContainer>
     )
 }
