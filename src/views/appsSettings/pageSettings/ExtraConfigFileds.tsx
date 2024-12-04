@@ -11,14 +11,14 @@ const ExtraConfigFileds = () => {
     return (
         <FormContainer className="grid grid-cols-2 gap-2">
             <FormItem label="Timeout" className="mt-4">
-                <Field name="extra_config.timeout">
+                <Field name="extra_info.timeout">
                     {({ field, form }: any) => (
                         <DatePicker
                             showTime
                             placeholder=""
                             value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                             onChange={(value) => {
-                                form.setFieldValue('extra_config.timeout', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                form.setFieldValue('extra_info.timeout', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                             }}
                             className=" md:w-2/3 lg:w-1/2 xl:w-2/3"
                         />
@@ -32,7 +32,7 @@ const ExtraConfigFileds = () => {
             ))}
             <CommonSelect
                 label="Timer Text Position"
-                name="extra_config.ttimer_text_position"
+                name="extra_info.timer_text_position"
                 options={ALIGNVALUES}
                 needClassName
                 className="col-span-1 w-1/2"

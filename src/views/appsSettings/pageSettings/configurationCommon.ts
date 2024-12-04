@@ -143,42 +143,42 @@ export const DATATYPEVALUES = [
 export const TimeFieldsArray = [
     {
         label: 'Timer Text',
-        name: 'extra_config.timer_text',
+        name: 'extra_info.timer_text',
         type: 'text',
     },
     // {
     //     label: 'Timer Text Position',
-    //     name: 'extra_config.timer_text_position',
+    //     name: 'extra_info.timer_text_position',
     //     type: 'text',
     // },
     {
         label: 'Timer Text Font',
-        name: 'extra_config.timer_text_font',
+        name: 'extra_info.timer_text_font',
         type: 'checkbox',
     },
     {
         label: 'Timer Font Size',
-        name: 'extra_config.timer_font_size',
+        name: 'extra_info.timer_font_size',
         type: 'number',
     },
     {
         label: 'Timer Background Color',
-        name: 'extra_config.timer_bg_color',
+        name: 'extra_info.timer_bg_color',
         type: 'text',
     },
     {
         label: 'Timer Gap',
-        name: 'extra_config.timer_gap',
+        name: 'extra_info.timer_gap',
         type: 'number',
     },
     {
         label: 'Timer Type',
-        name: 'extra_config.timer_type',
+        name: 'extra_info.timer_type',
         type: 'text',
     },
     {
         label: 'Background Color',
-        name: 'extra_config.bg_color',
+        name: 'extra_info.bg_color',
         type: 'text',
     },
 ]

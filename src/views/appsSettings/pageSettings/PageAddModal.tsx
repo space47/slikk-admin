@@ -321,9 +321,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...(row?.component_config?.web_name_footer ? { web_name_footer: row?.component_config?.web_name_footer } : {}),
                 ...(row?.component_config?.web_section_border ? { web_section_border: row?.component_config?.web_section_border } : {}),
             },
-            extra_config: {
-                ...row?.extra_config,
-                ...(row?.extra_config?.timeout ? { timeout: row?.extra_config?.timeout } : {}),
+            extra_info: {
+                ...row?.extra_info,
+                ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
             },
             ...(row?.data_type?.filters ? { section_filters: row?.data_type?.filters } : {}),
             ...(row?.section_type ? { section_type: row?.section_type } : {}),
