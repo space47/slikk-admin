@@ -18,9 +18,10 @@ interface BGprops {
     initialValue: any
     handleRemoveImage: any
     values: any
+    handleRemoveVideo: any
 }
 
-const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values }: BGprops) => {
+const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, handleRemoveVideo }: BGprops) => {
     return (
         <FormContainer className="grid grid-cols-2 gap-3">
             {editMode ? (
@@ -149,7 +150,7 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values }:
                         label="background Video"
                         rowName={initialValue.background_video}
                         removeName="background_video"
-                        // handleRemoveImage={handleRemoveSubImage}
+                        handleRemoveVideo={() => handleRemoveVideo('background_video')}
                         name="background_video_array"
                         beforeVideoUpload={beforeVideoUpload}
                         fileList={values.background_video_array}
@@ -174,7 +175,7 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values }:
                         label="Mobile background Video"
                         rowName={initialValue.mobile_background_video}
                         removeName="mobile_background_video"
-                        // handleRemoveImage={handleRemoveSubImage}
+                        handleRemoveVideo={() => handleRemoveVideo('mobile_background_video')}
                         name="mobile_background_video_array"
                         beforeVideoUpload={beforeVideoUpload}
                         fileList={values.mobile_background_video_array}

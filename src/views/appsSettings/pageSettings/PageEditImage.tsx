@@ -41,7 +41,7 @@ const PageEditImage = ({
                 {noImage && rowName && (
                     <div className="flex flex-col items-center justify-center min-w-[100px]">
                         <img src={rowName} alt={`Image `} className="w-[100px] h-[40px] flex object-contain " />
-                        <button className="text-red-500 text-md " onClick={() => handleRemoveImage(removeName)}>
+                        <button className="text-red-500 text-md " onClick={() => handleRemoveImage(removeName)} type="button">
                             <MdCancel className="text-red-500 bg-none text-lg" />
                         </button>
                     </div>

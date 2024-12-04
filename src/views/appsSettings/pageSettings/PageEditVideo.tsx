@@ -36,7 +36,7 @@ const PageEditVideo = ({
                 {noVideo && rowName && (
                     <div className="flex flex-col items-center justify-center min-w-[100px]">
                         <video src={rowName} controls className="w-[200px] h-[120px] flex object-contain" />
-                        <button className="text-red-500 text-md " onClick={() => handleRemoveVideo(removeName)}>
+                        <button type="button" className="text-red-500 text-md " onClick={() => handleRemoveVideo(removeName)}>
                             <MdCancel className="text-red-500 bg-none text-lg" />
                         </button>
                     </div>

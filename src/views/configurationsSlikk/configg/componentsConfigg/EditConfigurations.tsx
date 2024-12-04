@@ -41,6 +41,10 @@ const EditConfigurations = () => {
                         <div className="grid grid-cols-2 gap-4">{renderFields(val, fieldName, setFieldValue)}</div>
                     </div>
                 )
+            } else if (_.isArray(val)) {
+                val.map((item) => {
+                    console.log(item)
+                })
             } else {
                 return (
                     <FormItem key={fieldName} label={key} className="col-span-1 w-full">

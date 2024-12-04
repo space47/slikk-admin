@@ -93,6 +93,7 @@ interface CommonProps {
     particularRow?: any
     handleRemoveHeaderImage?: any
     handleRemoveSubImage?: any
+    handleRemoveVideo?: any
 }
 
 const CommonMainPageSettings = ({
@@ -138,6 +139,7 @@ const CommonMainPageSettings = ({
     particularRow,
     handleRemoveHeaderImage,
     handleRemoveSubImage,
+    handleRemoveVideo,
 }: CommonProps) => {
     const [configFields, setConfigFields] = useState(false)
     const [otherFields, setOtherFields] = useState(false)
@@ -243,6 +245,7 @@ const CommonMainPageSettings = ({
                                 initialValue={initialValue}
                                 handleRemoveImage={handleRemoveImage}
                                 values={values}
+                                handleRemoveVideo={handleRemoveVideo}
                             />
                         )}
 

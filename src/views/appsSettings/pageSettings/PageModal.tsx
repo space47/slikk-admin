@@ -56,8 +56,10 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         component_type: particularRow.component_type,
         section_heading: particularRow.section_heading,
         background_image: particularRow.background_config?.background_image,
+        background_video: particularRow.background_config?.background_video,
         sub_header_config: particularRow.sub_header_config,
         mobile_background_image: particularRow.background_config?.mobile_background_image,
+        mobile_background_video: particularRow.background_config?.mobile_background_video,
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
@@ -151,6 +153,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleimage = async (files: File[]) => {
+        console.log('Images of mobile for checking', files)
         if (!files || files.length === 0) {
             return
         }
@@ -202,38 +205,47 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleVideo = async (files: File[]) => {
-        if (!files || files.length === 0) {
-            console.error('No files provided for upload')
-            return ''
-        }
+        if (files) {
+            const formData = new FormData()
 
-        const formData = new FormData()
-        files.forEach((file, index) => {
-            formData.append(`file[${index}]`, file)
-        })
-        formData.append('file_type', 'product')
+            files.forEach((file) => {
+                formData.append('file', file)
+            })
+            formData.append('file_type', 'product')
 
-        try {
-            console.log('Uploading video files:', files)
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+            notification.info({
+                message: 'Video Upload In Process',
             })
-            console.log('Upload successful:', response)
-            const newData = response.data.url
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading video files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'Video not uploaded',
-            })
-            return ''
+            try {
+                setShowSpinner(true)
+                console.log(formData.get('file'))
+                const response = await axioisInstance.post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                console.log(response)
+                notification.success({
+                    message: 'Video Updated',
+                })
+                const newData = response.data.url
+                return newData
+            } catch (error: any) {
+                console.error('Error uploading files:', error)
+                notification.error({
+                    message: 'Failure',
+                    description: error?.response?.data?.message || 'Video Not uploaded',
+                })
+                return 'Error'
+            } finally {
+                setShowSpinner(false)
+            }
         }
     }
 
     const handleSubmit = async (row: any) => {
+        console.log('Mobile Upload video', row?.mobile_background_video_array)
+        console.log('Mobile Upload Image', row?.mobile_background_array)
         try {
             console.log('handleSubmit called')
             const imageUpload = await handleimage(row.background_image_array)
@@ -247,6 +259,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const headerVideoUpload = await handleVideo(row.header_config_video_Array)
             const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
             const backgroundVideoUpload = await handleVideo(row?.background_video_array)
+            const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
             console.log('New Row below')
             const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
             const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
@@ -254,7 +267,11 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
             const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
 
+            console.log('Image Url', mobileimageUpload)
+            console.log('video Url', mobileBackgroundVideoUpload)
+
             setShowSpinner(true)
+            console.log('Start New Row')
             const newRow = {
                 ...row,
                 ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
@@ -290,6 +307,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...(row?.background_config?.bg_video ? { is_background_video: row?.background_config?.bg_video } : {}),
                     ...(backgroundVideoUpload || row?.background_video
                         ? { background_video: backgroundVideoUpload || row?.background_video }
+                        : {}),
+                    ...(mobileBackgroundVideoUpload || row?.mobile_background_video
+                        ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
                         : {}),
                 },
                 footer_config: {
@@ -354,8 +374,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }
     }
 
-    console.log('ppppppproduct DDDDDDDDDatata', productData)
-
     const handleRemoveImage = (val: string) => {
         if (val === 'background_image') {
             setInitalValue((prev: any) => ({
@@ -366,6 +384,19 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             setInitalValue((prev: any) => ({
                 ...prev,
                 mobile_background_image: null,
+            }))
+        }
+    }
+    const handleRemoveVideo = (val: string) => {
+        if (val === 'background_video') {
+            setInitalValue((prev: any) => ({
+                ...prev,
+                background_video: null,
+            }))
+        } else if (val === 'mobile_background_video') {
+            setInitalValue((prev: any) => ({
+                ...prev,
+                mobile_background_video: null,
             }))
         }
     }
@@ -485,6 +516,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     particularRow={particularRow}
                     handleRemoveHeaderImage={handleRemoveHeaderImage}
                     handleRemoveSubImage={handleRemoveSubImage}
+                    handleRemoveVideo={handleRemoveVideo}
                 />
             </Modal>
         </>

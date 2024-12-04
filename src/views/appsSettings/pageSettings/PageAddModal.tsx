@@ -7,7 +7,7 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable, WebType } from './pageSettings.types'
-import { handleVideo } from '@/common/handleVideo'
+// import { handleVideo } from '@/common/handleVideo'
 
 type modalProps = {
     isModalOpen: boolean
@@ -177,7 +177,44 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         return aspectRatios
     }
 
+    const handleVideo = async (files: File[]) => {
+        if (files) {
+            const formData = new FormData()
+
+            files.forEach((file) => {
+                formData.append('file', file)
+            })
+            formData.append('file_type', 'product')
+            notification.info({
+                message: 'Video Upload In Process',
+            })
+
+            try {
+                console.log(formData.get('file'))
+                const response = await axioisInstance.post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                console.log(response)
+                notification.success({
+                    message: 'Video Updated',
+                })
+                const newData = response.data.url
+                return newData
+            } catch (error: any) {
+                console.error('Error uploading files:', error)
+                notification.error({
+                    message: 'Failure',
+                    description: error?.response?.data?.message || 'Video Not uploaded',
+                })
+                return 'Error'
+            }
+        }
+    }
+
     const handleSubmit = async (row: any) => {
+        console.log('Mobile file in Add', row?.mobile_background_video_array)
         console.log('satrt')
         const imageUpload = await handleimage(row.background_image_array)
         const mobileimageUpload = await handleimage(row.mobile_background_array)
@@ -190,6 +227,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         const headerVideoUpload = await handleVideo(row.header_config_video_Array)
         const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
         const backgroundVideoUpload = await handleVideo(row?.background_video_array)
+        const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
 
         console.log('headerIconImage')
         // Aspect Ratio handles
@@ -234,6 +272,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...(row?.background_config?.bg_video ? { is_background_video: row?.background_config?.bg_video } : {}),
                 ...(backgroundVideoUpload || row?.background_video
                     ? { background_video: backgroundVideoUpload || row?.background_video }
+                    : {}),
+                ...(mobileBackgroundVideoUpload || row?.mobile_background_video
+                    ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
                     : {}),
             },
             footer_config: {

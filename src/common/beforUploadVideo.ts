@@ -1,7 +1,7 @@
 export const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
     let valid: string | boolean = true
 
-    const allowedFileType = ['video/mp4', 'video/mov', 'video/flv', 'video/avi', 'video/wmv', 'video/webm', 'video/avchd']
+    const allowedFileType = ['video/mp4', 'video/mp3', 'video/mov', 'video/flv', 'video/avi', 'video/wmv', 'video/webm', 'video/avchd']
     const MAX_FILE_SIZE = 9000000000000000
     const MAX_UPLOAD = 70000000000000
 
