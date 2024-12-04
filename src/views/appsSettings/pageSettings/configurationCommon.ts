@@ -146,11 +146,16 @@ export const TimeFieldsArray = [
         name: 'extra_info.timer_text',
         type: 'text',
     },
-    // {
-    //     label: 'Timer Text Position',
-    //     name: 'extra_info.timer_text_position',
-    //     type: 'text',
-    // },
+    {
+        label: 'Timer Color',
+        name: 'extra_info.timer_color',
+        type: 'text',
+    },
+    {
+        label: 'Timer Text color',
+        name: 'extra_info.timer_text_color',
+        type: 'text',
+    },
     {
         label: 'Timer Text Font',
         name: 'extra_info.timer_text_font',
