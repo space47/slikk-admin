@@ -165,8 +165,10 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
                 image_mobile: mobileImageUpload || '',
-                video_web: webVideoUpload || '',
-                video_mobile: mobileVideoUpload || '',
+                extra_attributes: {
+                    video_web: webVideoUpload || '',
+                    video_mobile: mobileVideoUpload || '',
+                },
                 image_web_file: null,
                 image_mobile_file: null,
             }
