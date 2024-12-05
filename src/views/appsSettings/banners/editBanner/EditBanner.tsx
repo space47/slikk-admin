@@ -133,6 +133,33 @@ const EditBanner = () => {
         }
     }
 
+    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
+        if (!files || files.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+                image.onerror = () => {
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+        }
+        return aspectRatios
+    }
+
     const handleSubmit = async (values: BANNERMODEL) => {
         const processImageUpload = async (imageArray: any[], currentImage: string) => {
             return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
@@ -141,39 +168,48 @@ const EditBanner = () => {
             return videoArray.length > 0 ? await handleVideo(videoArray) : currentvideo
         }
         const webImageUpload = await processImageUpload(values.image_web_array, values.image_web)
+        const webAspectratio = await calculateAspectRatio(values.image_web_array)
         const mobileImageUpload = await processImageUpload(values.image_mobile_array, values.image_mobile)
+        const mobileAspectratio = await calculateAspectRatio(values.image_mobile_array)
         const sectionBgWebUpload = await processImageUpload(values.section_background_web_array, values.section_background_web)
         const sectionBgMobileUpload = await processImageUpload(values.section_background_mobile_array, values.section_background_mobile)
 
+        console.log('Aspect ratios', webAspectratio)
         const webVideoUpload = await processVideoUpload(values?.video_web_array, values?.video_web)
         const mobileVideoUpload = await processVideoUpload(values?.video_mobile_array, values?.video_mobile)
+
         const { max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array, ...rest } = values
         console.log(max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array)
 
+        console.log('start')
         const formData = {
             ...rest,
-            banner_id: values.id || '',
+            banner_id: values?.id || '',
             image_web: webImageUpload || '',
             image_mobile: mobileImageUpload || '',
             extra_attributes: {
                 video_web: webVideoUpload || '',
                 video_mobile: mobileVideoUpload || '',
+                web_aspect_ratio: webAspectratio?.[0] ? Number(webAspectratio[0].toFixed(2)) : null,
+                mobile_aspect_ratio: mobileAspectratio?.[0] ? Number(mobileAspectratio[0].toFixed(2)) : null,
             },
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
-            division: values.division ? values.division.map((item) => item.name).join(',') : '',
-            category: values.category ? values.category.map((item) => item.name).join(',') : '',
-            sub_category: values.sub_category ? values.sub_category.map((item) => item.name).join(',') : '',
-            product_type: values.product_type ? values.product_type.map((item) => item.name).join(',') : '',
-            brand: values.brand ? values.brand.map((item) => item.name).join(',') : '',
+            division: values?.division?.map((item) => item.name).join(',') || '',
+            category: values?.category?.map((item) => item.name).join(',') || '',
+            sub_category: values?.sub_category?.map((item) => item.name).join(',') || '',
+            product_type: values?.product_type?.map((item) => item.name).join(',') || '',
+            brand: values?.brand?.map((item) => item.name).join(',') || '',
             tags: [
-                ...(values.tags_input
+                ...(values?.tags_input
                     ? values.tags_input.split(',').filter((tag) => !tag.startsWith('maxoff_') && !tag.startsWith('minoff_'))
                     : []),
-                BANNER_FIELDS_TYPE.map((item) => item.name).includes('max_off') && values?.max_off && `maxoff_${values?.max_off}`,
-                BANNER_FIELDS_TYPE.map((item) => item.name).includes('min_off') && values?.min_off && `minoff_${values?.min_off}`,
-            ].filter((item) => item),
+                BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off && `maxoff_${values?.max_off}`,
+                BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off && `minoff_${values?.min_off}`,
+            ].filter(Boolean),
         }
+
+        console.log('FormData of Edit Banner:', formData)
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`banners`, formData)

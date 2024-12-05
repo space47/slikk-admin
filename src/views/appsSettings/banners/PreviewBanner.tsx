@@ -140,12 +140,40 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
         }
     }
 
+    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
+        if (!files || files.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+
+        const image = new Image()
+        const fileURL = URL.createObjectURL(files)
+
+        image.src = fileURL
+
+        await new Promise<void>((resolve) => {
+            image.onload = () => {
+                aspectRatios.push(image.width / image.height)
+                URL.revokeObjectURL(fileURL)
+                resolve()
+            }
+            image.onerror = () => {
+                URL.revokeObjectURL(fileURL)
+                resolve()
+            }
+        })
+
+        return aspectRatios
+    }
+
     const handleSubmit = async () => {
         await completeBannerFormData?.forEach(async (banner: any, index: number) => {
             // console.log(banner);
             const webImageUpload = await HandleImage(banner.image_web_file)
             const mobileImageUpload = await HandleImage(banner.image_mobile_file)
-
+            const webAspectratio = await calculateAspectRatio(banner.image_web_file)
+            const mobileAspectratio = await calculateAspectRatio(banner.image_mobile_file)
             const mobileVideoUpload = await handleVideo(banner?.video_file)
             const webVideoUpload = await handleVideo(banner?.video_mobile_file)
 
@@ -168,10 +196,14 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 extra_attributes: {
                     video_web: webVideoUpload || '',
                     video_mobile: mobileVideoUpload || '',
+                    web_aspect_ratio: Number(webAspectratio[0].toFixed(2)) || null,
+                    mobile_aspect_ratio: Number(mobileAspectratio[0].toFixed(2)) || null,
                 },
                 image_web_file: null,
                 image_mobile_file: null,
             }
+
+            console.log('Data to send', data)
 
             const createBannerAPI = await axioisInstance
                 .post('banners', data)

@@ -412,7 +412,7 @@ export const BackGroundArray = [
     {
         label: 'Web Corner Radius',
         type: 'number',
-        name: 'background_config.web corner_radius',
+        name: 'background_config.web_corner_radius',
         placeholder: 'Place Desktop Corner Radius',
     },
 
