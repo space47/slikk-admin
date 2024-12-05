@@ -45,7 +45,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
     const handlePreviewClicked = () => {
         const formValid = bannerForm?.map((formData) => {
-            if (formData?.from_date && formData.to_date && formData.name) {
+            if (formData?.from_date && formData.to_date && formData?.name) {
                 return true
             }
             return false
@@ -272,7 +272,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['division'] || []}
                     options={divisions.divisions}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
@@ -285,7 +285,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
                         setFilteredCategories(selectedCategories)
 
-                        handleMultiSelect('division', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('division', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>
@@ -296,7 +296,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['category'] || []}
                     options={filteredCategories}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
@@ -308,7 +308,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
                         setFilteredSubCategories(selectedSubCategories)
 
-                        handleMultiSelect('category', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('category', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>
@@ -319,7 +319,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['sub_category'] || []}
                     options={filteredSubCategories}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
@@ -330,7 +330,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
                         setFilteredProductTypes(selectedProductTypes)
 
-                        handleMultiSelect('sub_category', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('sub_category', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>
@@ -341,12 +341,12 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['product_type'] || []}
                     options={filteredProductTypes}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
 
-                        handleMultiSelect('product_type', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('product_type', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>
@@ -357,11 +357,11 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['brand'] || []}
                     options={brands.brands}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
-                        handleMultiSelect('brand', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('brand', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>

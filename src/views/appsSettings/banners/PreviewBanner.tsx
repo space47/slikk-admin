@@ -222,7 +222,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             <div
                 className={`bg-black flex flex-col gap-y-5 md:gap-y-7 lg:gap-y-10 lg:px-[5%] absolute w-full z-40 overflow-y-scroll py-10`}
             >
-                <AllComponentsLib data={API_BANNERS} size={viewSize} />
+                {/* <AllComponentsLib data={API_BANNERS} size={viewSize} /> */}
             </div>
         </div>
     )

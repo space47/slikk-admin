@@ -65,9 +65,9 @@ const EditBanner = () => {
             setBannerData(data)
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
-            setWebVideoView(data.video_web ? [data.video_web] : [])
-            setMobileVideoView(data.video_mobile ? [data.video_mobile] : [])
-            setSectionBGweb(data.section_background_web ? [data.section_background_web] : [])
+            setWebVideoView(data?.extra_attributes?.video_web ? [data?.extra_attributes?.video_web] : [])
+            setMobileVideoView(data?.extra_attributes?.video_mobile ? [data?.extra_attributes?.video_mobile] : [])
+            setSectionBGweb(data?.section_background_web ? [data.section_background_web] : [])
             setSectionBGmobile(data.section_background_mobile ? [data.section_background_mobile] : [])
         } catch (error) {
             console.log(error)
@@ -155,8 +155,10 @@ const EditBanner = () => {
             banner_id: values.id || '',
             image_web: webImageUpload || '',
             image_mobile: mobileImageUpload || '',
-            video_web: webVideoUpload || '',
-            video_mobile: mobileVideoUpload || '',
+            extra_attributes: {
+                video_web: webVideoUpload || '',
+                video_mobile: mobileVideoUpload || '',
+            },
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
             division: values.division ? values.division.map((item) => item.name).join(',') : '',

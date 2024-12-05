@@ -22,7 +22,7 @@ const VideoComponent = ({ videoView, videoRemove, handleVideoRemove, beforeUploa
                     {videoView && videoView.length > 0 ? (
                         videoView.map((img, index) => (
                             <div key={index} className="flex flex-col">
-                                <img src={img} alt={`image-${index}`} className="rounded-sm w-[50px] h-[50px]" />
+                                <video src={img} controls className="w-[200px] h-[120px] flex object-contain" />
 
                                 <button onClick={() => handleVideoRemove(index, videoRemove)} className="flex justify-center">
                                     <MdCancel className="text-red-500 bg-none text-lg" />
