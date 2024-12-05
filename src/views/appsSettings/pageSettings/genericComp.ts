@@ -463,6 +463,10 @@ export const ALIGNVALUES = [
 ]
 export const MobileAndDesktopPositions = [
     {
+        label: 'Top',
+        value: 'top',
+    },
+    {
         label: 'Right',
         value: 'right',
     },
