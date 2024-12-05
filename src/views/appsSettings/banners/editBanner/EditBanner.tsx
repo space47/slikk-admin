@@ -160,6 +160,50 @@ const EditBanner = () => {
         return aspectRatios
     }
 
+    const calculateAspectRatioFromString = async (imageUrl: string): Promise<number | null> => {
+        if (!imageUrl) {
+            return null
+        }
+
+        const image = new Image()
+        image.src = imageUrl
+
+        return new Promise<number | null>((resolve) => {
+            image.onload = () => {
+                const aspectRatio = image.width / image.height
+                resolve(aspectRatio)
+            }
+            image.onerror = () => {
+                resolve(null)
+            }
+        })
+    }
+
+    const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
+        if (!imageSources || imageSources.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+
+        for (const src of imageSources) {
+            const image = new Image()
+            image.src = src
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    resolve()
+                }
+                image.onerror = () => {
+                    resolve()
+                }
+            })
+        }
+
+        return aspectRatios
+    }
+
     const handleSubmit = async (values: BANNERMODEL) => {
         const processImageUpload = async (imageArray: any[], currentImage: string) => {
             return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
@@ -168,9 +212,10 @@ const EditBanner = () => {
             return videoArray.length > 0 ? await handleVideo(videoArray) : currentvideo
         }
         const webImageUpload = await processImageUpload(values.image_web_array, values.image_web)
-        const webAspectratio = await calculateAspectRatio(values.image_web_array)
+        const webAspectratio = (await calculateAspectRatio(values.image_web_array)) || (await calculateAspectRatioFromStrings(webVideoview))
         const mobileImageUpload = await processImageUpload(values.image_mobile_array, values.image_mobile)
-        const mobileAspectratio = await calculateAspectRatio(values.image_mobile_array)
+        const mobileAspectratio =
+            (await calculateAspectRatio(values.image_mobile_array)) || (await calculateAspectRatioFromStrings(mobileVideoview))
         const sectionBgWebUpload = await processImageUpload(values.section_background_web_array, values.section_background_web)
         const sectionBgMobileUpload = await processImageUpload(values.section_background_mobile_array, values.section_background_mobile)
 
