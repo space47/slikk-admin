@@ -6,7 +6,7 @@ import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps, ErrorMessage } from 'formik'
 import { useEffect, useState } from 'react'
 import { DatePicker, notification } from 'antd'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { BANNER_FIELDS_TYPE, getInitialBannerValue } from './EditCommon'
 import { BANNERMODEL } from '../BannerCommon'
 import { useAppDispatch, useAppSelector } from '@/store'
@@ -36,7 +36,7 @@ const EditBanner = () => {
     const [mobileVideoview, setMobileVideoView] = useState<string[]>([])
     const [sectionBGweb, setSectionBGweb] = useState<string[]>([])
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
-    // const navigate = useNavigate()
+    const navigate = useNavigate()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -182,7 +182,7 @@ const EditBanner = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Banner Edited Successfully',
             })
-            // navigate('/app/appSettings/banners')
+            navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
