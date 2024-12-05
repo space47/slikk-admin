@@ -269,7 +269,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     : {}),
                 ...(backgroundImageAspectRatios?.[0] ? { background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) } : {}),
                 ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) } : {}),
-                ...(row?.background_config?.bg_video ? { is_background_video: row?.background_config?.bg_video } : {}),
+                ...(row?.background_config?.is_background_video
+                    ? { is_background_video: row?.background_config?.is_background_video }
+                    : {}),
                 ...(backgroundVideoUpload || row?.background_video
                     ? { background_video: backgroundVideoUpload || row?.background_video }
                     : {}),
@@ -325,7 +327,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...row?.extra_info,
                 ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
             },
-            ...(row?.data_type?.filters ? { section_filters: row?.data_type?.filters } : {}),
+            ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
             ...(row?.section_type ? { section_type: row?.section_type } : {}),
         }
 

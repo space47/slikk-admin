@@ -442,7 +442,11 @@ const CommonMainPageSettings = ({
                                 </FormItem>
                             ))}
                         </FormContainer>
-                        <TagsEdit filterOptions={filters.filters} isValue />
+                        <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
+                            <Field type="checkbox" name="is_section_clickable" placeholder="" component={Input} />
+                        </FormItem>
+
+                        {values?.is_section_clickable && <TagsEdit filterOptions={filters.filters} isValue />}
 
                         {/* ..................................................... */}
                     </FormContainer>

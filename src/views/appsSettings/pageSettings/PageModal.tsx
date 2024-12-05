@@ -42,6 +42,10 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             : [],
     ])
 
+    const [showSectionFilters, setShowSectionFilters] = useState(particularRow?.is_section_clickable)
+
+    console.log('showSection Clickable', showSectionFilters)
+
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const dispatch = useAppDispatch()
@@ -63,7 +67,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
-        background_config: particularRow.background_config,
+        background_config: particularRow?.background_config,
         border: particularRow.border,
         border_style: particularRow.border_style,
         web_border: particularRow.web_border,
@@ -78,6 +82,8 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         extra_info: particularRow.extra_info,
         web_section_border: particularRow?.web_section_border,
     })
+
+    console.log('Is video true', initialValue?.background_config)
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -304,7 +310,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         ? { background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) }
                         : {}),
                     ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) } : {}),
-                    ...(row?.background_config?.bg_video ? { is_background_video: row?.background_config?.bg_video } : {}),
+                    ...(row?.background_config?.is_background_video
+                        ? { is_background_video: row?.background_config?.is_background_video }
+                        : {}),
                     ...(backgroundVideoUpload || row?.background_video
                         ? { background_video: backgroundVideoUpload || row?.background_video }
                         : {}),
@@ -360,7 +368,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...row?.extra_info,
                     ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
                 },
-                ...(row?.data_type?.filters ? { section_filters: row?.data_type?.filters } : {}),
+                ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
                 ...(row?.section_type ? { section_type: row?.section_type } : {}),
             }
 

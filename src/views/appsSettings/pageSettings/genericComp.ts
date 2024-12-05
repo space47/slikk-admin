@@ -431,7 +431,7 @@ export const BackGroundArray = [
     {
         label: 'Video',
         type: 'checkbox',
-        name: 'background_config.bg_video',
+        name: 'background_config.is_background_video',
         placeholder: '',
     },
 ]
