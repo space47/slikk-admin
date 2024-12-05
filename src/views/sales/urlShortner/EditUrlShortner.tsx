@@ -45,6 +45,7 @@ const EditUrlShortner = () => {
         web_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
         android_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
         ios_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
+        app: urlFieldDatas?.app,
         select_filter:
             urlFieldDatas?.web_url?.split('https://slikk.club/')[1]?.length > 0 ||
             urlFieldDatas?.android_url?.split('https://slikk.club/')[1]?.length > 0,
@@ -143,24 +144,29 @@ const EditUrlShortner = () => {
             pageTitle = `${page_title}`
         }
 
+        let appOnly = ''
+        if (values?.app) {
+            appOnly = `&app=${values?.app}`
+        }
+
         console.log('Target Page', values?.target_page)
 
         const formData = {
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}`
+                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}${appOnly}`
                     : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}`
+                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}${appOnly}`
                     : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}/${pageTitle}?${noSelectFilters}`
+                    ? `${values.android_url}/${pageTitle}?${noSelectFilters}${appOnly}`
                     : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
             short_code: values?.short_code,
         }
 
@@ -210,6 +216,9 @@ const EditUrlShortner = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+                                <FormItem label="App Only">
+                                    <Field type="checkbox" name="app" component={Input} />
+                                </FormItem>
                             </FormContainer>
 
                             <FormContainer>

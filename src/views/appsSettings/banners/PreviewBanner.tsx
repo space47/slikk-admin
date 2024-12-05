@@ -105,28 +105,68 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
         }
     }
 
+    const handleVideo = async (files: File[]) => {
+        if (files) {
+            const formData = new FormData()
+
+            formData.append('file', files)
+
+            formData.append('file_type', 'product')
+
+            notification.info({
+                message: 'Video Upload In Process',
+            })
+            try {
+                console.log(formData.get('file'))
+                const response = await axioisInstance.post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                console.log(response)
+                notification.success({
+                    message: 'Video Updated',
+                })
+                const newData = response.data.url
+                return newData
+            } catch (error: any) {
+                console.error('Error uploading files:', error)
+                notification.error({
+                    message: 'Failure',
+                    description: error?.response?.data?.message || 'Video Not uploaded',
+                })
+                return 'Error'
+            }
+        }
+    }
+
     const handleSubmit = async () => {
         await completeBannerFormData?.forEach(async (banner: any, index: number) => {
             // console.log(banner);
             const webImageUpload = await HandleImage(banner.image_web_file)
             const mobileImageUpload = await HandleImage(banner.image_mobile_file)
 
-            console.log(webImageUpload, mobileImageUpload)
+            const mobileVideoUpload = await handleVideo(banner?.video_file)
+            const webVideoUpload = await handleVideo(banner?.video_mobile_file)
 
-            if (!webImageUpload && !mobileImageUpload) {
-                notification.error({
-                    message: 'Upload Failed',
-                    description: 'Error Uploading Banner ' + (index + 1),
-                })
-                return
-            }
+            console.log(webImageUpload, mobileImageUpload, mobileVideoUpload, webVideoUpload)
+
+            // if (!webImageUpload && !mobileImageUpload) {
+            //     notification.error({
+            //         message: 'Upload Failed',
+            //         description: 'Error Uploading Banner ' + (index + 1),
+            //     })
+            //     return
+            // }
 
             const data = {
                 ...banner,
                 page: selectedPage.value,
                 section_heading: selectedSection?.section_heading,
-                image_web: webImageUpload,
-                image_mobile: mobileImageUpload,
+                image_web: webImageUpload || '',
+                image_mobile: mobileImageUpload || '',
+                video_web: webVideoUpload || '',
+                video_mobile: mobileVideoUpload || '',
                 image_web_file: null,
                 image_mobile_file: null,
             }

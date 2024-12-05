@@ -80,9 +80,13 @@ const AddUrlShortner = () => {
 
         const { page_title, ...rest } = values
         let pageTitle = ''
-
         if (values.page_title) {
             pageTitle = `${values?.page_title}`
+        }
+
+        let appOnly = ''
+        if (values?.app) {
+            appOnly = `&app=${values?.app}`
         }
 
         const formData = {
@@ -90,19 +94,19 @@ const AddUrlShortner = () => {
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}`
+                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}${appOnly}`
                     : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}`
+                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}${appOnly}`
                     : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}/${pageTitle}?${noSelectFilters}`
+                    ? `${values.android_url}/${pageTitle}?${noSelectFilters}${appOnly}`
                     : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}`,
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
         }
 
         try {
@@ -153,6 +157,9 @@ const AddUrlShortner = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+                                <FormItem label="App Only">
+                                    <Field type="checkbox" name="app" component={Input} />
+                                </FormItem>
                             </FormContainer>
 
                             <FormContainer>
