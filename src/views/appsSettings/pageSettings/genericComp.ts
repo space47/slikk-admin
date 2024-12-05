@@ -403,18 +403,19 @@ export const BackGroundArray = [
         name: 'background_config.web_background_bottomMargin',
         placeholder: 'Place bottom Margin',
     },
-    // {
-    //     label: 'Desktop Position',
-    //     type: 'text',
-    //     name: 'background_config.desktop_position',
-    //     placeholder: 'Place Desktop Position',
-    // },
-    // {
-    //     label: 'Mobile Position',
-    //     type: 'text',
-    //     name: 'background_config.mobile_position',
-    //     placeholder: 'Place Mobile Position',
-    // },
+    {
+        label: 'Corner Radius',
+        type: 'number',
+        name: 'background_config.corner_radius',
+        placeholder: 'Place Corner Radius',
+    },
+    {
+        label: 'Web Corner Radius',
+        type: 'number',
+        name: 'background_config.web corner_radius',
+        placeholder: 'Place Desktop Corner Radius',
+    },
+
     {
         label: 'Mobile Width',
         type: 'number',

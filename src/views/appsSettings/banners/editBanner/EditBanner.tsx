@@ -24,11 +24,16 @@ import { beforeUpload } from '@/common/beforeUpload'
 import BannerCategories from './component/BannerCategories'
 import { handleimage } from '@/common/handleImage'
 import moment from 'moment'
+import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import VideoComponent from './component/VideoComponent'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
     const [webImagview, setWebImageView] = useState<string[]>([])
     const [mobileImagview, setMobileImageView] = useState<string[]>([])
+
+    const [webVideoview, setWebVideoView] = useState<string[]>([])
+    const [mobileVideoview, setMobileVideoView] = useState<string[]>([])
     const [sectionBGweb, setSectionBGweb] = useState<string[]>([])
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
     // const navigate = useNavigate()
@@ -60,6 +65,8 @@ const EditBanner = () => {
             setBannerData(data)
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
+            setWebVideoView(data.video_web ? [data.video_web] : [])
+            setMobileVideoView(data.video_mobile ? [data.video_mobile] : [])
             setSectionBGweb(data.section_background_web ? [data.section_background_web] : [])
             setSectionBGmobile(data.section_background_mobile ? [data.section_background_mobile] : [])
         } catch (error) {
@@ -72,17 +79,57 @@ const EditBanner = () => {
     }, [id])
 
     const handleImageRemove = (index: number, type: string) => {
-        if (type === 'mobile') {
-            setMobileImageView((item) => item.filter((_, id) => id !== index))
+        const typeToUpdater = {
+            mobile: setMobileImageView,
+            web: setWebImageView,
+            SecWeb: setSectionBGweb,
+            SecMob: setSectionBGmobile,
+            mobile_video: setMobileVideoView,
+            web_video: setWebVideoView,
         }
-        if (type === 'web') {
-            setWebImageView((item) => item.filter((_, id) => id !== index))
+
+        const updater = typeToUpdater[type as keyof typeof typeToUpdater]
+        if (updater) {
+            updater((items) => items.filter((_, id) => id !== index))
         }
-        if (type === 'SecWeb') {
-            setSectionBGweb((item) => item.filter((_, id) => id !== index))
-        }
-        if (type === 'SecMob') {
-            setSectionBGmobile((item) => item.filter((_, id) => id !== index))
+    }
+
+    const handleVideo = async (files: File[]) => {
+        if (files) {
+            const formData = new FormData()
+
+            files.forEach((file) => {
+                formData.append('file', file)
+            })
+            formData.append('file_type', 'product')
+
+            notification.info({
+                message: 'Video Upload In Process',
+            })
+            try {
+                setShowSpinner(true)
+                console.log(formData.get('file'))
+                const response = await axioisInstance.post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                console.log(response)
+                notification.success({
+                    message: 'Video Updated',
+                })
+                const newData = response.data.url
+                return newData
+            } catch (error: any) {
+                console.error('Error uploading files:', error)
+                notification.error({
+                    message: 'Failure',
+                    description: error?.response?.data?.message || 'Video Not uploaded',
+                })
+                return 'Error'
+            } finally {
+                setShowSpinner(false)
+            }
         }
     }
 
@@ -90,22 +137,28 @@ const EditBanner = () => {
         const processImageUpload = async (imageArray: any[], currentImage: string) => {
             return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
         }
+        const processVideoUpload = async (videoArray: any[], currentvideo: string) => {
+            return videoArray.length > 0 ? await handleVideo(videoArray) : currentvideo
+        }
         const webImageUpload = await processImageUpload(values.image_web_array, values.image_web)
         const mobileImageUpload = await processImageUpload(values.image_mobile_array, values.image_mobile)
         const sectionBgWebUpload = await processImageUpload(values.section_background_web_array, values.section_background_web)
         const sectionBgMobileUpload = await processImageUpload(values.section_background_mobile_array, values.section_background_mobile)
-        const { max_off, min_off, ...rest } = values
-        console.log(max_off, min_off)
+
+        const webVideoUpload = await processVideoUpload(values?.video_web_array, values?.video_web)
+        const mobileVideoUpload = await processVideoUpload(values?.video_mobile_array, values?.video_mobile)
+        const { max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array, ...rest } = values
+        console.log(max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array)
 
         const formData = {
             ...rest,
             banner_id: values.id || '',
             image_web: webImageUpload || '',
             image_mobile: mobileImageUpload || '',
+            video_web: webVideoUpload || '',
+            video_mobile: mobileVideoUpload || '',
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
-            image_web_array: null,
-            image_mobile_array: null,
             division: values.division ? values.division.map((item) => item.name).join(',') : '',
             category: values.category ? values.category.map((item) => item.name).join(',') : '',
             sub_category: values.sub_category ? values.sub_category.map((item) => item.name).join(',') : '',
@@ -213,6 +266,27 @@ const EditBanner = () => {
                                 beforeUpload={beforeUpload}
                                 fileList={values.image_web_array}
                             />
+
+                            <div>Mobile Video</div>
+                            <VideoComponent
+                                videoView={mobileVideoview}
+                                videoRemove="mobile_video"
+                                handleVideoRemove={handleImageRemove}
+                                name="video_mobile_array"
+                                beforeUpload={beforeVideoUpload}
+                                fileList={values.video_mobile_array}
+                            />
+
+                            <div>Web Video</div>
+                            <VideoComponent
+                                videoView={webVideoview}
+                                videoRemove="web_video"
+                                handleVideoRemove={handleImageRemove}
+                                name="video_web_array"
+                                beforeUpload={beforeVideoUpload}
+                                fileList={values.video_web_array}
+                            />
+
                             {/* ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, */}
 
                             <div>Section BG Web</div>
