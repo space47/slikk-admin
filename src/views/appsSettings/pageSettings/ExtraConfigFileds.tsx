@@ -5,7 +5,25 @@ import { Field } from 'formik'
 import { DatePicker } from 'antd'
 import moment from 'moment'
 import CommonSelect from './CommonSelect'
-import { ALIGNVALUES } from './genericComp'
+
+const TimerPositionArray = [
+    {
+        label: 'Left',
+        value: 'left',
+    },
+    {
+        label: 'Right',
+        value: 'right',
+    },
+    {
+        label: 'Top',
+        value: 'top',
+    },
+    {
+        label: 'Bottom',
+        value: 'bottom',
+    },
+]
 
 const ExtraConfigFileds = () => {
     return (
@@ -33,7 +51,7 @@ const ExtraConfigFileds = () => {
             <CommonSelect
                 label="Timer Text Position"
                 name="extra_info.timer_text_position"
-                options={ALIGNVALUES}
+                options={TimerPositionArray}
                 needClassName
                 className="col-span-1 w-1/2"
             />
