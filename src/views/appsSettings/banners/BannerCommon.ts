@@ -28,11 +28,15 @@ export interface BANNERMODEL {
     category: DIVTYPES[]
     image_web_array: []
     image_mobile_array: []
+    video_web_array: []
+    video_mobile_array: []
     sub_category: DIVTYPES[]
     product_type: DIVTYPES[]
     type: string | null
     image_web: string
     image_mobile: string
+    video_web: string
+    video_mobile: string
     offers: boolean
     offer_id: string
     page: string

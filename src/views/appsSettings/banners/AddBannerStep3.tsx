@@ -45,7 +45,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
 
     const handlePreviewClicked = () => {
         const formValid = bannerForm?.map((formData) => {
-            if (formData?.from_date && formData.to_date && formData.name) {
+            if (formData?.from_date && formData.to_date && formData?.name) {
                 return true
             }
             return false
@@ -166,6 +166,18 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 [key]: value,
                 image_mobile: URL.createObjectURL(value),
             }
+        } else if (key === 'video_file') {
+            tempBannerForm[index] = {
+                ...bannerForm[index],
+                [key]: value,
+                video_web: URL.createObjectURL(value),
+            }
+        } else if (key === 'video_mobile_file') {
+            tempBannerForm[index] = {
+                ...bannerForm[index],
+                [key]: value,
+                video_mobile: URL.createObjectURL(value),
+            }
         } else {
             tempBannerForm[index] = { ...bannerForm[index], [key]: value }
         }
@@ -196,6 +208,17 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
             <div className="flex flex-col gap-y-2 items-center justify-center">
                 <span>Select Banner Mobile Image</span>
                 <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('image_mobile_file', file[0])} />
+            </div>
+
+            {/* videos */}
+
+            <div className="flex flex-col gap-y-2 items-center justify-center">
+                <span>Select Banner Video</span>
+                <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('video_file', file[0])} />
+            </div>
+            <div className="flex flex-col gap-y-2 items-center justify-center">
+                <span>Select Mobile Banner Video</span>
+                <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('video_mobile_file', file[0])} />
             </div>
 
             <form className="p-4 flex flex-row gap-3 flex-wrap">
@@ -249,7 +272,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['division'] || []}
                     options={divisions.divisions}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
@@ -262,7 +285,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
                         setFilteredCategories(selectedCategories)
 
-                        handleMultiSelect('division', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('division', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>
@@ -273,7 +296,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['category'] || []}
                     options={filteredCategories}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
@@ -285,7 +308,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
                         setFilteredSubCategories(selectedSubCategories)
 
-                        handleMultiSelect('category', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('category', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>
@@ -296,7 +319,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['sub_category'] || []}
                     options={filteredSubCategories}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
@@ -307,7 +330,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
 
                         setFilteredProductTypes(selectedProductTypes)
 
-                        handleMultiSelect('sub_category', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('sub_category', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>
@@ -318,12 +341,12 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['product_type'] || []}
                     options={filteredProductTypes}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
 
-                        handleMultiSelect('product_type', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('product_type', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>
@@ -334,11 +357,11 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                     isMulti
                     defaultValue={bannerForm[index]['brand'] || []}
                     options={brands.brands}
-                    getOptionLabel={(option) => option.name}
+                    getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
-                        handleMultiSelect('brand', newVal?.map((val) => val.name)?.join(','))
+                        handleMultiSelect('brand', newVal?.map((val) => val?.name)?.join(','))
                     }}
                 />
             </div>

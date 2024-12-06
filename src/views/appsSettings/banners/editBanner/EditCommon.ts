@@ -240,11 +240,17 @@ export const getInitialBannerValue = (bannerData: BANNERMODEL | undefined) => ({
     category: bannerData?.category || [],
     image_web_array: bannerData?.image_web_array || [],
     image_mobile_array: bannerData?.image_mobile_array || [],
+
+    video_web_array: bannerData?.video_web_array || [],
+    video_mobile_array: bannerData?.video_mobile_array || [],
+
     sub_category: bannerData?.sub_category || [],
     product_type: bannerData?.product_type || [],
     type: bannerData?.type || null,
     image_web: bannerData?.image_web || '',
     image_mobile: bannerData?.image_mobile || '',
+    video_web: bannerData?.video_web || '',
+    video_mobile: bannerData?.video_mobile || '',
     offers: bannerData?.offers || false,
     offer_id: bannerData?.offer_id || '',
     page: bannerData?.page || '',
