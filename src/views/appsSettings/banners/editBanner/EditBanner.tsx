@@ -6,7 +6,7 @@ import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps, ErrorMessage } from 'formik'
 import { useEffect, useState } from 'react'
 import { DatePicker, notification } from 'antd'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { BANNER_FIELDS_TYPE, getInitialBannerValue } from './EditCommon'
 import { BANNERMODEL } from '../BannerCommon'
 import { useAppDispatch, useAppSelector } from '@/store'
@@ -24,14 +24,19 @@ import { beforeUpload } from '@/common/beforeUpload'
 import BannerCategories from './component/BannerCategories'
 import { handleimage } from '@/common/handleImage'
 import moment from 'moment'
+import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import VideoComponent from './component/VideoComponent'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
     const [webImagview, setWebImageView] = useState<string[]>([])
     const [mobileImagview, setMobileImageView] = useState<string[]>([])
+
+    const [webVideoview, setWebVideoView] = useState<string[]>([])
+    const [mobileVideoview, setMobileVideoView] = useState<string[]>([])
     const [sectionBGweb, setSectionBGweb] = useState<string[]>([])
     const [sectionBGmobile, setSectionBGmobile] = useState<string[]>([])
-    // const navigate = useNavigate()
+    const navigate = useNavigate()
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -60,7 +65,9 @@ const EditBanner = () => {
             setBannerData(data)
             setMobileImageView(data.image_mobile ? [data.image_mobile] : [])
             setWebImageView(data.image_web ? [data.image_web] : [])
-            setSectionBGweb(data.section_background_web ? [data.section_background_web] : [])
+            setWebVideoView(data?.extra_attributes?.video_web ? [data?.extra_attributes?.video_web] : [])
+            setMobileVideoView(data?.extra_attributes?.video_mobile ? [data?.extra_attributes?.video_mobile] : [])
+            setSectionBGweb(data?.section_background_web ? [data.section_background_web] : [])
             setSectionBGmobile(data.section_background_mobile ? [data.section_background_mobile] : [])
         } catch (error) {
             console.log(error)
@@ -72,53 +79,182 @@ const EditBanner = () => {
     }, [id])
 
     const handleImageRemove = (index: number, type: string) => {
-        if (type === 'mobile') {
-            setMobileImageView((item) => item.filter((_, id) => id !== index))
+        const typeToUpdater = {
+            mobile: setMobileImageView,
+            web: setWebImageView,
+            SecWeb: setSectionBGweb,
+            SecMob: setSectionBGmobile,
+            mobile_video: setMobileVideoView,
+            web_video: setWebVideoView,
         }
-        if (type === 'web') {
-            setWebImageView((item) => item.filter((_, id) => id !== index))
+
+        const updater = typeToUpdater[type as keyof typeof typeToUpdater]
+        if (updater) {
+            updater((items) => items.filter((_, id) => id !== index))
         }
-        if (type === 'SecWeb') {
-            setSectionBGweb((item) => item.filter((_, id) => id !== index))
+    }
+
+    const handleVideo = async (files: File[]) => {
+        if (files) {
+            const formData = new FormData()
+
+            files.forEach((file) => {
+                formData.append('file', file)
+            })
+            formData.append('file_type', 'product')
+
+            notification.info({
+                message: 'Video Upload In Process',
+            })
+            try {
+                setShowSpinner(true)
+                console.log(formData.get('file'))
+                const response = await axioisInstance.post('fileupload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
+                console.log(response)
+                notification.success({
+                    message: 'Video Updated',
+                })
+                const newData = response.data.url
+                return newData
+            } catch (error: any) {
+                console.error('Error uploading files:', error)
+                notification.error({
+                    message: 'Failure',
+                    description: error?.response?.data?.message || 'Video Not uploaded',
+                })
+                return 'Error'
+            } finally {
+                setShowSpinner(false)
+            }
         }
-        if (type === 'SecMob') {
-            setSectionBGmobile((item) => item.filter((_, id) => id !== index))
+    }
+
+    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
+        if (!files || files.length === 0) {
+            return []
         }
+
+        const aspectRatios: number[] = []
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+                image.onerror = () => {
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+        }
+        return aspectRatios
+    }
+
+    const calculateAspectRatioFromString = async (imageUrl: string): Promise<number | null> => {
+        if (!imageUrl) {
+            return null
+        }
+
+        const image = new Image()
+        image.src = imageUrl
+
+        return new Promise<number | null>((resolve) => {
+            image.onload = () => {
+                const aspectRatio = image.width / image.height
+                resolve(aspectRatio)
+            }
+            image.onerror = () => {
+                resolve(null)
+            }
+        })
+    }
+
+    const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
+        if (!imageSources || imageSources.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+
+        for (const src of imageSources) {
+            const image = new Image()
+            image.src = src
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    resolve()
+                }
+                image.onerror = () => {
+                    resolve()
+                }
+            })
+        }
+
+        return aspectRatios
     }
 
     const handleSubmit = async (values: BANNERMODEL) => {
         const processImageUpload = async (imageArray: any[], currentImage: string) => {
             return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
         }
+        const processVideoUpload = async (videoArray: any[], currentvideo: string) => {
+            return videoArray.length > 0 ? await handleVideo(videoArray) : currentvideo
+        }
         const webImageUpload = await processImageUpload(values.image_web_array, values.image_web)
+        const webAspectratio = (await calculateAspectRatio(values.image_web_array)) || (await calculateAspectRatioFromStrings(webVideoview))
         const mobileImageUpload = await processImageUpload(values.image_mobile_array, values.image_mobile)
+        const mobileAspectratio =
+            (await calculateAspectRatio(values.image_mobile_array)) || (await calculateAspectRatioFromStrings(mobileVideoview))
         const sectionBgWebUpload = await processImageUpload(values.section_background_web_array, values.section_background_web)
         const sectionBgMobileUpload = await processImageUpload(values.section_background_mobile_array, values.section_background_mobile)
-        const { max_off, min_off, ...rest } = values
-        console.log(max_off, min_off)
 
+        console.log('Aspect ratios', webAspectratio)
+        const webVideoUpload = await processVideoUpload(values?.video_web_array, values?.video_web)
+        const mobileVideoUpload = await processVideoUpload(values?.video_mobile_array, values?.video_mobile)
+
+        const { max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array, ...rest } = values
+        console.log(max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array)
+
+        console.log('start')
         const formData = {
             ...rest,
-            banner_id: values.id || '',
+            banner_id: values?.id || '',
             image_web: webImageUpload || '',
             image_mobile: mobileImageUpload || '',
+            extra_attributes: {
+                video_web: webVideoUpload || '',
+                video_mobile: mobileVideoUpload || '',
+                web_aspect_ratio: webAspectratio?.[0] ? Number(webAspectratio[0].toFixed(2)) : null,
+                mobile_aspect_ratio: mobileAspectratio?.[0] ? Number(mobileAspectratio[0].toFixed(2)) : null,
+            },
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
-            image_web_array: null,
-            image_mobile_array: null,
-            division: values.division ? values.division.map((item) => item.name).join(',') : '',
-            category: values.category ? values.category.map((item) => item.name).join(',') : '',
-            sub_category: values.sub_category ? values.sub_category.map((item) => item.name).join(',') : '',
-            product_type: values.product_type ? values.product_type.map((item) => item.name).join(',') : '',
-            brand: values.brand ? values.brand.map((item) => item.name).join(',') : '',
+            division: values?.division?.map((item) => item.name).join(',') || '',
+            category: values?.category?.map((item) => item.name).join(',') || '',
+            sub_category: values?.sub_category?.map((item) => item.name).join(',') || '',
+            product_type: values?.product_type?.map((item) => item.name).join(',') || '',
+            brand: values?.brand?.map((item) => item.name).join(',') || '',
             tags: [
-                ...(values.tags_input
+                ...(values?.tags_input
                     ? values.tags_input.split(',').filter((tag) => !tag.startsWith('maxoff_') && !tag.startsWith('minoff_'))
                     : []),
-                BANNER_FIELDS_TYPE.map((item) => item.name).includes('max_off') && values?.max_off && `maxoff_${values?.max_off}`,
-                BANNER_FIELDS_TYPE.map((item) => item.name).includes('min_off') && values?.min_off && `minoff_${values?.min_off}`,
-            ].filter((item) => item),
+                BANNER_FIELDS_TYPE.some((item) => item.name === 'max_off') && values?.max_off && `maxoff_${values?.max_off}`,
+                BANNER_FIELDS_TYPE.some((item) => item.name === 'min_off') && values?.min_off && `minoff_${values?.min_off}`,
+            ].filter(Boolean),
         }
+
+        console.log('FormData of Edit Banner:', formData)
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`banners`, formData)
@@ -127,7 +263,7 @@ const EditBanner = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Banner Edited Successfully',
             })
-            // navigate('/app/appSettings/banners')
+            navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
@@ -213,6 +349,27 @@ const EditBanner = () => {
                                 beforeUpload={beforeUpload}
                                 fileList={values.image_web_array}
                             />
+
+                            <div>Mobile Video</div>
+                            <VideoComponent
+                                videoView={mobileVideoview}
+                                videoRemove="mobile_video"
+                                handleVideoRemove={handleImageRemove}
+                                name="video_mobile_array"
+                                beforeUpload={beforeVideoUpload}
+                                fileList={values.video_mobile_array}
+                            />
+
+                            <div>Web Video</div>
+                            <VideoComponent
+                                videoView={webVideoview}
+                                videoRemove="web_video"
+                                handleVideoRemove={handleImageRemove}
+                                name="video_web_array"
+                                beforeUpload={beforeVideoUpload}
+                                fileList={values.video_web_array}
+                            />
+
                             {/* ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, */}
 
                             <div>Section BG Web</div>

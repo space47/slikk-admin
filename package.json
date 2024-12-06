@@ -82,7 +82,7 @@
     "redux-persist": "^6.0.0",
     "slate": "^0.103.0",
     "slate-react": "^0.107.1",
-    "slikk-react-comps": "^1.8.14",
+    "slikk-react-comps": "^1.9.11",
     "tailwind-scrollbar-hide": "^1.1.7",
     "terser": "^5.36.0",
     "twin.macro": "^3.4.1",

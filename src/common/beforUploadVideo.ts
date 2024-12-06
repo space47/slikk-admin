@@ -3,7 +3,7 @@ export const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
 
     const allowedFileType = [
         'video/mp4',
-        'video/mp3',
+        'video/m3u8',
         'video/mov',
         'video/flv',
         'video/avi',

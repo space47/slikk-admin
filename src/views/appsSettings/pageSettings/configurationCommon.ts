@@ -133,11 +133,11 @@ export const DATATYPEVALUES = [
         name: 'data_type.handles',
         type: 'text',
     },
-    {
-        label: 'is_section_clickable',
-        name: 'is_section_clickable',
-        type: 'checkbox',
-    },
+    // {
+    //     label: 'is_section_clickable',
+    //     name: 'is_section_clickable',
+    //     type: 'checkbox',
+    // },
 ]
 
 export const TimeFieldsArray = [
