@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useMemo, useLayoutEffect } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { BANNERMODEL } from './BannerCommon'
 import { FaEdit, FaTrash } from 'react-icons/fa'
@@ -15,7 +15,7 @@ import { Dropdown } from '@/components/ui'
 import { BANNER_PAGE_NAME } from '@/common/banner'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import _ from 'lodash'
-import BannerFilter from './editBanner/component/BannerFilter'
+import { MdCancel } from 'react-icons/md'
 
 type Option = {
     value: number
@@ -30,24 +30,30 @@ const pageSizeOptions = [
 ]
 
 const AppBanners = () => {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const { var1, var2 } = location.state || {}
     const [data, setData] = useState<BANNERMODEL[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [showDeleteModal, setShowDeleteModal] = useState(false)
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(BANNER_PAGE_NAME[0])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(var1 ? var1 : BANNER_PAGE_NAME[0])
     const [sectionHeadingArray, setSectionHeadingArray] = useState<any[]>()
     const [isSectionheading, setIsSectionheading] = useState(false)
-    const [selectedHeading, setSelectedHeading] = useState('Select Section')
+    const [selectedHeading, setSelectedHeading] = useState(var2 ? var2 : 'Select Section')
     const [bannerid, setBannerid] = useState<number>()
     const [isFilterOn, setIsFilterOn] = useState(false)
 
-    const navigate = useNavigate()
+    console.log('var1', var1, 'var2', var2)
 
     const fetchData = async (page: number, pageSize: number, filter: string) => {
         let sectionHeading = ''
-        if (isSectionheading) {
+        if (var2) {
+            sectionHeading = `&section_heading=${var2}`
+        }
+        if (isSectionheading && selectedHeading !== 'Select Section') {
             sectionHeading = `&section_heading=${selectedHeading}`
         }
         try {
@@ -93,7 +99,7 @@ const AppBanners = () => {
         }
     }
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         fetchForSectionHeading()
     }, [])
 
@@ -273,7 +279,7 @@ const AppBanners = () => {
                 <div className="mb-4">
                     <input
                         type="text"
-                        placeholder="Search here"
+                        placeholder="Search by name"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
                         className="p-2 border rounded"
@@ -282,10 +288,39 @@ const AppBanners = () => {
 
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
                     <div className="flex items-end justify-end mb-2 gap-2">
-                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={() => setIsFilterOn(true)}>
-                            Filters
-                        </button>
-                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleBanner}>
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border bg-gray-200 text-black text-lg font-semibold"
+                                title={currentSelectedPage.name}
+                                onSelect={handleSelectPage}
+                            >
+                                {BANNER_PAGE_NAME.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item.value}>
+                                        {item.name}
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
+
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border  bg-gray-200 text-black text-lg font-semibold"
+                                title={selectedHeading}
+                                onSelect={handleSectionHeading}
+                            >
+                                {sectionHeadingArray?.map((item, key) => (
+                                    <DropdownItem key={key} eventKey={item}>
+                                        {item}
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
+                        <div>
+                            <button className="" onClick={() => setSelectedHeading('Select Section')}>
+                                <MdCancel className="text-xl text-red-500 " />
+                            </button>
+                        </div>
+                        <button className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-700" onClick={handleBanner}>
                             ADD NEW BANNER
                         </button>
                     </div>
@@ -319,18 +354,6 @@ const AppBanners = () => {
                         <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE THE BANNER Id: {bannerid} !!
                     </div>
                 </Modal>
-            )}
-
-            {isFilterOn && (
-                <BannerFilter
-                    isOpen={isFilterOn}
-                    setIsOpen={setIsFilterOn}
-                    sectionHeadingArray={sectionHeadingArray}
-                    currentSelectedPage={currentSelectedPage}
-                    handleSectionHeading={handleSectionHeading}
-                    handleSelectPage={handleSelectPage}
-                    selectedHeading={selectedHeading}
-                />
             )}
         </div>
     )
