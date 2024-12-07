@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useLayoutEffect } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
@@ -11,6 +11,11 @@ import { FaEdit, FaTrash } from 'react-icons/fa'
 import { Modal, notification } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
 import EasyTable from '@/common/EasyTable'
+import { Dropdown } from '@/components/ui'
+import { BANNER_PAGE_NAME } from '@/common/banner'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import _ from 'lodash'
+import BannerFilter from './editBanner/component/BannerFilter'
 
 type Option = {
     value: number
@@ -31,17 +36,29 @@ const AppBanners = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(BANNER_PAGE_NAME[0])
+    const [sectionHeadingArray, setSectionHeadingArray] = useState<any[]>()
+    const [isSectionheading, setIsSectionheading] = useState(false)
+    const [selectedHeading, setSelectedHeading] = useState('Select Section')
     const [bannerid, setBannerid] = useState<number>()
+    const [isFilterOn, setIsFilterOn] = useState(false)
 
     const navigate = useNavigate()
 
     const fetchData = async (page: number, pageSize: number, filter: string) => {
+        let sectionHeading = ''
+        if (isSectionheading) {
+            sectionHeading = `&section_heading=${selectedHeading}`
+        }
         try {
-            const response = await axiosInstance.get(`/banners?p=${page}&page_size=${pageSize}&filter=${filter}`)
+            const response = await axiosInstance.get(
+                `/banners?p=${page}&page_size=${pageSize}&name=${filter}&page=${currentSelectedPage.value}${sectionHeading}`,
+            )
             const data = response.data.data.results
 
             const total = response.data.data.count
             setData(data)
+
             setTotalData(total)
 
             const count = response.data.data.count
@@ -52,9 +69,44 @@ const AppBanners = () => {
         }
     }
 
+    const fetchForSectionHeading = async () => {
+        try {
+            let page = 1
+            let hasMore = true
+            let allSectionHeadings: any = []
+
+            while (hasMore) {
+                const response = await axiosInstance.get(`/banners?p=${page}`)
+                const data = response.data.data
+                const newSectionHeadings = data.results.map((item) => item.section_heading)
+                allSectionHeadings = _.uniq(allSectionHeadings.concat(newSectionHeadings))
+                if (data.next) {
+                    page++
+                } else {
+                    hasMore = false
+                }
+            }
+
+            setSectionHeadingArray(allSectionHeadings)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useLayoutEffect(() => {
+        fetchForSectionHeading()
+    }, [])
+
+    console.log('Section Heading Array', sectionHeadingArray)
+
     useEffect(() => {
         fetchData(page, pageSize, globalFilter)
-    }, [page, pageSize, globalFilter])
+    }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading])
+
+    const handleSectionHeading = (selectedKey: string) => {
+        setSelectedHeading(selectedKey)
+        setIsSectionheading(true)
+    }
 
     const columns = useMemo(
         () => [
@@ -62,11 +114,20 @@ const AppBanners = () => {
                 header: 'Edit',
                 accessorKey: 'id',
                 cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
-                        {/* <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
+                    <button className="border-none bg-none">
+                        <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
                             <FaEdit className="text-xl text-blue-600" />
-                        </a> */}
-                        <FaEdit className="text-xl text-blue-600" />
+                        </a>
+                        {/* <FaEdit className="text-xl text-blue-600" /> */}
+                    </button>
+                ),
+            },
+            {
+                header: 'Delete',
+                accessorKey: 'id',
+                cell: ({ row }) => (
+                    <button onClick={() => handleDeleteClick(row.original.id)} className="border-none bg-none">
+                        <FaTrash className="text-xl text-red-500" />
                     </button>
                 ),
             },
@@ -160,9 +221,9 @@ const AppBanners = () => {
         [],
     )
 
-    const handleActionClick = (id: number) => {
-        navigate(`/app/appSettings/banners/${id}`)
-        console.log('id', id)
+    const handleSelectPage = (value: string) => {
+        const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
+        if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
 
     const handleDeleteClick = (id: number) => {
@@ -218,8 +279,12 @@ const AppBanners = () => {
                         className="p-2 border rounded"
                     />
                 </div>
+
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    <div className="flex items-end justify-end mb-2">
+                    <div className="flex items-end justify-end mb-2 gap-2">
+                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={() => setIsFilterOn(true)}>
+                            Filters
+                        </button>
                         <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleBanner}>
                             ADD NEW BANNER
                         </button>
@@ -254,6 +319,18 @@ const AppBanners = () => {
                         <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE THE BANNER Id: {bannerid} !!
                     </div>
                 </Modal>
+            )}
+
+            {isFilterOn && (
+                <BannerFilter
+                    isOpen={isFilterOn}
+                    setIsOpen={setIsFilterOn}
+                    sectionHeadingArray={sectionHeadingArray}
+                    currentSelectedPage={currentSelectedPage}
+                    handleSectionHeading={handleSectionHeading}
+                    handleSelectPage={handleSelectPage}
+                    selectedHeading={selectedHeading}
+                />
             )}
         </div>
     )

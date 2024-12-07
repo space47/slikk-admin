@@ -165,29 +165,30 @@ const Products = () => {
         let query = '&'
 
         if (divisionList.length > 0) {
-            const divisionIds = divisionList.map((item: any) => item).join(',')
+            console.log('kela divisionList', divisionList)
+            const divisionIds = divisionList.map((item: any) => item?.name).join(',')
 
             query += `division=${divisionIds}`
         }
 
         if (categoryList.length > 0) {
-            const categoryIds = categoryList.map((item: any) => item).join(',')
+            const categoryIds = categoryList.map((item: any) => item?.name).join(',')
             if (query) query += '&'
             query += `category=${categoryIds}`
         }
 
         if (subCategoryList.length > 0) {
-            const subCategoryIds = subCategoryList.map((item: any) => item).join(',')
+            const subCategoryIds = subCategoryList.map((item: any) => item?.name).join(',')
             if (query) query += '&'
             query += `sub_category=${subCategoryIds}`
         }
         if (productTypeList.length > 0) {
-            const productTypeIds = productTypeList.map((item: any) => item).join(',')
+            const productTypeIds = productTypeList.map((item: any) => item?.name).join(',')
             if (query) query += '&'
             query += `Product_type=${productTypeIds}`
         }
         if (brandList.length > 0) {
-            const brandIds = brandList.map((item: any) => item).join(',')
+            const brandIds = brandList.map((item: any) => item?.name).join(',')
             if (query) query += '&'
             query += `brand=${brandIds}`
         }
@@ -320,7 +321,7 @@ const Products = () => {
                 filterParam = `&sku=${globalFilter}`
             }
             console.log('filterParam', filterParam)
-            const downloadUrl = `merchant/products?download=true${typeFetch}${filterParam}`
+            const downloadUrl = `merchant/products?download=true&${typeFetch}${filterParam}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
