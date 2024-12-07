@@ -43,7 +43,7 @@ const EditConfigurations = () => {
                 )
             } else if (_.isArray(val)) {
                 val.map((item) => {
-                    console.log(item)
+                    console.log('Items Inside Array', item)
                 })
             } else {
                 return (

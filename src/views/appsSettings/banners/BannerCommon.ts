@@ -40,6 +40,7 @@ export interface BANNERMODEL {
     offers: boolean
     offer_id: string
     page: string
+    extra_attributes: Record<string, never>
     from_date: string
     to_date: string
     uptooff: string

@@ -205,6 +205,7 @@ const EditBanner = () => {
     }
 
     const handleSubmit = async (values: BANNERMODEL) => {
+        console.log(`Initial Value for Extra attributes`, values?.extra_attributes?.video_web)
         const processImageUpload = async (imageArray: any[], currentImage: string) => {
             return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
         }
@@ -233,10 +234,12 @@ const EditBanner = () => {
             image_web: webImageUpload || '',
             image_mobile: mobileImageUpload || '',
             extra_attributes: {
-                video_web: webVideoUpload || '',
-                video_mobile: mobileVideoUpload || '',
-                web_aspect_ratio: webAspectratio?.[0] ? Number(webAspectratio[0].toFixed(2)) : null,
-                mobile_aspect_ratio: mobileAspectratio?.[0] ? Number(mobileAspectratio[0].toFixed(2)) : null,
+                video_web: webVideoUpload || values?.extra_attributes?.video_web,
+                video_mobile: mobileVideoUpload || values?.extra_attributes?.video_mobile,
+                web_aspect_ratio: webAspectratio?.[0] ? Number(webAspectratio[0].toFixed(2)) : values?.extra_attributes?.web_aspect_ratio,
+                mobile_aspect_ratio: mobileAspectratio?.[0]
+                    ? Number(mobileAspectratio[0].toFixed(2))
+                    : values?.extra_attributes?.web_aspect_ratio,
             },
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
@@ -263,7 +266,7 @@ const EditBanner = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Banner Edited Successfully',
             })
-            navigate('/app/appSettings/banners')
+            // navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',

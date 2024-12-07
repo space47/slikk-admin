@@ -243,7 +243,7 @@ export const getInitialBannerValue = (bannerData: BANNERMODEL | undefined) => ({
 
     video_web_array: bannerData?.video_web_array || [],
     video_mobile_array: bannerData?.video_mobile_array || [],
-
+    extra_attributes: bannerData?.extra_attributes || {},
     sub_category: bannerData?.sub_category || [],
     product_type: bannerData?.product_type || [],
     type: bannerData?.type || null,
