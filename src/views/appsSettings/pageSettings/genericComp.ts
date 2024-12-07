@@ -392,6 +392,18 @@ export const BackGroundArray = [
         placeholder: 'Place Bottom Margin',
     },
     {
+        label: 'Background Left Margin',
+        type: 'number',
+        name: 'background_config.background_leftMargin',
+        placeholder: 'Place Left Margin',
+    },
+    {
+        label: 'Background Right Margin',
+        type: 'number',
+        name: 'background_config.background_rightMargin',
+        placeholder: 'Place Right Margin',
+    },
+    {
         label: 'Web Background TopMargin',
         type: 'number',
         name: 'background_config.web_background_topMargin',
@@ -402,6 +414,18 @@ export const BackGroundArray = [
         type: 'number',
         name: 'background_config.web_background_bottomMargin',
         placeholder: 'Place bottom Margin',
+    },
+    {
+        label: 'Web Background Left Margin',
+        type: 'number',
+        name: 'background_config.web_background_leftMargin',
+        placeholder: 'Place Web Left Margin',
+    },
+    {
+        label: 'Web Background Right Margin',
+        type: 'number',
+        name: 'background_config.web_background_rightMargin',
+        placeholder: 'Place Web Right Margin',
     },
     {
         label: 'Corner Radius',
