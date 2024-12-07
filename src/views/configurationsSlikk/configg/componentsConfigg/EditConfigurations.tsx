@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface, EDITFIELDSARRAY } from './commonConfigTypes'
-import { Field, FieldProps, Form, Formik } from 'formik'
+import { Field, FieldArray, FieldProps, Form, Formik } from 'formik'
 import { Button, FormContainer, FormItem, Input, Spinner, Upload } from '@/components/ui'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -9,6 +10,8 @@ import _ from 'lodash'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { beforeUpload } from '@/common/beforeUpload'
 import { handleimage } from '@/common/handleImage'
+import { MdCancel } from 'react-icons/md'
+import { IoIosAddCircle } from 'react-icons/io'
 
 const EditConfigurations = () => {
     const navigate = useNavigate()
@@ -32,35 +35,42 @@ const EditConfigurations = () => {
 
     const renderFields = (obj: any, parentKey: string, setFieldValue: any) => {
         console.log('Item for the renderedFields', obj)
-        return Object.entries(obj).map(([key, val]) => {
-            const fieldName = parentKey ? `${parentKey}.${key}` : key
+        if (_.isPlainObject(obj)) {
+            return Object.entries(obj).map(([key, val]) => {
+                const fieldName = parentKey ? `${parentKey}.${key}` : key
 
-            if (_.isPlainObject(val)) {
-                return (
-                    <div key={fieldName} className="col-span-2">
-                        <div className="text-xl font-semibold mb-1">{key}</div>
-                        <div className="grid grid-cols-2 gap-4">{renderFields(val, fieldName, setFieldValue)}</div>
-                    </div>
-                )
-            } else if (_.isArray(val)) {
-                val.map((item) => {
-                    console.log('Items Inside Array', item)
-                })
-            } else {
-                return (
-                    <FormItem key={fieldName} label={key} className="col-span-1 w-full">
-                        {key.toLowerCase().includes('image') ? (
-                            <div>
-                                <Field name={fieldName}>
-                                    {({ form }: FieldProps) => (
-                                        <Upload
-                                            beforeUpload={beforeUpload}
-                                            onChange={(files) => form.setFieldValue(fieldName, files)}
-                                            onFileRemove={(files) => form.setFieldValue(fieldName, files)}
-                                            className="flex justify-center"
-                                        />
-                                    )}
-                                </Field>
+                if (_.isPlainObject(val)) {
+                    return (
+                        <div key={fieldName} className="col-span-2">
+                            <div className="text-xl font-semibold mb-1">{key}</div>
+                            <div className="grid grid-cols-2 gap-4">{renderFields(val, fieldName, setFieldValue)}</div>
+                        </div>
+                    )
+                } else {
+                    return (
+                        <FormItem key={fieldName} label={key} className="col-span-1 w-full">
+                            {key.toLowerCase().includes('image') ? (
+                                <div>
+                                    <Field name={fieldName}>
+                                        {({ form }: FieldProps) => (
+                                            <Upload
+                                                beforeUpload={beforeUpload}
+                                                onChange={(files) => form.setFieldValue(fieldName, files)}
+                                                onFileRemove={(files) => form.setFieldValue(fieldName, files)}
+                                                className="flex justify-center"
+                                            />
+                                        )}
+                                    </Field>
+                                    <Field
+                                        component={Input}
+                                        type="text"
+                                        placeholder={`Enter ${key}`}
+                                        name={fieldName}
+                                        value={val}
+                                        onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                                    />
+                                </div>
+                            ) : (
                                 <Field
                                     component={Input}
                                     type="text"
@@ -69,21 +79,99 @@ const EditConfigurations = () => {
                                     value={val}
                                     onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
                                 />
-                            </div>
-                        ) : (
-                            <Field
-                                component={Input}
-                                type="text"
-                                placeholder={`Enter ${key}`}
-                                name={fieldName}
-                                value={val}
-                                onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
-                            />
-                        )}
-                    </FormItem>
-                )
-            }
-        })
+                            )}
+                        </FormItem>
+                    )
+                }
+            })
+        } else if (_.isArray(obj)) {
+            return (
+                <FieldArray
+                    name={parentKey || ''}
+                    render={(arrayHelpers) => (
+                        <div>
+                            {obj.map((item, index) => {
+                                const arrayKey = parentKey ? `${parentKey}[${index}]` : `${index}`
+                                console.log('FieldName of Array', arrayKey)
+
+                                if (_.isPlainObject(item)) {
+                                    return (
+                                        <div key={arrayKey} className="col-span-1">
+                                            <div className="text-lg font-medium mb-2">Data {index + 1}:</div>
+                                            <div className="flex gap-2">
+                                                <div className="grid grid-cols-2 gap-4">{renderFields(item, arrayKey, setFieldValue)}</div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => arrayHelpers.remove(index)}
+                                                    className="text-red-500 mt-2"
+                                                >
+                                                    <MdCancel className="text-xl text-red-600" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )
+                                } else if (_.isArray(item)) {
+                                    return (
+                                        <div key={arrayKey} className="col-span-2 flex gap-2">
+                                            {item.map((subItem, subIndex) => (
+                                                <Field
+                                                    key={`${arrayKey}[${subIndex}]`}
+                                                    component={Input}
+                                                    type="text"
+                                                    placeholder={`Enter value for ${parentKey}[${index}][${subIndex}]`}
+                                                    name={`${arrayKey}[${subIndex}]`}
+                                                    value={subItem}
+                                                    onChange={(e: any) => setFieldValue(`${arrayKey}[${subIndex}]`, e.target.value)}
+                                                    className="w-full"
+                                                />
+                                            ))}
+                                            <button type="button" onClick={() => arrayHelpers.remove(index)} className="text-red-500 mt-2">
+                                                <MdCancel className="text-xl text-red-600" />
+                                            </button>
+                                        </div>
+                                    )
+                                } else {
+                                    return (
+                                        <div key={arrayKey} className="flex gap-2">
+                                            <Field
+                                                component={Input}
+                                                type="text"
+                                                placeholder={`Enter value for ${parentKey}[${index}]`}
+                                                name={arrayKey}
+                                                value={item}
+                                                onChange={(e: any) => setFieldValue(arrayKey, e.target.value)}
+                                                className="w-full"
+                                            />
+                                            <button type="button" onClick={() => arrayHelpers.remove(index)} className="text-red-500 mt-2">
+                                                <MdCancel className="text-xl text-red-600" />
+                                            </button>
+                                        </div>
+                                    )
+                                }
+                            })}
+                            <button
+                                type="button"
+                                className="bg-black text-white px-2 py-2 rounded-xl flex gap-2"
+                                onClick={() => {
+                                    if (obj.length > 0) {
+                                        const newItem = _.isPlainObject(obj[0])
+                                            ? _.mapValues(obj[0], () => '')
+                                            : _.isArray(obj[0])
+                                              ? []
+                                              : ''
+                                        arrayHelpers.push(newItem)
+                                    } else {
+                                        arrayHelpers.push('')
+                                    }
+                                }}
+                            >
+                                <IoIosAddCircle className="text-xl" /> Add Item
+                            </button>
+                        </div>
+                    )}
+                />
+            )
+        }
     }
 
     const handleSubmit = async (values: ConfigInterface) => {
