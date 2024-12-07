@@ -31,6 +31,7 @@ const EditConfigurations = () => {
     }, [id])
 
     const renderFields = (obj: any, parentKey: string, setFieldValue: any) => {
+        console.log('Item for the renderedFields', obj)
         return Object.entries(obj).map(([key, val]) => {
             const fieldName = parentKey ? `${parentKey}.${key}` : key
 
