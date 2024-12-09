@@ -4,13 +4,18 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { BANNERMODEL } from './BannerCommon'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { Modal, notification } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
 import EasyTable from '@/common/EasyTable'
+import { Dropdown } from '@/components/ui'
+import { BANNER_PAGE_NAME } from '@/common/banner'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import _ from 'lodash'
+import { MdCancel } from 'react-icons/md'
 
 type Option = {
     value: number
@@ -25,23 +30,41 @@ const pageSizeOptions = [
 ]
 
 const AppBanners = () => {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const { var1, var2 } = location.state || {}
     const [data, setData] = useState<BANNERMODEL[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(var1 ? var1 : BANNER_PAGE_NAME[0])
+    const [sectionHeadingArray, setSectionHeadingArray] = useState<any[]>()
+    const [isSectionheading, setIsSectionheading] = useState(false)
+    const [selectedHeading, setSelectedHeading] = useState(var2 ? var2 : 'Select Section')
     const [bannerid, setBannerid] = useState<number>()
+    const [isFilterOn, setIsFilterOn] = useState(false)
 
-    const navigate = useNavigate()
+    console.log('var1', var1, 'var2', var2)
 
     const fetchData = async (page: number, pageSize: number, filter: string) => {
+        let sectionHeading = ''
+        if (var2) {
+            sectionHeading = `&section_heading=${var2}`
+        }
+        if (isSectionheading && selectedHeading !== 'Select Section') {
+            sectionHeading = `&section_heading=${selectedHeading}`
+        }
         try {
-            const response = await axiosInstance.get(`/banners?p=${page}&page_size=${pageSize}&filter=${filter}`)
+            const response = await axiosInstance.get(
+                `/banners?p=${page}&page_size=${pageSize}&name=${filter}&page=${currentSelectedPage.value}${sectionHeading}`,
+            )
             const data = response.data.data.results
 
             const total = response.data.data.count
             setData(data)
+
             setTotalData(total)
 
             const count = response.data.data.count
@@ -52,9 +75,44 @@ const AppBanners = () => {
         }
     }
 
+    const fetchForSectionHeading = async () => {
+        try {
+            let page = 1
+            let hasMore = true
+            let allSectionHeadings: any = []
+
+            while (hasMore) {
+                const response = await axiosInstance.get(`/banners?p=${page}`)
+                const data = response.data.data
+                const newSectionHeadings = data.results.map((item) => item.section_heading)
+                allSectionHeadings = _.uniq(allSectionHeadings.concat(newSectionHeadings))
+                if (data.next) {
+                    page++
+                } else {
+                    hasMore = false
+                }
+            }
+
+            setSectionHeadingArray(allSectionHeadings)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchForSectionHeading()
+    }, [])
+
+    console.log('Section Heading Array', sectionHeadingArray)
+
     useEffect(() => {
         fetchData(page, pageSize, globalFilter)
-    }, [page, pageSize, globalFilter])
+    }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading])
+
+    const handleSectionHeading = (selectedKey: string) => {
+        ;+setSelectedHeading(selectedKey)
+        setIsSectionheading(true)
+    }
 
     const columns = useMemo(
         () => [
@@ -62,11 +120,20 @@ const AppBanners = () => {
                 header: 'Edit',
                 accessorKey: 'id',
                 cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
-                        {/* <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
+                    <button className="border-none bg-none">
+                        <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
                             <FaEdit className="text-xl text-blue-600" />
-                        </a> */}
-                        <FaEdit className="text-xl text-blue-600" />
+                        </a>
+                        {/* <FaEdit className="text-xl text-blue-600" /> */}
+                    </button>
+                ),
+            },
+            {
+                header: 'Delete',
+                accessorKey: 'id',
+                cell: ({ row }) => (
+                    <button onClick={() => handleDeleteClick(row.original.id)} className="border-none bg-none">
+                        <FaTrash className="text-xl text-red-500" />
                     </button>
                 ),
             },
@@ -160,9 +227,9 @@ const AppBanners = () => {
         [],
     )
 
-    const handleActionClick = (id: number) => {
-        navigate(`/app/appSettings/banners/${id}`)
-        console.log('id', id)
+    const handleSelectPage = (value: string) => {
+        const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
+        if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
 
     const handleDeleteClick = (id: number) => {
@@ -209,18 +276,53 @@ const AppBanners = () => {
     return (
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4">
+                <div className="mb-4 flex gap-2">
                     <input
                         type="text"
-                        placeholder="Search here"
+                        placeholder="Search by name"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
                         className="p-2 border rounded"
                     />
+                    <div className="flex gap-2">
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border bg-gray-200 text-black text-lg font-semibold"
+                                title={currentSelectedPage.name}
+                                onSelect={handleSelectPage}
+                            >
+                                {BANNER_PAGE_NAME.map((item) => (
+                                    <DropdownItem key={item.value} eventKey={item.value}>
+                                        {item.name}
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
+
+                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border  bg-gray-200 text-black text-lg font-semibold"
+                                title={selectedHeading}
+                                onSelect={handleSectionHeading}
+                            >
+                                {sectionHeadingArray?.map((item, key) => (
+                                    <DropdownItem key={key} eventKey={item}>
+                                        {item}
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
+                        <div className="items-center flex justify-center">
+                            <button className="" onClick={() => setSelectedHeading('Select Section')}>
+                                <MdCancel className="text-xl text-red-500 " />
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    <div className="flex items-end justify-end mb-2">
-                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleBanner}>
+                    <div className="flex items-end justify-end mb-2 gap-2">
+                        <button className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-700" onClick={handleBanner}>
                             ADD NEW BANNER
                         </button>
                     </div>

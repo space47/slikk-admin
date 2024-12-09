@@ -147,7 +147,22 @@ const PageSettings = () => {
                     </button>
                 ),
             },
-            { header: 'Section Heading', accessorKey: 'section_heading' },
+            {
+                header: 'Section Heading',
+                accessorKey: 'section_heading',
+                cell: ({ row }) => {
+                    const sectionHeading = row?.original?.section_heading
+
+                    return (
+                        <div
+                            className="w-[180px] text-overflow:ellipsis cursor-pointer hover:text-blue-600"
+                            onClick={() => handleGoToBanner(currentSelectedPage, sectionHeading)}
+                        >
+                            {sectionHeading}
+                        </div>
+                    )
+                },
+            },
             { header: 'Component Type', accessorKey: 'component_type' },
             {
                 header: 'Background Image',
@@ -199,6 +214,15 @@ const PageSettings = () => {
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
+
+    const handleGoToBanner = (currentPage: any, sectionHeading: any) => {
+        navigate('/app/appSettings/banners', {
+            state: {
+                var1: currentPage,
+                var2: sectionHeading,
+            },
+        })
+    }
 
     const handleSelectPage = (value: string) => {
         const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)

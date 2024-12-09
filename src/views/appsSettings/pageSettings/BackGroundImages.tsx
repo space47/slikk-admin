@@ -10,8 +10,8 @@ import CommonSelect from './CommonSelect'
 import PageEditVideo from './PageEditVideo'
 import PageAddVideo from './PageAddVideo'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
-import { DatePicker } from 'antd'
-import moment from 'moment'
+// import { DatePicker } from 'antd'
+// import moment from 'moment'
 
 interface BGprops {
     editMode: any
@@ -45,9 +45,9 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
                                         <Upload
                                             beforeUpload={beforeUpload}
                                             fileList={values.background_image_array} // uploadedd the file
-                                            onChange={(files) => form.setFieldValue('background_image_array', files)}
                                             className="flex justify-center"
                                             onFileRemove={(files) => form.setFieldValue('background_image_array', files)}
+                                            onChange={(files) => form.setFieldValue('background_image_array', files)}
                                         />
                                     </>
                                 )}
@@ -67,12 +67,12 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
                                         <Upload
                                             beforeUpload={beforeUpload}
                                             fileList={values.background_image_array}
+                                            className="items-center flex justify-center"
+                                            onFileRemove={(files) => form.setFieldValue('background_image_array', files)}
                                             onChange={(files) => {
                                                 console.log('OnchangeFiles', files, field.name, values.background_image_array)
                                                 form.setFieldValue('background_image_array', files)
                                             }}
-                                            className="items-center flex justify-center"
-                                            onFileRemove={(files) => form.setFieldValue('background_image_array', files)}
                                         />
                                     </>
                                 )}
@@ -107,9 +107,9 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
                                         <Upload
                                             beforeUpload={beforeUpload}
                                             fileList={values.mobile_background_array} // uploadedd the file
-                                            onChange={(files) => form.setFieldValue('mobile_background_array', files)}
                                             className="flex justify-center"
                                             onFileRemove={(files) => form.setFieldValue('mobile_background_array', files)}
+                                            onChange={(files) => form.setFieldValue('mobile_background_array', files)}
                                         />
                                     </>
                                 )}
@@ -129,12 +129,12 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
                                         <Upload
                                             beforeUpload={beforeUpload}
                                             fileList={values.mobile_background_array} // uploadedd the file
+                                            className="flex justify-center"
+                                            onFileRemove={(files) => form.setFieldValue('mobile_background_array', files)}
                                             onChange={(files) => {
                                                 console.log('OnchangeFiles', files, field.name, values.mobile_background_array)
                                                 form.setFieldValue('mobile_background_array', files)
                                             }}
-                                            className="flex justify-center"
-                                            onFileRemove={(files) => form.setFieldValue('mobile_background_array', files)}
                                         />
                                     </>
                                 )}
@@ -195,23 +195,23 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
             )}
 
             {BackGroundArray.map((item, key) => (
-                <FormItem asterisk label={item.label} className="w-1/2" key={key}>
+                <FormItem key={key} asterisk label={item.label} className="w-1/2">
                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
                 </FormItem>
             ))}
             <CommonSelect
+                needClassName
                 name="background_config.desktop_position"
                 label="Web Position"
                 options={MobileAndDesktopPositions}
-                needClassName
                 className="w-1/2"
             />
 
             <CommonSelect
+                needClassName
                 name="background_config.mobile_position"
                 label="Mobile Position"
                 options={MobileAndDesktopPositions}
-                needClassName
                 className="w-1/2"
             />
 

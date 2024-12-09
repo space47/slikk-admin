@@ -246,23 +246,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                 : {}),
             background_config: {
-                ...(row?.background_config?.background_color ? { background_color: row?.background_config?.background_color } : {}),
-                ...(row?.background_config?.desktop_position ? { desktop_position: row?.background_config?.desktop_position } : {}),
-                ...(row?.background_config?.mobile_position ? { mobile_position: row?.background_config?.mobile_position } : {}),
-                ...(row?.background_config?.background_topMargin
-                    ? { background_topMargin: Number(row?.background_config?.background_topMargin) }
-                    : {}),
-                ...(row?.background_config?.background_bottomMargin
-                    ? { background_bottomMargin: Number(row?.background_config?.background_bottomMargin) }
-                    : {}),
-                ...(row?.background_config?.web_background_topMargin
-                    ? { web_background_topMargin: Number(row?.background_config?.web_background_topMargin) }
-                    : {}),
-                ...(row?.background_config?.web_background_bottomMargin
-                    ? { web_background_bottomMargin: Number(row?.background_config?.web_background_bottomMargin) }
-                    : {}),
-                ...(row?.background_config?.mobile_width ? { mobile_width: Number(row?.background_config?.mobile_width) } : {}),
-                ...(row?.background_config?.web_width ? { web_width: Number(row?.background_config?.web_width) } : {}),
+                ...row?.background_config,
+
                 ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
                 ...(mobileimageUpload || row?.mobile_background_image
                     ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
@@ -271,17 +256,13 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     ? { background_image_aspect_ratio: Number(backgroundImageAspectRatios[0].toFixed(2)) }
                     : {}),
                 ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: Number(mobileImageAspectRatios[0].toFixed(2)) } : {}),
-                ...(row?.background_config?.is_background_video
-                    ? { is_background_video: row?.background_config?.is_background_video }
-                    : {}),
+
                 ...(backgroundVideoUpload || row?.background_video
                     ? { background_video: backgroundVideoUpload || row?.background_video }
                     : {}),
                 ...(mobileBackgroundVideoUpload || row?.mobile_background_video
                     ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
                     : {}),
-                ...(row?.background_config?.corner_radius ? { corner_radius: row?.background_config?.corner_radius } : {}),
-                ...(row?.background_config?.web_corner_radius ? { web_corner_radius: row?.background_config?.web_corner_radius } : {}),
             },
             footer_config: {
                 ...row?.footer_config,

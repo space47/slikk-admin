@@ -40,8 +40,9 @@ export interface BANNERMODEL {
     offers: boolean
     offer_id: string
     page: string
-    from_date: string
-    to_date: string
+    extra_attributes: Record<string, never>
+    from_date: Date | null
+    to_date: Date | null
     uptooff: string
     tags: TAGSTYPE[]
     footer: string | null
