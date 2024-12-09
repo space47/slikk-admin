@@ -23,6 +23,8 @@ const EditUrlShortner = () => {
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState([])
+    const [sortValue, setSortValue] = useState<string>('')
+    const [targetPageValue, setTargetPageValue] = useState<string>('')
 
     const { short_code } = useParams()
 
@@ -31,10 +33,24 @@ const EditUrlShortner = () => {
             const response = await axioisInstance.get(`/short_urls?short_code=${short_code}`)
             const data = response?.data?.message
             setUrlFieldDatas(data?.results[0])
+            if (data?.results[0]?.web_url) {
+                const filters = extractFilters(data?.results[0]?.web_url)
+                if (filters.discountTags) {
+                    setSortValue(filters.discountTags)
+                }
+            }
+            if (data?.results[0]?.web_url) {
+                const filters = extractTargetPage(data?.results[0]?.web_url)
+                if (filters.target_page) {
+                    setTargetPageValue(filters.target_page)
+                }
+            }
         } catch (error) {
             console.log(error)
         }
     }
+
+    console.log('Discount Tags', targetPageValue)
 
     useEffect(() => {
         fetchUrlData()
@@ -69,20 +85,35 @@ const EditUrlShortner = () => {
             if (key === 'utm-tags') filterParams['utm_tags'] = value
             if (key === 'maxoff') filterParams['maxoff'] = value
             if (key === 'minoff') filterParams['minoff'] = value
-            if (key === 'sort') filterParams['sort_order'] = value
+            if (key === 'sort') filterParams['discountTags'] = value
             if (key === 'filterId') filterParams['filter_id'] = value
+            if (key === 'ub/') filterParams['target_page'] = value
         }
+        return filterParams
+    }
+    const extractTargetPage = (url: string) => {
+        const pageRegex = /slikk.club\/([^/?]+)/
+        const pageMatch = pageRegex.exec(url)
+        const filterParams: Record<string, any> = {}
+        if (pageMatch) {
+            filterParams['target_page'] = pageMatch[1]
+        }
+
         return filterParams
     }
 
     useEffect(() => {
         if (urlFieldDatas?.android_url || urlFieldDatas?.web_url) {
             const filters = extractFilters(urlFieldDatas.android_url || urlFieldDatas?.web_url)
+            console.log('Filter of Urls', filters)
+
             Object.keys(filters).forEach((key) => {
                 initialValues[key] = filters[key]
             })
         }
     }, [urlFieldDatas])
+
+    console.log('url Field Datas', urlFieldDatas)
 
     const handleAddFilter = () => {
         setShowAddFilter([...showAddFilter, showAddFilter.length])
@@ -248,6 +279,8 @@ const EditUrlShortner = () => {
                                     showAddFilter={showAddFilter}
                                     handleAddFilters={handleAddFilters}
                                     handleRemoveFilter={handleRemoveFilter}
+                                    sortValue={sortValue}
+                                    targetPagevalue={targetPageValue}
                                 />
                             )}
 
