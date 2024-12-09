@@ -23,12 +23,12 @@ const CreateSeoSettings = () => {
             setSpinnerShow(true)
             const response = await axioisInstance.post(`/seo/links`, body)
             notification.success({
-                message: response.data?.message || 'Successfully Created SEO',
+                message: response.data?.message || response.data?.data?.message || 'Successfully Created SEO',
             })
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
             notification.error({
-                message: 'Failed to create SEO',
+                message: error?.response.data.message || 'Failed to create SEO',
             })
         } finally {
             setSpinnerShow(false)
