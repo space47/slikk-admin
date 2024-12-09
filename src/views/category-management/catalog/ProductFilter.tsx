@@ -116,7 +116,7 @@ const ProductFilterNest = ({
     return (
         <div>
             <Drawer title="" isOpen={showDrawer} onClose={handleCloseDrawer} onRequestClose={handleCloseDrawer} lockScroll={false}>
-                <Formik initialValues={initialValues} onSubmit={handleApply} enableReinitialize>
+                <Formik initialValues={initialValues} onSubmit={handleApply}>
                     {({ setFieldValue, values, resetForm }) => (
                         <Form className="flex flex-col gap-10 w-full items-start">
                             {/* Division */}
@@ -124,19 +124,23 @@ const ProductFilterNest = ({
                             <FormItem asterisk label="Division" className="col-span-1 w-full">
                                 <Field name="division">
                                     {({ field }: FieldProps) => {
-                                        console.log('FieldValue ', field.value)
+                                        console.log('FieldValue ok ok', field.value)
+                                        console.log('FieldValue Division List', divisionList)
+
                                         return (
                                             <Select
                                                 isMulti
                                                 className="w-full"
-                                                field={field}
-                                                options={options} //divisions.divisions
+                                                options={options}
                                                 getOptionLabel={(option: any) => option?.name}
-                                                defaultValue={field.value || []}
                                                 getOptionValue={(option) => option.id?.toString() || ''}
+                                                value={field.value}
                                                 onChange={(newVal) => {
+                                                    console.log('setting Field value', newVal)
+
                                                     setFieldValue('division', newVal ? newVal : [])
-                                                    setDivisionList(newVal?.map((item) => item.name))
+
+                                                    setDivisionList(newVal)
 
                                                     const selectedDivision = newVal
                                                         ? newVal.map((division) => division.categories).flat()
@@ -169,7 +173,7 @@ const ProductFilterNest = ({
                                                 getOptionValue={(option) => option.id?.toString() || ''}
                                                 onChange={(newVal) => {
                                                     setFieldValue('category', newVal ? newVal : [])
-                                                    setCategoryList(newVal?.map((item) => item.name))
+                                                    setCategoryList(newVal)
 
                                                     const selectedSubCategories = newVal
                                                         ? newVal.map((category) => category.sub_categories).flat()
@@ -201,7 +205,7 @@ const ProductFilterNest = ({
                                                 getOptionValue={(option) => option?.id?.toString() || ''}
                                                 onChange={(newVal) => {
                                                     setFieldValue('sub_category', newVal ? newVal : [])
-                                                    setSubCategoryList(newVal?.map((item) => item.name))
+                                                    setSubCategoryList(newVal)
                                                     const selectedProductTypes = newVal
                                                         ? newVal.map((sub_category) => sub_category?.product_types)?.flat()
                                                         : []
@@ -232,7 +236,7 @@ const ProductFilterNest = ({
                                                 getOptionValue={(option) => option?.id?.toString() || ''}
                                                 onChange={(newVal) => {
                                                     setFieldValue('product_type', newVal ? newVal : [])
-                                                    setProductTypeList(newVal?.map((item) => item.name))
+                                                    setProductTypeList(newVal)
                                                 }}
                                             />
                                         )

@@ -76,9 +76,7 @@ const BannerCategories = ({
                                 <Select
                                     isMulti
                                     field={field}
-                                    defaultValue={initialValue.category.filter((option) =>
-                                        fieldValue.some((item) => item.name === option.name),
-                                    )}
+                                    defaultValue={filteredCategories}
                                     options={filteredCategories} // Use the filtered categories here
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
@@ -110,9 +108,7 @@ const BannerCategories = ({
                                 <Select
                                     isMulti
                                     field={field}
-                                    defaultValue={initialValue.sub_category.filter((option) =>
-                                        fieldValue.some((item) => item.name === option.name),
-                                    )}
+                                    defaultValue={filteredSubCategories}
                                     options={filteredSubCategories}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
@@ -145,10 +141,8 @@ const BannerCategories = ({
                                 <Select
                                     isMulti
                                     field={field}
-                                    defaultValue={initialValue.product_type.filter((option) =>
-                                        fieldValue.some((item) => item.name === option.name),
-                                    )}
-                                    options={filteredProductTypes} // Use the filtered product types here
+                                    defaultValue={filteredProductTypes}
+                                    options={filteredProductTypes}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id.toString()}
                                     onChange={(newVal) => {
