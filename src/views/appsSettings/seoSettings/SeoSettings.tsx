@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { NotFoundData } from '@/views/pages/AccessDenied/AccessDenied'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 import React, { useEffect, useState } from 'react'
 import { MdSearchOff } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
@@ -13,7 +13,6 @@ const SeoSettings = () => {
     const [seoLinksData, setSeoLinksData] = useState<SubLinkTypes[]>([])
     const [seoData, setSeoData] = useState<PopularLinksTypes>()
     const [seoValue, setSeoValue] = useState<string>('')
-    const [seoTable, setSeoTable] = useState(false)
     const [seo400, setSeo400] = useState(false)
 
     const fetchSeoDatas = async (linkValue: string) => {
@@ -31,11 +30,6 @@ const SeoSettings = () => {
             console.error(error)
         }
     }
-
-    // useEffect(() => {
-    //     fetchSeoDatas()
-    // }, [])
-    console.log('seo table', seoLinksData)
 
     const columns = [
         {
@@ -69,11 +63,6 @@ const SeoSettings = () => {
         },
     ]
 
-    const handleSeoTable = () => {
-        fetchSeoDatas(seoValue)
-        setSeoTable(true)
-    }
-
     return (
         <div className="flex flex-col gap-10">
             <div className="flex justify-between">
@@ -93,10 +82,10 @@ const SeoSettings = () => {
             {seo400 && <NotFoundData />}
             {seoData && seoLinksData?.length === 0 && <NotFoundData />}
             {seoLinksData?.length > 0 && !seo400 && (
-                <div>
-                    <div>Seo Name : {seoData?.name}</div>
+                <div className="p-4  rounded-lg">
+                    <div className="text-lg font-semibold text-gray-700 mb-4">SEO Name: {seoData?.name}</div>
 
-                    <EasyTable mainData={seoLinksData} columns={columns} noPage />
+                    <EasyTable noPage mainData={seoLinksData} columns={columns} />
                 </div>
             )}
         </div>
@@ -104,6 +93,9 @@ const SeoSettings = () => {
 
     function handleAddSeoSettings() {
         navigate(`/app/appSettings/seoSettings/addNew`)
+    }
+    function handleSeoTable() {
+        fetchSeoDatas(seoValue)
     }
 }
 
