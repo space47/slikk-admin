@@ -110,7 +110,7 @@ const AppBanners = () => {
     }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading])
 
     const handleSectionHeading = (selectedKey: string) => {
-        setSelectedHeading(selectedKey)
+        ;+setSelectedHeading(selectedKey)
         setIsSectionheading(true)
     }
 
@@ -276,7 +276,7 @@ const AppBanners = () => {
     return (
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4">
+                <div className="mb-4 flex gap-2">
                     <input
                         type="text"
                         placeholder="Search by name"
@@ -284,10 +284,7 @@ const AppBanners = () => {
                         onChange={(e) => setGlobalFilter(e.target.value)}
                         className="p-2 border rounded"
                     />
-                </div>
-
-                <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    <div className="flex items-end justify-end mb-2 gap-2">
+                    <div className="flex gap-2">
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
@@ -315,11 +312,16 @@ const AppBanners = () => {
                                 ))}
                             </Dropdown>
                         </div>
-                        <div>
+                        <div className="items-center flex justify-center">
                             <button className="" onClick={() => setSelectedHeading('Select Section')}>
                                 <MdCancel className="text-xl text-red-500 " />
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                <div className="flex gap-3 items-center justify-center order-first xl:order-none">
+                    <div className="flex items-end justify-end mb-2 gap-2">
                         <button className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-700" onClick={handleBanner}>
                             ADD NEW BANNER
                         </button>
