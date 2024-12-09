@@ -110,7 +110,7 @@ const AppBanners = () => {
     }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading])
 
     const handleSectionHeading = (selectedKey: string) => {
-        ;+setSelectedHeading(selectedKey)
+        setSelectedHeading(selectedKey)
         setIsSectionheading(true)
     }
 
@@ -128,16 +128,6 @@ const AppBanners = () => {
                     </button>
                 ),
             },
-            {
-                header: 'Delete',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <button onClick={() => handleDeleteClick(row.original.id)} className="border-none bg-none">
-                        <FaTrash className="text-xl text-red-500" />
-                    </button>
-                ),
-            },
-
             { header: 'Name', accessorKey: 'name' },
             { header: 'Position', accessorKey: 'position' },
             { header: 'Section Heading', accessorKey: 'section_heading' },
@@ -152,22 +142,6 @@ const AppBanners = () => {
                 cell: (info: any) => info.row.original.division.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
 
-            {
-                header: 'Category Name',
-                accessorKey: 'category.name',
-                cell: (info) => info.row.original.category.map((item: any, key: number) => <div key={key}>{item.name}</div>),
-            },
-
-            {
-                header: 'Sub Category Name',
-                accessorKey: 'sub_category',
-                cell: (info: any) => info.row.original.sub_category.map((item: any, key: number) => <div key={key}>{item.name}</div>),
-            },
-            {
-                header: 'Product Type Name',
-                accessorKey: 'product_type',
-                cell: (info: any) => info.row.original.product_type.map((item: any, key: number) => <div key={key}>{item.name}</div>),
-            },
             {
                 header: 'Image (WEB)',
                 accessorKey: 'image_web',
@@ -184,36 +158,16 @@ const AppBanners = () => {
                 cell: (info) =>
                     info.getValue() ? <img src={info.getValue()?.split(',')[0]} alt="" className=" object-contain w-[100px]  " /> : '',
             },
-
-            { header: 'Upto Off', accessorKey: 'uptoff' },
-
-            { header: 'Footer', accessorKey: 'footer' },
-            { header: 'Coupon Code', accessorKey: 'coupon_code' },
-            { header: 'Is Clickable', accessorKey: 'is_clickable' },
             {
-                header: 'Section Background Web',
-                accessorKey: 'section_background_web',
-                cell: ({ getValue }) => {
-                    const imageUrl = getValue() as string
-                    console.log('SECTION URL:', imageUrl)
-
-                    return <img src={imageUrl} alt="Image" style={{ width: '100px', height: 'auto' }} />
-                },
+                header: 'From Update',
+                accessorKey: 'from_date',
+                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
-
-            { header: 'Max Price', accessorKey: 'max_price' },
-            { header: 'Min Price', accessorKey: 'min_price' },
-            { header: 'Barcodes', accessorKey: 'barcodes' },
             {
-                header: 'Redirection URL',
-                accessorKey: 'redirection_url',
-                cell: ({ row }) => (
-                    <div className="w-[180px] text-overflow:ellipsis">
-                        <a href={row.original.redirection_url}> {row.original.redirection_url}</a>
-                    </div>
-                ),
+                header: 'To Update',
+                accessorKey: 'to_date',
+                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
-
             {
                 header: 'Delete',
                 accessorKey: 'id',

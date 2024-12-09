@@ -15,6 +15,8 @@ interface FILTERPROPS {
     showAddFilter: any
     handleRemoveFilter: any
     handleAddFilters: any
+    sortValue?: any
+    targetPagevalue?: any
 }
 
 const DISCOUNTOPTIONS = [
@@ -31,7 +33,14 @@ const targetPageArray = [
     { label: 'cart', value: 'cart' },
 ]
 
-const FilterSelect = ({ handleAddFilter, showAddFilter, handleRemoveFilter, handleAddFilters }: FILTERPROPS) => {
+const FilterSelect = ({
+    handleAddFilter,
+    showAddFilter,
+    handleRemoveFilter,
+    handleAddFilters,
+    sortValue,
+    targetPagevalue,
+}: FILTERPROPS) => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -105,6 +114,10 @@ const FilterSelect = ({ handleAddFilter, showAddFilter, handleRemoveFilter, hand
                 <div>Sort By</div>
                 <Field name="discountTags">
                     {({ field, form }: FieldProps<any>) => {
+                        console.log('Field Value', field)
+                        console.log('Sort', sortValue)
+                        const selectedValue = DISCOUNTOPTIONS.find((option) => option.value === `sort_${sortValue}`)
+                        console.log('Selected Value', selectedValue)
                         return (
                             <Select
                                 isMulti
@@ -112,8 +125,10 @@ const FilterSelect = ({ handleAddFilter, showAddFilter, handleRemoveFilter, hand
                                 options={DISCOUNTOPTIONS}
                                 getOptionLabel={(option) => option.label}
                                 getOptionValue={(option) => option.value}
+                                // defaultValue={selectedValue}
                                 onChange={(newVal) => {
                                     const newValues = newVal ? newVal.map((val) => val.value) : []
+                                    console.log('onChange Values', newVal)
                                     form.setFieldValue(field.name, newValues)
                                 }}
                             />
@@ -124,10 +139,12 @@ const FilterSelect = ({ handleAddFilter, showAddFilter, handleRemoveFilter, hand
             <FormItem label="Target Page">
                 <Field name="target_page">
                     {({ field, form }: FieldProps<any>) => {
+                        const selectedOption = targetPageArray.find((options) => options?.value === targetPagevalue)
                         return (
                             <Select
                                 placeholder="Select Target Page"
                                 options={targetPageArray}
+                                // defaultValue={selectedOption}
                                 value={targetPageArray.find((option) => option.value === field.value)}
                                 onChange={(option) => form.setFieldValue(field.name, option?.value)}
                             />
