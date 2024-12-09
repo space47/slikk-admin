@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Avatar from '@/components/ui/Avatar'
 import moment from 'moment'
@@ -6,8 +6,13 @@ import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchUserSummary } from '@/store/slices/orderUserSummary/UserSummary.slice'
 import CartHome from './componentsHomes/CartHome'
+import { Button } from '@/components/ui'
+import BlockUserModal from './componentsHomes/BlockUserModal'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
 
 const CustomerAnalytics = () => {
+    const [blockUser, setBlockUser] = useState(false)
     const dispatch = useAppDispatch()
     const { mobile } = useParams<{ mobile: string }>()
 
@@ -49,9 +54,35 @@ const CustomerAnalytics = () => {
         },
     ]
 
+    const handleBlockUser = async () => {
+        const body = {
+            mobile: mobile,
+        }
+        try {
+            const response = await axioisInstance.post(`/merchant/user/block`, body)
+            notification.success({
+                message: response?.data?.message || 'Successfully blacklisted user',
+            })
+        } catch (error: any) {
+            notification.error({
+                message: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to block User',
+            })
+            console.log(error)
+        } finally {
+            setBlockUser(false)
+        }
+    }
+
     return (
         <div className="p-6 bg-gray-50 min-h-screen dark:bg-gray-800 dark:text-white">
-            <h1 className="text-3xl font-extrabold text-gray-800 mb-8">Customer Analytics</h1>
+            <div className="flex justify-between">
+                <h1 className="text-3xl font-extrabold text-gray-800 mb-8">Customer Analytics</h1>
+                <div>
+                    <Button variant="new" size="sm" onClick={() => setBlockUser(true)}>
+                        Block User
+                    </Button>
+                </div>
+            </div>
             {customerData ? (
                 <div className="flex flex-wrap gap-6">
                     {/* Profile Section */}
@@ -101,6 +132,14 @@ const CustomerAnalytics = () => {
                 <>
                     <div className="text-xl font-bold flex items-center justify-center ">No Cart Available 😔</div>
                 </>
+            )}
+            {blockUser && (
+                <BlockUserModal
+                    dialogIsOpen={blockUser}
+                    setIsOpen={setBlockUser}
+                    handleDialogOk={handleBlockUser}
+                    name={customerData?.profile?.first_name}
+                />
             )}
         </div>
     )

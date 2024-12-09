@@ -51,3 +51,8 @@ export const pageSizeOptions = [
     { value: 50, label: '50 / page' },
     { value: 100, label: '100 / page' },
 ]
+
+export const SEARCHOPTIONS = [
+    { label: 'Client Id', value: 'client_order_id' },
+    { label: 'Status', value: 'status' },
+]
