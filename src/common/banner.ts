@@ -3,6 +3,10 @@ export const BANNER_PAGE_NAME = [
     { name: 'Trend', value: 'Trend' },
     { name: 'Offers', value: 'Offers' },
     { name: 'Login', value: 'Login' },
+    { name: 'Brand', value: 'Brand' },
+    { name: 'Cart', value: 'Cart' },
+    { name: 'Order Details', value: 'Order Details' },
+    { name: 'Category', value: 'Category' },
     { name: 'Profile', value: 'Profile' },
     { name: 'Collection', value: 'Collection' },
     { name: 'Loyalty', value: 'Loyalty' },
@@ -11,8 +15,6 @@ export const BANNER_PAGE_NAME = [
     { name: 'My Order', value: 'My Order' },
     { name: 'Product', value: 'Product' },
     { name: 'Search', value: 'Search' },
-    // { name: 'Brand', value: 'Brand' },
-    // { name: 'Cart', value: 'Cart' },
 ]
 
 export type BANNER_UPLOAD_DATA = {
