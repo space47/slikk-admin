@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect } from 'react'
 import { fetchReturnOrders } from '@/store/slices/returnOrderDetails/returnOrderDetails'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { useParams } from 'react-router-dom'
@@ -11,7 +12,7 @@ import ReturnUserInfo from './components/ReturnUserInfo'
 import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 import RefundActivity from './components/RefundActivity'
 
-const scheduleSlots: any = {
+const scheduleSlots: Record<string, { start: string; end: string }> = {
     '1': { start: '10:00 AM', end: '01:00 PM' },
     '2': { start: '01:00 PM', end: '04:00 PM' },
     '3': { start: '04:00 PM', end: '07:00 PM' },
@@ -26,7 +27,7 @@ const ReturnOrderDetails = () => {
 
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
-    }, [return_order_id])
+    }, [return_order_id, dispatch])
 
     return (
         <div>
