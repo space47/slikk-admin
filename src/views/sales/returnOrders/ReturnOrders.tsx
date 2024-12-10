@@ -27,6 +27,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { DropdownStatus } from '@/store/types/orderList.types'
 import { FaFilter } from 'react-icons/fa'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
+import { returnOrderApi } from '@/services/ReturnOrders.services'
 
 interface ReturnOrderItem {
     order_item: number
@@ -106,7 +107,10 @@ const OrderList = () => {
     const [from, setFrom] = useState(var1 ? var1 : null)
     const [to, setTo] = useState(var2 ? var2 : null)
     const [orderCount, setOrderCount] = useState()
-    const [dropdownStatus, setDropdownStatus] = useState<ReturnDropdownStatus>(RETURN_ORDERS[0])
+    const [dropdownStatus, setDropdownStatus] = useState<{ name: string; value: string[] }>({
+        name: 'PICKUP CREATED',
+        value: ['PICKUP_CREATED'],
+    })
     const [showFilter, setShowFilter] = useState(false)
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
@@ -130,9 +134,7 @@ const OrderList = () => {
                 fromToParams = `&from=${from}&to=${To_Date}`
             }
 
-            const returnUrl = `merchant/return_orders?p=${page}&page_size=${pageSize}${searwiseDownload}${status}${fromToParams}${deliveryStatus}`
-
-            const response = await axioisInstance.get(returnUrl)
+            const response = await returnOrderApi(page, pageSize, searwiseDownload, status, fromToParams, deliveryStatus)
 
             const ordersData = response?.data?.data.results
             const orderCount = response?.data?.data.count
@@ -289,17 +291,20 @@ const OrderList = () => {
     }
 
     const handleDropdownSelect = (selectedValue: string) => {
-        if (dropdownStatus.value.includes(selectedValue)) {
-            setDropdownStatus((prevState) => ({
-                ...prevState,
-                value: prevState.value.filter((item) => item !== selectedValue),
-            }))
-        } else {
-            setDropdownStatus((prevState) => ({
-                ...prevState,
-                value: [...prevState.value, selectedValue],
-            }))
-        }
+        setDropdownStatus((prevState) => {
+            const currentValue = prevState.value
+            if (currentValue.includes(selectedValue)) {
+                return {
+                    ...prevState,
+                    value: currentValue.filter((item) => item !== selectedValue),
+                }
+            } else {
+                return {
+                    ...prevState,
+                    value: [...currentValue, selectedValue],
+                }
+            }
+        })
     }
 
     const handleDeliverySelect = (selectedValue: string) => {
