@@ -56,6 +56,7 @@ export interface ReturnOrder {
     return_order_id: string
     return_order_items: ReturnOrderItem[]
     pickup_schedule_slot: number
+    pickup_schedule_date: string
     return_type: string
     status: string
     uuid: string
@@ -89,7 +90,7 @@ const scheduleSlots: any = {
     '4': { start: '07:00 PM', end: '10:00 PM' },
 }
 
-const OrderList = () => {
+const ReturnOrders = () => {
     const location = useLocation()
     const { var1, var2 } = location.state || {}
     const [orders, setOrders] = useState<ReturnOrder[]>([])
@@ -205,6 +206,15 @@ const OrderList = () => {
                     const schedule = scheduleSlots[log]
 
                     return <div>{schedule ? `${schedule.start} - ${schedule.end}` : 'Not Scheduled'}</div>
+                },
+            },
+            {
+                header: 'Scheduled Date',
+                accessorKey: 'pickup_schedule_date',
+                cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                    const log = row?.original?.pickup_schedule_date
+
+                    return <div>{log}</div>
                 },
             },
             {
@@ -509,7 +519,7 @@ const OrderList = () => {
     )
 }
 
-export default OrderList
+export default ReturnOrders
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value)
