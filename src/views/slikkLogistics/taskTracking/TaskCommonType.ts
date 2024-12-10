@@ -51,3 +51,15 @@ export const pageSizeOptions = [
     { value: 50, label: '50 / page' },
     { value: 100, label: '100 / page' },
 ]
+
+export const SEARCHOPTIONS = [
+    { label: 'Client Id', value: 'client_order_id' },
+    { label: 'Status', value: 'status' },
+]
+export const STATUSARRAY = [
+    { label: 'CREATED', value: 'CREATED' },
+    { label: 'ASSIGNED', value: 'ASSIGNED' },
+    { label: 'OUT_FOR_DELIVERY', value: 'OUT_FOR_DELIVERY' },
+    { label: 'COMPLETED', value: 'COMPLETED' },
+    { label: 'CANCELLED', value: 'CANCELLED' },
+]

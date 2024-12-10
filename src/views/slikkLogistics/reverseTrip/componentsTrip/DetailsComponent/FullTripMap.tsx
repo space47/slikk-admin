@@ -6,12 +6,10 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { LogisticTask } from './DetailsCommon'
 import { MdCloseFullscreen, MdOutlineFullscreen } from 'react-icons/md'
 import { FaMapMarkerAlt } from 'react-icons/fa'
-import FullTripMap from './FullTripMap'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 interface LogisticsMapProps {
-    logistic_tasks?: LogisticTask[]
-    trip_id: string
+    logistic_tasks: LogisticTask[]
 }
 
 interface FullMapProps {
@@ -37,7 +35,7 @@ const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.
     const map = useMap()
 
     const handleClick = () => {
-        map.setView([12.9014, 77.65122], 13) // Adjust the zoom level as needed
+        map.setView([12.9014, 77.65122], 13)
     }
 
     return (
@@ -60,10 +58,10 @@ const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.
         </button>
     )
 }
-const FullMapButton = ({ trip_id }: LogisticsMapProps) => {
+const FullMapButton = ({ setFullTripMap }: FullMapProps) => {
     const navigate = useNavigate()
     const handleFullMap = () => {
-        navigate(`/app/tryAndBuy/fullTripMap/${trip_id}`)
+        navigate(-1)
     }
 
     return (
@@ -82,14 +80,15 @@ const FullMapButton = ({ trip_id }: LogisticsMapProps) => {
                 zIndex: 1000,
             }}
         >
-            <MdOutlineFullscreen size={24} color="black" />
+            <MdCloseFullscreen size={24} color="black" />
         </button>
     )
 }
 
-const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
+const FullTripMap = () => {
     const [logData, setLogData] = useState<LogisticTask[]>([])
     const [fullTripMap, setFullTripMap] = useState(false)
+    const { trip_id } = useParams()
 
     const fetchMainData = async () => {
         try {
@@ -124,7 +123,7 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
     return (
         <div className="relative flex flex-col gap-10">
             {/* Relative wrapper for positioning */}
-            <div className="relative w-full" style={{ height: '500px' }}>
+            <div className="relative w-[97rem] h-[47rem]">
                 <MapContainer center={center} zoom={16} style={{ width: '100%', height: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
@@ -147,11 +146,12 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
                     <Polyline positions={waypoints} color="blue" />
                     <CurrentLocationButton setCenter={() => {}} />
 
-                    <FullMapButton trip_id={trip_id} />
+                    <FullMapButton setFullTripMap={setFullTripMap} />
                 </MapContainer>
             </div>
+            {/* {fullTripMap && <>hello</>} */}
         </div>
     )
 }
 
-export default TripMap
+export default FullTripMap

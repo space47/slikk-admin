@@ -10,7 +10,10 @@ type ModalProps = {
     showTaskModal: any
     handleCloseModal: any
     storeTaskId: number
-    setShowAssignModal: any
+    setShowAssignModal?: any
+    handleFilterName?: any
+    SetParticularMobileOfRunner: any
+    particularMobileOfRunner: any
 }
 
 type RiderProfile = {
@@ -23,11 +26,17 @@ type RiderProfile = {
     business_email: string | null
 }
 
-const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssignModal }: ModalProps) => {
+const FilterByRunner = ({
+    showTaskModal,
+    handleCloseModal,
+    storeTaskId,
+    setShowAssignModal,
+    SetParticularMobileOfRunner,
+    particularMobileOfRunner,
+}: ModalProps) => {
     console.log('TaskId', storeTaskId)
 
     const [ridersData, setRidersData] = useState<RiderProfile[]>([])
-    const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
 
     const fetchData = async () => {
         try {
@@ -44,40 +53,17 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
         fetchData()
     }, [])
 
-    const assignTask = async () => {
-        if (!selectedRiderMobile) {
-            notification.warning({
-                message: 'WARNING',
-                description: 'YOU SHOULD SELECT A RIDER',
-            })
-            return
-        }
+    const assignTask = () => {
+        notification.success({
+            message: `Filter has been applied with mobile: ${particularMobileOfRunner}`,
+        })
 
-        try {
-            const riderBody = {
-                action: 'assign_rider',
-                rider_mobile: selectedRiderMobile,
-            }
-
-            const response = await axioisInstance.patch(`logistic/slikk/task/${storeTaskId}`, riderBody)
-            console.log('rssssssssssssssss:', response)
-            notification.success({
-                message: 'SUCCESS',
-                description: `Rider with moblie ${selectedRiderMobile} is assigned`,
-            })
-            setShowAssignModal(false)
-            return response
-        } catch (error) {
-            console.log(error)
-            notification.error({
-                message: `FAILURE`,
-                description: 'Failed to assign Rider',
-            })
-        }
+        handleCloseModal()
+        if (setShowAssignModal) setShowAssignModal(false)
     }
 
     const handleRiderSelection = (e: any) => {
-        setSelectedRiderMobile(e.target.value)
+        SetParticularMobileOfRunner(e.target.value)
     }
 
     return (
@@ -85,7 +71,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
             <Modal
                 title=""
                 open={showTaskModal}
-                okText="Search"
+                okText="Filter"
                 okButtonProps={{
                     style: {
                         backgroundColor: 'green',
@@ -98,7 +84,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                 <div className="main">
                     {ridersData && (
                         <div className="details">
-                            <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection}>
+                            <Radio.Group value={particularMobileOfRunner} onChange={handleRiderSelection}>
                                 {ridersData.map((item, key) => {
                                     return (
                                         <Card key={key} className="w-[350px] mb-4 bg-gray-200">
@@ -124,4 +110,4 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
     )
 }
 
-export default TrackModal
+export default FilterByRunner
