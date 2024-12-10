@@ -112,9 +112,12 @@ export const ORDER_STATUS = [
 ]
 
 export const RETURN_ORDERS = [
+    { name: 'PICKUP CREATED', value: 'PICKUP_CREATED' },
+    { name: 'PENDING', value: 'PENDING' },
     { name: 'CANCELLED', value: 'CANCELLED' },
     { name: 'APPROVED', value: 'APPROVED' },
     { name: 'ACCEPTED', value: 'ACCEPTED' },
+    { name: 'REFUNDED', value: 'REFUNDED' },
     { name: 'SHIPPED', value: 'SHIPPED' },
     { name: 'OUT_FOR_DELIVERY', value: 'OUT_FOR_DELIVERY' },
     { name: 'COMPLETED', value: 'COMPLETED' },
