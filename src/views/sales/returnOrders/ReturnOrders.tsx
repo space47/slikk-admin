@@ -56,6 +56,7 @@ export interface ReturnOrder {
     return_order_id: string
     return_order_items: ReturnOrderItem[]
     pickup_schedule_slot: number
+    pickup_schedule_date: string
     return_type: string
     status: string
     uuid: string
@@ -205,6 +206,15 @@ const ReturnOrders = () => {
                     const schedule = scheduleSlots[log]
 
                     return <div>{schedule ? `${schedule.start} - ${schedule.end}` : 'Not Scheduled'}</div>
+                },
+            },
+            {
+                header: 'Scheduled Date',
+                accessorKey: 'pickup_schedule_date',
+                cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                    const log = row?.original?.pickup_schedule_date
+
+                    return <div>{log}</div>
                 },
             },
             {
