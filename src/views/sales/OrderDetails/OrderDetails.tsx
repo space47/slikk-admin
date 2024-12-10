@@ -22,7 +22,7 @@ import { notification } from 'antd'
 import { SalesOrderDetailsResponse } from './orderList.common'
 // import { string } from 'yup'
 
-const scheduleSlots = {
+const scheduleSlots: any = {
     '1': { start: '10:00 AM', end: '01:00 PM' },
     '2': { start: '01:00 PM', end: '04:00 PM' },
     '3': { start: '04:00 PM', end: '07:00 PM' },

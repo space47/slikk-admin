@@ -11,6 +11,13 @@ import ReturnUserInfo from './components/ReturnUserInfo'
 import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 import RefundActivity from './components/RefundActivity'
 
+const scheduleSlots: any = {
+    '1': { start: '10:00 AM', end: '01:00 PM' },
+    '2': { start: '01:00 PM', end: '04:00 PM' },
+    '3': { start: '04:00 PM', end: '07:00 PM' },
+    '4': { start: '07:00 PM', end: '10:00 PM' },
+}
+
 const ReturnOrderDetails = () => {
     const { return_order_id } = useParams()
     const dispatch = useAppDispatch()
@@ -53,8 +60,12 @@ const ReturnOrderDetails = () => {
                     {returnDetails?.pickup_schedule_slot ? (
                         <>
                             <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
-                                <span className="font-bold ">Pickup Slot:</span>
-                                <span className="ml-2 ">{returnDetails?.pickup_schedule_slot}</span>
+                                <span className="font-bold text-xl">Schedule Slot:</span>
+                                <span className="ml-2 text-xl">
+                                    {scheduleSlots[returnDetails?.pickup_schedule_slot]
+                                        ? `${scheduleSlots[returnDetails?.pickup_schedule_slot].start} - ${scheduleSlots[returnDetails?.pickup_schedule_slot].end}`
+                                        : 'Invalid slot'}
+                                </span>
                             </span>
                         </>
                     ) : (

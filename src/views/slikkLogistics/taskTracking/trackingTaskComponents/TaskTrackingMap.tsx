@@ -1,119 +1,106 @@
-import React, { useState } from 'react'
-import { GoogleMap, MarkerF, DirectionsRenderer, useJsApiLoader } from '@react-google-maps/api'
-
+import React, { useEffect, useState } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import { useAppSelector } from '@/store'
 import { TASKDETAILS } from '@/store/types/tasks.type'
+import { FaMapMarkerAlt } from 'react-icons/fa'
 
-const TaskTrackingMap = () => {
-    const [mapRef, setMapRef] = useState<google.maps.Map>()
-    const [direction, setDirection] = useState<google.maps.DirectionsResult | null>(null)
-    const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
-
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.MAP_API_KEY,
-        libraries: ['places'],
+const customIcon = (iconUrl: string) =>
+    new L.Icon({
+        iconUrl,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/images/marker-shadow.png',
     })
 
-    const handleOnLoad = (map: google.maps.Map) => {
-        setMapRef(map)
+const icons = {
+    pickup: customIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png'),
+    drop: customIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png'),
+    runner: customIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png'),
+}
 
-        const DirectionsService = new google.maps.DirectionsService()
-        const origin = new google.maps.LatLng(taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude)
+const TaskTrackingMap = () => {
+    const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
+    const [waypoints, setWaypoints] = useState<[number, number][]>([])
+    const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
 
-        const destination = new google.maps.LatLng(taskData?.drop_details?.latitude, taskData?.drop_details?.longitude)
+    useEffect(() => {
+        if (taskData?.pickup_details && taskData?.drop_details) {
+            const origin: [number, number] = [taskData.pickup_details.latitude, taskData.pickup_details.longitude]
+            const destination: [number, number] = [taskData.drop_details.latitude, taskData.drop_details.longitude]
 
-        DirectionsService.route(
-            {
-                origin,
-                destination,
-                travelMode: google.maps.TravelMode.DRIVING,
-            },
-            (result, status) => {
-                if (status === google.maps.DirectionsStatus.OK) {
-                    setDirection(result)
-                } else {
-                    console.error(`Error fetching directions: ${status}`)
-                }
-            },
+            // Set initial map center and waypoints
+            setMapCenter(destination)
+            setWaypoints([origin, destination])
+        }
+    }, [taskData])
+
+    if (!mapCenter) {
+        return <p>Loading map...</p>
+    }
+
+    const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.SetStateAction<[number, number]>> }) => {
+        const map = useMap()
+
+        const handleClick = () => {
+            map.setView([12.9014, 77.65122], 13) // Adjust the zoom level as needed
+        }
+
+        return (
+            <button
+                onClick={handleClick}
+                style={{
+                    position: 'absolute',
+                    bottom: '3px',
+                    right: '10px',
+                    backgroundColor: 'white',
+                    border: 'none',
+                    borderRadius: '20%',
+                    padding: '10px',
+                    boxShadow: '0 0 5px rgba(0,0,0,0.3)',
+                    cursor: 'pointer',
+                    zIndex: 1000,
+                }}
+            >
+                <FaMapMarkerAlt size={24} color="black" />
+            </button>
         )
     }
 
-    const zoom = 16
-    const mapContainerStyle = { width: '100%', height: '500px' }
-
-    const icons = {
-        pickup: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-        drop: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
-        runner: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-    }
-
     return (
-        <div className="flex flex-col gap-10 ">
-            {isLoaded ? (
-                <GoogleMap
-                    onLoad={handleOnLoad}
-                    mapContainerStyle={mapContainerStyle}
-                    zoom={zoom}
-                    center={{
-                        lat: taskData?.drop_details?.latitude,
-                        lng: taskData?.drop_details?.longitude,
-                    }}
-                    options={{
-                        fullscreenControl: true,
-                        keyboardShortcuts: false,
-                        mapTypeControl: false,
-                        streetViewControl: false,
-                        zoomControlOptions: { position: 9 },
-                    }}
-                >
-                    <MarkerF
-                        position={{
-                            lat: taskData?.pickup_details?.latitude,
-                            lng: taskData?.pickup_details?.longitude,
-                        }}
-                        icon={icons.pickup}
-                        label={{
-                            text: `${taskData?.pickup_details?.name}`,
-                            color: 'white',
-                            fontSize: '13px',
-                            fontWeight: 'bold',
-                        }}
-                    />
-                    <MarkerF
-                        position={{
-                            lat: taskData?.drop_details?.latitude,
-                            lng: taskData?.drop_details?.longitude,
-                        }}
-                        icon={icons.drop}
-                        label={{
-                            text: `${taskData?.drop_details?.name}`,
-                            color: 'white',
-                            fontSize: '13px',
-                            fontWeight: 'bold',
-                        }}
-                    />
-                    {taskData?.runner_latitude && taskData?.runner_longitude && (
-                        <MarkerF
-                            position={{
-                                lat: taskData?.runner_latitude,
-                                lng: taskData?.runner_longitude,
-                            }}
-                            icon={icons?.runner}
-                            label={{
-                                text: `${taskData?.runner_detail?.name}`,
-                                color: 'white',
-                                fontSize: '13px',
-                                fontWeight: 'bold',
-                            }}
-                        />
+        <div className="relative flex flex-col gap-10">
+            <div className="relative w-full" style={{ height: '500px' }}>
+                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%' }}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                    {/* Pickup Marker */}
+                    {taskData?.pickup_details && (
+                        <Marker position={[taskData.pickup_details.latitude, taskData.pickup_details.longitude]} icon={icons.pickup}>
+                            <Popup>{taskData.pickup_details.name}</Popup>
+                        </Marker>
                     )}
 
-                    {direction && <DirectionsRenderer directions={direction} />}
-                </GoogleMap>
-            ) : (
-                <p>Loading map...</p>
-            )}
+                    {/* Drop Marker */}
+                    {taskData?.drop_details && (
+                        <Marker position={[taskData.drop_details.latitude, taskData.drop_details.longitude]} icon={icons.drop}>
+                            <Popup>{taskData.drop_details.name}</Popup>
+                        </Marker>
+                    )}
+
+                    {/* Runner Marker */}
+                    {taskData?.runner_latitude && taskData?.runner_longitude && (
+                        <Marker position={[taskData.runner_latitude, taskData.runner_longitude]} icon={icons.runner}>
+                            <Popup>{taskData.runner_detail?.name}</Popup>
+                        </Marker>
+                    )}
+
+                    {/* Route Polyline */}
+                    {waypoints.length > 1 && <Polyline positions={waypoints} color="blue" />}
+                    <CurrentLocationButton setCenter={() => {}} />
+                </MapContainer>
+            </div>
         </div>
     )
 }

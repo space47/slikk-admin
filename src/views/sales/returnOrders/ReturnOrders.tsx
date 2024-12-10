@@ -54,6 +54,7 @@ export interface ReturnOrder {
     return_order_delivery: any[]
     return_order_id: string
     return_order_items: ReturnOrderItem[]
+    pickup_schedule_slot: number
     return_type: string
     status: string
     uuid: string
@@ -80,6 +81,13 @@ export const DELEIVERYRETRUNOPTIONS = [
     { label: 'Try&Buy', value: 'TRY_AND_BUY' },
 ]
 
+const scheduleSlots: any = {
+    '1': { start: '10:00 AM', end: '01:00 PM' },
+    '2': { start: '01:00 PM', end: '04:00 PM' },
+    '3': { start: '04:00 PM', end: '07:00 PM' },
+    '4': { start: '07:00 PM', end: '10:00 PM' },
+}
+
 const OrderList = () => {
     const location = useLocation()
     const { var1, var2 } = location.state || {}
@@ -95,13 +103,10 @@ const OrderList = () => {
     const [searchInput, setSearchInput] = useState<string>('')
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
-    const [from, setFrom] = useState(var1 ? var1 : moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(var2 ? var2 : moment().format('YYYY-MM-DD'))
+    const [from, setFrom] = useState(var1 ? var1 : null)
+    const [to, setTo] = useState(var2 ? var2 : null)
     const [orderCount, setOrderCount] = useState()
-    const [dropdownStatus, setDropdownStatus] = useState<ReturnDropdownStatus>({
-        value: [],
-        name: [],
-    })
+    const [dropdownStatus, setDropdownStatus] = useState<ReturnDropdownStatus>(RETURN_ORDERS[0])
     const [showFilter, setShowFilter] = useState(false)
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
@@ -120,8 +125,10 @@ const OrderList = () => {
             } else if (currentSelectedPage.value === 'invoice_id' && searchInput) {
                 searwiseDownload = `&invoice_id=${searchInput.toUpperCase()}`
             }
-
-            const fromToParams = searchInput ? '' : `&from=${from}&to=${To_Date}`
+            let fromToParams = ''
+            if (from && to && !searchInput) {
+                fromToParams = `&from=${from}&to=${To_Date}`
+            }
 
             const returnUrl = `merchant/return_orders?p=${page}&page_size=${pageSize}${searwiseDownload}${status}${fromToParams}${deliveryStatus}`
 
@@ -165,7 +172,7 @@ const OrderList = () => {
                         href={`/app/returnOrders/${getValue()}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                        className="text-white w-[70%] bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
                     >
                         {getValue()}
                     </a>
@@ -181,37 +188,22 @@ const OrderList = () => {
                 accessorKey: 'return_type',
                 cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
             },
-            {
-                header: 'Total Amount',
-                accessorKey: 'amount',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
-            },
-            {
-                header: 'Return Order Item',
-                accessorKey: 'return_order_items',
-                cell: ({ row }: { row: { original: ReturnOrder } }) => <span>{row.original.return_order_items[0]?.order_item || ''}</span>,
-            },
-            {
-                header: 'Return QTY',
-                accessorKey: 'return_order_items',
-                cell: ({ row }: { row: { original: ReturnOrder } }) => <span>{row.original.return_order_items[0]?.quantity || ''}</span>,
-            },
-            {
-                header: 'Return Reason',
-                accessorKey: 'return_order_items',
-                cell: ({ row }: { row: { original: ReturnOrder } }) => (
-                    <span>{row.original.return_order_items[0]?.return_reason || ''}</span>
-                ),
-            },
-            {
-                header: 'Order Total',
-                accessorKey: 'amount',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
-            },
+
             {
                 header: 'Status',
                 accessorKey: 'status',
                 cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
+            },
+            {
+                header: 'Scheduled Slot',
+                accessorKey: 'pickup_schedule_slot',
+                cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                    const log = row?.original?.pickup_schedule_slot
+
+                    const schedule = scheduleSlots[log]
+
+                    return <div>{schedule ? `${schedule.start} - ${schedule.end}` : 'Not Scheduled'}</div>
+                },
             },
             {
                 header: 'Last Update',
@@ -228,12 +220,6 @@ const OrderList = () => {
                         </div>
                     )
                 },
-            },
-
-            {
-                header: 'UUID',
-                accessorKey: 'uuid',
-                cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
             },
         ],
         [],
