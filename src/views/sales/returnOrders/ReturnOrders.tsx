@@ -89,7 +89,7 @@ const scheduleSlots: any = {
     '4': { start: '07:00 PM', end: '10:00 PM' },
 }
 
-const OrderList = () => {
+const ReturnOrders = () => {
     const location = useLocation()
     const { var1, var2 } = location.state || {}
     const [orders, setOrders] = useState<ReturnOrder[]>([])
@@ -509,7 +509,7 @@ const OrderList = () => {
     )
 }
 
-export default OrderList
+export default ReturnOrders
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value)
