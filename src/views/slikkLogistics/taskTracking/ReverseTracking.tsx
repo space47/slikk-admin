@@ -5,7 +5,7 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import TrackModal from './TrackModal'
 import { MdAssignment } from 'react-icons/md'
-import { Option, pageSizeOptions, SEARCHOPTIONS, TaskDetails } from './TaskCommonType'
+import { Option, pageSizeOptions, SEARCHOPTIONS, STATUSARRAY, TaskDetails } from './TaskCommonType'
 
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
@@ -32,24 +32,32 @@ const TaskTracking = () => {
     const navigate = useNavigate()
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
+    const [currentStatus, setCurrentStatus] = useState<any>()
     const [showFilterByRunner, SetShowFilterByRunner] = useState(false)
     const [particularMobileOfRunner, SetParticularMobileOfRunner] = useState<string>('')
+    const [statusName, setStatusName] = useState('')
 
     const fetchData = async () => {
         try {
             let searchData = ''
             let filterRunnerName = ''
+            let currentStatusName = ''
             if (particularMobileOfRunner) {
                 filterRunnerName = `&runner_mobile=${particularMobileOfRunner}`
             }
 
             if (currentSelectedPage.value === 'client_order_id' && globalFilter) {
                 searchData = `&client_order_id=${globalFilter}`
-            } else if (currentSelectedPage.value === 'status' && globalFilter) {
-                searchData = `&status=${globalFilter}`
+            } else if (currentSelectedPage.value === 'Mobile' && globalFilter) {
+                searchData = `&runner_mobile=${globalFilter}`
             }
+
+            if (currentStatus) {
+                currentStatusName = `&status=${statusName}`
+            }
+
             const response = await axioisInstance.get(
-                `logistic/slikk/task?task_type=REVERSE&page_size=100&from=${from}&to=${To_Date}${searchData}${filterRunnerName}`,
+                `logistic/slikk/task?task_type=REVERSE&page_size=100&from=${from}&to=${To_Date}${searchData}${filterRunnerName}${currentStatusName}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -66,7 +74,7 @@ const TaskTracking = () => {
 
     useEffect(() => {
         fetchData()
-    }, [from, to, particularMobileOfRunner, globalFilter])
+    }, [from, to, particularMobileOfRunner, globalFilter, currentStatus])
 
     const filteredData = data.filter((item) =>
         Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
@@ -94,6 +102,14 @@ const TaskTracking = () => {
         const selected = SEARCHOPTIONS.find((item) => item.value === value)
         if (selected) {
             setCurrentSelectedPage(selected)
+        }
+    }
+
+    const handleSelectStatus = (value: any) => {
+        const selected = STATUSARRAY.find((item) => item.value === value)
+        if (selected) {
+            setCurrentStatus(selected)
+            setStatusName(selected?.value)
         }
     }
 
@@ -233,6 +249,20 @@ const TaskTracking = () => {
                             onSelect={handleSelect}
                         >
                             {SEARCHOPTIONS?.map((item, key) => (
+                                <DropdownItem key={key} eventKey={item.value}>
+                                    <span>{item.label}</span>
+                                </DropdownItem>
+                            ))}
+                        </Dropdown>
+                    </div>
+                    {/* STATUS */}
+                    <div className="bg-gray-100 xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                        <Dropdown
+                            className="text-black bg-gray-200 font-bold px-4 py-2 rounded-md"
+                            title={currentStatus?.value ? currentStatus.label : 'SELECT STATUS'}
+                            onSelect={handleSelectStatus}
+                        >
+                            {STATUSARRAY?.map((item, key) => (
                                 <DropdownItem key={key} eventKey={item.value}>
                                     <span>{item.label}</span>
                                 </DropdownItem>
