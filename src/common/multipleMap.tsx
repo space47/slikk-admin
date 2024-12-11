@@ -143,7 +143,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                 belowTen.push({ lat, lon, amount: amount[index], distance })
             } else if (distance > 10 && distance <= 15) {
                 tenToFifteen.push({ lat, lon, amount: amount[index], distance })
-            } else if (distance > 15 && distance <= 30) {
+            } else if (distance > 15 && distance <= 20) {
                 fifteenToThirty.push({ lat, lon, amount: amount[index], distance })
             } else {
                 aboveThirty.push({ lat, lon, amount: amount[index], distance })
@@ -163,8 +163,8 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
     const Belowdatas = [
         { name: 'Below 10 km', value: distanceBelowTen },
         { name: 'Between 10-15 km', value: distanceBelowTentoFifteen },
-        { name: 'Between 15-30 km', value: distanceBelowFifteenToThirty },
-        { name: 'Above 30 km', value: distanceAboveThirty },
+        { name: 'Between 15-20 km', value: distanceBelowFifteenToThirty },
+        { name: 'Above 20 km', value: distanceAboveThirty },
     ]
 
     return (
