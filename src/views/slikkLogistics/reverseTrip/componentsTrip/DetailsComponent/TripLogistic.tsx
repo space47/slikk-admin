@@ -92,7 +92,7 @@ const TripLogistic = ({ trip_id, listOfTaskIds = [], setListOfTaskIds, setMobile
 
     return (
         <div>
-            <EasyTable noPage mainData={tripDetail} columns={columns} />
+            <EasyTable noPage mainData={tripDetail} columns={columns} overflow />
         </div>
     )
 }

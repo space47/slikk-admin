@@ -17,14 +17,12 @@ import Select from '@/components/ui/Select'
 import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
 import { Button, Dropdown } from '@/components/ui'
-import { RETURN_ORDERS } from '@/views/category-management/orderlist/commontypes'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdDownload } from 'react-icons/io'
 import { notification } from 'antd'
 import { CiFilter } from 'react-icons/ci'
 import FilterReturnOrder from './filter/FilterReturnOrder'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { DropdownStatus } from '@/store/types/orderList.types'
 import { FaFilter } from 'react-icons/fa'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { returnOrderApi } from '@/services/ReturnOrders.services'
@@ -104,7 +102,7 @@ const ReturnOrders = () => {
     })
     const [searchInput, setSearchInput] = useState<string>('')
     const [page, setPage] = useState(1)
-    const navigate = useNavigate()
+
     const [from, setFrom] = useState(var1 ? var1 : null)
     const [to, setTo] = useState(var2 ? var2 : null)
     const [orderCount, setOrderCount] = useState()
@@ -198,6 +196,15 @@ const ReturnOrders = () => {
                 cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
             },
             {
+                header: 'Scheduled Date',
+                accessorKey: 'pickup_schedule_date',
+                cell: ({ row }: { row: { original: ReturnOrder } }) => {
+                    const log = row?.original?.pickup_schedule_date
+
+                    return <div>{log}</div>
+                },
+            },
+            {
                 header: 'Scheduled Slot',
                 accessorKey: 'pickup_schedule_slot',
                 cell: ({ row }: { row: { original: ReturnOrder } }) => {
@@ -208,15 +215,7 @@ const ReturnOrders = () => {
                     return <div>{schedule ? `${schedule.start} - ${schedule.end}` : 'Not Scheduled'}</div>
                 },
             },
-            {
-                header: 'Scheduled Date',
-                accessorKey: 'pickup_schedule_date',
-                cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                    const log = row?.original?.pickup_schedule_date
 
-                    return <div>{log}</div>
-                },
-            },
             {
                 header: 'Last Update',
                 accessorKey: 'return_order_items',
