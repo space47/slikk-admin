@@ -40,7 +40,7 @@ const TaskLogisticItem = () => {
 
     return (
         <div>
-            <EasyTable noPage mainData={logisticData} columns={columns} />
+            <EasyTable noPage mainData={logisticData} columns={columns} overflow />
         </div>
     )
 }

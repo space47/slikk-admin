@@ -927,6 +927,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/slikkLogistics/reverseTrip/componentsTrip/DetailsComponent/FullTripMap')),
         authority: [ADMIN, USER],
     },
+    {
+        key: '',
+        path: `${APP_PREFIX_PATH}/riderProfile/:mobile`,
+        component: lazy(() => import('@/views/slikkLogistics/taskTracking/trackingTaskComponents/RiderProfile')),
+        authority: [ADMIN, USER],
+    },
 
     // ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
     {

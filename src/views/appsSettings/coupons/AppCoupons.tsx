@@ -123,7 +123,7 @@ const AppCoupons = () => {
                 </div>
             ) : (
                 <>
-                    <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
+                    <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center mb-10">
                         <input
                             type="text"
                             placeholder="Search here"
@@ -132,7 +132,7 @@ const AppCoupons = () => {
                             className="p-2 border rounded"
                         />
                         <button
-                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700 order-first xl:order-none"
+                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700 order-first xl:order-none font-bold"
                             onClick={handleCoupons}
                         >
                             Add Coupons

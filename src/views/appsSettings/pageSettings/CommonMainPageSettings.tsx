@@ -318,6 +318,9 @@ const CommonMainPageSettings = ({
                                     min="0"
                                 />
                             </FormItem>
+                            <FormItem label="Data Count" className="col-span-1 w-[60%] h-[80%]">
+                                <Field type="number" name="data_type.data_count" placeholder="Place Data Count" component={Input} min="0" />
+                            </FormItem>
                         </FormContainer>
 
                         <FormContainer className="grid grid-cols-2 gap-3">

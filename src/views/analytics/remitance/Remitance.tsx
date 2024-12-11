@@ -239,20 +239,21 @@ const Remitance = () => {
                 <div>
                     <h5>Dowmload Raw Dumps:</h5> <br />
                     <div className="flex flex-col xl:flex-row gap-4 xl:gap-10">
-                        <div className="xl:mt-5">
+                        <div className="xl:mt-7">
                             <Button variant="new" onClick={handleOrderItem}>
                                 Order Item
                             </Button>
                         </div>
-                        <div className="xl:mt-5">
+                        <div className="xl:mt-7">
                             <Button variant="new" onClick={handleReturnOrderItem}>
                                 Return Order Item
                             </Button>
                         </div>
                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                             <div className="font-semibold">Select Company</div>
-                            <div className="flex gap-2 items-center w-auto">
+                            <div className="flex gap-2 items-center w-auto xl:w-[200px]">
                                 <Select
+                                    isClearable
                                     className="w-full"
                                     options={companyList}
                                     getOptionLabel={(option) => option.name}
@@ -263,11 +264,11 @@ const Remitance = () => {
                                         setCompanyData(newVal?.id)
                                     }}
                                 />
-                                <div>
+                                {/* <div>
                                     <button onClick={handleRemoveCompanyId} className="bg-none border-none">
                                         <div className="text-red-600">Clear</div>
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>

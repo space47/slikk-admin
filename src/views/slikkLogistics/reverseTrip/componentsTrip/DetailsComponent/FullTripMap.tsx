@@ -149,7 +149,6 @@ const FullTripMap = () => {
                     <FullMapButton setFullTripMap={setFullTripMap} />
                 </MapContainer>
             </div>
-            {/* {fullTripMap && <>hello</>} */}
         </div>
     )
 }

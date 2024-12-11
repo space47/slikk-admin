@@ -54,7 +54,7 @@ export const pageSizeOptions = [
 
 export const SEARCHOPTIONS = [
     { label: 'Client Id', value: 'client_order_id' },
-    { label: 'Status', value: 'status' },
+    { label: 'Mobile', value: 'mobile' },
 ]
 export const STATUSARRAY = [
     { label: 'CREATED', value: 'CREATED' },
