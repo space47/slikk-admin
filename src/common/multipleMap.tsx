@@ -76,6 +76,8 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
     const [distanceBelowFifteenToThirty, setDistanceBelowFifteenToThirty] = useState<any[]>([])
     const [distanceAboveThirty, setDistanceAboveThirty] = useState<any[]>([])
 
+    const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
+
     const handleSearchLocation = useCallback(
         _.debounce(async (query: string) => {
             if (!query) {
@@ -88,7 +90,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                     params: {
                         input: query,
                         language: 'English',
-                        api_key: 'mEHMu4ifYRDhxV4YArcu3AxxDF1AvjV9Hds9vANS',
+                        api_key: MAP_KEY,
                     },
                 })
 
