@@ -91,12 +91,6 @@ const CreatorPost = () => {
         let status = 'PENDING'
         if (activeTab === 'tab2') status = 'APPROVED'
         if (activeTab === 'tab3') status = 'REJECTED'
-
-        console.log('Active Tab........', activeTab)
-        console.log('Page...........', page)
-        console.log('Page Size........', pageSize)
-        console.log('Status.........', status)
-
         fetchData(status, page, pageSize, globalFilter)
     }, [activeTab, page, pageSize, globalFilter])
 

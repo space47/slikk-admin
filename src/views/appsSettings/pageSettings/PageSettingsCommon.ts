@@ -75,4 +75,5 @@ export const SubDataTypeArray = [
     { label: 'Top Seller', value: 'top_seller' },
     { label: 'Top Searched', value: 'top_searched' },
     { label: 'Favourite', value: 'favourite' },
+    { label: 'New', value: 'new' },
 ]

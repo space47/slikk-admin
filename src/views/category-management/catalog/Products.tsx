@@ -20,6 +20,9 @@ import DialogConfirm from '@/common/DialogConfirm'
 import axios from 'axios'
 import CatalogActions from './CalatogActions'
 import { FILTER_STATE } from '@/store/types/filters.types'
+import { Dropdown } from '@/components/ui'
+import { ProductFilterArray } from './ProductCommon'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 type ProductVariant = {
     name: string
@@ -92,50 +95,36 @@ const Products = () => {
     const [showRandomizeDialog, setShowRandomizeDialog] = useState(false)
     const [selectFilterString, setFilterString] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(ProductFilterArray[0])
 
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
-    const fetchData = async (page: number, pageSize: number, filter: string = '') => {
+    const fetchData = async (page: number, pageSize: number) => {
         try {
             let searchInputType = ''
 
-            if (filter) {
-                searchInputType = `&sku=${filter}`
-                setFilterInput(searchInputType)
-                let response = await axiosInstance.get(
-                    `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
-                )
-
-                if (response.data.data.results.length === 0) {
-                    searchInputType = `&name=${filter}`
-                    setFilterInput(searchInputType)
-                    response = await axiosInstance.get(
-                        `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
-                    )
-                }
-
-                const data = response.data.data.results
-                const total = response.data.data.count
-
-                setData(data)
-                setTotalData(total)
-            } else {
-                const response = await axiosInstance.get(`merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}`)
-
-                const data = response.data.data.results
-                const total = response.data.data.count
-
-                setData(data)
-                setTotalData(total)
+            if (currentSelectedPage.value === 'sku' && globalFilter) {
+                searchInputType = `&sku=${globalFilter}`
+            } else if (currentSelectedPage.value === 'name' && globalFilter) {
+                searchInputType = `&name=${globalFilter}`
             }
+            const response = await axiosInstance.get(
+                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
+            )
+
+            const data = response.data.data.results
+            const total = response.data.data.count
+
+            setData(data)
+            setTotalData(total)
         } catch (error) {
             console.error('Error fetching data:', error)
         }
     }
 
     useEffect(() => {
-        fetchData(page, pageSize, globalFilter)
+        fetchData(page, pageSize)
     }, [page, pageSize, typeFetch, globalFilter, searchType])
 
     const hanldeFilter = () => {
@@ -165,7 +154,6 @@ const Products = () => {
         let query = '&'
 
         if (divisionList.length > 0) {
-            console.log('kela divisionList', divisionList)
             const divisionIds = divisionList.map((item: any) => item?.name).join(',')
 
             query += `division=${divisionIds}`
@@ -198,6 +186,14 @@ const Products = () => {
 
         setTypeFetch(query)
         setShowDrawer(false)
+    }
+
+    const onPaginationChange = (page: number) => {
+        setPage(page)
+    }
+
+    const onSelectChange = (value = 0) => {
+        setPageSize(Number(value))
     }
 
     const columns = useMemo<ColumnDef<Product>[]>(
@@ -304,24 +300,23 @@ const Products = () => {
         [],
     )
 
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
+    const handleProductSelect = (value: any) => {
+        const selected = ProductFilterArray.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
     }
 
     const handleDownload = async () => {
         try {
-            let filterParam = ''
-            if (filterInput.includes('&name=')) {
-                filterParam = `&name=${globalFilter}`
-            } else if (filterInput.includes('&sku=')) {
-                filterParam = `&sku=${globalFilter}`
+            let searchInputType = ''
+
+            if (currentSelectedPage.value === 'sku' && globalFilter) {
+                searchInputType = `&sku=${globalFilter}`
+            } else if (currentSelectedPage.value === 'name' && globalFilter) {
+                searchInputType = `&name=${globalFilter}`
             }
-            console.log('filterParam', filterParam)
-            const downloadUrl = `merchant/products?download=true&${typeFetch}${filterParam}`
+            const downloadUrl = `merchant/products?download=true&${typeFetch}${searchInputType}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
@@ -414,13 +409,28 @@ const Products = () => {
         <div>
             <div className="flex flex-col md:flex-row md:items-center justify-center xl:justify-between mb-4 gap-4">
                 <div className="w-full md:w-1/3 flex justify-between gap-3">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 w-full md:w-[70%] border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    <div className="flex gap-2">
+                        <input
+                            type="search"
+                            placeholder="Search here"
+                            value={globalFilter}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            className="p-2 w-full md:w-[70%] border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <div className="bg-gray-100 xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white font-bold">
+                            <Dropdown
+                                className="text-black bg-gray-200 font-bold px-4 py-2 rounded-md"
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                onSelect={handleProductSelect}
+                            >
+                                {ProductFilterArray?.map((item, key) => (
+                                    <DropdownItem key={key} eventKey={item.value}>
+                                        <span>{item.label}</span>
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
+                    </div>
                     <button
                         className="bg-gray-100 text-black px-4 py-2 flex items-center gap-2 xl:hidden hover:bg-gray-200 rounded-lg"
                         onClick={handleDownload}

@@ -29,6 +29,7 @@ type LocationDetails = {
 type EventLog = {
     status: string
     timestamp: string
+    failure_reason?: string
 }
 
 type ClientOrderDetails = {

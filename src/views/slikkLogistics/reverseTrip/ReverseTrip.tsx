@@ -19,6 +19,7 @@ import { pageSizeOptions } from '@/views/category-management/category/categoryTa
 import { MdAssignment, MdUpdate } from 'react-icons/md'
 import AssignTrackerModal from './createReverseTrip/AssignTrackerModal'
 import AccessDenied from '@/views/pages/AccessDenied'
+import EasyTable from '@/common/EasyTable'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -160,36 +161,7 @@ const ReverseTrip = () => {
                     Create New Trip
                 </Button>
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                            <Sorter sort={header.column.getIsSorted()} />
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={reverseTaskDetail} columns={columns} page={page} pageSize={pageSize} />
 
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 <Pagination

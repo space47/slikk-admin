@@ -127,6 +127,9 @@ const AddUrlShortner = () => {
 
     const handleCopy = (data: string) => {
         navigator.clipboard.writeText(data)
+        notification.success({
+            message: 'Copied to Clipboard',
+        })
     }
 
     const handleFilterChange = (e: any, setFieldValue: any) => {

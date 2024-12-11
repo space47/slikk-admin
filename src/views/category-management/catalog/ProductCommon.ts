@@ -408,3 +408,8 @@ export const INITIALVALUES: Product = {
     fit: '',
     fabric: '',
 }
+
+export const ProductFilterArray = [
+    { label: 'SKU', value: 'sku' },
+    { label: 'Name', value: 'name' },
+]
