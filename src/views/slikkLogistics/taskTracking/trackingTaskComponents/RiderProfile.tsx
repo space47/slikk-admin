@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import moment from 'moment'
-import EasyTable from '@/common/EasyTable'
 import { Card } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
@@ -32,22 +31,19 @@ const RiderProfile = () => {
         { name: moment(riderProfile?.dob).isValid() ? moment(riderProfile?.dob).format('YYYY-MM-DD') : '', label: 'DOB' },
         { name: riderProfile?.email || '', label: 'Email' },
         { name: riderProfile?.gender || '', label: 'Gender' },
-        { name: riderProfile?.device_id || '', label: 'Device Id' },
     ]
 
-    const columns = [
-        { header: 'Assigned', accessorKey: 'ASSIGNED', cell: ({ getValue }: any) => <span>{getValue() || 0}</span> },
-        { header: 'Total', accessorKey: 'TOTAL', cell: ({ getValue }: any) => <span>{getValue() || 0}</span> },
-        { header: 'Delivered', accessorKey: 'DELIVERED', cell: ({ getValue }: any) => <span>{getValue() || 0}</span> },
-        { header: 'Out for Pickup', accessorKey: 'OUT_FOR_PICKUP', cell: ({ getValue }: any) => <span>{getValue() || 0}</span> },
-        { header: 'Out for Delivery', accessorKey: 'OUT_FOR_DELIVERY', cell: ({ getValue }: any) => <span>{getValue() || 0}</span> },
-        { header: 'Picked Up', accessorKey: 'PICKED_UP', cell: ({ getValue }: any) => <span>{getValue() || 0}</span> },
-        { header: 'Pickup Failed', accessorKey: 'PICKUP_FAILED', cell: ({ getValue }: any) => <span>{getValue() || 0}</span> },
-        { header: 'Completed', accessorKey: 'COMPLETED', cell: ({ getValue }: any) => <span>{getValue() || 0}</span> },
-        { header: 'Distance Covered', accessorKey: 'distance_covered', cell: ({ getValue }: any) => <span>{getValue() || ''}</span> },
+    const taskCards = [
+        { label: 'Assigned', value: riderTask?.ASSIGNED || 0 },
+        { label: 'Total', value: riderTask?.TOTAL || 0 },
+        { label: 'Delivered', value: riderTask?.DELIVERED || 0 },
+        { label: 'Out for Pickup', value: riderTask?.OUT_FOR_PICKUP || 0 },
+        { label: 'Out for Delivery', value: riderTask?.OUT_FOR_DELIVERY || 0 },
+        { label: 'Picked Up', value: riderTask?.PICKED_UP || 0 },
+        { label: 'Pickup Failed', value: riderTask?.PICKUP_FAILED || 0 },
+        { label: 'Completed', value: riderTask?.COMPLETED || 0 },
+        { label: 'Distance Covered', value: riderTask?.distance_covered || 'N/A' },
     ]
-
-    console.log('Data for task', riderTask)
 
     return (
         <div className="flex flex-col gap-10">
@@ -67,7 +63,16 @@ const RiderProfile = () => {
             </div>
             <div>
                 <div className="text-xl text-red-700 font-bold mb-8">Rider Task Details</div>
-                <EasyTable mainData={[riderTask]} noPage columns={columns} overflow />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {taskCards.map((task, index) => (
+                        <Card key={index} className="p-4 shadow-md flex flex-col items-center justify-center text-center">
+                            <div className="flex gap-2">
+                                <span className="text-xl font-semibold text-gray-700">{task.label}:</span>
+                                <span className="text-xl font-bold text-blue-600">{task.value}</span>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
             </div>
         </div>
     )
