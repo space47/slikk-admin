@@ -48,7 +48,7 @@ const TaskTracking = () => {
 
             if (currentSelectedPage.value === 'client_order_id' && globalFilter) {
                 searchData = `&client_order_id=${globalFilter}`
-            } else if (currentSelectedPage.value === 'Mobile' && globalFilter) {
+            } else if (currentSelectedPage.value === 'mobile' && globalFilter) {
                 searchData = `&runner_mobile=${globalFilter}`
             }
 
@@ -79,6 +79,8 @@ const TaskTracking = () => {
     const filteredData = data.filter((item) =>
         Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
+
+    console.log('Mobile', filteredData)
 
     const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(totalData / pageSize)
@@ -137,7 +139,16 @@ const TaskTracking = () => {
         },
         { header: 'Status', accessor: 'status' },
         { header: 'Task Type', accessor: 'task_type' },
-
+        {
+            header: 'Runner Name',
+            accessor: 'runner_detail.name',
+            format: (_: any, row: TaskDetails) => row.runner_detail?.name || '',
+        },
+        {
+            header: 'Runner Contact Number',
+            accessor: 'runner_detail.mobile',
+            format: (_: any, row: TaskDetails) => row.runner_detail?.mobile || '',
+        },
         {
             header: 'Pickup Name',
             accessor: 'pickup_details.name',
@@ -147,11 +158,6 @@ const TaskTracking = () => {
             header: 'Pickup Address',
             accessor: 'pickup_details.address',
             format: (_: any, row: TaskDetails) => row.pickup_details?.address || '',
-        },
-        {
-            header: 'Pickup Landmark',
-            accessor: 'pickup_details.landmark',
-            format: (_: any, row: TaskDetails) => row.pickup_details?.landmark || '',
         },
         {
             header: 'Pickup Contact Number',
@@ -229,6 +235,8 @@ const TaskTracking = () => {
     if (accessDenied) {
         return <AccessDenied />
     }
+
+    console.log('Data', paginatedData)
 
     return (
         <div>
