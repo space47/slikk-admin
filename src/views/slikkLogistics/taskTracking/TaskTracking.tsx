@@ -142,7 +142,14 @@ const TaskTracking = () => {
         {
             header: 'Runner Name',
             accessor: 'runner_detail.name',
-            format: (_: any, row: TaskDetails) => row.runner_detail?.name || '',
+            format: (_: any, row: TaskDetails) => {
+                const runnerMobile = row.runner_detail?.mobile
+                return (
+                    <div className="hover:text-blue-700 cursor-pointer" onClick={() => handleRiderProfile(runnerMobile)}>
+                        {row.runner_detail?.name || ''}
+                    </div>
+                )
+            },
         },
         {
             header: 'Runner Contact Number',
@@ -237,6 +244,10 @@ const TaskTracking = () => {
     }
 
     console.log('Data', paginatedData)
+
+    const handleRiderProfile = (mobile: any) => {
+        navigate(`/app/riderProfile/${mobile}`)
+    }
 
     return (
         <div>

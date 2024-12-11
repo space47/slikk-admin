@@ -6,11 +6,6 @@ import moment from 'moment'
 import { TASKDETAILS } from '@/store/types/tasks.type'
 import { useAppSelector } from '@/store'
 
-type Event = {
-    timestamp: string
-    status: string
-}
-
 const TaskActivity = () => {
     const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
 
@@ -34,6 +29,7 @@ const TaskActivity = () => {
                             }
                         >
                             <div className="font-bold text-md">{activity.status}</div>
+                            <div className="font-semibold text-sm text-red-500">{activity.failure_reason ?? ''}</div>
                             <div>{moment(activity.timestamp).format('DD:MM:YYYY hh:mm')}</div>
                         </Timeline.Item>
                     ))

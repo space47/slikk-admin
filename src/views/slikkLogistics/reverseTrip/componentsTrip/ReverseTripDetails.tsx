@@ -23,6 +23,11 @@ const ReverseTripDetails = () => {
 
     useEffect(() => {
         fetchMainData()
+        const intervalId = setInterval(() => {
+            fetchMainData()
+        }, 60000)
+
+        return () => clearInterval(intervalId)
     }, [])
 
     return (

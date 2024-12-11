@@ -16,7 +16,12 @@ const TaskDetails = () => {
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(fetchTaskData(task_id ?? ''))
-    }, [dispatch])
+        const intervalId = setInterval(() => {
+            dispatch(fetchTaskData(task_id ?? ''))
+        }, 60000)
+
+        return () => clearInterval(intervalId)
+    }, [dispatch, task_id])
 
     console.log('LOG', taskData?.slikklogistic_item)
 
