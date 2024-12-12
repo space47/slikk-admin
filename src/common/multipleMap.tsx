@@ -139,7 +139,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
             const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2)
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 
-            const distance = parseFloat((R * c).toFixed(2)) // Distance in km
+            const distance = parseFloat((R * c).toFixed(2))
 
             if (distance <= 10) {
                 belowTen.push({ lat, lon, amount: amount[index], distance })

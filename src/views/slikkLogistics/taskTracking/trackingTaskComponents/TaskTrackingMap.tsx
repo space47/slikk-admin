@@ -5,6 +5,8 @@ import 'leaflet/dist/leaflet.css'
 import { useAppSelector } from '@/store'
 import { TASKDETAILS } from '@/store/types/tasks.type'
 import { FaMapMarkerAlt } from 'react-icons/fa'
+import polyline from '@mapbox/polyline'
+import axios from 'axios'
 
 const customIcon = (iconUrl: string) =>
     new L.Icon({
@@ -26,14 +28,49 @@ const TaskTrackingMap = () => {
     const [waypoints, setWaypoints] = useState<[number, number][]>([])
     const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
 
+    const [polyLine, setPolyLine] = useState('')
+    const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
+    const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
+
+    const decodedPolyline = polyline.decode(polyLine)
+
+    const fetchRouteDetails = async () => {
+        const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
+
+        try {
+            const response = await axios.post(`https://api.olamaps.io/routing/v1/directions/basic`, null, {
+                params: {
+                    origin: sourceLatLong.join(','),
+                    destination: destinationLatLong.join(','),
+                    alternatives: false,
+                    steps: true,
+                    overview: 'full',
+                    language: 'en',
+                    api_key: MAP_KEY,
+                },
+            })
+
+            const data = response.data
+            setPolyLine(data.routes[0]?.overview_polyline)
+        } catch (error) {
+            console.error('Error fetching route details:', error)
+            return null
+        }
+    }
+
+    useEffect(() => {
+        fetchRouteDetails()
+    }, [sourceLatLong, destinationLatLong])
+
     useEffect(() => {
         if (taskData?.pickup_details && taskData?.drop_details) {
             const origin: [number, number] = [taskData.pickup_details.latitude, taskData.pickup_details.longitude]
             const destination: [number, number] = [taskData.drop_details.latitude, taskData.drop_details.longitude]
-
-            // Set initial map center and waypoints
             setMapCenter(destination)
             setWaypoints([origin, destination])
+
+            setSourceLatLong(origin)
+            setDestinationLatLong(destination)
         }
     }, [taskData])
 
@@ -45,7 +82,7 @@ const TaskTrackingMap = () => {
         const map = useMap()
 
         const handleClick = () => {
-            map.setView([12.9014, 77.65122], 13) // Adjust the zoom level as needed
+            map.setView([12.9014, 77.65122], 13)
         }
 
         return (
@@ -68,6 +105,8 @@ const TaskTrackingMap = () => {
             </button>
         )
     }
+
+    console.log('Map set in trip Map', decodedPolyline)
 
     return (
         <div className="relative flex flex-col gap-10">
@@ -96,8 +135,7 @@ const TaskTrackingMap = () => {
                         </Marker>
                     )}
 
-                    {/* Route Polyline */}
-                    {waypoints.length > 1 && <Polyline positions={waypoints} color="blue" />}
+                    <Polyline positions={decodedPolyline} color="blue" />
                     <CurrentLocationButton setCenter={() => {}} />
                 </MapContainer>
             </div>
