@@ -32,7 +32,7 @@ const dataTypeArray = [
     { label: 'brands', value: 'brands' },
     { label: 'post', value: 'post' },
     { label: 'creator', value: 'creator' },
-    { label: 'categories', value: 'categories' },
+    { label: 'Sub categories', value: 'categories' },
 ]
 
 const SECTIONARRAY = [
