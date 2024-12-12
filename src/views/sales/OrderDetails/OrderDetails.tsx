@@ -20,6 +20,7 @@ import CancelModal from './components/CancelModal'
 import { FaDownload } from 'react-icons/fa'
 import { notification } from 'antd'
 import { SalesOrderDetailsResponse } from './orderList.common'
+import { Dialog } from '@/components/ui'
 // import { string } from 'yup'
 
 const scheduleSlots: any = {
@@ -34,6 +35,7 @@ const OrderDetails = () => {
     const [data, setData] = useState<SalesOrderDetailsResponse>()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
+    const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
     const navigate = useNavigate()
 
     const { invoice_id } = useParams()
@@ -63,6 +65,14 @@ const OrderDetails = () => {
     }
     const handleCloseModal = () => {
         setShowCancelModal(false)
+    }
+
+    const handleCancelExchangeOrder = () => {
+        setShowCancelExchangeModal(true)
+    }
+
+    const handleCloseExchangeModal = () => {
+        setShowCancelExchangeModal(false)
     }
 
     const handlemarkAsPaid = async () => {
@@ -109,6 +119,25 @@ const OrderDetails = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.log(error)
+        }
+    }
+
+    const handleConvert = async () => {
+        const body = {
+            action: 'EXCHANGE_TO_RETURN',
+        }
+        try {
+            const response = await axioisInstance.patch(`/merchant/order/${invoice_id}`, body)
+            notification.success({
+                message: response?.data?.message || 'Successfully converted',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failed to Convert',
+            })
+        } finally {
+            setShowCancelExchangeModal(false)
         }
     }
 
@@ -179,6 +208,14 @@ const OrderDetails = () => {
                                             onClick={handleCancelOrder}
                                         >
                                             CANCEL ORDER
+                                        </button>
+                                    )}
+                                    {data?.delivery_type === 'EXCHANGE' && (
+                                        <button
+                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                            onClick={handleCancelExchangeOrder}
+                                        >
+                                            CONVERT
                                         </button>
                                     )}
                                     {/* {data.status === 'COMPLETED' &&
@@ -287,6 +324,36 @@ const OrderDetails = () => {
                                     invoice_id={invoice_id}
                                     setIsModalOpen={setShowCancelModal}
                                 />
+                            )}
+                            {showCancelExchangeModal && (
+                                <>
+                                    <div>
+                                        <Dialog
+                                            width="100%"
+                                            className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/2 mx-auto p-4 sm:p-6 md:p-8  "
+                                            isOpen={showCancelExchangeModal}
+                                            onClose={handleCancelExchangeOrder}
+                                        >
+                                            <div>Are you sure You want to Exchange the Order</div>
+                                            <div>
+                                                <div className="flex justify-end mt-6 gap-3">
+                                                    <button
+                                                        onClick={handleCloseExchangeModal}
+                                                        className="bg-green-600 text-white hover:bg-green-500 transition-colors duration-300 px-4 py-2 rounded-lg"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                    <button
+                                                        onClick={handleConvert}
+                                                        className="bg-red-600 text-white hover:bg-red-500 transition-colors duration-300 px-4 py-2 rounded-lg"
+                                                    >
+                                                        Convert
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </Dialog>
+                                    </div>
+                                </>
                             )}
                         </div>
                     </>

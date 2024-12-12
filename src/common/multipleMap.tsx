@@ -37,7 +37,7 @@ interface CenterProps {
     currLong: any
 }
 
-const CurrentLocationButton = ({ setCenter, currLat, currLong }: CenterProps) => {
+const CurrentLocationButton = ({ currLat, currLong }: CenterProps) => {
     const map = useMap()
 
     const handleClick = () => {
@@ -46,7 +46,6 @@ const CurrentLocationButton = ({ setCenter, currLat, currLong }: CenterProps) =>
 
     return (
         <button
-            onClick={handleClick}
             style={{
                 position: 'absolute',
                 bottom: '3px',
@@ -59,9 +58,81 @@ const CurrentLocationButton = ({ setCenter, currLat, currLong }: CenterProps) =>
                 cursor: 'pointer',
                 zIndex: 1000,
             }}
+            onClick={handleClick}
         >
             <FaMapMarkerAlt size={24} color="black" />
         </button>
+    )
+}
+
+// Marker
+interface MarkerComponentProps {
+    markers: any[]
+    currLat?: any
+    currLong?: any
+    distanceAboveThirty: any
+    distanceBetweenFifteenToThirty: any
+    distanceBelowTen: any
+    distanceBelowTentoFifteen: any
+}
+
+const MarkerComponent = ({
+    markers,
+    currLat,
+    currLong,
+    distanceAboveThirty,
+    distanceBetweenFifteenToThirty,
+    distanceBelowTen,
+    distanceBelowTentoFifteen,
+}: MarkerComponentProps) => {
+    const map = useMap()
+
+    useEffect(() => {
+        let currPos = 13
+
+        const countAboveThirty = distanceAboveThirty
+        const countBetweenFifteenToThirty = distanceBetweenFifteenToThirty
+        const countBelowTen = distanceBelowTen
+        const countBelowTentoFifteen = distanceBelowTentoFifteen
+
+        const maxCount = Math.max(countAboveThirty, countBetweenFifteenToThirty, countBelowTen, countBelowTentoFifteen)
+
+        if (maxCount === countAboveThirty) {
+            currPos = 5
+        } else if (maxCount === countBetweenFifteenToThirty) {
+            currPos = 8
+        } else if (maxCount === countBelowTen) {
+            currPos = 12
+        } else if (maxCount === countBelowTentoFifteen) {
+            currPos = 10
+        }
+
+        map.setView([currLat, currLong], currPos)
+    }, [currLat, currLong, map, distanceAboveThirty, distanceBetweenFifteenToThirty, distanceBelowTen, distanceBelowTentoFifteen])
+
+    return (
+        <div>
+            {markers.map((marker, index) => (
+                <Marker key={index} position={[marker.lat, marker.lon]}>
+                    <Popup>
+                        <div>
+                            <p>Amount: Rs.{marker.amount}</p>
+                            <p>Distance: {marker.distance} km</p>
+                        </div>
+                    </Popup>
+                </Marker>
+            ))}
+
+            <Marker position={[currLat, currLong]} icon={officeIcon}>
+                <Popup>
+                    <div>
+                        <p>SlikkSync Technologies</p>
+                    </div>
+                </Popup>
+            </Marker>
+
+            <CurrentLocationButton setCenter={() => {}} currLat={currLat} currLong={currLong} />
+        </div>
     )
 }
 
@@ -188,28 +259,17 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                 )}
             </div>
             <div className="flex flex-col gap-10 xl:flex-row">
-                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100vh', width: '100%' }}>
+                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '70vh', width: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {markers.map((marker, index) => (
-                        <Marker key={index} position={[marker.lat, marker.lon]}>
-                            <Popup>
-                                <div>
-                                    <p>Amount: Rs.{marker.amount}</p>
-                                    <p>Distance: {marker.distance} km</p>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
-
-                    <Marker position={[currLat, currLong]} icon={officeIcon}>
-                        <Popup>
-                            <div>
-                                <p>SlikkSync Technologies</p>
-                            </div>
-                        </Popup>
-                    </Marker>
-
-                    <CurrentLocationButton setCenter={() => {}} currLat={currLat} currLong={currLong} />
+                    <MarkerComponent
+                        currLat={currLat}
+                        currLong={currLong}
+                        markers={markers}
+                        distanceAboveThirty={distanceAboveThirty?.length}
+                        distanceBetweenFifteenToThirty={distanceBelowFifteenToThirty?.length}
+                        distanceBelowTen={distanceBelowTen?.length}
+                        distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
+                    />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[250px]">
                     {Belowdatas.map((item, key) => (

@@ -20,11 +20,16 @@ const PaginationTable = () => {
     const [pageSize, setPageSize] = useState(10)
     const [accessDenied, setAccessDenied] = useState(false)
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const [globalFilter, setGlobalFilter] = useState<any>('')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
+            let filter = ''
+            if (globalFilter) {
+                filter = `&document_number=${globalFilter}`
+            }
             const response = await axiosInstance.get(
-                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}`, // &company_id
+                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}${filter}`, // &company_id
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -40,7 +45,7 @@ const PaginationTable = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, selectedCompany])
+    }, [page, pageSize, selectedCompany, globalFilter])
 
     const getowner = (own: any) => {
         if (own === true) {
@@ -50,9 +55,9 @@ const PaginationTable = () => {
         }
     }
 
-    const handleDocumentClick = (id: any) => {
-        console.log('ok', id)
-    }
+    // const handleDocumentClick = (id: any) => {
+    //     console.log('ok', id)
+    // }
 
     const columns = useMemo<ColumnDef<TableData>[]>(
         () => [
@@ -80,26 +85,26 @@ const PaginationTable = () => {
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
-            {
-                header: 'Document url',
-                accessorKey: 'document_url',
-                cell: (info) => (
-                    <div style={{ cursor: 'pointer' }} onClick={() => handleDocumentClick(info.getValue())}>
-                        {info.getValue() as string}
-                    </div>
-                ),
-            },
+            // {
+            //     header: 'Document url',
+            //     accessorKey: 'document_url',
+            //     cell: (info) => (
+            //         <div style={{ cursor: 'pointer' }} onClick={() => handleDocumentClick(info.getValue())}>
+            //             {info.getValue() as string}
+            //         </div>
+            //     ),
+            // },
             {
                 header: 'Document Date',
                 accessorKey: 'document_date',
                 cell: (info) => info.getValue(),
             },
 
-            {
-                header: 'Images',
-                accessorKey: 'images',
-                cell: (info) => info.getValue(),
-            },
+            // {
+            //     header: 'Images',
+            //     accessorKey: 'images',
+            //     cell: (info) => info.getValue(),
+            // },
             {
                 header: 'Updated By',
                 accessorKey: 'last_updated_by.name',
@@ -171,14 +176,21 @@ const PaginationTable = () => {
 
     return (
         <div>
-            <div className=" flex gap-6 justify-end mb-5">
-                <div className="flex items-end justify-end">
+            <div className=" flex gap-6 justify-between mb-5">
+                <div>
+                    <input
+                        type="search"
+                        value={globalFilter}
+                        placeholder="Search by document No."
+                        className="rounded-lg"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
+                    />
+                </div>
+                <div className="">
                     <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleGRN}>
                         ADD NEW GRN
                     </button>{' '}
                 </div>
-                <br />
-                <br />
             </div>
             <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">

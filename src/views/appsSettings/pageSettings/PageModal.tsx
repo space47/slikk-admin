@@ -186,6 +186,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         formData.append('file_type', 'banners')
 
         try {
+            notification.info({
+                message: 'Image Upload in process',
+            })
             const response = await axioisInstance.post('fileupload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
