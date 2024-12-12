@@ -70,14 +70,47 @@ interface MarkerComponentProps {
     markers: any[]
     currLat?: any
     currLong?: any
+    distanceAboveThirty: any
+    distanceBetweenFifteenToThirty: any
+    distanceBelowTen: any
+    distanceBelowTentoFifteen: any
 }
 
-const MarkerComponent = ({ markers, currLat, currLong }: MarkerComponentProps) => {
+const MarkerComponent = ({
+    markers,
+    currLat,
+    currLong,
+    distanceAboveThirty,
+    distanceBetweenFifteenToThirty,
+    distanceBelowTen,
+    distanceBelowTentoFifteen,
+}: MarkerComponentProps) => {
     const map = useMap()
 
     useEffect(() => {
-        map.setView([currLat, currLong], 13)
-    }, [currLat, currLong, map])
+        let currPos = 13
+
+        const countAboveThirty = distanceAboveThirty
+        const countBetweenFifteenToThirty = distanceBetweenFifteenToThirty
+        const countBelowTen = distanceBelowTen
+        const countBelowTentoFifteen = distanceBelowTentoFifteen
+
+        const maxCount = Math.max(countAboveThirty, countBetweenFifteenToThirty, countBelowTen, countBelowTentoFifteen)
+
+        console.log('Count', maxCount)
+
+        if (maxCount === countAboveThirty) {
+            currPos = 5
+        } else if (maxCount === countBetweenFifteenToThirty) {
+            currPos = 8
+        } else if (maxCount === countBelowTen) {
+            currPos = 12
+        } else if (maxCount === countBelowTentoFifteen) {
+            currPos = 10
+        }
+
+        map.setView([currLat, currLong], currPos)
+    }, [currLat, currLong, map, distanceAboveThirty, distanceBetweenFifteenToThirty, distanceBelowTen, distanceBelowTentoFifteen])
 
     return (
         <div>
@@ -228,9 +261,17 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                 )}
             </div>
             <div className="flex flex-col gap-10 xl:flex-row">
-                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100vh', width: '100%' }}>
+                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '70vh', width: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />
+                    <MarkerComponent
+                        currLat={currLat}
+                        currLong={currLong}
+                        markers={markers}
+                        distanceAboveThirty={distanceAboveThirty?.length}
+                        distanceBetweenFifteenToThirty={distanceBelowFifteenToThirty?.length}
+                        distanceBelowTen={distanceBelowTen?.length}
+                        distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
+                    />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[250px]">
                     {Belowdatas.map((item, key) => (
