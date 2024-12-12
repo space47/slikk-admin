@@ -80,7 +80,7 @@ const Products = () => {
     const [filterInput, setFilterInput] = useState('')
     const [searchType, setSearchType] = useState<string>('')
     const [showImageModal, setShowImageModal] = useState(false)
-    const [particularRowImage, setParticularROwImage] = useState<string[]>([])
+    const [particularRowImage, setParticularROwImage] = useState<any[]>([])
     const [showActionButtons, setShowActionButtons] = useState(false)
     const [divisionList, setDivisionList] = useState<string[]>([])
     const [categoryList, setCategoryList] = useState([])
