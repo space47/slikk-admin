@@ -8,6 +8,8 @@ import { MdCloseFullscreen, MdOutlineFullscreen } from 'react-icons/md'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import FullTripMap from './FullTripMap'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import polyline from '@mapbox/polyline'
 
 interface LogisticsMapProps {
     logistic_tasks?: LogisticTask[]
@@ -90,26 +92,72 @@ const FullMapButton = ({ trip_id }: LogisticsMapProps) => {
 const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
     const [logData, setLogData] = useState<LogisticTask[]>([])
     const [fullTripMap, setFullTripMap] = useState(false)
+    const [polyLine, setPolyLine] = useState('')
+    const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
+    const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
+
+    const decodedPolyline = polyline.decode(polyLine)
+
+    console.log('object', decodedPolyline)
+
+    console.log('sourceLat', sourceLatLong)
+    console.log('destLat', destinationLatLong)
 
     const fetchMainData = async () => {
         try {
             const response = await axiosInstance.get(`/logistic/slikk/trip?trip_id=${trip_id}`)
             const data = response.data?.data.logistic_tasks || []
             setLogData(data)
+
+            if (data.length > 0) {
+                const firstTask = data[0]
+                setSourceLatLong([firstTask.pickup_details?.latitude || 0, firstTask.pickup_details?.longitude || 0])
+                setDestinationLatLong([firstTask.drop_details?.latitude || 0, firstTask.drop_details?.longitude || 0])
+            }
         } catch (error) {
             console.error('Error fetching data:', error)
         }
     }
 
+    const fetchRouteDetails = async () => {
+        const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
+
+        try {
+            const response = await axios.post(`https://api.olamaps.io/routing/v1/directions/basic`, null, {
+                params: {
+                    origin: sourceLatLong.join(','),
+                    destination: destinationLatLong.join(','),
+                    alternatives: false,
+                    steps: true,
+                    overview: 'full',
+                    language: 'en',
+                    api_key: MAP_KEY,
+                },
+            })
+
+            const data = response.data
+            setPolyLine(data.routes[0]?.overview_polyline)
+        } catch (error) {
+            console.error('Error fetching route details:', error)
+            return null
+        }
+    }
+
     useEffect(() => {
         fetchMainData()
-        const intervalId = setInterval(fetchMainData, 60000)
-        return () => clearInterval(intervalId)
     }, [trip_id])
+
+    useEffect(() => {
+        if (sourceLatLong[0] !== 0 && destinationLatLong[0] !== 0) {
+            fetchRouteDetails()
+        }
+    }, [sourceLatLong, destinationLatLong])
 
     if (logData.length === 0) {
         return <p>Loading map...</p>
     }
+
+    console.log('Overview PolyLine', polyLine)
 
     const center: [number, number] = [logData[0].drop_details?.latitude || 0, logData[0].drop_details?.longitude || 0]
 
@@ -119,11 +167,8 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
         runner: task.runner_latitude && task.runner_longitude ? [task.runner_latitude, task.runner_longitude] : null,
     }))
 
-    const waypoints = logData.map((task) => [task.drop_details?.latitude || 0, task.drop_details?.longitude || 0])
-
     return (
         <div className="relative flex flex-col gap-10">
-            {/* Relative wrapper for positioning */}
             <div className="relative w-full" style={{ height: '500px' }}>
                 <MapContainer center={center} zoom={16} style={{ width: '100%', height: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -144,7 +189,7 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
                         </React.Fragment>
                     ))}
 
-                    <Polyline positions={waypoints} color="blue" />
+                    <Polyline positions={decodedPolyline} color="blue" />
                     <CurrentLocationButton setCenter={() => {}} />
 
                     <FullMapButton trip_id={trip_id} />
