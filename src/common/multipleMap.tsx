@@ -65,6 +65,46 @@ const CurrentLocationButton = ({ setCenter, currLat, currLong }: CenterProps) =>
     )
 }
 
+// Marker
+interface MarkerComponentProps {
+    markers: any[]
+    currLat?: any
+    currLong?: any
+}
+
+const MarkerComponent = ({ markers, currLat, currLong }: MarkerComponentProps) => {
+    const map = useMap()
+
+    useEffect(() => {
+        map.setView([currLat, currLong], 13)
+    }, [currLat, currLong, map])
+
+    return (
+        <div>
+            {markers.map((marker, index) => (
+                <Marker key={index} position={[marker.lat, marker.lon]}>
+                    <Popup>
+                        <div>
+                            <p>Amount: Rs.{marker.amount}</p>
+                            <p>Distance: {marker.distance} km</p>
+                        </div>
+                    </Popup>
+                </Marker>
+            ))}
+
+            <Marker position={[currLat, currLong]} icon={officeIcon}>
+                <Popup>
+                    <div>
+                        <p>SlikkSync Technologies</p>
+                    </div>
+                </Popup>
+            </Marker>
+
+            <CurrentLocationButton setCenter={() => {}} currLat={currLat} currLong={currLong} />
+        </div>
+    )
+}
+
 const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount }) => {
     const [currLat, setCurrLat] = useState(12.9014)
     const [currLong, setCurrLong] = useState(77.65122)
@@ -190,26 +230,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
             <div className="flex flex-col gap-10 xl:flex-row">
                 <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100vh', width: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {markers.map((marker, index) => (
-                        <Marker key={index} position={[marker.lat, marker.lon]}>
-                            <Popup>
-                                <div>
-                                    <p>Amount: Rs.{marker.amount}</p>
-                                    <p>Distance: {marker.distance} km</p>
-                                </div>
-                            </Popup>
-                        </Marker>
-                    ))}
-
-                    <Marker position={[currLat, currLong]} icon={officeIcon}>
-                        <Popup>
-                            <div>
-                                <p>SlikkSync Technologies</p>
-                            </div>
-                        </Popup>
-                    </Marker>
-
-                    <CurrentLocationButton setCenter={() => {}} currLat={currLat} currLong={currLong} />
+                    <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[250px]">
                     {Belowdatas.map((item, key) => (
