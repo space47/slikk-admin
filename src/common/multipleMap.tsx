@@ -37,7 +37,7 @@ interface CenterProps {
     currLong: any
 }
 
-const CurrentLocationButton = ({ setCenter, currLat, currLong }: CenterProps) => {
+const CurrentLocationButton = ({ currLat, currLong }: CenterProps) => {
     const map = useMap()
 
     const handleClick = () => {
@@ -46,7 +46,6 @@ const CurrentLocationButton = ({ setCenter, currLat, currLong }: CenterProps) =>
 
     return (
         <button
-            onClick={handleClick}
             style={{
                 position: 'absolute',
                 bottom: '3px',
@@ -59,6 +58,7 @@ const CurrentLocationButton = ({ setCenter, currLat, currLong }: CenterProps) =>
                 cursor: 'pointer',
                 zIndex: 1000,
             }}
+            onClick={handleClick}
         >
             <FaMapMarkerAlt size={24} color="black" />
         </button>
@@ -96,8 +96,6 @@ const MarkerComponent = ({
         const countBelowTentoFifteen = distanceBelowTentoFifteen
 
         const maxCount = Math.max(countAboveThirty, countBetweenFifteenToThirty, countBelowTen, countBelowTentoFifteen)
-
-        console.log('Count', maxCount)
 
         if (maxCount === countAboveThirty) {
             currPos = 5
