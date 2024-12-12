@@ -80,7 +80,7 @@ const Products = () => {
     const [filterInput, setFilterInput] = useState('')
     const [searchType, setSearchType] = useState<string>('')
     const [showImageModal, setShowImageModal] = useState(false)
-    const [particularRowImage, setParticularROwImage] = useState<string[]>([])
+    const [particularRowImage, setParticularROwImage] = useState<any[]>([])
     const [showActionButtons, setShowActionButtons] = useState(false)
     const [divisionList, setDivisionList] = useState<string[]>([])
     const [categoryList, setCategoryList] = useState([])
@@ -149,6 +149,8 @@ const Products = () => {
         }
     }
 
+    console.log('Brand List', brandList)
+
     const handleApply = (values: any) => {
         console.log('value inside  apply', values)
         let query = '&'
@@ -176,7 +178,7 @@ const Products = () => {
             query += `Product_type=${productTypeIds}`
         }
         if (brandList.length > 0) {
-            const brandIds = brandList.map((item: any) => item?.name).join(',')
+            const brandIds = brandList.join(',')
             if (query) query += '&'
             query += `brand=${brandIds}`
         }
