@@ -48,6 +48,8 @@ const AddCoupons = () => {
             'image/JPG',
             'image/WEBP',
             'image/PNG',
+            'image/gif',
+            'image/GIF',
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

@@ -16,6 +16,8 @@ export const beforeUpload = (file: FileList | null, fileList: File[]) => {
         'text/csv',
         'application/vnd.ms-excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/gif',
+        'image/GIF',
     ]
     const MAX_FILE_SIZE = 50000000000000
 
