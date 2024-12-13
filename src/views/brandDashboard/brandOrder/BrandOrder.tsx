@@ -192,6 +192,11 @@ const BrandOrder = () => {
                 accessorKey: 'value.name',
                 cell: (info) => info.getValue(),
             },
+            {
+                header: 'Delivery Type',
+                accessorKey: 'value.delivery_type',
+                cell: (info) => info.getValue(),
+            },
 
             {
                 header: 'Size',
@@ -214,6 +219,11 @@ const BrandOrder = () => {
                 accessorKey: 'value.sp',
                 cell: (info) => info.getValue(),
             },
+            {
+                header: 'Order Date',
+                accessorKey: 'value.order_date',
+                cell: (info) => info.getValue(),
+            },
 
             {
                 header: 'Total Quantity',
@@ -230,7 +240,7 @@ const BrandOrder = () => {
                 accessorKey: 'value.image',
                 cell: ({ getValue, row }) => (
                     <img
-                        src={getValue().split(',')[0]}
+                        src={getValue()?.split(',')[0]}
                         alt="Image"
                         className="w-24 h-20 object-cover cursor-pointer"
                         onClick={() => handleOpenModal(row.original.value.image)}
