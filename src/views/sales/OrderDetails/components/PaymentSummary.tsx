@@ -71,7 +71,7 @@ const PaymentSummary = ({
                 <div>
                     {data?.status === 'PAID' || data?.status === 'POD_PAID' ? (
                         <p className="bg-gray-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg">PAID</p>
-                    ) : data?.status === 'POD_CREATED' && data.mode === 'POD' && status === 'COMPLETED' ? (
+                    ) : (data?.status === 'POD_CREATED' || data?.status === 'FAILED') && data.mode === 'POD' && status === 'COMPLETED' ? (
                         <button
                             className="bg-green-500 px-5 rounded-[22px] flex items-center justify-center text-white text-lg"
                             onClick={handlePODAction}

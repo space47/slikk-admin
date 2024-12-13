@@ -214,11 +214,7 @@ const BrandOrder = () => {
                 accessorKey: 'value.sp',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Total Quantity',
-                accessorKey: 'value.total_quantity',
-                cell: (info) => info.getValue(),
-            },
+
             {
                 header: 'Total Quantity',
                 accessorKey: 'value.total_quantity',

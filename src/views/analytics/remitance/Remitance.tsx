@@ -105,7 +105,7 @@ const Remitance = () => {
             if (companyData) {
                 companyId = `&company_id=${companyData}`
             }
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
                 `/merchant/order_items?download=true&download_type=finance&from=${from}&to=${ToDate}${brandData}${companyId}`,
                 {
@@ -131,7 +131,7 @@ const Remitance = () => {
             if (companyData) {
                 companyId = `&company_id=${companyData}`
             }
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
                 `/merchant/return_order_items?download=true&download_type=finance&from=${from}&to=${ToDate}${brandData}${companyId}`,
                 {

@@ -93,9 +93,9 @@ const AnalyticsReports = () => {
 
     const handleOrderItem = async () => {
         try {
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
-                `/merchant/order_items?download=true&download_type=master&from=${from}&to=${ToDate}${brandData}&company_id=${selectedCompany.id}`,
+                `/merchant/order_items?download=true&download_type=master&from=${from}&to=${ToDate}${brandData}`,
                 {
                     responseType: 'blob',
                 },
@@ -115,9 +115,9 @@ const AnalyticsReports = () => {
 
     const handleReturnOrderItem = async () => {
         try {
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
-                `/merchant/return_order_items?download=true&download_type=master&from=${from}&to=${ToDate}${brandData}&company_id=${selectedCompany.id}`,
+                `/merchant/return_order_items?download=true&download_type=master&from=${from}&to=${ToDate}${brandData}`,
                 {
                     responseType: 'blob',
                 },
