@@ -79,6 +79,18 @@ const ProductType = () => {
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
     const columns = [
+        {
+            header: 'Edit',
+            accessor: 'id',
+            format: (value) => (
+                <button className="border-none bg-none">
+                    <a href={`/app/category/productType/${value}`}>
+                        {' '}
+                        <FaEdit className="text-xl text-blue-600" />
+                    </a>
+                </button>
+            ),
+        },
         { header: 'Name', accessor: 'name' },
         {
             header: 'Create Date',
@@ -125,18 +137,7 @@ const ProductType = () => {
             format: (value: any) => (value ? 'Yes' : 'No'),
         },
         { header: 'Last Updated By', accessor: 'last_updated_by' },
-        {
-            header: 'Edit',
-            accessor: 'id',
-            format: (value) => (
-                <button className="border-none bg-none">
-                    <a href={`/app/category/productType/${value}`}>
-                        {' '}
-                        <FaEdit className="text-xl text-blue-600" />
-                    </a>
-                </button>
-            ),
-        },
+
         {
             header: 'Delete',
             accessor: 'id',

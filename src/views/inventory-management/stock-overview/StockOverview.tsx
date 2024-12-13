@@ -135,6 +135,18 @@ const StockOverview = () => {
     const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
             {
+                header: 'Update Row',
+                accessorKey: 'id',
+                cell: ({ getValue, row }) => (
+                    <button
+                        onClick={() => handleUpdate(row.original.id, row.original.quantity, row.original.location)}
+                        className="px-4 py-2 bg-none text-2xl rounded font-bold text-green-600"
+                    >
+                        <FaSync />
+                    </button>
+                ),
+            },
+            {
                 header: 'SKU',
                 accessorKey: 'product.sku',
                 cell: (info) => info.getValue(),
@@ -167,7 +179,14 @@ const StockOverview = () => {
                 cell: ({ row }) => {
                     const stockId = row.original.id
                     const location = updatedLocation[stockId] ?? row.original.location
-                    return <input type="text" value={location} onChange={(e) => handleLocationChange(stockId, e.target.value)} />
+                    return (
+                        <input
+                            type="text"
+                            className="rounded-xl"
+                            value={location}
+                            onChange={(e) => handleLocationChange(stockId, e.target.value)}
+                        />
+                    )
                 },
             },
             {
@@ -194,7 +213,7 @@ const StockOverview = () => {
                     const quantity = updatedQuantities[stockId] ?? row.original.quantity
                     return (
                         <input
-                            className="w-[100px]"
+                            className="w-[100px] rounded-xl"
                             type="number"
                             value={quantity}
                             onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
@@ -253,18 +272,6 @@ const StockOverview = () => {
                 header: 'Updated By',
                 accessorKey: 'last_updated_by.name',
                 cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Update Row',
-                accessorKey: 'id',
-                cell: ({ getValue, row }) => (
-                    <button
-                        onClick={() => handleUpdate(row.original.id, row.original.quantity, row.original.location)}
-                        className="px-4 py-2 bg-none text-2xl rounded font-bold text-green-600"
-                    >
-                        <FaSync />
-                    </button>
-                ),
             },
         ],
         [updatedQuantities, updatedLocation],

@@ -48,10 +48,6 @@ const CustomerAnalytics = () => {
             name: 'Gender',
             value: customerData?.profile?.gender || 'N/A',
         },
-        {
-            name: 'Device ID',
-            value: customerData?.profile?.device_id || 'N/A',
-        },
     ]
 
     const handleBlockUser = async () => {

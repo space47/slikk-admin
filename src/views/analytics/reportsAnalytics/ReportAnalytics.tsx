@@ -15,6 +15,7 @@ import AccessDenied from '@/views/pages/AccessDenied'
 import InnternalError from '@/views/pages/InternalServerError/InternalError'
 import ReportFields from './ReportFields'
 import moment from 'moment'
+import BadRequest from '@/views/pages/BadRequest/BadRequest'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -44,6 +45,7 @@ const ReportAnalytics = () => {
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
     const [selectedOption, setSelectedOption] = useState('line')
     const [accessDenied, setAccessDenied] = useState(false)
+    const [badRequest, setBadRequest] = useState(false)
     const [serverError, setServerError] = useState(false)
     const [reportValue, setReportValue] = useState()
     const fetchReportApi = async () => {
@@ -197,6 +199,8 @@ const ReportAnalytics = () => {
                 setAccessDenied(true)
             } else if (error.response && error.response.status === 500) {
                 setServerError(true)
+            } else if (error.response && error.response.status === 400) {
+                setBadRequest(true)
             }
             console.log(error)
         } finally {
@@ -257,6 +261,8 @@ const ReportAnalytics = () => {
         return <InnternalError />
     }
 
+    console.log('Bad', badRequest)
+
     return (
         <div>
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
@@ -296,6 +302,14 @@ const ReportAnalytics = () => {
                 )}
             </Formik>
             <br />
+
+            {badRequest && (
+                <>
+                    <div className="flex justify-center text-red-700 font-bold text-xl">
+                        You have Passed wrong value or the data do not exist
+                    </div>
+                </>
+            )}
 
             {showSpinner ? (
                 <div className="flex justify-center items-center h-auto">

@@ -1,61 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Button } from '@/components/ui'
-
-interface Product {
-    barcode: string
-    mrp: string
-    sp: string
-    name: string
-    brand: string
-    product_feedback: string | null
-    is_wish_listed: boolean
-    is_try_and_buy: boolean
-    trends: any | null
-    styles: any | null
-    inventory_count: number
-    image: string
-    division: string
-    category: string
-    sub_category: string
-    product_type: string
-    variants: any[]
-}
-
-interface Post {
-    id: number
-    url: string
-    products: Product[]
-    post_id: string
-    caption: string
-    type: string
-    latitude: string
-    longitude: string
-    likes_count: number
-    comments_count: number
-    clicks_count: number
-    unique_clicks_count: number
-    views_count: number
-    thumbnail_url: string
-    low_res_url: string
-    video_url: string
-    video_low_bandwidth_url: string
-    video_low_res_url: string
-    is_active: boolean
-    create_date: string
-    update_date: string
-    approval_status: string
-    owner: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
+import { Post } from './uploadPostCommon'
+import EasyTable from '@/common/EasyTable'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
@@ -71,6 +24,7 @@ const UploadPost = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
+    const [showSpinner, setShowSpinner] = useState(false)
 
     const handlePostClick = (id: number, post_id: string) => {
         navigate(`/app/postApproval/approved/${id}?post_id=${post_id}`)
@@ -78,6 +32,7 @@ const UploadPost = () => {
 
     const fetchData = async (page = 1, pageSize = 10, filter: string = '') => {
         try {
+            setShowSpinner(true)
             const response = await axiosInstance.get(`userposts/approval?status=APPROVED&p=${page}&page_size=${pageSize}&name=${filter}`)
             const data = response.data.data.results
             const total = response.data.data.count
@@ -85,6 +40,8 @@ const UploadPost = () => {
             setTotalData(total)
         } catch (error) {
             console.error(error)
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -180,25 +137,6 @@ const UploadPost = () => {
         [],
     )
 
-    const table = useReactTable({
-        data: tableData,
-        columns,
-        state: {
-            globalFilter,
-            pagination: {
-                pageIndex: page - 1,
-                pageSize,
-            },
-        },
-        onGlobalFilterChange: setGlobalFilter,
-        globalFilterFn: 'includesString',
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: true,
-        pageCount: Math.ceil(totalData / pageSize),
-    })
-
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
@@ -209,6 +147,10 @@ const UploadPost = () => {
 
     const handleCreatePost = () => {
         navigate(`/app/uploadPost/createPost`)
+    }
+
+    if (showSpinner) {
+        return <LoadingSpinner />
     }
 
     return (
@@ -231,35 +173,7 @@ const UploadPost = () => {
                 </div>
             </div>
 
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={tableData} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                 <div style={{ minWidth: 130 }}>

@@ -66,6 +66,24 @@ const ReverseTrip = () => {
     const columns = useMemo(
         () => [
             {
+                header: 'Assign Trip',
+                accessorKey: 'trip_id',
+                cell: ({ getValue, row }) => (
+                    <button onClick={() => handleAssignClick(getValue())} className="bg-none border-none">
+                        <MdAssignment className="text-3xl text-yellow-500" />
+                    </button>
+                ),
+            },
+            {
+                header: 'Update Trip',
+                accessorKey: 'trip_id',
+                cell: ({ getValue, row }) => (
+                    <button onClick={() => handleUpdateClick(getValue())} className="bg-none border-none">
+                        <MdUpdate className="text-3xl text-green-500" />
+                    </button>
+                ),
+            },
+            {
                 header: 'Trip Id',
                 accessorKey: 'trip_id',
                 cell: ({ getValue, row }) => {
@@ -92,24 +110,6 @@ const ReverseTrip = () => {
                 header: 'Last Update',
                 accessorKey: 'update_date',
                 cell: ({ getValue }: any) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-            {
-                header: 'Assign Trip',
-                accessorKey: 'trip_id',
-                cell: ({ getValue, row }) => (
-                    <button onClick={() => handleAssignClick(getValue())} className="bg-none border-none">
-                        <MdAssignment className="text-3xl text-yellow-500" />
-                    </button>
-                ),
-            },
-            {
-                header: 'Update Trip',
-                accessorKey: 'trip_id',
-                cell: ({ getValue, row }) => (
-                    <button onClick={() => handleUpdateClick(getValue())} className="bg-none border-none">
-                        <MdUpdate className="text-3xl text-green-500" />
-                    </button>
-                ),
             },
         ],
         [],
