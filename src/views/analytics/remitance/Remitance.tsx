@@ -264,11 +264,6 @@ const Remitance = () => {
                                         setCompanyData(newVal?.id)
                                     }}
                                 />
-                                {/* <div>
-                                    <button onClick={handleRemoveCompanyId} className="bg-none border-none">
-                                        <div className="text-red-600">Clear</div>
-                                    </button>
-                                </div> */}
                             </div>
                         </div>
                     </div>
@@ -288,7 +283,7 @@ const Remitance = () => {
                         </div>
                         <div className="mb-3 flex gap-2">
                             {' '}
-                            <span className="font-bold">TOTAL AMOUNT:</span> {fullRemitanceRespone?.total_amount}{' '}
+                            <span className="font-bold">TOTAL AMOUNT:</span> {fullRemitanceRespone?.total_amount.toFixed(2)}{' '}
                         </div>
                         <Table className="min-w-full">
                             <THead>

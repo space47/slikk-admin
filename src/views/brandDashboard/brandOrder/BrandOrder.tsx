@@ -440,7 +440,7 @@ const BrandOrder = () => {
             {noDateData ? (
                 <div className="flex flex-col justify-center items-center h-auto">
                     <div className="font-bold text-xl">No Data To Preview</div>
-                    <p>Try changig the date</p>
+                    <p>Try changing the date</p>
                 </div>
             ) : (
                 <div className="mb-10 flex flex-col lg:flex-row gap-10 justify-center">
