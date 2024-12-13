@@ -1,57 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AdaptableCard from '@/components/shared/AdaptableCard'
-import Table from '@/components/ui/Table'
-import {
-    useReactTable,
-    getCoreRowModel,
-    flexRender,
-    createColumnHelper,
-} from '@tanstack/react-table'
+import { createColumnHelper } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
-
-const { Tr, Th, Td, THead, TBody } = Table
+import EasyTable from '@/common/EasyTable'
+import ReturnCancelOrder from './ReturnCancelOrder'
+import { useState } from 'react'
+import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useNavigate } from 'react-router-dom'
 
 const columnHelper = createColumnHelper<any>()
 
 const ProductColumn = ({ row }: { row: any }) => {
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
-            <img
-                src={row.product.image.split(',')[0]}
-                className=" xl:mt-3 w-[100px] h-[120px]"
-            />
+            <img src={row.product.image.split(',')[0]} className=" xl:mt-3 w-[100px] h-[120px]" />
             <div className="ltr:ml-2 rtl:mr-2">
                 <div className="mb-2 text-[18px] font-bold ">
                     Brand Name:
-                    <h4 className="font-light text-[16px] flex-wrap">
-                        {row.product.brand}
-                    </h4>
+                    <h4 className="font-light text-[16px] flex-wrap">{row.product.brand}</h4>
                 </div>
                 <div className="mb-2 text-[18px] font-bold ">
                     Product Name:
-                    <h4 className="font-light text-[16px] flex-wrap">
-                        {row.product.name}
-                    </h4>
+                    <h4 className="font-light text-[16px] flex-wrap">{row.product.name}</h4>
                 </div>
-                <h4 className="font-light text-[14px]">
-                    SKU: {row.product.sku}
-                </h4>
+                <h4 className="font-light text-[14px]">SKU: {row.product.sku}</h4>
             </div>
         </div>
     )
 }
 
 const PriceAmount = ({ amount }: { amount: number }) => {
-    return (
-        <NumericFormat
-            displayType="text"
-            value={(Math.round(amount * 100) / 100).toFixed(2)}
-            prefix={'Rs.'}
-            thousandSeparator={true}
-        />
-    )
+    return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
 const columns = [
@@ -82,50 +64,65 @@ const columns = [
 ]
 
 const ReturnProductsDetails = () => {
-    const returnOrder = useAppSelector<ReturnOrderState>(
-        (state) => state.returnOrders,
-    )
-    const returnProducts =
-        returnOrder?.returnOrders?.return_order_items.map((item) => item) || []
+    const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
+    const [showCancelModal, setShowCancelModal] = useState(false)
+    const returnOrderId = returnOrder?.returnOrders?.return_order_id
+    const returnProducts = returnOrder?.returnOrders?.return_order_items.map((item) => item) || []
+    const navigate = useNavigate()
 
-    const table = useReactTable({
-        data: returnProducts,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-    })
+    const handleCancelOrder = () => {
+        setShowCancelModal(true)
+    }
+    const handleCloseModal = () => {
+        setShowCancelModal(false)
+    }
+
+    const handleCancelReturn = async () => {
+        const body = {
+            action: 'cancel_return_order',
+        }
+        try {
+            const response = await axioisInstance.patch(`/merchant/return_order/${returnOrderId}`, body)
+            notification.success({
+                message: response?.data?.data?.message || 'Successfully Cancelled',
+            })
+            navigate(0)
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failed to cancel Return Order',
+            })
+        } finally {
+            setShowCancelModal(false)
+        }
+    }
 
     return (
-        <AdaptableCard className="mb-4">
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+        <AdaptableCard className="mb-4 py-3">
+            <EasyTable noPage overflow mainData={returnProducts} columns={columns} />
+
+            {returnProducts?.length > 0 ? (
+                <div className="flex justify-end mr-7 ">
+                    <button
+                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                        onClick={handleCancelOrder}
+                    >
+                        CANCEL
+                    </button>
+                </div>
+            ) : (
+                ''
+            )}
+
+            {showCancelModal && (
+                <>
+                    <ReturnCancelOrder
+                        showCancelModal={showCancelModal}
+                        handleCancelReturn={handleCancelReturn}
+                        handleCloseModal={handleCloseModal}
+                    />
+                </>
+            )}
         </AdaptableCard>
     )
 }

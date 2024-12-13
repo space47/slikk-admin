@@ -70,6 +70,27 @@ const Brand = () => {
     const columns = useMemo<ColumnDef<Brand & Action>[]>(
         () => [
             {
+                header: 'Edit',
+                accessorKey: 'id',
+                cell: ({ row }) => (
+                    <Button className="bg-none border-none">
+                        <a href={`/app/category/brand/${row.original.id}`}>
+                            {' '}
+                            <FaEdit className="text-xl text-blue-600" />
+                        </a>
+                    </Button>
+                ),
+            },
+            {
+                header: 'Sync',
+                accessorKey: 'name',
+                cell: ({ row }) => (
+                    <Button className="bg-none border-none" onClick={() => handleSyncBrand(row?.original?.name)}>
+                        <FaSync className="text-yellow-500 text-xl" />
+                    </Button>
+                ),
+            },
+            {
                 header: 'Name',
                 accessorKey: 'name',
                 cell: (info) => info.getValue(),
@@ -148,27 +169,6 @@ const Brand = () => {
                 header: 'Last Updated By',
                 accessorKey: 'last_updated_by',
                 cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Edit',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <Button className="bg-none border-none">
-                        <a href={`/app/category/brand/${row.original.id}`}>
-                            {' '}
-                            <FaEdit className="text-xl text-blue-600" />
-                        </a>
-                    </Button>
-                ),
-            },
-            {
-                header: 'Sync',
-                accessorKey: 'name',
-                cell: ({ row }) => (
-                    <Button className="bg-none border-none" onClick={() => handleSyncBrand(row?.original?.name)}>
-                        <FaSync className="text-yellow-500 text-xl" />
-                    </Button>
-                ),
             },
         ],
         [],

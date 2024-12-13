@@ -66,6 +66,15 @@ const Stores = () => {
     const columns = useMemo<ColumnDef<STORETABLE>[]>(
         () => [
             {
+                header: 'Edit',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
+                        <FaEdit className="text-xl text-blue-600" />
+                    </button>
+                ),
+            },
+            {
                 header: 'Name',
                 accessorKey: 'name',
                 cell: (info) => info.getValue(),
@@ -202,16 +211,6 @@ const Stores = () => {
                     <a href={info.getValue() as string} target="_blank" rel="noopener noreferrer">
                         Location
                     </a>
-                ),
-            },
-
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
-                        <FaEdit className="text-xl text-blue-600" />
-                    </button>
                 ),
             },
         ],

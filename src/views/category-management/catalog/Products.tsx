@@ -149,8 +149,6 @@ const Products = () => {
         }
     }
 
-    console.log('Brand List', brandList)
-
     const handleApply = (values: any) => {
         console.log('value inside  apply', values)
         let query = '&'
@@ -200,6 +198,18 @@ const Products = () => {
 
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
+            {
+                header: 'Edit',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button className="border-none bg-none">
+                        <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
+                            {' '}
+                            <FaEdit className="text-xl text-blue-600" />
+                        </a>
+                    </button>
+                ),
+            },
             {
                 header: 'SKU',
                 accessorKey: 'sku',
@@ -285,18 +295,6 @@ const Products = () => {
                 header: 'SIZE',
                 accessorKey: 'size',
                 cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button className="border-none bg-none">
-                        <a href={`/app/catalog/products/${row.original.barcode}`} target="_blank" rel="noreferrer">
-                            {' '}
-                            <FaEdit className="text-xl text-blue-600" />
-                        </a>
-                    </button>
-                ),
             },
         ],
         [],
