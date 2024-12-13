@@ -62,6 +62,18 @@ const PaginationTable = () => {
     const columns = useMemo<ColumnDef<TableData>[]>(
         () => [
             {
+                header: 'Edit',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button className="border-none bg-none">
+                        <a href={`/app/goods/received/edit/${row.original.grn_number}`} target="_blank" rel="noreferrer">
+                            {' '}
+                            <FaEdit className="text-xl text-blue-500" />
+                        </a>
+                    </button>
+                ),
+            },
+            {
                 header: 'GRN Number',
                 accessorKey: 'grn_number',
                 cell: ({ row }) => (
@@ -139,18 +151,6 @@ const PaginationTable = () => {
                 header: 'Updated On',
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
-            },
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button className="border-none bg-none">
-                        <a href={`/app/goods/received/edit/${row.original.grn_number}`} target="_blank" rel="noreferrer">
-                            {' '}
-                            <FaEdit className="text-xl text-blue-500" />
-                        </a>
-                    </button>
-                ),
             },
         ],
         [],

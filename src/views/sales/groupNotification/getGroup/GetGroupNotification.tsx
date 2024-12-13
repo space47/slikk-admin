@@ -33,6 +33,15 @@ const GetGroupNotification = () => {
     const columns = useMemo(
         () => [
             {
+                header: 'Edit',
+                accessorKey: 'id',
+                cell: ({ getValue }: any) => (
+                    <button onClick={() => handleEditClick(getValue())}>
+                        <FaEdit className="text-blue-500 text-xl" />
+                    </button>
+                ),
+            },
+            {
                 header: 'Group',
                 accessorKey: 'group',
                 cell: ({ getValue }: any) => {
@@ -176,15 +185,6 @@ const GetGroupNotification = () => {
                 header: 'Create Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-            {
-                header: 'Edit',
-                accessorKey: 'id',
-                cell: ({ getValue }: any) => (
-                    <button onClick={() => handleEditClick(getValue())}>
-                        <FaEdit className="text-blue-500 text-xl" />
-                    </button>
-                ),
             },
         ],
         [],

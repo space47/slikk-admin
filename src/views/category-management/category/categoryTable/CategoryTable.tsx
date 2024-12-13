@@ -47,6 +47,18 @@ const CategoryTable = () => {
     const columns = useMemo<ColumnDef<categoryItem>[]>(
         () => [
             {
+                header: 'Edit',
+                accessorKey: 'id',
+                cell: ({ row }) => (
+                    <Button className="bg-none border-none">
+                        <a href={`/app/category/category/${row.original.id}`}>
+                            {' '}
+                            <FaEdit className="text-xl text-blue-600" />
+                        </a>
+                    </Button>
+                ),
+            },
+            {
                 header: 'Name',
                 accessorKey: 'name',
                 cell: (info) => info.getValue(),
@@ -130,18 +142,7 @@ const CategoryTable = () => {
                 accessorKey: 'last_updated_by',
                 cell: (info) => info.getValue(),
             },
-            {
-                header: 'Edit',
-                accessorKey: 'id',
-                cell: ({ row }) => (
-                    <Button className="bg-none border-none">
-                        <a href={`/app/category/category/${row.original.id}`}>
-                            {' '}
-                            <FaEdit className="text-xl text-blue-600" />
-                        </a>
-                    </Button>
-                ),
-            },
+
             {
                 header: 'Delete',
                 accessorKey: 'id',

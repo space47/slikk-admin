@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import { WebType } from './PageSettingsCommon'
 import PageDraggavleTable from './PageDraggavleTable'
 import PreviousConfiguration from './PreviousConfiguration'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 const PageSettings = () => {
     const [data, setData] = useState<WebType[]>([])
@@ -30,9 +31,11 @@ const PageSettings = () => {
     const [previousConfigs, setPreviousConfigs] = useState<any[]>([])
     const [currentConfig, setCurentConfigs] = useState<any[]>([])
     const [isPreviousConfig, setIsPreviousConfig] = useState(false)
+    const [showSpinner, setShowSpinner] = useState(false)
 
     const fetchData = async () => {
         try {
+            setShowSpinner(true)
             const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage.value}`)
             const responsedata = response.data?.data?.value?.Web || {}
             setData(Object.values(responsedata))
@@ -41,6 +44,8 @@ const PageSettings = () => {
         } catch (error) {
             console.error('Error fetching data:', error)
             setData([])
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -174,9 +179,9 @@ const PageSettings = () => {
                 accessorKey: 'background_config.mobile_background_image',
                 cell: (info) => <img src={info.getValue() as string} alt="" className="object-contain bg-black" />,
             },
-            { header: 'Header Text', accessorKey: 'header_config.text' },
-            { header: 'Footer Text', accessorKey: 'footer_config.text' },
-            { header: 'Sub Header Text', accessorKey: 'sub_header_config.text' },
+            // { header: 'Header Text', accessorKey: 'header_config.text' },
+            // { header: 'Footer Text', accessorKey: 'footer_config.text' },
+            // { header: 'Sub Header Text', accessorKey: 'sub_header_config.text' },
             { header: 'Data Type', accessorKey: 'data_type.type' },
             {
                 header: 'Section',
@@ -227,6 +232,10 @@ const PageSettings = () => {
     const handleSelectPage = (value: string) => {
         const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
+    }
+
+    if (showSpinner) {
+        return <LoadingSpinner />
     }
 
     return (

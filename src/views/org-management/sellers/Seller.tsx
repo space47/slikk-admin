@@ -44,6 +44,15 @@ const Seller = () => {
     const columns = useMemo<ColumnDef<Product>[]>(
         () => [
             {
+                header: 'Edit',
+                accessorKey: '',
+                cell: ({ row }) => (
+                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
+                        <FaEdit className="text-xl text-blue-600" />
+                    </button>
+                ),
+            },
+            {
                 header: 'ID',
                 accessorKey: 'id',
                 cell: (info) => info.getValue(),
@@ -118,16 +127,6 @@ const Seller = () => {
                 header: 'Update Date',
                 accessorKey: 'update_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
-            },
-
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button onClick={() => handleActionClick(row.original.id)} className="border-none bg-none">
-                        <FaEdit className="text-xl text-blue-600" />
-                    </button>
-                ),
             },
         ],
         [],
