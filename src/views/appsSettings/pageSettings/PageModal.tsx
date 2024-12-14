@@ -376,12 +376,22 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             setInitalValue((prev: any) => ({
                 ...prev,
                 background_image: null,
+                background_config: {
+                    ...prev.component_config,
+                    background_image: null,
+                },
             }))
         } else if (val === 'mobile_background_image') {
+            console.log('Remive mobile Bg')
             setInitalValue((prev: any) => ({
                 ...prev,
                 mobile_background_image: null,
+                background_config: {
+                    ...prev.component_config,
+                    mobile_background_image: null,
+                },
             }))
+            console.log('Remive mobile Bg done')
         }
     }
     const handleRemoveVideo = (val: string) => {
