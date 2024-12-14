@@ -377,7 +377,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 ...prev,
                 background_image: null,
                 background_config: {
-                    ...prev.component_config,
+                    ...prev.background_config,
                     background_image: null,
                 },
             }))
@@ -387,7 +387,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 ...prev,
                 mobile_background_image: null,
                 background_config: {
-                    ...prev.component_config,
+                    ...prev.background_config,
                     mobile_background_image: null,
                 },
             }))
