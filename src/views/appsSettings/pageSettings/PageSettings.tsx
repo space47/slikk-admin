@@ -287,6 +287,10 @@ const PageSettings = () => {
                             return notification.error({
                                 message: 'Section Heading Required',
                             })
+                        } else if (!formikRef.current?.values.component_type) {
+                            return notification.error({
+                                message: 'Component Config is Required',
+                            })
                         }
                         formikRef.current?.submitForm()
                         setYesModal(false)
@@ -309,6 +313,10 @@ const PageSettings = () => {
                         if (!formikRef.current?.values.section_heading) {
                             return notification.error({
                                 message: 'Section Heading Required',
+                            })
+                        } else if (!formikRef.current?.values.component_type) {
+                            return notification.error({
+                                message: 'Component Config is Required',
                             })
                         }
                         formikRef.current?.submitForm()
