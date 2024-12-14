@@ -19,11 +19,11 @@ export const HEADERCONFIGARRAY = [
         name: 'header_config.web_font_size',
         type: 'text',
     },
-    // {
-    //     label: 'Header Position',
-    //     name: 'header_config.position',
-    //     type: 'text',
-    // },
+    {
+        label: 'Header Top Margin',
+        name: 'header_config.bottomMargin',
+        type: 'number',
+    },
     {
         label: 'Header BG Color',
         name: 'header_config.background_color',
@@ -57,11 +57,16 @@ export const SUBHEADERCONFIGARRAY = [
         name: 'sub_header_config.web_font_size',
         type: 'text',
     },
-    // {
-    //     label: 'Sub-Header Position',
-    //     name: 'sub_header_config.position',
-    //     type: 'text',
-    // },
+    {
+        label: 'Sub Header Top Margin',
+        name: 'sub_header_config.topMargin',
+        type: 'number',
+    },
+    {
+        label: 'Sub Header bottom Margin',
+        name: 'sub_header_config.bottomMargin',
+        type: 'number',
+    },
     {
         label: 'Sub-Header BG Color',
         name: 'sub_header_config.background_color',
@@ -95,11 +100,11 @@ export const FOOTERCONFIGARRAY = [
         name: 'footer_config.web_font_size',
         type: 'text',
     },
-    // {
-    //     label: 'Footer Position',
-    //     name: 'footer_config.position',
-    //     type: 'text',
-    // },
+    {
+        label: 'Footer Top Margin',
+        name: 'footer_config.topMargin',
+        type: 'number',
+    },
     {
         label: 'Footer BG Color',
         name: 'footer_config.background_color',

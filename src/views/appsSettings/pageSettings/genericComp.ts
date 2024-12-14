@@ -94,6 +94,66 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter Section Corner Radius',
     },
+    //
+
+    {
+        label: 'Section Top Margin',
+        name: 'component_config.section_topMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Top Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Bottom Margin',
+        name: 'component_config.section_bottomMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Bottom Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Left Margin',
+        name: 'component_config.section_leftMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Left Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Right Margin',
+        name: 'component_config.section_rightMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Right Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Top Padding',
+        name: 'component_config.section_topPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Top Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Bottom Padding',
+        name: 'component_config.section_bottomPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Bottom Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Left Padding',
+        name: 'component_config.section_leftPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Left Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Section Right Padding',
+        name: 'component_config.section_rightPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Right Padding (e.g., 0.5, 1, etc.)',
+    },
+
+    //
     {
         label: 'Gap',
         name: 'component_config.gap',
@@ -243,6 +303,67 @@ export const genericComponentArray = [
         component: { Input },
         placeholder: 'Enter Web Section Corner Radius',
     },
+
+    //
+
+    {
+        label: 'Web Section Top Margin',
+        name: 'component_config.web_section_topMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Top Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Bottom Margin',
+        name: 'component_config.web_section_bottomMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Bottom Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Left Margin',
+        name: 'component_config.web_section_leftMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Left Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Right Margin',
+        name: 'component_config.web_section_rightMargin',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Right Margin (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Top Padding',
+        name: 'component_config.web_section_topPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Top Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Bottom Padding',
+        name: 'component_config.web_section_bottomPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Bottom Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Left Padding',
+        name: 'component_config.web_section_leftPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Left Padding (e.g., 0.5, 1, etc.)',
+    },
+    {
+        label: 'Web Section Right Padding',
+        name: 'component_config.web_section_rightPadding',
+        type: 'number',
+        component: { Input },
+        placeholder: 'Enter Web Section Right Padding (e.g., 0.5, 1, etc.)',
+    },
+
+    //
     {
         label: 'Web Gap',
         name: 'component_config.web_gap',
@@ -505,5 +626,34 @@ export const MobileAndDesktopPositions = [
     {
         label: 'Bottom',
         value: 'bottom',
+    },
+]
+
+export const NameFieldArray = [
+    {
+        label: 'Name Top Margin',
+        type: 'number',
+        name: 'component_config.name_topMargin',
+        placeholder: 'Place name top margin',
+    },
+    {
+        label: 'Name Bottom Margin',
+        type: 'number',
+        name: 'component_config.name_bottomMargin',
+        placeholder: 'Place name bottom margin',
+    },
+]
+export const WebNameFieldArray = [
+    {
+        label: 'Web Name Top Margin',
+        type: 'number',
+        name: 'component_config.web_name_topMargin',
+        placeholder: 'Place Web name top margin',
+    },
+    {
+        label: 'Web Name Bottom Margin',
+        type: 'number',
+        name: 'component_config.web_name_bottomMargin',
+        placeholder: 'Place Web name bottom margin',
     },
 ]
