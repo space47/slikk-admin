@@ -234,6 +234,8 @@ const PageSettings = () => {
         if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
 
+    console.log('Check Closing off Add modal', addModal)
+
     if (showSpinner) {
         return <LoadingSpinner />
     }
@@ -281,6 +283,11 @@ const PageSettings = () => {
                     setIsModalOpen={setYesModal}
                     handleCancel={() => setYesModal(false)}
                     handleOk={() => {
+                        if (!formikRef.current?.values.section_heading) {
+                            return notification.error({
+                                message: 'Section Heading Required',
+                            })
+                        }
                         formikRef.current?.submitForm()
                         setYesModal(false)
                     }}
@@ -299,6 +306,11 @@ const PageSettings = () => {
                     setIsModalOpen={setAddModal}
                     handleCancel={() => setAddModal(false)}
                     handleOk={() => {
+                        if (!formikRef.current?.values.section_heading) {
+                            return notification.error({
+                                message: 'Section Heading Required',
+                            })
+                        }
                         formikRef.current?.submitForm()
                         setAddModal(false)
                     }}

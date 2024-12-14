@@ -8,6 +8,7 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable, WebType } from './pageSettings.types'
 // import { handleVideo } from '@/common/handleVideo'
+import * as Yup from 'yup'
 
 type modalProps = {
     isModalOpen: boolean
@@ -51,6 +52,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
     const initialValue = {}
     const [selectedType, setSelectedType] = useState('')
+
+    const validationSchema = Yup.object().shape({
+        section_heading: Yup.string().required('Section Header is required'),
+    })
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -343,6 +348,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         <>
             <Modal title="ADD PAGE SECTION" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={1500} okText="ADD">
                 <CommonMainPageSettings
+                    validationSchema={validationSchema}
                     setComponentOptions={setComponentOptions}
                     initialValue={initialValue}
                     formikRef={formikRef}

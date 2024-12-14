@@ -53,7 +53,11 @@ const AnalyticsReports = () => {
 
     useEffect(() => {
         fetchRemitance()
-    }, [from, to, brandValue])
+    }, [brandValue])
+
+    const handleDateSubmit = () => {
+        fetchRemitance()
+    }
 
     const handleFromChange = (date: Date | null) => {
         if (date) {
@@ -188,6 +192,9 @@ const AnalyticsReports = () => {
                                 className="w-56 rounded-md border-gray-300 focus:border-blue-500"
                             />
                         </div>
+                        <Button variant="new" className="h-1/2 xl:mt-7" onClick={handleDateSubmit}>
+                            Submit
+                        </Button>
                     </div>
 
                     {/*  */}

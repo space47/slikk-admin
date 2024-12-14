@@ -8,6 +8,7 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable } from './pageSettings.types'
+import * as Yup from 'yup'
 
 type modalProps = {
     isModalOpen: boolean
@@ -82,6 +83,11 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         extra_info: particularRow.extra_info,
         web_section_border: particularRow?.web_section_border,
     })
+    const validationSchema = Yup.object().shape({
+        section_heading: Yup.string().required('Section Header is required'),
+    })
+
+    console.log('Is video true', initialValue?.background_config)
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -251,6 +257,8 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleSubmit = async (row: any) => {
+        console.log('Mobile Upload video', row?.mobile_background_video_array)
+        console.log('Mobile Upload Image', row?.mobile_background_array)
         try {
             console.log('handleSubmit called')
             const imageUpload = await handleimage(row.background_image_array)
@@ -259,16 +267,22 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const headerImageUpload = await handleimage(row.header_config_image_Array)
             const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
             const headerIconUpload = await handleimage(row.header_config_icon_Array)
+
             const footervideoUpload = await handleVideo(row.footer_config_video_Array)
             const headerVideoUpload = await handleVideo(row.header_config_video_Array)
             const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
             const backgroundVideoUpload = await handleVideo(row?.background_video_array)
             const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+            console.log('New Row below')
             const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
             const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
             const headerImageAspectRatios = await calculateAspectRatio(row.header_config_image_Array)
             const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
             const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
+
+            console.log('Image Url', mobileimageUpload)
+            console.log('video Url', mobileBackgroundVideoUpload)
+
             setShowSpinner(true)
             console.log('Start New Row')
             const newRow = {
@@ -362,12 +376,22 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             setInitalValue((prev: any) => ({
                 ...prev,
                 background_image: null,
+                background_config: {
+                    ...prev.background_config,
+                    background_image: null,
+                },
             }))
         } else if (val === 'mobile_background_image') {
+            console.log('Remive mobile Bg')
             setInitalValue((prev: any) => ({
                 ...prev,
                 mobile_background_image: null,
+                background_config: {
+                    ...prev.background_config,
+                    mobile_background_image: null,
+                },
             }))
+            console.log('Remive mobile Bg done')
         }
     }
     const handleRemoveVideo = (val: string) => {
@@ -457,6 +481,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 className="z-50"
             >
                 <CommonMainPageSettings
+                    validationSchema={validationSchema}
                     setComponentOptions={setComponentOptions}
                     initialValue={initialValue}
                     formikRef={formikRef}

@@ -4,9 +4,11 @@ import {
     ALIGNVALUES,
     borrderStyleArray,
     genericComponentArray,
+    NameFieldArray,
     NAMEPOSITION,
     sectionBorrderStyleArray,
     webBorrderStyleArray,
+    WebNameFieldArray,
 } from './genericComp'
 import { FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
@@ -297,6 +299,11 @@ const PageComponentConfig = ({
                         <br />
                         {nameForm && (
                             <>
+                                {NameFieldArray.map((item, key) => (
+                                    <FormItem key={key} label={item.label} className="w-full">
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
+                                    </FormItem>
+                                ))}
                                 <CommonSelect label="Position" name="component_config.name_position" options={NAMEPOSITION} />
                                 <CommonSelect label="Align" name="component_config.name_align" options={ALIGNVALUES} />
                             </>
@@ -315,6 +322,16 @@ const PageComponentConfig = ({
 
                             {footerAlignForm && (
                                 <>
+                                    <FormItem label="Footer Top Margin" className="w-full">
+                                        <Field
+                                            type="number"
+                                            name="component_config.footer_topMargin"
+                                            placeholder="Enter Footer Top Margin"
+                                            component={Input}
+                                            min="0"
+                                        />
+                                    </FormItem>
+
                                     <CommonSelect label="Align Footer" name="component_config.name_footer_align" options={ALIGNVALUES} />
                                 </>
                             )}
@@ -338,6 +355,11 @@ const PageComponentConfig = ({
                         <br />
                         {webNameForm === true && (
                             <>
+                                {WebNameFieldArray.map((item, key) => (
+                                    <FormItem key={key} label={item.label} className="w-full">
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
+                                    </FormItem>
+                                ))}
                                 <CommonSelect label="Web position" name="component_config.web_name_position" options={NAMEPOSITION} />
                                 <CommonSelect label="Web Align" name="component_config.web_name_align" options={ALIGNVALUES} />
                             </>
@@ -356,6 +378,15 @@ const PageComponentConfig = ({
 
                             {webFooterAlignForm && (
                                 <>
+                                    <FormItem label="Web Footer Top Margin" className="w-full">
+                                        <Field
+                                            type="number"
+                                            name="component_config.web_footer_topMargin"
+                                            placeholder="Enter Web Footer Top Margin"
+                                            component={Input}
+                                            min="0"
+                                        />
+                                    </FormItem>
                                     <CommonSelect
                                         label="Web Align Footer"
                                         name="component_config.web_name_footer_align"

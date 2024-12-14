@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import { Button, Dropdown, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
-import { Field, FieldProps, Form, Formik } from 'formik'
+import { ErrorMessage, Field, FieldProps, Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -95,6 +95,7 @@ interface CommonProps {
     handleRemoveHeaderImage?: any
     handleRemoveSubImage?: any
     handleRemoveVideo?: any
+    validationSchema?: any
 }
 
 const CommonMainPageSettings = ({
@@ -141,6 +142,7 @@ const CommonMainPageSettings = ({
     handleRemoveHeaderImage,
     handleRemoveSubImage,
     handleRemoveVideo,
+    validationSchema,
 }: CommonProps) => {
     const [configFields, setConfigFields] = useState(false)
     const [otherFields, setOtherFields] = useState(false)
@@ -152,8 +154,7 @@ const CommonMainPageSettings = ({
             enableReinitialize
             initialValues={initialValue}
             innerRef={formikRef}
-            // validationSchema={validationSchema}
-
+            validationSchema={validationSchema}
             onSubmit={handleSubmit}
         >
             {({ values, setFieldValue }) => (
@@ -162,6 +163,7 @@ const CommonMainPageSettings = ({
                         <FormContainer className="grid grid-cols-2 gap-3">
                             <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
                                 <Field type="text" name="section_heading" placeholder="Place your Section heading" component={Input} />
+                                <ErrorMessage name="section_heading" component="div" className="text-red-700" />
                             </FormItem>
 
                             <FormItem asterisk label="Component Types" className="col-span-1 w-[60%] h-[80%]">
