@@ -196,8 +196,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 extra_attributes: {
                     video_web: webVideoUpload || '',
                     video_mobile: mobileVideoUpload || '',
-                    web_aspect_ratio: Number(webAspectratio[0].toFixed(2)) || null,
-                    mobile_aspect_ratio: Number(mobileAspectratio[0].toFixed(2)) || null,
+                    web_aspect_ratio: Number(webAspectratio[0]?.toFixed(2)) || null,
+                    mobile_aspect_ratio: Number(mobileAspectratio[0]?.toFixed(2)) || null,
                 },
                 image_web_file: null,
                 image_mobile_file: null,

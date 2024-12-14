@@ -41,7 +41,7 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: !noPage,
     })
-    console.log('DeliveryType', selectedDeliveryType)
+    console.log('DeliveryType in red Tablw', selectedDeliveryType)
 
     const getRowClassName = (row: any) => {
         const createDate = moment(row.original.create_date)
@@ -50,7 +50,7 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
         console.log('Diff', diffInMinutes)
 
         const deliveryType = selectedDeliveryType || ''
-
+        console.log(`For Red Mark Table-${createDate}`, deliveryType)
         if (deliveryType === 'EXCHANGE' || deliveryType === 'STANDARD') {
             return ''
         }

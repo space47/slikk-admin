@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState, useCallback, useEffect } from 'react'
+import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -10,6 +10,8 @@ import _ from 'lodash' // Lodash for debounce
 // Fix for default icon issues with leaflet
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
+import { MdClose, MdFullscreen } from 'react-icons/md'
+import { BsFullscreenExit } from 'react-icons/bs'
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
@@ -70,10 +72,10 @@ interface MarkerComponentProps {
     markers: any[]
     currLat?: any
     currLong?: any
-    distanceAboveThirty: any
-    distanceBetweenFifteenToThirty: any
-    distanceBelowTen: any
-    distanceBelowTentoFifteen: any
+    distanceAboveThirty?: any
+    distanceBetweenFifteenToThirty?: any
+    distanceBelowTen?: any
+    distanceBelowTentoFifteen?: any
 }
 
 const MarkerComponent = ({
@@ -136,6 +138,67 @@ const MarkerComponent = ({
     )
 }
 
+interface FullScreenMapProps {
+    currLat: number
+    currLong: number
+    markers?: any[]
+    style?: React.CSSProperties
+}
+
+const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', width: '100%' } }: FullScreenMapProps) => {
+    const mapContainerRef = useRef<HTMLDivElement>(null)
+    const [isFullScreen, setIsFullScreen] = useState(false)
+
+    const toggleFullScreen = () => {
+        if (mapContainerRef.current) {
+            if (!document.fullscreenElement) {
+                mapContainerRef.current
+                    .requestFullscreen()
+                    .then(() => {
+                        setIsFullScreen(true)
+                    })
+                    .catch((err) => {
+                        console.error('Error attempting to enable fullscreen mode:', err)
+                    })
+            } else {
+                document
+                    .exitFullscreen()
+                    .then(() => {
+                        setIsFullScreen(false)
+                    })
+                    .catch((err) => {
+                        console.error('Error attempting to exit fullscreen mode:', err)
+                    })
+            }
+        }
+    }
+
+    return (
+        <div ref={mapContainerRef} style={{ position: 'relative', ...style }}>
+            <button
+                onClick={toggleFullScreen}
+                style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    zIndex: 1000,
+                    padding: '8px 12px',
+                    backgroundColor: 'white',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                }}
+            >
+                {isFullScreen ? <BsFullscreenExit className="text-2xl font-bold" /> : <MdFullscreen className="text-2xl font-bold" />}
+            </button>
+            <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100%', width: '100%' }}>
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />
+            </MapContainer>
+        </div>
+    )
+}
+
 const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount }) => {
     const [currLat, setCurrLat] = useState(12.9014)
     const [currLong, setCurrLong] = useState(77.65122)
@@ -156,6 +219,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                 return
             }
 
+            console.log('Debounce query', query)
             try {
                 const response = await axios.get(`https://api.olamaps.io/places/v1/autocomplete`, {
                     params: {
@@ -270,6 +334,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                         distanceBelowTen={distanceBelowTen?.length}
                         distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
                     />
+                    <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[250px]">
                     {Belowdatas.map((item, key) => (
