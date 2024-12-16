@@ -85,7 +85,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
             <Modal
                 title=""
                 open={showTaskModal}
-                okText="Search"
+                okText="Assign"
                 okButtonProps={{
                     style: {
                         backgroundColor: 'green',

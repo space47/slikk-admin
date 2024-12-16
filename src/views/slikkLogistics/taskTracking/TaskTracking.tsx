@@ -89,6 +89,10 @@ const TaskTracking = () => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
     }
+    const handleReAssignClick = (task_id: any) => {
+        setShowAssignModal(true)
+        setStoreTaskId(task_id)
+    }
 
     const handleCloseModal = () => {
         setShowAssignModal(false)
@@ -237,8 +241,6 @@ const TaskTracking = () => {
             format: (_: any, row: TaskDetails) => row.client_order_id || '',
         },
     ]
-
-    const handleReAssignClick = () => {}
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (dates && dates[0]) {
