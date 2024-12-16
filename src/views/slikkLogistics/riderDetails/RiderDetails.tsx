@@ -31,7 +31,7 @@ const RiderDetails = () => {
             cell: ({ row }) => {
                 return (
                     <div
-                        className="flex gap-2  hover:text-blue-800 hover:text-xl cursor-pointer "
+                        className="flex gap-2  hover:text-blue-800 hover:underline cursor-pointer "
                         onClick={() => hanldeProfileClick(row?.original?.profile?.mobile)}
                     >
                         <span className=""> {row?.original?.profile?.first_name}</span>
