@@ -32,10 +32,10 @@ const RiderDetails = () => {
                 return (
                     <div
                         className="flex gap-2  hover:text-blue-800 hover:text-xl cursor-pointer "
-                        onClick={() => hanldeProfileClick(row?.original?.profile.mobile)}
+                        onClick={() => hanldeProfileClick(row?.original?.profile?.mobile)}
                     >
-                        <span className=""> {row?.original?.profile.first_name}</span>
-                        <span className="">{row?.original?.profile.last_name}</span>
+                        <span className=""> {row?.original?.profile?.first_name}</span>
+                        <span className="">{row?.original?.profile?.last_name}</span>
                     </div>
                 )
             },

@@ -97,12 +97,12 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) 
                             ))}
                         </div>
                     </div>
-                    <div>
-                        {/* <RiderLocationMap latitudes={12} longitudes={12.8} amount={0} /> */}
+                    {/* <div>
+                        <RiderLocationMap latitudes={12} longitudes={12.8} amount={0} />
                         <div className="flex justify-center items-center">
                             <div>Map</div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </Dialog>
         </div>
