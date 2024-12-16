@@ -10,6 +10,7 @@ interface ActiveUserProps {
 const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     const [userData, setUserData] = useState<any[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
+    const [isPageActive, setIsPageActive] = useState(true)
 
     const fetchUserTable = async () => {
         try {
@@ -31,12 +32,30 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     }
 
     useEffect(() => {
-        fetchUserTable()
-        const interval = setInterval(() => {
-            fetchUserTable()
-        }, 60000)
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setIsPageActive(false)
+                console.log('Page is inactive')
+            } else {
+                setIsPageActive(true)
+                console.log('Page is active')
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange)
+        }
+    }, [])
+
+    useEffect(() => {
+        const interval = setInterval(fetchUserTable, 60000)
+        if (!isPageActive) {
+            clearInterval(interval)
+        }
         return () => clearInterval(interval)
-    }, [from, to])
+    }, [isPageActive, from, to])
 
     const columns = useMemo(
         () => [

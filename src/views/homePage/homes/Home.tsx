@@ -28,6 +28,7 @@ const Home = () => {
         invoice_id: '',
     })
     const [accessDenied, setAccessDenied] = useState(false)
+    const [isPageActive, setIsPageActive] = useState(true)
     const navigate = useNavigate()
 
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -66,21 +67,30 @@ const Home = () => {
     }, [from, to])
 
     useEffect(() => {
-        fetchHome()
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setIsPageActive(false)
+                console.log('Page is inactive')
+            } else {
+                setIsPageActive(true)
+                console.log('Page is active')
+            }
+        }
 
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange)
+        }
+    }, [])
+
+    useEffect(() => {
         const interval = setInterval(fetchHome, 60000)
-
+        if (!isPageActive) {
+            clearInterval(interval)
+        }
         return () => clearInterval(interval)
-    }, [from, to])
-
-    const handleShowFullScreen = () => {
-        navigate(`/app/homePage/fullMap`, {
-            state: {
-                var1: from,
-                var2: to,
-            },
-        })
-    }
+    }, [isPageActive, from, to])
 
     const netSales =
         (homeData?.received?.total_amount || 0) -
