@@ -120,7 +120,7 @@ const AddUrlShortner = () => {
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
-                description: error?.response?.data?.message || 'Failed to create Url Shortener',
+                description: error?.response?.data?.message || error?.response?.data?.data.message || 'Failed to create Url Shortener',
             })
         }
     }

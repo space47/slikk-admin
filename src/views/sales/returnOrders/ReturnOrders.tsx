@@ -115,7 +115,10 @@ const ReturnOrders = () => {
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            let status = ''
+            if (!searchInput) {
+                status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            }
 
             let deliveryStatus = ''
             if (deliveryType?.value && deliveryType?.value.length > 0) {

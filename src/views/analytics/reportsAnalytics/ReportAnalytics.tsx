@@ -267,36 +267,39 @@ const ReportAnalytics = () => {
         <div>
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
-                    <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
+                    <Form className="w-3/4 p-6  bg-white shadow-lg rounded-lg">
                         <FormContainer>
-                            <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-                                <FormItem label="Select Report" className="font-bold">
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                <FormItem className="font-semibold text-gray-700">
+                                    <div className="flex font-bold text-gray-700 text-xl xl:mb-5">Select Target Page</div>
                                     <Field name="target_page">
-                                        {({ field, form }: FieldProps) => {
-                                            return (
-                                                <Select
-                                                    placeholder="Select Target Page"
-                                                    options={reportQueryNames}
-                                                    value={reportQueryNames?.find((option) => option.value === field.value)}
-                                                    onChange={(option: any) => {
-                                                        form.setFieldValue(field.name, option?.value)
-                                                        setStoreName(option?.value)
-                                                        setShowTable(false)
-                                                    }}
-                                                />
-                                            )
-                                        }}
+                                        {({ field, form }: FieldProps) => (
+                                            <Select
+                                                placeholder="Select Target Page"
+                                                options={reportQueryNames}
+                                                value={reportQueryNames?.find((option) => option.value === field.value)}
+                                                onChange={(option: any) => {
+                                                    form.setFieldValue(field.name, option?.value)
+                                                    setStoreName(option?.value)
+                                                    setShowTable(false)
+                                                }}
+                                                className="w-2/3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                            />
+                                        )}
                                     </Field>
                                 </FormItem>
-                            </FormContainer>
+                            </div>
                         </FormContainer>
+
                         {showDataBelow && (
-                            <ReportFields
-                                storeName={storeName}
-                                optionDataMap={optionDataMap}
-                                values={values.required_fields}
-                                reportQueryArray={reportQueryArray}
-                            />
+                            <div className="mt-6">
+                                <ReportFields
+                                    storeName={storeName}
+                                    optionDataMap={optionDataMap}
+                                    values={values.required_fields}
+                                    reportQueryArray={reportQueryArray}
+                                />
+                            </div>
                         )}
                     </Form>
                 )}

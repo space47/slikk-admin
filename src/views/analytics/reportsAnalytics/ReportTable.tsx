@@ -51,7 +51,7 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName,
     return (
         <div>
             <div className="flex justify-between mb-5">
-                <div className="font-bold text-2xl ">{keyName ? keyName.toUpperCase() : ''}</div>
+                <div className="font-bold text-2xl text-blue-700 ">{keyName ? keyName.toUpperCase() : ''}</div>
                 <div className="flex justify-end ">
                     <Button variant="new" onClick={() => handleDownloadCsv(tableName)}>
                         Download CSV

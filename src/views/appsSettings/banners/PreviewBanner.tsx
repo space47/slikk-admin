@@ -187,6 +187,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             //     return
             // }
 
+            console.log('redir url', banner?.web_redirection_url)
+
             const data = {
                 ...banner,
                 page: selectedPage.value,
@@ -196,8 +198,10 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 extra_attributes: {
                     video_web: webVideoUpload || '',
                     video_mobile: mobileVideoUpload || '',
-                    web_aspect_ratio: Number(webAspectratio[0].toFixed(2)) || null,
-                    mobile_aspect_ratio: Number(mobileAspectratio[0].toFixed(2)) || null,
+                    web_aspect_ratio: Number(webAspectratio[0]?.toFixed(2)) || null,
+                    mobile_aspect_ratio: Number(mobileAspectratio[0]?.toFixed(2)) || null,
+                    web_redirection_url: banner?.web_redirection_url || null,
+                    mobile_redirection_url: banner?.mobile_redirection_url || null,
                 },
                 image_web_file: null,
                 image_mobile_file: null,

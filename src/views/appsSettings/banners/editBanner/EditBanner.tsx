@@ -266,7 +266,7 @@ const EditBanner = () => {
                 message: 'Success',
                 description: response?.data?.message || 'Banner Edited Successfully',
             })
-            // navigate('/app/appSettings/banners')
+            navigate('/app/appSettings/banners')
         } catch (error: any) {
             notification.error({
                 message: 'Failure',

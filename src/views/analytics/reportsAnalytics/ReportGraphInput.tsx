@@ -78,7 +78,7 @@ const ReportGraphInput = ({
 
     return dynamicReportTable.map((table, index) => {
         return (
-            <div key={index} className="mt-5 flex flex-col gap-4">
+            <div key={index} className="mt-8 flex flex-col gap-24 ">
                 <ReportTable
                     showSpinner={showSpinner}
                     tableData={table?.data?.data}

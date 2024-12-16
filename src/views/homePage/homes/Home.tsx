@@ -337,9 +337,6 @@ const Home = () => {
                         longitudes={orders?.map((item) => item?.longitude || [])}
                         amount={orders?.map((item) => item?.amount || [])}
                     />
-                    <div className="flex justify-start items-start cursor-pointer" onClick={handleShowFullScreen}>
-                        <MdOutlineFullscreen className="text-xl" />
-                    </div>
                 </div>
             </div>
         </div>
