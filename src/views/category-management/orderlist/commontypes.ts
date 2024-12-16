@@ -95,6 +95,7 @@ export interface Order {
     to: string
     latitude: any
     longitude: any
+    delivery_type: any
 }
 
 export const ORDER_STATUS = [

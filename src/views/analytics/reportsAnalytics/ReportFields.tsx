@@ -36,7 +36,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                     className="flex space-x-4 mt-2 xl:flex-row flex-col  items-center
                                                     rounded-lg px-4 py-2"
                                 >
-                                    <Field name={`required_fields[${index}].key`} placeholder="Key" component={Input} className="w-full" />
+                                    <Field name={`required_fields[${index}].key`} placeholder="Key" component={Input} className="w-2/3" />
                                     <Field name={`required_fields[${index}].dataType`}>
                                         {({ field, form }: FieldProps) => (
                                             <Select

@@ -49,8 +49,6 @@ const OrderList = () => {
     const location = useLocation()
     const { var1, var2 } = location.state || {}
 
-    console.log('VAR1,VAR2', var1, var2)
-
     const [orders, setOrders] = useState<Order[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [deliveryType, setDeliveryType] = useState<DropdownStatus>({
@@ -304,11 +302,12 @@ const OrderList = () => {
             {
                 header: 'Delivery Type',
                 accessorKey: 'delivery_type',
-                cell: ({ row }: any) => {
+                cell: ({ row, getValue }: any) => {
                     const Rowid = row?.original.invoice_id
+                    const deliveryForRedTable = getValue()
                     const selectedDeliveryType = deliveryChangeType[Rowid]?.label || row.original?.delivery_type || 'SELECT'
-                    console.log('OKOKOKOKK', selectedDeliveryType)
-                    setDeliveryForTable(selectedDeliveryType)
+
+                    setDeliveryForTable(deliveryForRedTable)
 
                     return (
                         <Dropdown
@@ -343,7 +342,7 @@ const OrderList = () => {
                 ),
             },
 
-            { header: 'Rating', accessorKey: 'rating' },
+            { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }) => <span>{getValue()} km</span> },
             { header: 'Payment Mode', accessorKey: 'payment.mode' },
             { header: 'Payment Status', accessorKey: 'payment.status' },
             { header: 'Total Items', accessorKey: 'order_items.length' },
@@ -401,7 +400,6 @@ const OrderList = () => {
     }
 
     const handleDeliveryChange = (selectedValue: any, row: any) => {
-        console.log('DELIVERY VALUE', selectedValue, row)
         const selectedLabel = CHANGE_DELIVERY_OPTIONS.find((item) => item.value === selectedValue)?.label || ''
 
         setDeliveryChangeType((prev) => ({
@@ -458,7 +456,6 @@ const OrderList = () => {
         }
     }
 
-    console.log('TO DTAE', to)
     const handleSelect = (value: any) => {
         const selected = SEARCHOPTIONS.find((item) => item.value === value)
         if (selected) {
@@ -518,6 +515,8 @@ const OrderList = () => {
     const handleFilterClose = useCallback(() => {
         setShowFilter(false)
     }, [setShowFilter])
+
+    console.log(`Table for red ---`, deliveryForTable)
 
     return (
         <div className="p-4">

@@ -182,7 +182,7 @@ const StockOverview = () => {
                     return (
                         <input
                             type="text"
-                            className="rounded-xl"
+                            className="rounded-xl w-[150px]"
                             value={location}
                             onChange={(e) => handleLocationChange(stockId, e.target.value)}
                         />
@@ -213,7 +213,7 @@ const StockOverview = () => {
                     const quantity = updatedQuantities[stockId] ?? row.original.quantity
                     return (
                         <input
-                            className="w-[100px] rounded-xl"
+                            className="w-[70px] rounded-xl"
                             type="number"
                             value={quantity}
                             onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}

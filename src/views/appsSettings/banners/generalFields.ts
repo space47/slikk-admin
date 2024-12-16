@@ -65,6 +65,18 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         defVal: '',
         placeHolder: 'Enter Redirection URL',
     },
+    web_redirection_url: {
+        label: 'Web Redirection Url',
+        type: 'text',
+        defVal: '',
+        placeHolder: 'Enter Redirection URL',
+    },
+    mobile_redirection_url: {
+        label: 'Mobile Redirection Url',
+        type: 'text',
+        defVal: '',
+        placeHolder: 'Enter Redirection URL',
+    },
     // from_date: {
     //     label: 'From',
     //     type: 'date',

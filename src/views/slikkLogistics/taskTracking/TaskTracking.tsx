@@ -89,6 +89,10 @@ const TaskTracking = () => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
     }
+    const handleReAssignClick = (task_id: any) => {
+        setShowAssignModal(true)
+        setStoreTaskId(task_id)
+    }
 
     const handleCloseModal = () => {
         setShowAssignModal(false)
@@ -119,12 +123,22 @@ const TaskTracking = () => {
         {
             header: 'Assign Task',
             accessor: 'task_id',
-            format: (value: any, row: TaskDetails) =>
-                row.status == 'CREATED' && (
-                    <button onClick={() => handleAssignClick(row.task_id)} className="bg-none border-none">
-                        <MdAssignment className="text-3xl text-yellow-500" />
-                    </button>
-                ),
+            format: (value: any, row: TaskDetails) => {
+                return (
+                    <div>
+                        {row.status == 'CREATED' && (
+                            <button onClick={() => handleAssignClick(row.task_id)} className="bg-none border-none">
+                                <MdAssignment className="text-3xl text-yellow-500" />
+                            </button>
+                        )}
+                        {row.status !== 'CREATED' && (
+                            <button onClick={() => handleReAssignClick(row.task_id)} className="bg-none border-none">
+                                <MdAssignment className="text-3xl text-red-500" />
+                            </button>
+                        )}
+                    </div>
+                )
+            },
         },
         {
             header: 'Task ID',
