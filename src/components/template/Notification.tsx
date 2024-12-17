@@ -8,17 +8,8 @@ import Spinner from '@/components/ui/Spinner'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import Tooltip from '@/components/ui/Tooltip'
-import {
-    HiOutlineBell,
-    HiOutlineCalendar,
-    HiOutlineClipboardCheck,
-    HiOutlineBan,
-    HiOutlineMailOpen,
-} from 'react-icons/hi'
-import {
-    apiGetNotificationList,
-    apiGetNotificationCount,
-} from '@/services/CommonService'
+import { HiOutlineBell, HiOutlineCalendar, HiOutlineClipboardCheck, HiOutlineBan, HiOutlineMailOpen } from 'react-icons/hi'
+import { apiGetNotificationList, apiGetNotificationCount } from '@/services/CommonService'
 import { Link } from 'react-router-dom'
 import isLastChild from '@/utils/isLastChild'
 import useTwColorByName from '@/utils/hooks/useTwColorByName'
@@ -52,12 +43,7 @@ const GeneratedAvatar = ({ target }: { target: string }) => {
     )
 }
 
-const notificationTypeAvatar = (data: {
-    type: number
-    target: string
-    image: string
-    status: string
-}) => {
+const notificationTypeAvatar = (data: { type: number; target: string; image: string; status: string }) => {
     const { type, target, image, status } = data
     switch (type) {
         case 0:
@@ -83,13 +69,7 @@ const notificationTypeAvatar = (data: {
                             ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100'
                             : 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-100'
                     }
-                    icon={
-                        status === 'succeed' ? (
-                            <HiOutlineClipboardCheck />
-                        ) : (
-                            <HiOutlineBan />
-                        )
-                    }
+                    icon={status === 'succeed' ? <HiOutlineClipboardCheck /> : <HiOutlineBan />}
                 />
             )
         default:
@@ -97,13 +77,7 @@ const notificationTypeAvatar = (data: {
     }
 }
 
-const NotificationToggle = ({
-    className,
-    dot,
-}: {
-    className?: string
-    dot: boolean
-}) => {
+const NotificationToggle = ({ className, dot }: { className?: string; dot: boolean }) => {
     return (
         <div className={classNames('text-2xl', className)}>
             {dot ? (
@@ -118,9 +92,20 @@ const NotificationToggle = ({
 }
 
 const _Notification = ({ className }: { className?: string }) => {
-    const [notificationList, setNotificationList] = useState<
-        NotificationList[]
-    >([])
+    const [notificationList, setNotificationList] = useState<NotificationList[]>([
+        {
+            id: '1',
+            target: null,
+            description: 'new Message arrived',
+            date: '2024',
+            image: '',
+            type: 1,
+            location: 'here',
+            locationLabel: 'Down',
+            status: 'PENDING',
+            readed: false,
+        },
+    ])
     const [unreadNotification, setUnreadNotification] = useState(false)
     const [noResult, setNoResult] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -180,17 +165,12 @@ const _Notification = ({ className }: { className?: string }) => {
                 setUnreadNotification(false)
             }
         },
-        [notificationList]
+        [notificationList],
     )
 
     return (
         <Dropdown
-            renderTitle={
-                <NotificationToggle
-                    dot={unreadNotification}
-                    className={className}
-                />
-            }
+            renderTitle={<NotificationToggle dot={unreadNotification} className={className} />}
             menuClass="p-0 min-w-[280px] md:min-w-[340px]"
             placement={larger.md ? 'bottom-end' : 'bottom-center'}
             onOpen={onNotificationOpen}
@@ -212,77 +192,53 @@ const _Notification = ({ className }: { className?: string }) => {
             <div className={classNames('overflow-y-auto', notificationHeight)}>
                 <ScrollBar direction={direction}>
                     {notificationList.length > 0 &&
-                        notificationList.map((item, index) => (
+                        notificationList?.map((item, index) => (
                             <div
                                 key={item.id}
                                 className={`relative flex px-4 py-4 cursor-pointer hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-black dark:hover:bg-opacity-20  ${
-                                    !isLastChild(notificationList, index)
-                                        ? 'border-b border-gray-200 dark:border-gray-600'
-                                        : ''
+                                    !isLastChild(notificationList, index) ? 'border-b border-gray-200 dark:border-gray-600' : ''
                                 }`}
                                 onClick={() => onMarkAsRead(item.id)}
                             >
                                 <div>{notificationTypeAvatar(item)}</div>
                                 <div className="ltr:ml-3 rtl:mr-3">
                                     <div>
-                                        {item.target && (
-                                            <span className="font-semibold heading-text">
-                                                {item.target}{' '}
-                                            </span>
-                                        )}
+                                        {item.target && <span className="font-semibold heading-text">{item.target} </span>}
                                         <span>{item.description}</span>
                                     </div>
                                     <span className="text-xs">{item.date}</span>
                                 </div>
                                 <Badge
                                     className="absolute top-4 ltr:right-4 rtl:left-4 mt-1.5"
-                                    innerClass={`${
-                                        item.readed ? 'bg-gray-300' : bgTheme
-                                    } `}
+                                    innerClass={`${item.readed ? 'bg-gray-300' : bgTheme} `}
                                 />
                             </div>
                         ))}
                     {loading && (
-                        <div
-                            className={classNames(
-                                'flex items-center justify-center',
-                                notificationHeight
-                            )}
-                        >
+                        <div className={classNames('flex items-center justify-center', notificationHeight)}>
                             <Spinner size={40} />
                         </div>
                     )}
-                    {noResult && (
-                        <div
-                            className={classNames(
-                                'flex items-center justify-center',
-                                notificationHeight
-                            )}
-                        >
+                    {/* {noResult && (
+                        <div className={classNames('flex items-center justify-center', notificationHeight)}>
                             <div className="text-center">
-                                <img
-                                    className="mx-auto mb-2 max-w-[150px]"
-                                    src="/img/others/no-notification.png"
-                                    alt="no-notification"
-                                />
-                                <h6 className="font-semibold">
-                                    No notifications!
-                                </h6>
+                                <img className="mx-auto mb-2 max-w-[150px]" src="/img/others/no-notification.png" alt="no-notification" />
+                                <h6 className="font-semibold">No notifications!</h6>
                                 <p className="mt-1">Please Try again later</p>
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </ScrollBar>
             </div>
             <Dropdown.Item variant="header">
-                <div className="flex justify-center border-t border-gray-200 dark:border-gray-600 px-4 py-2">
+                {/* <div className="flex justify-center border-t border-gray-200 dark:border-gray-600 px-4 py-2">
                     <Link
                         to="/app/account/activity-log"
                         className="font-semibold cursor-pointer p-2 px-3 text-gray-600 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                     >
                         View All Activity
                     </Link>
-                </div>
+                </div> */}
             </Dropdown.Item>
         </Dropdown>
     )

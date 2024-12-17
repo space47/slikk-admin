@@ -425,6 +425,7 @@ const EditBanner = () => {
                                 {/* BRAND   */}
 
                                 <SectionsComponent
+                                    needClassName
                                     name="brand"
                                     label="Brand"
                                     defaultValue={getInitialBannerValue(bannerData).brand}
@@ -436,7 +437,7 @@ const EditBanner = () => {
                                 {/* Tags */}
 
                                 <FormContainer>
-                                    <FormItem asterisk label="Filter Tags" className="col-span-1 w-full">
+                                    <FormItem label="Quick Filter Tags" className="col-span-1 w-1/2">
                                         <Field name="quick_filter_tags">
                                             {({ field, form }: FieldProps<any>) => {
                                                 const selectedTags = field.value.map((tag: any) => {

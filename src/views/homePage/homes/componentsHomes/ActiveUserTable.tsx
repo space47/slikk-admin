@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -53,7 +54,7 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
         let interval: NodeJS.Timeout
 
         if (isPageActive) {
-            fetchUserTable() // Fetch immediately when page becomes active
+            fetchUserTable()
             interval = setInterval(fetchUserTable, 60000)
         } else {
             console.log('Clearing interval as page is inactive')

@@ -5,7 +5,7 @@ export default function serviceworker() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
             navigator.serviceWorker
-                .register(swUrl, { scope: '/' }) // Ensure proper scope
+                .register(swUrl, { scope: '/' })
                 .then((registration) => {
                     console.log('Service Worker registration successful with scope: ', registration.scope)
                 })
