@@ -85,11 +85,19 @@ const Home = () => {
     }, [])
 
     useEffect(() => {
-        const interval = setInterval(fetchHome, 60000)
-        if (!isPageActive) {
-            clearInterval(interval)
+        let interval: NodeJS.Timeout
+
+        if (isPageActive) {
+            fetchHome()
+            interval = setInterval(fetchHome, 60000)
         }
-        return () => clearInterval(interval)
+
+        return () => {
+            if (interval) {
+                clearInterval(interval)
+                console.log('Interval cleared')
+            }
+        }
     }, [isPageActive, from, to])
 
     const netSales =

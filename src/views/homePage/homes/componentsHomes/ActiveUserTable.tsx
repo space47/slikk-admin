@@ -17,15 +17,15 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
             setShowSpinner(true)
             const response = await axioisInstance.get(`query/execute/Daily_user_stats?end_date=${to}&start_date=${from}`)
             const data = response.data.data
-            const tab = Object.keys(data).map((key) => {
-                return {
-                    key,
-                    data: data[key],
-                }
-            })
+
+            const tab = Object.keys(data).map((key) => ({
+                key,
+                data: data[key],
+            }))
+
             setUserData(tab[0].data?.data)
         } catch (error: any) {
-            console.log(error)
+            console.error('Error fetching data:', error)
         } finally {
             setShowSpinner(false)
         }
@@ -50,11 +50,20 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     }, [])
 
     useEffect(() => {
-        const interval = setInterval(fetchUserTable, 60000)
-        if (!isPageActive) {
-            clearInterval(interval)
+        let interval: NodeJS.Timeout
+
+        if (isPageActive) {
+            fetchUserTable() // Fetch immediately when page becomes active
+            interval = setInterval(fetchUserTable, 60000)
+        } else {
+            console.log('Clearing interval as page is inactive')
         }
-        return () => clearInterval(interval)
+
+        return () => {
+            if (interval) {
+                clearInterval(interval)
+            }
+        }
     }, [isPageActive, from, to])
 
     const columns = useMemo(
