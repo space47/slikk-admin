@@ -72,6 +72,8 @@ const OrderList = () => {
         value: [],
         name: [],
     })
+
+    const [storeInvoiceId, setStoreInvoiceId] = useState()
     const [showFilter, setShowFilter] = useState(false)
     const [soundEnabled, setSoundEnabled] = useState(false)
     const [pendingSound, setPendingSound] = useState(false)
@@ -81,7 +83,7 @@ const OrderList = () => {
     }>({})
 
     const previousOrders = useRef<Order[]>([])
-    const [deliveryForTable, setDeliveryForTable] = useState('')
+    const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
@@ -245,7 +247,7 @@ const OrderList = () => {
                     const createDate = moment(row.original.create_date)
                     const currentDate = moment()
                     const differenceInSeconds = currentDate.diff(createDate, 'seconds')
-
+                    setStoreInvoiceId(getValue())
                     if (row.original.status === 'PENDING' && differenceInSeconds > 120) {
                         setPendingSound(true)
                         setTimeout(() => setPendingSound(false), 5000)
@@ -307,7 +309,7 @@ const OrderList = () => {
                     const deliveryForRedTable = getValue()
                     const selectedDeliveryType = deliveryChangeType[Rowid]?.label || row.original?.delivery_type || 'SELECT'
 
-                    setDeliveryForTable(deliveryForRedTable)
+                    // setDeliveryForTable(deliveryForRedTable)
 
                     return (
                         <Dropdown
@@ -356,6 +358,14 @@ const OrderList = () => {
         ],
         [],
     )
+
+    useEffect(() => {
+        const initialDeliveryTypes: any = {}
+        orders.forEach((row: any) => {
+            initialDeliveryTypes[row.invoice_id] = row.delivery_type || 'SELECT'
+        })
+        setDeliveryTypes(initialDeliveryTypes)
+    }, [orders])
 
     const handleDownload = async () => {
         try {
@@ -516,7 +526,7 @@ const OrderList = () => {
         setShowFilter(false)
     }, [setShowFilter])
 
-    console.log(`Table for red ---`, deliveryForTable)
+    console.log(`Table for red ---`, deliveryTypes)
 
     return (
         <div className="p-4">
@@ -603,7 +613,7 @@ const OrderList = () => {
                     page={page}
                     pageSize={pageSize}
                     columns={columns}
-                    selectedDeliveryType={deliveryForTable ?? ''}
+                    selectedDeliveryType={deliveryTypes ?? ''}
                 />
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">
