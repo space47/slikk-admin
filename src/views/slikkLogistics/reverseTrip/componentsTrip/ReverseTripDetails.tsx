@@ -9,6 +9,7 @@ import TripMap from './DetailsComponent/TripMap'
 
 const ReverseTripDetails = () => {
     const [mainData, setMainData] = useState<TRIPDETAIL>()
+    const [isPageActive, setIsPageActive] = useState(true)
 
     const { tripId } = useParams()
     const fetchMainData = async () => {
@@ -22,13 +23,30 @@ const ReverseTripDetails = () => {
     }
 
     useEffect(() => {
-        fetchMainData()
-        const intervalId = setInterval(() => {
-            fetchMainData()
-        }, 60000)
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setIsPageActive(false)
+                console.log('Page is inactive')
+            } else {
+                setIsPageActive(true)
+                console.log('Page is active')
+            }
+        }
 
-        return () => clearInterval(intervalId)
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange)
+        }
     }, [])
+
+    useEffect(() => {
+        const interval = setInterval(fetchMainData, 60000)
+        if (!isPageActive) {
+            clearInterval(interval)
+        }
+        return () => clearInterval(interval)
+    }, [isPageActive])
 
     return (
         <div className="flex flex-col gap-8 p-6">

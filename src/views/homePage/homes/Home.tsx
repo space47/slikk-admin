@@ -11,7 +11,7 @@ import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import BrandDataChart from '../homeChart/BubbleChart'
 import MultipleMap from '@/common/multipleMap'
-import { MdDeliveryDining, MdOutlineFullscreen } from 'react-icons/md'
+import { MdDeliveryDining } from 'react-icons/md'
 import { PiDevicesFill } from 'react-icons/pi'
 import { FaMoneyBillTrendUp } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
@@ -134,7 +134,7 @@ const Home = () => {
     const handleInvoiceFunction = (inputName: string) => {
         navigate(`/app/orders/${inputName}`)
     }
-    const handleReceived = (from, to) => {
+    const handleReceived = (from: string, to: string) => {
         navigate(`/app/orders`, {
             state: {
                 var1: from,
@@ -142,7 +142,7 @@ const Home = () => {
             },
         })
     }
-    const handleReturned = (from, to) => {
+    const handleReturned = (from: string, to: string) => {
         navigate(`/app/returnOrders`, {
             state: {
                 var1: from,
@@ -151,7 +151,7 @@ const Home = () => {
         })
     }
 
-    const handleCompleted = (from, to) => {
+    const handleCompleted = (from: string, to: string) => {
         navigate('/app/orders/completed', {
             state: {
                 var1: from,

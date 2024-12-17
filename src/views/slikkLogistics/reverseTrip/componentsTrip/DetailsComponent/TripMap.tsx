@@ -4,20 +4,16 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { LogisticTask } from './DetailsCommon'
-import { MdCloseFullscreen, MdOutlineFullscreen } from 'react-icons/md'
+import { MdOutlineFullscreen } from 'react-icons/md'
 import { FaMapMarkerAlt } from 'react-icons/fa'
-import FullTripMap from './FullTripMap'
+
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import polyline from '@mapbox/polyline'
 
 interface LogisticsMapProps {
     logistic_tasks?: LogisticTask[]
-    trip_id: string
-}
-
-interface FullMapProps {
-    setFullTripMap: any
+    trip_id: string | undefined
 }
 
 const customIcon = (iconUrl: string) =>
@@ -35,7 +31,7 @@ const icons = {
     runner: customIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png'),
 }
 
-const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.SetStateAction<[number, number]>> }) => {
+const CurrentLocationButton = () => {
     const map = useMap()
 
     const handleClick = () => {
@@ -44,7 +40,6 @@ const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.
 
     return (
         <button
-            onClick={handleClick}
             style={{
                 position: 'absolute',
                 bottom: '3px',
@@ -57,6 +52,7 @@ const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.
                 cursor: 'pointer',
                 zIndex: 1000,
             }}
+            onClick={handleClick}
         >
             <FaMapMarkerAlt size={24} color="black" />
         </button>
@@ -70,7 +66,6 @@ const FullMapButton = ({ trip_id }: LogisticsMapProps) => {
 
     return (
         <button
-            onClick={handleFullMap}
             style={{
                 position: 'absolute',
                 bottom: '10px',
@@ -83,15 +78,15 @@ const FullMapButton = ({ trip_id }: LogisticsMapProps) => {
                 cursor: 'pointer',
                 zIndex: 1000,
             }}
+            onClick={handleFullMap}
         >
             <MdOutlineFullscreen size={24} color="black" />
         </button>
     )
 }
 
-const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
+const TripMap: React.FC<LogisticsMapProps> = ({ trip_id }) => {
     const [logData, setLogData] = useState<LogisticTask[]>([])
-    const [fullTripMap, setFullTripMap] = useState(false)
     const [polyLine, setPolyLine] = useState('')
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
@@ -190,7 +185,7 @@ const TripMap: React.FC<LogisticsMapProps> = ({ logistic_tasks, trip_id }) => {
                     ))}
 
                     <Polyline positions={decodedPolyline} color="blue" />
-                    <CurrentLocationButton setCenter={() => {}} />
+                    <CurrentLocationButton />
 
                     <FullMapButton trip_id={trip_id} />
                 </MapContainer>

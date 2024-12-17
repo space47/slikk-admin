@@ -1,8 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchTaskData } from '@/store/slices/taskData/taskData.slice'
-import { TaskData, TASKDETAILS } from '@/store/types/tasks.type'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import React, { useEffect, useState } from 'react'
+import { TASKDETAILS } from '@/store/types/tasks.type'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import TaskLogisticItem from './TaskLogisticItem'
 import TaskActivity from './TaskActivity'
@@ -38,7 +37,7 @@ const TaskDetails = () => {
                 <div className="bg-white p-6 rounded-lg shadow-md max-w-lg font-bold flex flex-col gap-2">
                     {CARDDATA.map((item, key) => {
                         return (
-                            <div className="flex justify-between mb-3" key={key}>
+                            <div key={key} className="flex justify-between mb-3">
                                 <span className="font-semibold text-gray-700">{item.name}</span>
                                 <span className="text-gray-900">
                                     {item?.hyper ? (

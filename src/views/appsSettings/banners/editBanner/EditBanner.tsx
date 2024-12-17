@@ -224,7 +224,17 @@ const EditBanner = () => {
         const webVideoUpload = await processVideoUpload(values?.video_web_array, values?.video_web)
         const mobileVideoUpload = await processVideoUpload(values?.video_mobile_array, values?.video_mobile)
 
-        const { max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array, ...rest } = values
+        const {
+            max_off,
+            min_off,
+            mobile_redirection_url,
+            web_redirection_url,
+            image_web_array,
+            image_mobile_array,
+            video_web_array,
+            video_mobile_array,
+            ...rest
+        } = values
         console.log(max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array)
 
         console.log('start')
@@ -240,6 +250,8 @@ const EditBanner = () => {
                 mobile_aspect_ratio: mobileAspectratio?.[0]
                     ? Number(mobileAspectratio[0].toFixed(2))
                     : values?.extra_attributes?.web_aspect_ratio,
+                mobile_redirection_url: values?.extra_attributes?.mobile_redirection_url || null,
+                web_redirection_url: values?.extra_attributes?.web_redirection_url || null,
             },
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
