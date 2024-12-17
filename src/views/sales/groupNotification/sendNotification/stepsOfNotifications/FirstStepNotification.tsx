@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeUpload } from '@/common/beforeUpload'
 import { RichTextEditor } from '@/components/shared'
 import { FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
-import { notificationTypeArray } from '../sendNotify.common'
+import { notificationTypeArray, SendNotificationARRAYType, sendNotificationType } from '../sendNotify.common'
 
 interface FirstStepProps {
-    SendNotificationARRAY: any[]
-    values: any
-    setMessagePreview?: any
-    setImagePreview: any
-    setTitleView?: any
+    SendNotificationARRAY: SendNotificationARRAYType[]
+    values: sendNotificationType
+    setMessagePreview: React.Dispatch<React.SetStateAction<string>>
+    setImagePreview: React.Dispatch<React.SetStateAction<string>>
+    setTitleView: React.Dispatch<React.SetStateAction<string>>
 }
 
 const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePreview, setImagePreview, setTitleView }: FirstStepProps) => {
@@ -24,7 +25,7 @@ const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePrevie
                         name="Title"
                         placeholder="Enter Title"
                         component={Input}
-                        onChange={(e: any) => setTitleView(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitleView(e.target.value)}
                     />
                 </FormItem>
                 {SendNotificationARRAY.map((item, key) => (
@@ -34,7 +35,7 @@ const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePrevie
                 ))}
                 <FormItem label="Notification Type" className="col-span-1 w-full xl:col-span-2 xl:w-1/2">
                     <Field name="notification_type">
-                        {({ field, form }: FieldProps<any>) => (
+                        {({ field, form }: FieldProps) => (
                             <Select
                                 isClearable
                                 field={field}
@@ -68,11 +69,11 @@ const FirstStepNotification = ({ SendNotificationARRAY, values, setMessagePrevie
                     <Field name="image">
                         {({ form }: FieldProps) => (
                             <Upload
-                                className="flex justify-center"
                                 multiple
+                                className="flex justify-center"
                                 beforeUpload={beforeUpload}
                                 fileList={values.image_url_array}
-                                onChange={(files) => {
+                                onChange={(files: any) => {
                                     form.setFieldValue('image_url_array', files)
                                     setImagePreview(files)
                                 }}

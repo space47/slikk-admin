@@ -59,6 +59,14 @@ export const SchedulerARRAY = [
     },
 ]
 
+export type SendNotificationARRAYType = {
+    label: string
+    classname: string
+    type: string
+    name: string
+    placeholder: string
+}
+
 export const SendNotificationARRAY = [
     {
         label: 'Name',
