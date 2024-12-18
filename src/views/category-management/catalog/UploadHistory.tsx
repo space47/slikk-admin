@@ -3,12 +3,20 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
-import type { ColumnDef } from '@tanstack/react-table'
+import {
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    flexRender,
+} from '@tanstack/react-table'
+import type { ColumnDef, FilterFn } from '@tanstack/react-table'
 
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import axios from 'axios'
 import { FaDownload } from 'react-icons/fa'
+import { rankItem } from '@tanstack/match-sorter-utils'
 
 type User = {
     name: string
@@ -48,6 +56,7 @@ const PaginationTable = () => {
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [globalFilter, setGlobalFilter] = useState<string>('')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -226,21 +235,21 @@ const PaginationTable = () => {
     const table = useReactTable({
         data,
         columns,
+        filterFns: {
+            fuzzy: fuzzyFilter,
+        },
+        state: {
+            globalFilter,
+            pagination: { pageIndex: page - 1, pageSize },
+        },
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: fuzzyFilter,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize), // Ensure page count is updated
-        manualPagination: true, // Enable manual pagination
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1) // React Table uses zero-based index
-            setPageSize(pageSize)
-        },
+        manualPagination: true,
+        pageCount: Math.ceil(totalData / pageSize),
     })
 
     const onPaginationChange = (page: number) => {
@@ -254,6 +263,14 @@ const PaginationTable = () => {
 
     return (
         <div>
+            <div className="mb-8">
+                <input
+                    placeholder="Search here..."
+                    value={globalFilter || ''}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    className="p-2 border rounded-md"
+                />
+            </div>
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -293,3 +310,9 @@ const PaginationTable = () => {
 }
 
 export default PaginationTable
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    const itemRank = rankItem(row.getValue(columnId), value)
+    addMeta(itemRank)
+    return itemRank.passed
+}

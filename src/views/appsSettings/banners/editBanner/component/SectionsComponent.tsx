@@ -10,12 +10,13 @@ interface PROPS {
     fieldValues: string
     setFieldValue: any
     options: any
+    needClassName?: boolean
 }
 
-const SectionsComponent = ({ label, name, defaultValue, fieldValues, setFieldValue, options }: PROPS) => {
+const SectionsComponent = ({ label, name, defaultValue, fieldValues, setFieldValue, options, needClassName }: PROPS) => {
     return (
         <FormContainer>
-            <FormItem asterisk label={label} className="col-span-1 w-full">
+            <FormItem label={label} className={needClassName ? 'col-span-1 w-1/2' : 'col-span-1 w-full'}>
                 <Field name={name}>
                     {({ field }: FieldProps<any>) => {
                         const fieldValue = Array.isArray(field.value) ? field.value : []

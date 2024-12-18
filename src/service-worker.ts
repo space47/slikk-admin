@@ -3,26 +3,31 @@
 
 import { clientsClaim } from 'workbox-core'
 import { precacheAndRoute } from 'workbox-precaching'
-import { registerRoute } from 'workbox-routing'
+import { registerRoute, NavigationRoute } from 'workbox-routing'
 import { CacheFirst, StaleWhileRevalidate } from 'workbox-strategies'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { ExpirationPlugin } from 'workbox-expiration'
 
-// Claim clients as soon as the service worker is activated
 self.skipWaiting()
 clientsClaim()
 
-// Precache assets
 precacheAndRoute(self.__WB_MANIFEST || [])
 
-// Cache API requests
+const apiUrl = import.meta.env.VITE_BACKEND_URI
+
 registerRoute(
-    ({ url }) => url.origin === 'https://api.example.com', // Update with your API URL
+    ({ url }) => url.origin === apiUrl,
     new StaleWhileRevalidate({
         cacheName: 'api-cache',
         plugins: [new CacheableResponsePlugin({ statuses: [0, 200] })],
     }),
 )
+
+const handler = async ({ event }: any) => {
+    const cache = await caches.open('start-url-cache')
+    const response = await cache.match('/index.html')
+    return response || fetch(event.request)
+}
 
 // Cache images with a Cache First strategy
 registerRoute(
@@ -34,3 +39,6 @@ registerRoute(
         ],
     }),
 )
+
+const navigationRoute = new NavigationRoute(handler)
+registerRoute(navigationRoute)

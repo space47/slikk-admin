@@ -29,7 +29,7 @@ const BannerCategories = ({
     return (
         <div className="grid grid-cols-2 gap-10">
             <FormContainer>
-                <FormItem asterisk label="Division" className="col-span-1 w-full">
+                <FormItem label="Division" className="col-span-1 w-full">
                     <Field name="division">
                         {({ field }: FieldProps) => {
                             const fieldValue = Array.isArray(field.value) ? field.value : []
@@ -67,7 +67,7 @@ const BannerCategories = ({
 
             {/* CATEGORY ...................................... */}
             <FormContainer>
-                <FormItem asterisk label="Category" className="col-span-1 w-full">
+                <FormItem label="Category" className="col-span-1 w-full">
                     <Field name="category">
                         {({ field }: FieldProps<any>) => {
                             const fieldValue = Array.isArray(field.value) ? field.value : []
@@ -99,7 +99,7 @@ const BannerCategories = ({
 
             {/* SUB-CATEGORY ...................................... */}
             <FormContainer>
-                <FormItem asterisk label="Sub-Category" className="col-span-1 w-full">
+                <FormItem label="Sub-Category" className="col-span-1 w-full">
                     <Field name="sub_category">
                         {({ field }: FieldProps<any>) => {
                             const fieldValue = Array.isArray(field.value) ? field.value : []
@@ -132,7 +132,7 @@ const BannerCategories = ({
 
             {/* PRODUCT TYPE ...................................... */}
             <FormContainer>
-                <FormItem asterisk label="Product Type" className="col-span-1 w-full">
+                <FormItem label="Product Type" className="col-span-1 w-full">
                     <Field name="product_type">
                         {({ field }: FieldProps<any>) => {
                             const fieldValue = Array.isArray(field.value) ? field.value : []
