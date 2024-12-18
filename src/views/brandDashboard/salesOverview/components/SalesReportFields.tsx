@@ -55,8 +55,8 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                                     )
                                                 }
                                                 return (
-                                                    <div className="flex gap-1 xl:text-[16px] font-bold  items-end">
-                                                        {key.toUpperCase()}:
+                                                    <div className="flex gap-1 xl:text-[16px] font-bold items-end">
+                                                        {key?.replaceAll('_', ' ').toUpperCase()}:
                                                     </div>
                                                 )
                                             }}
