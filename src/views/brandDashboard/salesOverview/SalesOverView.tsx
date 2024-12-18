@@ -274,7 +274,7 @@ const SalesOverview = () => {
         <div>
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
-                    <Form className="w-3/4 p-6  bg-white shadow-lg rounded-lg">
+                    <Form className="w-full p-6  bg-white shadow-lg rounded-lg">
                         <FormContainer>
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
                         </FormContainer>

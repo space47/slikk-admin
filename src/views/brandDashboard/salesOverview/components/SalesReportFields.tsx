@@ -30,8 +30,8 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
         return () => clearTimeout(timer)
     }, [])
     return (
-        <FormContainer>
-            <div className="flex text-xl gap-2 font-bold">
+        <FormContainer className="items-end">
+            <div className="flex text-xl gap-2 font-bold  mb-4">
                 <span className="text-blue-700">SALES OVERVIEW</span>
             </div>
             <FormItem className="col-span-1 w-[60%] h-[80%]">
@@ -41,43 +41,35 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                             {values?.map((item: any, index: number) => (
                                 <div
                                     key={index}
-                                    className="flex space-x-4 mt-2 xl:flex-row flex-col  items-center
-                                                    rounded-lg px-4 py-2"
+                                    className="flex space-x-4 mt-2 b xl:flex-row xl:justify-between  flex-col gap-5 items-center rounded-lg px-4 py-2"
                                 >
-                                    <Field name={`required_fields[${index}].key`}>
-                                        {({ field }: { field: any }) => {
-                                            const { dataType, key } = values[index]
-                                            if (key === 'brand') {
+                                    <div className="">
+                                        <Field name={`required_fields[${index}].key`}>
+                                            {({ field }: { field: any }) => {
+                                                const { dataType, key } = values[index]
+                                                if (key === 'brand') {
+                                                    return (
+                                                        <div className="hidden">
+                                                            <Input type="text" placeholder="" {...field} className="w-2/3" />
+                                                        </div>
+                                                    )
+                                                }
                                                 return (
-                                                    <div className="hidden">
-                                                        <Input type="text" placeholder="" {...field} className="w-2/3" />
+                                                    <div className="flex gap-1 xl:text-[16px] font-bold  items-end">
+                                                        {key.toUpperCase()}:
                                                     </div>
                                                 )
-                                            } else {
-                                                return <Input type="text" placeholder="Enter Brand" {...field} className="w-full" />
-                                            }
-                                        }}
-                                    </Field>
+                                            }}
+                                        </Field>
+                                    </div>
 
                                     <Field name={`required_fields[${index}].dataType`}>
                                         {({ field, form }: FieldProps) => {
                                             const { dataType, key } = values[index]
 
-                                            if (key === 'brand') {
-                                                return (
-                                                    <Select
-                                                        className=" w-full hidden"
-                                                        placeholder="Select dataType"
-                                                        options={reportQueryArray}
-                                                        isDisabled
-                                                        value={reportQueryArray.find((option) => option.value === field.value)}
-                                                        onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                    />
-                                                )
-                                            }
                                             return (
                                                 <Select
-                                                    className=" w-full"
+                                                    className="w-full hidden"
                                                     placeholder="Select dataType"
                                                     options={reportQueryArray}
                                                     isDisabled
@@ -87,10 +79,10 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                             )
                                         }}
                                     </Field>
+
                                     <Field name={`required_fields[${index}].value`}>
                                         {({ field, form }: FieldProps) => {
                                             const { dataType, key } = values[index]
-                                            console.log('Brand Check', key)
                                             const fieldValue = Array.isArray(field.value) ? field.value : []
                                             const options = optionDataMap[key]
 
@@ -113,9 +105,9 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                                 )
 
                                                 return (
-                                                    <div className="w-full">
+                                                    <div className="w-2/3">
                                                         <Select
-                                                            className="w-full"
+                                                            className="w-1/3"
                                                             {...field}
                                                             options={options}
                                                             getOptionLabel={(option) => option?.name}
@@ -126,9 +118,6 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                                                 form.setFieldValue(`required_fields[${index}].value`, newVal?.name)
                                                             }}
                                                         />
-                                                        {/* {showInfo && (
-                                                            <p className="mt-2 text-sm text-yellow-500">Leave empty to select all</p>
-                                                        )} */}
                                                     </div>
                                                 )
                                             }
@@ -136,16 +125,13 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                             if (dataType === 'MultiSelect' && options) {
                                                 const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
 
-                                                const selectedOptions = fieldValueArray.map((item) => {
-                                                    const selectedOption = options?.find((options) => {
-                                                        return options?.name.toLowerCase() === item.toLowerCase()
-                                                    })
-                                                    return selectedOption
-                                                })
+                                                const selectedOptions = fieldValueArray.map((item) =>
+                                                    options.find((option) => option?.name.toLowerCase() === item.toLowerCase()),
+                                                )
 
                                                 return (
                                                     <Select
-                                                        className="w-full"
+                                                        className="w-1/2"
                                                         {...field}
                                                         options={options}
                                                         getOptionLabel={(option) => option?.name}
@@ -154,9 +140,7 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                                         isMulti
                                                         isClearable
                                                         onChange={(newVals) => {
-                                                            console.log('multiselect values', newVals)
                                                             const selectedValues = newVals?.map((val: any) => val.name) || []
-
                                                             form.setFieldValue(`required_fields[${index}].value`, selectedValues)
                                                         }}
                                                     />
@@ -164,12 +148,14 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                             }
 
                                             return (
-                                                <Input
-                                                    type={dataType === 'Date' ? 'date' : 'text'}
-                                                    placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
-                                                    {...field}
-                                                    className=" w-full"
-                                                />
+                                                <div className="w-2/3">
+                                                    <Input
+                                                        type={dataType === 'Date' ? 'date' : 'text'}
+                                                        placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
+                                                        {...field}
+                                                        className="w-1/3"
+                                                    />
+                                                </div>
                                             )
                                         }}
                                     </Field>
@@ -193,13 +179,12 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                         </div>
                     )}
                 </FieldArray>
-                {
-                    <FormContainer className="flex  mt-8 mb-9">
-                        <Button variant="new" type="submit" className="text-white ">
-                            Generate
-                        </Button>
-                    </FormContainer>
-                }
+
+                <FormContainer className="flex mt-8 mb-9">
+                    <Button variant="new" type="submit" className="text-white">
+                        Generate
+                    </Button>
+                </FormContainer>
             </FormItem>
         </FormContainer>
     )
