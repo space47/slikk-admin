@@ -72,7 +72,7 @@ const AddCoupons = () => {
 
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Coupon created successfully',
+                description: response?.data?.message || response?.data?.data?.message || 'Coupon created successfully',
             })
             navigate(-1)
         } catch (error) {
