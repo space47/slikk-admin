@@ -312,7 +312,7 @@ const SalesOverview = () => {
                 </div>
             )}
 
-            {showEmptyData ? (
+            {showEmptyData && !showSpinner ? (
                 <div className="flex justify-center items-center h-auto text-xl text-red-500 font-bold mt-10">
                     <div className="flex flex-col gap-2 justify-center items-center">
                         <CiNoWaitingSign className="text-3xl font-bold text-red-600" />
