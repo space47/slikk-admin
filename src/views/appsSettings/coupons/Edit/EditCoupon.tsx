@@ -75,11 +75,12 @@ const AddCoupons = () => {
                 description: response?.data?.message || response?.data?.data?.message || 'Coupon created successfully',
             })
             navigate(-1)
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error during submission:', error)
 
             notification.error({
-                message: 'Failure',
+                message: error?.response?.data?.data?.message || 'Failure',
+
                 description: 'Failed to create Coupon',
             })
         }

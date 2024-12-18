@@ -11,6 +11,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { DatePicker, notification } from 'antd'
 import Upload from '@/components/ui/Upload'
 import moment from 'moment'
+import { useNavigate } from 'react-router-dom'
 
 const CouponsType = () => {
     return ['PERCENT_OFF', 'FLAT_OFF'].map((coupon) => ({
@@ -34,6 +35,7 @@ const DiscountType = () => {
 }
 
 const AddCoupons = () => {
+    const navigate = useNavigate()
     const MAX_UPLOAD = 90000000
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
@@ -132,11 +134,12 @@ const AddCoupons = () => {
                 message: 'Success',
                 description: response?.data?.message || response?.data?.data?.message || 'Coupon created successfully',
             })
-        } catch (error) {
+            navigate(-1)
+        } catch (error: any) {
             console.error('Error during submission:', error)
 
             notification.error({
-                message: 'Failure',
+                message: error?.response?.data?.data?.message || 'Failure',
                 description: 'Failed to create Coupon',
             })
         }
