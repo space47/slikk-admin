@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -10,33 +11,61 @@ interface ActiveUserProps {
 const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
     const [userData, setUserData] = useState<any[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
+    const [isPageActive, setIsPageActive] = useState(true)
 
     const fetchUserTable = async () => {
         try {
             setShowSpinner(true)
             const response = await axioisInstance.get(`query/execute/Daily_user_stats?end_date=${to}&start_date=${from}`)
             const data = response.data.data
-            const tab = Object.keys(data).map((key) => {
-                return {
-                    key,
-                    data: data[key],
-                }
-            })
+
+            const tab = Object.keys(data).map((key) => ({
+                key,
+                data: data[key],
+            }))
+
             setUserData(tab[0].data?.data)
         } catch (error: any) {
-            console.log(error)
+            console.error('Error fetching data:', error)
         } finally {
             setShowSpinner(false)
         }
     }
 
     useEffect(() => {
-        fetchUserTable()
-        const interval = setInterval(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                setIsPageActive(false)
+                console.log('Page is inactive')
+            } else {
+                setIsPageActive(true)
+                console.log('Page is active')
+            }
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange)
+        }
+    }, [])
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout
+
+        if (isPageActive) {
             fetchUserTable()
-        }, 60000)
-        return () => clearInterval(interval)
-    }, [from, to])
+            interval = setInterval(fetchUserTable, 60000)
+        } else {
+            console.log('Clearing interval as page is inactive')
+        }
+
+        return () => {
+            if (interval) {
+                clearInterval(interval)
+            }
+        }
+    }, [isPageActive, from, to])
 
     const columns = useMemo(
         () => [

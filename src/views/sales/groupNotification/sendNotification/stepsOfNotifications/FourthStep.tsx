@@ -1,17 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Checkbox, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
 import React from 'react'
-import { USERNOTFARRAY } from '../sendNotify.common'
+import { sendNotificationType, USERNOTFARRAY } from '../sendNotify.common'
 
 interface FourthStepProps {
-    handleSchedule: any
+    handleSchedule: (value: any) => void
     valueForSchedule: any
     scheduleModal: boolean
-
-    values: any
+    values: sendNotificationType
 }
 
-const FourthStep = ({ valueForSchedule, scheduleModal, handleSchedule, values }: FourthStepProps) => {
+const FourthStep = ({ scheduleModal, handleSchedule, values }: FourthStepProps) => {
     return (
         <div
             className={

@@ -197,6 +197,24 @@ export const BANNER_FIELDS_TYPE = [
         status: 'redirection_url',
     },
     {
+        label: 'Web Redirection URL',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'extra_attributes.web_redirection_url',
+        placeholder: 'Place your Web Redirection URL',
+        component: { Input },
+        status: 'web_redirection_url',
+    },
+    {
+        label: 'Mobile Redirection URL',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'extra_attributes.mobile_redirection_url',
+        placeholder: 'Place your Mobile Redirection URL',
+        component: { Input },
+        status: 'mobile_redirection_url',
+    },
+    {
         label: 'Offers',
         classname: '',
         type: 'checkbox',
@@ -212,22 +230,6 @@ export const BANNER_FIELDS_TYPE = [
         component: { Checkbox },
         status: 'is_clickable',
     },
-    // {
-    //     label: 'From Date',
-    //     classname: '',
-    //     type: 'date',
-    //     name: 'from_date',
-    //     component: { Input },
-    //     status: 'from_date',
-    // },
-    // {
-    //     label: 'To Date',
-    //     classname: '',
-    //     type: 'date',
-    //     name: 'to_date',
-    //     component: { Input },
-    //     status: 'to_date',
-    // },
 ]
 
 export const getInitialBannerValue = (bannerData: BANNERMODEL | undefined) => ({

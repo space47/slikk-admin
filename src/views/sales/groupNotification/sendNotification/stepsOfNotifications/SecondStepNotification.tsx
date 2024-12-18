@@ -24,7 +24,6 @@ interface SecondStepNotification {
 }
 
 const SecondStepNotification = ({
-    notificationTypeArray,
     groupValue,
     setGroupValue,
     groupDatatoSend,

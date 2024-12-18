@@ -25,6 +25,11 @@ export const HEADERCONFIGARRAY = [
         type: 'number',
     },
     {
+        label: 'Web Header Top Margin',
+        name: 'header_config.web_bottomMargin',
+        type: 'number',
+    },
+    {
         label: 'Header BG Color',
         name: 'header_config.background_color',
         type: 'text',
@@ -62,6 +67,12 @@ export const SUBHEADERCONFIGARRAY = [
         name: 'sub_header_config.topMargin',
         type: 'number',
     },
+    {
+        label: 'Web Sub Header Top Margin',
+        name: 'sub_header_config.web_topMargin',
+        type: 'number',
+    },
+
     {
         label: 'Sub Header bottom Margin',
         name: 'sub_header_config.bottomMargin',
@@ -103,6 +114,11 @@ export const FOOTERCONFIGARRAY = [
     {
         label: 'Footer Top Margin',
         name: 'footer_config.topMargin',
+        type: 'number',
+    },
+    {
+        label: 'Web Footer Top Margin',
+        name: 'footer_config.web_topMargin',
         type: 'number',
     },
     {

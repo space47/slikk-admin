@@ -47,10 +47,10 @@ const RedMarkTable = ({ columns, page, pageSize, mainData, noPage, overflow, sel
         const createDate = moment(row.original.create_date)
         const currentDate = moment()
         const diffInMinutes = currentDate.diff(createDate, 'minutes')
-        console.log('Diff', diffInMinutes)
 
-        const deliveryType = selectedDeliveryType || ''
-        console.log(`For Red Mark Table-${createDate}`, deliveryType)
+        const rowId = row.original.invoice_id
+        const deliveryType = selectedDeliveryType[rowId] || ''
+
         if (deliveryType === 'EXCHANGE' || deliveryType === 'STANDARD') {
             return ''
         }

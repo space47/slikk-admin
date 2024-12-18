@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
-import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { MouseEvent } from 'react'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiderData } from '../RiderDetailsCommon'
 import { GiFullMotorcycleHelmet } from 'react-icons/gi'
 import { Card } from '@/components/ui'
-import RiderLocationMap from './RiderLocationMap'
 
 interface RiderModalProps {
     dialogIsOpen: boolean
@@ -55,21 +53,31 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) 
                 <div className="flex justify-between mt-10">
                     <div>
                         <div className="flex items-center gap-4 mb-6">
-                            <span className="text-4xl text-blue-500">
+                            <span className="text-6xl text-blue-500">
                                 <GiFullMotorcycleHelmet />
                             </span>
-                            <span className="text-xl font-semibold text-gray-800">{riderData?.profile?.first_name}</span>
+                            <div className="flex flex-col gap-1">
+                                <div className="flex gap-2">
+                                    <span className="text-xl font-semibold text-gray-800">{riderData?.profile?.first_name}</span>
+                                    <span className="text-xl font-semibold text-gray-800">{riderData?.profile?.last_name}</span>
+                                </div>
+                                <div>{riderData?.profile?.mobile}</div>
+                            </div>
                         </div>
 
                         <Card className="shadow-xl bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 rounded-lg p-6 mb-6 w-full">
                             <div className="flex justify-between">
                                 <div className="flex flex-col mb-4">
-                                    <span className="text-blue-700 text-lg font-bold">Shift</span>
-                                    <span className="text-gray-600 text-lg">10AM - 10PM</span>
+                                    <span className="text-gray-600 text-lg">10:00AM - 10:00PM</span>
+                                    <span className="text-blue-700 font-bold justify-center flex">Shift</span>
+                                </div>
+                                <div className="flex flex-col mb-4">
+                                    <span className="text-gray-600 text-lg">Bike</span>
+                                    <span className="text-blue-700 font-bold justify-center flex">Vehicle Type</span>
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-blue-700 text-lg font-bold">Location</span>
-                                    <span className="text-gray-600 text-lg">HSR</span>
+                                    <span className="text-gray-600 text-lg">HSR Outlet</span>
+                                    <span className="text-blue-700  font-bold justify-center flex">Location</span>
                                 </div>
                             </div>
                         </Card>
