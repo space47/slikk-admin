@@ -8,8 +8,10 @@ import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik'
 import { COUPON_FORM } from '../Edit/EditCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { notification } from 'antd'
+import { DatePicker, notification } from 'antd'
 import Upload from '@/components/ui/Upload'
+import moment from 'moment'
+import { useNavigate } from 'react-router-dom'
 
 const CouponsType = () => {
     return ['PERCENT_OFF', 'FLAT_OFF'].map((coupon) => ({
@@ -33,6 +35,7 @@ const DiscountType = () => {
 }
 
 const AddCoupons = () => {
+    const navigate = useNavigate()
     const MAX_UPLOAD = 90000000
 
     const beforeUpload = (file: FileList | null, fileList: File[]) => {
@@ -129,13 +132,14 @@ const AddCoupons = () => {
 
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Coupon created successfully',
+                description: response?.data?.message || response?.data?.data?.message || 'Coupon created successfully',
             })
-        } catch (error) {
+            navigate(-1)
+        } catch (error: any) {
             console.error('Error during submission:', error)
 
             notification.error({
-                message: 'Failure',
+                message: error?.response?.data?.data?.message || 'Failure',
                 description: 'Failed to create Coupon',
             })
         }
@@ -247,6 +251,34 @@ const AddCoupons = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+                                <FormItem label="Valid From" className="col-span-1 w-full">
+                                    <Field name="valid_from">
+                                        {({ field, form }: any) => (
+                                            <DatePicker
+                                                showTime
+                                                placeholder=""
+                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                onChange={(value) => {
+                                                    form.setFieldValue('valid_from', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
+                                <FormItem label="Valid To" className="col-span-1 w-full">
+                                    <Field name="valid_to">
+                                        {({ field, form }: any) => (
+                                            <DatePicker
+                                                showTime
+                                                placeholder=""
+                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                onChange={(value) => {
+                                                    form.setFieldValue('valid_to', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5">
