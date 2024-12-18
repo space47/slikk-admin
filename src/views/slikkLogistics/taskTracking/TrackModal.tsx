@@ -32,7 +32,8 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
     const fetchData = async () => {
         try {
             const response = await axioisInstance.get(`logistic/riders`)
-            const riderdata = response.data.data
+            const riderdata = response.data?.data?.map((item) => item?.profile)
+
             console.log('Rider Data:', riderdata)
             setRidersData(riderdata)
         } catch (error) {
