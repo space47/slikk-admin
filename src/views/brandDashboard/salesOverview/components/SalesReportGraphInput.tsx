@@ -196,8 +196,6 @@ const SalesReportGraphInput = ({
                             />
                         </div>
                     )}
-
-                    <hr className="font-bold text-xl" />
                 </div>
             ))}
         </div>

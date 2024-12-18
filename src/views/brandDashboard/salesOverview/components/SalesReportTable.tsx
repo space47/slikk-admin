@@ -3,7 +3,7 @@ import EasyTable from '@/common/EasyTable'
 import { Button, Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import moment from 'moment'
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { FaDownload } from 'react-icons/fa'
 
 interface SalesReportTableProps {
@@ -27,14 +27,16 @@ type Option = {
 
 const SalesReportTable = ({
     tableData,
-    page,
-    pageSize,
-    setPage,
-    setPageSize,
+    // page,
+    // pageSize,
+    // setPage,
+    // setPageSize,
     keyName,
     tableName,
     handleDownloadCsv,
 }: SalesReportTableProps) => {
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
     const paginatedData = tableData ? tableData?.slice((page - 1) * pageSize, page * pageSize) : []
     const totalPages = Math.ceil(tableData.length / pageSize)
 
@@ -58,6 +60,8 @@ const SalesReportTable = ({
         }))
     }, [tableData])
 
+    console.log('Totla Data', totalPages)
+
     return (
         <div>
             <div className="flex justify-between mb-5">
@@ -65,23 +69,28 @@ const SalesReportTable = ({
                 <div className="flex justify-end ">
                     {/* <Button variant="new" onClick={}>
                     </Button> */}
-                    <FaDownload className="text-3xl cursor-pointer hover:text-blue-500" onClick={() => handleDownloadCsv(tableName)} />
+                    <FaDownload className="text-xl cursor-pointer hover:text-blue-500" onClick={() => handleDownloadCsv(tableName)} />
                 </div>
             </div>
-            <EasyTable mainData={paginatedData} columns={columns} overflow />
 
-            <div className="flex items-center justify-between mt-4">
-                <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => setPageSize(Number(option?.value))}
-                    />
-                </div>
+            <div className="border  border-gray-300 p-1 rounded-sm">
+                <EasyTable mainData={paginatedData} columns={columns} overflow />
             </div>
+
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                    <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
+                    <div style={{ minWidth: 130 }}>
+                        <Select<Option>
+                            size="sm"
+                            isSearchable={false}
+                            value={pageSizeOptions.find((option) => option.value === pageSize)}
+                            options={pageSizeOptions}
+                            onChange={(option) => setPageSize(Number(option?.value))}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
