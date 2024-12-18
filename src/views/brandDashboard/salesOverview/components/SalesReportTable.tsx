@@ -4,6 +4,7 @@ import { Button, Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import moment from 'moment'
 import React, { useMemo } from 'react'
+import { FaDownload } from 'react-icons/fa'
 
 interface SalesReportTableProps {
     tableData: any[]
@@ -60,11 +61,11 @@ const SalesReportTable = ({
     return (
         <div>
             <div className="flex justify-between mb-5">
-                <div className="font-bold text-2xl text-blue-700 ">{keyName ? keyName.toUpperCase() : ''}</div>
+                <div className="font-bold text-xl text-green-500 ">{keyName ? keyName.toUpperCase() : ''}</div>
                 <div className="flex justify-end ">
-                    <Button variant="new" onClick={() => handleDownloadCsv(tableName)}>
-                        Download CSV
-                    </Button>
+                    {/* <Button variant="new" onClick={}>
+                    </Button> */}
+                    <FaDownload className="text-3xl cursor-pointer hover:text-blue-500" onClick={() => handleDownloadCsv(tableName)} />
                 </div>
             </div>
             <EasyTable mainData={paginatedData} columns={columns} overflow />

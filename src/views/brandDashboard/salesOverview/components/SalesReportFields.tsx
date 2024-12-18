@@ -29,20 +29,18 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
 
         return () => clearTimeout(timer)
     }, [])
+
     return (
-        <FormContainer className="items-end">
-            <div className="flex text-xl gap-2 font-bold  mb-4">
+        <FormContainer className=" xl:mx-10 flex flex-col gap-5">
+            <div className="flex text-xl gap-2 font-bold xl:mx-2  mb-4">
                 <span className="text-blue-700">SALES OVERVIEW</span>
             </div>
-            <FormItem className="col-span-1 w-[60%] h-[80%]">
+            <FormItem className="flex">
                 <FieldArray name="required_fields">
                     {({ push, remove }) => (
-                        <div>
+                        <div className="flex justify-start">
                             {values?.map((item: any, index: number) => (
-                                <div
-                                    key={index}
-                                    className="flex space-x-4 mt-2 b xl:flex-row xl:justify-between  flex-col gap-5 items-center rounded-lg px-4 py-2"
-                                >
+                                <div key={index} className="flex space-x-4 mt-2  flex-col gap-5 items-center rounded-lg px-4 py-2">
                                     <div className="">
                                         <Field name={`required_fields[${index}].key`}>
                                             {({ field }: { field: any }) => {
@@ -105,9 +103,9 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                                 )
 
                                                 return (
-                                                    <div className="w-2/3">
+                                                    <div className="w-full">
                                                         <Select
-                                                            className="w-1/3"
+                                                            className="w-full"
                                                             {...field}
                                                             options={options}
                                                             getOptionLabel={(option) => option?.name}
@@ -131,7 +129,7 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
 
                                                 return (
                                                     <Select
-                                                        className="w-1/2"
+                                                        className="w-full"
                                                         {...field}
                                                         options={options}
                                                         getOptionLabel={(option) => option?.name}
@@ -148,12 +146,12 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                             }
 
                                             return (
-                                                <div className="w-2/3">
+                                                <div className="w-full">
                                                     <Input
                                                         type={dataType === 'Date' ? 'date' : 'text'}
                                                         placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
                                                         {...field}
-                                                        className="w-1/3"
+                                                        className="w-full"
                                                     />
                                                 </div>
                                             )
@@ -176,15 +174,14 @@ const SalesReportFields = ({ values, reportQueryArray, optionDataMap, storeName 
                                     </FormContainer>
                                 </div>
                             ))}
+                            <div className="xl:mt-16">
+                                <Button variant="new" type="submit" className="text-white ">
+                                    Generate
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </FieldArray>
-
-                <FormContainer className="flex mt-8 mb-9">
-                    <Button variant="new" type="submit" className="text-white">
-                        Generate
-                    </Button>
-                </FormContainer>
             </FormItem>
         </FormContainer>
     )

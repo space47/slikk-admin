@@ -18,6 +18,7 @@ import moment from 'moment'
 import BadRequest from '@/views/pages/BadRequest/BadRequest'
 import SalesReportGraphInput from './components/SalesReportGraphInput'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { CiNoWaitingSign } from 'react-icons/ci'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -50,6 +51,7 @@ const SalesOverview = () => {
     const [badRequest, setBadRequest] = useState(false)
     const [serverError, setServerError] = useState(false)
     const [reportValue, setReportValue] = useState()
+    const [showEmptyData, setShowEmptyData] = useState(false)
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
@@ -198,6 +200,8 @@ const SalesOverview = () => {
                 }
             })
 
+            const isEmptyData = Object.values(data).every((item) => item.data.length === 0)
+            setShowEmptyData(isEmptyData)
             setDynamicReportTable(tab)
             setTotalCount(tab.length)
             setShowTable(true)
@@ -274,7 +278,7 @@ const SalesOverview = () => {
         <div>
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
-                    <Form className="w-full p-6  bg-white shadow-lg rounded-lg">
+                    <Form className="w-7/9 p-6  bg-white  rounded-lg">
                         <FormContainer>
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6"></div>
                         </FormContainer>
@@ -305,6 +309,13 @@ const SalesOverview = () => {
             {showSpinner ? (
                 <div className="flex justify-center items-center h-auto">
                     <Spinner size={40} />
+                </div>
+            ) : showEmptyData ? (
+                <div className="flex justify-center items-center h-auto text-xl text-red-500 font-bold mt-10">
+                    <div className="flex flex-col gap-2 justify-center items-center">
+                        <CiNoWaitingSign className="text-3xl font-bold text-red-600" />
+                        OOPS......... No data available to Show
+                    </div>
                 </div>
             ) : showTable ? (
                 <SalesReportGraphInput
