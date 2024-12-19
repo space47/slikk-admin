@@ -5,9 +5,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import axios from 'axios'
-import _ from 'lodash' // Lodash for debounce
-
-// Fix for default icon issues with leaflet
+import _ from 'lodash'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import { MdClose, MdFullscreen } from 'react-icons/md'

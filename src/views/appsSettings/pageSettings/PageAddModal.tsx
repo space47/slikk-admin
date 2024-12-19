@@ -9,6 +9,7 @@ import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable, WebType } from './pageSettings.types'
 // import { handleVideo } from '@/common/handleVideo'
 import * as Yup from 'yup'
+import { values } from 'lodash'
 
 type modalProps = {
     isModalOpen: boolean
@@ -44,6 +45,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const [sectionBorderShow, setSectioBorderShow] = useState('')
     const [webSectionBorderShow, setWebSectioBorderShow] = useState('')
     const [componentOption, setComponentOptions] = useState('')
+
+    const [showAddFilter, setShowAddFilter] = useState<number[]>([])
+    const [filterId, setFilterId] = useState()
+    const [filtersData, setFiltersData] = useState([])
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -96,6 +101,40 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     useEffect(() => {
         fetchPost()
     }, [postInput])
+
+    const handleAddFilter = () => {
+        setShowAddFilter([...showAddFilter, showAddFilter.length])
+    }
+
+    const handleRemoveFilter = (index: number) => {
+        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
+        setShowAddFilter(updatedFilters)
+    }
+
+    const handleAddFilters = async (values) => {
+        const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
+        setFiltersData((prev) => {
+            const updatedFilters = [...prev, newFilterData]
+            const lastElement = updatedFilters.at(-1)
+            sendFilterData(lastElement)
+            return updatedFilters
+        })
+    }
+
+    const sendFilterData = async (filterData) => {
+        try {
+            const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
+            setFilterId(response.data?.data?.id)
+            notification.success({
+                message: 'Filter Id Added',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failed to Add Filter ID',
+            })
+            console.error(error)
+        }
+    }
 
     const handleActionClick = (value: any) => {
         console.log('Barcode', value)
@@ -301,6 +340,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     : row?.data_type?.barcodes
                       ? { barcodes: row?.data_type?.barcodes }
                       : {}),
+
+                filters: [row?.division_select ? `division_${row.division_select}` : null, filterId ? `filterID_${filterId}` : null].filter(
+                    Boolean,
+                ),
             },
             component_config: {
                 ...row?.component_config,
@@ -386,6 +429,10 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     setPostData={setPostData}
                     filters={filters}
                     tableData={tableData}
+                    handleAddFilter={handleAddFilter}
+                    handleAddFilters={handleAddFilters}
+                    handleRemoveFilter={handleRemoveFilter}
+                    showAddFilter={showAddFilter}
                 />
             </Modal>
         </>

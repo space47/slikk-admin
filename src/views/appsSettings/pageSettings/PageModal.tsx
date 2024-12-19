@@ -44,6 +44,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     ])
 
     const [showSectionFilters, setShowSectionFilters] = useState(particularRow?.is_section_clickable)
+    const [showAddFilter, setShowAddFilter] = useState<number[]>([])
+    const [filterId, setFilterId] = useState()
+    const [filtersData, setFiltersData] = useState<any[]>([])
 
     console.log('showSection Clickable', showSectionFilters)
 
@@ -92,6 +95,40 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
         setShowTable(true)
+    }
+
+    const handleAddFilter = () => {
+        setShowAddFilter([...showAddFilter, showAddFilter.length])
+    }
+
+    const handleRemoveFilter = (index: number) => {
+        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
+        setShowAddFilter(updatedFilters)
+    }
+
+    const handleAddFilters = async (values: any) => {
+        const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
+        setFiltersData((prev: any) => {
+            const updatedFilters = [...prev, newFilterData]
+            const lastElement = updatedFilters.at(-1)
+            sendFilterData(lastElement)
+            return updatedFilters
+        })
+    }
+
+    const sendFilterData = async (filterData) => {
+        try {
+            const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
+            setFilterId(response.data?.data?.id)
+            notification.success({
+                message: 'Filter Id Added',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failed to Add Filter ID',
+            })
+            console.error(error)
+        }
     }
 
     const fetchInput = async () => {
@@ -341,6 +378,10 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         : row?.data_type?.barcodes
                           ? { barcodes: row?.data_type?.barcodes }
                           : {}),
+                    filters: [
+                        row?.division_select ? `division_${row.division_select}` : null,
+                        filterId ? `filterID_${filterId}` : null,
+                    ].filter(Boolean),
                 },
                 component_config: {
                     ...row?.component_config,
@@ -525,6 +566,10 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     handleRemoveHeaderImage={handleRemoveHeaderImage}
                     handleRemoveSubImage={handleRemoveSubImage}
                     handleRemoveVideo={handleRemoveVideo}
+                    handleAddFilter={handleAddFilter}
+                    handleAddFilters={handleAddFilters}
+                    handleRemoveFilter={handleRemoveFilter}
+                    showAddFilter={showAddFilter}
                 />
             </Modal>
         </>

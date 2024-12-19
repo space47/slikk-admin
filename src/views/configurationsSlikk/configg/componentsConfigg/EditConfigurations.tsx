@@ -53,13 +53,14 @@ const EditConfigurations = () => {
                 if (_.isPlainObject(val)) {
                     return (
                         <div key={fieldName} className="col-span-2">
-                            <div className="text-xl font-semibold mb-1">{key}</div>
+                            <div className="text-xl font-semibold mb-1">{key}::</div>
+
                             <div className="grid grid-cols-2 gap-4">{renderFields(val, fieldName, setFieldValue)}</div>
                         </div>
                     )
                 } else {
                     return (
-                        <FormItem key={fieldName} label={key} className="col-span-1 w-full">
+                        <FormItem key={fieldName} className="col-span-1 w-full">
                             {key.toLowerCase().includes('image') ? (
                                 <div>
                                     <Field name={fieldName}>
@@ -85,7 +86,6 @@ const EditConfigurations = () => {
                                 <div>
                                     <Field name={fieldName}>
                                         {({ field, form }: FieldProps<any>) => {
-                                            // Ensure field.value is an array
                                             const selectedTags = Array.isArray(field.value)
                                                 ? field.value?.map((tag: any) => {
                                                       const matchedOption = filters.filters.find((option: any) => option.value === tag)
@@ -117,13 +117,34 @@ const EditConfigurations = () => {
                                 </div>
                             ) : (
                                 <div>
-                                    <Field
-                                        component={Input}
-                                        type="text"
-                                        placeholder={`Enter ${key}`}
-                                        name={fieldName}
-                                        value={val}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue(fieldName, e.target.value)}
+                                    <FieldArray
+                                        name={parentKey || ''}
+                                        render={(arrayHelpers) => {
+                                            console.log('Data for obj', obj)
+                                            return (
+                                                <div>
+                                                    <FormItem key={fieldName} label={key} className="col-span-1 w-full">
+                                                        <Field
+                                                            component={Input}
+                                                            type="text"
+                                                            placeholder={`Enter ${key}`}
+                                                            name={fieldName}
+                                                            value={val}
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                                                setFieldValue(fieldName, e.target.value)
+                                                            }
+                                                        />
+                                                    </FormItem>
+                                                    {/* {Object.entries(obj).map([key,value])=>{
+                                                        return (
+                                                            <div>
+                                                                ss
+                                                            </div>
+                                                        )
+                                                    }} */}
+                                                </div>
+                                            )
+                                        }}
                                     />
                                 </div>
                             )}
@@ -170,8 +191,8 @@ const EditConfigurations = () => {
                                                         placeholder={`Enter value for ${parentKey}[${index}][${subIndex}]`}
                                                         name={`${arrayKey}[${subIndex}]`}
                                                         value={subItem}
-                                                        onChange={(e: any) => setFieldValue(`${arrayKey}[${subIndex}]`, e.target.value)}
                                                         className="w-full"
+                                                        onChange={(e: any) => setFieldValue(`${arrayKey}[${subIndex}]`, e.target.value)}
                                                     />
                                                 )
                                             })}
