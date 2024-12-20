@@ -799,6 +799,18 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCommuncication.manageTemplates',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/templates`,
+        component: lazy(() => import('@/views/sales/manageTemplates/ManageTemplates')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.manageTemplates',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/templates/addNew`,
+        component: lazy(() => import('@/views/sales/manageTemplates/AddTemplates/AddTemplates')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCommuncication.notification',
         path: `${APP_PREFIX_PATH}/appsCommuncication/notification`,
         component: lazy(() => import('@/views/sales/Notification/getNotification/NotificationTable')),

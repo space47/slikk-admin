@@ -30,7 +30,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                 <FieldArray name="required_fields">
                     {({ push, remove }) => (
                         <div>
-                            {values?.map((item: any, index: number) => (
+                            {values?.reverse().map((item: any, index: number) => (
                                 <div
                                     key={index}
                                     className="flex space-x-4 mt-2 xl:flex-row flex-col  items-center

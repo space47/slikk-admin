@@ -422,20 +422,22 @@ const DeliveryOrders = () => {
                             onChange={handleSearch}
                         />
                     </div>
-                    <div className="bg-gray-100 dark:bg-blue-600 dark:text-white  xl:text-md text-sm w-auto rounded-md ">
-                        <Dropdown
-                            className=" text-xl text-black bg-gray-200 font-bold "
-                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                            onSelect={handleSelect}
-                        >
-                            {SEARCHOPTIONS?.map((item, key) => {
-                                return (
-                                    <DropdownItem key={key} eventKey={item.value}>
-                                        <span>{item.label}</span>
-                                    </DropdownItem>
-                                )
-                            })}
-                        </Dropdown>
+                    <div>
+                        <div className="bg-gray-100 dark:bg-blue-600 dark:text-white xl:mt-1  xl:text-md text-sm w-auto rounded-md ">
+                            <Dropdown
+                                className=" text-xl text-black bg-gray-200 font-bold "
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                onSelect={handleSelect}
+                            >
+                                {SEARCHOPTIONS?.map((item, key) => {
+                                    return (
+                                        <DropdownItem key={key} eventKey={item.value}>
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    )
+                                })}
+                            </Dropdown>
+                        </div>
                     </div>
                 </div>
 
@@ -465,36 +467,38 @@ const DeliveryOrders = () => {
                 </div>
             </div>
 
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                            <Sorter sort={header.column.getIsSorted()} />
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <div className="border p-2 border-gray-200 rounded-lg">
+                <Table>
+                    <THead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <Tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {header.isPlaceholder ? null : (
+                                            <div
+                                                className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+                                                onClick={header.column.getToggleSortingHandler()}
+                                            >
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                <Sorter sort={header.column.getIsSorted()} />
+                                            </div>
+                                        )}
+                                    </Th>
+                                ))}
+                            </Tr>
+                        ))}
+                    </THead>
+                    <TBody>
+                        {table.getRowModel().rows.map((row) => (
+                            <Tr key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                ))}
+                            </Tr>
+                        ))}
+                    </TBody>
+                </Table>
+            </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
