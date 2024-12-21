@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { handleimage } from '@/common/handleImage'
 import React, { useEffect, useState } from 'react'
 import { GoDotFill } from 'react-icons/go'
@@ -8,10 +9,13 @@ interface TemplateMobilePreviewProps {
     image?: any
     video?: any
     text?: any
+    buttonText?: any
+    quickButtonText?: any
 }
 
-const TemplateMobilePreview = ({ title, message, image, video, text }: TemplateMobilePreviewProps) => {
+const TemplateMobilePreview = ({ title, message, image, video, text, buttonText, quickButtonText }: TemplateMobilePreviewProps) => {
     const [imageView, setImageView] = useState<string>('')
+    console.log('Button Text in here', buttonText)
 
     useEffect(() => {
         const handleImageView = async () => {
@@ -48,6 +52,22 @@ const TemplateMobilePreview = ({ title, message, image, video, text }: TemplateM
                 {video && (
                     <video controls className="rounded-lg mt-2 w-full" src={video instanceof File ? URL.createObjectURL(video) : video} />
                 )}
+                <div className="flex items-center justify-center">
+                    <span className="text-blue-700">
+                        {buttonText?.map((item, key) => {
+                            console.log('Item for button', item)
+                            return <div key={key}>{item}</div>
+                        })}
+                    </span>
+                </div>
+                <div className="flex items-center justify-center">
+                    <span className="text-blue-700">
+                        {quickButtonText?.map((item, key) => {
+                            console.log('Item for button', item)
+                            return <div key={key}>{item}</div>
+                        })}
+                    </span>
+                </div>
 
                 {/* Timestamp */}
                 <div className="flex justify-end items-center text-xs text-gray-500 mt-2 gap-1">

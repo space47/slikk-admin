@@ -296,10 +296,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...(mobileimageUpload || row?.mobile_background_image
                     ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                     : {}),
-                ...(backgroundImageAspectRatios?.[0]
-                    ? { background_image_aspect_ratio: Number(backgroundImageAspectRatios[0].toFixed(2)) }
-                    : {}),
-                ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: Number(mobileImageAspectRatios[0].toFixed(2)) } : {}),
+                ...(backgroundImageAspectRatios?.[0] ? { background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) } : {}),
+                ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) } : {}),
 
                 ...(backgroundVideoUpload || row?.background_video
                     ? { background_video: backgroundVideoUpload || row?.background_video }
@@ -311,20 +309,20 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             footer_config: {
                 ...row?.footer_config,
                 ...(footerImageUpload ? { image: footerImageUpload } : {}),
-                ...(footerImageAspectRatios?.[0] ? { aspect_ratio: Number(footerImageAspectRatios[0].toFixed(2)) } : {}),
+                ...(footerImageAspectRatios?.[0] ? { aspect_ratio: footerImageAspectRatios[0].toFixed(2) } : {}),
                 ...(footervideoUpload ? { video: footervideoUpload } : {}),
             },
             header_config: {
                 ...row?.header_config,
                 ...(headerIconUpload ? { icon: headerIconUpload } : {}),
                 ...(headerImageUpload ? { image: headerImageUpload } : {}),
-                ...(headerImageAspectRatios?.[0] ? { aspect_ratio: Number(headerImageAspectRatios[0].toFixed(2)) } : {}),
+                ...(headerImageAspectRatios?.[0] ? { aspect_ratio: headerImageAspectRatios[0].toFixed(2) } : {}),
                 ...(headerVideoUpload ? { video: headerVideoUpload } : {}),
             },
             sub_header_config: {
                 ...row?.sub_header_config,
                 ...(subHeaderImageUpload ? { image: subHeaderImageUpload } : {}),
-                ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: Number(subHeaderImageAspectRatios[0].toFixed(2)) } : {}),
+                ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: subHeaderImageAspectRatios[0].toFixed(2) } : {}),
                 ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
             },
             data_type: {
