@@ -86,7 +86,7 @@ const PageComponentConfig = ({
                     <span className="bg-gray-300  rounded-lg ">Mobile Configurations :</span>
                 </div>
 
-                {genericComponentArray.slice(0, 19).map((item, key) => (
+                {genericComponentArray.slice(0, 28).map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-2/3">
                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
                     </FormItem>
@@ -128,7 +128,7 @@ const PageComponentConfig = ({
                     <span className="bg-gray-300  rounded-lg ">Web Configurations :</span>
                 </div>
 
-                {genericComponentArray.slice(19).map((item, key) => (
+                {genericComponentArray.slice(28).map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-2/3">
                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
                     </FormItem>
@@ -198,7 +198,7 @@ const PageComponentConfig = ({
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                 const isChecked = e.target.checked
                                 setFieldValue('section_border', isChecked)
-                                setSectioBorderShow(isChecked ? 'yes' : 'no')
+                                setSectioBorderShow(isChecked)
                             }}
                         />
                         {sectionBorderShow === true && (

@@ -317,12 +317,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
             const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
 
-            console.log('bgWebAspectRatio', Number(backgroundImageAspectRatios[0].toFixed(2)))
-
-            console.log('Image Url', mobileimageUpload)
-            console.log('video Url', mobileBackgroundVideoUpload)
-
-            setShowSpinner(true)
             console.log('Start New Row')
             const newRow = {
                 ...row,
@@ -387,14 +381,14 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 },
                 component_config: {
                     ...row?.component_config,
-                    ...(row?.component_config?.border ? { border: row?.component_config?.border } : {}),
-                    ...(row?.component_config?.name ? { name: row?.component_config?.name } : {}),
-                    ...(row?.component_config?.name_footer ? { name_footer: row?.component_config?.name_footer } : {}),
-                    ...(row?.component_config?.section_border ? { section_border: row?.component_config?.section_border } : {}),
-                    ...(row?.component_config?.web_border ? { web_border: row?.component_config?.web_border } : {}),
-                    ...(row?.component_config?.web_name ? { web_name: row?.component_config?.web_name } : {}),
-                    ...(row?.component_config?.web_name_footer ? { web_name_footer: row?.component_config?.web_name_footer } : {}),
-                    ...(row?.component_config?.web_section_border ? { web_section_border: row?.component_config?.web_section_border } : {}),
+                    ...(row?.border ? { border: row?.border } : {}),
+                    ...(row?.name ? { name: row?.name } : {}),
+                    ...(row?.name_footer ? { name_footer: row?.name_footer } : {}),
+                    ...(row?.section_border ? { section_border: row?.section_border } : {}),
+                    ...(row?.web_border ? { web_border: row?.web_border } : {}),
+                    ...(row?.web_name ? { web_name: row?.web_name } : {}),
+                    ...(row?.web_name_footer ? { web_name_footer: row?.web_name_footer } : {}),
+                    ...(row?.web_section_border ? { web_section_border: row?.web_section_border } : {}),
                 },
                 extra_info: {
                     ...row?.extra_info,

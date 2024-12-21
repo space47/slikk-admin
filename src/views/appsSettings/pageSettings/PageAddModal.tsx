@@ -285,6 +285,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         //Fields
         const newRowAdd = {
             ...row,
+
             ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
             ...(mobileimageUpload || row?.mobile_background_image
                 ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
@@ -314,6 +315,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             },
             header_config: {
                 ...row?.header_config,
+
                 ...(headerIconUpload ? { icon: headerIconUpload } : {}),
                 ...(headerImageUpload ? { image: headerImageUpload } : {}),
                 ...(headerImageAspectRatios?.[0] ? { aspect_ratio: headerImageAspectRatios[0].toFixed(2) } : {}),
@@ -345,14 +347,14 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
             },
             component_config: {
                 ...row?.component_config,
-                ...(row?.component_config?.border ? { border: row?.component_config?.border } : {}),
-                ...(row?.component_config?.name ? { name: row?.component_config?.name } : {}),
-                ...(row?.component_config?.name_footer ? { name_footer: row?.component_config?.name_footer } : {}),
-                ...(row?.component_config?.section_border ? { section_border: row?.component_config?.section_border } : {}),
-                ...(row?.component_config?.web_border ? { web_border: row?.component_config?.web_border } : {}),
-                ...(row?.component_config?.web_name ? { web_name: row?.component_config?.web_name } : {}),
-                ...(row?.component_config?.web_name_footer ? { web_name_footer: row?.component_config?.web_name_footer } : {}),
-                ...(row?.component_config?.web_section_border ? { web_section_border: row?.component_config?.web_section_border } : {}),
+                ...(row?.border ? { border: row?.border } : {}),
+                ...(row?.name ? { name: row?.name } : {}),
+                ...(row?.name_footer ? { name_footer: row?.name_footer } : {}),
+                ...(row?.section_border ? { section_border: row?.section_border } : {}),
+                ...(row?.web_border ? { web_border: row?.web_border } : {}),
+                ...(row?.web_name ? { web_name: row?.web_name } : {}),
+                ...(row?.web_name_footer ? { web_name_footer: row?.web_name_footer } : {}),
+                ...(row?.web_section_border ? { web_section_border: row?.web_section_border } : {}),
             },
             extra_info: {
                 ...row?.extra_info,
