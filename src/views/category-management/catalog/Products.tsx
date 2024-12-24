@@ -104,11 +104,11 @@ const Products = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            setShowSpinner(true)
             let searchInputType = ''
 
+            setShowSpinner(true)
             if (currentSelectedPage.value === 'sku' && globalFilter) {
-                searchInputType = `&sku=${globalFilter}`
+                searchInputType = `&barcodes=${globalFilter}`
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
                 searchInputType = `&name=${globalFilter}`
             }
@@ -118,7 +118,6 @@ const Products = () => {
 
             const data = response.data?.results
             const total = response.data.count
-
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -317,7 +316,7 @@ const Products = () => {
             let searchInputType = ''
 
             if (currentSelectedPage.value === 'sku' && globalFilter) {
-                searchInputType = `&sku=${globalFilter}`
+                searchInputType = `&barcodes=${globalFilter}`
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
                 searchInputType = `&name=${globalFilter}`
             }
