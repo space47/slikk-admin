@@ -1,26 +1,39 @@
-import React, { useEffect, useMemo } from 'react'
-import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
-import Table from '@/components/ui/Table'
-import { NotificationEvent } from './commonNotification'
-import { fetchNotification, setPage, setPageSize } from '@/store/slices/notificationSlice/notificationSlice'
-import { useAppDispatch, useAppSelector } from '@/store'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useMemo, useState } from 'react'
 import { NotificationData } from '@/store/types/notification.types'
 import moment from 'moment'
-import { Button } from '@/components/ui'
+import { Button, Pagination, Select } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
+import EasyTable from '@/common/EasyTable'
+import { pageSizeOptions } from '@/views/org-management/sellers/sellerCommon'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
-const { Tr, Th, Td, THead, TBody } = Table
 const NotificationTable = () => {
     const navigate = useNavigate()
-    const dispatch = useAppDispatch()
+    const [notificationData, setNotificationData] = useState<NotificationData[]>([])
+    const [page, setPage] = useState<number>(1)
+    const [pageSize, setPageSize] = useState<number>(10)
+    const [totalCount, setTotalCount] = useState<number>(0)
+    const [globalFilter, setGlobalFilter] = useState<string>()
 
-    const { notification, page, pageSize, count } = useAppSelector((state: { notification: NotificationData }) => state.notification)
+    const fetchNotificationData = async () => {
+        try {
+            let filterData = ''
+            if (globalFilter) {
+                filterData = `&event_name=${globalFilter}`
+            }
+            const response = await axioisInstance.get(`/notifications/config?p=${page}&page_size=${pageSize}${filterData}`)
+            const data = response?.data?.data
+            setNotificationData(data?.results)
+            setTotalCount(data?.count)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     useEffect(() => {
-        dispatch(fetchNotification())
-    }, [dispatch, page, pageSize])
-
-    console.log('NOTIFICATION', notification)
+        fetchNotificationData()
+    }, [page, pageSize, globalFilter])
 
     const columns = useMemo(
         () => [
@@ -32,12 +45,12 @@ const NotificationTable = () => {
             {
                 header: 'Create Date',
                 accessorKey: 'create_date',
-                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
                 header: 'Update Date',
                 accessorKey: 'update_date',
-                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
+                cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
             {
                 header: 'Image',
@@ -67,52 +80,50 @@ const NotificationTable = () => {
         [],
     )
 
-    const table = useReactTable({
-        data: notification || [],
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        manualPagination: false,
-        // state: {
-        //     pagination: {
-        //         pageIndex: 0,
-        //         pageSize: data?.results?.length || 10,
-        //     },
-        // },
-    })
-
     const handleAddNotification = () => {
         navigate('/app/appSettings/addNotification')
+    }
+
+    const onPaginationChange = (page: number) => {
+        setPage(page)
     }
 
     return (
         <div className="flex flex-col gap-5">
             {' '}
-            <div className="flex justify-end">
-                <Button variant="new" onClick={handleAddNotification}>
-                    Add Config
-                </Button>
+            <div>
+                <div>
+                    <input
+                        value={globalFilter}
+                        placeholder="Search Here.."
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="rounded-md"
+                    />
+                </div>
+                <div className="flex justify-end">
+                    <Button variant="new" onClick={handleAddNotification}>
+                        Add Config
+                    </Button>
+                </div>
             </div>
-            <div className="overflow-x-auto">
-                <Table className="min-w-full">
-                    <THead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <Tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <Th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</Th>
-                                ))}
-                            </Tr>
-                        ))}
-                    </THead>
-                    <TBody>
-                        {table.getRowModel().rows.map((row) => (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                                ))}
-                            </Tr>
-                        ))}
-                    </TBody>
-                </Table>
+            <EasyTable mainData={notificationData} columns={columns} page={page} pageSize={pageSize} />
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
+                <Pagination
+                    pageSize={pageSize}
+                    currentPage={page}
+                    total={totalCount}
+                    onChange={onPaginationChange}
+                    className="mb-4 md:mb-0"
+                />
+                <div className="w-full sm:w-auto min-w-[130px]">
+                    <Select
+                        size="sm"
+                        value={pageSizeOptions.find((option) => option.value === pageSize)}
+                        options={pageSizeOptions}
+                        onChange={(option) => setPageSize(option?.value)}
+                        className="w-full"
+                    />
+                </div>
             </div>
         </div>
     )

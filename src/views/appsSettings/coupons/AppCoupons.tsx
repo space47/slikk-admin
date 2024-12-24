@@ -81,7 +81,17 @@ const AppCoupons = () => {
             accessor: 'valid_to',
             format: (value) => moment(value).format('YYYY-MM-DD'),
         },
-        { header: 'Description', accessor: 'description' },
+        {
+            header: 'Description',
+            accessor: 'description',
+            format: (value) => {
+                return (
+                    <div className="w-[200px] h-[70px] overflow-hidden">
+                        <div className="text-ellipsis whitespace-normal line-clamp-3" dangerouslySetInnerHTML={{ __html: value }} />
+                    </div>
+                )
+            },
+        },
         { header: 'Max Count Per User', accessor: 'max_count_per_user' },
         { header: 'Coupon Used Count', accessor: 'coupon_used_count' },
         { header: 'Frequency', accessor: 'frequency' },

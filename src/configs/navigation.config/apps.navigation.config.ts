@@ -549,6 +549,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsCommuncication.manageTemplates',
+                        path: `${APP_PREFIX_PATH}/appsCommuncication/templates`,
+                        title: 'Manage Templates',
+                        translateKey: 'nav.appsCommuncication.manageTemplates',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                     // {
                     //     key: 'appscreatorPost.uploadPost',
                     //     path: `${APP_PREFIX_PATH}/uploadPost`,

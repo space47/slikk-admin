@@ -44,6 +44,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     ])
 
     const [showSectionFilters, setShowSectionFilters] = useState(particularRow?.is_section_clickable)
+    const [showAddFilter, setShowAddFilter] = useState<number[]>([])
+    const [filterId, setFilterId] = useState()
+    const [filtersData, setFiltersData] = useState<any[]>([])
 
     console.log('showSection Clickable', showSectionFilters)
 
@@ -92,6 +95,40 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
         setShowTable(true)
+    }
+
+    const handleAddFilter = () => {
+        setShowAddFilter([...showAddFilter, showAddFilter.length])
+    }
+
+    const handleRemoveFilter = (index: number) => {
+        const updatedFilters = showAddFilter.filter((_, i) => i !== index)
+        setShowAddFilter(updatedFilters)
+    }
+
+    const handleAddFilters = async (values: any) => {
+        const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
+        setFiltersData((prev: any) => {
+            const updatedFilters = [...prev, newFilterData]
+            const lastElement = updatedFilters.at(-1)
+            sendFilterData(lastElement)
+            return updatedFilters
+        })
+    }
+
+    const sendFilterData = async (filterData) => {
+        try {
+            const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
+            setFilterId(response.data?.data?.id)
+            notification.success({
+                message: 'Filter Id Added',
+            })
+        } catch (error) {
+            notification.error({
+                message: 'Failed to Add Filter ID',
+            })
+            console.error(error)
+        }
     }
 
     const fetchInput = async () => {
@@ -280,10 +317,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
             const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
 
-            console.log('Image Url', mobileimageUpload)
-            console.log('video Url', mobileBackgroundVideoUpload)
-
-            setShowSpinner(true)
             console.log('Start New Row')
             const newRow = {
                 ...row,
@@ -298,9 +331,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                         : {}),
                     ...(backgroundImageAspectRatios?.[0]
-                        ? { background_image_aspect_ratio: Number(backgroundImageAspectRatios[0].toFixed(2)) }
+                        ? { background_image_aspect_ratio: backgroundImageAspectRatios[0].toFixed(2) }
                         : {}),
-                    ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: Number(mobileImageAspectRatios[0].toFixed(2)) } : {}),
+                    ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0].toFixed(2) } : {}),
 
                     ...(backgroundVideoUpload || row?.background_video
                         ? { background_video: backgroundVideoUpload || row?.background_video }
@@ -312,20 +345,20 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 footer_config: {
                     ...row?.footer_config,
                     ...(footerImageUpload ? { image: footerImageUpload } : {}),
-                    ...(footerImageAspectRatios?.[0] ? { aspect_ratio: Number(footerImageAspectRatios[0].toFixed(2)) } : {}),
+                    ...(footerImageAspectRatios?.[0] ? { aspect_ratio: footerImageAspectRatios[0].toFixed(2) } : {}),
                     ...(footervideoUpload ? { video: footervideoUpload } : {}),
                 },
                 header_config: {
                     ...row?.header_config,
                     ...(headerIconUpload ? { icon: headerIconUpload } : {}),
                     ...(headerImageUpload ? { image: headerImageUpload } : {}),
-                    ...(headerImageAspectRatios?.[0] ? { aspect_ratio: Number(headerImageAspectRatios[0].toFixed(2)) } : {}),
+                    ...(headerImageAspectRatios?.[0] ? { aspect_ratio: headerImageAspectRatios[0].toFixed(2) } : {}),
                     ...(headerVideoUpload ? { video: headerVideoUpload } : {}),
                 },
                 sub_header_config: {
                     ...row?.sub_header_config,
                     ...(subHeaderImageUpload ? { image: subHeaderImageUpload } : {}),
-                    ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: Number(subHeaderImageAspectRatios[0].toFixed(2)) } : {}),
+                    ...(subHeaderImageAspectRatios?.[0] ? { aspect_ratio: subHeaderImageAspectRatios[0].toFixed(2) } : {}),
                     ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
                 },
                 data_type: {
@@ -341,17 +374,21 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         : row?.data_type?.barcodes
                           ? { barcodes: row?.data_type?.barcodes }
                           : {}),
+                    filters: [
+                        row?.division_select ? `division_${row.division_select}` : null,
+                        filterId ? `filterID_${filterId}` : null,
+                    ].filter(Boolean),
                 },
                 component_config: {
                     ...row?.component_config,
-                    ...(row?.component_config?.border ? { border: row?.component_config?.border } : {}),
-                    ...(row?.component_config?.name ? { name: row?.component_config?.name } : {}),
-                    ...(row?.component_config?.name_footer ? { name_footer: row?.component_config?.name_footer } : {}),
-                    ...(row?.component_config?.section_border ? { section_border: row?.component_config?.section_border } : {}),
-                    ...(row?.component_config?.web_border ? { web_border: row?.component_config?.web_border } : {}),
-                    ...(row?.component_config?.web_name ? { web_name: row?.component_config?.web_name } : {}),
-                    ...(row?.component_config?.web_name_footer ? { web_name_footer: row?.component_config?.web_name_footer } : {}),
-                    ...(row?.component_config?.web_section_border ? { web_section_border: row?.component_config?.web_section_border } : {}),
+                    ...(row?.border ? { border: row?.border } : {}),
+                    ...(row?.name ? { name: row?.name } : {}),
+                    ...(row?.name_footer ? { name_footer: row?.name_footer } : {}),
+                    ...(row?.section_border ? { section_border: row?.section_border } : {}),
+                    ...(row?.web_border ? { web_border: row?.web_border } : {}),
+                    ...(row?.web_name ? { web_name: row?.web_name } : {}),
+                    ...(row?.web_name_footer ? { web_name_footer: row?.web_name_footer } : {}),
+                    ...(row?.web_section_border ? { web_section_border: row?.web_section_border } : {}),
                 },
                 extra_info: {
                     ...row?.extra_info,
@@ -525,6 +562,10 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     handleRemoveHeaderImage={handleRemoveHeaderImage}
                     handleRemoveSubImage={handleRemoveSubImage}
                     handleRemoveVideo={handleRemoveVideo}
+                    handleAddFilter={handleAddFilter}
+                    handleAddFilters={handleAddFilters}
+                    handleRemoveFilter={handleRemoveFilter}
+                    showAddFilter={showAddFilter}
                 />
             </Modal>
         </>

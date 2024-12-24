@@ -14,6 +14,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Upload } from '@/components/ui'
 import { beforeUpload } from '@/common/beforeUpload'
 import moment from 'moment'
+import { RichTextEditor } from '@/components/shared'
 
 const CouponsType = () => {
     return ['PERCENT_OFF', 'FLAT_OFF'].map((segment) => ({
@@ -117,6 +118,12 @@ const AddCoupons = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+
+                                <Field name="description">
+                                    {({ field, form }: FieldProps) => (
+                                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                    )}
+                                </Field>
 
                                 <FormItem label="Valid From" className="col-span-1 w-full">
                                     <Field name="valid_from">

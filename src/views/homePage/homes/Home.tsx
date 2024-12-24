@@ -247,7 +247,7 @@ const Home = () => {
                             />
                             <button
                                 onClick={() => handleCustomerFunction(inputValues.customer)}
-                                className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                             >
                                 <FaSearch />
                             </button>
@@ -268,7 +268,7 @@ const Home = () => {
                             />
                             <button
                                 onClick={() => handleInvoiceFunction(inputValues.invoice_id)}
-                                className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                             >
                                 <FaSearch />
                             </button>

@@ -1,7 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import Avatar from '@/components/ui/Avatar'
-import moment from 'moment'
 import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { fetchUserSummary } from '@/store/slices/orderUserSummary/UserSummary.slice'
@@ -10,6 +9,9 @@ import { Button } from '@/components/ui'
 import BlockUserModal from './componentsHomes/BlockUserModal'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import CustomerData from './componentsHomes/CustomerData'
+import CartPaymentSummary from './componentsHomes/CartPaymentSummary'
+import CartShipping from './componentsHomes/CartShipping'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
@@ -25,30 +27,6 @@ const CustomerAnalytics = () => {
     }, [dispatch])
 
     console.log('DATA', customerData)
-
-    const CustomerArray = [
-        {
-            name: 'Name',
-            value: `${customerData?.profile?.first_name || ''} ${customerData?.profile?.last_name || ''}`.trim(),
-        },
-        {
-            name: 'Email',
-            value: customerData?.profile?.email || '',
-        },
-        {
-            name: 'Mobile',
-            value: `${customerData?.profile?.country_code || ''} ${customerData?.profile?.mobile || ''}`.trim(),
-        },
-
-        {
-            name: 'Date of Birth',
-            value: moment(customerData?.profile?.dob).format('YYYY-MM-DD') || '',
-        },
-        {
-            name: 'Gender',
-            value: customerData?.profile?.gender || 'N/A',
-        },
-    ]
 
     const handleBlockUser = async () => {
         const body = {
@@ -79,45 +57,18 @@ const CustomerAnalytics = () => {
                     </Button>
                 </div>
             </div>
-            {customerData ? (
-                <div className="flex flex-wrap gap-6">
-                    {/* Profile Section */}
-                    <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex-1 dark:bg-gray-800 dark:text-white">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">Profile</h2>
-                        <div className="flex items-center gap-4">
-                            <Avatar
-                                shape="circle"
-                                src={customerData?.profile?.image}
-                                className="w-[80px] h-[80px] border border-gray-300"
-                            />
-                            <div className="space-y-1 dark:text-white">
-                                {CustomerArray.map((item, key) => (
-                                    <p className="text-sm text-gray-600 dark:text-white" key={key}>
-                                        <span className="font-medium text-gray-700">{item?.name}:</span> {item?.value}
-                                    </p>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Orders Section */}
-                    <div className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex-1">
-                        <h2 className="text-xl font-semibold mb-4 text-gray-700">Orders</h2>
-                        <p className="text-sm text-gray-600 mb-1">
-                            <span className="font-medium text-gray-700">Order Count:</span> {customerData.orders?.count}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                            <span className="font-medium text-gray-700">Total Amount:</span> Rs.
-                            {customerData.orders?.total_amount.toFixed(2)}
-                        </p>
-                    </div>
+            <div className="flex justify-between w-full gap-4">
+                <div className="w-1/2">
+                    {customerData ? <CustomerData data={customerData} /> : <p className="text-gray-500">Loading data...</p>}
                 </div>
-            ) : (
-                <p className="text-gray-500">Loading data...</p>
-            )}
+                <div className="flex flex-col gap-2 w-full">
+                    <CartPaymentSummary />
+                    <CartShipping />
+                </div>
+            </div>
+
             <br />
             <div className="font-bold text-xl">Cart Details:</div>
-            {/* Cart Section */}
             {customerData?.cart !== null ? (
                 <>
                     <div className="bg-white p-5 mt-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">

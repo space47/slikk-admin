@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface, EDITFIELDSARRAY } from './commonConfigTypes'
 import { Field, FieldArray, FieldProps, Form, Formik } from 'formik'
-import { Button, FormContainer, FormItem, Input, Select, Spinner, Upload } from '@/components/ui'
+import { Button, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate, useParams } from 'react-router-dom'
 import { notification } from 'antd'
@@ -10,12 +10,11 @@ import _ from 'lodash'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { beforeUpload } from '@/common/beforeUpload'
 import { handleimage } from '@/common/handleImage'
-import { MdCancel } from 'react-icons/md'
 import { IoIosAddCircle } from 'react-icons/io'
-import TagsEdit from '@/views/appsSettings/pageSettings/TagsEdit'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
+import { MdCancel } from 'react-icons/md'
 
 const EditConfigurations = () => {
     const navigate = useNavigate()
@@ -24,196 +23,189 @@ const EditConfigurations = () => {
     const { id } = useParams()
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-
     const dispatch = useAppDispatch()
+
     useEffect(() => {
         dispatch(getAllFiltersAPI())
-    }, [])
+    }, [dispatch])
 
     const fetchConfigurationApi = async () => {
         try {
             const response = await axiosInstance.get(`/app/configuration?config_id=${id}`)
-            const apiData = response.data?.config
-            setEditConfigData(apiData)
+            setEditConfigData(response.data?.config || null)
         } catch (error) {
-            console.log(error)
+            console.error('Error fetching configuration:', error)
         }
     }
 
     useEffect(() => {
-        fetchConfigurationApi()
+        if (id) fetchConfigurationApi()
     }, [id])
 
     const renderFields = (obj: any, parentKey: string, setFieldValue: any) => {
-        console.log('Item for the renderedFields', obj, parentKey)
         if (_.isPlainObject(obj)) {
-            return Object.entries(obj).map(([key, val]) => {
-                const fieldName = parentKey ? `${parentKey}.${key}` : key
-                console.log('Key to recognize', key)
-                if (_.isPlainObject(val)) {
-                    return (
-                        <div key={fieldName} className="col-span-2">
-                            <div className="text-xl font-semibold mb-1">{key}</div>
-                            <div className="grid grid-cols-2 gap-4">{renderFields(val, fieldName, setFieldValue)}</div>
-                        </div>
-                    )
-                } else {
-                    return (
-                        <FormItem key={fieldName} label={key} className="col-span-1 w-full">
-                            {key.toLowerCase().includes('image') ? (
-                                <div>
+            return (
+                <div>
+                    {Object.entries(obj).map(([key, val]) => {
+                        const fieldName = parentKey ? `${parentKey}.${key}` : key
+
+                        return (
+                            <div key={fieldName} className="flex gap-4 items-center mb-2">
+                                {/* Editable key */}
+                                <Field name={fieldName}>
+                                    {({ form }) => (
+                                        <Input
+                                            placeholder="Key"
+                                            value={key}
+                                            onChange={(e) => {
+                                                const newKey = e.target.value
+                                                const updatedObj = { ...obj, [newKey]: val }
+                                                delete updatedObj[key]
+                                                form.setFieldValue(parentKey, updatedObj)
+                                            }}
+                                            className="w-1/3"
+                                        />
+                                    )}
+                                </Field>
+
+                                {/* Editable value based on key */}
+                                {key.toLowerCase().includes('filters') ? (
+                                    <>
+                                        <div>
+                                            <Field name={fieldName}>
+                                                {({ field, form }: FieldProps<any>) => {
+                                                    const selectedTags = Array.isArray(field.value)
+                                                        ? field.value?.map((tag: any) => {
+                                                              const matchedOption = filters.filters.find(
+                                                                  (option: any) => option.value === tag,
+                                                              )
+                                                              return (
+                                                                  matchedOption || {
+                                                                      value: tag,
+                                                                      label: tag,
+                                                                  }
+                                                              )
+                                                          })
+                                                        : []
+
+                                                    return (
+                                                        <Select
+                                                            isMulti
+                                                            placeholder="Select Filter Tags"
+                                                            options={filters.filters}
+                                                            value={selectedTags ?? []}
+                                                            getOptionLabel={(option) => option.label}
+                                                            getOptionValue={(option) => option.value}
+                                                            onChange={(newVal) => {
+                                                                const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                                form.setFieldValue(field.name, newValues)
+                                                            }}
+                                                        />
+                                                    )
+                                                }}
+                                            </Field>
+                                        </div>
+                                    </>
+                                ) : key.toLowerCase().includes('image') ? (
                                     <Field name={fieldName}>
-                                        {({ form }: FieldProps) => (
+                                        {({ field, form }) => (
                                             <Upload
+                                                name="file"
+                                                listType="picture"
                                                 beforeUpload={beforeUpload}
-                                                onChange={(files) => form.setFieldValue(fieldName, files)}
-                                                onFileRemove={(files) => form.setFieldValue(fieldName, files)}
-                                                className="flex justify-center"
-                                            />
+                                                onChange={async (info) => {
+                                                    const processedImage = await handleimage(key, info.fileList)
+                                                    form.setFieldValue(fieldName, processedImage)
+                                                }}
+                                            >
+                                                <Button>Upload Image</Button>
+                                            </Upload>
                                         )}
                                     </Field>
+                                ) : _.isPlainObject(val) || _.isArray(val) ? (
+                                    <div className="w-full">{renderFields(val, fieldName, setFieldValue)}</div>
+                                ) : (
                                     <Field
-                                        component={Input}
-                                        type="text"
-                                        placeholder={`Enter ${key}`}
                                         name={fieldName}
-                                        value={val}
-                                        onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                placeholder="Value"
+                                                className="w-full"
+                                                onChange={(e) => setFieldValue(fieldName, e.target.value)}
+                                            />
+                                        )}
                                     />
-                                </div>
-                            ) : key === 'filters' ? (
-                                <div>
-                                    <Field name={fieldName}>
-                                        {({ field, form }: FieldProps<any>) => {
-                                            // Ensure field.value is an array
-                                            const selectedTags = Array.isArray(field.value)
-                                                ? field.value?.map((tag: any) => {
-                                                      const matchedOption = filters.filters.find((option: any) => option.value === tag)
-                                                      return (
-                                                          matchedOption || {
-                                                              value: tag,
-                                                              label: tag,
-                                                          }
-                                                      )
-                                                  })
-                                                : []
+                                )}
 
-                                            return (
-                                                <Select
-                                                    isMulti
-                                                    placeholder="Select Filter Tags"
-                                                    options={filters.filters}
-                                                    value={selectedTags ?? []}
-                                                    getOptionLabel={(option) => option.label}
-                                                    getOptionValue={(option) => option.value}
-                                                    onChange={(newVal) => {
-                                                        const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                        form.setFieldValue(field.name, newValues)
-                                                    }}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </div>
-                            ) : (
-                                <div>
-                                    <Field
-                                        component={Input}
-                                        type="text"
-                                        placeholder={`Enter ${key}`}
-                                        name={fieldName}
-                                        value={val}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue(fieldName, e.target.value)}
-                                    />
-                                </div>
-                            )}
-                        </FormItem>
-                    )
-                }
-            })
+                                {/* Remove key-value set */}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const updatedObj = { ...obj }
+                                        delete updatedObj[key]
+                                        setFieldValue(parentKey, updatedObj)
+                                    }}
+                                    className="text-red-500"
+                                >
+                                    <MdCancel className="text-xl" />
+                                </button>
+                            </div>
+                        )
+                    })}
+
+                    {/* Add new key-value set */}
+                    <button
+                        type="button"
+                        onClick={() => {
+                            const newKey = `new_key_${Date.now()}`
+                            setFieldValue(parentKey, { ...obj, [newKey]: '' })
+                        }}
+                        className=" text-green-600 px-4 py-2 rounded"
+                    >
+                        <IoIosAddCircle className="text-xl" />
+                    </button>
+                </div>
+            )
         } else if (_.isArray(obj)) {
             return (
                 <FieldArray
-                    name={parentKey || ''}
+                    name={parentKey}
                     render={(arrayHelpers) => (
                         <div>
                             {obj.map((item, index) => {
                                 const arrayKey = parentKey ? `${parentKey}[${index}]` : `${index}`
-                                console.log('FieldName of Array', arrayKey)
 
-                                if (_.isPlainObject(item)) {
-                                    return (
-                                        <div key={arrayKey} className="col-span-1">
-                                            <div className="text-lg font-medium mb-2">Data {index + 1}:</div>
-                                            <div className="flex gap-2">
-                                                <div className="grid grid-cols-2 gap-4">{renderFields(item, arrayKey, setFieldValue)}</div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => arrayHelpers.remove(index)}
-                                                    className="text-red-500 mt-2"
-                                                >
-                                                    <MdCancel className="text-xl text-red-600" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    )
-                                } else if (_.isArray(item)) {
-                                    return (
-                                        <div key={arrayKey} className="col-span-2 flex gap-2">
-                                            {item.map((subItem, subIndex) => {
-                                                console.log('Array checking for Filter dropdown', subItem)
-                                                return (
-                                                    <Field
-                                                        key={`${arrayKey}[${subIndex}]`}
-                                                        component={Input}
-                                                        type="text"
-                                                        placeholder={`Enter value for ${parentKey}[${index}][${subIndex}]`}
-                                                        name={`${arrayKey}[${subIndex}]`}
-                                                        value={subItem}
-                                                        onChange={(e: any) => setFieldValue(`${arrayKey}[${subIndex}]`, e.target.value)}
+                                return (
+                                    <div key={arrayKey} className="flex gap-4 items-center mb-2">
+                                        {_.isPlainObject(item) ? (
+                                            <div className="w-full">{renderFields(item, arrayKey, setFieldValue)}</div>
+                                        ) : (
+                                            <Field
+                                                name={arrayKey}
+                                                render={({ field }) => (
+                                                    <Input
+                                                        {...field}
+                                                        placeholder={`Enter value for ${parentKey}[${index}]`}
                                                         className="w-full"
                                                     />
-                                                )
-                                            })}
-                                            <button type="button" onClick={() => arrayHelpers.remove(index)} className="text-red-500 mt-2">
-                                                <MdCancel className="text-xl text-red-600" />
-                                            </button>
-                                        </div>
-                                    )
-                                } else {
-                                    return (
-                                        <div key={arrayKey} className="flex gap-2">
-                                            <Field
-                                                component={Input}
-                                                type="text"
-                                                placeholder={`Enter value for ${parentKey}[${index}]`}
-                                                name={arrayKey}
-                                                value={item}
-                                                onChange={(e: any) => setFieldValue(arrayKey, e.target.value)}
-                                                className="w-full"
+                                                )}
                                             />
-                                            <button type="button" onClick={() => arrayHelpers.remove(index)} className="text-red-500 mt-2">
-                                                <MdCancel className="text-xl text-red-600" />
-                                            </button>
-                                        </div>
-                                    )
-                                }
+                                        )}
+
+                                        {/* Remove array item */}
+                                        <button type="button" onClick={() => arrayHelpers.remove(index)} className="text-red-500">
+                                            X
+                                        </button>
+                                    </div>
+                                )
                             })}
+
+                            {/* Add new array item */}
                             <button
                                 type="button"
                                 className="bg-black text-white px-2 py-2 rounded-xl flex gap-2"
-                                onClick={() => {
-                                    if (obj.length > 0) {
-                                        const newItem = _.isPlainObject(obj[0])
-                                            ? _.mapValues(obj[0], () => '')
-                                            : _.isArray(obj[0])
-                                              ? []
-                                              : ''
-                                        arrayHelpers.push(newItem)
-                                    } else {
-                                        arrayHelpers.push('')
-                                    }
-                                }}
+                                onClick={() => arrayHelpers.push('')}
                             >
                                 <IoIosAddCircle className="text-xl" /> Add Item
                             </button>
@@ -225,48 +217,41 @@ const EditConfigurations = () => {
     }
 
     const handleSubmit = async (values: ConfigInterface) => {
-        const handlingValueForAll = async (obj: any): Promise<any> => {
+        const processValues = async (obj: any): Promise<any> => {
             if (Array.isArray(obj)) {
-                return Promise.all(obj.map(async (item) => handlingValueForAll(item)))
-            } else if (_.isPlainObject(obj)) {
+                return Promise.all(obj.map(processValues))
+            }
+            if (_.isPlainObject(obj)) {
                 const entries = await Promise.all(
                     Object.entries(obj).map(async ([key, val]) => {
                         if (key.toLowerCase().includes('image') && Array.isArray(val)) {
                             const processedImage = await handleimage(key, val)
                             return [key, processedImage]
-                        } else if (_.isPlainObject(val) || Array.isArray(val)) {
-                            const nestedValue = await handlingValueForAll(val)
-                            return [key, nestedValue]
-                        } else {
-                            return [key, val]
                         }
+                        if (_.isPlainObject(val) || Array.isArray(val)) {
+                            return [key, await processValues(val)]
+                        }
+                        return [key, val]
                     }),
                 )
                 return Object.fromEntries(entries)
-            } else {
-                return obj
             }
+            return obj
         }
 
         const body = {
             config_name: values.name,
-            config_value: await handlingValueForAll(values.value),
+            config_value: await processValues(values.value),
         }
-
-        console.log('Body of config', body)
 
         try {
             setShowSpinner(true)
-            const response = await axiosInstance.post(`/app/configuration`, body)
-            notification.success({
-                message: response?.data?.message || 'Successfully Configured',
-            })
-            // navigate(`/app/configurations`)
+            const response = await axiosInstance.post('/app/configuration', body)
+            notification.success({ message: response.data?.message || 'Successfully Configured' })
+            navigate('/app/configurations')
         } catch (error) {
-            console.error(error)
-            notification.error({
-                message: 'Failed to configure',
-            })
+            console.error('Submit Error:', error)
+            notification.error({ message: 'Failed to configure' })
         } finally {
             setShowSpinner(false)
         }
@@ -294,12 +279,12 @@ const EditConfigurations = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, setFieldValue }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-full">
                         <FormContainer>
                             <h5 className="mb-5 text-neutral-900">Edit Configurations</h5>
 
-                            {EDITFIELDSARRAY.map((item, key) => (
-                                <FormItem key={key} label={item.label} className="col-span-1 w-1/2">
+                            {EDITFIELDSARRAY.map((item) => (
+                                <FormItem key={item.name} label={item.label} className="col-span-1 w-1/2">
                                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                 </FormItem>
                             ))}
