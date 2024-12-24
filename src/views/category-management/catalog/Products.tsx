@@ -23,6 +23,7 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { Dropdown } from '@/components/ui'
 import { ProductFilterArray } from './ProductCommon'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 type ProductVariant = {
     name: string
@@ -96,6 +97,7 @@ const Products = () => {
     const [selectFilterString, setFilterString] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(ProductFilterArray[0])
+    const [showSpinner, setShowSpinner] = useState(false)
 
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -104,22 +106,24 @@ const Products = () => {
         try {
             let searchInputType = ''
 
+            setShowSpinner(true)
             if (currentSelectedPage.value === 'sku' && globalFilter) {
-                searchInputType = `&sku=${globalFilter}`
+                searchInputType = `&barcodes=${globalFilter}`
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
                 searchInputType = `&name=${globalFilter}`
             }
             const response = await axiosInstance.get(
-                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
+                `search/product?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
             )
 
-            const data = response.data.data.results
-            const total = response.data.data.count
-
+            const data = response.data?.results
+            const total = response.data.count
             setData(data)
             setTotalData(total)
         } catch (error) {
             console.error('Error fetching data:', error)
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -312,11 +316,11 @@ const Products = () => {
             let searchInputType = ''
 
             if (currentSelectedPage.value === 'sku' && globalFilter) {
-                searchInputType = `&sku=${globalFilter}`
+                searchInputType = `&barcodes=${globalFilter}`
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
                 searchInputType = `&name=${globalFilter}`
             }
-            const downloadUrl = `merchant/products?download=true&${typeFetch}${searchInputType}`
+            const downloadUrl = `search/product?download=true&${typeFetch}${searchInputType}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
@@ -403,6 +407,10 @@ const Products = () => {
     const handleOpenModal = (img: any) => {
         setParticularROwImage(img)
         setShowImageModal(true)
+    }
+
+    if (showSpinner) {
+        return <LoadingSpinner />
     }
 
     return (

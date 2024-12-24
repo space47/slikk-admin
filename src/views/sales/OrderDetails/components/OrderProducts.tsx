@@ -199,7 +199,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
 
     return (
         <AdaptableCard className="mb-4">
-            <Table>
+            <Table overflow>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <Tr key={headerGroup.id}>
