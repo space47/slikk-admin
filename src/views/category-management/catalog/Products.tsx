@@ -23,6 +23,7 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { Dropdown } from '@/components/ui'
 import { ProductFilterArray } from './ProductCommon'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 type ProductVariant = {
     name: string
@@ -96,12 +97,14 @@ const Products = () => {
     const [selectFilterString, setFilterString] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(ProductFilterArray[0])
+    const [showSpinner, setShowSpinner] = useState(false)
 
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
+            setShowSpinner(true)
             let searchInputType = ''
 
             if (currentSelectedPage.value === 'sku' && globalFilter) {
@@ -113,13 +116,15 @@ const Products = () => {
                 `search/product?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
             )
 
-            const data = response.data.data.results
-            const total = response.data.data.count
+            const data = response.data?.results
+            const total = response.data.count
 
             setData(data)
             setTotalData(total)
         } catch (error) {
             console.error('Error fetching data:', error)
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -403,6 +408,10 @@ const Products = () => {
     const handleOpenModal = (img: any) => {
         setParticularROwImage(img)
         setShowImageModal(true)
+    }
+
+    if (showSpinner) {
+        return <LoadingSpinner />
     }
 
     return (
