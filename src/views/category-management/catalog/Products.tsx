@@ -110,7 +110,7 @@ const Products = () => {
                 searchInputType = `&name=${globalFilter}`
             }
             const response = await axiosInstance.get(
-                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
+                `search/product?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
             )
 
             const data = response.data.data.results
@@ -316,7 +316,7 @@ const Products = () => {
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
                 searchInputType = `&name=${globalFilter}`
             }
-            const downloadUrl = `merchant/products?download=true&${typeFetch}${searchInputType}`
+            const downloadUrl = `search/product?download=true&${typeFetch}${searchInputType}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
