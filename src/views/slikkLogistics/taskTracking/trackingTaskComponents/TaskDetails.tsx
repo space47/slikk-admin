@@ -42,14 +42,29 @@ const TaskDetails = () => {
                                 <span className="text-gray-900">
                                     {item?.hyper ? (
                                         <>
-                                            <a
-                                                href={`/app/returnOrders/${item?.value}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
-                                            >
-                                                {item?.value}
-                                            </a>
+                                            {typeof item?.value === 'string' && /^\d/.test(item.value) ? (
+                                                <div>
+                                                    <a
+                                                        href={`/app/orders/${item?.value}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                                                    >
+                                                        {item?.value}
+                                                    </a>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <a
+                                                        href={`/app/returnOrders/${item?.value}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                                                    >
+                                                        {item?.value}
+                                                    </a>
+                                                </div>
+                                            )}
                                         </>
                                     ) : (
                                         <>{item?.value}</>

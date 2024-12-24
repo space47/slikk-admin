@@ -18,7 +18,7 @@ import FilterByRunner from './FilterByRunner'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const ReverseTaskTracking = () => {
+const TaskTracking = () => {
     const [data, setData] = useState<TaskDetails[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
@@ -89,6 +89,10 @@ const ReverseTaskTracking = () => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
     }
+    const handleReAssignClick = (task_id: any) => {
+        setShowAssignModal(true)
+        setStoreTaskId(task_id)
+    }
 
     const handleCloseModal = () => {
         setShowAssignModal(false)
@@ -119,12 +123,22 @@ const ReverseTaskTracking = () => {
         {
             header: 'Assign Task',
             accessor: 'task_id',
-            format: (value: any, row: TaskDetails) =>
-                row.status == 'CREATED' && (
-                    <button onClick={() => handleAssignClick(row.task_id)} className="bg-none border-none">
-                        <MdAssignment className="text-3xl text-yellow-500" />
-                    </button>
-                ),
+            format: (value: any, row: TaskDetails) => {
+                return (
+                    <div>
+                        {row.status == 'CREATED' && (
+                            <button onClick={() => handleAssignClick(row.task_id)} className="bg-none border-none">
+                                <MdAssignment className="text-3xl text-yellow-500" />
+                            </button>
+                        )}
+                        {row.status !== 'CREATED' && (
+                            <button onClick={() => handleReAssignClick(row.task_id)} className="bg-none border-none">
+                                <MdAssignment className="text-3xl text-red-500" />
+                            </button>
+                        )}
+                    </div>
+                )
+            },
         },
         {
             header: 'Task ID',
@@ -352,4 +366,4 @@ const ReverseTaskTracking = () => {
     )
 }
 
-export default ReverseTaskTracking
+export default TaskTracking

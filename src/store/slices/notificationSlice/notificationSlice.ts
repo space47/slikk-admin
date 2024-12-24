@@ -7,7 +7,7 @@ const initialState: NotificationData = {
     loading: false,
     message: '',
     page: 1,
-    pageSize: 1,
+    pageSize: 10,
     count: 0,
 }
 
@@ -16,7 +16,7 @@ export const fetchNotification = createAsyncThunk('notification/fetchNotificatio
         const state = getState() as { userAnalytics: NotificationData }
         const { page, pageSize } = state.userAnalytics
 
-        const response = await axioisInstance.get(`/notifications/config`)
+        const response = await axioisInstance.get(`/notifications/config?p=${page}&page_size=${pageSize}`)
 
         return {
             data: response.data.data,

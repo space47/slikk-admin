@@ -7,7 +7,7 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import type { Order, OrderItem } from './commontypes'
-import { Button, Dropdown } from '@/components/ui'
+import { Button, Dropdown, Input } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import { FaExclamationCircle, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
 import FilterDialogOrder from './filterDialog/FilterDialog'
@@ -19,6 +19,7 @@ import { notification } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import EasyTable from '@/common/EasyTable'
 import RedMarkTable from '@/common/RedMarkTable'
+import { HiOutlineSearch, HiSearch } from 'react-icons/hi'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -541,7 +542,7 @@ const OrderList = () => {
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
                     <div className="flex gap-1 xl:gap-2  xl:flex-row  ">
                         <div className="flex justify-start ">
-                            <input
+                            {/* <input
                                 type="search"
                                 name="search"
                                 id=""
@@ -549,22 +550,33 @@ const OrderList = () => {
                                 value={searchInput}
                                 className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
                                 onChange={handleSearch}
+                            /> */}
+                            <Input
+                                type="search"
+                                name="search"
+                                placeholder="search here"
+                                value={searchInput}
+                                className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
+                                prefix={<HiSearch className="text-xl items-center flex justify-center" />}
+                                onChange={handleSearch}
                             />
                         </div>
-                        <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                            <Dropdown
-                                className=" text-xl text-black bg-gray-200 font-bold  "
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={handleSelect}
-                            >
-                                {SEARCHOPTIONS?.map((item, key) => {
-                                    return (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.label}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </Dropdown>
+                        <div>
+                            <div className="bg-gray-100 items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                                <Dropdown
+                                    className=" text-xl text-black bg-gray-200 font-bold  "
+                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                    onSelect={handleSelect}
+                                >
+                                    {SEARCHOPTIONS?.map((item, key) => {
+                                        return (
+                                            <DropdownItem key={key} eventKey={item.value}>
+                                                <span>{item.label}</span>
+                                            </DropdownItem>
+                                        )
+                                    })}
+                                </Dropdown>
+                            </div>
                         </div>
                     </div>
                     {/* From here */}
@@ -607,13 +619,15 @@ const OrderList = () => {
                 </div>
                 <br />
 
-                <RedMarkTable
-                    mainData={orders}
-                    page={page}
-                    pageSize={pageSize}
-                    columns={columns}
-                    selectedDeliveryType={deliveryTypes ?? ''}
-                />
+                <div className="border border-gray-300 p-2 rounded-xl">
+                    <RedMarkTable
+                        mainData={orders}
+                        page={page}
+                        pageSize={pageSize}
+                        columns={columns}
+                        selectedDeliveryType={deliveryTypes ?? ''}
+                    />
+                </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                     {numberClick !== true && (

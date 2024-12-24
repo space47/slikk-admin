@@ -94,32 +94,36 @@ const CartItems = () => {
     return (
         <div>
             <Card className="mb-4">
-                <Table overflow>
-                    <thead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <Tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <Th key={header.id} colSpan={header.colSpan}>
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                        </Th>
-                                    )
-                                })}
-                            </Tr>
-                        ))}
-                    </thead>
-                    <TBody>
-                        {table.getRowModel().rows.map((row) => {
-                            return (
-                                <Tr key={row.id}>
-                                    {row.getVisibleCells().map((cell) => {
-                                        return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                {cartItems ? (
+                    <Table overflow>
+                        <thead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <Tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <Th key={header.id} colSpan={header.colSpan}>
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                            </Th>
+                                        )
                                     })}
                                 </Tr>
-                            )
-                        })}
-                    </TBody>
-                </Table>
+                            ))}
+                        </thead>
+                        <TBody>
+                            {table.getRowModel().rows.map((row) => {
+                                return (
+                                    <Tr key={row.id}>
+                                        {row.getVisibleCells().map((cell) => {
+                                            return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                        })}
+                                    </Tr>
+                                )
+                            })}
+                        </TBody>
+                    </Table>
+                ) : (
+                    ''
+                )}
             </Card>
         </div>
     )

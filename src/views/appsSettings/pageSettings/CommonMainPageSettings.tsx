@@ -16,10 +16,16 @@ import BackGroundImages from './BackGroundImages'
 import CommonSelect from './CommonSelect'
 import { SubDataTypeArray } from './PageSettingsCommon'
 import ExtraConfigFileds from './ExtraConfigFileds'
+import FilterSelect from '@/views/sales/urlShortner/FilterSelect'
+import DataTypes from './DataTypes'
 
 const SectionTypeArray = [
     { label: 'Generic', value: 'generic' },
     { label: 'Personalized', value: 'personalized' },
+]
+const GenderArray = [
+    { label: 'Men', value: 'men' },
+    { label: 'Women', value: 'women' },
 ]
 
 const dataTypeArray = [
@@ -96,6 +102,10 @@ interface CommonProps {
     handleRemoveSubImage?: any
     handleRemoveVideo?: any
     validationSchema?: any
+    handleAddFilter: any
+    showAddFilter: any
+    handleAddFilters: any
+    handleRemoveFilter: any
 }
 
 const CommonMainPageSettings = ({
@@ -143,11 +153,16 @@ const CommonMainPageSettings = ({
     handleRemoveSubImage,
     handleRemoveVideo,
     validationSchema,
+    handleAddFilter,
+    showAddFilter,
+    handleAddFilters,
+    handleRemoveFilter,
 }: CommonProps) => {
     const [configFields, setConfigFields] = useState(false)
     const [otherFields, setOtherFields] = useState(false)
     const [bgFields, setBgFields] = useState(false)
     const [extraConfigFields, setExtraConfigFields] = useState(false)
+    const [dataTypeFields, setDataTypeFields] = useState(false)
 
     return (
         <Formik
@@ -296,7 +311,7 @@ const CommonMainPageSettings = ({
                         {extraConfigFields && <ExtraConfigFileds />}
 
                         {/*  */}
-                        <FormContainer className="grid grid-cols-2 gap-3">
+                        {/* <FormContainer className="grid grid-cols-2 gap-3">
                             <CommonSelect
                                 needClassName
                                 label="Data Types"
@@ -315,16 +330,55 @@ const CommonMainPageSettings = ({
                             <FormItem label="Filters" className="col-span-1 w-[60%] h-[80%]">
                                 <Field
                                     type="text"
+                                    disabled
                                     name="data_type.filters"
                                     placeholder="Place your header Text"
                                     component={Input}
                                     min="0"
                                 />
                             </FormItem>
+
+                            <CommonSelect
+                                needClassName
+                                label="Division Select"
+                                options={GenderArray}
+                                name="division_select"
+                                className="w-1/2"
+                            />
+
+                            <FilterSelect
+                                handleAddFilter={handleAddFilter}
+                                showAddFilter={showAddFilter}
+                                handleAddFilters={handleAddFilters}
+                                handleRemoveFilter={handleRemoveFilter}
+                            />
+
                             <FormItem label="Data Count" className="col-span-1 w-[60%] h-[80%]">
                                 <Field type="number" name="data_type.data_count" placeholder="Place Data Count" component={Input} min="0" />
                             </FormItem>
-                        </FormContainer>
+                        </FormContainer> */}
+
+                        {dataTypeFields ? (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="reject" onClick={() => setDataTypeFields(false)} type="button">
+                                    Data Type Configs
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="flex justify-center items-center mt-10 mb-10">
+                                <Button variant="new" onClick={() => setDataTypeFields(true)} type="button">
+                                    Data Type Configs
+                                </Button>
+                            </div>
+                        )}
+                        {dataTypeFields && (
+                            <DataTypes
+                                handleAddFilter={handleAddFilter}
+                                handleAddFilters={handleAddFilters}
+                                showAddFilter={showAddFilter}
+                                handleRemoveFilter={handleRemoveFilter}
+                            />
+                        )}
 
                         <FormContainer className="grid grid-cols-2 gap-3">
                             <FormContainer className="flex flex-col gap-4 ">

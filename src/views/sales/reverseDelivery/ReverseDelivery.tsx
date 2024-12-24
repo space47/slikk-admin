@@ -49,7 +49,7 @@ const ReverseDelivery = () => {
         name: [],
     })
     const [searchInput, setSearchInput] = useState<string>('')
-    const [pageSize, setPageSize] = useState<number>(10)
+    const [pageSize, setPageSize] = useState<number | undefined>(10)
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
@@ -369,20 +369,22 @@ const ReverseDelivery = () => {
                             onChange={handleSearch}
                         />
                     </div>
-                    <div className="bg-gray-100 dark:bg-blue-600 dark:text-white  xl:text-md text-sm w-auto rounded-md">
-                        <Dropdown
-                            className=" text-xl text-black bg-gray-200 font-bold "
-                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                            onSelect={handleSelect}
-                        >
-                            {SEARCHOPTIONS?.map((item, key) => {
-                                return (
-                                    <DropdownItem key={key} eventKey={item.value}>
-                                        <span>{item.label}</span>
-                                    </DropdownItem>
-                                )
-                            })}
-                        </Dropdown>
+                    <div>
+                        <div className="bg-gray-100 xl:mt-1 dark:bg-blue-600 dark:text-white  xl:text-md text-sm w-auto rounded-md">
+                            <Dropdown
+                                className=" text-xl text-black bg-gray-200 font-bold "
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                onSelect={handleSelect}
+                            >
+                                {SEARCHOPTIONS?.map((item, key) => {
+                                    return (
+                                        <DropdownItem key={key} eventKey={item.value}>
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    )
+                                })}
+                            </Dropdown>
+                        </div>
                     </div>
                 </div>
 
@@ -403,7 +405,9 @@ const ReverseDelivery = () => {
                 </div>
             </div>
 
-            <EasyTable columns={columns} page={page} pageSize={pageSize} mainData={orders} />
+            <div className="border p-2 border-gray-200 rounded-lg">
+                <EasyTable columns={columns} page={page} pageSize={pageSize} mainData={orders} />
+            </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />

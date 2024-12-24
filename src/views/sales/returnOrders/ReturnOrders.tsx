@@ -16,7 +16,7 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import type { FilterFn } from '@tanstack/react-table'
-import { Button, Dropdown } from '@/components/ui'
+import { Button, Dropdown, Input } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdDownload } from 'react-icons/io'
 import { notification } from 'antd'
@@ -26,6 +26,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { FaFilter } from 'react-icons/fa'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { returnOrderApi } from '@/services/ReturnOrders.services'
+import { HiSearch } from 'react-icons/hi'
 
 interface ReturnOrderItem {
     order_item: number
@@ -395,7 +396,7 @@ const ReturnOrders = () => {
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
                 <div className="flex gap-2">
                     <div className="flex justify-start ">
-                        <input
+                        {/* <input
                             type="search"
                             name="search"
                             id=""
@@ -403,22 +404,33 @@ const ReturnOrders = () => {
                             value={searchInput}
                             className=" xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
                             onChange={handleSearch}
+                        /> */}
+                        <Input
+                            type="search"
+                            name="search"
+                            placeholder="search here"
+                            value={searchInput}
+                            className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
+                            prefix={<HiSearch className="text-xl items-center flex justify-center" />}
+                            onChange={handleSearch}
                         />
                     </div>
-                    <div className="bg-gray-100   xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                        <Dropdown
-                            className=" text-xl text-black bg-gray-200 font-bold  "
-                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                            onSelect={handleSelect}
-                        >
-                            {SEARCHOPTIONS?.map((item, key) => {
-                                return (
-                                    <DropdownItem key={key} eventKey={item.value}>
-                                        <span>{item.label}</span>
-                                    </DropdownItem>
-                                )
-                            })}
-                        </Dropdown>
+                    <div>
+                        <div className="bg-gray-100 xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                            <Dropdown
+                                className=" text-xl text-black bg-gray-200 font-bold  "
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                onSelect={handleSelect}
+                            >
+                                {SEARCHOPTIONS?.map((item, key) => {
+                                    return (
+                                        <DropdownItem key={key} eventKey={item.value}>
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    )
+                                })}
+                            </Dropdown>
+                        </div>
                     </div>
                 </div>
 
@@ -433,7 +445,7 @@ const ReturnOrders = () => {
                         </button>
                     </div>
 
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-2 items-center xl:mt-1">
                         <div>
                             <UltimateDatePicker
                                 from={from}
@@ -458,36 +470,38 @@ const ReturnOrders = () => {
                 </div>
             </div>
 
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
-                                            <Sorter sort={header.column.getIsSorted()} />
-                                        </div>
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <div className="border p-2 border-gray-300 rounded-md">
+                <Table>
+                    <THead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <Tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {header.isPlaceholder ? null : (
+                                            <div
+                                                className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+                                                onClick={header.column.getToggleSortingHandler()}
+                                            >
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                <Sorter sort={header.column.getIsSorted()} />
+                                            </div>
+                                        )}
+                                    </Th>
+                                ))}
+                            </Tr>
+                        ))}
+                    </THead>
+                    <TBody>
+                        {table.getRowModel().rows.map((row) => (
+                            <Tr key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                ))}
+                            </Tr>
+                        ))}
+                    </TBody>
+                </Table>
+            </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
                 <div className="min-w-[130px] flex gap-5">

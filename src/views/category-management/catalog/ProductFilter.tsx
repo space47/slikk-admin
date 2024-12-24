@@ -121,7 +121,7 @@ const ProductFilterNest = ({
                         <Form className="flex flex-col gap-10 w-full items-start">
                             {/* Division */}
 
-                            <FormItem asterisk label="Division" className="col-span-1 w-full">
+                            {/* <FormItem asterisk label="Division" className="col-span-1 w-full">
                                 <Field name="division">
                                     {({ field }: FieldProps) => {
                                         console.log('FieldValue ok ok', field.value)
@@ -155,11 +155,11 @@ const ProductFilterNest = ({
                                         )
                                     }}
                                 </Field>
-                            </FormItem>
+                            </FormItem> */}
 
                             {/* CATEGORY ...................................... */}
 
-                            <FormItem asterisk label="Category" className="col-span-1 w-full">
+                            {/* <FormItem asterisk label="Category" className="col-span-1 w-full">
                                 <Field name="category">
                                     {({ field }: FieldProps<any>) => {
                                         return (
@@ -187,11 +187,11 @@ const ProductFilterNest = ({
                                         )
                                     }}
                                 </Field>
-                            </FormItem>
+                            </FormItem> */}
 
                             {/* SUB-CATEGORY ...................................... */}
 
-                            <FormItem asterisk label="Sub-Category" className="col-span-1 w-full">
+                            {/* <FormItem asterisk label="Sub-Category" className="col-span-1 w-full">
                                 <Field name="sub_category">
                                     {({ field }: FieldProps<any>) => {
                                         return (
@@ -218,11 +218,11 @@ const ProductFilterNest = ({
                                         )
                                     }}
                                 </Field>
-                            </FormItem>
+                            </FormItem> */}
 
                             {/* PRODUCT TYPE ...................................... */}
 
-                            <FormItem asterisk label="Product Type" className="col-span-1 w-full">
+                            {/* <FormItem asterisk label="Product Type" className="col-span-1 w-full">
                                 <Field name="product_type">
                                     {({ field }: FieldProps<any>) => {
                                         return (
@@ -268,7 +268,7 @@ const ProductFilterNest = ({
                                         </div>
                                     )
                                 }}
-                            </Field>
+                            </Field> */}
 
                             <FormItem label="SEARCH FILTER STRINGS">
                                 <FieldArray name="filtersAdd">

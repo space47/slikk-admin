@@ -12,6 +12,7 @@ import { DatePicker, notification } from 'antd'
 import Upload from '@/components/ui/Upload'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
+import { RichTextEditor } from '@/components/shared'
 
 const CouponsType = () => {
     return ['PERCENT_OFF', 'FLAT_OFF'].map((coupon) => ({
@@ -162,7 +163,11 @@ const AddCoupons = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
-
+                                <Field name="description">
+                                    {({ field, form }: FieldProps) => (
+                                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                    )}
+                                </Field>
                                 <FormItem label="Coupon Type" className="col-span-1 w-full">
                                     <Field name="type">
                                         {({ field }: FieldProps) => (
