@@ -191,7 +191,7 @@ const InwardEdit = () => {
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-full">
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-3 ">
                                 {DocumentArray.map((item, key) => {
@@ -255,87 +255,89 @@ const InwardEdit = () => {
 
                             {/* ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo */}
 
-                            <div className="font-bold mb-3">Upload Supporting Document</div>
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
-                                <FormContainer className=" mt-5 ">
-                                    <FormItem label="" errorMessage={errors.document as string} className="grid grid-rows-2">
-                                        <Field name="files">
-                                            {({ field, form }: FieldProps<FormModel>) => (
-                                                <>
-                                                    <Upload
-                                                        beforeUpload={beforeUpload}
-                                                        fileList={values.files}
-                                                        onChange={(files) => {
-                                                            console.log('OnchangeFiles', files, field.name, values.files)
-                                                            form.setFieldValue('files', files)
-                                                        }}
-                                                        onFileRemove={(files) => form.setFieldValue('files', files)}
-                                                    />
-                                                </>
-                                            )}
-                                        </Field>
-                                    </FormItem>
-                                    {showData && (
-                                        <>
-                                            <p>{datas?.document}</p>
-                                        </>
-                                    )}
-                                    <br />
-                                </FormContainer>
-
-                                <FormItem label="" className="col-span-1 w-[80%]">
-                                    <Field
-                                        type="text"
-                                        name="document"
-                                        placeholder="Enter Document Url or Upload docs file"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                            </FormContainer>
-
-                            {/* ...............................IMAGES.......................................... */}
-                            <div className="font-bold mb-3 mt-8">Upload Supporting Image</div>
-                            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
-                                <FormContainer className=" mt-5 ">
-                                    <div className=" image w-[50px] h-[50px] mt-5 flex gap-2  ">
-                                        {imagview ? (
-                                            imagview.map((img, index) => <img key={index} src={img} alt="img" className="rounded-xl" />)
-                                        ) : (
-                                            <p>No image</p>
+                            <div className="flex gap-2">
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 w-full">
+                                    <div className="font-bold mb-3">Upload Supporting Document</div>
+                                    <FormContainer className=" mt-5 ">
+                                        <FormItem label="" errorMessage={errors.document as string} className="grid grid-rows-2">
+                                            <Field name="files">
+                                                {({ field, form }: FieldProps<FormModel>) => (
+                                                    <>
+                                                        <Upload
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.files}
+                                                            onChange={(files) => {
+                                                                console.log('OnchangeFiles', files, field.name, values.files)
+                                                                form.setFieldValue('files', files)
+                                                            }}
+                                                            onFileRemove={(files) => form.setFieldValue('files', files)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                        {showData && (
+                                            <>
+                                                <p>{datas?.document}</p>
+                                            </>
                                         )}
-                                    </div>
-                                    <FormItem
-                                        label=""
-                                        invalid={Boolean(errors.files && touched.files)}
-                                        errorMessage={errors.files as string}
-                                        className="grid grid-rows-2"
-                                    >
-                                        <Field name="image">
-                                            {({ form }: FieldProps<FormModel>) => (
-                                                <>
-                                                    <Upload
-                                                        multiple
-                                                        beforeUpload={beforeUpload}
-                                                        fileList={values.image}
-                                                        onChange={(files) => {
-                                                            console.log('File of Image', files)
-                                                            return form.setFieldValue('image', files)
-                                                        }}
-                                                        onFileRemove={(files) => form.setFieldValue('image', files)}
-                                                    />
-                                                </>
-                                            )}
-                                        </Field>
+                                        <br />
+                                    </FormContainer>
+
+                                    <FormItem label="" className="col-span-1 w-[80%]">
+                                        <Field
+                                            type="text"
+                                            name="document"
+                                            placeholder="Enter Document Url or Upload docs file"
+                                            component={Input}
+                                        />
                                     </FormItem>
-                                    {showImage && (
-                                        <>
-                                            <p>{imagview}</p>
-                                        </>
-                                    )}
-                                    <br />
-                                    <br />
                                 </FormContainer>
-                            </FormContainer>
+
+                                {/* ...............................IMAGES.......................................... */}
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 w-full">
+                                    <div className="font-bold mb-3 mt-8">Upload Supporting Image</div>
+                                    <FormContainer className=" mt-5 ">
+                                        <div className=" image w-[50px] h-[50px] mt-5 flex gap-2  ">
+                                            {imagview ? (
+                                                imagview.map((img, index) => <img key={index} src={img} alt="img" className="rounded-xl" />)
+                                            ) : (
+                                                <p>No image</p>
+                                            )}
+                                        </div>
+                                        <FormItem
+                                            label=""
+                                            invalid={Boolean(errors.files && touched.files)}
+                                            errorMessage={errors.files as string}
+                                            className="grid grid-rows-2"
+                                        >
+                                            <Field name="image">
+                                                {({ form }: FieldProps<FormModel>) => (
+                                                    <>
+                                                        <Upload
+                                                            multiple
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.image}
+                                                            onChange={(files) => {
+                                                                console.log('File of Image', files)
+                                                                return form.setFieldValue('image', files)
+                                                            }}
+                                                            onFileRemove={(files) => form.setFieldValue('image', files)}
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                        {showImage && (
+                                            <>
+                                                <p>{imagview}</p>
+                                            </>
+                                        )}
+                                        <br />
+                                        <br />
+                                    </FormContainer>
+                                </FormContainer>
+                            </div>
 
                             <FormItem label="SLIKK OWNED" invalid={errors.slikk_owned && touched.slikk_owned}>
                                 <Field name="slikk_owned" component={Checkbox}>

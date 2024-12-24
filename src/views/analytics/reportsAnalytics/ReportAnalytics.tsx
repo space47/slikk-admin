@@ -94,26 +94,28 @@ const ReportAnalytics = () => {
             const formattedData = {
                 name: data?.results[0]?.name || '',
                 value: data?.results[0]?.value || '',
-                required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
-                    const [dataType, valueArray, prefix, suffix] = fullValue || []
-                    console.log('Prefix', prefix)
+                required_fields: Object.entries(data?.results[0]?.required_fields || {})
+                    ?.reverse()
+                    ?.map(([key, fullValue]) => {
+                        const [dataType, valueArray, prefix, suffix] = fullValue || []
+                        console.log('Prefix', prefix)
 
-                    let transformedValue = valueArray
+                        let transformedValue = valueArray
 
-                    if (key === 'start_date') {
-                        transformedValue = moment().startOf('month').format('YYYY-MM-DD')
-                    } else if (key === 'end_date') {
-                        transformedValue = moment().endOf('month').format('YYYY-MM-DD')
-                    }
+                        if (key === 'start_date') {
+                            transformedValue = moment().startOf('month').format('YYYY-MM-DD')
+                        } else if (key === 'end_date') {
+                            transformedValue = moment().endOf('month').format('YYYY-MM-DD')
+                        }
 
-                    return {
-                        key,
-                        value: transformedValue,
-                        prefix: prefix || '',
-                        suffix: suffix || '',
-                        dataType: dataType || 'String',
-                    }
-                }),
+                        return {
+                            key,
+                            value: transformedValue,
+                            prefix: prefix || '',
+                            suffix: suffix || '',
+                            dataType: dataType || 'String',
+                        }
+                    }),
             }
             setReportData(formattedData)
             setReportValue(formattedData?.value)
