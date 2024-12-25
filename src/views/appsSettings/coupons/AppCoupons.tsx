@@ -57,7 +57,7 @@ const AppCoupons = () => {
 
     // Paginate filtered data
     const paginatedData = filteredData?.slice((page - 1) * pageSize, page * pageSize)
-    const totalPages = Math.ceil(filteredData.length / pageSize)
+    const totalPages = Math.ceil(filteredData?.length / pageSize)
 
     const columns = [
         { header: 'Code', accessor: 'code' },
