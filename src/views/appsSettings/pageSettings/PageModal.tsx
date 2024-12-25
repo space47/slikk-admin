@@ -296,6 +296,8 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const handleSubmit = async (row: any) => {
         console.log('Mobile Upload video', row?.mobile_background_video_array)
         console.log('Mobile Upload Image', row?.mobile_background_array)
+
+        console.log('Row ofData Type Filters', row?.data_type.filters, row?.division_select, filterId)
         try {
             console.log('handleSubmit called')
             const imageUpload = await handleimage(row.background_image_array)
@@ -374,10 +376,16 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         : row?.data_type?.barcodes
                           ? { barcodes: row?.data_type?.barcodes }
                           : {}),
-                    filters: [
-                        row?.division_select ? `division_${row.division_select}` : null,
-                        filterId ? `filterID_${filterId}` : null,
-                    ].filter(Boolean),
+                    filters:
+                        [
+                            ...(row?.division_select ? [`division_${row.division_select}`] : []),
+                            ...(filterId ? [`filterID_${filterId}`] : []),
+                        ].length > 0
+                            ? [
+                                  ...(row?.division_select ? [`division_${row.division_select}`] : []),
+                                  ...(filterId ? [`filterID_${filterId}`] : []),
+                              ]
+                            : row?.data_type?.filters || [],
                 },
                 component_config: {
                     ...row?.component_config,
