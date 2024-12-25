@@ -642,6 +642,7 @@ const OrderList = () => {
                     <div className="min-w-[130px] flex gap-5">
                         {numberClick !== true && (
                             <Select
+                                isSearchable={false}
                                 size="sm"
                                 value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
