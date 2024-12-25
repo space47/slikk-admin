@@ -505,6 +505,7 @@ const DeliveryOrders = () => {
                 <div className="w-full sm:w-auto min-w-[130px]">
                     <Select
                         size="sm"
+                        isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
                         onChange={(option) => dispatch(setPageSize(option?.value))}
