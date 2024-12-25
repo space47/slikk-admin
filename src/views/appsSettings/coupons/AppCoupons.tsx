@@ -151,16 +151,12 @@ const AppCoupons = () => {
 
                     <Table>
                         <THead>
-                            <Tr>
-                                {columns.map((col) => (
-                                    <Th key={col.header}>{col.header}</Th>
-                                ))}
-                            </Tr>
+                            <Tr>{columns?.map((col) => <Th key={col.header}>{col.header}</Th>)}</Tr>
                         </THead>
                         <TBody>
-                            {paginatedData.map((row) => (
+                            {paginatedData?.map((row) => (
                                 <Tr key={row.code}>
-                                    {columns.map((col) => (
+                                    {columns?.map((col) => (
                                         <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
                                     ))}
                                 </Tr>

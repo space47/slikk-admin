@@ -506,6 +506,7 @@ const ReturnOrders = () => {
                 <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
                 <div className="min-w-[130px] flex gap-5">
                     <Select
+                        isSearchable={false}
                         size="sm"
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
