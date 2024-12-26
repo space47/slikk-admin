@@ -90,7 +90,6 @@ const OrderList = () => {
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
-            setShowSpinner(true)
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
 
@@ -648,15 +647,23 @@ const OrderList = () => {
                 </div>
                 <br />
 
-                <div className="border border-gray-300 p-2 rounded-xl">
-                    <RedMarkTable
-                        mainData={orders}
-                        page={page}
-                        pageSize={pageSize}
-                        columns={columns}
-                        selectedDeliveryType={deliveryTypes ?? ''}
-                    />
-                </div>
+                {orders?.length === 0 ? (
+                    <>
+                        <div className="flex justify-center items-center text-xl text-red-500 font-bold xl:h-[400px]">
+                            No Data Available
+                        </div>
+                    </>
+                ) : (
+                    <div className="border border-gray-300 p-2 rounded-xl">
+                        <RedMarkTable
+                            mainData={orders}
+                            page={page}
+                            pageSize={pageSize}
+                            columns={columns}
+                            selectedDeliveryType={deliveryTypes ?? ''}
+                        />
+                    </div>
+                )}
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                     {numberClick !== true && (
