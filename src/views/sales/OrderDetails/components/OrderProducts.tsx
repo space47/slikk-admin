@@ -60,7 +60,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
                 onClick={() => handleImageView(row.image)}
             />
 
-            <div className="ltr:ml-2 rtl:mr-2">
+            <div className="ltr:ml-2 rtl:mr-2 xl:w-[300px] ">
                 <div className="mb-2 text-[18px] font-bold ">
                     Brand Name:
                     <h4 className="font-light text-[16px] flex-wrap">{row.brand}</h4>
@@ -100,7 +100,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
 
     const columns = [
         columnHelper.accessor('name', {
-            header: 'Product',
+            header: '',
             cell: (props) => {
                 const row = props.row.original
                 return <ProductColumn row={row} />
@@ -135,7 +135,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 const percentageCalculation = Math.round(((parseFloat(row.mrp) - parseFloat(row.sp)) / parseFloat(row.mrp)) * 100)
 
                 return percentageCalculation > 0 ? (
-                    <div className="w-[200px] overflow-ellipsis flex flex-col">
+                    <div className=" overflow-ellipsis flex flex-col">
                         <span className="line-through">Rs.{row.mrp}</span>
                         <span>Rs.{row.sp}</span>
                         <span>{percentageCalculation} % off</span>
