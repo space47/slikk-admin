@@ -89,7 +89,7 @@ const AddTemplates = () => {
                     useAccessToken: true,
                     isContent: true,
                 },
-                data: `@/${file?.name}`,
+                data: `@/${file}`,
             }
 
             console.log('Request Body:', body)
