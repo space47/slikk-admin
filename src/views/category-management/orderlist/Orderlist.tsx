@@ -649,9 +649,7 @@ const OrderList = () => {
 
                 {orders?.length === 0 ? (
                     <>
-                        <div className="flex justify-center items-center text-xl text-red-500 font-bold xl:h-[400px]">
-                            No Data Available
-                        </div>
+                        <div className="flex justify-center items-center text-xl text-red-500 font-bold xl:h-[400px]"></div>
                     </>
                 ) : (
                     <div className="border border-gray-300 p-2 rounded-xl">
