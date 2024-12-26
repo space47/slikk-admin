@@ -187,7 +187,7 @@ const DivisionTable = () => {
                     className="p-2 border rounded"
                 />
             </div>
-            <Table>
+            <Table overflow className="scrollbar-hide">
                 <THead>
                     <Tr>
                         {columns.map((col) => (

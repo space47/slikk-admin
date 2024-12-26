@@ -20,6 +20,7 @@ import UltimateDatePicker from '@/common/UltimateDateFilter'
 import EasyTable from '@/common/EasyTable'
 import RedMarkTable from '@/common/RedMarkTable'
 import { HiOutlineSearch, HiSearch } from 'react-icons/hi'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -85,8 +86,11 @@ const OrderList = () => {
     const previousOrders = useRef<Order[]>([])
     const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
 
+    const [showSpinner, setShowSpinner] = useState(false)
+
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
+            setShowSpinner(true)
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
 
@@ -119,6 +123,8 @@ const OrderList = () => {
             setOrderCount(orderCount)
         } catch (error) {
             console.error(error)
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -344,12 +350,31 @@ const OrderList = () => {
                 ),
             },
 
+            {
+                header: 'Status',
+                accessorKey: 'status',
+                cell: ({ getValue, row }) => {
+                    const statuses = row?.original?.status
+                    return (
+                        <div>
+                            {statuses === 'PENDING' ? (
+                                <span className="text-red-700 font-semibold bg-red-200 p-2 rounded-md">{statuses}</span>
+                            ) : statuses === 'COMPLETED' ? (
+                                <span className="font-semibold text-green-700 bg-green-200 p-2 rounded-lg">{statuses}</span>
+                            ) : (
+                                <span className="text-yellow-700 bg-yellow-200 p-2 rounded-lg font-semibold">{statuses}</span>
+                            )}
+                        </div>
+                    )
+                },
+            },
+
             { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }) => <span>{getValue()} km</span> },
             { header: 'Payment Mode', accessorKey: 'payment.mode' },
             { header: 'Payment Status', accessorKey: 'payment.status' },
             { header: 'Total Items', accessorKey: 'order_items.length' },
             { header: 'Order Total', accessorKey: 'payment.amount' },
-            { header: 'Status', accessorKey: 'status' },
+
             {
                 header: 'Last Update',
                 accessorKey: 'update_date',
@@ -527,6 +552,10 @@ const OrderList = () => {
     }, [setShowFilter])
 
     console.log(`Table for red ---`, deliveryTypes)
+
+    if (showSpinner) {
+        return <LoadingSpinner />
+    }
 
     return (
         <div className="p-4">
