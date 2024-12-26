@@ -8,11 +8,13 @@ import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 import { fetchCoupons } from '@/store/slices/couponSlice/couponSlice'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { COUPON_STATE } from '@/store/types/coupons.types'
+import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
 import Spinner from '@/components/ui/Spinner'
 import { ImSpinner9 } from 'react-icons/im'
 import { FaEdit } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import EasyTable from '@/common/EasyTable'
 
 type Option = {
     value: number
@@ -32,85 +34,85 @@ const AppCoupons = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const [loading, setLoading] = useState(true)
-
-    const { coupons, accessDenied } = useAppSelector<COUPON_STATE>((state) => state.coupon)
-    const dispatch = useAppDispatch()
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true)
-            await dispatch(fetchCoupons())
-            setLoading(false)
-        }
-
-        fetchData()
-    }, [dispatch])
-
-    console.log('AccessDenied', accessDenied)
-
-    const filteredData = coupons?.filter((item) =>
-        Object.values(item).some((val) => (val ? val?.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
-    )
-
+    const [loading, setLoading] = useState(false)
+    const [accessDenied, setAccessDenied] = useState(false)
+    const [couponsData, setCouponsData] = useState<COUPONDATA>([])
+    const [totalPages, setTotalPages] = useState(0)
     const navigate = useNavigate()
 
-    // Paginate filtered data
-    const paginatedData = filteredData?.slice((page - 1) * pageSize, page * pageSize)
-    const totalPages = Math.ceil(filteredData?.length / pageSize)
+    const fetchCouponsData = async () => {
+        try {
+            setLoading(true)
+            const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}`)
+            const data = response?.data?.data
+            setTotalPages(data?.count)
+            setCouponsData(data?.results)
+        } catch (error: any) {
+            if (error.response || error.response.status === 403) {
+                setAccessDenied(true)
+            }
+            console.error(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchCouponsData()
+    }, [page, pageSize])
 
     const columns = [
-        { header: 'Code', accessor: 'code' },
+        { header: 'Code', accessorKey: 'code' },
         {
             header: 'Image',
-            accessor: 'image',
-            format: (value) => (value ? <img src={value} alt="coupon" width="50" /> : 'N/A'),
+            accessorKey: 'image',
+            cell: ({ getValue }) => (getValue() ? <img src={getValue()} alt="coupon" width="50" /> : 'N/A'),
         },
-        { header: 'Type', accessor: 'type' },
-        { header: 'Value', accessor: 'value' },
-        { header: 'Min Cart Value', accessor: 'min_cart_value' },
-        { header: 'Max Count', accessor: 'max_count' },
-        { header: 'Maximum Price', accessor: 'maximum_price' },
+        { header: 'Type', accessorKey: 'type' },
+        { header: 'Value', accessorKey: 'value' },
+        { header: 'Min Cart Value', accessorKey: 'min_cart_value' },
+        { header: 'Max Count', accessorKey: 'max_count' },
+        { header: 'Maximum Price', accessorKey: 'maximum_price' },
         {
             header: 'Valid From',
-            accessor: 'valid_from',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            accessorKey: 'valid_from',
+            cell: ({ getValue }) => moment(getValue()).format('YYYY-MM-DD'),
         },
         {
             header: 'Valid To',
-            accessor: 'valid_to',
-            format: (value) => moment(value).format('YYYY-MM-DD'),
+            accessorKey: 'valid_to',
+            cell: ({ getValue }) => moment(getValue()).format('YYYY-MM-DD'),
         },
         {
             header: 'Description',
-            accessor: 'description',
-            format: (value) => {
+            accessorKey: 'description',
+            cell: ({ getValue }) => {
                 return (
                     <div className="w-[200px] h-[70px] overflow-hidden">
-                        <div className="text-ellipsis whitespace-normal line-clamp-3" dangerouslySetInnerHTML={{ __html: value }} />
+                        <div className="text-ellipsis whitespace-normal line-clamp-3" dangerouslySetInnerHTML={{ __html: getValue() }} />
                     </div>
                 )
             },
         },
-        { header: 'Max Count Per User', accessor: 'max_count_per_user' },
-        { header: 'Coupon Used Count', accessor: 'coupon_used_count' },
-        { header: 'Frequency', accessor: 'frequency' },
-        // { header: 'Frequency Config', accessor: 'freq_config' },
-        { header: 'Coupon Discount Type', accessor: 'coupon_discount_type' },
+        { header: 'Max Count Per User', accessorKey: 'max_count_per_user' },
+        { header: 'Coupon Used Count', accessorKey: 'coupon_used_count' },
+        { header: 'Frequency', accessorKey: 'frequency' },
+
+        { header: 'Coupon Discount Type', accessorKey: 'coupon_discount_type' },
 
         {
             header: 'Edit',
-            accessor: 'code', // Ensure that 'code' exists in your data
-            format: (value) => {
-                console.log('Row data:', value) // Check if row.original contains 'code'
+            accessorKey: 'code',
+            cell: ({ getValue }) => {
+                console.log('Row data:', getValue()) // Check if row.original contains 'code'
                 return (
-                    <Button onClick={() => handleActionClick(value)} className="bg-none border-none">
+                    <Button onClick={() => handleActionClick(getValue())} className="bg-none border-none">
                         <FaEdit className="text-xl text-blue-600 items-center flex justify-center" />
                     </Button>
                 )
             },
         },
-    ]
+    ].filter((column) => column.header && column.accessorKey)
 
     const handleActionClick = (coupon_code: string) => {
         console.log('clicked', coupon_code)
@@ -149,20 +151,7 @@ const AppCoupons = () => {
                         </button>
                     </div>
 
-                    <Table>
-                        <THead>
-                            <Tr>{columns?.map((col) => <Th key={col.header}>{col.header}</Th>)}</Tr>
-                        </THead>
-                        <TBody>
-                            {paginatedData?.map((row) => (
-                                <Tr key={row.code}>
-                                    {columns?.map((col) => (
-                                        <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
-                                    ))}
-                                </Tr>
-                            ))}
-                        </TBody>
-                    </Table>
+                    <EasyTable mainData={couponsData} columns={columns} page={page} pageSize={pageSize} />
 
                     <div className="flex items-center justify-between mt-4">
                         <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
