@@ -62,6 +62,14 @@ const EditUrlShortner = () => {
         android_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
         ios_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
         app: urlFieldDatas?.app,
+        page_title: (() => {
+            const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
+            if (url) {
+                const match = url.match(/https:\/\/slikk\.club\/(?:[^/]+\/)?([^/?]+)/)
+                return match ? match[1] : ''
+            }
+            return ''
+        })(),
         select_filter:
             urlFieldDatas?.web_url?.split('https://slikk.club/')[1]?.length > 0 ||
             urlFieldDatas?.android_url?.split('https://slikk.club/')[1]?.length > 0,
