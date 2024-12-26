@@ -108,16 +108,16 @@ const Products = () => {
 
             setShowSpinner(true)
             if (currentSelectedPage.value === 'sku' && globalFilter) {
-                searchInputType = `&barcodes=${globalFilter}`
+                searchInputType = `&sku=${globalFilter}`
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
                 searchInputType = `&name=${globalFilter}`
             }
             const response = await axiosInstance.get(
-                `search/product?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
+                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
             )
 
-            const data = response.data?.results
-            const total = response.data.count
+            const data = response.data?.data?.results
+            const total = response.data?.data?.count
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -157,29 +157,29 @@ const Products = () => {
         console.log('value inside  apply', values)
         let query = '&'
 
-        if (divisionList.length > 0) {
+        if (divisionList?.length > 0) {
             const divisionIds = divisionList.map((item: any) => item?.name).join(',')
 
             query += `division=${divisionIds}`
         }
 
-        if (categoryList.length > 0) {
+        if (categoryList?.length > 0) {
             const categoryIds = categoryList.map((item: any) => item?.name).join(',')
             if (query) query += '&'
             query += `category=${categoryIds}`
         }
 
-        if (subCategoryList.length > 0) {
+        if (subCategoryList?.length > 0) {
             const subCategoryIds = subCategoryList.map((item: any) => item?.name).join(',')
             if (query) query += '&'
             query += `sub_category=${subCategoryIds}`
         }
-        if (productTypeList.length > 0) {
+        if (productTypeList?.length > 0) {
             const productTypeIds = productTypeList.map((item: any) => item?.name).join(',')
             if (query) query += '&'
             query += `Product_type=${productTypeIds}`
         }
-        if (brandList.length > 0) {
+        if (brandList?.length > 0) {
             const brandIds = brandList.join(',')
             if (query) query += '&'
             query += `brand=${brandIds}`
@@ -316,11 +316,11 @@ const Products = () => {
             let searchInputType = ''
 
             if (currentSelectedPage.value === 'sku' && globalFilter) {
-                searchInputType = `&barcodes=${globalFilter}`
+                searchInputType = `&sku=${globalFilter}`
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
                 searchInputType = `&name=${globalFilter}`
             }
-            const downloadUrl = `search/product?download=true&${typeFetch}${searchInputType}`
+            const downloadUrl = `merchant/products?download=true&${typeFetch}${searchInputType}`
 
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
