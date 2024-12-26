@@ -19,7 +19,7 @@ const EditUrlShortner = () => {
     const [urlFieldDatas, setUrlFieldDatas] = useState<any>()
     const [shortUrlData, setShortUrlData] = useState('')
     const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
-
+    const navigate = useNavigate()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState([])
@@ -217,6 +217,7 @@ const EditUrlShortner = () => {
             })
             setShortUrlData(response?.data?.data?.short_url)
             setShowGeneratedUrl(true)
+            navigate(-1)
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
