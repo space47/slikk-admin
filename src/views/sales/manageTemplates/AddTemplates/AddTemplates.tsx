@@ -5,10 +5,6 @@ import TemplateDetails from './components/TemplateDetails'
 import ContentSetup, { btnsArray } from './components/ContentSetup'
 import TemplateMobilePreview from '../templateMobilePreview/TemplateMobilePreview'
 import ButtonTemplate from './components/ButtonTemplate'
-import { values } from 'lodash'
-import { handleimage } from '@/common/handleImage'
-import { handleVideo } from '@/common/handleVideo'
-import { boolean } from 'yup'
 import axios from 'axios'
 
 const AddTemplates = () => {
@@ -232,12 +228,6 @@ const AddTemplates = () => {
                 </Steps>
             </div>
 
-            {/* <div className="flex justify-center items-center xl:hidden">
-        <Button variant="new" className=" xl:hidden" onClick={() => setShowMobileView(true)}>
-            Mobile View
-        </Button>
-    </div> */}
-
             <div className="flex justify-between">
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                     {({ values, resetForm }) => (
@@ -265,14 +255,6 @@ const AddTemplates = () => {
                                 {currentStep === 2 && (
                                     <ButtonTemplate values={values} setButtonText={setButtonText} setQuickButtonText={setQuickButtonText} />
                                 )}
-                                {/* {currentStep === 3 && (
-                            <FourthStep
-                                values={values}
-                                handleSchedule={hanldeSchedule}
-                                valueForSchedule={valueForSchedule}
-                                scheduleModal={showScheduleModal}
-                            />
-                        )} */}
                             </FormContainer>
 
                             <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
