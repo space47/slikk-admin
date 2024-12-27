@@ -19,7 +19,7 @@ const EditUrlShortner = () => {
     const [urlFieldDatas, setUrlFieldDatas] = useState<any>()
     const [shortUrlData, setShortUrlData] = useState('')
     const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
-
+    const navigate = useNavigate()
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState([])
@@ -62,6 +62,14 @@ const EditUrlShortner = () => {
         android_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
         ios_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
         app: urlFieldDatas?.app,
+        page_title: (() => {
+            const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
+            if (url) {
+                const match = url.match(/https:\/\/slikk\.club\/(?:[^/]+\/)?([^/?]+)/)
+                return match ? match[1] : ''
+            }
+            return ''
+        })(),
         select_filter:
             urlFieldDatas?.web_url?.split('https://slikk.club/')[1]?.length > 0 ||
             urlFieldDatas?.android_url?.split('https://slikk.club/')[1]?.length > 0,
@@ -209,6 +217,7 @@ const EditUrlShortner = () => {
             })
             setShortUrlData(response?.data?.data?.short_url)
             setShowGeneratedUrl(true)
+            navigate(-1)
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
