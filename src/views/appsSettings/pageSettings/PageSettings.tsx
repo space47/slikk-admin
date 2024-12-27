@@ -11,7 +11,7 @@ import { notification } from 'antd'
 import PageModal from './PageModal'
 import { FormikProps } from 'formik'
 import PageAddModal from './PageAddModal'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaCopy, FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { WebType } from './PageSettingsCommon'
 import PageDraggavleTable from './PageDraggavleTable'
@@ -153,6 +153,18 @@ const PageSettings = () => {
                 ),
             },
             {
+                header: 'Copy',
+                accessorKey: '',
+                cell: ({ row }) => {
+                    const copiedRow = { ...row.original }
+                    return (
+                        <button onClick={() => handleCopyPage(copiedRow)} className="border-none bg-none">
+                            <FaCopy className="text-xl text-green-500" />
+                        </button>
+                    )
+                },
+            },
+            {
                 header: 'Section Heading',
                 accessorKey: 'section_heading',
                 cell: ({ row }) => {
@@ -179,9 +191,6 @@ const PageSettings = () => {
                 accessorKey: 'background_config.mobile_background_image',
                 cell: (info) => <img src={info.getValue() as string} alt="" className="object-contain bg-black" />,
             },
-            // { header: 'Header Text', accessorKey: 'header_config.text' },
-            // { header: 'Footer Text', accessorKey: 'footer_config.text' },
-            // { header: 'Sub Header Text', accessorKey: 'sub_header_config.text' },
             { header: 'Data Type', accessorKey: 'data_type.type' },
             {
                 header: 'Section',
@@ -229,6 +238,13 @@ const PageSettings = () => {
         })
     }
 
+    const handleCopyPage = (copiedRow: any) => {
+        setData((prev) => [...prev, copiedRow])
+        notification.success({
+            message: 'A Copy of the row has been added',
+        })
+    }
+
     const handleSelectPage = (value: string) => {
         const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
@@ -239,6 +255,10 @@ const PageSettings = () => {
     if (showSpinner) {
         return <LoadingSpinner />
     }
+
+    // const newData = [...prev];
+    // newData.splice(rowIndex + 1, 0, copiedRow);
+    // return newData;
 
     return (
         <div>

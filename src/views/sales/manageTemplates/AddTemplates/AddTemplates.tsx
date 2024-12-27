@@ -6,6 +6,7 @@ import ContentSetup, { btnsArray } from './components/ContentSetup'
 import TemplateMobilePreview from '../templateMobilePreview/TemplateMobilePreview'
 import ButtonTemplate from './components/ButtonTemplate'
 import axios from 'axios'
+import { handleimage } from '@/common/handleImage'
 
 const AddTemplates = () => {
     const [currentStep, setCurrentStep] = useState(0)
@@ -43,7 +44,7 @@ const AddTemplates = () => {
         const body = {
             url: 'https://graph.facebook.com/v21.0/1588246595239188/uploads',
             method: 'POST',
-            data: {
+            extra_data: {
                 parameters: 'access_token',
             },
             params: {
@@ -58,38 +59,44 @@ const AddTemplates = () => {
             const data = response?.data
             console.log('data after handle', data?.response?.id)
 
-            // Return the upload ID directly instead of relying on state
             return data?.response?.id
         } catch (error) {
             console.error(error)
-            throw error // Propagate the error to be handled by the caller
+            throw error
         }
     }
 
-    const handleStartUpload = async (file: any, uploadSessionId: string) => {
+    const handleStartUpload = async (file: File, uploadSessionId: string) => {
         console.log('UploadSessionId:', uploadSessionId)
         console.log('FileName:', file?.name)
+
+        // const imageupload = await handleimage('product', [file])
+        // console.log('image Upload', imageupload)
 
         const url = `https://graph.facebook.com/v21.0/${uploadSessionId}`
 
         try {
             const formData = new FormData()
-            formData.append('file', file)
+            // formData.append('file', imageupload)
+
+            console.log('FormData is', formData)
 
             const body = {
                 url,
                 method: 'POST',
-                data: {
+                params: {},
+                extra_data: {
                     useAccessToken: true,
-                    binaryFile: formData,
+                    isContent: true,
                 },
+                data: `@/${file}`,
             }
 
-            console.log('Body:', body)
+            console.log('Request Body:', body)
 
             const response = await axios.post('https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/api_test', body)
 
-            console.log('Response:', response?.data)
+            console.log('Response Data:', response?.data)
         } catch (error) {
             console.error('Error uploading file:', error)
         }
