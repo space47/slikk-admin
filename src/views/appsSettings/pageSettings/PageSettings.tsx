@@ -19,6 +19,7 @@ import PreviousConfiguration from './PreviousConfiguration'
 import LoadingSpinner from '@/common/LoadingSpinner'
 
 const PageSettings = () => {
+    const navigate = useNavigate()
     const [data, setData] = useState<WebType[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(BANNER_PAGE_NAME[0])
     const [yesModal, setYesModal] = useState(false)
@@ -26,7 +27,6 @@ const PageSettings = () => {
     const [addModal, setAddModal] = useState(false)
     const formikRef = useRef<FormikProps<any>>(null)
     const [showPreviousConfigDrawer, setShowPreviousConfigDrawer] = useState(false)
-    const navigate = useNavigate()
     const [storePrevIndex, setStorePrevIndex] = useState<number>()
     const [previousConfigs, setPreviousConfigs] = useState<any[]>([])
     const [currentConfig, setCurentConfigs] = useState<any[]>([])
@@ -357,7 +357,9 @@ const PageSettings = () => {
 
             {isPreviousConfig && <div className="font-bold text-xl text-red-500 mb-6">Previous Configuration : {storePrevIndex ?? +1}</div>}
 
-            <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />
+            <div className="border border-gray-200 p-2 rounded-lg">
+                <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />
+            </div>
         </div>
     )
 }

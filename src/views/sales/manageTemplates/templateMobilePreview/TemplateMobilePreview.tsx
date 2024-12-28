@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { handleimage } from '@/common/handleImage'
 import React, { useEffect, useState } from 'react'
+import { FaRegShareSquare } from 'react-icons/fa'
 import { GoDotFill } from 'react-icons/go'
 
 interface TemplateMobilePreviewProps {
@@ -56,15 +57,24 @@ const TemplateMobilePreview = ({ title, message, image, video, text, buttonText,
                     <span className="text-blue-700">
                         {buttonText?.map((item, key) => {
                             console.log('Item for button', item)
-                            return <div key={key}>{item}</div>
+                            return (
+                                <div key={key} className="flex gap-1 items-center">
+                                    <FaRegShareSquare /> {item}
+                                </div>
+                            )
                         })}
                     </span>
                 </div>
                 <div className="flex items-center justify-center">
-                    <span className="text-blue-700">
+                    <span className="text-blue-700 ">
                         {quickButtonText?.map((item, key) => {
                             console.log('Item for button', item)
-                            return <div key={key}>{item}</div>
+                            return (
+                                <div key={key} className="flex gap-1 items-center">
+                                    <FaRegShareSquare />
+                                    {item}
+                                </div>
+                            )
                         })}
                     </span>
                 </div>

@@ -391,6 +391,8 @@ const OrderList = () => {
         setDeliveryTypes(initialDeliveryTypes)
     }, [orders])
 
+    console.log('Order Table', orders)
+
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -570,15 +572,6 @@ const OrderList = () => {
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
                     <div className="flex gap-1 xl:gap-2  xl:flex-row  ">
                         <div className="flex justify-start ">
-                            {/* <input
-                                type="search"
-                                name="search"
-                                id=""
-                                placeholder="search here"
-                                value={searchInput}
-                                className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
-                                onChange={handleSearch}
-                            /> */}
                             <Input
                                 type="search"
                                 name="search"
@@ -647,21 +640,15 @@ const OrderList = () => {
                 </div>
                 <br />
 
-                {orders?.length === 0 ? (
-                    <>
-                        <div className="flex justify-center items-center text-xl text-red-500 font-bold xl:h-[400px]"></div>
-                    </>
-                ) : (
-                    <div className="border border-gray-300 p-2 rounded-xl">
-                        <RedMarkTable
-                            mainData={orders}
-                            page={page}
-                            pageSize={pageSize}
-                            columns={columns}
-                            selectedDeliveryType={deliveryTypes ?? ''}
-                        />
-                    </div>
-                )}
+                <div className="border border-gray-300 p-2 rounded-xl">
+                    <RedMarkTable
+                        mainData={orders}
+                        page={page}
+                        pageSize={pageSize}
+                        columns={columns}
+                        selectedDeliveryType={deliveryTypes ?? ''}
+                    />
+                </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                     {numberClick !== true && (

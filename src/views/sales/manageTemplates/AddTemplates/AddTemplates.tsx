@@ -68,10 +68,7 @@ const AddTemplates = () => {
 
     const handleStartUpload = async (file: File, uploadSessionId: string) => {
         console.log('UploadSessionId:', uploadSessionId)
-        console.log('FileName:', file?.name)
-
-        // const imageupload = await handleimage('product', [file])
-        // console.log('image Upload', imageupload)
+        console.log('FileName:', file)
 
         const url = `https://graph.facebook.com/v21.0/${uploadSessionId}`
 
@@ -89,7 +86,7 @@ const AddTemplates = () => {
                     useAccessToken: true,
                     isContent: true,
                 },
-                data: `@/${file}`,
+                data: file,
             }
 
             console.log('Request Body:', body)
@@ -177,7 +174,6 @@ const AddTemplates = () => {
                 {
                     type: 'BUTTONS',
                     buttons: [
-                        // Add "CALL_TO_ACTION" buttons if specified
                         ...(values.addButtons?.includes('CALL_TO_ACTION')
                             ? values.buttons
                                   .flatMap((button: any) => {
