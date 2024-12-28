@@ -12,6 +12,7 @@ import { notification } from 'antd'
 import CustomerData from './componentsHomes/CustomerData'
 import CartPaymentSummary from './componentsHomes/CartPaymentSummary'
 import CartShipping from './componentsHomes/CartShipping'
+import CartTabs from './componentsHomes/CartTabs'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
@@ -77,9 +78,16 @@ const CustomerAnalytics = () => {
                 </>
             ) : (
                 <>
-                    <div className="text-xl font-bold flex items-center justify-center ">No Cart Available 😔</div>
+                    <div className="text-xl font-bold flex items-center justify-center mt-5 ">No Cart Available 😔</div>
                 </>
             )}
+            <br />
+            <div className="mt-10">
+                <div className="flex flex-col gap-4">
+                    <h2 className="font-bold text-2xl">Transaction History</h2>
+                    <CartTabs />
+                </div>
+            </div>
             {blockUser && (
                 <BlockUserModal
                     dialogIsOpen={blockUser}
