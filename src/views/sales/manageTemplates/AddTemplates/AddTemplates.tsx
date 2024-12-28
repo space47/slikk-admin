@@ -74,9 +74,9 @@ const AddTemplates = () => {
 
         try {
             const formData = new FormData()
-            // formData.append('file', imageupload)
+            formData.append('file', file)
 
-            console.log('FormData is', formData)
+            console.log('FormData is')
 
             const body = {
                 url,
@@ -86,7 +86,7 @@ const AddTemplates = () => {
                     useAccessToken: true,
                     isContent: true,
                 },
-                data: file,
+                data: formData,
             }
 
             console.log('Request Body:', body)
