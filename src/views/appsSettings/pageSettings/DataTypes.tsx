@@ -12,6 +12,7 @@ const GenderArray = [
 ]
 
 const dataTypeArray = [
+    { label: 'Default', value: 'Default' },
     { label: 'banner', value: 'banner' },
     { label: 'wishlist', value: 'wishlist' },
     { label: 'purchases', value: 'purchases' },
