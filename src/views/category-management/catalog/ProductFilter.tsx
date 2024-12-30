@@ -243,6 +243,7 @@ const ProductFilterNest = ({
                                     }}
                                 </Field>
                             </FormItem>
+                            */}
 
                             <Field name="brand">
                                 {({ field }: FieldProps<any>) => {
@@ -268,7 +269,7 @@ const ProductFilterNest = ({
                                         </div>
                                     )
                                 }}
-                            </Field> */}
+                            </Field>
 
                             <FormItem label="SEARCH FILTER STRINGS">
                                 <FieldArray name="filtersAdd">

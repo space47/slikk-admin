@@ -120,6 +120,8 @@ const PageSettings = () => {
             value: { Web: webData },
         }
 
+        console.log('Body to be send', body)
+
         try {
             const response = await axioisInstance.post(`/page/config`, body)
             notification.success({

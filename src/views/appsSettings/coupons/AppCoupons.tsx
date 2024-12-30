@@ -42,6 +42,11 @@ const AppCoupons = () => {
 
     const fetchCouponsData = async () => {
         try {
+            // let couponCode = ''
+            // if (globalFilter) {
+            //     couponCode = `&coupon_code=${globalFilter}`
+            // }
+
             setLoading(true)
             const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}`)
             const data = response?.data?.data
@@ -59,7 +64,7 @@ const AppCoupons = () => {
 
     useEffect(() => {
         fetchCouponsData()
-    }, [page, pageSize])
+    }, [page, pageSize, globalFilter])
 
     const columns = [
         { header: 'Code', accessorKey: 'code' },
