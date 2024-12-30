@@ -155,37 +155,15 @@ const Products = () => {
 
     const handleApply = (values: any) => {
         console.log('value inside  apply', values)
-        let query = '&'
+        let query = ''
 
-        if (divisionList?.length > 0) {
-            const divisionIds = divisionList.map((item: any) => item?.name).join(',')
-
-            query += `division=${divisionIds}`
-        }
-
-        if (categoryList?.length > 0) {
-            const categoryIds = categoryList.map((item: any) => item?.name).join(',')
-            if (query) query += '&'
-            query += `category=${categoryIds}`
-        }
-
-        if (subCategoryList?.length > 0) {
-            const subCategoryIds = subCategoryList.map((item: any) => item?.name).join(',')
-            if (query) query += '&'
-            query += `sub_category=${subCategoryIds}`
-        }
-        if (productTypeList?.length > 0) {
-            const productTypeIds = productTypeList.map((item: any) => item?.name).join(',')
-            if (query) query += '&'
-            query += `Product_type=${productTypeIds}`
-        }
         if (brandList?.length > 0) {
             const brandIds = brandList.join(',')
             if (query) query += '&'
             query += `brand=${brandIds}`
         }
         if (selectFilterString) {
-            query = selectFilterString
+            query += `&${selectFilterString}`
         }
 
         setTypeFetch(query)

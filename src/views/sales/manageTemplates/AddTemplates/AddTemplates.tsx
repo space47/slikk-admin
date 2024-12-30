@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
@@ -7,12 +8,13 @@ import TemplateMobilePreview from '../templateMobilePreview/TemplateMobilePrevie
 import ButtonTemplate from './components/ButtonTemplate'
 import axios from 'axios'
 import { handleimage } from '@/common/handleImage'
+import { notification } from 'antd'
 
 const AddTemplates = () => {
     const [currentStep, setCurrentStep] = useState(0)
-    const [templateImagePreview, setTemplateImagePreview] = useState('')
+    const [templateImagePreview, setTemplateImagePreview] = useState<any>()
     const [templateTextPreview, setTemplateTextPreview] = useState('')
-    const [templateVideoPreview, setTemplateVideoPreview] = useState('')
+    const [templateVideoPreview, setTemplateVideoPreview] = useState<any>()
     const [templatedocsPreview, setTemplatedocsPreview] = useState('')
     const [bodyTemplate, setBodyTemplate] = useState('')
     const [buttonText, setButtonText] = useState<any[]>([])
@@ -21,6 +23,8 @@ const AddTemplates = () => {
     const [sampleBodyValues, setSampleBodyValues] = useState<any>({})
     const [bodyButtonVariable, setBodyButtonVariable] = useState<any[]>([])
     const [textButtonVariable, setTextButtonVariable] = useState<any[]>([])
+    const [h, setH] = useState('')
+
     const [storeUploadId, setStoreUploadId] = useState('')
     const initialValue = {}
 
@@ -67,61 +71,40 @@ const AddTemplates = () => {
     }
 
     const handleStartUpload = async (file: File, uploadSessionId: string) => {
-        console.log('UploadSessionId:', uploadSessionId)
-        console.log('FileName:', file)
-
-        const url = `https://graph.facebook.com/v21.0/${uploadSessionId}`
-
+        const formData = new FormData()
         try {
-            const formData = new FormData()
             formData.append('file', file)
-
-            console.log('FormData is')
-
-            const body = {
-                url,
-                method: 'POST',
-                params: {},
-                extra_data: {
-                    useAccessToken: true,
-                    isContent: true,
-                },
-                data: formData,
-            }
-
-            console.log('Request Body:', body)
-
-            const response = await axios.post('https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/api_test', body)
-
+            formData.append('url', `https://graph.facebook.com/v21.0/${uploadSessionId}`)
+            const response = await axios.post('https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/upload_media', formData)
+            const data = response?.data?.response_data
+            setH(data?.h)
             console.log('Response Data:', response?.data)
+            return data?.h
         } catch (error) {
             console.error('Error uploading file:', error)
         }
     }
-
+    console.log('H ois', h)
     const handleSubmit = async (values: any) => {
-        console.log('Values for manage Template', templateImagePreview[0]?.name)
-
         const plainBody = plaintexter(values?.body)
         const plainFooter = plaintexter(values?.footer)
 
         let headerTextExample = ''
-        let headerStartUpload = ''
+        let hForMedia
         if (values.header === 'text') {
             headerTextExample = values.header_text || 'Sample Text'
         } else if (values.header === 'image') {
             const storeUploadId = await handleMediaForFacebook(templateImagePreview[0])
             headerTextExample = storeUploadId
-            await handleStartUpload(templateImagePreview[0], storeUploadId)
+            hForMedia = await handleStartUpload(templateImagePreview[0], storeUploadId)
         } else if (values.header === 'video') {
+            console.log('Handling Video')
             const storeUploadId = await handleMediaForFacebook(templateVideoPreview[0])
             headerTextExample = storeUploadId
-            await handleStartUpload(templateVideoPreview[0], storeUploadId)
+            hForMedia = await handleStartUpload(templateVideoPreview[0], storeUploadId)
         } else if (values.header === 'document') {
             headerTextExample = templatedocsPreview || ''
         }
-
-        console.log('Image hand;er', headerStartUpload)
 
         const formattedBody = {
             name: values.name || '',
@@ -138,22 +121,24 @@ const AddTemplates = () => {
                               : values?.header === 'video'
                                 ? 'VIDEO'
                                 : 'TEXT',
-                    text: values?.header === 'text' ? headerTextExample || '' : undefined,
-                    example:
-                        values?.header === 'text'
-                            ? {
-                                  header_text_named_params: btnsArray
-                                      .map((item) => ({
-                                          param_name: item,
-                                          example: sampleValues[item] || '',
-                                      }))
-                                      .filter((item) => item?.example !== ''),
-                              }
-                            : values?.header === 'image' || values?.header === 'video'
-                              ? {
-                                    header_handle: ['<HEADER_HANDLE>'],
-                                }
-                              : undefined,
+                    ...(values?.header === 'text' && {
+                        text: headerTextExample || '',
+                        example: {
+                            header_text_named_params: btnsArray
+                                .map((item) => ({
+                                    param_name: item,
+                                    example: sampleValues[item] || '',
+                                }))
+                                .filter((item) => item.example !== ''),
+                        },
+                    }),
+                    ...(values?.header === 'image' || values?.header === 'video'
+                        ? {
+                              example: {
+                                  header_handle: hForMedia.split(','),
+                              },
+                          }
+                        : {}),
                 },
                 {
                     type: 'BODY',
@@ -204,8 +189,24 @@ const AddTemplates = () => {
                 },
             ],
         }
-
         console.log('Formatted Body:', formattedBody)
+
+        try {
+            const body = {
+                formattedBody: formattedBody,
+            }
+
+            const response = await axios.post(`https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/message_templates`, body)
+
+            notification.success({
+                message: response?.data?.message || 'Message Template Added',
+            })
+        } catch (error: any) {
+            notification.error({
+                message: error?.response?.message || 'Unable to Add',
+            })
+            console.error(error)
+        }
     }
 
     return (
