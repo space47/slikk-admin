@@ -21,6 +21,7 @@ const EditConfigurations = () => {
     const [editConfigData, setEditConfigData] = useState<ConfigInterface | null>(null)
     const [showSpinner, setShowSpinner] = useState(false)
     const { id } = useParams()
+    const [editableKeys, setEditableKeys] = useState<Record<string, string>>({})
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const dispatch = useAppDispatch()
@@ -48,7 +49,7 @@ const EditConfigurations = () => {
                 <div>
                     {Object.entries(obj).map(([key, val]) => {
                         const fieldName = parentKey ? `${parentKey}.${key}` : key
-
+                        const tempKey = editableKeys[key] ?? key
                         return (
                             <div key={fieldName} className="flex gap-4 items-center mb-2">
                                 {/* Editable key */}
@@ -56,12 +57,23 @@ const EditConfigurations = () => {
                                     {({ form }) => (
                                         <Input
                                             placeholder="Key"
-                                            value={key}
+                                            value={tempKey}
                                             onChange={(e) => {
                                                 const newKey = e.target.value
-                                                const updatedObj = { ...obj, [newKey]: val }
-                                                delete updatedObj[key]
-                                                form.setFieldValue(parentKey, updatedObj)
+                                                setEditableKeys((prev) => ({ ...prev, [key]: newKey }))
+                                            }}
+                                            onBlur={() => {
+                                                if (tempKey && tempKey !== key) {
+                                                    const updatedEntries = Object.entries(obj).map(([k, v]) =>
+                                                        k === key ? [tempKey, v] : [k, v],
+                                                    )
+                                                    const updatedObj = Object.fromEntries(updatedEntries)
+                                                    setFieldValue(parentKey, updatedObj)
+                                                }
+                                                setEditableKeys((prev) => {
+                                                    const { [key]: _, ...rest } = prev
+                                                    return rest
+                                                })
                                             }}
                                             className="w-1/3"
                                         />
@@ -107,21 +119,23 @@ const EditConfigurations = () => {
                                         </div>
                                     </>
                                 ) : key.toLowerCase().includes('image') ? (
-                                    <Field name={fieldName}>
-                                        {({ field, form }) => (
-                                            <Upload
-                                                name="file"
-                                                listType="picture"
-                                                beforeUpload={beforeUpload}
-                                                onChange={async (info) => {
-                                                    const processedImage = await handleimage(key, info.fileList)
-                                                    form.setFieldValue(fieldName, processedImage)
-                                                }}
-                                            >
-                                                <Button>Upload Image</Button>
-                                            </Upload>
-                                        )}
-                                    </Field>
+                                    <FormItem className="xl:mt-6">
+                                        {/* <Field name={fieldName}>
+                                            {({ field, form }) => (
+                                                <Upload
+                                                    beforeUpload={beforeUpload}
+                                                    fileList={[fieldName]}
+                                                    onChange={async (info) => {
+                                                        
+                                                        form.setFieldValue(fieldName, processedImage)
+                                                    }}
+                                                >
+                                                    <Button type="button">Upload Image</Button>
+                                                </Upload>
+                                            )}
+                                        </Field> */}
+                                        <Field name={fieldName} component={Input} type="text" placeholder="image" />
+                                    </FormItem>
                                 ) : _.isPlainObject(val) || _.isArray(val) ? (
                                     <div className="w-full">{renderFields(val, fieldName, setFieldValue)}</div>
                                 ) : (
@@ -225,7 +239,7 @@ const EditConfigurations = () => {
                 const entries = await Promise.all(
                     Object.entries(obj).map(async ([key, val]) => {
                         if (key.toLowerCase().includes('image') && Array.isArray(val)) {
-                            const processedImage = await handleimage(key, val)
+                            const processedImage = await handleimage('product', val)
                             return [key, processedImage]
                         }
                         if (_.isPlainObject(val) || Array.isArray(val)) {

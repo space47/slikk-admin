@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
-import L from 'leaflet'
+import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import axios from 'axios'
@@ -10,6 +10,7 @@ import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import { MdClose, MdFullscreen } from 'react-icons/md'
 import { BsFullscreenExit } from 'react-icons/bs'
+import 'leaflet.heat'
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
@@ -136,6 +137,24 @@ const MarkerComponent = ({
     )
 }
 
+const HeatMapComponent = ({ markers }: { markers: any[] }) => {
+    const map = useMap()
+
+    useEffect(() => {
+        const heatLayer = L.heatLayer(
+            markers.map((marker) => [marker.lat, marker.lon, marker.amount || 1]),
+            { radius: 25, blur: 15, maxZoom: 17 },
+        )
+        heatLayer.addTo(map)
+
+        return () => {
+            map.removeLayer(heatLayer)
+        }
+    }, [markers, map])
+
+    return null
+}
+
 interface FullScreenMapProps {
     currLat: number
     currLong: number
@@ -192,6 +211,7 @@ const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', w
             <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100%', width: '100%' }}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                 <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />
+                <HeatMapComponent markers={markers} />
             </MapContainer>
         </div>
     )
@@ -332,6 +352,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                         distanceBelowTen={distanceBelowTen?.length}
                         distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
                     />
+                    <HeatMapComponent markers={markers} />
                     <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[250px]">
