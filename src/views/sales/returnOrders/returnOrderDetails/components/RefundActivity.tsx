@@ -150,7 +150,8 @@ const RefundActivity = () => {
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
             <Timeline className="mb-5">
-                {returnDetails?.log?.[returnDetails.log.length - 1]?.status === '' ? (
+                {returnDetails?.log?.[returnDetails.log.length - 1]?.status === '' &&
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PARTIALLY_ACCEPTED' ? (
                     ''
                 ) : returnDetails?.log.length === 0 && returnDetails?.status === 'CANCELLED' ? (
                     <div>Order cancelled</div>

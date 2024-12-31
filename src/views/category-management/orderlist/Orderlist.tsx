@@ -21,6 +21,7 @@ import EasyTable from '@/common/EasyTable'
 import RedMarkTable from '@/common/RedMarkTable'
 import { HiOutlineSearch, HiSearch } from 'react-icons/hi'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import { Option } from '@/views/org-management/sellers/sellerCommon'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
@@ -356,7 +357,7 @@ const OrderList = () => {
                     const statuses = row?.original?.status
                     return (
                         <div>
-                            {statuses === 'PENDING' ? (
+                            {statuses === 'PENDING' && statuses === 'CANCELLED' ? (
                                 <span className="text-red-700 font-semibold bg-red-200 p-2 rounded-md">{statuses}</span>
                             ) : statuses === 'COMPLETED' ? (
                                 <span className="font-semibold text-green-700 bg-green-200 p-2 rounded-lg">{statuses}</span>
@@ -649,29 +650,35 @@ const OrderList = () => {
                         selectedDeliveryType={deliveryTypes ?? ''}
                     />
                 </div>
-
-                <div className="flex flex-col md:flex-row items-center justify-between mt-4">
+            </div>
+            <div className="flex flex-col md:flex-row items-center justify-between mt-4">
+                {numberClick !== true && (
+                    <Pagination
+                        pageSize={pageSize}
+                        currentPage={page}
+                        total={orderCount}
+                        onChange={onPaginationChange}
+                        className="mb-4 md:mb-0"
+                    />
+                )}
+                <div className="min-w-[130px] flex gap-5">
                     {numberClick !== true && (
-                        <Pagination
-                            pageSize={pageSize}
-                            currentPage={page}
-                            total={orderCount}
-                            onChange={onPaginationChange}
-                            className="mb-4 md:mb-0"
+                        // <Select
+                        //     isSearchable={false}
+                        //     size="sm"
+                        //     value={pageSizeOptions.find((option) => option.value === pageSize)}
+                        //     options={pageSizeOptions}
+                        //     onChange={(option) => onSelectChange(option?.value)}
+                        //     className="w-full"
+                        // />
+                        <Select<Option>
+                            size="sm"
+                            isSearchable={false}
+                            value={pageSizeOptions.find((option) => option.value === pageSize)}
+                            options={pageSizeOptions}
+                            onChange={(option) => onSelectChange(option?.value)}
                         />
                     )}
-                    <div className="min-w-[130px] flex gap-5">
-                        {numberClick !== true && (
-                            <Select
-                                isSearchable={false}
-                                size="sm"
-                                value={pageSizeOptions.find((option) => option.value === pageSize)}
-                                options={pageSizeOptions}
-                                onChange={(option) => onSelectChange(option?.value)}
-                                className="w-full"
-                            />
-                        )}
-                    </div>
                 </div>
             </div>
             {showFilter && (
