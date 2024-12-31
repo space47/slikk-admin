@@ -42,16 +42,20 @@ const AppCoupons = () => {
 
     const fetchCouponsData = async () => {
         try {
-            // let couponCode = ''
-            // if (globalFilter) {
-            //     couponCode = `&coupon_code=${globalFilter}`
-            // }
+            let couponCode = ''
+            if (globalFilter) {
+                couponCode = `&coupon_code=${globalFilter}`
+            }
 
             setLoading(true)
-            const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}`)
+            const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}&coupon_code=${globalFilter}`)
             const data = response?.data?.data
             setTotalPages(data?.count)
-            setCouponsData(data?.results)
+            if (globalFilter) {
+                setCouponsData([data])
+            } else {
+                setCouponsData(data?.results)
+            }
         } catch (error: any) {
             if (error.response || error.response.status === 403) {
                 setAccessDenied(true)

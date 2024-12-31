@@ -254,6 +254,7 @@ const EditConfigurations = () => {
         }
 
         const body = {
+            is_active: values?.is_active,
             config_name: values.name,
             config_value: await processValues(values.value),
         }
