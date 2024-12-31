@@ -76,6 +76,11 @@ const DeliveryOrders = () => {
 
     useEffect(() => {
         dispatch(fetchOrders())
+        const intervalId = setInterval(() => {
+            dispatch(fetchOrders())
+        }, 60000)
+
+        return () => clearInterval(intervalId)
     }, [dispatch, page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     const [showFilter, setShowFilter] = useState(false)
@@ -96,12 +101,14 @@ const DeliveryOrders = () => {
                 const referenceId = row.original?.invoice_id
 
                 return referenceId ? (
-                    <div
-                        className="text-white bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
-                        onClick={() => handleInvoiceClick(referenceId)}
+                    <a
+                        href={`/app/orders/${referenceId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
                     >
                         {referenceId}
-                    </div>
+                    </a>
                 ) : (
                     ''
                 )
@@ -306,9 +313,9 @@ const DeliveryOrders = () => {
         dispatch(setSearchInput(e.target.value))
     }
 
-    const handleInvoiceClick = (invoiceId: string) => {
-        navigate(`/app/orders/${invoiceId}`)
-    }
+    // const handleInvoiceClick = (invoiceId: string) => {
+    //     navigate(`/app/orders/${invoiceId}`)
+    // }
 
     const onPaginationChange = (page: number) => {
         dispatch(setPage(page))
