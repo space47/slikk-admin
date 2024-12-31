@@ -76,11 +76,11 @@ const DeliveryOrders = () => {
 
     useEffect(() => {
         dispatch(fetchOrders())
-        const intervalId = setInterval(() => {
+        const interval = setInterval(() => {
             dispatch(fetchOrders())
         }, 60000)
 
-        return () => clearInterval(intervalId)
+        return () => clearInterval(interval)
     }, [dispatch, page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     const [showFilter, setShowFilter] = useState(false)
@@ -432,7 +432,7 @@ const DeliveryOrders = () => {
     console.log(`from`, from, 'and', 'to', to)
 
     return (
-        <div className="overflow-x-auto">
+        <div className="">
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-4 md:flex-col">
                 <div className="flex gap-2">
                     <div className="flex justify-start ">

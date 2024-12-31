@@ -384,7 +384,7 @@ const ReturnOrders = () => {
     }, [setShowFilter])
 
     return (
-        <div className="overflow-x-auto">
+        <div className="">
             <div className="flex justify-end">
                 <button
                     className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden dark:bg-slate-700 dark:text-gray-200"
