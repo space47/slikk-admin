@@ -357,12 +357,12 @@ const OrderList = () => {
                     const statuses = row?.original?.status
                     return (
                         <div>
-                            {statuses === 'PENDING' && statuses === 'CANCELLED' ? (
-                                <span className="text-red-700 font-semibold bg-red-200 p-2 rounded-md">{statuses}</span>
+                            {statuses === 'PENDING' || statuses === 'CANCELLED' ? (
+                                <span className="text-red-700 font-semibold bg-red-100 p-2 rounded-md">{statuses}</span>
                             ) : statuses === 'COMPLETED' ? (
-                                <span className="font-semibold text-green-700 bg-green-200 p-2 rounded-lg">{statuses}</span>
+                                <span className="font-semibold text-green-700 bg-green-100 p-2 rounded-lg">{statuses}</span>
                             ) : (
-                                <span className="text-yellow-700 bg-yellow-200 p-2 rounded-lg font-semibold">{statuses}</span>
+                                <span className="text-yellow-700 bg-yellow-100 p-2 rounded-lg font-semibold">{statuses}</span>
                             )}
                         </div>
                     )
