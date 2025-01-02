@@ -445,6 +445,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsInventoryManagement.gdn_quality_check',
+        path: `${APP_PREFIX_PATH}/goods/gdn_qualitycheck`,
+        component: lazy(() => import('@/views/inventory-management/gdnQc/GDNQCbulkupload')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsInventoryManagement.quality_checkList',
         path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
         component: lazy(() => import('@/views/inventory-management/qualityCheckList/QCListTable')),

@@ -1,7 +1,7 @@
 import { Button, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
 import { Field, FieldProps, Formik } from 'formik'
 import React, { useState } from 'react'
-
+import { SingleUploadArray } from './GDNqcCommon'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { useAppSelector } from '@/store'
 import { beforeUpload } from '@/common/beforeUpload'
@@ -9,20 +9,7 @@ import { handleimage } from '@/common/handleImage'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 
-const SingleUploadArray = [
-    { label: 'Document Number', type: 'text', name: 'document_number' },
-    { label: 'SKU', type: 'text', name: 'sku' },
-    { label: 'Barcode', type: 'text', name: 'barcode' },
-    { label: 'Quantity Sent', type: 'number', name: 'quantity_sent' },
-    { label: 'Quantity Received', type: 'number', name: 'quantity_received' },
-    { label: 'QC Passed', type: 'number', name: 'qc_passed' },
-    { label: 'QC Failed', type: 'number', name: 'qc_failed' },
-    { label: 'Batch Number', type: 'text', name: 'batch_number' },
-    { label: 'QC Done By', type: 'text', name: 'qc_done_by' },
-    { label: 'Sent to Inventory', type: 'checkbox', name: 'sent_to_inventory' },
-]
-
-const SingleUpload = () => {
+const GDNSingleUpload = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
 
     const [companyData, setCompanyData] = useState<number>()
@@ -45,7 +32,7 @@ const SingleUpload = () => {
         console.log('Body of', body)
 
         try {
-            const response = await axioisInstance.post(`/goods/qualitycheck`, body)
+            const response = await axioisInstance.post(`/goods/dispatchproduct`, body)
             notification.success({
                 message: response?.data?.message || 'Successfully updated ',
             })
@@ -140,4 +127,4 @@ const SingleUpload = () => {
     )
 }
 
-export default SingleUpload
+export default GDNSingleUpload
