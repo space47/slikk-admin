@@ -106,7 +106,7 @@ const Products = () => {
         try {
             let searchInputType = ''
 
-            setShowSpinner(true)
+            // setShowSpinner(true)
             if (currentSelectedPage.value === 'sku' && globalFilter) {
                 searchInputType = `&sku=${globalFilter}`
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
