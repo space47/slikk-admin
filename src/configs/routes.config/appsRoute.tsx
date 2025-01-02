@@ -412,6 +412,32 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/inventory-management/inward/inwardDetails')),
         authority: [ADMIN, USER],
     },
+    // GDN
+    {
+        key: 'appsInventoryManagement.gdn',
+        path: `${APP_PREFIX_PATH}/goods/gdn`,
+        component: lazy(() => import('@/views/inventory-management/gdn/gdnTable/GdnTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.gdn',
+        path: `${APP_PREFIX_PATH}/goods/gdnDetails/:document_number`,
+        component: lazy(() => import('@/views/inventory-management/gdn/gdnTable/components/GdnDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.gdn',
+        path: `${APP_PREFIX_PATH}/goods/gdn/addNew`,
+        component: lazy(() => import('@/views/inventory-management/gdn/createGdn/CreateGdn')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.gdn',
+        path: `${APP_PREFIX_PATH}/goods/gdn/:document_number`,
+        component: lazy(() => import('@/views/inventory-management/gdn/editGdn/EditGdn')),
+        authority: [ADMIN, USER],
+    },
+
     {
         key: 'appsInventoryManagement.quality_check',
         path: `${APP_PREFIX_PATH}/goods/qualitycheck`,

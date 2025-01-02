@@ -3,6 +3,7 @@ export const BANNER_PAGE_NAME = [
     { name: 'Trend', value: 'Trend' },
     { name: 'Offers', value: 'Offers' },
     { name: 'Login', value: 'Login' },
+    { name: 'Referral', value: 'Referral' },
     { name: 'Brand', value: 'Brand' },
     { name: 'Cart', value: 'Cart' },
     { name: 'Order Details', value: 'Order Details' },

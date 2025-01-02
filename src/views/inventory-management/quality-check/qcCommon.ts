@@ -28,3 +28,16 @@ export const pageSizeOptions = [
     { value: 50, label: '50 / page' },
     { value: 100, label: '100 / page' },
 ]
+
+export const SingleUploadArray = [
+    { label: 'Document Number', type: 'text', name: 'document_number' },
+    { label: 'SKU', type: 'text', name: 'sku' },
+    { label: 'Barcode', type: 'text', name: 'barcode' },
+    { label: 'Quantity Sent', type: 'number', name: 'quantity_sent' },
+    { label: 'Quantity Received', type: 'number', name: 'quantity_received' },
+    { label: 'QC Passed', type: 'number', name: 'qc_passed' },
+    { label: 'QC Failed', type: 'number', name: 'qc_failed' },
+    { label: 'Batch Number', type: 'text', name: 'batch_number' },
+    { label: 'QC Done By', type: 'text', name: 'qc_done_by' },
+    { label: 'Sent to Inventory', type: 'checkbox', name: 'sent_to_inventory' },
+]

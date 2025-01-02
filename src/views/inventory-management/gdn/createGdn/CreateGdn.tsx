@@ -1,33 +1,21 @@
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-// import Select from '@/components/ui/Select'
-import DatePicker from '@/components/ui/DatePicker'
-import Checkbox from '@/components/ui/Checkbox'
-import Upload from '@/components/ui/Upload'
-import { Field, Form, Formik } from 'formik'
-import type { FieldProps } from 'formik'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useState } from 'react'
-import axios from 'axios'
-import { notification } from 'antd'
-import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { RichTextEditor } from '@/components/shared'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeUpload } from '@/common/beforeUpload'
-import { FormModel, initialValue } from '../inwardCommon'
-import { Dropdown, Select } from '@/components/ui'
-import { setDefaultCompanyId } from '@/store/action/company.action'
-import { DIVISION_STATE } from '@/store/types/division.types'
+import { RichTextEditor } from '@/components/shared'
+import { Button, Checkbox, DatePicker, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
+import axios from 'axios'
+import { Field, FieldProps, Form, Formik } from 'formik'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-const MixedFormControl = () => {
+const CreateGdn = () => {
     const [datas, setDatas] = useState()
     const [imagview, setImageView] = useState<string>('')
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
-    const dispatch = useAppDispatch()
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
 
@@ -101,7 +89,16 @@ const MixedFormControl = () => {
         }
     }
 
-    const handleSubmit = async (values: FormModel) => {
+    const initialValue: any = {}
+
+    const plainValue = (item: any) => {
+        const parser = new DOMParser()
+        const htmlDoc = parser.parseFromString(item, 'text/html')
+        const plainTextValue = htmlDoc.body.textContent || ''
+        return plainTextValue
+    }
+
+    const handleSubmit = async (values: any) => {
         let docsUpload = null
         if (values.files && values.files.length > 0) {
             docsUpload = await handleUpload(values.files)
@@ -129,16 +126,25 @@ const MixedFormControl = () => {
         } else if (values.image) {
             imageShow = values.images
         }
-        const formData = {
-            ...values,
-            company: companyData,
 
+        const plainOriginAddress = plainValue(values?.origin_address)
+        const plainDeliveryAddress = plainValue(values?.delivery_address)
+        const formData = {
+            document_number: values?.document_number,
+            company: companyData,
+            received_by: values?.received_by,
+            document_date: values?.document_date,
+            origin_address: plainOriginAddress,
+            delivery_address: plainDeliveryAddress,
+            total_sku: values?.total_sku,
+            total_quantity: values?.total_quantity,
             document: docsShow,
             images: imageShow,
+            // store: values?.store,
         }
 
         try {
-            const response = await axioisInstance.post('goods/received', formData)
+            const response = await axioisInstance.post('/goods/dispatch', formData)
 
             console.log(response)
             notification.success({
@@ -167,28 +173,16 @@ const MixedFormControl = () => {
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="Document Number"
-                                    invalid={errors.document_number && touched.document_number}
-                                    errorMessage={errors.document_number}
-                                    className="col-span-1 w-1/2"
-                                >
+                                <FormItem label="Document Number" className="col-span-1 w-1/2">
                                     <Field type="text" name="document_number" placeholder="Place your Document Number" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Date"
-                                    invalid={errors.document_date && touched.document_date}
-                                    errorMessage={errors.document_date}
-                                    className="col-span-1 w-1/2"
-                                >
+                                <FormItem label="Date" className="col-span-1 w-1/2">
                                     <Field name="document_date" placeholder="Date">
-                                        {({ field, form }: FieldProps<FormModel>) => (
+                                        {({ field, form }: FieldProps<any>) => (
                                             <DatePicker
                                                 field={field}
                                                 form={form}
-                                                value={values.document_date}
+                                                value={values?.document_date}
                                                 onChange={(date) => {
                                                     console.log(field.name)
                                                     form.setFieldValue(field.name, date)
@@ -237,8 +231,8 @@ const MixedFormControl = () => {
                                 </FormItem>
                             </FormContainer>
                             <FormContainer>
-                                <FormItem label="Receiver Address" labelClass="!justify-start" className="col-span-1 w-full">
-                                    <Field name="received_address">
+                                <FormItem label="Delivery Address" labelClass="!justify-start" className="col-span-1 w-full">
+                                    <Field name="delivery_address">
                                         {({ field, form }: FieldProps) => (
                                             <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
                                         )}
@@ -248,33 +242,18 @@ const MixedFormControl = () => {
                             {/* fffffffffffffffffffffffffffffffffffffff */}
 
                             <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem
-                                    asterisk
-                                    label="Received By"
-                                    invalid={errors.received_by && touched.received_by}
-                                    errorMessage={errors.received_by}
-                                    className="col-span-1 w-1/3"
-                                >
+                                <FormItem label="Received By" className="col-span-1 w-1/3">
                                     <Field type="text" name="received_by" placeholder="Enter your Mobile Number" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Total SKUs"
-                                    invalid={errors.total_sku && touched.total_sku}
-                                    errorMessage={errors.total_sku}
-                                    className="col-span-1 w-1/3"
-                                >
+                                <FormItem label="Total SKUs" className="col-span-1 w-1/3">
                                     <Field type="number" name="total_sku" placeholder="Enter total Skus" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Total Quantity"
-                                    invalid={errors.total_quantity && touched.total_quantity}
-                                    errorMessage={errors.total_quantity}
-                                    className="col-span-1 w-1/3"
-                                >
+                                <FormItem label="Total Quantity" className="col-span-1 w-1/3">
                                     <Field type="number" name="total_quantity" placeholder="Enter total items received" component={Input} />
                                 </FormItem>
+                                {/* <FormItem label="Store" className="col-span-1 w-1/3">
+                                    <Field type="number" name="store" placeholder="Enter Store" component={Input} />
+                                </FormItem> */}
                             </FormContainer>
 
                             {/* ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo */}
@@ -289,7 +268,7 @@ const MixedFormControl = () => {
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="document">
-                                            {({ field, form }: FieldProps<FormModel>) => (
+                                            {({ field, form }: FieldProps<any>) => (
                                                 <>
                                                     <Upload
                                                         beforeUpload={beforeUpload}
@@ -338,7 +317,7 @@ const MixedFormControl = () => {
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="images">
-                                            {({ form }: FieldProps<FormModel>) => (
+                                            {({ form }: FieldProps<any>) => (
                                                 <>
                                                     <Upload
                                                         multiple
@@ -361,25 +340,10 @@ const MixedFormControl = () => {
                                     <br />
                                 </FormContainer>
 
-                                <FormItem
-                                    label=""
-                                    invalid={errors.images && touched.images}
-                                    errorMessage={errors.images}
-                                    className="col-span-1 w-[80%]"
-                                >
+                                <FormItem label="" className="col-span-1 w-[80%]">
                                     <Field type="text" name="images" placeholder="Enter ImageUrl or Upload Image file" component={Input} />
                                 </FormItem>
                             </FormContainer>
-
-                            <FormItem
-                                label="SLIKK OWNED"
-                                invalid={errors.slikk_owned && touched.slikk_owned}
-                                // errorMessage={errors.singleCheckbox}
-                            >
-                                <Field name="slikk_owned" component={Checkbox}>
-                                    Items purchased by SLIKK
-                                </Field>
-                            </FormItem>
 
                             <FormItem>
                                 <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
@@ -401,4 +365,4 @@ const MixedFormControl = () => {
     )
 }
 
-export default MixedFormControl
+export default CreateGdn

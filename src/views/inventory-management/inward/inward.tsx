@@ -97,26 +97,11 @@ const PaginationTable = () => {
                 accessorKey: 'create_date',
                 cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
             },
-            // {
-            //     header: 'Document url',
-            //     accessorKey: 'document_url',
-            //     cell: (info) => (
-            //         <div style={{ cursor: 'pointer' }} onClick={() => handleDocumentClick(info.getValue())}>
-            //             {info.getValue() as string}
-            //         </div>
-            //     ),
-            // },
             {
                 header: 'Document Date',
                 accessorKey: 'document_date',
                 cell: (info) => info.getValue(),
             },
-
-            // {
-            //     header: 'Images',
-            //     accessorKey: 'images',
-            //     cell: (info) => info.getValue(),
-            // },
             {
                 header: 'Updated By',
                 accessorKey: 'last_updated_by.name',
