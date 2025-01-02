@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 // import Customize from '@/views/ui-components/data-display/Tooltip/Customize';
-import QCUploader from './QCUploader'
-import QCuploadHistory from '@/views/inventory-management/quality-check/QCuploadHistory'
-import SingleUpload from './SingleUpload'
 
-const QCbulkUpload = () => {
+import GDNQCUploader from './GDNQCUploader'
+import GDNPaginationTable from './GDNQCuploadHistory'
+import GDNSingleUpload from './GDNSingleUpload'
+
+const GDNQCbulkUpload = () => {
     const [tabSelect, setTabSelect] = useState('bulk_upload')
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
@@ -30,19 +31,19 @@ const QCbulkUpload = () => {
             <br />
             {tabSelect === 'bulk_upload' && (
                 <div>
-                    <div className="font-bold text-xl mb-5">QUALITY CHECK</div>
-                    <QCUploader />
+                    <div className="font-bold text-xl mb-5">GDN QUALITY CHECK</div>
+                    <GDNQCUploader />
                     <br />
-                    <QCuploadHistory />
+                    <GDNPaginationTable />
                 </div>
             )}
             {tabSelect === 'single_upload' && (
                 <div>
-                    <SingleUpload />
+                    <GDNSingleUpload />
                 </div>
             )}
         </div>
     )
 }
 
-export default QCbulkUpload
+export default GDNQCbulkUpload

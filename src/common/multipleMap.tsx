@@ -11,6 +11,8 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import { MdClose, MdFullscreen } from 'react-icons/md'
 import { BsFullscreenExit } from 'react-icons/bs'
 import 'leaflet.heat'
+import { Dropdown } from '@/components/ui'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
@@ -160,9 +162,10 @@ interface FullScreenMapProps {
     currLong: number
     markers?: any[]
     style?: React.CSSProperties
+    currentPage: string
 }
 
-const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', width: '100%' } }: FullScreenMapProps) => {
+const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', width: '100%' }, currentPage }: FullScreenMapProps) => {
     const mapContainerRef = useRef<HTMLDivElement>(null)
     const [isFullScreen, setIsFullScreen] = useState(false)
 
@@ -190,6 +193,8 @@ const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', w
         }
     }
 
+    console.log('Current Page Name', currentPage)
+
     return (
         <div ref={mapContainerRef} style={{ position: 'relative', ...style }}>
             <button
@@ -210,12 +215,17 @@ const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', w
             </button>
             <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100%', width: '100%' }}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />
-                <HeatMapComponent markers={markers} />
+                {currentPage === 'marker' && <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />}
+                {currentPage === 'heat_map' && <HeatMapComponent markers={markers} />}
             </MapContainer>
         </div>
     )
 }
+
+const MAP_STYLE_ARRAY = [
+    { name: 'HeatMap', value: 'heat_map' },
+    { name: 'Marker', value: 'marker' },
+]
 
 const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount }) => {
     const [currLat, setCurrLat] = useState(12.9014)
@@ -227,6 +237,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
     const [distanceBelowTentoFifteen, setDistanceBelowTentoFifteen] = useState<any[]>([])
     const [distanceBelowFifteenToThirty, setDistanceBelowFifteenToThirty] = useState<any[]>([])
     const [distanceAboveThirty, setDistanceAboveThirty] = useState<any[]>([])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(MAP_STYLE_ARRAY[0])
 
     const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
 
@@ -322,6 +333,11 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         { name: 'Above 20 km', value: distanceAboveThirty },
     ]
 
+    const handleSelectPage = (value: string) => {
+        const selectedPage = MAP_STYLE_ARRAY.find((page) => page.value === value)
+        if (selectedPage) setCurrentSelectedPage(selectedPage)
+    }
+
     return (
         <div className="flex flex-col gap-4">
             <div>
@@ -340,6 +356,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                     </ul>
                 )}
             </div>
+
             <div className="flex flex-col gap-10 xl:flex-row">
                 <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '70vh', width: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -353,7 +370,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                         distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
                     />
                     <HeatMapComponent markers={markers} />
-                    <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} />
+                    <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} currentPage={currentSelectedPage?.value} />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[250px]">
                     {Belowdatas.map((item, key) => (
@@ -365,6 +382,19 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                             <span className="text-sm text-blue-700">{item?.value?.length}</span>
                         </div>
                     ))}
+                    <div className="bg-gray-200 px-2 rounded-lg font-bold text-[17px] items-center flex justify-center">
+                        <Dropdown
+                            className="border bg-gray-200 text-black text-lg font-semibold"
+                            title={currentSelectedPage.name}
+                            onSelect={handleSelectPage}
+                        >
+                            {MAP_STYLE_ARRAY.map((item) => (
+                                <DropdownItem key={item.value} eventKey={item.value}>
+                                    {item.name}
+                                </DropdownItem>
+                            ))}
+                        </Dropdown>
+                    </div>
                 </div>
             </div>
         </div>

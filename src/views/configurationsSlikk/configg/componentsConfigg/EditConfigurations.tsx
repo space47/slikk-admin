@@ -277,7 +277,7 @@ const EditConfigurations = () => {
     }
 
     return (
-        <div>
+        <div className="w-full">
             <Formik
                 enableReinitialize
                 initialValues={
@@ -294,7 +294,7 @@ const EditConfigurations = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, setFieldValue }) => (
-                    <Form className="w-full">
+                    <Form className="w-4/5">
                         <FormContainer>
                             <h5 className="mb-5 text-neutral-900">Edit Configurations</h5>
 
@@ -304,7 +304,7 @@ const EditConfigurations = () => {
                                 </FormItem>
                             ))}
 
-                            <FormContainer className="grid grid-cols-2 gap-10">
+                            <FormContainer className="grid grid-cols-1 gap-10">
                                 {renderFields(values.value, 'value', setFieldValue)}
                             </FormContainer>
 
