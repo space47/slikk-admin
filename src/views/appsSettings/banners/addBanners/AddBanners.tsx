@@ -99,6 +99,7 @@ const AddBanners = () => {
     }
 
     const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now(), is_clickable: true }])
+    console.log('Section heading data', sectionHeadingData)
 
     return (
         <div>
@@ -143,11 +144,14 @@ const AddBanners = () => {
                                 >
                                     {sectionHeadingData
                                         ?.filter((item) => item.data_type.type === 'banner')
-                                        .map((item, key) => (
-                                            <DropdownItem key={key} eventKey={item.section_heading}>
-                                                <span>{item.section_heading}</span>
-                                            </DropdownItem>
-                                        ))}
+                                        .map((item, key) => {
+                                            // console.log('Seaction Heading', item?.section_heading)
+                                            return (
+                                                <DropdownItem key={key} eventKey={item.section_heading}>
+                                                    <span>{item.section_heading}</span>
+                                                </DropdownItem>
+                                            )
+                                        })}
                                 </Dropdown>
                             </div>
                         ) : (
