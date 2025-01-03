@@ -48,7 +48,7 @@ const AppCoupons = () => {
             }
 
             setLoading(true)
-            const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}&coupon_code=${globalFilter}`)
+            const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}${couponCode}`)
             const data = response?.data?.data
             setTotalPages(data?.count)
             if (globalFilter) {
@@ -57,7 +57,7 @@ const AppCoupons = () => {
                 setCouponsData(data?.results)
             }
         } catch (error: any) {
-            if (error.response || error.response.status === 403) {
+            if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
             }
             console.error(error)
@@ -163,7 +163,8 @@ const AppCoupons = () => {
                     <EasyTable mainData={couponsData} columns={columns} page={page} pageSize={pageSize} />
 
                     <div className="flex items-center justify-between mt-4">
-                        <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
+                        {/* <Pagination currentPage={pageS} total={totalPages} onChange={(page) => setPage(page)} /> */}
+                        <Pagination pageSize={pageSize} currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
                         <div className="min-w-[130px]">
                             <Select<Option>
                                 size="sm"
