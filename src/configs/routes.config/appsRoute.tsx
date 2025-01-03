@@ -6,7 +6,7 @@ import type { Routes } from '@/@types/routes'
 const appsRoute: Routes = [
     {
         key: 'apps.homePage',
-        path: `${APP_PREFIX_PATH}/homePage`,
+        path: `${APP_PREFIX_PATH}/homePage/`,
         component: lazy(() => import('@/views/homePage/homes/Home')),
         authority: [ADMIN, USER],
     },
@@ -93,7 +93,7 @@ const appsRoute: Routes = [
     // ..........Order Management............................................................................................................
     {
         key: 'appsOrderManagement.orderList',
-        path: `${APP_PREFIX_PATH}/orders`,
+        path: `${APP_PREFIX_PATH}/orders/`,
         component: lazy(() => import('@/views/category-management/orderlist/Orderlist')),
         authority: [ADMIN, USER],
     },
@@ -111,7 +111,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsOrderManagement.returnOrderList',
-        path: `${APP_PREFIX_PATH}/returnOrders`,
+        path: `${APP_PREFIX_PATH}/returnOrders/`,
         component: lazy(() => import('@/views/sales/returnOrders/ReturnOrders')),
         authority: [ADMIN, USER],
     },
