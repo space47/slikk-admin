@@ -127,17 +127,22 @@ const AddTemplates = () => {
                               : values.header === 'video'
                                 ? 'VIDEO'
                                 : 'TEXT',
-                    ...(values.header === 'text' && {
-                        text: headerTextExample || '',
-                        example: {
-                            header_text_named_params: btnsArray
-                                .map((item) => ({
-                                    param_name: item,
-                                    example: sampleValues[item] || '',
-                                }))
-                                .filter((item) => item.example),
-                        },
-                    }),
+                    ...(values.header === 'text' &&
+                        (Object.keys(sampleValues || {}).length > 0
+                            ? {
+                                  text: headerTextExample || '',
+                                  example: {
+                                      header_text_named_params: btnsArray
+                                          .map((item) => ({
+                                              param_name: item,
+                                              example: sampleValues[item] || '',
+                                          }))
+                                          .filter((item) => item.example),
+                                  },
+                              }
+                            : {
+                                  text: headerTextExample || '',
+                              })),
                     ...(values.header === 'image' || values.header === 'video'
                         ? {
                               example: {
@@ -150,14 +155,18 @@ const AddTemplates = () => {
                 {
                     type: 'BODY',
                     text: plainBody || '',
-                    example: {
-                        body_text_named_params: btnsArray
-                            .map((item) => ({
-                                param_name: item,
-                                example: sampleBodyValues[item] || '',
-                            }))
-                            .filter((item) => item.example),
-                    },
+                    ...(Object.keys(sampleBodyValues || {}).length > 0
+                        ? {
+                              example: {
+                                  body_text_named_params: btnsArray
+                                      .map((item) => ({
+                                          param_name: item,
+                                          example: sampleBodyValues[item] || '',
+                                      }))
+                                      .filter((item) => item.example),
+                              },
+                          }
+                        : {}),
                 },
                 // FOOTER Component
                 plainFooter && {
