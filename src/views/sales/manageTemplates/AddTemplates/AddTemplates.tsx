@@ -9,6 +9,7 @@ import ButtonTemplate from './components/ButtonTemplate'
 import axios from 'axios'
 import { handleimage } from '@/common/handleImage'
 import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const AddTemplates = () => {
     const [currentStep, setCurrentStep] = useState(0)
@@ -85,6 +86,10 @@ const AddTemplates = () => {
         }
     }
     console.log('H ois', h)
+
+    const tokenAouth = import.meta.env.VITE_FACEBOOK_TOKEN
+    console.log('AUTH TOKEN', tokenAouth)
+
     const handleSubmit = async (values: any) => {
         const plainBody = plaintexter(values?.body)
         const plainFooter = plaintexter(values?.footer)
@@ -111,17 +116,18 @@ const AddTemplates = () => {
             language: values.language || 'en',
             category: values.category || 'MARKETING',
             components: [
-                {
+                // HEADER Component
+                values?.header && {
                     type: 'HEADER',
                     format:
-                        values?.header === 'text'
+                        values.header === 'text'
                             ? 'TEXT'
-                            : values?.header === 'image'
+                            : values.header === 'image'
                               ? 'IMAGE'
-                              : values?.header === 'video'
+                              : values.header === 'video'
                                 ? 'VIDEO'
                                 : 'TEXT',
-                    ...(values?.header === 'text' && {
+                    ...(values.header === 'text' && {
                         text: headerTextExample || '',
                         example: {
                             header_text_named_params: btnsArray
@@ -129,10 +135,10 @@ const AddTemplates = () => {
                                     param_name: item,
                                     example: sampleValues[item] || '',
                                 }))
-                                .filter((item) => item.example !== ''),
+                                .filter((item) => item.example),
                         },
                     }),
-                    ...(values?.header === 'image' || values?.header === 'video'
+                    ...(values.header === 'image' || values.header === 'video'
                         ? {
                               example: {
                                   header_handle: hForMedia.split(','),
@@ -140,23 +146,26 @@ const AddTemplates = () => {
                           }
                         : {}),
                 },
+                // BODY Component
                 {
                     type: 'BODY',
                     text: plainBody || '',
                     example: {
-                        header_text_named_params: btnsArray
+                        body_text_named_params: btnsArray
                             .map((item) => ({
                                 param_name: item,
                                 example: sampleBodyValues[item] || '',
                             }))
-                            .filter((item) => item?.example !== ''),
+                            .filter((item) => item.example),
                     },
                 },
-                {
+                // FOOTER Component
+                plainFooter && {
                     type: 'FOOTER',
-                    text: plainFooter || '',
+                    text: plainFooter,
                 },
-                {
+                // BUTTONS Component
+                (values.addButtons?.length > 0 || values.quickButtons?.length > 0) && {
                     type: 'BUTTONS',
                     buttons: [
                         ...(values.addButtons?.includes('CALL_TO_ACTION')
@@ -180,30 +189,37 @@ const AddTemplates = () => {
                                   })
                                   .filter(Boolean)
                             : []),
-
                         ...(values.quickButtons?.map((quickButton: any) => ({
                             type: values.addButtons?.includes('QUICK_REPLY') ? 'QUICK_REPLY' : '',
                             text: quickButton.buttonText || 'Stop Promotions',
                         })) || []),
                     ],
                 },
-            ],
+            ].filter(Boolean),
         }
-        console.log('Formatted Body:', formattedBody)
 
         try {
-            const body = {
-                formattedBody: formattedBody,
+            const response = await fetch('https://graph.facebook.com/v21.0/397892343406101/message_templates', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${tokenAouth}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formattedBody),
+            })
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
             }
 
-            const response = await axios.post(`https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/message_templates`, body)
+            const data = await response.json()
 
             notification.success({
-                message: response?.data?.message || 'Message Template Added',
+                message: data?.message || 'Message Template Added',
             })
         } catch (error: any) {
             notification.error({
-                message: error?.response?.message || 'Unable to Add',
+                message: error?.message || 'Unable to Add',
             })
             console.error(error)
         }
