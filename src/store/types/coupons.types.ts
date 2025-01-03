@@ -1,5 +1,9 @@
 import { createAction } from '@reduxjs/toolkit'
 
+interface extra_attributes {
+    dellivery_free: string
+}
+
 export interface COUPONDATA {
     code: string
     imageArray: File[]
@@ -18,6 +22,8 @@ export interface COUPONDATA {
     user_add_action: string
     // freq_config: string
     coupon_discount_type: string | null
+    extra_attributes: extra_attributes
+    is_public: boolean
     user: any[]
 }
 

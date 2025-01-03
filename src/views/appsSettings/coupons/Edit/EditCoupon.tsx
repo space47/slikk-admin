@@ -15,6 +15,7 @@ import { Upload } from '@/components/ui'
 import { beforeUpload } from '@/common/beforeUpload'
 import moment from 'moment'
 import { RichTextEditor } from '@/components/shared'
+import CouponForm from '../CouponForm'
 
 const CouponsType = () => {
     return ['PERCENT_OFF', 'FLAT_OFF'].map((segment) => ({
@@ -64,6 +65,9 @@ const AddCoupons = () => {
             formData.append('max_count_per_user', values.max_count_per_user?.toString() || '')
             formData.append('coupon_used_count', values.coupon_used_count?.toString() || '')
             formData.append('user_add_action', userAction)
+            formData.append('coupon_discount_type', values?.coupon_discount_type || '')
+            const extraAttributes = { delivery_free: values?.delivery_free }
+            formData.append('extra_attributes', JSON.stringify(extraAttributes))
 
             if (userArray.length > 0) {
                 formData.append('users', userArray)
@@ -103,6 +107,9 @@ const AddCoupons = () => {
         coupon_used_count: couponsEdit?.coupon_used_count || null,
         user: couponsEdit?.user?.map((item) => item.mobile) || [],
         user_add_action: userAction,
+        is_public: couponsEdit?.is_public,
+        delivery_free: couponsEdit?.extra_attributes?.delivery_free,
+        coupon_discount_type: couponsEdit?.coupon_discount_type,
     }
 
     return (
@@ -110,132 +117,16 @@ const AddCoupons = () => {
             <h3 className="mb-5 from-neutral-900">COUPON EDIT</h3>
             <Formik initialValues={initialValue} onSubmit={handleSubmit} enableReinitialize>
                 {({ values, setFieldValue, resetForm }) => (
-                    <Form className="w-2/3">
-                        <FormContainer>
-                            <FormContainer className="grid grid-cols-2 gap-10">
-                                {COUPON_FORM.slice(0, 5).map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-
-                                <Field name="description">
-                                    {({ field, form }: FieldProps) => (
-                                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
-                                    )}
-                                </Field>
-
-                                <FormItem label="Valid From" className="col-span-1 w-full">
-                                    <Field name="valid_from">
-                                        {({ field, form }: any) => (
-                                            <DatePicker
-                                                showTime
-                                                placeholder=""
-                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
-                                                onChange={(value) => {
-                                                    form.setFieldValue('valid_from', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
-                                                }}
-                                            />
-                                        )}
-                                    </Field>
-                                </FormItem>
-                                <FormItem label="Valid To" className="col-span-1 w-full">
-                                    <Field name="valid_to">
-                                        {({ field, form }: any) => (
-                                            <DatePicker
-                                                showTime
-                                                placeholder=""
-                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
-                                                onChange={(value) => {
-                                                    form.setFieldValue('valid_to', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
-                                                }}
-                                            />
-                                        )}
-                                    </Field>
-                                </FormItem>
-
-                                <FormItem label="Type" className="col-span-1 w-full">
-                                    <Field name="type">
-                                        {({ field, form }: FieldProps) => {
-                                            console.log('VALUE', field.value)
-
-                                            return (
-                                                <Select
-                                                    {...field}
-                                                    value={CouponsType().find((option) => option.value === field.value)}
-                                                    options={CouponsType()}
-                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                />
-                                            )
-                                        }}
-                                    </Field>
-                                </FormItem>
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
-                                    Image
-                                    <FormContainer className=" mt-5 w-full ">
-                                        {/* DIV */}
-
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="imageArray">
-                                                {({ form }: FieldProps) => (
-                                                    <>
-                                                        <Upload
-                                                            multiple
-                                                            className="flex justify-center"
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.imageArray}
-                                                            onChange={(files) => form.setFieldValue('imageArray', files)}
-                                                            onFileRemove={(files) => form.setFieldValue('imageArray', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                    <FormItem label="" className="col-span-1 w-[80%]">
-                                        <Field
-                                            type="text"
-                                            name="image"
-                                            placeholder="Enter ImageUrl or Upload Image file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-
-                                {COUPON_FORM.slice(5, 20).map((item, key) => (
-                                    <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                    </FormItem>
-                                ))}
-
-                                <Select
-                                    className="xl:w-1/2 mt-7 w-full"
-                                    options={ACTIONARRAY}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.value}
-                                    value={ACTIONARRAY.find((option) => option.value === userAction)}
-                                    onChange={(selectedOption) => {
-                                        const newValue: string = selectedOption?.value || ''
-                                        setUserAction(newValue)
-                                        setFieldValue('user_add_action', newValue)
-                                    }}
-                                />
-                            </FormContainer>
-
-                            <FormContainer className="flex justify-end mt-5">
-                                <Button type="reset" className="mr-2" onClick={() => resetForm()}>
-                                    Reset
-                                </Button>
-                                <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                    Submit
-                                </Button>
-                            </FormContainer>
-                        </FormContainer>
-                    </Form>
+                    <CouponForm
+                        values={values}
+                        setFieldValue={setFieldValue}
+                        resetForm={resetForm}
+                        ACTIONARRAY={ACTIONARRAY}
+                        userAction={userAction}
+                        setUserAction={setUserAction}
+                        CouponsType={CouponsType}
+                        isEdit
+                    />
                 )}
             </Formik>
         </div>
