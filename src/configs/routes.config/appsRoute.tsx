@@ -444,12 +444,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/inventory-management/quality-check/QCbulkupload')),
         authority: [ADMIN, USER],
     },
-    // {
-    //     key: 'appsInventoryManagement.gdn_quality_check',
-    //     path: `${APP_PREFIX_PATH}/goods/gdn_qualitycheck`,
-    //     component: lazy(() => import('@/views/inventory-management/gdnQc/GDNQCbulkupload')),
-    //     authority: [ADMIN, USER],
-    // },
+    {
+        key: 'appsInventoryManagement.gdn_quality_check',
+        path: `${APP_PREFIX_PATH}/goods/gdn_qualitycheck`,
+        component: lazy(() => import('@/views/inventory-management/gdnQc/GDNQCbulkupload')),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appsInventoryManagement.quality_checkList',
         path: `${APP_PREFIX_PATH}/goods/qualitycheckList`,
