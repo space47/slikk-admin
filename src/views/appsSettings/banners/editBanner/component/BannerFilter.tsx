@@ -30,6 +30,8 @@ const BannerFilter = ({
         setIsOpen(false)
     }
 
+    console.log('Section heading array', sectionHeadingArray)
+
     return (
         <div>
             <Drawer title="Banner Filters" isOpen={isOpen} onClose={onDrawerClose} onRequestClose={onDrawerClose} lockScroll={false}>
