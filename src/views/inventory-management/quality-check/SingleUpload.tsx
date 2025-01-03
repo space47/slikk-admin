@@ -28,8 +28,6 @@ const SingleUpload = () => {
     const [companyData, setCompanyData] = useState<number>()
     const initialValue: any = {}
 
-    console.log('data')
-
     const handleSubmit = async (values: any) => {
         console.log('start', values)
         let imageUploadData
