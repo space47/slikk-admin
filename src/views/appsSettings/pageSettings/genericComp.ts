@@ -574,6 +574,18 @@ export const BackGroundArray = [
         placeholder: 'Place Mobile width',
     },
     {
+        label: 'Redirection Url',
+        type: 'text',
+        name: 'background_config.redirection_url',
+        placeholder: 'Place Redirection Url',
+    },
+    {
+        label: 'Web Redirection Url',
+        type: 'text',
+        name: 'background_config.web_redirection_url',
+        placeholder: 'Place Web Redirection Url',
+    },
+    {
         label: 'Video',
         type: 'checkbox',
         name: 'background_config.is_background_video',

@@ -2,19 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { fetchCoupons, fetchCouponsEdit } from '@/store/slices/couponSlice/couponSlice'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import Input from '@/components/ui/Input'
-import Button from '@/components/ui/Button'
-import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik'
-import { COUPON_FORM } from './EditCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { DatePicker, notification } from 'antd'
+import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Upload } from '@/components/ui'
-import { beforeUpload } from '@/common/beforeUpload'
-import moment from 'moment'
-import { RichTextEditor } from '@/components/shared'
 import CouponForm from '../CouponForm'
 
 const CouponsType = () => {
@@ -66,7 +57,7 @@ const AddCoupons = () => {
             formData.append('coupon_used_count', values.coupon_used_count?.toString() || '')
             formData.append('user_add_action', userAction)
             formData.append('coupon_discount_type', values?.coupon_discount_type || '')
-            const extraAttributes = { delivery_free: values?.delivery_free }
+            const extraAttributes = { delivery_free: values?.delivery_free, order_count: values?.order_count }
             formData.append('extra_attributes', JSON.stringify(extraAttributes))
 
             if (userArray.length > 0) {
@@ -110,6 +101,7 @@ const AddCoupons = () => {
         is_public: couponsEdit?.is_public,
         delivery_free: couponsEdit?.extra_attributes?.delivery_free,
         coupon_discount_type: couponsEdit?.coupon_discount_type,
+        order_count: couponsEdit?.extra_attributes?.order_count,
     }
 
     return (
