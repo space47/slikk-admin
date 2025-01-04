@@ -26,6 +26,7 @@ const EditTemplates = () => {
     const [bodyButtonVariable, setBodyButtonVariable] = useState<any[]>([])
     const [textButtonVariable, setTextButtonVariable] = useState<any[]>([])
     const [messageTemplateData, setMessageTemplateData] = useState<any>()
+    const [templateId, setTemplateId] = useState<number>()
     const [h, setH] = useState('')
     const { name } = useParams()
 
@@ -39,6 +40,7 @@ const EditTemplates = () => {
             const response = await axios.post(`https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/get_message_templates`, body)
             const data = response?.data?.data?.data
             setMessageTemplateData(data[0])
+            setTemplateId(data[0]?.id)
         } catch (error) {
             console.error(error)
         }
@@ -49,6 +51,7 @@ const EditTemplates = () => {
     }, [])
 
     console.log('Datatatatataata', messageTemplateData)
+    console.log('Template Id', templateId)
 
     const [storeUploadId, setStoreUploadId] = useState('')
 
@@ -214,11 +217,15 @@ const EditTemplates = () => {
                             ? values.buttons
                                   .flatMap((button: any) => {
                                       if (button?.type?.value === 'website') {
-                                          return {
+                                          const buttonData: any = {
                                               type: 'URL',
                                               text: button.buttonText || 'Default Button',
                                               url: button.websiteUrl,
                                           }
+                                          if (button.sampleUrl) {
+                                              buttonData.example = [button.sampleUrl]
+                                          }
+                                          return buttonData
                                       }
                                       if (button?.type?.value === 'phone') {
                                           return {
@@ -241,7 +248,7 @@ const EditTemplates = () => {
         }
 
         try {
-            const response = await fetch('https://graph.facebook.com/v21.0/4085273615074443', {
+            const response = await fetch(`https://graph.facebook.com/v21.0/${templateId}`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${tokenAouth}`,
