@@ -18,6 +18,7 @@ const TemplateStatus = [
 const TemplateCategory = [
     { label: 'MARKETING', value: 'MARKETING' },
     { label: 'UTILITY', value: 'UTILITY' },
+    { label: 'AUTHENTICATION', value: 'AUTHENTICATION' },
 ]
 
 const FilterDrawer = ({ showFilter, setShowFilter, dropdownStatus, handleDropdownSelect, handleDeliverySelect, deliveryType }: props) => {

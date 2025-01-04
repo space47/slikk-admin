@@ -97,11 +97,31 @@ const ContentSetup = ({
     }
 
     const handleInsertVariable = (field: any, form: any, variable: string) => {
-        setBodyButtonVariable((prev) => [...(Array.isArray(prev) ? prev : []), variable])
+        const editor = document.querySelector('[contenteditable="true"]') // Target the editable area of the RichTextEditor
+        if (editor) {
+            const selection = window.getSelection()
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0) // Get the current cursor position
+                range.deleteContents() // Remove any selected text (if any)
+
+                // Create a new text node with the variable to insert
+                const textNode = document.createTextNode(`{{${variable}}}`)
+                range.insertNode(textNode) // Insert the text at the cursor position
+
+                // Move the cursor after the inserted text
+                range.setStartAfter(textNode)
+                range.setEndAfter(textNode)
+                selection.removeAllRanges()
+                selection.addRange(range)
+            }
+        }
+
+        // Update the field value in Formik
         const currentBody = field.value || ''
-        const updatedBody = `${currentBody}{{${variable}}}`
+        const updatedBody = editor?.innerHTML || currentBody // Get updated content
         form.setFieldValue(field.name, updatedBody)
         setBodyTemplate(updatedBody)
+
         handleSampleBodyValueChange(variable, '')
         setActiveButton(variable)
 

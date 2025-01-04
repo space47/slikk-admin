@@ -241,7 +241,7 @@ const EditTemplates = () => {
         }
 
         try {
-            const response = await fetch('https://graph.facebook.com/v21.0/397892343406101/message_templates', {
+            const response = await fetch('https://graph.facebook.com/v21.0/4085273615074443', {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${tokenAouth}`,
