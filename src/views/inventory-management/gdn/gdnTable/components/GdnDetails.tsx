@@ -23,6 +23,7 @@ import PaymentSummary from '@/views/inventory-management/inward/inwardDetails/co
 import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
 import ShippingInfo from '@/views/inventory-management/inward/inwardDetails/components/ShippingInfo'
 import { Card } from '@/components/ui'
+import GDNdetailTable from './GDNdetailTable'
 // import { string } from 'yup'
 
 const GdnDetails = () => {
@@ -165,6 +166,7 @@ const GdnDetails = () => {
                                 </button>
                             </div>
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
+                            <GDNdetailTable data={data?.gdn_products} />
                         </div>
                         {showSyncModal && (
                             <Modal

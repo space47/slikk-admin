@@ -93,7 +93,7 @@ const ButtonTemplate = ({ values, setButtonText, setQuickButtonText }: ButtonPro
                                     })
                                 }
                             >
-                                + Add Static Button
+                                + Add Button
                             </button>
 
                             {values.buttons?.map((button: any, index: number) => (

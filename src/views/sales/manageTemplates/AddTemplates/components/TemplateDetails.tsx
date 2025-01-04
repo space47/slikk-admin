@@ -5,7 +5,7 @@ import React from 'react'
 
 const LanguageArray = [
     { label: 'English', value: 'en' },
-    { label: 'English(US)', value: 'en_us' },
+    { label: 'English(US)', value: 'en_US' },
 ]
 const CategoryArray = [
     { label: 'Marketing', value: 'MARKETING' },

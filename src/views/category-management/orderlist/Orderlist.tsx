@@ -553,7 +553,7 @@ const OrderList = () => {
         setShowFilter(false)
     }, [setShowFilter])
 
-    console.log(`Table for red ---`, deliveryTypes)
+    console.log(`Table for red ---`, deliveryType?.value)
 
     if (showSpinner) {
         return <LoadingSpinner />

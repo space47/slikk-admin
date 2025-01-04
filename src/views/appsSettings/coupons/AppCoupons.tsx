@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
 import Spinner from '@/components/ui/Spinner'
 import { ImSpinner9 } from 'react-icons/im'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaSearch } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import EasyTable from '@/common/EasyTable'
@@ -38,17 +38,22 @@ const AppCoupons = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const [couponsData, setCouponsData] = useState<COUPONDATA>([])
     const [totalPages, setTotalPages] = useState(0)
+    const [activateSearchButton, setActivateSearchButton] = useState('')
     const navigate = useNavigate()
 
     const fetchCouponsData = async () => {
         try {
             let couponCode = ''
+            let couponType = ''
             if (globalFilter) {
                 couponCode = `&coupon_code=${globalFilter}`
             }
+            if (!globalFilter) {
+                couponType = `&coupon_type=COUPON`
+            }
 
             setLoading(true)
-            const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}${couponCode}`)
+            const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}${couponCode}${couponType}`)
             const data = response?.data?.data
             setTotalPages(data?.count)
             if (globalFilter) {
@@ -68,7 +73,7 @@ const AppCoupons = () => {
 
     useEffect(() => {
         fetchCouponsData()
-    }, [page, pageSize, globalFilter])
+    }, [page, pageSize, activateSearchButton])
 
     const columns = [
         { header: 'Code', accessorKey: 'code' },
@@ -136,6 +141,10 @@ const AppCoupons = () => {
         return <AccessDenied />
     }
 
+    const hanldeSearchFuntion = () => {
+        setActivateSearchButton(globalFilter)
+    }
+
     return (
         <div>
             {loading ? (
@@ -145,13 +154,23 @@ const AppCoupons = () => {
             ) : (
                 <>
                     <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center mb-10">
-                        <input
-                            type="text"
-                            placeholder="Search here"
-                            value={globalFilter}
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                            className="p-2 border rounded"
-                        />
+                        <div className="flex gap-1">
+                            <input
+                                type="search"
+                                placeholder="Search here"
+                                value={globalFilter}
+                                onChange={(e) => setGlobalFilter(e.target.value)}
+                                className="p-2 border rounded"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        hanldeSearchFuntion()
+                                    }
+                                }}
+                            />
+                            <button onClick={hanldeSearchFuntion} className="bg-blue-500 text-white px-2 rounded-lg">
+                                <FaSearch className="text-2xl" />
+                            </button>
+                        </div>
                         <button
                             className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700 order-first xl:order-none font-bold"
                             onClick={handleCoupons}
