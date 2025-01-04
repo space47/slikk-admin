@@ -306,3 +306,45 @@ export const CustomModal4: React.FC<props4> = ({ isModalOpen, handlePack, handle
         </Modal>
     )
 }
+
+type props5 = {
+    isModalOpen: boolean
+    handlePack: () => void
+    handleClose: () => void
+    modalContent?: string
+    status: string
+}
+
+export const CustomModal5: React.FC<props4> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
+    return (
+        <Modal
+            title=""
+            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'DELIVERED'}
+            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            width={800}
+            className="custom-modal"
+            okButtonProps={{
+                className: 'font-bold',
+                style: {
+                    backgroundColor: '#1D4ED8',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
+                },
+            }}
+            cancelButtonProps={{
+                className: 'font-bold',
+                style: {
+                    backgroundColor: '#6B7280',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
+                },
+            }}
+            open={isModalOpen}
+            onOk={handlePack}
+            onCancel={handleClose}
+        >
+            <p className="text-lg font-semibold mb-4">{modalContent}</p>
+            <h1 className="text-center text-lg font-bold text-green-600">ACCEPT ORDER</h1>
+        </Modal>
+    )
+}

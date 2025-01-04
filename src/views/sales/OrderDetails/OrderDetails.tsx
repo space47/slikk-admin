@@ -297,6 +297,7 @@ const OrderDetails = () => {
                                 </div>
                                 <div className="mt-6">
                                     <Activity
+                                        mainData={data}
                                         data={data.log}
                                         status={data.status}
                                         product={data.order_items}
