@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
-import React, { useState } from 'react'
-import TemplateDetails from './components/TemplateDetails'
-import ContentSetup, { btnsArray } from './components/ContentSetup'
+import React, { useEffect, useState } from 'react'
+import TemplateDetails from '../AddTemplates/components/TemplateDetails'
+import ContentSetup, { btnsArray } from '../AddTemplates/components/ContentSetup'
 import TemplateMobilePreview from '../templateMobilePreview/TemplateMobilePreview'
-import ButtonTemplate from './components/ButtonTemplate'
+import ButtonTemplate from '../AddTemplates/components/ButtonTemplate'
 import axios from 'axios'
 import { handleimage } from '@/common/handleImage'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { useParams } from 'react-router-dom'
 
-const AddTemplates = () => {
+const EditTemplates = () => {
     const [currentStep, setCurrentStep] = useState(0)
     const [templateImagePreview, setTemplateImagePreview] = useState<any>()
     const [templateTextPreview, setTemplateTextPreview] = useState('')
@@ -24,10 +25,45 @@ const AddTemplates = () => {
     const [sampleBodyValues, setSampleBodyValues] = useState<any>({})
     const [bodyButtonVariable, setBodyButtonVariable] = useState<any[]>([])
     const [textButtonVariable, setTextButtonVariable] = useState<any[]>([])
+    const [messageTemplateData, setMessageTemplateData] = useState<any>()
+    const [templateId, setTemplateId] = useState<number>()
     const [h, setH] = useState('')
+    const { name } = useParams()
+
+    const fetchEditMessageTemplate = async () => {
+        const body = {
+            params: {
+                name: name,
+            },
+        }
+        try {
+            const response = await axios.post(`https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/get_message_templates`, body)
+            const data = response?.data?.data?.data
+            setMessageTemplateData(data[0])
+            setTemplateId(data[0]?.id)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchEditMessageTemplate()
+    }, [])
+
+    console.log('Datatatatataata', messageTemplateData)
+    console.log('Template Id', templateId)
 
     const [storeUploadId, setStoreUploadId] = useState('')
-    const initialValue = {}
+
+    const initialValue = {
+        name: messageTemplateData?.name,
+        language: messageTemplateData?.language,
+        category: messageTemplateData?.category,
+        header: messageTemplateData?.components.find((item) => item?.type === 'HEADER')?.format?.toLowerCase(),
+        header_text: messageTemplateData?.components.find((item) => item?.type === 'HEADER')?.text,
+        body: messageTemplateData?.components.find((item) => item?.type === 'BODY')?.text,
+        footer: messageTemplateData?.components.find((item) => item?.type === 'FOOTER')?.text,
+    }
 
     const handleNext = () => {
         setCurrentStep((prev) => prev + 1)
@@ -181,11 +217,15 @@ const AddTemplates = () => {
                             ? values.buttons
                                   .flatMap((button: any) => {
                                       if (button?.type?.value === 'website') {
-                                          return {
+                                          const buttonData: any = {
                                               type: 'URL',
                                               text: button.buttonText || 'Default Button',
                                               url: button.websiteUrl,
                                           }
+                                          if (button.sampleUrl) {
+                                              buttonData.example = [button.sampleUrl]
+                                          }
+                                          return buttonData
                                       }
                                       if (button?.type?.value === 'phone') {
                                           return {
@@ -208,7 +248,7 @@ const AddTemplates = () => {
         }
 
         try {
-            const response = await fetch('https://graph.facebook.com/v21.0/397892343406101/message_templates', {
+            const response = await fetch(`https://graph.facebook.com/v21.0/${templateId}`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${tokenAouth}`,
@@ -343,4 +383,4 @@ const AddTemplates = () => {
     )
 }
 
-export default AddTemplates
+export default EditTemplates

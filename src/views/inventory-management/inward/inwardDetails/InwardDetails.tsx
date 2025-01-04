@@ -22,7 +22,7 @@ import moment from 'moment'
 import { Modal, notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { FaSync } from 'react-icons/fa'
+import { FaDownload, FaSync } from 'react-icons/fa'
 import { inwardDetailsResponse } from './inwardCommon'
 // import { string } from 'yup'
 
@@ -35,6 +35,7 @@ const InwardDetails = () => {
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
     const [grnNumber, setGrnNumber] = useState('')
+    const [companyId, setCompanyId] = useState<number>()
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
@@ -47,6 +48,7 @@ const InwardDetails = () => {
                 setLoading(false)
 
                 setData(ordersData)
+                setCompanyId(ordersData?.company?.id)
             } catch (error) {
                 console.log(error)
             }
@@ -100,6 +102,38 @@ const InwardDetails = () => {
         }
     }
 
+    const handleRegenerateGrn = async (doc_number) => {
+        try {
+            const response = await axioisInstance.get(`/goods/received/${companyId}/${doc_number}?download=true&regenerate=true`)
+            const preSignedUrl = response?.data?.data
+
+            if (preSignedUrl) {
+                const fileResponse = await fetch(preSignedUrl)
+                if (!fileResponse.ok) {
+                    throw new Error(`Failed to fetch the file: ${fileResponse.statusText}`)
+                }
+                const blob = await fileResponse.blob()
+                const blobUrl = window.URL.createObjectURL(blob)
+
+                const link = document.createElement('a')
+                link.href = blobUrl
+                link.download = 'GRN_Document.pdf'
+                document.body.appendChild(link)
+                link.click()
+
+                window.URL.revokeObjectURL(blobUrl)
+                document.body.removeChild(link)
+            } else {
+                console.error('Failed to retrieve the pre-signed URL from the response.')
+            }
+        } catch (error: any) {
+            notification.error({
+                message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to Regenerate',
+            })
+            console.error('Error while regenerating the GRN:', error)
+        }
+    }
+
     return (
         <Container className="h-full">
             <Loading loading={loading}>
@@ -108,10 +142,19 @@ const InwardDetails = () => {
                         <div className="mb-6">
                             <div className="flex flex-col  mb-2">
                                 <div>
-                                    <h3>
-                                        <span>GRN:</span>
-                                        <span className="ltr:ml-2 rtl:mr-2">#{data.grn_number}</span>
-                                    </h3>
+                                    <div className="flex gap-5">
+                                        <div>
+                                            <span className="font-bold text-xl">GRN:</span>
+                                            <span className="ltr:ml-2 rtl:mr-2 ont-bold text-xl">#{data.grn_number}</span>
+                                        </div>
+
+                                        <div
+                                            className="flex p-2 bg-gray-200 gap-2 rounded-lg cursor-pointer"
+                                            onClick={() => handleRegenerateGrn(data.document_number)}
+                                        >
+                                            <span className="font-bold">Export</span> <FaDownload className="text-xl" />
+                                        </div>
+                                    </div>
                                     <div className="docs flex flex-col">
                                         {data.document_number}
                                         <div className="cursor-pointer" onClick={() => handleUrl(data.document_url)}>

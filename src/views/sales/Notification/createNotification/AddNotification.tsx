@@ -112,7 +112,7 @@ const AddNotification = () => {
                             </Button>
 
                             <Button variant="solid" type="submit" className=" text-white">
-                                Send Now
+                                Submit
                             </Button>
                         </FormContainer>
                     </Form>

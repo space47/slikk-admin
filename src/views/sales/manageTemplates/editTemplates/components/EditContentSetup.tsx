@@ -5,7 +5,7 @@ import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import UploadDocument from '@/common/UploadDocument'
 import UploaderFiles from '@/common/UploadFiles'
 import { RichTextEditor } from '@/components/shared'
-import { Card, FormItem, Input } from '@/components/ui'
+import { Card, FormItem, Input, Select } from '@/components/ui'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { Field, FieldProps } from 'formik'
 
@@ -34,7 +34,7 @@ export const btnsArray = [
     'return_slot',
 ]
 
-interface ContentSetupProps {
+interface EditContentSetupProps {
     values: any
     setTemplateImagePreview: any
     setTemplateTextPreview: any
@@ -49,7 +49,7 @@ interface ContentSetupProps {
     sampleBodyValues: any
 }
 
-const ContentSetup = ({
+const EditContentSetup = ({
     values,
     setTemplateImagePreview,
     setTemplateTextPreview,
@@ -62,7 +62,7 @@ const ContentSetup = ({
     sampleValues,
     setSampleBodyValues,
     sampleBodyValues,
-}: ContentSetupProps) => {
+}: EditContentSetupProps) => {
     const [activeButton, setActiveButton] = useState<string | null>(null)
 
     // Dynamically handle sample value changes for header
@@ -97,31 +97,11 @@ const ContentSetup = ({
     }
 
     const handleInsertVariable = (field: any, form: any, variable: string) => {
-        const editor = document.querySelector('[contenteditable="true"]') // Target the editable area of the RichTextEditor
-        if (editor) {
-            const selection = window.getSelection()
-            if (selection && selection.rangeCount > 0) {
-                const range = selection.getRangeAt(0) // Get the current cursor position
-                range.deleteContents() // Remove any selected text (if any)
-
-                // Create a new text node with the variable to insert
-                const textNode = document.createTextNode(`{{${variable}}}`)
-                range.insertNode(textNode) // Insert the text at the cursor position
-
-                // Move the cursor after the inserted text
-                range.setStartAfter(textNode)
-                range.setEndAfter(textNode)
-                selection.removeAllRanges()
-                selection.addRange(range)
-            }
-        }
-
-        // Update the field value in Formik
+        setBodyButtonVariable((prev) => [...(Array.isArray(prev) ? prev : []), variable])
         const currentBody = field.value || ''
-        const updatedBody = editor?.innerHTML || currentBody // Get updated content
+        const updatedBody = `${currentBody}{{${variable}}}`
         form.setFieldValue(field.name, updatedBody)
         setBodyTemplate(updatedBody)
-
         handleSampleBodyValueChange(variable, '')
         setActiveButton(variable)
 
@@ -139,7 +119,25 @@ const ContentSetup = ({
             </div>
 
             <div className="mt-5">
-                <CommonSelect options={HeaderArray} name="header" label="Header" />
+                <FormItem label="Header">
+                    <Field name="header">
+                        {({ field, form }: FieldProps<any>) => {
+                            return (
+                                <Select
+                                    isClearable
+                                    options={HeaderArray}
+                                    value={HeaderArray.find((option) => option.value === field.value)}
+                                    onChange={(option) => {
+                                        const value = option ? option.value : ''
+                                        form.setFieldValue(field.name, value)
+                                        console.log('FIELD.NAME', field.name)
+                                    }}
+                                    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                                />
+                            )
+                        }}
+                    </Field>
+                </FormItem>
                 {values?.header !== '' && <label htmlFor="">Header Sample</label>}
                 {values?.header === 'text' && (
                     <Field name="header_text">
@@ -267,4 +265,4 @@ const ContentSetup = ({
     )
 }
 
-export default ContentSetup
+export default EditContentSetup

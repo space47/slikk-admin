@@ -45,7 +45,7 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
             />
 
             <FormItem label="Filters" className="col-span-1 w-[60%] h-[80%]">
-                <Field type="text" disabled name="data_type.filters" placeholder="Place your header Text" component={Input} min="0" />
+                <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} min="0" />
             </FormItem>
 
             <CommonSelect needClassName label="Division Select" options={GenderArray} name="division_select" className="w-1/2" />

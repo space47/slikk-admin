@@ -5,6 +5,7 @@ import { Dropdown, Button } from '@/components/ui'
 import { BANNER_PAGE_NAME } from '@/common/banner'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
 
 const Policies = () => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(CONFIGOPTIONS[0])
@@ -50,9 +51,15 @@ const Policies = () => {
                 value: richTextValue,
             }
             console.log('BOOOODY', body)
-            axioisInstance.post(`/page/config?page_name=${currentSelectedPage.value}`, body)
+            const response = axioisInstance.post(`/page/config?page_name=${currentSelectedPage.value}`, body)
+            notification.success({
+                message: 'Successfully added',
+            })
         } catch (error) {
             console.log(error)
+            notification.error({
+                message: 'Failed to Upload',
+            })
         }
     }
 

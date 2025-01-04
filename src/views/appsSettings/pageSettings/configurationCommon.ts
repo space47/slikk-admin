@@ -39,6 +39,16 @@ export const HEADERCONFIGARRAY = [
         name: 'header_config.font_color',
         type: 'text',
     },
+    {
+        label: 'Header redirection url',
+        name: 'header_config.redirection_url',
+        type: 'text',
+    },
+    {
+        label: 'Web Header redirection url',
+        name: 'header_config.web_redirection_url',
+        type: 'text',
+    },
 ]
 
 export const SUBHEADERCONFIGARRAY = [
@@ -88,6 +98,16 @@ export const SUBHEADERCONFIGARRAY = [
         name: 'sub_header_config.font_color',
         type: 'text',
     },
+    {
+        label: 'Sub-Header redirection url',
+        name: 'sub_header_config.redirection_url',
+        type: 'text',
+    },
+    {
+        label: 'Web Sub-Header redirection url',
+        name: 'sub_header_config.web_redirection_url',
+        type: 'text',
+    },
 ]
 
 export const FOOTERCONFIGARRAY = [
@@ -129,6 +149,16 @@ export const FOOTERCONFIGARRAY = [
     {
         label: 'Footer Font Color',
         name: 'footer_config.font_color',
+        type: 'text',
+    },
+    {
+        label: 'Footer Redirection Url',
+        name: 'footer_config.redirection_url',
+        type: 'text',
+    },
+    {
+        label: 'Web Footer Redirection Url',
+        name: 'footer_config.web_redirection_url',
         type: 'text',
     },
 ]

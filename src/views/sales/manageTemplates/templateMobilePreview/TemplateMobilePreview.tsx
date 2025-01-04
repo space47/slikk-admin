@@ -44,7 +44,6 @@ const TemplateMobilePreview = ({ title, message, image, video, text, buttonText,
                 {text && <p className="text-sm text-gray-800 mt-1 break-words">{text}</p>}
 
                 {/* Message */}
-                {message && <p className="text-sm text-gray-800 break-words">{plainTextMessage}</p>}
 
                 {/* Image */}
                 {image && <img src={imageView} alt="Media" className="rounded-lg mt-2 w-full object-cover" />}
@@ -53,6 +52,10 @@ const TemplateMobilePreview = ({ title, message, image, video, text, buttonText,
                 {video && (
                     <video controls className="rounded-lg mt-2 w-full" src={video instanceof File ? URL.createObjectURL(video) : video} />
                 )}
+                <br />
+                {message && <p className="text-sm text-gray-800 break-words">{plainTextMessage}</p>}
+                <br />
+
                 <div className="flex items-center justify-center">
                     <span className="text-blue-700">
                         {buttonText?.map((item, key) => {
@@ -78,6 +81,7 @@ const TemplateMobilePreview = ({ title, message, image, video, text, buttonText,
                         })}
                     </span>
                 </div>
+                <br />
 
                 {/* Timestamp */}
                 <div className="flex justify-end items-center text-xs text-gray-500 mt-2 gap-1">

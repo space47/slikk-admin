@@ -27,7 +27,7 @@ const ActionOptions = [
     { label: 'Call Phone Number', value: 'phone' },
 ]
 
-const ButtonTemplate = ({ values, setButtonText, setQuickButtonText }: ButtonProps) => {
+const EditButtonTemplate = ({ values, setButtonText, setQuickButtonText }: ButtonProps) => {
     const { setFieldValue } = useFormikContext<any>()
 
     const handleButtonChange = (index: number, type: 'buttons' | 'quickButtons', key: string, value: string) => {
@@ -299,4 +299,4 @@ const ButtonTemplate = ({ values, setButtonText, setQuickButtonText }: ButtonPro
     )
 }
 
-export default ButtonTemplate
+export default EditButtonTemplate
