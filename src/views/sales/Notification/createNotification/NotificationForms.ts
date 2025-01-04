@@ -21,7 +21,7 @@ export const NotificationARRAY = [
         component: { Input },
     },
     {
-        label: 'Template Id',
+        label: 'Template Id/Name',
         classname: 'col-span-1 w-full',
         type: 'text',
         name: 'template_id',

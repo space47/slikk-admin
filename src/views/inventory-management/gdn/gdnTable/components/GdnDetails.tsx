@@ -23,6 +23,7 @@ import PaymentSummary from '@/views/inventory-management/inward/inwardDetails/co
 import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
 import ShippingInfo from '@/views/inventory-management/inward/inwardDetails/components/ShippingInfo'
 import { Card } from '@/components/ui'
+import GDNdetailTable from './GDNdetailTable'
 // import { string } from 'yup'
 
 const GdnDetails = () => {
@@ -108,7 +109,7 @@ const GdnDetails = () => {
                             <div className="flex flex-col  mb-2">
                                 <div>
                                     <h3>
-                                        <span>GRN:</span>
+                                        <span>GDN:</span>
                                         <span className="ltr:ml-2 rtl:mr-2">#{data.gdn_number}</span>
                                     </h3>
                                     <div className="docs flex flex-col">
@@ -160,11 +161,12 @@ const GdnDetails = () => {
                                 <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
                                     {' '}
                                     <div className="flex gap-2 font-bold text-green-600">
-                                        SYNC GRN <FaSync className="text-2xl" />
+                                        SYNC GDN <FaSync className="text-2xl" />
                                     </div>{' '}
                                 </button>
                             </div>
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
+                            <GDNdetailTable data={data?.gdn_products} />
                         </div>
                         {showSyncModal && (
                             <Modal

@@ -123,13 +123,13 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsOrderManagement.deliveryOrders',
-        path: `${APP_PREFIX_PATH}/deliveryOrders`,
+        path: `${APP_PREFIX_PATH}/deliveryOrders/`,
         component: lazy(() => import('@/views/sales/DeliveryOrders/DeliveryOrders')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsOrderManagement.reverseDelivery',
-        path: `${APP_PREFIX_PATH}/reverseDelivery`,
+        path: `${APP_PREFIX_PATH}/reverseDelivery/`,
         component: lazy(() => import('@/views/sales/reverseDelivery/ReverseDelivery')),
         authority: [ADMIN, USER],
     },
@@ -384,7 +384,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsInventoryManagement.inwards',
-        path: `${APP_PREFIX_PATH}/goods/received`,
+        path: `${APP_PREFIX_PATH}/goods/received/`,
         component: lazy(() => import('@/views/inventory-management/inward/inward')),
         authority: [ADMIN, USER],
     },
@@ -440,13 +440,13 @@ const appsRoute: Routes = [
 
     {
         key: 'appsInventoryManagement.quality_check',
-        path: `${APP_PREFIX_PATH}/goods/qualitycheck`,
+        path: `${APP_PREFIX_PATH}/goods/qualitycheck/`,
         component: lazy(() => import('@/views/inventory-management/quality-check/QCbulkupload')),
         authority: [ADMIN, USER],
     },
     {
         key: 'appsInventoryManagement.gdn_quality_check',
-        path: `${APP_PREFIX_PATH}/goods/gdn_qualitycheck`,
+        path: `${APP_PREFIX_PATH}/goods/gdn_qualitycheck/`,
         component: lazy(() => import('@/views/inventory-management/gdnQc/GDNQCbulkupload')),
         authority: [ADMIN, USER],
     },
@@ -458,7 +458,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsInventoryManagement.stock_overview',
-        path: `${APP_PREFIX_PATH}/stockOverview`,
+        path: `${APP_PREFIX_PATH}/stockOverview/`,
         component: lazy(() => import('@/views/inventory-management/stock-overview/StockOverview')),
         authority: [ADMIN, USER],
     },
@@ -771,7 +771,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsAppSettings.banners',
-        path: `${APP_PREFIX_PATH}/appSettings/banners`,
+        path: `${APP_PREFIX_PATH}/appSettings/banners/`,
         component: lazy(() => import('@/views/appsSettings/banners/AppBanners')),
         authority: [ADMIN, USER],
     },
@@ -800,7 +800,7 @@ const appsRoute: Routes = [
 
     {
         key: 'appsAppSettings.pageSettings',
-        path: `${APP_PREFIX_PATH}/appSettings/pageSettings`,
+        path: `${APP_PREFIX_PATH}/appSettings/pageSettings/`,
         component: lazy(() => import('@/views/appsSettings/pageSettings/PageSettings')),
         authority: [ADMIN, USER],
     },
@@ -840,6 +840,12 @@ const appsRoute: Routes = [
         key: 'appsCommuncication.manageTemplates',
         path: `${APP_PREFIX_PATH}/appsCommuncication/templates/addNew`,
         component: lazy(() => import('@/views/sales/manageTemplates/AddTemplates/AddTemplates')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsCommuncication.manageTemplates',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/templates/:name`,
+        component: lazy(() => import('@/views/sales/manageTemplates/editTemplates/EditTemplates')),
         authority: [ADMIN, USER],
     },
     {

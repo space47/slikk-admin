@@ -572,7 +572,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsCommuncication.manageTemplates',
                         path: `${APP_PREFIX_PATH}/appsCommuncication/templates`,
-                        title: 'Manage Templates',
+                        title: 'WhatsApp Templates',
                         translateKey: 'nav.appsCommuncication.manageTemplates',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,

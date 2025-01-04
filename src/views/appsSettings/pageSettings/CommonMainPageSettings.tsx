@@ -483,10 +483,10 @@ const CommonMainPageSettings = ({
                             </FormContainer>
                         </FormContainer>
                         <CommonSelect
+                            needClassName
                             name="section_type"
                             label="Section Type"
                             options={SectionTypeArray}
-                            needClassName
                             className=" col-span-1 w-1/4"
                         />
 
@@ -502,6 +502,9 @@ const CommonMainPageSettings = ({
                                 </FormItem>
                             ))}
                         </FormContainer>
+                        <FormItem label="Order Count" className="w-1/4">
+                            <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" />
+                        </FormItem>
                         <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
                             <Field type="checkbox" name="is_section_clickable" placeholder="" component={Input} />
                         </FormItem>

@@ -85,6 +85,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         component_config: particularRow.component_config,
         extra_info: particularRow.extra_info,
         web_section_border: particularRow?.web_section_border,
+        order_count: particularRow?.order_count,
     })
     const validationSchema = Yup.object().shape({
         section_heading: Yup.string().required('Section Header is required'),
@@ -294,10 +295,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleSubmit = async (row: any) => {
-        console.log('Mobile Upload video', row?.mobile_background_video_array)
-        console.log('Mobile Upload Image', row?.mobile_background_array)
-
-        console.log('Row ofData Type Filters', row?.data_type.filters, row?.division_select, filterId)
         try {
             console.log('handleSubmit called')
             const imageUpload = await handleimage(row.background_image_array)
@@ -402,6 +399,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 },
                 ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
                 ...(row?.section_type ? { section_type: row?.section_type } : {}),
+                ...(row?.order_count ? { order_count: row?.order_count } : {}),
             }
 
             setShowSpinner(false)
