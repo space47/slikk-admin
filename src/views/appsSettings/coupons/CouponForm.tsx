@@ -141,8 +141,11 @@ const CouponForm = ({ CouponsType, values, ACTIONARRAY, userAction, setUserActio
                         />{' '}
                     </FormItem>
 
-                    <FormItem label="Order Count">
-                        <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" />
+                    <FormItem label="Max Order Count">
+                        <Field type="number" name="max_order_count" placeholder="Enter max order count" component={Input} min="0" />
+                    </FormItem>
+                    <FormItem label="Min Order Count">
+                        <Field type="number" name="min_order_count" placeholder="Enter min order count" component={Input} min="0" />
                     </FormItem>
 
                     {COUPON_FORM.slice(5, 20).map((item, key) => (

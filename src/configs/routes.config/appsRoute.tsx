@@ -843,6 +843,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsCommuncication.manageTemplates',
+        path: `${APP_PREFIX_PATH}/appsCommuncication/templates/:name`,
+        component: lazy(() => import('@/views/sales/manageTemplates/editTemplates/EditTemplates')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsCommuncication.notification',
         path: `${APP_PREFIX_PATH}/appsCommuncication/notification`,
         component: lazy(() => import('@/views/sales/Notification/getNotification/NotificationTable')),

@@ -64,8 +64,8 @@ const ManageTemplates = () => {
             accessorKey: 'name',
             cell: ({ getValue }) => {
                 return (
-                    <div className="flex justify-center items-center">
-                        <FaEdit className="text-xl text-blue-600" />
+                    <div className="flex justify-center items-center" onClick={() => handleEditTemplate(getValue())}>
+                        <FaEdit className="text-xl text-blue-600 cursor-pointer" />
                     </div>
                 )
             },
@@ -158,6 +158,10 @@ const ManageTemplates = () => {
             },
         },
     ]
+
+    const handleEditTemplate = (name: string) => {
+        navigate(`/app/appsCommuncication/templates/${name}`)
+    }
 
     const handleDeleteTemplate = (name: string) => {
         setNameForDelete(name)

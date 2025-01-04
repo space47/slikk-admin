@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { fetchCoupons, fetchCouponsEdit } from '@/store/slices/couponSlice/couponSlice'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
-import { Field, Form, Formik, FieldProps } from 'formik'
+import { COUPONDATA } from '@/store/types/coupons.types'
+import { Formik } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -23,16 +22,48 @@ const ACTIONARRAY = [
 
 const AddCoupons = () => {
     const [userAction, setUserAction] = useState('add')
-    const { couponsEdit } = useAppSelector<COUPON_STATE>((state) => state.coupon)
-    const dispatch = useAppDispatch()
+    const [couponsEdit, setCouposEdit] = useState<any>()
     const { coupon_code } = useParams()
     const navigate = useNavigate()
 
-    useEffect(() => {
-        if (coupon_code) {
-            dispatch(fetchCouponsEdit(coupon_code))
+    const fetchCouponsCode = async () => {
+        try {
+            const response = await axioisInstance.get(`merchant/coupon?coupon_code=${coupon_code}`)
+            const data = response?.data?.data
+            setCouposEdit(data)
+        } catch (error) {
+            console.error(error)
         }
-    }, [coupon_code, dispatch])
+    }
+
+    useEffect(() => {
+        fetchCouponsCode()
+    }, [])
+
+    console.log('Coupons Code', couponsEdit)
+
+    const initialValue: any = {
+        code: couponsEdit?.code || '',
+        imageArray: [],
+        image: couponsEdit?.image || '',
+        type: couponsEdit?.type || '',
+        value: couponsEdit?.value || null,
+        min_cart_value: couponsEdit?.min_cart_value || null,
+        max_count: couponsEdit?.max_count || null,
+        maximum_price: couponsEdit?.maximum_price || null,
+        valid_from: couponsEdit?.valid_from || '',
+        valid_to: couponsEdit?.valid_to || '',
+        description: couponsEdit?.description || '',
+        max_count_per_user: couponsEdit?.max_count_per_user || null,
+        coupon_used_count: couponsEdit?.coupon_used_count || null,
+        user: couponsEdit?.user?.map((item) => item.mobile) || [],
+        user_add_action: userAction,
+        is_public: couponsEdit?.is_public,
+        delivery_free: couponsEdit?.extra_attributes?.delivery_free,
+        coupon_discount_type: couponsEdit?.coupon_discount_type,
+        max_order_count: couponsEdit?.extra_attributes?.max_order_count,
+        min_order_count: couponsEdit?.extra_attributes?.min_order_count,
+    }
 
     const handleSubmit = async (values: COUPONDATA) => {
         try {
@@ -57,7 +88,11 @@ const AddCoupons = () => {
             formData.append('coupon_used_count', values.coupon_used_count?.toString() || '')
             formData.append('user_add_action', userAction)
             formData.append('coupon_discount_type', values?.coupon_discount_type || '')
-            const extraAttributes = { delivery_free: values?.delivery_free, order_count: values?.order_count }
+            const extraAttributes = {
+                delivery_free: values?.delivery_free,
+                max_order_count: values?.max_order_count,
+                min_order_count: values?.min_order_count,
+            }
             formData.append('extra_attributes', JSON.stringify(extraAttributes))
 
             if (userArray.length > 0) {
@@ -80,28 +115,6 @@ const AddCoupons = () => {
                 description: 'Failed to create Coupon',
             })
         }
-    }
-
-    const initialValue: any = {
-        code: couponsEdit?.code || '',
-        imageArray: [],
-        image: couponsEdit?.image || '',
-        type: couponsEdit?.type || '',
-        value: couponsEdit?.value || null,
-        min_cart_value: couponsEdit?.min_cart_value || null,
-        max_count: couponsEdit?.max_count || null,
-        maximum_price: couponsEdit?.maximum_price || null,
-        valid_from: couponsEdit?.valid_from || '',
-        valid_to: couponsEdit?.valid_to || '',
-        description: couponsEdit?.description || '',
-        max_count_per_user: couponsEdit?.max_count_per_user || null,
-        coupon_used_count: couponsEdit?.coupon_used_count || null,
-        user: couponsEdit?.user?.map((item) => item.mobile) || [],
-        user_add_action: userAction,
-        is_public: couponsEdit?.is_public,
-        delivery_free: couponsEdit?.extra_attributes?.delivery_free,
-        coupon_discount_type: couponsEdit?.coupon_discount_type,
-        order_count: couponsEdit?.extra_attributes?.order_count,
     }
 
     return (
