@@ -55,7 +55,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     }
 
     const handleOk = () => {
-        setAction('PICK_AND_PACK')
+        setAction('PACKED')
         setTriggerApiCall(true)
     }
 
