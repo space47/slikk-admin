@@ -35,6 +35,7 @@ const InwardDetails = () => {
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
     const [grnNumber, setGrnNumber] = useState('')
+    const [companyId, setCompanyId] = useState<number>()
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
@@ -47,6 +48,7 @@ const InwardDetails = () => {
                 setLoading(false)
 
                 setData(ordersData)
+                setCompanyId(ordersData?.company?.id)
             } catch (error) {
                 console.log(error)
             }
@@ -102,7 +104,7 @@ const InwardDetails = () => {
 
     const handleRegenerateGrn = async (doc_number) => {
         try {
-            const response = await axioisInstance.get(`/goods/received/${selectedCompany?.id}/${doc_number}?download=true&regenerate=true`)
+            const response = await axioisInstance.get(`/goods/received/${companyId}/${doc_number}?download=true&regenerate=true`)
             const preSignedUrl = response?.data?.data
 
             if (preSignedUrl) {
@@ -146,8 +148,11 @@ const InwardDetails = () => {
                                             <span className="ltr:ml-2 rtl:mr-2 ont-bold text-xl">#{data.grn_number}</span>
                                         </div>
 
-                                        <div>
-                                            <FaDownload className="text-xl" onClick={() => handleRegenerateGrn(data.document_number)} />
+                                        <div
+                                            className="flex p-2 bg-gray-200 gap-2 rounded-lg cursor-pointer"
+                                            onClick={() => handleRegenerateGrn(data.document_number)}
+                                        >
+                                            <span className="font-bold">Export</span> <FaDownload className="text-xl" />
                                         </div>
                                     </div>
                                     <div className="docs flex flex-col">
