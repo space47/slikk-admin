@@ -403,7 +403,7 @@ const DeliveryOrders = () => {
     const handleCreateTask = async (partner: any, logistic_partner: any, order_id: any) => {
         try {
             const body = {
-                action: 'PACKED',
+                action: 'CREATE_DELIVERY',
                 delivery_partner: partner?.value ? partner?.value : logistic_partner,
             }
             const response = await axioisInstance.patch(`/merchant/order/${order_id}`, body)

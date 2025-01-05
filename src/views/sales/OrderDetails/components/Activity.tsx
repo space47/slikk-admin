@@ -82,6 +82,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     console.log(response)
                     setIsModalOpen(false)
                     setTriggerApiCall(false)
+                    navigate(0)
                 } catch (error) {
                     console.error(error)
                     setTriggerApiCall(false)
@@ -123,6 +124,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     console.log(response)
                     setIsModalOpen(false)
                     setCancelCall(false)
+                    navigate(0)
                 } catch (error) {
                     console.error(error)
                     setCancelCall(false)
@@ -147,6 +149,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 message: 'Success',
                 description: response?.data?.message || 'Order status updated successfully.',
             })
+            navigate(0)
         } catch (error: any) {
             console.error(error)
             const errorMessage = error.response?.data?.message || 'There was an error updating the order status. Please try again.'
