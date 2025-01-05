@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react'
 import { notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import { CustomModal, CustomModal2, CustomModal3, CustomModal4 } from './Modal'
+import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5 } from './Modal'
 import { LOGISTIC, LOGISTIC_PARTNER, Payment, Product } from './activityCommon'
 
 type Event = {
@@ -18,6 +18,7 @@ type Event = {
 }
 
 type ActivityProps = {
+    mainData: any
     data?: Event[]
     status: string
     product?: Product[]
@@ -26,13 +27,14 @@ type ActivityProps = {
     logistic: LOGISTIC
 }
 
-const Activity = ({ data = [], status, product = [], payment, invoice_id, logistic }: ActivityProps) => {
+const Activity = ({ data = [], status, product = [], payment, invoice_id, logistic, mainData }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const [fulfilledQuantities, setFulfilledQuantities] = useState<{ [key: number]: number }>({})
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
     const [action, setAction] = useState('')
     const [triggerApiCall, setTriggerApiCall] = useState(false)
+    const [triggerAcceptedCall, setTriggerAcceptedCall] = useState(false)
     const [triggerpackCall, setTriggerpackCall] = useState(false)
     const [triggerShipCall, setTriggerShipCall] = useState(false)
     const [triggerDeliveryCall, setTriggerDeliveryCall] = useState(false)
@@ -53,7 +55,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     }
 
     const handleOk = () => {
-        setAction('ACCEPTED')
+        setAction('PACKED')
         setTriggerApiCall(true)
     }
 
@@ -80,7 +82,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     console.log(response)
                     setIsModalOpen(false)
                     setTriggerApiCall(false)
-                    navigate(0)
                 } catch (error) {
                     console.error(error)
                     setTriggerApiCall(false)
@@ -122,7 +123,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     console.log(response)
                     setIsModalOpen(false)
                     setCancelCall(false)
-                    navigate(0)
                 } catch (error) {
                     console.error(error)
                     setCancelCall(false)
@@ -142,7 +142,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         try {
             const body = isDelivery ? { action, delivery_partner: partnerValue } : { action }
             const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-            navigate(0)
+
             notification.success({
                 message: 'Success',
                 description: response?.data?.message || 'Order status updated successfully.',
@@ -165,14 +165,20 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     }
 
     useEffect(() => {
+        handleApiCall(triggerAcceptedCall, setTriggerAcceptedCall, true)
         handleApiCall(triggerpackCall, setTriggerpackCall, true)
         handleApiCall(triggerShipCall, setTriggerShipCall, false)
         handleApiCall(triggerDeliveryCall, setTriggerDeliveryCall, false)
     }, [triggerpackCall, triggerShipCall, triggerDeliveryCall, action, invoice_id, partner, navigate])
 
     const handlePack = () => {
-        setAction('PACKED')
+        setAction('CREATE_DELIVERY')
         setTriggerpackCall(true)
+    }
+
+    const handleAccept = () => {
+        setAction('ACCEPTED')
+        setTriggerAcceptedCall(true)
     }
 
     const handleShip = () => {
@@ -199,6 +205,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             case 'PENDING':
                 return { buttonText: 'ACCEPT/REJECT' }
             case 'ACCEPTED':
+                return { buttonText: 'CREATE DELIVERY' }
+            case 'DELIVERY_CREATED':
                 return { buttonText: 'PICK AND PACK' }
             case 'PACKED':
                 return { buttonText: 'MARK AS SHIPPED' }
@@ -247,6 +255,30 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             )}
 
             {status === 'PENDING' && (
+                <CustomModal5
+                    isModalOpen={isModalOpen}
+                    handlePack={handleAccept}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                />
+            )}
+
+            {/* {status === ''} */}
+
+            {status === 'ACCEPTED' && (
+                <CustomModal2
+                    isModalOpen={isModalOpen}
+                    handlePack={handlePack}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                    logistic={logistic}
+                    handlePartnerSelect={handlePartnerSelect}
+                    partner={partner?.label}
+                />
+            )}
+            {status === 'DELIVERY_CREATED' && (
                 <CustomModal
                     isModalOpen={isModalOpen}
                     handleOk={handleOk}
@@ -262,18 +294,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     errorMessage={errorMessage || undefined}
                 />
             )}
-            {status === 'ACCEPTED' && (
-                <CustomModal2
-                    isModalOpen={isModalOpen}
-                    handlePack={handlePack}
-                    handleClose={handleClose}
-                    modalContent={modalContent}
-                    status={status}
-                    logistic={logistic}
-                    handlePartnerSelect={handlePartnerSelect}
-                    partner={partner?.label}
-                />
-            )}
+
             {status === 'PACKED' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
@@ -283,6 +304,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     status={status}
                 />
             )}
+
             {status === 'OUT_FOR_DELIVERY' && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
