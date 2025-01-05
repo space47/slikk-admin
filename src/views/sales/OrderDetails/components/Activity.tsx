@@ -204,13 +204,15 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     }
 
     const getButtonAndModalContent = (status: string) => {
+        if (status === 'DELIVERY_CREATED') {
+            return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
+        }
+
         switch (status) {
             case 'PENDING':
                 return { buttonText: 'ACCEPT/REJECT' }
             case 'ACCEPTED':
                 return { buttonText: 'CREATE DELIVERY' }
-            case 'DELIVERY_CREATED':
-                return { buttonText: 'PICK AND PACK' }
             case 'PACKED':
                 return { buttonText: 'MARK AS SHIPPED' }
             case 'OUT_FOR_DELIVERY':
@@ -264,6 +266,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={status}
+                    invoice={invoice_id}
                 />
             )}
 
