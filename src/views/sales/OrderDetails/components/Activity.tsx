@@ -330,7 +330,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {data[data.length - 1]?.status === 'OUT_FOR_DELIVERY' && (
+            {data[data.length - 1]?.status === 'OUT_FOR_DELIVERY' && isPacked && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
@@ -339,7 +339,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     status={status}
                 />
             )}
-            {data[data.length - 1]?.status === 'SHIPPED' && (
+            {data[data.length - 1]?.status === 'SHIPPED' && isPacked && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
