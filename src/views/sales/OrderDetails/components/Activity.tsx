@@ -203,19 +203,29 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         setIsModalOpen(false)
     }
 
-    const getButtonAndModalContent = (status: string) => {
-        if (status === 'DELIVERY_CREATED') {
+    console.log('Data of the log', data)
+
+    const getButtonAndModalContent = (data: Event[]) => {
+        const lastLogStatus = data.length > 0 ? data[data.length - 1].status : null
+        const isPacked = data.some((log) => log.status === 'PACKED')
+        const isDeliveryCreated = data.some((log) => log.status === 'DELIVERY_CREATED')
+
+        if (data.length === 0) {
+            return { buttonText: 'ACCEPT/REJECT' }
+        }
+
+        if (isDeliveryCreated && !isPacked) {
             return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
         }
 
-        switch (status) {
-            case 'PENDING':
-                return { buttonText: 'ACCEPT/REJECT' }
+        switch (lastLogStatus) {
+            case 'DELIVERY_CREATED':
+                return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
+            case 'PACKED':
+                return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
             case 'ACCEPTED':
                 return { buttonText: 'CREATE DELIVERY' }
-            case 'PACKED':
-                return { buttonText: 'MARK AS SHIPPED' }
-            case 'OUT_FOR_DELIVERY':
+            case 'OUT_FOR_PICKUP':
             case 'SHIPPED':
                 return { buttonText: 'MARK AS DELIVERED' }
             case 'CANCELLED':
@@ -225,7 +235,10 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         }
     }
 
-    const { buttonText, modalContent: content } = getButtonAndModalContent(status)
+    const { buttonText, modalContent: content } = getButtonAndModalContent(data)
+
+    const isPacked = data.some((log) => log?.status === 'PACKED')
+    const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -253,13 +266,19 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
             {/* buttons........................................................................................................ */}
 
-            {buttonText && (
-                <Button variant="solid" onClick={() => showModal(content)}>
-                    {buttonText}
+            {isDeliveryCreated && !isPacked ? (
+                <Button variant="solid" onClick={() => showModal('Pick and Pack')}>
+                    PICK AND PACK
                 </Button>
+            ) : (
+                buttonText && (
+                    <Button variant="solid" onClick={() => showModal(content)}>
+                        {buttonText}
+                    </Button>
+                )
             )}
 
-            {status === 'PENDING' && (
+            {data.length === 0 && (
                 <CustomModal5
                     isModalOpen={isModalOpen}
                     handlePack={handleAccept}
@@ -272,7 +291,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
             {/* {status === ''} */}
 
-            {status === 'ACCEPTED' && (
+            {data[data.length - 1]?.status === 'ACCEPTED' && (
                 <CustomModal2
                     isModalOpen={isModalOpen}
                     handlePack={handlePack}
@@ -284,7 +303,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     partner={partner?.label}
                 />
             )}
-            {status === 'DELIVERY_CREATED' && (
+            {data[data.length - 1]?.status === 'DELIVERY_CREATED' && (
                 <CustomModal
                     isModalOpen={isModalOpen}
                     handleOk={handleOk}
@@ -301,7 +320,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {status === 'PACKED' && (
+            {data[data.length - 1]?.status === 'PACKED' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={handleShip}
@@ -311,7 +330,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {status === 'OUT_FOR_DELIVERY' && (
+            {data[data.length - 1]?.status === 'OUT_FOR_DELIVERY' && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
@@ -320,7 +339,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     status={status}
                 />
             )}
-            {status === 'SHIPPED' && (
+            {data[data.length - 1]?.status === 'SHIPPED' && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
