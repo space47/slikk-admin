@@ -303,7 +303,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     partner={partner?.label}
                 />
             )}
-            {data[data.length - 1]?.status === 'DELIVERY_CREATED' && (
+            {isDeliveryCreated && !isPacked && (
                 <CustomModal
                     isModalOpen={isModalOpen}
                     handleOk={handleOk}
