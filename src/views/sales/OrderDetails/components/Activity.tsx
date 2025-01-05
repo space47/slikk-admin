@@ -226,6 +226,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             case 'ACCEPTED':
                 return { buttonText: 'CREATE DELIVERY' }
             case 'OUT_FOR_PICKUP':
+            case 'OUT_FOR_DELIVERY':
             case 'SHIPPED':
                 return { buttonText: 'MARK AS DELIVERED' }
             case 'CANCELLED':
@@ -348,6 +349,15 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     status={status}
                 />
             )}
+            {/* {data[data.length - 1]?.status === 'OUT_FOR_DELIVERY' && isPacked && (
+                <CustomModal4
+                    isModalOpen={isModalOpen}
+                    handlePack={handleDelivery}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                />
+            )} */}
         </Card>
     )
 }
