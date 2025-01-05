@@ -42,7 +42,7 @@ export const CustomModal: React.FC<Props> = ({
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'PACKED'}
+            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'PACK'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal overflow-scroll scrollbar-hide"
@@ -166,7 +166,7 @@ export const CustomModal2: React.FC<props2> = ({
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'PACKED'}
+            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'SELECT PARTNER'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
@@ -194,7 +194,7 @@ export const CustomModal2: React.FC<props2> = ({
                 <p className="text-lg font-semibold mb-4">{modalContent}</p>
 
                 <div className="flex flex-col gap-5 justify-center items-center">
-                    <div className="text-center text-lg font-bold text-green-600">MARKED AS PACKED</div>
+                    <div className="text-center text-lg font-bold text-green-600">Delivery Partner</div>
                     <div className="flex flex-col gap-2 justify-center items-center w-[250px] p-4 rounded-lg">
                         <span className="font-bold text-lg">Select Delivery Partner:</span>
                         <div className="border border-gray-300 w-[150px] rounded-lg">
@@ -313,14 +313,15 @@ type props5 = {
     handleClose: () => void
     modalContent?: string
     status: string
+    invoice: any
 }
 
-export const CustomModal5: React.FC<props4> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
+export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handleClose, modalContent, status, invoice }) => {
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'DELIVERED'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            okText={status === 'PENDING' ? 'ACCEPT ORDER' : 'DELIVERED'}
+            cancelText={status === 'PENDING' ? 'REJECT ORDER' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{
@@ -345,6 +346,9 @@ export const CustomModal5: React.FC<props4> = ({ isModalOpen, handlePack, handle
         >
             <p className="text-lg font-semibold mb-4">{modalContent}</p>
             <h1 className="text-center text-lg font-bold text-green-600">ACCEPT ORDER</h1>
+            <p className="text-center text-md font-semibold text-red-600">
+                Are you sure you want to accept the order: <span className="font-bold underline">{invoice}</span>{' '}
+            </p>
         </Modal>
     )
 }
