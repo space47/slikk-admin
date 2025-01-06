@@ -39,6 +39,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const [triggerShipCall, setTriggerShipCall] = useState(false)
     const [triggerDeliveryCall, setTriggerDeliveryCall] = useState(false)
     const [cancelCall, setCancelCall] = useState(false)
+    const [buttonAfterClick, setButtonAfterClick] = useState(false)
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
 
@@ -57,6 +58,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const handleOk = () => {
         setAction('PACKED')
         setTriggerApiCall(true)
+        setButtonAfterClick(true)
     }
 
     useEffect(() => {
@@ -101,6 +103,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             }, 2000)
         } else {
             setAction('ACCEPTED')
+            // setButtonAfterClick(true)
             setCancelCall(true)
         }
     }
@@ -177,21 +180,25 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const handlePack = () => {
         setAction('CREATE_DELIVERY')
         setTriggerpackCall(true)
+        setButtonAfterClick(true)
     }
 
     const handleAccept = () => {
         setAction('ACCEPTED')
         setTriggerAcceptedCall(true)
+        setButtonAfterClick(true)
     }
 
     const handleShip = () => {
         setAction('SHIPPED')
         setTriggerShipCall(true)
+        setButtonAfterClick(true)
     }
 
     const handleDelivery = () => {
         setAction('DELIVERED')
         setTriggerDeliveryCall(true)
+        setButtonAfterClick(true)
     }
 
     const handlePartnerSelect = (selectedValue: any) => {
@@ -221,8 +228,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         switch (lastLogStatus) {
             case 'DELIVERY_CREATED':
                 return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
-            case 'PACKED':
-                return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
+            case 'PACKED': {
+                const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
+                const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
+                return { buttonText, modalContent }
+            }
             case 'ACCEPTED':
                 return { buttonText: 'CREATE DELIVERY' }
             case 'OUT_FOR_PICKUP':
@@ -287,6 +297,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     modalContent={modalContent}
                     status={status}
                     invoice={invoice_id}
+                    isButtonClick={buttonAfterClick}
                 />
             )}
 
@@ -302,6 +313,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     logistic={logistic}
                     handlePartnerSelect={handlePartnerSelect}
                     partner={partner?.label}
+                    isButtonClick={buttonAfterClick}
                 />
             )}
             {isDeliveryCreated && !isPacked && (
@@ -318,6 +330,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     fulfilledQuantities={fulfilledQuantities}
                     handleSelectChange={handleSelectChange}
                     errorMessage={errorMessage || undefined}
+                    isButtonClick={buttonAfterClick}
                 />
             )}
 
@@ -331,22 +344,24 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {data[data.length - 1]?.status === 'OUT_FOR_DELIVERY' && isPacked && (
+            {status === 'OUT_FOR_DELIVERY' && isPacked && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={status}
+                    isButtonClick={buttonAfterClick}
                 />
             )}
-            {data[data.length - 1]?.status === 'SHIPPED' && isPacked && (
+            {status === 'SHIPPED' && isPacked && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={status}
+                    isButtonClick={buttonAfterClick}
                 />
             )}
             {/* {data[data.length - 1]?.status === 'OUT_FOR_DELIVERY' && isPacked && (
