@@ -224,6 +224,9 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         if (isDeliveryCreated && !isPacked) {
             return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
         }
+        if (status === 'SHIPPED' && isPacked) {
+            return { buttonText: 'MARK AS DELIVERED', modalContent: 'Mark as Delivered' }
+        }
 
         switch (lastLogStatus) {
             case 'DELIVERY_CREATED':
@@ -286,7 +289,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 </Button>
             ) : status === 'SHIPPED' ? (
                 buttonText ? (
-                    <Button variant="solid" onClick={() => showModal('MARK AS DELIVERED')}>
+                    <Button variant="solid" onClick={() => showModal('Mark as Delivered')}>
                         MARK AS DELIVERED
                     </Button>
                 ) : null
