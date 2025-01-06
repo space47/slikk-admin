@@ -1,6 +1,7 @@
 export const BANNER_PAGE_NAME = [
     { name: 'Home', value: 'Home' },
     { name: 'Trend', value: 'Trend' },
+    { name: 'Order_Confirmation', value: 'Order_Confirmation' },
     { name: 'Offers', value: 'Offers' },
     { name: 'Login', value: 'Login' },
     { name: 'Referral', value: 'Referral' },
