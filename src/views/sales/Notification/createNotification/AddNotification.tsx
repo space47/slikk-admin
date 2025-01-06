@@ -3,7 +3,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
-import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
+import { Field, Form, Formik, FieldProps, FieldArray } from 'formik' // Add FieldProps here
 import * as Yup from 'yup'
 import { useState } from 'react'
 import { message, notification } from 'antd'
@@ -41,11 +41,11 @@ const AddNotification = () => {
         console.log('FORMDATA', formData)
 
         try {
-            const response = await axioisInstance.post(`/notifications/config`, formData)
-            notification.success({
-                message: 'SUCCESS',
-                description: response.data.message || 'Notification has been added',
-            })
+            // const response = await axioisInstance.post(`/notifications/config`, formData)
+            // notification.success({
+            //     message: 'SUCCESS',
+            //     description: response.data.message || 'Notification has been added',
+            // })
         } catch (error) {
             console.log(error)
             notification.error({
@@ -89,6 +89,152 @@ const AddNotification = () => {
                                     </Field>
                                 </FormItem>
                             </FormContainer>
+                            {values?.notification_type === 'WHATSAPP' && (
+                                <>
+                                    <FormItem label="Body Config" className="w-full">
+                                        <FieldArray
+                                            name="config_data.body_config"
+                                            render={(arrayHelpers) => (
+                                                <div>
+                                                    {values?.config_data?.body_config?.map((config, index) => (
+                                                        <div key={index} className="flex items-center space-x-4 mb-2">
+                                                            <Field
+                                                                name={`config_data.body_config[${index}].text`}
+                                                                placeholder="Enter text (e.g., {name})"
+                                                                className="flex-1"
+                                                                component={Input}
+                                                            />
+                                                            <Field
+                                                                name={`config_data.body_config[${index}].type`}
+                                                                as="select"
+                                                                className="flex-1 border rounded px-2 py-1"
+                                                            >
+                                                                <option value="text">Text</option>
+                                                                <option value="image">Image</option>
+                                                                <option value="video">Video</option>
+                                                            </Field>
+                                                            <Button
+                                                                type="button"
+                                                                variant="reject"
+                                                                onClick={() => arrayHelpers.remove(index)}
+                                                            >
+                                                                Remove
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                    <Button
+                                                        type="button"
+                                                        variant="accept"
+                                                        onClick={() => arrayHelpers.push({ text: '', type: 'text' })}
+                                                    >
+                                                        Add Body Config
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        />
+                                    </FormItem>
+
+                                    {/* header config */}
+
+                                    <FormItem label="Header Config" className="w-full">
+                                        <FieldArray
+                                            name="config_data.header_config"
+                                            render={(arrayHelpers) => (
+                                                <div>
+                                                    {values?.config_data?.header_config?.map((config, index) => (
+                                                        <div key={index} className="flex items-center space-x-4 mb-2">
+                                                            <Field
+                                                                name={`config_data.header_config[${index}].text`}
+                                                                placeholder="Enter text (e.g., {name})"
+                                                                className="flex-1"
+                                                                component={Input}
+                                                            />
+                                                            <Field
+                                                                name={`config_data.header_config[${index}].type`}
+                                                                as="select"
+                                                                className="flex-1 border rounded px-2 py-1"
+                                                            >
+                                                                <option value="text">Text</option>
+                                                                <option value="image">Image</option>
+                                                                <option value="video">Video</option>
+                                                            </Field>
+                                                            <Button
+                                                                type="button"
+                                                                variant="reject"
+                                                                onClick={() => arrayHelpers.remove(index)}
+                                                            >
+                                                                Remove
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                    <Button
+                                                        type="button"
+                                                        variant="accept"
+                                                        onClick={() => arrayHelpers.push({ text: '', type: 'text' })}
+                                                    >
+                                                        Add Body Config
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        />
+                                    </FormItem>
+
+                                    <FormItem label="Button Config" className="w-full mt-5">
+                                        <FieldArray
+                                            name="config_data.button_config"
+                                            render={(arrayHelpers) => (
+                                                <div>
+                                                    {values?.config_data?.button_config?.map((config, index) => (
+                                                        <div key={index} className="flex items-center space-x-4 mb-2">
+                                                            <Field
+                                                                name={`config_data.button_config[${index}].url`}
+                                                                placeholder="Enter URL (e.g., {order_id})"
+                                                                className="flex-1"
+                                                                component={Input}
+                                                            />
+                                                            <Field
+                                                                name={`config_data.button_config[${index}].sub_type`}
+                                                                as="select"
+                                                                className="flex-1 border rounded px-2 py-1"
+                                                            >
+                                                                <option value="url">URL</option>
+                                                                <option value="call">Phone</option>
+                                                            </Field>
+                                                            <Field
+                                                                name={`config_data.button_config[${index}].index`}
+                                                                type="number"
+                                                                placeholder="Enter Index"
+                                                                className="flex-1"
+                                                                component={Input}
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                variant="reject"
+                                                                onClick={() => arrayHelpers.remove(index)}
+                                                            >
+                                                                Remove
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                    <Button
+                                                        type="button"
+                                                        variant="accept"
+                                                        onClick={() =>
+                                                            arrayHelpers.push({
+                                                                url: '',
+                                                                index: values?.config_data?.button_config?.length || 0,
+                                                                sub_type: 'url',
+                                                            })
+                                                        }
+                                                    >
+                                                        Add Button Config
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        />
+                                    </FormItem>
+                                </>
+                            )}
                         </FormContainer>
                         <FormItem label="Schedular Message" labelClass="!justify-start" className="col-span-1 w-full">
                             <Field name="message">

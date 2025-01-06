@@ -149,6 +149,7 @@ const EditTemplates = () => {
 
         const formattedBody = {
             name: values.name || '',
+            parameter_format: 'NAMED',
             language: values.language || 'en',
             category: values.category || 'MARKETING',
             components: [

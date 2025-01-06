@@ -44,9 +44,16 @@ const DialogConfirm = ({ IsOpen, setIsOpen, onDialogOk, IsDelete, IsConfirm, hea
                     <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
                         Cancel
                     </Button>
-                    <Button variant="solid" onClick={onDialogOk}>
-                        {IsConfirm && 'CONFIRM'}
-                    </Button>
+                    {IsConfirm && (
+                        <Button variant="solid" onClick={onDialogOk}>
+                            CONFIRM
+                        </Button>
+                    )}
+                    {IsDelete && (
+                        <Button variant="reject" onClick={onDialogOk}>
+                            DELETE
+                        </Button>
+                    )}
                 </div>
             </Dialog>
         </div>
