@@ -292,12 +292,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 )
             )}
 
-            {status === 'SHIPPED' ||
-                (status === 'OUT_FOR_DELIVERY' && (
-                    <Button variant="solid" onClick={() => showModal('Mark as Shipped')}>
-                        MARK AS DELIVERED
-                    </Button>
-                ))}
+            {status === 'SHIPPED' && (
+                <Button variant="solid" onClick={() => showModal('Mark as Shipped')}>
+                    MARK AS DELIVERED
+                </Button>
+            )}
 
             {data.length === 0 && (
                 <CustomModal5
