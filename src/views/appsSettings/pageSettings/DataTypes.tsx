@@ -5,6 +5,7 @@ import CommonSelect from './CommonSelect'
 import { Field } from 'formik'
 import FilterSelect from '@/views/sales/urlShortner/FilterSelect'
 import { SubDataTypeArray } from './PageSettingsCommon'
+import { values } from 'lodash'
 
 const GenderArray = [
     { label: 'Men', value: 'men' },
@@ -30,12 +31,26 @@ interface DataTypesProps {
     showAddFilter: any
     handleAddFilters: any
     handleRemoveFilter: any
+    values: any
 }
 
-const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, showAddFilter }: DataTypesProps) => {
+const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, showAddFilter, values }: DataTypesProps) => {
+    console.log('Is DataType', values?.data_type)
     return (
         <FormContainer className="grid grid-cols-2 gap-3">
             <CommonSelect needClassName label="Data Types" name="data_type.type" options={dataTypeArray} className="w-2/3" />
+            {values?.data_type?.type === 'brands' && (
+                <>
+                    <FormItem label="IS LOGO">
+                        <Field type="checkbox" name="data_type.is_logo" component={Input} />
+                    </FormItem>
+                </>
+            )}
+            {['wishlist', 'purchases', 'searches', 'spotlight', 'products'].includes(values?.data_type?.type) && (
+                <FormItem label="Hide Info">
+                    <Field type="checkbox" name="data_type.hide_info" component={Input} />
+                </FormItem>
+            )}
             <CommonSelect
                 needClassName
                 label="Sub Data Types"

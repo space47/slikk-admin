@@ -95,7 +95,7 @@ export const LoyaltyArray = [
         type: 'number',
     },
     {
-        label: 'Points Available',
+        label: 'Points Redeemed',
         start_name: 'max_point_redeemed',
         end_name: 'min_point_redeemed',
         start_placeholder: 'max',

@@ -1,9 +1,8 @@
 import { useState, useCallback } from 'react'
-import { Dropdown, Button } from '@/components/ui'
+import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import Drawer from '@/components/ui/Drawer'
 import { Select, notification } from 'antd'
-import type { MouseEvent } from 'react'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import Spinner from '@/components/ui/Spinner'
@@ -19,13 +18,15 @@ export type Product = {
     name: string
     id: number
     returnable_quantity: number
+    delivery_Type: string
 }
 
 type ReturnOrderProps = {
     isOpen: boolean
     setIsOpen: (x: boolean) => void
     product: Product[]
-    invoice_id: any
+    invoice_id: number
+    delivery_type: string
 }
 
 const returnReasons = [
@@ -61,23 +62,23 @@ const returnReasons = [
     },
 ]
 
-const returnType = [
-    {
-        label: 'Try and Buy',
-        value: 'TRY_AND_BUY',
-    },
-    {
-        label: 'DASHBOARD',
-        value: 'DASHBOARD_INITIATIVE',
-    },
-]
+// const returnType = [
+//     {
+//         label: 'Try and Buy',
+//         value: 'TRY_AND_BUY',
+//     },
+//     {
+//         label: 'DASHBOARD',
+//         value: 'DASHBOARD_INITIATIVE',
+//     },
+// ]
 
-const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrderProps) => {
+const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_type }: ReturnOrderProps) => {
     const [returnQuantities, setReturnQuantities] = useState<{
         [key: string]: number
     }>({})
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, { value: string; label: string }>>({})
-    const [currentReturnType, setCurrentReturnType] = useState<string>()
+    // const [currentReturnType, setCurrentReturnType] = useState<string>()
     const [loaderSpin, setLoaderSpin] = useState(false)
     const navigate = useNavigate()
 
@@ -103,11 +104,11 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
         }))
     }, [])
 
-    const handleReturnType = (selectedValue: string) => {
-        setCurrentReturnType(selectedValue)
-    }
+    // const handleReturnType = (selectedValue: string) => {
+    //     setCurrentReturnType(selectedValue)
+    // }
 
-    console.log('RETURNTYPE', currentReturnType)
+    console.log('RETURNTYPE', delivery_type)
 
     const handleReturnClick = async () => {
         const returnReasonMap = Object.fromEntries(Object.entries(currentSelectedPage).map(([id, { value }]) => [id, value]))
@@ -117,7 +118,7 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
         const body = {
             return_reason: returnReasonMap,
             items: returnQtyMap,
-            return_type: currentReturnType ? currentReturnType : 'DASHBOARD_INITIATIVE',
+            return_type: delivery_type === 'TRY_AND_BUY' ? 'TRY_AND_BUY' : 'DASHBOARD_INITIATIVE',
         }
         console.log('BODY', body)
 
@@ -129,7 +130,7 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
                 description: response.data.message || 'Order successfully Returned',
             })
             setLoaderSpin(false)
-            navigate(0)
+            // navigate(0)
         } catch (error) {
             console.error('Error:', error)
             notification.error({
@@ -158,8 +159,13 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
                 <div className="p-4 bg-gray-50 min-h-screen">
                     <div className="mb-10">
                         <div className="font-semibold text-gray-600 text-center sm:text-left sm:col-span-1 items-center flex gap-2">
-                            <span className="fonnt-bold text-xl">SELECT RETURN TYPE:</span>
-                            <div className="sm:col-span-1 text-md bg-green-600 rounded-lg text-white">
+                            <span className="fonnt-bold text-xl">
+                                RETURN TYPE:{' '}
+                                <span className="text-red-600">
+                                    {delivery_type === 'TRY_AND_BUY' ? 'TRY_AND_BUY' : 'DASHBOARD_INITIATIVE'}
+                                </span>
+                            </span>
+                            {/* <div className="sm:col-span-1 text-md bg-green-600 rounded-lg text-white">
                                 <Dropdown
                                     className="text-black w-full border border-gray-300 rounded-lg"
                                     title={currentReturnType || 'Return Type'}
@@ -171,7 +177,7 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id }: ReturnOrd
                                         </DropdownItem>
                                     ))}
                                 </Dropdown>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     {product && product.length > 0 && (
