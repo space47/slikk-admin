@@ -377,6 +377,7 @@ const CommonMainPageSettings = ({
                                 handleAddFilters={handleAddFilters}
                                 showAddFilter={showAddFilter}
                                 handleRemoveFilter={handleRemoveFilter}
+                                values={values}
                             />
                         )}
 

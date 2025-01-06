@@ -314,6 +314,7 @@ const OrderDetails = () => {
                                     setIsOpen={setReturnOrderDrawer}
                                     product={data.order_items}
                                     invoice_id={invoice_id}
+                                    delivery_type={data?.delivery_type}
                                 />
                             )}
 
