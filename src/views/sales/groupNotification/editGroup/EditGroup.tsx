@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-
 import { groupLocation, headingGroup, LoyaltyArray, orderGroup, userProfileGroup } from '../addGroup/commonTypesGroup/userProfile'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
@@ -39,7 +37,7 @@ const LoyaltyOptions = [
 ]
 
 const EditGroup = () => {
-    const [initialData, setInitialData] = useState([])
+    const [initialData, setInitialData] = useState<any>([])
 
     const { groupId } = useParams()
 
@@ -48,61 +46,57 @@ const EditGroup = () => {
             const response = await axioisInstance.get(`/notification/groups?group_id=${groupId}`)
             const data = response?.data?.data?.results
             const mappedData = data.map((item) => item.rules)
-            setInitialData(mappedData)
+            setInitialData(data)
         } catch (error) {
             console.log(error)
         }
     }
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         fetchGroupNotification()
-    }, [])
+    }, [groupId])
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
+    console.log('Iniyial va;ues', initialData)
+
     const initialValues = {
-        // cart: {
-        //     cart_start: initialData?.map((item) => item?.cart?.value?.start_date).join(',') || '',
-        //     cart_end: initialData?.map((item) => item?.cart?.value?.end_date).join(',') || '',
-        // },
-        // userInfo: {
-        //     registration_start: initialData?.map((item) => item?.userInfo?.[0]?.value?.start_date).join(',') || '',
-        //     registration_end: initialData?.map((item) => item?.userInfo?.[0]?.value?.end_date).join(',') || '',
-        //     dob_start: initialData?.map((item) => item?.userInfo?.[1]?.value?.start_date).join(',') || '',
-        //     dob_end: initialData?.map((item) => item?.userInfo?.[1]?.value?.end_date).join(',') || '',
-        //     gender: initialData?.map((item) => item?.userInfo?.[2]?.value).join(',') || '',
-        // },
-        // order: {
-        //     start_date: initialData?.map((item) => item?.order?.[0]?.value?.start_date).join(',') || '',
-        //     end_date: initialData?.map((item) => item?.order?.[0]?.value?.end_date).join(',') || '',
-        //     max_value: initialData?.map((item) => item?.order?.[1]?.value?.max_amount).join(',') || '',
-        //     min_value: initialData?.map((item) => item?.order?.[1]?.value?.min_amount).join(',') || '',
-        //     max_purchase: initialData?.map((item) => item?.order?.[2]?.value?.max) || '',
-        //     min_purchase: initialData?.map((item) => item?.order?.[2]?.value?.min_amount) || '',
-        //     max_count: initialData?.map((item) => item?.order?.[3]?.value?.max_order_count).join(',') || '',
-        //     min_count: initialData?.map((item) => item?.order?.[3]?.value?.min_order_count).join(',') || '',
-        //     order_delivery_type: initialData?.map((item) => item?.order?.[4]?.value).join(',') || '',
-        // },
-        // loyalty: {
-        //     loyalty: initialData?.map((item) => item?.loyalty?.[0]?.value) || '',
-        //     max_point_available: initialData?.map((item) => item?.loyalty?.[1]?.value?.max).join(',') || '',
-        //     min_point_available: initialData?.map((item) => item?.loyalty?.[1]?.value?.min).join(',') || '',
-        //     max_point_earned: initialData?.map((item) => item?.loyalty?.[2]?.value?.max).join(',') || '',
-        //     min_point_earned: initialData?.map((item) => item?.loyalty?.[2]?.value?.min).join(',') || '',
-        //     max_point_redeemed: initialData?.map((item) => item?.loyalty?.[3]?.value?.max).join(',') || '',
-        //     min_point_redeemed: initialData?.map((item) => item?.loyalty?.[3]?.value?.min).join(',') || '',
-        // },
-        // order_item: {
-        //     max_basket_size: initialData?.map((item) => item?.order_item?.[0]?.value?.max).join(',') || '',
-        //     min_basket_size: initialData?.map((item) => item?.order_item?.[0]?.value?.min).join(',') || '',
-        //     filters: initialData?.map((item) => item?.filters).join(',') || '',
-        // },
-        // location: {
-        //     city: initialData?.map((item) => item?.location?.[0]?.value).join(',') || '',
-        //     state: initialData?.map((item) => item?.location?.[1]?.value).join(',') || '',
-        //     distance: initialData?.map((item) => item?.location?.[2]?.value).join(',') || '',
-        // },
+        name: initialData[0]?.name,
+        // Group fields
+        groups: initialData[0]?.group || [],
+
+        // Cart fields
+        cart_start: initialData[0]?.rules?.cart?.find((rule: any) => rule.type === 'cart')?.value.start_date || '',
+        cart_end: initialData[0]?.rules?.cart?.find((rule: any) => rule.type === 'cart')?.value.end_date || '',
+
+        // User profile fields
+        registration_start: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'registration')?.value.start || '',
+        registration_end: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'registration')?.value.end || '',
+        dob_start: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'dob')?.value.start || '',
+        dob_end: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'dob')?.value.end || '',
+        gender: initialData[0]?.rules?.userInfo?.find((info: any) => info.type === 'gender')?.value || [],
+
+        // Order fields
+        min_value: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_value')?.value.min || '',
+        max_value: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_value')?.value.max || '',
+        max_purchase: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'life_time_purchase')?.value.min || '',
+        min_purchase: initialData[0]?.rules.order?.find((rule: any) => rule.type === 'life_time_purchase')?.value.max || '',
+        min_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.min || '',
+        max_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.max || '',
+        order_delivery_type: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_type_delivery')?.value || [],
+
+        // Order item fields
+        max_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.max || '',
+        min_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.min || '',
+        tag_filters: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'filters')?.value || [],
+
+        // Location fields
+        city: initialData[0]?.location?.find((loc: any) => loc.type === 'city')?.value || '',
+        state: initialData[0]?.location?.find((loc: any) => loc.type === 'state')?.value || '',
+        distance: initialData[0]?.location?.find((loc: any) => loc.type === 'distance')?.value || '',
     }
+
+    // const initialValues = {}
 
     const dispatch = useAppDispatch()
     useEffect(() => {
