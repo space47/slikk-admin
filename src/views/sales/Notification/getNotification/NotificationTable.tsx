@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import EasyTable from '@/common/EasyTable'
 import { pageSizeOptions } from '@/views/org-management/sellers/sellerCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { FaEdit } from 'react-icons/fa'
 
 const NotificationTable = () => {
     const navigate = useNavigate()
@@ -37,6 +38,17 @@ const NotificationTable = () => {
 
     const columns = useMemo(
         () => [
+            {
+                header: 'Edit',
+                accessorKey: 'id',
+                cell: ({ getValue }: any) => (
+                    <span className="">
+                        <button onClick={() => hanldeEditNotification(getValue())}>
+                            <FaEdit className="text-xl text-blue-700" />
+                        </button>
+                    </span>
+                ),
+            },
             { header: 'Title', accessorKey: 'title' },
             { header: 'Event Name', accessorKey: 'event_name' },
             { header: 'Type', accessorKey: 'notification_type' },
@@ -79,6 +91,10 @@ const NotificationTable = () => {
         ],
         [],
     )
+
+    const hanldeEditNotification = (id: number) => {
+        navigate(`/app/appsCommuncication/${id}`)
+    }
 
     const handleAddNotification = () => {
         navigate('/app/appSettings/addNotification')

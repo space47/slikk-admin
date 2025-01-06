@@ -9,6 +9,8 @@ import moment from 'moment'
 import { FaEdit, FaSync } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
 import { notification } from 'antd'
+import { MdDelete } from 'react-icons/md'
+import DialogConfirm from '@/common/DialogConfirm'
 
 interface Brand {
     id: number
@@ -45,10 +47,12 @@ const pageSizeOptions = [
 
 const Brand = () => {
     const [data, setData] = useState<Brand[]>([])
-    const [totalData, setTotalData] = useState(0)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('')
+    const [totalData, setTotalData] = useState<number>(0)
+    const [page, setPage] = useState<number>(1)
+    const [pageSize, setPageSize] = useState<number>(10)
+    const [globalFilter, setGlobalFilter] = useState<string>('')
+    const [brandId, setBrandId] = useState<number>()
+    const [showbrandDelete, setShowBrandDelete] = useState<boolean>(false)
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -101,11 +105,6 @@ const Brand = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Description',
-                accessorKey: 'description',
-                cell: (info) => info.getValue(),
-            },
-            {
                 header: 'Image',
                 accessorKey: 'image',
                 cell: (info) => <img src={info.getValue() as string} alt="product" width="50" />,
@@ -124,26 +123,6 @@ const Brand = () => {
                 header: 'Private',
                 accessorKey: 'is_private',
                 cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            {
-                header: 'Footer',
-                accessorKey: 'footer',
-                cell: (info) => {
-                    console.log('ValueData', info.getValue())
-                    return (
-                        <div className="w-[200px] h-[70px] overflow-hidden">
-                            <div
-                                className="text-ellipsis whitespace-wrap line-clamp-3 overflow-hidden"
-                                dangerouslySetInnerHTML={{ __html: info.getValue() as string }}
-                            />
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'Quick Filter Tags',
-                accessorKey: 'quick_filter_tags',
-                cell: (info) => info.getValue() as string[],
             },
             {
                 header: 'Active',
@@ -170,9 +149,27 @@ const Brand = () => {
                 accessorKey: 'last_updated_by',
                 cell: (info) => info.getValue(),
             },
+            {
+                header: 'Delete',
+                accessorKey: '',
+                cell: ({ getValue, row }) => {
+                    return (
+                        <div>
+                            <button onClick={() => handleDeleteBrand(row?.original?.id)}>
+                                <MdDelete className="text-xl text-red-600" />
+                            </button>
+                        </div>
+                    )
+                },
+            },
         ],
         [],
     )
+
+    const handleDeleteBrand = (id: number) => {
+        setBrandId(id)
+        setShowBrandDelete(true)
+    }
 
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
@@ -200,6 +197,27 @@ const Brand = () => {
         }
     }
 
+    const handleDelete = async () => {
+        const body = {
+            remove_tags: true,
+        }
+        try {
+            await axiosInstance.delete(`/brands/${brandId}`, {
+                data: body,
+            })
+            notification.success({
+                message: 'Successfully deleted the brand',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failed to Delete Brand',
+            })
+        } finally {
+            setShowBrandDelete(false)
+        }
+    }
+
     return (
         <div>
             <div className="mb-4">
@@ -224,6 +242,9 @@ const Brand = () => {
                     />
                 </div>
             </div>
+            {showbrandDelete && (
+                <DialogConfirm IsDelete setIsOpen={setShowBrandDelete} IsOpen={showbrandDelete} onDialogOk={handleDelete} />
+            )}
         </div>
     )
 }
