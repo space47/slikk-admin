@@ -284,18 +284,18 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 <Button variant="solid" onClick={() => showModal('Pick and Pack')}>
                     PICK AND PACK
                 </Button>
+            ) : status === 'SHIPPED' ? (
+                buttonText ? (
+                    <Button variant="solid" onClick={() => showModal('MARK AS DELIVERED')}>
+                        MARK AS DELIVERED
+                    </Button>
+                ) : null
             ) : (
                 buttonText && (
                     <Button variant="solid" onClick={() => showModal(content)}>
                         {buttonText}
                     </Button>
                 )
-            )}
-
-            {status === 'SHIPPED' && (
-                <Button variant="solid" onClick={() => showModal('Mark as Shipped')}>
-                    MARK AS DELIVERED
-                </Button>
             )}
 
             {data.length === 0 && (
