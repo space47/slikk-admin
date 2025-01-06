@@ -38,6 +38,7 @@ const LoyaltyOptions = [
 
 const EditGroup = () => {
     const [initialData, setInitialData] = useState<any>([])
+    const [userData, setUserData] = useState<any[]>([])
 
     const { groupId } = useParams()
 
@@ -45,15 +46,25 @@ const EditGroup = () => {
         try {
             const response = await axioisInstance.get(`/notification/groups?group_id=${groupId}`)
             const data = response?.data?.data?.results
-            const mappedData = data.map((item) => item.rules)
             setInitialData(data)
         } catch (error) {
             console.log(error)
         }
     }
 
+    const fetchForUserData = async () => {
+        try {
+            const response = await axioisInstance.get(`/notification/groups/${groupId}`)
+            const data = response?.data?.data
+            setUserData(data?.group_users)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     useLayoutEffect(() => {
         fetchGroupNotification()
+        fetchForUserData()
     }, [groupId])
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
@@ -62,6 +73,7 @@ const EditGroup = () => {
 
     const initialValues = {
         name: initialData[0]?.name,
+        user: userData?.flatMap((item) => item?.mobile).join(','),
         // Group fields
         groups: initialData[0]?.group || [],
 
@@ -83,17 +95,21 @@ const EditGroup = () => {
         min_purchase: initialData[0]?.rules.order?.find((rule: any) => rule.type === 'life_time_purchase')?.value.max || '',
         min_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.min || '',
         max_count: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_count')?.value.max || '',
-        order_delivery_type: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_type_delivery')?.value || [],
+        order_delivery_type: initialData[0]?.rules?.order?.find((rule: any) => rule.type === 'order_delivery_type')?.value || [],
+
+        // Loyalty
+        // max_point_available:  initialData[0]?.rules?.loyalty?.find((rule: any) => rule.type === 'order_type_delivery')?.value || [],
+        // min_point_available:  initialData[0]?.rules?.loyalty?.find((rule: any) => rule.type === 'order_type_delivery')?.value || [],
 
         // Order item fields
         max_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.max || '',
         min_basket_size: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'basket_size')?.value.min || '',
-        tag_filters: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'filters')?.value || [],
+        filters: initialData[0]?.rules?.order_item?.find((item: any) => item.type === 'tag_filters')?.value || [],
 
         // Location fields
-        city: initialData[0]?.location?.find((loc: any) => loc.type === 'city')?.value || '',
-        state: initialData[0]?.location?.find((loc: any) => loc.type === 'state')?.value || '',
-        distance: initialData[0]?.location?.find((loc: any) => loc.type === 'distance')?.value || '',
+        city: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'city')?.value || '',
+        state: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'state')?.value || '',
+        distance: initialData[0]?.rules?.location?.find((loc: any) => loc.type === 'distance')?.value || '',
     }
 
     // const initialValues = {}
@@ -451,6 +467,7 @@ const EditGroup = () => {
                                 <FormItem asterisk label="Delivery Type" className="col-span-1 w-1/2">
                                     <Field name="order_delivery_type">
                                         {({ field, form }: FieldProps<any>) => {
+                                            console.log('Field value of order type', field?.value)
                                             return (
                                                 <Select
                                                     isMulti
