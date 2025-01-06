@@ -23,6 +23,7 @@ type Props = {
     handleSelectChange: (id: number, value: string) => void
     errorMessage?: string
     handleReject: () => void
+    isButtonClick?: boolean
 }
 
 export const CustomModal: React.FC<Props> = ({
@@ -38,11 +39,12 @@ export const CustomModal: React.FC<Props> = ({
     handleSelectChange,
     errorMessage,
     handleReject,
+    isButtonClick,
 }) => {
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'PACK'}
+            okText={isButtonClick ? 'PACKING...' : 'PACK'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal overflow-scroll scrollbar-hide"
@@ -141,6 +143,7 @@ type props2 = {
     logistic: LOGISTIC
     handlePartnerSelect: any
     partner: any
+    isButtonClick?: any
 }
 
 export const CustomModal2: React.FC<props2> = ({
@@ -152,6 +155,7 @@ export const CustomModal2: React.FC<props2> = ({
     logistic,
     handlePartnerSelect,
     partner,
+    isButtonClick,
 }) => {
     const LOGISTIC_PARTNER = [
         { value: 'porter', label: 'PORTER' },
@@ -166,7 +170,7 @@ export const CustomModal2: React.FC<props2> = ({
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'SELECT PARTNER'}
+            okText={isButtonClick ? 'SETTTING PARTNER...' : 'SELECT PARTNER'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
@@ -235,7 +239,7 @@ export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handle
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'SHIPPED'}
+            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'SELECT'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
@@ -260,7 +264,7 @@ export const CustomModal3: React.FC<props3> = ({ isModalOpen, handlePack, handle
             onCancel={handleClose}
         >
             <p className="text-lg font-semibold mb-4">{modalContent}</p>
-            <h1 className="text-center text-lg font-bold text-green-600">MARKED AS SHIPPED</h1>
+            <h1 className="text-center text-lg font-bold text-green-600">{modalContent}</h1>
         </Modal>
     )
 }
@@ -271,13 +275,14 @@ type props4 = {
     handleClose: () => void
     modalContent?: string
     status: string
+    isButtonClick?: boolean
 }
 
-export const CustomModal4: React.FC<props4> = ({ isModalOpen, handlePack, handleClose, modalContent, status }) => {
+export const CustomModal4: React.FC<props4> = ({ isModalOpen, handlePack, handleClose, modalContent, status, isButtonClick }) => {
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT & PACK' : 'DELIVERED'}
+            okText={isButtonClick ? 'Delivering....' : 'DELIVER'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"
@@ -302,7 +307,7 @@ export const CustomModal4: React.FC<props4> = ({ isModalOpen, handlePack, handle
             onCancel={handleClose}
         >
             <p className="text-lg font-semibold mb-4">{modalContent}</p>
-            <h1 className="text-center text-lg font-bold text-green-600">MARK AS DELIVERED</h1>
+            <h1 className="text-center text-lg font-bold text-green-600">Mark as Deliver to complete the order</h1>
         </Modal>
     )
 }
@@ -314,13 +319,14 @@ type props5 = {
     modalContent?: string
     status: string
     invoice: any
+    isButtonClick?: any
 }
 
-export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handleClose, modalContent, status, invoice }) => {
+export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handleClose, modalContent, status, invoice, isButtonClick }) => {
     return (
         <Modal
             title=""
-            okText={status === 'PENDING' ? 'ACCEPT ORDER' : 'DELIVERED'}
+            okText={isButtonClick ? 'ACCEPTING...' : 'ACCEPT'}
             cancelText={status === 'PENDING' ? 'REJECT ORDER' : 'CANCEL'}
             width={800}
             className="custom-modal"
