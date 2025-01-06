@@ -9,6 +9,7 @@ import {
     sectionBorrderStyleArray,
     webBorrderStyleArray,
     WebNameFieldArray,
+    WebSectionBorrderStyleArray,
 } from './genericComp'
 import { FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
@@ -354,7 +355,7 @@ const PageComponentConfig = ({
                                         label="Web Section Border Style"
                                         options={borderStyleArray}
                                     />
-                                    {webBorrderStyleArray.map((item, key) => (
+                                    {WebSectionBorrderStyleArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className="w-full">
                                             <Field
                                                 type={item.type}

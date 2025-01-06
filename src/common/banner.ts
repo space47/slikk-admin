@@ -50,6 +50,7 @@ export const COMPONENT_CATEGORY_TYPES = [
     { label: 'Generic Component', value: 'Generic' },
     { label: 'Cart', value: 'Cart' },
     { label: 'PDP', value: 'PDP' },
+    { label: 'Order_Confirmation', value: 'Order_Confirmation' },
     { label: 'Coupon', value: 'Coupon' },
     { label: 'Bell C', value: 'Bell C' },
     { label: 'Marquee', value: 'Marquee' },

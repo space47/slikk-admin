@@ -42,6 +42,15 @@ const GetGroupNotification = () => {
                 ),
             },
             {
+                header: 'name',
+                accessorKey: 'name',
+                // cell: ({ getValue }: any) => (
+                //     <button onClick={() => handleEditClick(getValue())}>
+                //         <FaEdit className="text-blue-500 text-xl" />
+                //     </button>
+                // ),
+            },
+            {
                 header: 'Group',
                 accessorKey: 'group',
                 cell: ({ getValue }: any) => {
@@ -53,22 +62,29 @@ const GetGroupNotification = () => {
                 },
             },
             {
-                header: 'User',
-                accessorKey: 'user',
+                header: 'USER INFO',
+                accessorKey: 'rules?.userInfo',
                 cell: ({ getValue }: any) => {
+                    const orders = getValue()
+
                     return (
-                        <div className="flex gap-2 max-w-[200px]  overflow-ellipsis">
-                            {getValue().map((item: any, key: any) => (
-                                <div key={key} className="flex gap-2">
-                                    {item.mobile}
-                                </div>
-                            ))}
+                        <div className="flex flex-col gap-2">
+                            {orders?.map((item: any, key: any) => {
+                                return (
+                                    <div key={key} className="flex gap-2">
+                                        <div>
+                                            <strong>{item.type}:</strong>
+                                        </div>
+                                        <div>{JSON.stringify(item.value)}</div>
+                                    </div>
+                                )
+                            })}
                         </div>
                     )
                 },
             },
             {
-                header: 'Order',
+                header: 'CART',
                 accessorKey: 'rules.cart',
                 cell: ({ getValue }: any) => {
                     const orders = getValue()

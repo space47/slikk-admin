@@ -250,6 +250,9 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
     const isPacked = data.some((log) => log?.status === 'PACKED')
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
+    const isOutForDelivery = data.some((log) => log?.status === 'OUT_FOR_DELIVERY')
+
+    console.log('Status is', status)
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -288,6 +291,13 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     </Button>
                 )
             )}
+
+            {status === 'SHIPPED' ||
+                (status === 'OUT_FOR_DELIVERY' && (
+                    <Button variant="solid" onClick={() => showModal('Mark as Shipped')}>
+                        MARK AS DELIVERED
+                    </Button>
+                ))}
 
             {data.length === 0 && (
                 <CustomModal5
@@ -355,6 +365,17 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
             {status === 'SHIPPED' && isPacked && (
+                <CustomModal4
+                    isModalOpen={isModalOpen}
+                    handlePack={handleDelivery}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                    isButtonClick={buttonAfterClick}
+                />
+            )}
+
+            {isOutForDelivery && isPacked && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
