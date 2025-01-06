@@ -228,8 +228,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         switch (lastLogStatus) {
             case 'DELIVERY_CREATED':
                 return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
-            case 'PACKED':
-                return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
+            case 'PACKED': {
+                const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
+                const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
+                return { buttonText, modalContent }
+            }
             case 'ACCEPTED':
                 return { buttonText: 'CREATE DELIVERY' }
             case 'OUT_FOR_PICKUP':
@@ -341,7 +344,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {data[data.length - 1]?.status === 'OUT_FOR_DELIVERY' && isPacked && (
+            {status === 'OUT_FOR_DELIVERY' && isPacked && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
