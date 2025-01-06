@@ -252,6 +252,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
     const isOutForDelivery = data.some((log) => log?.status === 'OUT_FOR_DELIVERY')
 
+    console.log('Status is', status)
+
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
@@ -289,6 +291,13 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     </Button>
                 )
             )}
+
+            {status === 'SHIPPED' ||
+                (status === 'OUT_FOR_DELIVERY' && (
+                    <Button variant="solid" onClick={() => showModal('Mark as Shipped')}>
+                        MARK AS DELIVERED
+                    </Button>
+                ))}
 
             {data.length === 0 && (
                 <CustomModal5
