@@ -25,7 +25,7 @@ type ReturnOrderProps = {
     isOpen: boolean
     setIsOpen: (x: boolean) => void
     product: Product[]
-    invoice_id: number
+    invoice_id: string | undefined
     delivery_type: string
 }
 
@@ -120,7 +120,6 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
             items: returnQtyMap,
             return_type: delivery_type === 'TRY_AND_BUY' ? 'TRY_AND_BUY' : 'DASHBOARD_INITIATIVE',
         }
-        console.log('BODY', body)
 
         try {
             const response = await axioisInstance.post(`merchant/returnorder/create/${invoice_id}`, body)
@@ -130,7 +129,7 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
                 description: response.data.message || 'Order successfully Returned',
             })
             setLoaderSpin(false)
-            // navigate(0)
+            navigate(0)
         } catch (error) {
             console.error('Error:', error)
             notification.error({
