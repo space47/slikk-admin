@@ -39,8 +39,8 @@ const EditTemplates = () => {
         try {
             const response = await axios.post(`https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/get_message_templates`, body)
             const data = response?.data?.data?.data
-            setMessageTemplateData(data[0])
-            setTemplateId(data[0]?.id)
+            setMessageTemplateData(data?.find((item) => item?.name === name))
+            setTemplateId(data?.find((item) => item?.name === name)?.id)
         } catch (error) {
             console.error(error)
         }

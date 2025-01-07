@@ -216,16 +216,17 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         const lastLogStatus = data.length > 0 ? data[data.length - 1].status : null
         const isPacked = data.some((log) => log.status === 'PACKED')
         const isDeliveryCreated = data.some((log) => log.status === 'DELIVERY_CREATED')
+        const isDriverAssigned = data[data.length - 1]?.status === 'DRIVER_ASSIGNED'
 
         if (data.length === 0) {
             return { buttonText: 'ACCEPT/REJECT' }
         }
 
+        if (isDriverAssigned && isPacked) {
+            return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
+        }
         if (isDeliveryCreated && !isPacked) {
             return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
-        }
-        if (status === 'SHIPPED' && isPacked) {
-            return { buttonText: 'MARK AS DELIVERED', modalContent: 'Mark as Delivered' }
         }
 
         switch (lastLogStatus) {
@@ -253,9 +254,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
     const isPacked = data.some((log) => log?.status === 'PACKED')
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
-    const isOutForDelivery = data.some((log) => log?.status === 'OUT_FOR_DELIVERY')
-
-    console.log('Status is', status)
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -287,12 +285,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 <Button variant="solid" onClick={() => showModal('Pick and Pack')}>
                     PICK AND PACK
                 </Button>
-            ) : status === 'SHIPPED' ? (
-                buttonText ? (
-                    <Button variant="solid" onClick={() => showModal('Mark as Delivered')}>
-                        MARK AS DELIVERED
-                    </Button>
-                ) : null
             ) : (
                 buttonText && (
                     <Button variant="solid" onClick={() => showModal(content)}>
@@ -367,17 +359,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
             {status === 'SHIPPED' && isPacked && (
-                <CustomModal4
-                    isModalOpen={isModalOpen}
-                    handlePack={handleDelivery}
-                    handleClose={handleClose}
-                    modalContent={modalContent}
-                    status={status}
-                    isButtonClick={buttonAfterClick}
-                />
-            )}
-
-            {isOutForDelivery && isPacked && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}

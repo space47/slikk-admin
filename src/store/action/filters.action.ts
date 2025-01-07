@@ -10,8 +10,6 @@ export const getAllFiltersAPI = () => async (dispatch: any) => {
 
         const response = await axiosInstance.get('search/product/filters?dashboard=true')
 
-        console.log('FFFFFFFFFFFFFFi', response.data?.filters)
-
         dispatch({
             type: 'getAllFiltersSuccess',
             payload: {

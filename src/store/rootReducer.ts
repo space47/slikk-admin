@@ -12,6 +12,7 @@ import { categoryReducer } from './reducers/category.reducer'
 import { subCategoryReducer } from './reducers/subcategory.reducer'
 import { productTypeReducer } from './reducers/productType.reducer'
 import { brandsReducer } from './reducers/brands.reducer'
+import { groupReducer } from './reducers/group.reducer'
 import { filtersReducer } from './reducers/filters.reducer'
 import returnOrdersReducer from './slices/returnOrderDetails/returnOrderDetails'
 import orderListReducer from './slices/orderList/OrderList'
@@ -56,6 +57,7 @@ const staticReducers = {
     subCategory: subCategoryReducer,
     product_type: productTypeReducer,
     brands: brandsReducer,
+    group: groupReducer,
     filters: filtersReducer,
     returnOrders: returnOrdersReducer,
     order: orderListReducer,
