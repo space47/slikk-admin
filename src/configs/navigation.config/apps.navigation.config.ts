@@ -579,6 +579,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsCommuncication.whatsAppMessage',
+                        path: `${APP_PREFIX_PATH}/appsCommuncication/whatsAppMessage`,
+                        title: 'WhatsApp Message Sender',
+                        translateKey: 'nav.appsCommuncication.whatsAppMessage',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                     // {
                     //     key: 'appscreatorPost.uploadPost',
                     //     path: `${APP_PREFIX_PATH}/uploadPost`,
