@@ -16,6 +16,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import _ from 'lodash'
 import { MdCancel } from 'react-icons/md'
 import BulkEditModal from './BulkEditModal'
+import { FaListCheck } from 'react-icons/fa6'
 
 type Option = {
     value: number
@@ -114,10 +115,16 @@ const AppBanners = () => {
         setIsSectionheading(true)
     }
 
+    const handleSelectAllBanners = () => {
+        const allIds = data.map((banner) => banner.id)
+        setShowBannerIdButton(true)
+        setBannerIdStore(allIds)
+    }
+
     const columns = useMemo(
         () => [
             {
-                header: '',
+                header: <input type="checkbox" onChange={handleSelectAllBanners} checked={bannerIdStore.length === data.length} />,
                 accessorKey: 'id',
                 cell: ({ row }) => {
                     const templateName = row.original.id
@@ -294,11 +301,16 @@ const AppBanners = () => {
                 </div>
 
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
+                    {/* <div>
+                        <FaListCheck className="text-2xl cursor-pointer" onClick={handleSelectAllBanners} />
+                    </div> */}
                     <div className="mb-2">
                         {showBannerEditButton && (
-                            <Button variant="new" size="sm" onClick={handleBulkEditModal}>
-                                Bulk Edit
-                            </Button>
+                            <div className="flex gap-2 items-center">
+                                <Button variant="new" size="sm" onClick={handleBulkEditModal}>
+                                    Bulk Edit
+                                </Button>
+                            </div>
                         )}
                     </div>
                     <div className="flex items-end justify-end mb-2 gap-2">
