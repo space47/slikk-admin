@@ -19,19 +19,11 @@ type CustomerInfoProps = {
     location_url: string
 }
 
-const CustomerInfo = ({
-    user,
-    billing_address,
-    store,
-    location_url,
-}: CustomerInfoProps) => {
+const CustomerInfo = ({ user, billing_address, store, location_url }: CustomerInfoProps) => {
     return (
         <Card>
             <h5 className="mb-4">Customer Details</h5>
-            <Link
-                className="group flex items-center justify-between"
-                to={`/app/customerAnalytics/${user.mobile}`}
-            >
+            <Link className="group flex items-center justify-between" to={`/app/customerAnalytics/${user.mobile}`}>
                 <div className="flex items-center">
                     {/* <Avatar shape="circle" src={data?.img} /> */}
                     <div className="ltr:ml-2 rtl:mr-2">
@@ -46,7 +38,11 @@ const CustomerInfo = ({
             <hr className="my-5" />
 
             <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                <span className="font-semibold">{user.mobile}</span>
+                <span className="font-semibold">
+                    <a href={`tel:${user.mobile}`} className="hover:text-blue-600">
+                        {user.mobile}
+                    </a>
+                </span>
             </IconText>
             <hr className="my-5" />
             <h6 className="mb-4">Shipping Address</h6>
@@ -55,12 +51,7 @@ const CustomerInfo = ({
             </address>
             <hr className="my-5" />
             <h6 className="mb-4 ">
-                <a
-                    href={location_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex gap-2 items-center"
-                >
+                <a href={location_url} target="_blank" rel="noreferrer" className="flex gap-2 items-center">
                     Billing address <FaMapMarkedAlt className="text-lg" />
                 </a>
             </h6>

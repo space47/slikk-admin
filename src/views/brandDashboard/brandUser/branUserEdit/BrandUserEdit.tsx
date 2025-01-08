@@ -4,11 +4,7 @@
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-
 import { Field, Form, Formik } from 'formik'
-
-import * as Yup from 'yup'
-import type { FieldProps } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { Card, notification } from 'antd'
@@ -41,9 +37,7 @@ const BrandUserEdit = () => {
 
     const navigate = useNavigate()
 
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (store) => store.company.currCompany,
-    )
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
     const fetchData = async () => {
         try {
@@ -61,14 +55,12 @@ const BrandUserEdit = () => {
 
     const fetchUser = async () => {
         try {
-            const response = await axioisInstance.get(
-                `company/user/permission/${mobile}`,
-            )
+            const response = await axioisInstance.get(`company/user/permission/${mobile}`)
 
             const user = response.data
             const userPermissions = response.data.user_permissions
             setUserData(user)
-            setAddedPermissions(userPermissions) // For right side card
+            setAddedPermissions(userPermissions)
         } catch (error) {
             console.log(error)
         }
@@ -78,20 +70,14 @@ const BrandUserEdit = () => {
         fetchUser()
     }, [])
 
-    console.log('sssd', userData)
-
     const handlePermissionSelect = (id: number) => {
         setSelectedPermissions((prevSelected) =>
-            prevSelected.includes(id)
-                ? prevSelected.filter((permId) => permId !== id)
-                : [...prevSelected, id],
+            prevSelected.includes(id) ? prevSelected.filter((permId) => permId !== id) : [...prevSelected, id],
         )
     }
 
     const handleAddPermissions = () => {
-        const alreadyAdded = selectedPermissions.filter((permId) =>
-            addedPermissions.some((added) => added.id === permId),
-        )
+        const alreadyAdded = selectedPermissions.filter((permId) => addedPermissions.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
             notification.warning({
@@ -101,9 +87,7 @@ const BrandUserEdit = () => {
         }
 
         const selected = getPermission?.filter(
-            (perm) =>
-                selectedPermissions.includes(perm.id) &&
-                !addedPermissions.some((added) => added.id === perm.id),
+            (perm) => selectedPermissions.includes(perm.id) && !addedPermissions.some((added) => added.id === perm.id),
         )
 
         setAddedPermissions((prevAdded) => [...prevAdded, ...selected])
@@ -111,9 +95,7 @@ const BrandUserEdit = () => {
     }
 
     const handleRemovePermissions = (id: number) => {
-        setAddedPermissions((prevAdded) =>
-            prevAdded.filter((perm) => perm.id !== id),
-        )
+        setAddedPermissions((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
     }
 
     const initialValue: FormModel = {
@@ -136,37 +118,19 @@ const BrandUserEdit = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form
-                        className="w-full"
-                        onKeyDown={(e: any) =>
-                            e.key === 'Enter' && e.preventDefault()
-                        }
-                    >
-                        <div className="text-xl mb-10 font-bold">
-                            EDIT USER DETAILS
-                        </div>
+                    <Form className="w-full" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
+                        <div className="text-xl mb-10 font-bold">EDIT USER DETAILS</div>
                         <FormContainer>
                             {/* Form Fields */}
                             <FormContainer className="grid grid-cols-2 gap-8">
                                 {BRAND_EDIT_FORM.map((item, key) => (
-                                    <FormItem
-                                        key={key}
-                                        label={item.label}
-                                        className={item.className}
-                                    >
-                                        <Field
-                                            type={item.type}
-                                            name={item.name}
-                                            placeholder={item.placeholder}
-                                            component={Input}
-                                        />
+                                    <FormItem key={key} label={item.label} className={item.className}>
+                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
                             </FormContainer>
 
-                            <div className="text-xl font-bold">
-                                USER PERMISSIONS
-                            </div>
+                            <div className="text-xl font-bold">USER PERMISSIONS</div>
                             <br />
 
                             {/* Permissions Section */}
@@ -182,34 +146,20 @@ const BrandUserEdit = () => {
                                                     placeholder="Search Permissions"
                                                 />
                                             </div>
-                                            <label
-                                                htmlFor="All Permissions"
-                                                className="font-bold bg-white"
-                                            >
+                                            <label htmlFor="All Permissions" className="font-bold bg-white">
                                                 All Permissions
                                             </label>
                                         </div>
                                         <div className="">
                                             {getPermission?.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className="flex flex-col"
-                                                >
+                                                <div key={item.id} className="flex flex-col">
                                                     <label className="bg-gray-100 px-2 py-2 flex items-center">
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedPermissions.includes(
-                                                                item.id,
-                                                            )}
-                                                            onChange={() =>
-                                                                handlePermissionSelect(
-                                                                    item.id,
-                                                                )
-                                                            }
+                                                            checked={selectedPermissions.includes(item.id)}
+                                                            onChange={() => handlePermissionSelect(item.id)}
                                                         />
-                                                        <span className="ml-2">
-                                                            {item.name}
-                                                        </span>
+                                                        <span className="ml-2">{item.name}</span>
                                                     </label>
                                                 </div>
                                             ))}
@@ -218,12 +168,7 @@ const BrandUserEdit = () => {
 
                                     {/* Buttons */}
                                     <div className="flex justify-center items-center flex-col gap-4">
-                                        <Button
-                                            type="button"
-                                            variant="accept"
-                                            className="w-32 px-8"
-                                            onClick={handleAddPermissions}
-                                        >
+                                        <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddPermissions}>
                                             ADD {'>>'}
                                         </Button>
                                     </div>
@@ -238,38 +183,24 @@ const BrandUserEdit = () => {
                                                     placeholder="Search Permissions"
                                                 />
                                             </div>
-                                            <label
-                                                htmlFor="Added Permissions"
-                                                className="font-bold bg-white"
-                                            >
+                                            <label htmlFor="Added Permissions" className="font-bold bg-white">
                                                 Added Permissions
                                             </label>
                                         </div>
                                         <div className="">
-                                            {addedPermissions.map(
-                                                (item, key) => (
-                                                    <div
-                                                        key={key}
-                                                        className="flex flex-col"
-                                                    >
-                                                        <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                                            <span className="text-black">
-                                                                {item.name}
-                                                            </span>
-                                                            <button
-                                                                className="text-red-500 ml-2"
-                                                                onClick={() =>
-                                                                    handleRemovePermissions(
-                                                                        item.id,
-                                                                    )
-                                                                }
-                                                            >
-                                                                Remove
-                                                            </button>
-                                                        </div>
+                                            {addedPermissions.map((item, key) => (
+                                                <div key={key} className="flex flex-col">
+                                                    <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
+                                                        <span className="text-black">{item.name}</span>
+                                                        <button
+                                                            className="text-red-500 ml-2"
+                                                            onClick={() => handleRemovePermissions(item.id)}
+                                                        >
+                                                            Remove
+                                                        </button>
                                                     </div>
-                                                ),
-                                            )}
+                                                </div>
+                                            ))}
                                         </div>
                                     </Card>
                                 </FormContainer>
@@ -277,11 +208,7 @@ const BrandUserEdit = () => {
 
                             {/* Submit & Reset Buttons */}
                             <FormItem className="mt-10 flex justify-center gap-4">
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button variant="new" type="submit">
