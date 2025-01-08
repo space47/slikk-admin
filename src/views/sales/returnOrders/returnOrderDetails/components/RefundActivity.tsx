@@ -41,6 +41,8 @@ const RefundActivity = () => {
             [name]: value,
         }))
     }
+
+    const [currentButton, setCurrentButton] = useState(false)
     const handlePICKUPGenerate = () => {
         setAction('create_reverse_pickup')
         setTriggerPickedUpGenerate(true)
@@ -111,6 +113,7 @@ const RefundActivity = () => {
     const handleAction = (value: string) => {
         setAction(value)
         setTriggerAction(true)
+        setCurrentButton(true)
     }
     const triggerApiCall = async () => {
         try {
@@ -185,6 +188,7 @@ const RefundActivity = () => {
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails?.status || ''}
+                    currentButton={currentButton}
                 />
             )}
 
@@ -194,10 +198,16 @@ const RefundActivity = () => {
                 handleAction={handleAction}
                 setIsModalOpen={setIsModalOpen}
                 modalContent={modalContent}
+                currentButton={currentButton}
             />
 
             {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' && (
-                <Modal open={isModalOpen} onOk={() => handleAction('return_completed')} onCancel={() => setIsModalOpen(false)}>
+                <Modal
+                    open={isModalOpen}
+                    onOk={() => handleAction('return_completed')}
+                    onCancel={() => setIsModalOpen(false)}
+                    okText={currentButton ? 'Returning....' : 'Return Order'}
+                >
                     <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">INPUTS</div>
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
                         <input

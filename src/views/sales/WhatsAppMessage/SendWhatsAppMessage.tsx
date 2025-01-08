@@ -78,6 +78,7 @@ const SendWhatsAppMessage = () => {
     }
 
     const initialValue = {
+        campaign_name: '',
         template_name: messageParticular?.name,
         language_code: messageParticular?.language,
         header_image_link: '',
@@ -114,7 +115,7 @@ const SendWhatsAppMessage = () => {
     const handleSubmit = async (values: any) => {
         console.log('syar', values)
         const body = filterEmptyKeys({
-            campaign: values?.campaign_name,
+            campaign_name: values?.campaign_name,
             users: values?.user,
             template_name: values?.template_name,
             language_code: values?.language_code,

@@ -8,9 +8,17 @@ interface ReturnActionProps {
     setIsModalOpen: (value: React.SetStateAction<boolean>) => void
     modalContent: string | undefined
     isModalOpen: boolean
+    currentButton: any
 }
 
-const ReturnActionActivity = ({ returnDetails, handleAction, setIsModalOpen, modalContent, isModalOpen }: ReturnActionProps) => {
+const ReturnActionActivity = ({
+    returnDetails,
+    handleAction,
+    setIsModalOpen,
+    modalContent,
+    isModalOpen,
+    currentButton,
+}: ReturnActionProps) => {
     return (
         <div>
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
@@ -22,6 +30,7 @@ const ReturnActionActivity = ({ returnDetails, handleAction, setIsModalOpen, mod
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails.status}
+                    currentButton={currentButton}
                 />
             )}
 
@@ -32,6 +41,7 @@ const ReturnActionActivity = ({ returnDetails, handleAction, setIsModalOpen, mod
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails.status}
+                    currentButton={currentButton}
                 />
             )}
 
@@ -42,6 +52,7 @@ const ReturnActionActivity = ({ returnDetails, handleAction, setIsModalOpen, mod
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails.status}
+                    currentButton={currentButton}
                 />
             )}
 
@@ -53,6 +64,7 @@ const ReturnActionActivity = ({ returnDetails, handleAction, setIsModalOpen, mod
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails.status}
+                    currentButton={currentButton}
                 />
             )}
             {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'OUT_FOR_DELIVERY' && (
@@ -62,6 +74,7 @@ const ReturnActionActivity = ({ returnDetails, handleAction, setIsModalOpen, mod
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails.status}
+                    currentButton={currentButton}
                 />
             )}
         </div>
