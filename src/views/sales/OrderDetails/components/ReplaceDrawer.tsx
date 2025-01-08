@@ -13,6 +13,7 @@ interface ReplaceDrawerProps {
     handleSubmit: any
     id: number | undefined
     invoice_id: any
+    setIsDialogOpen: any
 }
 type ProductTable = {
     sku: string
@@ -26,7 +27,7 @@ const DROPDOWNARRAY = [
     { label: 'SKU', value: 'sku' },
 ]
 
-const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_id }: ReplaceDrawerProps) => {
+const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_id, setIsDialogOpen }: ReplaceDrawerProps) => {
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
@@ -89,6 +90,8 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
             })
         } catch (error) {
             console.log(error)
+        } finally {
+            setIsDialogOpen(false)
         }
     }
 

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -11,11 +10,12 @@ import { FaEdit, FaTrash } from 'react-icons/fa'
 import { Modal, notification } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
 import EasyTable from '@/common/EasyTable'
-import { Dropdown } from '@/components/ui'
+import { Button, Dropdown } from '@/components/ui'
 import { BANNER_PAGE_NAME } from '@/common/banner'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import _ from 'lodash'
 import { MdCancel } from 'react-icons/md'
+import BulkEditModal from './BulkEditModal'
 
 type Option = {
     value: number
@@ -44,7 +44,9 @@ const AppBanners = () => {
     const [isSectionheading, setIsSectionheading] = useState(false)
     const [selectedHeading, setSelectedHeading] = useState(var2 ? var2 : 'Select Section')
     const [bannerid, setBannerid] = useState<number>()
-    const [isFilterOn, setIsFilterOn] = useState(false)
+    const [bannerIdStore, setBannerIdStore] = useState<any[]>([])
+    const [showBannerEditButton, setShowBannerIdButton] = useState(false)
+    const [showBulkEditModal, setShowBulkEditModal] = useState(false)
 
     console.log('var1', var1, 'var2', var2)
 
@@ -103,8 +105,6 @@ const AppBanners = () => {
         fetchForSectionHeading()
     }, [])
 
-    console.log('Section Heading Array', sectionHeadingArray)
-
     useEffect(() => {
         fetchData(page, pageSize, globalFilter)
     }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading])
@@ -116,6 +116,14 @@ const AppBanners = () => {
 
     const columns = useMemo(
         () => [
+            {
+                header: '',
+                accessorKey: 'id',
+                cell: ({ row }) => {
+                    const templateName = row.original.id
+                    return <input type="checkbox" name="bannerId" onChange={() => handleSelectBannerId(templateName)} />
+                },
+            },
             {
                 header: 'Edit',
                 accessorKey: 'id',
@@ -181,6 +189,13 @@ const AppBanners = () => {
         [],
     )
 
+    const handleSelectBannerId = (id: number) => {
+        setShowBannerIdButton(true)
+        setBannerIdStore((prev) => [...prev, id])
+    }
+
+    console.log('Banner_Id', bannerIdStore)
+
     const handleSelectPage = (value: string) => {
         const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
@@ -225,6 +240,10 @@ const AppBanners = () => {
         }
 
         setShowDeleteModal(false)
+    }
+
+    const handleBulkEditModal = () => {
+        setShowBulkEditModal(true)
     }
 
     return (
@@ -275,6 +294,13 @@ const AppBanners = () => {
                 </div>
 
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
+                    <div className="mb-2">
+                        {showBannerEditButton && (
+                            <Button variant="new" size="sm" onClick={handleBulkEditModal}>
+                                Bulk Edit
+                            </Button>
+                        )}
+                    </div>
                     <div className="flex items-end justify-end mb-2 gap-2">
                         <button className="bg-black text-white px-5 py-2 rounded-md hover:bg-gray-700" onClick={handleBanner}>
                             ADD NEW BANNER
@@ -310,6 +336,9 @@ const AppBanners = () => {
                         <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE THE BANNER Id: {bannerid} !!
                     </div>
                 </Modal>
+            )}
+            {showBulkEditModal && (
+                <BulkEditModal dialogIsOpen={showBulkEditModal} setIsOpen={setShowBulkEditModal} bannerIdStore={bannerIdStore} />
             )}
         </div>
     )

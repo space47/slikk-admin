@@ -40,7 +40,7 @@ const AddCoupons = () => {
         fetchCouponsCode()
     }, [])
 
-    console.log('Coupons Code', couponsEdit)
+    console.log('Coupons Code', couponsEdit?.extra_attributes?.delivery_free)
 
     const initialValue: any = {
         code: couponsEdit?.code || '',
