@@ -100,7 +100,7 @@ const AddCoupons = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm, setFieldValue }) => (
+                {({ values, resetForm, setFieldValue }) => (
                     <CouponForm values={values} setFieldValue={setFieldValue} resetForm={resetForm} CouponsType={CouponsType} />
                 )}
             </Formik>

@@ -11,6 +11,7 @@ export const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
         'video/webm',
         'video/avchd',
         'video/3gp',
+        'video/mov',
     ]
     const MAX_FILE_SIZE = 9000000000000000
     const MAX_UPLOAD = 70000000000000

@@ -229,10 +229,11 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
             {replaceDrawer && (
                 <ReplaceDrawer
                     dialogIsOpen={replaceDrawer}
-                    onDialogClose={handleReplaceClose}
                     handleSubmit={handleReplaceSubmit}
                     id={itemId}
                     invoice_id={invoice_id}
+                    setIsDialogOpen={setReplaceDrawer}
+                    onDialogClose={handleReplaceClose}
                 />
             )}
         </AdaptableCard>

@@ -1,7 +1,9 @@
 import { createAction } from '@reduxjs/toolkit'
 
 interface extra_attributes {
-    dellivery_free: string
+    delivery_free: string
+    max_order_count: number
+    min_order_count: number
 }
 
 export interface COUPONDATA {

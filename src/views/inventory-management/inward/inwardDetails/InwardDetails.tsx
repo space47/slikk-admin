@@ -104,7 +104,9 @@ const InwardDetails = () => {
 
     const handleRegenerateGrn = async (doc_number) => {
         try {
-            const response = await axioisInstance.get(`/goods/received/${companyId}/${doc_number}?download=true&regenerate=true`)
+            const response = await axioisInstance.get(
+                `/goods/received/${companyId}?document_number=${doc_number}&download=true&regenerate=true`,
+            )
             const preSignedUrl = response?.data?.data
 
             if (preSignedUrl) {
