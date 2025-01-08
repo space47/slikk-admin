@@ -34,8 +34,7 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABL
                   },
               },
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
+
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: !noPage,
     })
@@ -49,12 +48,8 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABL
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {header.isPlaceholder ? null : (
-                                        <div
-                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
+                                        <div className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}>
                                             {flexRender(header.column.columnDef.header, header.getContext())}
-                                            <Sorter sort={header.column.getIsSorted()} />
                                         </div>
                                     )}
                                 </Th>
