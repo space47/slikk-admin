@@ -87,7 +87,7 @@ const AddCoupons = () => {
             formData.append('max_count_per_user', values.max_count_per_user?.toString() || '')
             formData.append('coupon_used_count', values.coupon_used_count?.toString() || '')
             formData.append('user_add_action', userAction)
-            formData.append('is_public', values?.is_public)
+            formData.append('is_public', values?.is_public || false)
             formData.append('coupon_discount_type', values?.coupon_discount_type || '')
             const extraAttributes = {
                 delivery_free: values?.delivery_free,

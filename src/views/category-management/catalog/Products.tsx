@@ -262,15 +262,9 @@ const Products = () => {
             },
             {
                 header: 'COLOR Family',
-                accessorKey: 'filter_tags.colorfamily',
+                accessorKey: 'filter_to_display_map.colorfamily',
                 cell: ({ getValue }: any) => {
-                    return (
-                        <div>
-                            {getValue()
-                                ?.map((item: any) => item)
-                                .join(',')}
-                        </div>
-                    )
+                    return <div>{getValue()}</div>
                 },
             },
             {
