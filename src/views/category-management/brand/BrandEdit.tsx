@@ -3,11 +3,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Checkbox from '@/components/ui/Checkbox'
-import Upload from '@/components/ui/Upload'
-import Textarea from '@/views/ui-components/forms/Input/Textarea'
 import { Field, Form, Formik } from 'formik'
-import Select from '@/components/ui/Select'
-import * as Yup from 'yup'
 import type { FieldProps } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
@@ -16,6 +12,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { checkBoxFields, textField } from './component/textFields.common'
 import ImageField from './component/ImageField'
 import { RichTextEditor } from '@/components/shared'
+import { beforeUpload } from '@/common/beforeUpload'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 export type FormModel = {
     id: number
@@ -34,21 +32,14 @@ export type FormModel = {
     is_try_and_buy: boolean
     last_updated_by: string | null
     images: File[]
+    logo_array: File[]
+    logo: string
 }
-
-interface Option {
-    value: number
-    label: string
-}
-
-const MIN_UPLOAD = 1
-const MAX_UPLOAD = 8
 
 const BrandEdit = () => {
     const [catedate, setCateData] = useState<FormModel | null>(null)
-
     const [imagview, setImageView] = useState<string[]>([])
-
+    const [logoview, setLogoView] = useState<string[]>([])
     const { id } = useParams()
     const navigate = useNavigate()
 
@@ -58,6 +49,7 @@ const BrandEdit = () => {
             const categoryData = response.data?.data.results[0] || {}
             setCateData(categoryData)
             setImageView(categoryData.image ? [categoryData.image] : [])
+            setLogoView(categoryData.logo ? [categoryData.logo] : [])
         } catch (error) {
             console.log(error)
         }
@@ -66,40 +58,6 @@ const BrandEdit = () => {
     useEffect(() => {
         fetchData()
     }, [])
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
 
     const handleFileupload = async (files: File[]) => {
         const formData = new FormData()
@@ -158,26 +116,28 @@ const BrandEdit = () => {
     }
 
     if (!catedate) {
-        return <div>Loading...</div>
+        return <LoadingSpinner />
     }
 
     const initialValue: FormModel = {
-        id: catedate.id,
-        name: catedate.name,
-        title: catedate.title,
-        description: catedate.description,
-        image: catedate.image,
-        footer: catedate.footer,
-        quick_filter_tags: catedate.quick_filter_tags,
-        is_top: catedate.is_top,
-        is_exclusive: catedate.is_exclusive,
-        is_private: catedate.is_private,
-        is_active: catedate.is_active,
-        create_date: catedate.create_date,
-        update_date: catedate.update_date,
-        is_try_and_buy: catedate.is_try_and_buy,
-        last_updated_by: catedate.last_updated_by,
+        id: catedate?.id,
+        name: catedate?.name,
+        title: catedate?.title,
+        description: catedate?.description,
+        image: catedate?.image,
+        footer: catedate?.footer,
+        quick_filter_tags: catedate?.quick_filter_tags,
+        is_top: catedate?.is_top,
+        is_exclusive: catedate?.is_exclusive,
+        is_private: catedate?.is_private,
+        is_active: catedate?.is_active,
+        create_date: catedate?.create_date,
+        update_date: catedate?.update_date,
+        is_try_and_buy: catedate?.is_try_and_buy,
+        last_updated_by: catedate?.last_updated_by,
         images: [],
+        logo_array: [],
+        logo: catedate?.logo,
     }
 
     return (
@@ -222,15 +182,28 @@ const BrandEdit = () => {
 
                             {/* Image */}
 
-                            <ImageField
-                                label="ADD NEW IMAGE"
-                                name="image"
-                                beforeUpload={beforeUpload}
-                                fileList={values.images}
-                                handleFileupload={handleFileupload}
-                                setImageView={setImageView}
-                                imagview={imagview}
-                            />
+                            <FormItem label="Brand Logo">
+                                <ImageField
+                                    label="ADD NEW LOGO"
+                                    name="logo"
+                                    beforeUpload={beforeUpload}
+                                    fileList={values.logo_array}
+                                    handleFileupload={handleFileupload}
+                                    setImageView={setLogoView}
+                                    imagview={logoview}
+                                />
+                            </FormItem>
+                            <FormItem label="Brand Image">
+                                <ImageField
+                                    label="ADD NEW IMAGE"
+                                    name="image"
+                                    beforeUpload={beforeUpload}
+                                    fileList={values.images}
+                                    handleFileupload={handleFileupload}
+                                    setImageView={setImageView}
+                                    imagview={imagview}
+                                />
+                            </FormItem>
 
                             {/* Select boxes......................................................................... */}
 

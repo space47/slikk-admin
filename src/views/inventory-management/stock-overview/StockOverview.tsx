@@ -1,72 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
 import { IoMdDownload } from 'react-icons/io'
 import { notification } from 'antd'
 import ImageMODAL from '@/common/ImageModal'
-
 import { FaSync } from 'react-icons/fa'
 import StockOverviewFilter from './stockOverviewComponents/StockOverviewFilter'
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
-
-interface LastUpdatedBy {
-    name: string
-    mobile: string
-    email: string
-}
-
-interface Product {
-    barcode: string
-    brand_name: string
-    color: string
-    id: number
-    name: string
-    size: string
-    sku: string
-    variant_id: string
-    image: string
-}
-
-interface Stock {
-    product: Product
-    store: number
-    quantity: any
-    last_updated_by: LastUpdatedBy
-    show_out_of_stock: boolean
-    is_active: boolean
-    offer_is_active: boolean
-    expiry_date: string
-    batch_number: string
-    create_date: string
-    update_date: string
-    grn: any
-    from: string
-    to: string
-    id: any
-    location: string
-}
-
-type Option = {
-    value: number
-    label: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import EasyTable from '@/common/EasyTable'
+import { Option, pageSizeOptions, Stock } from './stockOverviewCommon'
 
 const StockOverview = () => {
     const [data, setData] = useState<Stock[]>([])
@@ -203,7 +151,7 @@ const StockOverview = () => {
             {
                 header: 'Size',
                 accessorKey: 'product.size',
-                cell: (info) => info.getValue().toUpperCase(),
+                cell: ({ getValue }) => <span>{getValue().toUpperCase()}</span>,
             },
             {
                 header: 'Stock',
@@ -296,8 +244,6 @@ const StockOverview = () => {
         }))
     }
 
-    // Filters.................
-
     const hanldeFilter = () => {
         setShowDrawer(true)
     }
@@ -353,9 +299,6 @@ const StockOverview = () => {
         setTypeFetch(query)
         setShowDrawer(false)
     }
-
-    //...........................
-
     const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
         const location = updatedLocation[id] ?? null
         const quantity = updatedQuantities[id] >= 0 ? updatedQuantities[id] : null
@@ -379,27 +322,6 @@ const StockOverview = () => {
             console.error(error)
         }
     }
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
-        },
-    })
 
     const onPaginationChange = (page: number) => {
         setPage(page)
@@ -442,7 +364,7 @@ const StockOverview = () => {
     }
 
     return (
-        <div className="overflow-x-auto p-4">
+        <div className="p-4">
             <div className="upper flex flex-col md:flex-row justify-between mb-5 items-center">
                 <button
                     className="xl:hidden bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mb-4 justify-end items-end"
@@ -483,28 +405,7 @@ const StockOverview = () => {
                     </div>
                 </div>
             </div>
-            <Table className="w-full">
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} overflow />
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 <Pagination
                     pageSize={pageSize}
@@ -522,9 +423,6 @@ const StockOverview = () => {
                         onChange={(option) => onSelectChange(option?.value)}
                         className="w-1/2 md:w-auto"
                     />
-                    {/* <button className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg " onClick={handleDownload}>
-                        <IoMdDownload className="text-xl" />
-                    </button> */}
                 </div>
             </div>
             {showImageModal && (

@@ -61,7 +61,11 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) 
                                     <span className="text-xl font-semibold text-gray-800">{riderData?.profile?.first_name}</span>
                                     <span className="text-xl font-semibold text-gray-800">{riderData?.profile?.last_name}</span>
                                 </div>
-                                <div>{riderData?.profile?.mobile}</div>
+                                <div>
+                                    <a href={`tel:${riderData?.profile?.mobile}`} className="hover:text-blue-600">
+                                        {riderData?.profile?.mobile}
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
