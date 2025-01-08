@@ -17,6 +17,10 @@ const SendWhatsAppMessage = () => {
     const [messageTemplateData, setMessageTemplateData] = useState<any>([])
     const [messageParticular, setMessageParticular] = useState<any>([])
     const [selectedTemplateName, setSelectedTemplateName] = useState<string | null>(null)
+    const [headerImageLink, setHeaderImageLink] = useState('')
+    const [headerVideoLink, setHeaderVideoLink] = useState('')
+    const [headerVideoCaption, setHeaderVideoCaption] = useState('')
+    const [headerVideoId, setHeaderVideoId] = useState('')
     const group = useAppSelector<GroupData>((state) => state.group)
     useEffect(() => {
         dispatch(getAllGroupAPI())
@@ -74,8 +78,10 @@ const SendWhatsAppMessage = () => {
     }
 
     const initialValue = {
+        campaign_name: '',
         template_name: messageParticular?.name,
         language_code: messageParticular?.language,
+        header_image_link: '',
         header: messageParticular?.components?.find((item) => item?.type === 'HEADER')?.format,
         body: messageParticular?.components?.find((item) => item?.type === 'BODY')?.format,
         header_text: messageParticular?.components
@@ -87,50 +93,66 @@ const SendWhatsAppMessage = () => {
         button_text: messageParticular?.components
             ?.find((item) => item?.example?.button_text_named_params)
             ?.example?.button_text_named_params?.map((item) => `{${item?.param_name}}`),
+
+        button: messageParticular?.components
+            ?.find((item) => item?.buttons)
+            ?.buttons?.map((button) => button.type)
+            .join(','),
     }
 
     console.log('initial ava', initialValue)
 
+    const filterEmptyKeys = (obj: any) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([_, value]) => {
+                if (Array.isArray(value)) return value.length > 0
+                if (typeof value === 'object' && value !== null) return Object.keys(value).length > 0
+                return value !== undefined && value !== ''
+            }),
+        )
+    }
+
     const handleSubmit = async (values: any) => {
-        console.log('syar', values?.group)
-        const body = {
-            campaign: values?.campaign || '',
-            users: values?.user || '',
-            template_name: values?.template_name || '',
-            language_code: values?.language_code || '',
-            body_config: {
+        console.log('syar', values)
+        const body = filterEmptyKeys({
+            campaign_name: values?.campaign_name,
+            users: values?.user,
+            template_name: values?.template_name,
+            language_code: values?.language_code,
+            body_config: filterEmptyKeys({
                 text: values?.body_text || [],
-            },
+            }),
+            notification_group: values?.group,
             header_config: (() => {
                 if (values?.header === 'TEXT') {
-                    return { text: values?.header_text || [] }
+                    return filterEmptyKeys({ text: values?.header_text })
                 }
                 if (values?.header === 'IMAGE') {
-                    return { image: { link: values?.header_image_link || '' } }
+                    return filterEmptyKeys({ image: { link: headerImageLink } })
                 }
                 if (values?.header === 'VIDEO') {
-                    return {
+                    return filterEmptyKeys({
                         video: {
-                            link: values?.header_video_link || '',
-                            caption: values?.header_video_caption || '',
-                            id: values?.header_video_id || '',
+                            link: headerVideoLink,
+                            caption: headerVideoCaption,
+                            id: headerVideoId,
                         },
-                    }
+                    })
                 }
                 return undefined
             })(),
-            button_config: {
+            button_config: filterEmptyKeys({
                 buttons: [
-                    {
-                        type: values?.button?.type || '',
-                        sub_type: values?.button?.sub_type || '',
-                        url: values?.button?.url || '',
-                        payload: values?.button?.payload || '',
-                        index: values?.button?.index || 0,
-                    },
-                ],
-            },
-        }
+                    filterEmptyKeys({
+                        type: values?.button?.type,
+                        sub_type: values?.button?.sub_type,
+                        url: values?.button?.url,
+                        payload: values?.button?.payload,
+                        index: values?.button?.index,
+                    }),
+                ].filter((button) => Object.keys(button).length > 0), // Remove empty buttons
+            }),
+        })
 
         console.log('Body is', body)
 
@@ -193,7 +215,17 @@ const SendWhatsAppMessage = () => {
 
                                 {currentStep === 2 && (
                                     <div>
-                                        <ThirdStep values={values} />
+                                        <ThirdStep
+                                            values={values}
+                                            headerImageLink={headerImageLink}
+                                            setHeaderImageLink={setHeaderImageLink}
+                                            headerVideoCaption={headerVideoCaption}
+                                            headerVideoId={headerVideoId}
+                                            headerVideoLink={headerVideoLink}
+                                            setHeaderVideoCaption={setHeaderVideoCaption}
+                                            setHeaderVideoId={setHeaderVideoId}
+                                            setHeaderVideoLink={setHeaderVideoLink}
+                                        />
                                     </div>
                                 )}
                             </FormContainer>

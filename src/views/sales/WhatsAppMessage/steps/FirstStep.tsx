@@ -96,7 +96,7 @@ const FirstStep = ({ messageTemplateData, selectedTemplateName, setSelectedTempl
         <div>
             <FormContainer>
                 <FormItem label="campaign Name">
-                    <Field name="campaign" type="text" component={Input} placeholder="Enter Campaign" />
+                    <Field name="campaign_name" type="text" component={Input} placeholder="Enter Campaign" />
                 </FormItem>
 
                 <FormItem>
