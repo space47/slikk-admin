@@ -1,44 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-
-import { groupLocation, headingGroup, LoyaltyArray, orderGroup, userProfileGroup } from './commonTypesGroup/userProfile'
+import Papa from 'papaparse'
+import {
+    DeliveryOptions,
+    form,
+    genderOptions,
+    groupLocation,
+    headingGroup,
+    LoyaltyArray,
+    LoyaltyOptions,
+    orderGroup,
+    userProfileGroup,
+} from './commonTypesGroup/userProfile'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { notification } from 'antd'
-
-const genderOptions = [
-    {
-        value: 'M',
-        label: 'Men',
-    },
-    {
-        value: 'F',
-        label: 'Female',
-    },
-]
-const DeliveryOptions = [
-    { label: 'Express', value: 'EXPRESS' },
-    { label: 'Standard', value: 'STANDARD' },
-    { label: 'Try&Buy', value: 'TRY_AND_BUY' },
-]
-
-const LoyaltyOptions = [
-    { label: 'Explorer', value: 'Explorer' },
-    { label: 'TRENDSETTER', value: 'Trendsetter' },
-    { label: 'ICON', value: 'Icon' },
-]
+import { MdDelete } from 'react-icons/md'
 
 const AddGroup = () => {
+    const [csvFile, setCSVFile] = useState()
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
     const initialValue = {}
 
     const dispatch = useAppDispatch()
@@ -46,208 +36,30 @@ const AddGroup = () => {
         dispatch(getAllFiltersAPI())
     }, [])
 
-    const handleSubmit = async (values: any) => {
-        console.log('start')
-
-        const formData = {
-            ...(values.name && { name: values.name }),
-            ...(values.user && { user: values.user }),
-            rules: {
-                cart: [
-                    ...((values.cart_start && values.cart_end) || values.allOpenCart
-                        ? [
-                              {
-                                  type: 'cart',
-                                  value: {
-                                      start_date: values.allOpenCart ? '' : values.cart_start,
-                                      end_date: values.allOpenCart ? '' : values.cart_end,
-                                  },
-                              },
-                          ]
-                        : []),
-                ],
-                userInfo: [
-                    ...(values.registration_start && values.registration_end
-                        ? [
-                              {
-                                  type: 'registration',
-                                  value: {
-                                      start_date: values.registration_start,
-                                      end_date: values.registration_end,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.dob_start && values.dob_end
-                        ? [
-                              {
-                                  type: 'dob',
-                                  value: {
-                                      start_date: values.dob_start,
-                                      end_date: values.dob_end,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.gender && values.gender.length
-                        ? [
-                              {
-                                  type: 'gender',
-                                  value: values.gender.join(','),
-                              },
-                          ]
-                        : []),
-                ],
-                order: [
-                    ...(values.start_date
-                        ? [
-                              {
-                                  type: 'order_date',
-                                  value: {
-                                      start_date: values.start_date,
-                                      end_date: values.end_date || values.start_date,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.max_value && values.min_value
-                        ? [
-                              {
-                                  type: 'order_value',
-                                  value: {
-                                      max_amount: values.max_value,
-                                      min_amount: values.min_value,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.max_purchase && values.min_purchase
-                        ? [
-                              {
-                                  type: 'life_time_purchase',
-                                  value: {
-                                      max_amount: values.max_purchase,
-                                      min_amount: values.min_purchase,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.max_count && values.min_count
-                        ? [
-                              {
-                                  type: 'order_count',
-                                  value: {
-                                      max_order_count: values.max_count,
-                                      min_order_count: values.min_count,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.order_delivery_type && values.order_delivery_type.length
-                        ? [
-                              {
-                                  type: 'order_delivery_type',
-                                  value: values.order_delivery_type.join(','),
-                              },
-                          ]
-                        : []),
-                ],
-                loyalty: [
-                    ...(values.loyalty && values.loyalty.length
-                        ? [
-                              {
-                                  type: 'tier',
-                                  value: values.loyalty.join(','),
-                              },
-                          ]
-                        : []),
-                    ...(values.max_point_available && values.min_point_available
-                        ? [
-                              {
-                                  type: 'points available',
-                                  value: {
-                                      max: values.max_point_available,
-                                      min: values.min_point_available,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.max_point_earned && values.min_point_earned
-                        ? [
-                              {
-                                  type: 'points earned',
-                                  value: {
-                                      max: values.max_point_earned,
-                                      min: values.min_point_earned,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.max_point_redeemed && values.min_point_redeemed
-                        ? [
-                              {
-                                  type: 'points redeemed',
-                                  value: {
-                                      max: values.max_point_redeemed,
-                                      min: values.min_point_redeemed,
-                                  },
-                              },
-                          ]
-                        : []),
-                ],
-                order_item: [
-                    ...(values.max_basket_size && values.min_basket_size
-                        ? [
-                              {
-                                  type: 'basket_size',
-                                  value: {
-                                      max: values.max_basket_size,
-                                      min: values.min_basket_size,
-                                  },
-                              },
-                          ]
-                        : []),
-                    ...(values.filters
-                        ? [
-                              {
-                                  type: 'tag_filters',
-                                  value: values.filters,
-                              },
-                          ]
-                        : []),
-                ],
-                location: [
-                    ...(values.city
-                        ? [
-                              {
-                                  type: 'city',
-                                  value: values.city,
-                              },
-                          ]
-                        : []),
-                    ...(values.state
-                        ? [
-                              {
-                                  type: 'state',
-                                  value: values.state,
-                              },
-                          ]
-                        : []),
-                    ...(values.distance
-                        ? [
-                              {
-                                  type: 'distance',
-                                  value: values.distance,
-                              },
-                          ]
-                        : []),
-                ],
-            },
+    const handleCSVFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null
+        if (file) {
+            setCSVFile(file)
+            parseCSV(file)
         }
+    }
 
-        console.log('mid')
+    const parseCSV = (file: File) => {
+        Papa.parse(file, {
+            complete: (result) => {
+                console.log('Parsed CSV Result:', result)
+                const extractedMobileNumbers = result.data.map((row: any) => row.mobile).filter(Boolean)
+                setMobileNumbers(extractedMobileNumbers)
+                console.log('Mobile Numbers:', extractedMobileNumbers)
+            },
+            header: true,
+            skipEmptyLines: true,
+        })
+    }
+
+    const handleSubmit = async (values: any) => {
         try {
-            const response = await axioisInstance.post(`/notification/groups`, formData)
+            const response = await axioisInstance.post(`/notification/groups`, form(values, csvFile, mobileNumbers))
             console.log(response.data)
             notification.success({
                 message: 'success',
@@ -271,7 +83,7 @@ const AddGroup = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ resetForm }) => (
+                {({ values, resetForm }) => (
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer>
@@ -283,6 +95,14 @@ const AddGroup = () => {
                                         </FormItem>
                                     ))}
                                 </FormContainer>
+                                <FormItem label="CSV for User" className="flex gap-2">
+                                    <div className="flex ">
+                                        <input type="file" accept=".csv" onChange={handleCSVFileChange} />
+                                        <span>
+                                            <MdDelete className="text-xl cursor-pointer" onClick={() => setMobileNumbers([])} />
+                                        </span>
+                                    </div>
+                                </FormItem>
                             </FormContainer>
                             <FormContainer>
                                 <FormContainer className="w-1/2">

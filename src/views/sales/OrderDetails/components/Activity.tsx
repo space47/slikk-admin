@@ -217,6 +217,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         const isPacked = data.some((log) => log.status === 'PACKED')
         const isDeliveryCreated = data.some((log) => log.status === 'DELIVERY_CREATED')
         const isDriverAssigned = data[data.length - 1]?.status === 'DRIVER_ASSIGNED'
+        const isOrderDone = data.some((log) => log.status === 'DELIVERED' || 'COMPLETED')
 
         if (data.length === 0) {
             return { buttonText: 'ACCEPT/REJECT' }
@@ -225,13 +226,13 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         if (isDriverAssigned && isPacked) {
             return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
         }
-        if (isDeliveryCreated && !isPacked) {
+        if (isDeliveryCreated && !isPacked && !isOrderDone) {
             return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
         }
 
         switch (lastLogStatus) {
-            case 'DELIVERY_CREATED':
-                return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
+            // case 'DELIVERY_CREATED':
+            //     return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
             case 'PACKED': {
                 const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
                 const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
@@ -254,6 +255,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
     const isPacked = data.some((log) => log?.status === 'PACKED')
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
+    const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -281,7 +283,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
             {/* buttons........................................................................................................ */}
 
-            {isDeliveryCreated && !isPacked ? (
+            {isDeliveryCreated && !isPacked && !isOrderDone ? (
                 <Button variant="solid" onClick={() => showModal('Pick and Pack')}>
                     PICK AND PACK
                 </Button>

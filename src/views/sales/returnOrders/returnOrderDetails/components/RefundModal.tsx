@@ -38,13 +38,7 @@ type props0 = {
     status: string
 }
 
-export const PickedUpGenerateModal: React.FC<props0> = ({
-    isModalOpen,
-    handlePickupGenerate,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const PickedUpGenerateModal: React.FC<props0> = ({ isModalOpen, handlePickupGenerate, handleClose, modalContent, status }) => {
     return (
         <Modal
             {...modalStyles}
@@ -68,19 +62,14 @@ type props1 = {
     handleClose: () => void
     modalContent?: string
     status: string
+    currentButton: boolean
 }
 
-export const PickedUpModal: React.FC<props1> = ({
-    isModalOpen,
-    handlePickup,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const PickedUpModal: React.FC<props1> = ({ isModalOpen, handlePickup, handleClose, modalContent, status, currentButton }) => {
     return (
         <Modal
             {...modalStyles}
-            okText={status === 'PICKED_UP' ? 'Picked_up' : 'OK'}
+            okText={currentButton ? 'PICKING.....' : 'PICK UP'}
             cancelText={status === 'cancel' ? 'Cancel' : 'Close'}
             okButtonProps={okButtonStyles}
             cancelButtonProps={cancelButtonStyles}
@@ -100,6 +89,7 @@ type props2 = {
     handleClose: () => void
     modalContent?: string
     status: string
+    currentButton: boolean
 }
 
 export const OutforDeliveryModal: React.FC<props2> = ({
@@ -108,11 +98,12 @@ export const OutforDeliveryModal: React.FC<props2> = ({
     handleClose,
     modalContent,
     status,
+    currentButton,
 }) => {
     return (
         <Modal
             {...modalStyles}
-            okText={status === 'OUT_FOR_PICKUP' ? 'OK' : 'OK'}
+            okText={currentButton ? 'OUT FOR PICKUP.....' : 'OUT FOR PICKUP'}
             cancelText={status === 'cancel' ? 'Cancel' : 'Close'}
             okButtonProps={okButtonStyles}
             cancelButtonProps={cancelButtonStyles}
@@ -134,21 +125,11 @@ type props3 = {
     status: string
 }
 
-export const InTransitModal: React.FC<props3> = ({
-    isModalOpen,
-    handleInTransit,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const InTransitModal: React.FC<props3> = ({ isModalOpen, handleInTransit, handleClose, modalContent, status }) => {
     return (
         <Modal
             {...modalStyles}
-            okText={
-                status === 'IN_TRANSIT' || status === 'SHIPPED'
-                    ? 'Transit'
-                    : 'OK'
-            }
+            okText={status === 'IN_TRANSIT' || status === 'SHIPPED' ? 'Transit' : 'SHIP'}
             cancelText={status === 'cancel' ? 'Cancel' : 'Close'}
             okButtonProps={okButtonStyles}
             cancelButtonProps={cancelButtonStyles}
@@ -168,6 +149,7 @@ type props4 = {
     handleClose: () => void
     modalContent?: string
     status: string
+    currentButton: boolean
 }
 
 export const OutForDeliveryModal: React.FC<props4> = ({
@@ -176,11 +158,12 @@ export const OutForDeliveryModal: React.FC<props4> = ({
     handleClose,
     modalContent,
     status,
+    currentButton,
 }) => {
     return (
         <Modal
             {...modalStyles}
-            okText={status === 'OUT_FOR_DELIVERY' ? 'Out for Delivery' : 'OK'}
+            okText={currentButton ? 'DELIVERING....' : 'OUT FOR DELIVERY'}
             cancelText={status === 'PENDING' ? 'Reject Orders' : 'Cancel'}
             okButtonProps={okButtonStyles}
             cancelButtonProps={cancelButtonStyles}
@@ -189,9 +172,7 @@ export const OutForDeliveryModal: React.FC<props4> = ({
             onCancel={handleClose}
         >
             <p className="text-lg mb-4">{modalContent}</p>
-            <h1 className="text-2xl font-semibold">
-                Your order is out for Delivery
-            </h1>
+            <h1 className="text-2xl font-semibold">Your order is out for Delivery</h1>
         </Modal>
     )
 }
@@ -202,19 +183,14 @@ type props5 = {
     handleClose: () => void
     modalContent?: string
     status: string
+    currentButton: boolean
 }
 
-export const DeliveredModal: React.FC<props5> = ({
-    isModalOpen,
-    handleDelivered,
-    handleClose,
-    modalContent,
-    status,
-}) => {
+export const DeliveredModal: React.FC<props5> = ({ isModalOpen, handleDelivered, handleClose, modalContent, status, currentButton }) => {
     return (
         <Modal
             {...modalStyles}
-            okText={status === 'DELIVERED' ? 'Deliver' : 'OK'}
+            okText={currentButton ? 'DOING.....' : 'DELIVER'}
             cancelText={status === 'PENDING' ? 'Reject Orders' : 'Cancel'}
             okButtonProps={okButtonStyles}
             cancelButtonProps={cancelButtonStyles}
