@@ -44,11 +44,9 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const [buttonAfterClick, setButtonAfterClick] = useState(false)
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
-
     const fulfilledIDs = Object.keys(fulfilledQuantities)
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
-    console.log('rejected Date', rejectData)
 
     const showModal = (content: string | undefined) => {
         setModalContent(content)
