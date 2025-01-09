@@ -11,6 +11,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5 } from './Modal'
 import { LOGISTIC, LOGISTIC_PARTNER, Payment, Product } from './activityCommon'
+import { SalesOrderDetailsResponse } from '../orderList.common'
 
 type Event = {
     timestamp: string
@@ -18,7 +19,7 @@ type Event = {
 }
 
 type ActivityProps = {
-    mainData: any
+    mainData: SalesOrderDetailsResponse
     data?: Event[]
     status: string
     product?: Product[]
@@ -43,6 +44,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const [buttonAfterClick, setButtonAfterClick] = useState(false)
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
+
+    const fulfilledIDs = Object.keys(fulfilledQuantities)
+
+    const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
+    console.log('rejected Date', rejectData)
 
     const showModal = (content: string | undefined) => {
         setModalContent(content)
@@ -80,7 +86,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                         action,
                         data,
                     }
-
+                    console.log('Accepted Data', data)
                     const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                     console.log(response)
                     setIsModalOpen(false)
@@ -103,7 +109,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 setErrorMessage('QUANTITY OF ITEMS SHOULD BE 0')
             }, 2000)
         } else {
-            setAction('ACCEPTED')
+            setAction('PACKED')
             // setButtonAfterClick(true)
             setCancelCall(true)
         }
@@ -116,14 +122,23 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     useEffect(() => {
         if (cancelCall) {
             const sendApiRequest = async () => {
+                console.log('fullfilled quantities', fulfilledQuantities)
+
                 try {
-                    const data = Object.entries(fulfilledQuantities).reduce((acc) => acc, {} as { [key: number]: number })
+                    const data = Object.entries(fulfilledQuantities)?.reduce((acc) => acc, {} as { [key: number]: number })
+
+                    const cancelData = rejectData?.reduce((acc, id) => {
+                        acc[id] = 0
+                        return acc
+                    }, {})
+
+                    console.log('after reject', cancelData)
 
                     const body = {
                         action,
-                        data,
+                        data: cancelData,
                     }
-
+                    console.log('Data after Reject', body)
                     const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                     console.log(response)
                     setIsModalOpen(false)
@@ -164,7 +179,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         }
     }
 
-    const handleApiCall = (trigger, setTrigger, isPacking) => {
+    const handleApiCall = (trigger: boolean, setTrigger: React.Dispatch<React.SetStateAction<boolean>>, isPacking: boolean) => {
         if (trigger) {
             particularApiCall(action, invoice_id, partner?.value, navigate, isPacking)
             setTrigger(false)
@@ -228,7 +243,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         const isOrderDone = data.some((log) => log.status === 'DELIVERED' || 'COMPLETED')
 
         if (data.length === 0) {
-            return { buttonText: 'ACCEPT/REJECT' }
+            return { buttonText: 'ACCEPT' }
         }
 
         if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD') {
@@ -238,7 +253,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             return { buttonText: 'OUT FOR DELIVERY', modalContent: 'Out for Delivery' }
         }
         if (isDeliveryCreated && !isPacked && !isOrderDone) {
-            return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
+            return { buttonText: 'PICK/Reject', modalContent: 'Pick and Pack' }
         }
 
         if (isDeliveryCreated && isPacked && !isOutForDelivery) {
@@ -250,13 +265,15 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         switch (lastLogStatus) {
             // case 'DELIVERY_CREATED':
             //     return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
-            case 'PACKED': {
+            case 'DELIVERY_CREATED': {
                 const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
                 const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
                 return { buttonText, modalContent }
             }
-            case 'ACCEPTED':
+            case 'PACKED':
                 return { buttonText: 'CREATE DELIVERY' }
+            case 'ACCEPTED':
+                return { buttonText: 'PICK/REJECT', modalContent: 'Pick and Pack' }
             case 'OUT_FOR_PICKUP':
             case 'OUT_FOR_DELIVERY':
             case 'SHIPPED':
@@ -269,7 +286,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     }
 
     const { buttonText, modalContent: content } = getButtonAndModalContent(data)
-
     const isPacked = data.some((log) => log?.status === 'PACKED')
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
     const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
@@ -302,7 +318,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
             {isDeliveryCreated && !isPacked && !isOrderDone ? (
                 <Button variant="solid" onClick={() => showModal('Pick and Pack')}>
-                    PICK AND PACK
+                    PICK/REJECT
                 </Button>
             ) : (
                 buttonText && (
@@ -326,7 +342,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
             {/* {status === ''} */}
 
-            {data[data.length - 1]?.status === 'ACCEPTED' && (
+            {data[data.length - 1]?.status === 'PACKED' && (
                 <CustomModal2
                     isModalOpen={isModalOpen}
                     handlePack={handlePack}
@@ -339,7 +355,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     isButtonClick={buttonAfterClick}
                 />
             )}
-            {isDeliveryCreated && !isPacked && (
+            {data[data.length - 1]?.status === 'ACCEPTED' && (
                 <CustomModal
                     isModalOpen={isModalOpen}
                     handleOk={handleOk}
@@ -357,7 +373,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {data[data.length - 1]?.status === 'PACKED' && mainData?.delivery_type === 'STANDARD' && (
+            {data[data.length - 1]?.status === 'DELIVERY_CREATED' && mainData?.delivery_type === 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={handleShip}
@@ -366,7 +382,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     status={status}
                 />
             )}
-            {data[data.length - 1]?.status === 'PACKED' && mainData?.delivery_type !== 'STANDARD' && (
+            {data[data.length - 1]?.status === 'DELIVERY_CREATED' && mainData?.delivery_type !== 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={handleOutForDelivery}

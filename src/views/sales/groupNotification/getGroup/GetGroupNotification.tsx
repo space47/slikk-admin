@@ -7,12 +7,14 @@ import { pageSizeOptions } from './groupComnmon'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import { FaEdit } from 'react-icons/fa'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const GetGroupNotification = () => {
     const [groupData, setGroupData] = useState([])
     const [totalCount, setTotalCount] = useState(0)
     const [page, setPage] = useState<number>(1)
     const [pageSize, setPageSize] = useState<number | undefined>(10)
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
     const fetchGroupNotification = async () => {
@@ -21,7 +23,10 @@ const GetGroupNotification = () => {
             const data = response?.data?.data
             setGroupData(data?.results)
             setTotalCount(data?.count)
-        } catch (error) {
+        } catch (error: any) {
+            if (error?.response && error?.response?.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -216,6 +221,10 @@ const GetGroupNotification = () => {
 
     const handleAddVariant = () => {
         navigate(`/app/appsCommuncication/addGroups`)
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
     return (
         <div className="flex flex-col gap-8">

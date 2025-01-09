@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 // import classNames from 'classnames'
 // import Tag from '@/components/ui/Tag'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
-import OrderProducts from './components/OrderProducts'
+// import OrderProducts from './components/OrderProducts'
 import PaymentSummary from './components/PaymentSummary'
 import ShippingInfo from './components/ShippingInfo'
 // import Activity from './components/Activity'
@@ -102,7 +103,7 @@ const InwardDetails = () => {
         }
     }
 
-    const handleRegenerateGrn = async (doc_number) => {
+    const handleRegenerateGrn = async (doc_number: string) => {
         try {
             const response = await axioisInstance.get(
                 `/goods/received/${companyId}?document_number=${doc_number}&download=true&regenerate=true`,

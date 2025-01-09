@@ -8,6 +8,7 @@ import EasyTable from '@/common/EasyTable'
 import { pageSizeOptions } from '@/views/org-management/sellers/sellerCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { FaEdit } from 'react-icons/fa'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const NotificationTable = () => {
     const navigate = useNavigate()
@@ -16,6 +17,7 @@ const NotificationTable = () => {
     const [pageSize, setPageSize] = useState<number>(10)
     const [totalCount, setTotalCount] = useState<number>(0)
     const [globalFilter, setGlobalFilter] = useState<string>()
+    const [accessDenied, setAccessDenied] = useState(false)
 
     const fetchNotificationData = async () => {
         try {
@@ -27,7 +29,10 @@ const NotificationTable = () => {
             const data = response?.data?.data
             setNotificationData(data?.results)
             setTotalCount(data?.count)
-        } catch (error) {
+        } catch (error: any) {
+            if (error?.response && error?.response?.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -102,6 +107,10 @@ const NotificationTable = () => {
 
     const onPaginationChange = (page: number) => {
         setPage(page)
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

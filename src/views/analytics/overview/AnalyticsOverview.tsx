@@ -33,54 +33,14 @@ import AnalyticsOrderDrawer from './analyticsOrderDrawer/AnalyticsOrderDrawer'
 import { IoMdDownload } from 'react-icons/io'
 import { useLocation } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
-
-type SKU_DETAILS = {
-    name: string
-    mrp: number
-    sp: number
-    image: string
-    total_quantity: number
-    total_amount: number
-}
-
-type DATA_WISE_SALES = {
-    total_quantity: number
-    total_amount: number
-}
-
-type SalesData = {
-    status: string
-    total_quantity: number
-    total_amount: number
-    sku_wise_sales_data: {
-        [sku: string]: SKU_DETAILS
-    }
-    date_wise_sales_data: {
-        date: DATA_WISE_SALES
-    }
-}
-
-type Option = {
-    value: number
-    label: string
-}
+import { DATA_WISE_SALES, Option, pageSizeOptions, SalesData, SKU_DETAILS } from './analyticsCommon'
 
 const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
 
 const AnalyticsOverview = () => {
     const location = useLocation()
     const { var1, var2, stateName } = location.state || {}
-
-    console.log('object', var1, var2, stateName)
     const [data, setData] = useState<SalesData>()
-
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -107,12 +67,7 @@ const AnalyticsOverview = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
 
-    const fetchData = async (
-        // page: number,
-        // pageSize: number,
-        from: string,
-        to: string,
-    ) => {
+    const fetchData = async (from: string, to: string) => {
         try {
             setSkuWiseDetails([])
             setDatewisedetails([])
@@ -125,36 +80,12 @@ const AnalyticsOverview = () => {
             const data = response.data
 
             setData(data)
-
-            console.log('ssssssssssssssss', data)
             const skuData = data.sku_wise_sales_data
-
             const dateWiseData = data.date_wise_sales_data
-
-            console.log('SKUDATA', skuData, dateWiseData)
-            const div = data.tags.division.map((item: any) => ({
-                id: item,
-                name: item,
-                value: item,
-            }))
-
-            const cat = data.tags.category.map((item: any) => ({
-                id: item,
-                name: item,
-                value: item,
-            }))
-
-            const sub = data.tags.subcategory.map((item: any) => ({
-                id: item,
-                name: item,
-                value: item,
-            }))
-            const brnd = data.tags.brand.map((item: any) => ({
-                id: item,
-                name: item,
-                value: item,
-            }))
-
+            const div = data.tags.division.map((item: any) => ({ id: item, name: item, value: item }))
+            const cat = data.tags.category.map((item: any) => ({ id: item, name: item, value: item }))
+            const sub = data.tags.subcategory.map((item: any) => ({ id: item, name: item, value: item }))
+            const brnd = data.tags.brand.map((item: any) => ({ id: item, name: item, value: item }))
             setDivisionArray(div)
             setCategoryArray(cat)
             setSubCategoryArray(sub)
@@ -191,53 +122,15 @@ const AnalyticsOverview = () => {
 
     const columns = useMemo<ColumnDef<{ key: SKU_DETAILS; value: SKU_DETAILS }>[]>(
         () => [
-            {
-                header: 'SKU',
-                accessorKey: 'key',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Name',
-                accessorKey: 'value.name',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'Size',
-                accessorKey: 'value.size',
-                cell: (info) => info.getValue(),
-            },
-
-            {
-                header: 'Color',
-                accessorKey: 'value.color',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'MRP',
-                accessorKey: 'value.mrp',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'SP',
-                accessorKey: 'value.sp',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Total Quantity',
-                accessorKey: 'value.total_quantity',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Total Quantity',
-                accessorKey: 'value.total_quantity',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Total Amount',
-                accessorKey: 'value.total_amount',
-                cell: (info) => info.getValue(),
-            },
+            { header: 'SKU', accessorKey: 'key', cell: (info) => info.getValue() },
+            { header: 'Name', accessorKey: 'value.name', cell: (info) => info.getValue() },
+            { header: 'Size', accessorKey: 'value.size', cell: (info) => info.getValue() },
+            { header: 'Color', accessorKey: 'value.color', cell: (info) => info.getValue() },
+            { header: 'MRP', accessorKey: 'value.mrp', cell: (info) => info.getValue() },
+            { header: 'SP', accessorKey: 'value.sp', cell: (info) => info.getValue() },
+            { header: 'Total Quantity', accessorKey: 'value.total_quantity', cell: (info) => info.getValue() },
+            { header: 'Total Quantity', accessorKey: 'value.total_quantity', cell: (info) => info.getValue() },
+            { header: 'Total Amount', accessorKey: 'value.total_amount', cell: (info) => info.getValue() },
             {
                 header: 'Image',
                 accessorKey: 'value.image',
@@ -255,7 +148,6 @@ const AnalyticsOverview = () => {
     )
 
     const handleOpenModal = (img: any) => {
-        console.log('sdsds', img)
         setParticularROwImage(img)
         setShowImageModal(true)
     }
@@ -266,7 +158,6 @@ const AnalyticsOverview = () => {
             if (stateName && !typeFetch) {
                 stateBrand = `brand=${stateName}`
             }
-
             const response = await axiosInstance.get(`/merchant/sales?from=${from}&to=${to}&${typeFetch}${stateBrand}&download=true`, {
                 responseType: 'blob',
             })
@@ -340,7 +231,6 @@ const AnalyticsOverview = () => {
     const handleCloseDrawer = () => {
         setShowDrawer(false)
     }
-
     const handleMultiSelect = (fieldName: string, selectedValues: any) => {
         if (fieldName === 'division') {
             setDivisionList(selectedValues)
@@ -354,18 +244,15 @@ const AnalyticsOverview = () => {
     }
     const handleApply = () => {
         let query = ''
-
         if (divisionList.length > 0) {
             const divisionIds = divisionList.map((item: any) => item.id).join(',')
             query += `division=${divisionIds}`
         }
-
         if (categoryList.length > 0) {
             const categoryIds = categoryList.map((item: any) => item.id).join(',')
             if (query) query += '&'
             query += `category=${categoryIds}`
         }
-
         if (subCategoryList.length > 0) {
             const subCategoryIds = subCategoryList.map((item: any) => item.id).join(',')
             if (query) query += '&'
@@ -386,10 +273,6 @@ const AnalyticsOverview = () => {
 
     const handleResetFilters = (resetForm: any) => {
         resetForm()
-        // setDivisionList([])
-        // setCategoryList([])
-        // setSubCategoryList([])
-        // setShowDrawer(false)
     }
 
     return (
