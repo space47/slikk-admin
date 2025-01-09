@@ -239,22 +239,23 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         const isOutForDelivery = data.some((log) => log.status === 'OUT_FOR_DELIVERY' || log.status === 'SHIPPED')
         const isDriverAssigned = data[data.length - 1]?.status === 'DRIVER_ASSIGNED'
         const isOrderDone = data.some((log) => log.status === 'DELIVERED' || 'COMPLETED')
+        const isOrderCANCELLED = data.some((log) => log.status === 'DECLINED' || 'CANCELLED')
 
         if (data.length === 0) {
             return { buttonText: 'ACCEPT' }
         }
 
-        if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD') {
+        if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD' && !isOrderDone && !isOrderCANCELLED) {
             return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
         }
-        if (isDriverAssigned && isPacked && mainData?.delivery_type !== 'STANDARD') {
+        if (isDriverAssigned && isPacked && mainData?.delivery_type !== 'STANDARD' && !isOrderDone && !isOrderCANCELLED) {
             return { buttonText: 'OUT FOR DELIVERY', modalContent: 'Out for Delivery' }
         }
-        if (isDeliveryCreated && !isPacked && !isOrderDone) {
+        if (isDeliveryCreated && !isPacked && !isOrderDone && !isOrderCANCELLED) {
             return { buttonText: 'PICK/Reject', modalContent: 'Pick and Pack' }
         }
 
-        if (isDeliveryCreated && isPacked && !isOutForDelivery) {
+        if (isDeliveryCreated && isPacked && !isOutForDelivery && !isOrderDone && !isOrderCANCELLED) {
             const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
             const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
             return { buttonText, modalContent }
