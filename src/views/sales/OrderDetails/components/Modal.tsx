@@ -45,7 +45,7 @@ export const CustomModal: React.FC<Props> = ({
         <Modal
             title=""
             okText={isButtonClick ? 'PACKING...' : 'PACK'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
+            cancelText={status === 'ACCEPTED' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal overflow-scroll scrollbar-hide"
             okButtonProps={{
@@ -63,7 +63,7 @@ export const CustomModal: React.FC<Props> = ({
                     color: '#FFFFFF',
                     borderRadius: '8px',
                 },
-                onClick: status === 'PENDING' ? handleReject : handleCancel,
+                onClick: status === 'ACCEPTED' ? handleReject : handleCancel,
             }}
             open={isModalOpen}
             onOk={handleOk}
@@ -327,7 +327,7 @@ export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handle
         <Modal
             title=""
             okText={isButtonClick ? 'ACCEPTING...' : 'ACCEPT'}
-            cancelText={status === 'PENDING' ? 'REJECT ORDER' : 'CANCEL'}
+            cancelText={status === 'PENDING' ? 'CANCEL' : 'CANCEL'}
             width={800}
             className="custom-modal"
             okButtonProps={{
@@ -352,9 +352,10 @@ export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handle
         >
             <p className="text-lg font-semibold mb-4">{modalContent}</p>
             <h1 className="text-center text-lg font-bold text-green-600">ACCEPT ORDER</h1>
-            <p className="text-center text-md font-semibold text-red-600">
-                Are you sure you want to accept the order: <span className="font-bold underline">{invoice}</span>{' '}
+            <p className="text-center text-xl font-semibold ">
+                Are you sure you want to accept the order: <span className="font-bold underline text-red-600">{invoice}</span>{' '}
             </p>
+            <br />
         </Modal>
     )
 }
