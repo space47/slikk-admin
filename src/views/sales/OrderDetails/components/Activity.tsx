@@ -383,7 +383,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             {data[data.length - 1]?.status === 'DELIVERY_CREATED' && mainData?.delivery_type !== 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
-                    handlePack={handleOutForDelivery}
+                    handlePack={handleShip}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={status}
