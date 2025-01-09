@@ -360,16 +360,18 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
             <div className="flex flex-col gap-10 xl:flex-row">
                 <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '70vh', width: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <MarkerComponent
-                        currLat={currLat}
-                        currLong={currLong}
-                        markers={markers}
-                        distanceAboveThirty={distanceAboveThirty?.length}
-                        distanceBetweenFifteenToThirty={distanceBelowFifteenToThirty?.length}
-                        distanceBelowTen={distanceBelowTen?.length}
-                        distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
-                    />
-                    <HeatMapComponent markers={markers} />
+                    {currentSelectedPage?.value === 'marker' && (
+                        <MarkerComponent
+                            currLat={currLat}
+                            currLong={currLong}
+                            markers={markers}
+                            distanceAboveThirty={distanceAboveThirty?.length}
+                            distanceBetweenFifteenToThirty={distanceBelowFifteenToThirty?.length}
+                            distanceBelowTen={distanceBelowTen?.length}
+                            distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
+                        />
+                    )}
+                    {currentSelectedPage?.value === 'heat_map' && <HeatMapComponent markers={markers} />}
                     <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} currentPage={currentSelectedPage?.value} />
                 </MapContainer>
                 <div className="space-y-2  xl:w-[250px]">
