@@ -288,7 +288,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const isPacked = data.some((log) => log?.status === 'PACKED')
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
     const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
-    const isOrderCANCELLED = data.some((log) => log.status === 'DECLINED' || 'CANCELLED')
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -321,9 +320,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     PICK/REJECT
                 </Button>
             ) : (
-                buttonText &&
-                !isOrderDone &&
-                !isOrderCANCELLED && (
+                buttonText && (
                     <Button variant="solid" onClick={() => showModal(content)}>
                         {buttonText}
                     </Button>
