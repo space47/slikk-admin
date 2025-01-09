@@ -37,6 +37,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const [triggerAcceptedCall, setTriggerAcceptedCall] = useState(false)
     const [triggerpackCall, setTriggerpackCall] = useState(false)
     const [triggerShipCall, setTriggerShipCall] = useState(false)
+    const [triggerOutDeliveryCall, setTriggerOutDeliveryCall] = useState(false)
     const [triggerDeliveryCall, setTriggerDeliveryCall] = useState(false)
     const [cancelCall, setCancelCall] = useState(false)
     const [buttonAfterClick, setButtonAfterClick] = useState(false)
@@ -172,6 +173,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
     useEffect(() => {
         handleApiCall(triggerAcceptedCall, setTriggerAcceptedCall, true)
+        handleApiCall(triggerOutDeliveryCall, setTriggerOutDeliveryCall, true)
         handleApiCall(triggerpackCall, setTriggerpackCall, true)
         handleApiCall(triggerShipCall, setTriggerShipCall, false)
         handleApiCall(triggerDeliveryCall, setTriggerDeliveryCall, false)
@@ -192,6 +194,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const handleShip = () => {
         setAction('SHIPPED')
         setTriggerShipCall(true)
+        setButtonAfterClick(true)
+    }
+    const handleOutForDelivery = () => {
+        setAction('SHIPPED')
+        setTriggerOutDeliveryCall(true)
         setButtonAfterClick(true)
     }
 
@@ -216,6 +223,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         const lastLogStatus = data.length > 0 ? data[data.length - 1].status : null
         const isPacked = data.some((log) => log.status === 'PACKED')
         const isDeliveryCreated = data.some((log) => log.status === 'DELIVERY_CREATED')
+        const isOutForDelivery = data.some((log) => log.status === 'OUT_FOR_DELIVERY' || log.status === 'SHIPPED')
         const isDriverAssigned = data[data.length - 1]?.status === 'DRIVER_ASSIGNED'
         const isOrderDone = data.some((log) => log.status === 'DELIVERED' || 'COMPLETED')
 
@@ -223,11 +231,20 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             return { buttonText: 'ACCEPT/REJECT' }
         }
 
-        if (isDriverAssigned && isPacked) {
+        if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD') {
             return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
+        }
+        if (isDriverAssigned && isPacked && mainData?.delivery_type !== 'STANDARD') {
+            return { buttonText: 'OUT FOR DELIVERY', modalContent: 'Out for Delivery' }
         }
         if (isDeliveryCreated && !isPacked && !isOrderDone) {
             return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
+        }
+
+        if (isDeliveryCreated && isPacked && !isOutForDelivery) {
+            const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
+            const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
+            return { buttonText, modalContent }
         }
 
         switch (lastLogStatus) {
@@ -340,10 +357,19 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {data[data.length - 1]?.status === 'PACKED' && (
+            {data[data.length - 1]?.status === 'PACKED' && mainData?.delivery_type === 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={handleShip}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                />
+            )}
+            {data[data.length - 1]?.status === 'PACKED' && mainData?.delivery_type !== 'STANDARD' && (
+                <CustomModal3
+                    isModalOpen={isModalOpen}
+                    handlePack={handleOutForDelivery}
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={status}

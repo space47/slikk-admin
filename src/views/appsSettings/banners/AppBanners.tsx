@@ -6,7 +6,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useLocation, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { BANNERMODEL } from './BannerCommon'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaEdit, FaSync, FaTrash } from 'react-icons/fa'
 import { Modal, notification } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
 import EasyTable from '@/common/EasyTable'
@@ -48,6 +48,9 @@ const AppBanners = () => {
     const [bannerIdStore, setBannerIdStore] = useState<any[]>([])
     const [showBannerEditButton, setShowBannerIdButton] = useState(false)
     const [showBulkEditModal, setShowBulkEditModal] = useState(false)
+    const [updatedPosition, setUpdatedPosition] = useState<{
+        [key: number]: number
+    }>({})
 
     console.log('var1', var1, 'var2', var2)
 
@@ -115,20 +118,21 @@ const AppBanners = () => {
         setIsSectionheading(true)
     }
 
-    const handleSelectAllBanners = () => {
-        const allIds = data.map((banner) => banner.id)
-        setShowBannerIdButton(true)
-        setBannerIdStore(allIds)
-    }
-
     const columns = useMemo(
         () => [
             {
-                header: <input type="checkbox" onChange={handleSelectAllBanners} checked={bannerIdStore.length === data.length} />,
+                header: '',
                 accessorKey: 'id',
                 cell: ({ row }) => {
                     const templateName = row.original.id
-                    return <input type="checkbox" name="bannerId" onChange={() => handleSelectBannerId(templateName)} />
+                    return (
+                        <input
+                            type="checkbox"
+                            name="bannerId"
+                            onChange={() => handleSelectBannerId(templateName)}
+                            // checked={data.length === bannerIdStore.length}
+                        />
+                    )
                 },
             },
             {
@@ -144,7 +148,23 @@ const AppBanners = () => {
                 ),
             },
             { header: 'Name', accessorKey: 'name' },
-            { header: 'Position', accessorKey: 'position' },
+            {
+                header: 'Position',
+                accessorKey: 'position',
+                cell: ({ getValue, row }) => {
+                    const stockId = row.original.id
+                    const location = updatedPosition[stockId] ?? row.original.position
+                    return (
+                        // <input
+                        //     type="number"
+                        //     className="rounded-xl w-[70px]"
+                        //     value={location}
+                        //     onChange={(e) => handlePositionChange(stockId, e.target.value)}
+                        // />
+                        <span>{getValue()}</span>
+                    )
+                },
+            },
             { header: 'Section Heading', accessorKey: 'section_heading' },
             {
                 header: 'Brand Name',
@@ -192,14 +212,64 @@ const AppBanners = () => {
                     </button>
                 ),
             },
+            // {
+            //     header: 'Update Position',
+            //     accessorKey: 'id',
+            //     cell: ({ getValue, row }) => (
+            //         // <button
+            //         //     onClick={() => handleUpdatePosition(row.original.id, row.original.position)}
+            //         //     className="px-4 py-2 bg-none text-2xl rounded font-bold text-green-600"
+            //         // >
+            //         //     <FaSync />
+            //         // </button>
+
+            //         <span>{getValue()}</span>
+            //     ),
+            // },
         ],
         [],
     )
+
+    // const handleUpdatePosition = async (id: any, position: any) => {
+    //     const quantity = updatedPosition[id] >= 0 ? updatedPosition[id] : null
+
+    //     console.log('quantity', quantity)
+    //     const body = {
+    //         banner_id: id,
+    //         position: Number(quantity) ? Number(quantity) : position,
+    //     }
+    //     try {
+    //         const response = await axioisInstance.post(`/banners`, body)
+    //         notification.success({
+    //             message: response?.data?.message || 'Successfully Updated',
+    //         })
+    //     } catch (error) {
+    //         console.log(error)
+    //         notification.error({
+    //             message: 'Failed to update',
+    //         })
+    //     }
+    // }
 
     const handleSelectBannerId = (id: number) => {
         setShowBannerIdButton(true)
         setBannerIdStore((prev) => [...prev, id])
     }
+
+    const handleSelectAllBanners = () => {
+        const allIds = data.map((banner) => banner.id)
+        setShowBannerIdButton(true)
+        setBannerIdStore(allIds)
+    }
+
+    const handlePositionChange = (id: number, newLocation: number) => {
+        setUpdatedPosition((prevQuantities) => ({
+            ...prevQuantities,
+            [id]: newLocation,
+        }))
+    }
+
+    console.log('Postiton', updatedPosition)
 
     console.log('Banner_Id', bannerIdStore)
 
@@ -301,9 +371,9 @@ const AppBanners = () => {
                 </div>
 
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    {/* <div>
+                    <div>
                         <FaListCheck className="text-2xl cursor-pointer" onClick={handleSelectAllBanners} />
-                    </div> */}
+                    </div>
                     <div className="mb-2">
                         {showBannerEditButton && (
                             <div className="flex gap-2 items-center">
