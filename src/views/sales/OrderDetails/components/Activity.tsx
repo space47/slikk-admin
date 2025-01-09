@@ -45,6 +45,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
 
+    const fulfilledIDs = Object.keys(fulfilledQuantities)
+
+    const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
+    console.log('rejected Date', rejectData)
+
     const showModal = (content: string | undefined) => {
         setModalContent(content)
         setIsModalOpen(true)
@@ -81,7 +86,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                         action,
                         data,
                     }
-
+                    console.log('Accepted Data', data)
                     const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                     console.log(response)
                     setIsModalOpen(false)
@@ -104,7 +109,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 setErrorMessage('QUANTITY OF ITEMS SHOULD BE 0')
             }, 2000)
         } else {
-            setAction('PENDING')
+            setAction('PACKED')
             // setButtonAfterClick(true)
             setCancelCall(true)
         }
@@ -117,14 +122,23 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     useEffect(() => {
         if (cancelCall) {
             const sendApiRequest = async () => {
+                console.log('fullfilled quantities', fulfilledQuantities)
+
                 try {
-                    const data = Object.entries(fulfilledQuantities).reduce((acc) => acc, {} as { [key: number]: number })
+                    const data = Object.entries(fulfilledQuantities)?.reduce((acc) => acc, {} as { [key: number]: number })
+
+                    const cancelData = rejectData?.reduce((acc, id) => {
+                        acc[id] = 0
+                        return acc
+                    }, {})
+
+                    console.log('after reject', cancelData)
 
                     const body = {
                         action,
-                        data,
+                        data: cancelData,
                     }
-
+                    console.log('Data after Reject', body)
                     const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                     console.log(response)
                     setIsModalOpen(false)

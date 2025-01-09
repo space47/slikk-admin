@@ -6,6 +6,7 @@ import { notification } from 'antd'
 import UserGroupTable from './componentsManagement/UserGroupTable'
 import { Button, Spinner } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const GetAccessManagement = () => {
     const [getGroups, setGetGroups] = useState<GROUPTYPES[]>([])
@@ -18,6 +19,7 @@ const GetAccessManagement = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [showTableSpinner, setShowTableSpinner] = useState(false)
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
     const fetchGroupsData = async () => {
@@ -25,7 +27,10 @@ const GetAccessManagement = () => {
             const response = await axioisInstance.get(`/groups`)
             const data = response?.data?.groups
             setGetGroups(data)
-        } catch (error) {
+        } catch (error: any) {
+            if (error?.response && error?.response?.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -36,6 +41,9 @@ const GetAccessManagement = () => {
             const perm = response.data?.permissions
             setGetPermission(perm)
         } catch (error: any) {
+            if (error?.response && error?.response?.status === 403) {
+                setAccessDenied(true)
+            }
             console.log(error)
         }
     }
@@ -118,6 +126,10 @@ const GetAccessManagement = () => {
                 message: 'Failed to add permission',
             })
         }
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
     return (
         <div className="p-6">
