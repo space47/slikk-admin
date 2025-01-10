@@ -345,28 +345,34 @@ const AnalyticsOverview = () => {
                 />
             </div>
 
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
+            {accessDenied ? (
+                <>
+                    <AccessDenied />
+                </>
+            ) : (
+                <Table>
+                    <THead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <Tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <Th key={header.id} colSpan={header.colSpan}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                    </Th>
+                                ))}
+                            </Tr>
+                        ))}
+                    </THead>
+                    <TBody>
+                        {table.getRowModel().rows.map((row) => (
+                            <Tr key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                ))}
+                            </Tr>
+                        ))}
+                    </TBody>
+                </Table>
+            )}
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
                 <Pagination
@@ -414,11 +420,6 @@ const AnalyticsOverview = () => {
                     setIsOpen={setShowImageModal}
                     image={particularRowImage && particularRowImage?.split(',')}
                 />
-            )}
-            {accessDenied && (
-                <>
-                    <AccessDenied />
-                </>
             )}
         </div>
     )

@@ -88,10 +88,12 @@ const TaskTracking = () => {
     const handleAssignClick = (task_id: any) => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
+        navigate(0)
     }
     const handleReAssignClick = (task_id: any) => {
         setShowAssignModal(true)
         setStoreTaskId(task_id)
+        navigate(0)
     }
 
     const handleCloseModal = () => {
