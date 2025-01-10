@@ -171,7 +171,7 @@ const BrandReturns = () => {
             const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = `${selectedCompany.name}(${from}-${to}).csv`
+            link.download = `${selectedCompany.name}_returns_(${from}-${to}).csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
