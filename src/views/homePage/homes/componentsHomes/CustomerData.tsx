@@ -32,13 +32,27 @@ const CustomerData = ({ data }: CustomerProps) => {
                         </h4>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-y-7 gap-x-4 mt-8">
-                        <CustomerInfoField title="Email" value={data?.profile?.email} />
-                        <CustomerInfoField title="Phone" value={data?.profile?.mobile} />
+                        <div className="grid grid-cols-2">
+                            <div className="flex flex-col gap-3">
+                                <CustomerInfoField title="Email" value={data?.profile?.email} />
+                                <CustomerInfoField title="Phone" value={data?.profile?.mobile} />
 
-                        <CustomerInfoField
-                            title="Date of birth"
-                            value={data?.profile?.dob ? moment(data?.profile?.dob).format('YYYY-MM-DD') : 'N/A'}
-                        />
+                                <CustomerInfoField
+                                    title="Date of birth"
+                                    value={data?.profile?.dob ? moment(data?.profile?.dob).format('YYYY-MM-DD') : 'N/A'}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-4">
+                                <CustomerInfoField
+                                    title="Registered on"
+                                    value={moment(data?.profile?.date_joined).format('YYYY-MM-DD HH:mm:ss a')}
+                                />
+                                <CustomerInfoField
+                                    title="Last Login"
+                                    value={moment(data?.profile?.last_otp_tried_time).format('YYYY-MM-DD HH:mm:ss a')}
+                                />
+                            </div>
+                        </div>
                         <CustomerInfoField title="Gender" value={data?.profile?.gender ? data?.profile?.gender : 'N/A'} />
                         <div className="mb-7">
                             <div className="flex mt-4 gap-8">
