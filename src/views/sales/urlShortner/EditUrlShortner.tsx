@@ -175,7 +175,7 @@ const EditUrlShortner = () => {
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)
             .join('&')
 
-        const { page_title } = values
+        const { page_title, rest } = values
 
         let pageTitle = ''
 
@@ -191,14 +191,16 @@ const EditUrlShortner = () => {
         console.log('Target Page', values?.target_page)
 
         const formData = {
-            web_url: !values.select_filter
-                ? values.web_url
-                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}${appOnly}`
-                    : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
+            ...rest,
+            short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
                     ? `${values.ios_url}/${pageTitle}?${noSelectFilters}${appOnly}`
+                    : ''
+                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
+            web_url: !values.select_filter
+                ? values.web_url
+                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}${appOnly}`
                     : ''
                 : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
             android_url: !values.select_filter
@@ -206,7 +208,6 @@ const EditUrlShortner = () => {
                     ? `${values.android_url}/${pageTitle}?${noSelectFilters}${appOnly}`
                     : ''
                 : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
-            short_code: values?.short_code,
         }
 
         try {
