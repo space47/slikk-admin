@@ -260,10 +260,13 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
             return { buttonText, modalContent }
         }
+        if (status === 'DELIVERY_CREATED' && isPacked && !isOutForDelivery && !isOrderDone && !isOrderCANCELLED) {
+            const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
+            const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
+            return { buttonText, modalContent }
+        }
 
         switch (lastLogStatus) {
-            // case 'DELIVERY_CREATED':
-            //     return { buttonText: 'PICK AND PACK', modalContent: 'Pick and Pack' }
             case 'DELIVERY_CREATED': {
                 const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
                 const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
