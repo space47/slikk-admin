@@ -54,7 +54,7 @@ const GetUrlShortner = () => {
             {
                 header: 'Edit',
                 accessorKey: 'short_code',
-                cell: ({ getValue }) => (
+                cell: ({ getValue }: any) => (
                     <span className="">
                         <FaEdit className="text-xl text-blue-500 cursor-pointer" onClick={() => handleEditUrlShortner(getValue())} />
                     </span>
