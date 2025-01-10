@@ -376,7 +376,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {data[data.length - 1]?.status === 'DELIVERY_CREATED' && mainData?.delivery_type === 'STANDARD' && (
+            {status === 'DELIVERY_CREATED' && mainData?.delivery_type === 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={handleShip}
@@ -385,7 +385,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     status={status}
                 />
             )}
-            {data[data.length - 1]?.status === 'DELIVERY_CREATED' && mainData?.delivery_type !== 'STANDARD' && (
+            {status === 'DELIVERY_CREATED' && mainData?.delivery_type !== 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={handleShip}
