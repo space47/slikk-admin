@@ -70,6 +70,14 @@ const EditUrlShortner = () => {
             }
             return ''
         })(),
+        target_page: (() => {
+            const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
+            if (url) {
+                const match = url.match(/https:\/\/slikk\.club\/([^/?]+)/)
+                return match ? match[1] : ''
+            }
+            return ''
+        })(),
         select_filter: urlFieldDatas?.web_url?.includes('filters') || urlFieldDatas?.android_url?.includes('filters'),
         app: urlFieldDatas?.web_url?.includes('app') || urlFieldDatas?.android_url?.includes('app'),
     }
@@ -281,9 +289,10 @@ const EditUrlShortner = () => {
                                         {({ field, form }: FieldProps<any>) => {
                                             return (
                                                 <Select
+                                                    isClearable
                                                     placeholder="Select Target Page"
                                                     options={targetPageArray}
-                                                    // defaultValue={selectedOption}
+                                                    defaultValue={field.value}
                                                     value={targetPageArray.find((option) => option.value === field.value)}
                                                     onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                                 />

@@ -269,7 +269,7 @@ const BrandOrder = () => {
             const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = `${selectedCompany.name}(${from} to ${to}).csv`
+            link.download = `${selectedCompany.name}_Orders_(${from} to ${to}).csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)

@@ -1,105 +1,147 @@
-import React, { useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import React, { useEffect, useState } from 'react'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
+import polyline from '@mapbox/polyline'
+import axios from 'axios'
+import { TaskData } from '@/store/types/tasks.type'
 
-// Fix for default icon issues with Leaflet
-import icon from 'leaflet/dist/images/marker-icon.png'
-import iconShadow from 'leaflet/dist/images/marker-shadow.png'
+const customIcon = (iconUrl: string) =>
+    new L.Icon({
+        iconUrl,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/images/marker-shadow.png',
+    })
 
-let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-})
-
-L.Marker.prototype.options.icon = DefaultIcon
-
-const officeIcon = L.icon({
-    iconUrl: '/img/logo/location-pin.png',
-    iconSize: [35, 40],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-})
-
-interface RiderLocationMapProps {
-    latitudes: string // Comma-separated string of latitudes
-    longitudes: string // Comma-separated string of longitudes
-    amount: string // Comma-separated string of amounts
+const icons = {
+    pickup: customIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png'),
+    drop: customIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png'),
+    runner: customIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png'),
 }
 
-const CurrentLocationButton = ({ setCenter }: { setCenter: (center: [number, number]) => void }) => {
-    const map = useMap()
+interface props {
+    taskData: TaskData | undefined
+}
 
-    const handleClick = () => {
-        const currentLocation: [number, number] = [12.9014, 77.65122] // Adjust to your current location
-        map.setView(currentLocation, 13)
-        setCenter(currentLocation)
+const RiderLocationMap = ({ taskData }: props) => {
+    const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
+    const [waypoints, setWaypoints] = useState<[number, number][]>([])
+
+    const [polyLine, setPolyLine] = useState('')
+    const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
+    const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
+
+    const decodedPolyline = polyline.decode(polyLine)
+
+    const fetchRouteDetails = async () => {
+        const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
+
+        try {
+            const response = await axios.post(`https://api.olamaps.io/routing/v1/directions/basic`, null, {
+                params: {
+                    origin: sourceLatLong.join(','),
+                    destination: destinationLatLong.join(','),
+                    alternatives: false,
+                    steps: true,
+                    overview: 'full',
+                    language: 'en',
+                    api_key: MAP_KEY,
+                },
+            })
+
+            const data = response.data
+            setPolyLine(data.routes[0]?.overview_polyline)
+        } catch (error) {
+            console.error('Error fetching route details:', error)
+            return null
+        }
     }
 
+    useEffect(() => {
+        fetchRouteDetails()
+    }, [sourceLatLong, destinationLatLong])
+
+    useEffect(() => {
+        if (taskData?.pickup_details && taskData?.drop_details) {
+            const origin: [number, number] = [taskData.pickup_details.latitude, taskData.pickup_details.longitude]
+            const destination: [number, number] = [taskData.drop_details.latitude, taskData.drop_details.longitude]
+            setMapCenter(destination)
+            setWaypoints([origin, destination])
+
+            setSourceLatLong(origin)
+            setDestinationLatLong(destination)
+        }
+    }, [taskData])
+
+    if (!mapCenter) {
+        return <p>Loading map...</p>
+    }
+
+    const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.SetStateAction<[number, number]>> }) => {
+        const map = useMap()
+
+        const handleClick = () => {
+            map.setView([12.9014, 77.65122], 13)
+        }
+
+        return (
+            <button
+                onClick={handleClick}
+                style={{
+                    position: 'absolute',
+                    bottom: '3px',
+                    right: '10px',
+                    backgroundColor: 'white',
+                    border: 'none',
+                    borderRadius: '20%',
+                    padding: '10px',
+                    boxShadow: '0 0 5px rgba(0,0,0,0.3)',
+                    cursor: 'pointer',
+                    zIndex: 1000,
+                }}
+            >
+                <FaMapMarkerAlt size={24} color="black" />
+            </button>
+        )
+    }
+
+    console.log('Map set in trip Map', decodedPolyline)
+
     return (
-        <button
-            onClick={handleClick}
-            style={{
-                position: 'absolute',
-                bottom: '3px',
-                right: '10px',
-                backgroundColor: 'white',
-                border: 'none',
-                borderRadius: '50%',
-                padding: '10px',
-                boxShadow: '0 0 5px rgba(0,0,0,0.3)',
-                cursor: 'pointer',
-                zIndex: 1000,
-            }}
-        >
-            <FaMapMarkerAlt size={24} color="black" />
-        </button>
-    )
-}
+        <div className="relative flex flex-col gap-10">
+            <div className="relative xl:w-[400px] rounded-xl" style={{ height: '500px' }}>
+                <MapContainer center={mapCenter} zoom={16} style={{ width: 'auto', height: '100%' }}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-const RiderLocationMap: React.FC<RiderLocationMapProps> = ({ latitudes, longitudes, amount }) => {
-    const currLat = 12.9014
-    const currLong = 77.65122
+                    {/* Pickup Marker */}
+                    {taskData?.pickup_details && (
+                        <Marker position={[taskData.pickup_details.latitude, taskData.pickup_details.longitude]} icon={icons.pickup}>
+                            <Popup>{taskData.pickup_details.name}</Popup>
+                        </Marker>
+                    )}
 
-    // Split comma-separated strings into arrays and parse them as numbers
-    const latitudeArray = latitudes.split(',').map((lat) => parseFloat(lat.trim()))
-    const longitudeArray = longitudes.split(',').map((lon) => parseFloat(lon.trim()))
-    const amountArray = amount.split(',').map((amt) => amt.trim())
+                    {/* Drop Marker */}
+                    {taskData?.drop_details && (
+                        <Marker position={[taskData.drop_details.latitude, taskData.drop_details.longitude]} icon={icons.drop}>
+                            <Popup>{taskData.drop_details.name}</Popup>
+                        </Marker>
+                    )}
 
-    // Combine latitudes, longitudes, and amounts into marker objects
-    const markers = latitudeArray.map((lat, index) => ({
-        lat,
-        lon: longitudeArray[index],
-        amount: amountArray[index],
-    }))
+                    {/* Runner Marker */}
+                    {taskData?.runner_latitude && taskData?.runner_longitude && (
+                        <Marker position={[taskData.runner_latitude, taskData.runner_longitude]} icon={icons.runner}>
+                            <Popup>{taskData.runner_detail?.name}</Popup>
+                        </Marker>
+                    )}
 
-    const [center, setCenter] = useState<[number, number]>([currLat, currLong])
-
-    return (
-        <MapContainer center={center} zoom={13} style={{ height: '100vh', width: '100%' }}>
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-            {markers.map((marker, index) => (
-                <Marker key={index} position={[marker.lat, marker.lon]}>
-                    <Popup>
-                        <div>
-                            <p>Amount: Rs.{marker.amount}</p>
-                        </div>
-                    </Popup>
-                </Marker>
-            ))}
-
-            <Marker position={[currLat, currLong]} icon={officeIcon}>
-                <Popup>
-                    <div>
-                        <p>SlikkSync Technologies</p>
-                    </div>
-                </Popup>
-            </Marker>
-
-            <CurrentLocationButton setCenter={setCenter} />
-        </MapContainer>
+                    <Polyline positions={decodedPolyline} color="blue" />
+                    <CurrentLocationButton setCenter={() => {}} />
+                </MapContainer>
+            </div>
+        </div>
     )
 }
 
