@@ -22,7 +22,7 @@ const TaskDetails = () => {
         return () => clearInterval(intervalId)
     }, [dispatch, task_id])
 
-    console.log('LOG', taskData?.slikklogistic_item)
+    console.log('LOG', taskData)
 
     const CARDDATA = [
         { name: 'Task_ID', value: taskData?.task_id, hyper: false },
