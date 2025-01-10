@@ -122,6 +122,7 @@ const AddUrlShortner = () => {
             })
             setShortUrlData(response.data.short_url)
             setShowGeneratedUrl(true)
+            navigate(-1)
         } catch (error: any) {
             notification.error({
                 message: 'Failure',
