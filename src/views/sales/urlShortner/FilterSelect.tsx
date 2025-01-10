@@ -25,13 +25,47 @@ const DISCOUNTOPTIONS = [
     { value: 'sort_discount', label: 'DISCOUNT' },
 ]
 
-const targetPageArray = [
+export const targetPageArray = [
     { label: 'product', value: 'product' },
     { label: 'login', value: 'login' },
-    { label: 'productListing', value: 'products' },
+    { label: 'productListing', value: 'productListing' },
     { label: 'wishlist', value: 'wishlist' },
     { label: 'order', value: 'order' },
     { label: 'cart', value: 'cart' },
+    { label: 'home', value: 'home' },
+    { label: 'signIn', value: 'signIn' },
+    { label: 'otpVerification', value: 'otpVerification' },
+    { label: 'homeTabs', value: 'homeTabs' },
+    { label: 'profilePage', value: 'profilePage' },
+    { label: 'profileEditPage', value: 'profileEditPage' },
+    { label: 'addAddressPage', value: 'addAddressPage' },
+    { label: 'addressesPage', value: 'addressesPage' },
+    { label: 'addressMapPage', value: 'addressMapPage' },
+    { label: 'collectionScreen', value: 'collectionScreen' },
+    { label: 'productDescription', value: 'productDescription' },
+    { label: 'collectionPage', value: 'collectionPage' },
+    { label: 'slikkLoyalty', value: 'slikkLoyalty' },
+    { label: 'orderDetailsMain', value: 'orderDetailsMain' },
+    { label: 'applyOffer', value: 'applyOffer' },
+    { label: 'myOffers', value: 'myOffers' },
+    { label: 'creatorAddProducts', value: 'creatorAddProducts' },
+    { label: 'newLookPost', value: 'newLookPost' },
+    { label: 'newLookPage', value: 'newLookPage' },
+    { label: 'orderFailed', value: 'orderFailed' },
+    { label: 'orderPending', value: 'orderPending' },
+    { label: 'creatorHome', value: 'creatorHome' },
+    { label: 'feedbackReview', value: 'feedbackReview' },
+    { label: 'reels', value: 'reels' },
+    { label: 'reelVideo', value: 'reelVideo' },
+    { label: 'trends', value: 'trends' },
+    { label: 'creatorProfileMain', value: 'creatorProfileMain' },
+    { label: 'referFriends', value: 'referFriends' },
+    { label: 'termsOfUse', value: 'termsOfUse' },
+    { label: 'globalSearch', value: 'globalSearch' },
+    { label: 'aboutUs', value: 'aboutUs' },
+    { label: 'contactUs', value: 'contactUs' },
+    { label: 'searchPage', value: 'searchPage' },
+    { label: 'brandList', value: 'brandList' },
 ]
 
 const FilterSelect = ({
@@ -137,22 +171,6 @@ const FilterSelect = ({
                     }}
                 </Field>
             </div>
-            <FormItem label="Target Page">
-                <Field name="target_page">
-                    {({ field, form }: FieldProps<any>) => {
-                        const selectedOption = targetPageArray.find((options) => options?.value === targetPagevalue)
-                        return (
-                            <Select
-                                placeholder="Select Target Page"
-                                options={targetPageArray}
-                                // defaultValue={selectedOption}
-                                value={targetPageArray.find((option) => option.value === field.value)}
-                                onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                            />
-                        )
-                    }}
-                </Field>
-            </FormItem>
         </div>
     )
 }

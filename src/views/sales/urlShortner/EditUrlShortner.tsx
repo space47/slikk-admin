@@ -3,7 +3,7 @@ import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 // import Select from '@/components/ui/Select'
-import { Field, Form, Formik } from 'formik' // Add FieldProps here
+import { Field, FieldProps, Form, Formik } from 'formik' // Add FieldProps here
 // import * as Yup from 'yup'
 
 import { notification } from 'antd'
@@ -11,9 +11,10 @@ import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { URLARRAY, URLTYPES, initialValueForUrl } from './urlShortner.common'
 import { AiOutlineCopy } from 'react-icons/ai'
-import FilterSelect from './FilterSelect'
+import FilterSelect, { targetPageArray } from './FilterSelect'
 import { useEffect, useState } from 'react'
 import { MAXMINARRAY, OFFARRAY, UtmArray } from '../groupNotification/sendNotification/sendNotify.common'
+import { Select } from '@/components/ui'
 
 const EditUrlShortner = () => {
     const [urlFieldDatas, setUrlFieldDatas] = useState<any>()
@@ -61,7 +62,6 @@ const EditUrlShortner = () => {
         web_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
         android_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
         ios_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
-        app: urlFieldDatas?.app,
         page_title: (() => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
@@ -70,9 +70,8 @@ const EditUrlShortner = () => {
             }
             return ''
         })(),
-        select_filter:
-            urlFieldDatas?.web_url?.split('https://slikk.club/')[1]?.length > 0 ||
-            urlFieldDatas?.android_url?.split('https://slikk.club/')[1]?.length > 0,
+        select_filter: urlFieldDatas?.web_url?.includes('filters') || urlFieldDatas?.android_url?.includes('filters'),
+        app: urlFieldDatas?.web_url?.includes('app') || urlFieldDatas?.android_url?.includes('app'),
     }
 
     const [filterShow, setFilterShow] = useState(initialValues?.select_filter)
@@ -80,25 +79,40 @@ const EditUrlShortner = () => {
     const extractFilters = (url: string) => {
         const filterParams: Record<string, any> = {}
 
-        const filterRegex = /([a-zA-Z0-9-_]+)_([a-zA-Z0-9-_]+)/g
-        let match
-        while ((match = filterRegex.exec(url)) !== null) {
-            const [_, key, value] = match
+        if (!url.includes('filters')) {
+            const filterRegex = /([a-zA-Z0-9-_]+)=([a-zA-Z0-9-_]+)/g
+            let match
+            while ((match = filterRegex.exec(url)) !== null) {
+                const [_, key, value] = match
+                console.log('key value is', value)
+                if (key === 'utm-medium') filterParams['utm_medium'] = value
+                if (key === 'utm-source') filterParams['utm_source'] = value
+                if (key === 'utm-campaign') filterParams['utm_campaign'] = value
+                if (key === 'utm-tags') filterParams['utm_tags'] = value
+            }
+        } else {
+            const filterRegex = /([a-zA-Z0-9-_]+)_([a-zA-Z0-9-_]+)/g
+            let match
+            while ((match = filterRegex.exec(url)) !== null) {
+                const [_, key, value] = match
 
-            if (key === 'minprice') filterParams['minprice'] = value
-            if (key === 'maxprice') filterParams['maxprice'] = value
-            if (key === 'utm-medium') filterParams['utm_medium'] = value
-            if (key === 'utm-source') filterParams['utm_source'] = value
-            if (key === 'utm-campaign') filterParams['utm_campaign'] = value
-            if (key === 'utm-tags') filterParams['utm_tags'] = value
-            if (key === 'maxoff') filterParams['maxoff'] = value
-            if (key === 'minoff') filterParams['minoff'] = value
-            if (key === 'sort') filterParams['discountTags'] = value
-            if (key === 'filterId') filterParams['filter_id'] = value
-            if (key === 'ub/') filterParams['target_page'] = value
+                if (key === 'minprice') filterParams['minprice'] = value
+                if (key === 'maxprice') filterParams['maxprice'] = value
+                if (key === 'utm-medium') filterParams['utm_medium'] = value
+                if (key === 'utm-source') filterParams['utm_source'] = value
+                if (key === 'utm-campaign') filterParams['utm_campaign'] = value
+                if (key === 'utm-tags') filterParams['utm_tags'] = value
+                if (key === 'maxoff') filterParams['maxoff'] = value
+                if (key === 'minoff') filterParams['minoff'] = value
+                if (key === 'sort') filterParams['discountTags'] = value
+                if (key === 'filterId') filterParams['filter_id'] = value
+                if (key === 'ub/') filterParams['target_page'] = value
+                if (key === 'app') filterParams['app'] = value
+            }
         }
         return filterParams
     }
+
     const extractTargetPage = (url: string) => {
         const pageRegex = /slikk.club\/([^/?]+)/
         const pageMatch = pageRegex.exec(url)
@@ -180,7 +194,12 @@ const EditUrlShortner = () => {
         let pageTitle = ''
 
         if (page_title) {
-            pageTitle = `${page_title}`
+            pageTitle = `/${values?.page_title}`
+        }
+
+        let target_page = ''
+        if (values?.target_page) {
+            target_page = `/${values?.target_page}`
         }
 
         let appOnly = ''
@@ -195,19 +214,19 @@ const EditUrlShortner = () => {
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}${appOnly}`
-                    : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.ios_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}${appOnly}`
-                    : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.web_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `https://slikk.club/${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}/${pageTitle}?${noSelectFilters}${appOnly}`
-                    : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.android_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
         }
 
         try {
@@ -252,11 +271,32 @@ const EditUrlShortner = () => {
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(0, 2).map((item, key) => (
+                                {URLARRAY.slice(0, 1).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+                                <FormItem label="Target Page">
+                                    <Field name="target_page">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    placeholder="Select Target Page"
+                                                    options={targetPageArray}
+                                                    // defaultValue={selectedOption}
+                                                    value={targetPageArray.find((option) => option.value === field.value)}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
+
+                                {values?.target_page && (
+                                    <FormItem label="Page Title">
+                                        <Field type="text" name="page_title" placeholder="Enter Page Title" component={Input} />
+                                    </FormItem>
+                                )}
                                 <FormItem label="App Only">
                                     <Field type="checkbox" name="app" component={Input} />
                                 </FormItem>
@@ -295,7 +335,7 @@ const EditUrlShortner = () => {
                             )}
 
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(2).map((item, key) => (
+                                {URLARRAY.slice(1).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} className="w-full" />
                                     </FormItem>

@@ -22,13 +22,13 @@ export const URLARRAY = [
         type: 'text',
         classname: 'w-full',
     },
-    {
-        label: 'Page Title',
-        name: 'page_title',
-        placeholder: 'Enter app page display name',
-        type: 'text',
-        classname: 'w-full',
-    },
+    // {
+    //     label: 'Page Title',
+    //     name: 'page_title',
+    //     placeholder: 'Enter app page display name',
+    //     type: 'text',
+    //     classname: 'w-full',
+    // },
     {
         label: 'Web URL',
         name: 'web_url',
