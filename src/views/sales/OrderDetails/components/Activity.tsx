@@ -273,7 +273,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 return { buttonText: 'CREATE DELIVERY' }
             case 'ACCEPTED':
                 return { buttonText: 'PICK/REJECT', modalContent: 'Pick and Pack' }
-            case 'OUT_FOR_PICKUP':
+            case 'OUT_FOR_PICKUP': {
+                const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
+                const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
+                return { buttonText, modalContent }
+            }
             case 'OUT_FOR_DELIVERY':
             case 'SHIPPED':
                 return { buttonText: 'MARK AS DELIVERED' }
