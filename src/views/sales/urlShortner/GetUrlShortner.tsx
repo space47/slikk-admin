@@ -10,6 +10,7 @@ import { FaEdit } from 'react-icons/fa'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import QRcodeModal from './QRcodeModal'
 import EasyTable from '@/common/EasyTable'
+import { notification } from 'antd'
 
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
@@ -66,7 +67,17 @@ const GetUrlShortner = () => {
                     return <div className="w-[100px]">{getValue()}</div>
                 },
             },
-            { header: 'Short Url', accessorKey: 'short_url' },
+            {
+                header: 'Short Url',
+                accessorKey: 'short_url',
+                cell: ({ getValue }) => {
+                    return (
+                        <div className="cursor-pointer hover:text-blue-600" onClick={() => handleCopy(getValue())}>
+                            {getValue()}
+                        </div>
+                    )
+                },
+            },
             { header: 'WEB URL', accessorKey: 'web_url' },
             { header: 'ANDROID URL', accessorKey: 'android_url' },
             { header: 'IOS URL', accessorKey: 'ios_url' },
@@ -98,6 +109,13 @@ const GetUrlShortner = () => {
         ],
         [],
     )
+
+    const handleCopy = (file: any) => {
+        navigator.clipboard.writeText(file)
+        notification.success({
+            message: 'Copied',
+        })
+    }
 
     const hanldeGenerateQR = (qr: string) => {
         setStoreUrl(qr)
