@@ -5,6 +5,8 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiderData } from '../RiderDetailsCommon'
 import { GiFullMotorcycleHelmet } from 'react-icons/gi'
 import { Card } from '@/components/ui'
+import { TASKDETAILS } from '@/store/types/tasks.type'
+import { useAppSelector } from '@/store'
 
 interface RiderModalProps {
     dialogIsOpen: boolean
@@ -14,6 +16,10 @@ interface RiderModalProps {
 
 const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) => {
     const [riderData, setRiderData] = useState<RiderData>()
+    const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
+
+    console.log('rider name is:', riderData?.profile?.first_name)
+    console.log('rider details is:', taskData?.runner_detail?.name)
 
     const fetchRiderParticularDetails = async () => {
         try {
