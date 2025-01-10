@@ -88,7 +88,7 @@ const AppBanners = () => {
             let allSectionHeadings: any = []
 
             while (hasMore) {
-                const response = await axiosInstance.get(`/banners?p=${page}`)
+                const response = await axiosInstance.get(`/banners?p=${page}&page=${currentSelectedPage.value}`)
                 const data = response.data.data
                 const newSectionHeadings = data.results.map((item) => item.section_heading)
                 allSectionHeadings = _.uniq(allSectionHeadings.concat(newSectionHeadings))
@@ -107,7 +107,7 @@ const AppBanners = () => {
 
     useEffect(() => {
         fetchForSectionHeading()
-    }, [])
+    }, [currentSelectedPage])
 
     useEffect(() => {
         fetchData(page, pageSize, globalFilter)
