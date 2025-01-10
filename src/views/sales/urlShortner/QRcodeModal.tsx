@@ -26,8 +26,10 @@ const QRcodeModal = ({ dialogIsOpen, setIsOpen, value }: props) => {
     return (
         <div>
             <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose}>
-                <h5 className="mb-4">Dialog Title</h5>
-                <QRCode value={value ?? ''} />
+                <h5 className="mb-4">QR CODE</h5>
+                <div className="flex justify-center">
+                    <QRCode value={value ?? ''} />
+                </div>
                 <div className="text-right mt-6">
                     <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
                         Cancel

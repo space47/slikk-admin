@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
-import { Field, Form, Formik } from 'formik'
+import { Field, FieldProps, Form, Formik } from 'formik'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { AiOutlineCopy } from 'react-icons/ai'
@@ -13,8 +13,8 @@ import Button from '@/components/ui/Button'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { URLARRAY, initialValueForUrl } from './urlShortner.common'
 import { MAXMINARRAY, OFFARRAY, UtmArray } from '../groupNotification/sendNotification/sendNotify.common'
-
-import FilterSelect from './FilterSelect'
+import FilterSelect, { targetPageArray } from './FilterSelect'
+import { Select } from '@/components/ui'
 
 const AddUrlShortner = () => {
     const navigate = useNavigate()
@@ -81,7 +81,7 @@ const AddUrlShortner = () => {
         const { page_title, ...rest } = values
         let pageTitle = ''
         if (values.page_title) {
-            pageTitle = `${values?.page_title}`
+            pageTitle = `/${values?.page_title}`
         }
 
         let appOnly = ''
@@ -89,24 +89,29 @@ const AddUrlShortner = () => {
             appOnly = `&app=${values?.app}`
         }
 
+        let target_page = ''
+        if (values?.target_page) {
+            target_page = `/${values?.target_page}`
+        }
+
         const formData = {
             ...rest,
             short_code: values?.short_code,
             ios_url: !values.select_filter
                 ? values.ios_url
-                    ? `${values.ios_url}/${pageTitle}?${noSelectFilters}${appOnly}`
-                    : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.ios_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
-                    ? `${values.web_url}/${pageTitle}?${noSelectFilters}${appOnly}`
-                    : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.web_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
-                    ? `${values.android_url}/${pageTitle}?${noSelectFilters}${appOnly}`
-                    : ''
-                : `https://slikk.club/${values?.target_page}/${pageTitle}?filters=${filters}${appOnly}`,
+                    ? `${values.android_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
         }
 
         try {
@@ -151,15 +156,38 @@ const AddUrlShortner = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ resetForm, setFieldValue }) => (
+                {({ resetForm, setFieldValue, values }) => (
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(0, 2).map((item, key) => (
+                                {URLARRAY.slice(0, 1).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+
+                                <FormItem label="Target Page">
+                                    <Field name="target_page">
+                                        {({ field, form }: FieldProps<any>) => {
+                                            return (
+                                                <Select
+                                                    placeholder="Select Target Page"
+                                                    options={targetPageArray}
+                                                    // defaultValue={selectedOption}
+                                                    value={targetPageArray.find((option) => option.value === field.value)}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+                                </FormItem>
+
+                                {values?.target_page && (
+                                    <FormItem label="Page Title">
+                                        <Field type="text" name="page_title" placeholder="Enter Page Title" component={Input} />
+                                    </FormItem>
+                                )}
+
                                 <FormItem label="App Only">
                                     <Field type="checkbox" name="app" component={Input} />
                                 </FormItem>
@@ -196,7 +224,7 @@ const AddUrlShortner = () => {
                             )}
 
                             <FormContainer className="grid grid-cols-2 gap-10">
-                                {URLARRAY.slice(2).map((item, key) => (
+                                {URLARRAY.slice(1).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field
                                             type={item.type}
