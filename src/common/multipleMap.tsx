@@ -213,11 +213,13 @@ const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', w
             >
                 {isFullScreen ? <BsFullscreenExit className="text-2xl font-bold" /> : <MdFullscreen className="text-2xl font-bold" />}
             </button>
-            <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100%', width: '100%' }}>
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                {currentPage === 'marker' && <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />}
-                {currentPage === 'heat_map' && <HeatMapComponent markers={markers} />}
-            </MapContainer>
+            {isFullScreen && (
+                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100%', width: '100%' }}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    {currentPage === 'marker' && <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />}
+                    {currentPage === 'heat_map' && <HeatMapComponent markers={markers} />}
+                </MapContainer>
+            )}
         </div>
     )
 }
