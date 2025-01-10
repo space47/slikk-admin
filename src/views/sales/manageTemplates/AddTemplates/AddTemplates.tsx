@@ -127,7 +127,9 @@ const AddTemplates = () => {
                               ? 'IMAGE'
                               : values.header === 'video'
                                 ? 'VIDEO'
-                                : 'TEXT',
+                                : values.header === 'location'
+                                  ? 'LOCATION'
+                                  : 'TEXT',
                     ...(values.header === 'text' &&
                         (Object.keys(sampleValues || {}).length > 0
                             ? {
