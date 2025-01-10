@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from 'react'
-import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
-import Table from '@/components/ui/Table'
 import { useAppDispatch, useAppSelector } from '@/store'
 import moment from 'moment'
 import { Button, Pagination, Select } from '@/components/ui'
@@ -10,8 +8,8 @@ import { URLSHORTNERTYPE } from '@/store/types/shortUrl.types'
 import { fetchUrlShortner, setPage, setPageSize } from '@/store/slices/urlShortner/urlShortner.slice'
 import { FaEdit } from 'react-icons/fa'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-
-const { Tr, Th, Td, THead, TBody } = Table
+import QRcodeModal from './QRcodeModal'
+import EasyTable from '@/common/EasyTable'
 
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
@@ -23,6 +21,8 @@ const pageSizeOptions = [
 const GetUrlShortner = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const [urlData, setUrlData] = useState([])
+    const [storeUrl, setStoreUrl] = useState<string>()
+    const [showQrModal, setShowQrModal] = useState(false)
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
@@ -80,27 +80,35 @@ const GetUrlShortner = () => {
                 accessorKey: 'update_date',
                 cell: ({ getValue }: any) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
             },
+            {
+                header: 'Generate QR',
+                accessorKey: 'id',
+                cell: ({ row }) => {
+                    const urlName = row.original.web_url
+                    return (
+                        <input
+                            type="radio"
+                            name="bannerId"
+                            onChange={() => hanldeGenerateQR(urlName)}
+                            // checked={data.length === bannerIdStore.length}
+                        />
+                    )
+                },
+            },
         ],
         [],
     )
+
+    const hanldeGenerateQR = (qr: string) => {
+        setStoreUrl(qr)
+        setShowQrModal(true)
+    }
 
     const handleEditUrlShortner = (value: string) => {
         navigate(`/app/appsCommuncication/urlShortner/${value}`)
     }
 
     const tableData = globalFilter ? urlData : result || []
-    const table = useReactTable({
-        data: tableData || [],
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        manualPagination: false,
-        // state: {
-        //     pagination: {
-        //         pageIndex: 0,
-        //         pageSize: data?.results?.length || 10,
-        //     },
-        // },
-    })
 
     const onPaginationChange = (page: number) => {
         dispatch(setPage(page))
@@ -124,26 +132,7 @@ const GetUrlShortner = () => {
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <Table className="min-w-full">
-                    <THead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <Tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <Th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</Th>
-                                ))}
-                            </Tr>
-                        ))}
-                    </THead>
-                    <TBody>
-                        {table.getRowModel().rows.map((row) => (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                                ))}
-                            </Tr>
-                        ))}
-                    </TBody>
-                </Table>
+                <EasyTable mainData={tableData} columns={columns} page={page} pageSize={pageSize} />
             </div>
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={count} onChange={onPaginationChange} />
@@ -157,6 +146,7 @@ const GetUrlShortner = () => {
                     />
                 </div>
             </div>
+            {showQrModal && <QRcodeModal dialogIsOpen={showQrModal} setIsOpen={setShowQrModal} value={storeUrl} />}
         </div>
     )
 }

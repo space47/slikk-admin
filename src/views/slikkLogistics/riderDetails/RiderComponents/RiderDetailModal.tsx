@@ -5,8 +5,8 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiderData } from '../RiderDetailsCommon'
 import { GiFullMotorcycleHelmet } from 'react-icons/gi'
 import { Card } from '@/components/ui'
-import { TASKDETAILS } from '@/store/types/tasks.type'
-import { useAppSelector } from '@/store'
+import { TaskData, TASKDETAILS } from '@/store/types/tasks.type'
+import { useAppDispatch, useAppSelector } from '@/store'
 
 interface RiderModalProps {
     dialogIsOpen: boolean
@@ -15,11 +15,35 @@ interface RiderModalProps {
 }
 
 const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) => {
+    const dispatch = useAppDispatch()
     const [riderData, setRiderData] = useState<RiderData>()
-    const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
+    const [taskData, setTaskData] = useState<TaskData[]>([])
+
+    const fetchTaskData = async () => {
+        try {
+            const response = await axioisInstance.get(`/logistic/rider/task`)
+            const data = response?.data?.data?.results
+            setTaskData(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchTaskData()
+        const intervalId = setInterval(() => {
+            fetchTaskData()
+        }, 60000)
+
+        return () => clearInterval(intervalId)
+    }, [dispatch])
 
     console.log('rider name is:', riderData?.profile?.first_name)
-    console.log('rider details is:', taskData?.runner_detail?.name)
+    console.log('rider Table:', taskData)
+    console.log(
+        'rider details is:',
+        taskData?.find((item) => item?.runner_detail?.name.includes(riderData?.profile?.first_name)),
+    )
 
     const fetchRiderParticularDetails = async () => {
         try {

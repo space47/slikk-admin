@@ -8,9 +8,14 @@ const initialState: TASKDETAILS = {
     message: '',
 }
 
-export const fetchTaskData = createAsyncThunk('taskData/fetchTaskData', async (task_id: unknown) => {
+export const fetchTaskData = createAsyncThunk('taskData/fetchTaskData', async (task_id?: unknown) => {
     try {
-        const response = await axioisInstance.get(`/logistic/slikk/task?task_id=${task_id}`)
+        let response
+        if (task_id) {
+            response = await axioisInstance.get(`/logistic/slikk/task?task_id=${task_id}`)
+        } else {
+            response = await axioisInstance.get(`/logistic/slikk/task`)
+        }
 
         return {
             data: response.data?.data,
