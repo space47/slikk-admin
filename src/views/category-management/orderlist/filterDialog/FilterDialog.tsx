@@ -23,6 +23,7 @@ type OrderFilterProps = {
     handleDateChange?: any
     setFrom?: any
     setTo?: any
+    forExchange?: boolean
 }
 
 const FilterDialogOrder = ({
@@ -30,7 +31,7 @@ const FilterDialogOrder = ({
     handleFilterClose,
     dropdownStatus,
     handleDropdownSelect,
-
+    forExchange,
     deliveryType,
     handleDeliverySelect,
     paymentType,
@@ -47,16 +48,6 @@ const FilterDialogOrder = ({
                 className="xl:mx-0 mx-8"
             >
                 <div className="flex flex-col  gap-6 items-start justify-start mt-4 lg:mt-0 xl:mx-0 mx-10">
-                    {/* <UltimateDatePicker
-                        from={from}
-                        setFrom={setFrom}
-                        to={to}
-                        setTo={setTo}
-                        handleFromChange={handleFromChange}
-                        handleToChange={handleToChange}
-                        handleDateChange={handleDateChange}
-                    /> */}
-
                     <div className="flex flex-col">
                         <label htmlFor="" className="font-semibold text-lg mb-2">
                             SELECT STATUS
@@ -87,33 +78,39 @@ const FilterDialogOrder = ({
 
                     <div className="mb-10">
                         {/* DELIVERY TYPE */}
-                        <div className="flex flex-col mb-6">
-                            <label htmlFor="" className="font-semibold text-lg mb-2">
-                                SELECT DELIVERY TYPE
-                            </label>
-                            <div className="relative w-auto lg:w-auto bg-gray-100 dark:bg-gray-800 dark:text-white flex justify-center lg:justify-start">
-                                <div className="w-full px-1 py-2 text-sm  text-black bg-gray-100 border dark:bg-gray-800 dark:text-white border-gray-300 rounded-md shadow-sm">
-                                    <div className="h-auto overflow-y-auto max-h-80">
-                                        {DELEIVERYOPTIONS?.map((item, key) => (
-                                            <div
-                                                key={key}
-                                                className={`flex items-center px-2 py-2 text-black hover:bg-gray-100 cursor-pointer dark:bg-gray-800 dark:text-white ${
-                                                    deliveryType?.value?.includes(item.value) ? 'bg-gray-200' : ''
-                                                }`}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={deliveryType?.value?.includes(item.value)}
-                                                    onChange={() => handleDeliverySelect(item.value)}
-                                                    className="mr-2"
-                                                />
-                                                <span>{item.label}</span>
+                        {!forExchange ? (
+                            <>
+                                <div className="flex flex-col mb-6">
+                                    <label htmlFor="" className="font-semibold text-lg mb-2">
+                                        SELECT DELIVERY TYPE
+                                    </label>
+                                    <div className="relative w-auto lg:w-auto bg-gray-100 dark:bg-gray-800 dark:text-white flex justify-center lg:justify-start">
+                                        <div className="w-full px-1 py-2 text-sm  text-black bg-gray-100 border dark:bg-gray-800 dark:text-white border-gray-300 rounded-md shadow-sm">
+                                            <div className="h-auto overflow-y-auto max-h-80">
+                                                {DELEIVERYOPTIONS?.map((item, key) => (
+                                                    <div
+                                                        key={key}
+                                                        className={`flex items-center px-2 py-2 text-black hover:bg-gray-100 cursor-pointer dark:bg-gray-800 dark:text-white ${
+                                                            deliveryType?.value?.includes(item.value) ? 'bg-gray-200' : ''
+                                                        }`}
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={deliveryType?.value?.includes(item.value)}
+                                                            onChange={() => handleDeliverySelect(item.value)}
+                                                            className="mr-2"
+                                                        />
+                                                        <span>{item.label}</span>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                            </>
+                        ) : (
+                            ''
+                        )}
 
                         {/* PAYMENT TYPE */}
                         <div className="flex flex-col">

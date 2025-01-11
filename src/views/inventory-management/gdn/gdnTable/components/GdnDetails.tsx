@@ -30,7 +30,7 @@ const GdnDetails = () => {
     // const location = useLocation()
 
     const [loading, setLoading] = useState(true)
-    const [data, setData] = useState<any>()
+    const [data, setData] = useState<any>([])
     const { document_number } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
@@ -41,7 +41,9 @@ const GdnDetails = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axioisInstance.get(`/goods/dispatch/${selectedCompany?.id}/${document_number}`)
+                const response = await axioisInstance.get(
+                    `/goods/dispatch/${selectedCompany?.id}/detail?document_number=${document_number}`,
+                )
 
                 const ordersData = response.data?.data || []
                 setLoading(false)
@@ -166,7 +168,13 @@ const GdnDetails = () => {
                                 </button>
                             </div>
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
-                            <GDNdetailTable data={data?.gdn_products} />
+                            {data?.gdn_products?.length === 0 ? (
+                                <>
+                                    <div className="flex justify-center items-center text-xl font-bold text-red-700">NO GDN PRODUCTS</div>
+                                </>
+                            ) : (
+                                <GDNdetailTable data={data?.gdn_products || []} />
+                            )}
                         </div>
                         {showSyncModal && (
                             <Modal

@@ -10,6 +10,11 @@ export const HEADERCONFIGARRAY = [
         type: 'text',
     },
     {
+        label: 'Web Header Text',
+        name: 'header_config.web_text',
+        type: 'text',
+    },
+    {
         label: 'Header mobile Font Size',
         name: 'header_config.font_size',
         type: 'number',
@@ -63,6 +68,11 @@ export const SUBHEADERCONFIGARRAY = [
         type: 'text',
     },
     {
+        label: 'Web Sub-Header Text',
+        name: 'sub_header_config.web_text',
+        type: 'text',
+    },
+    {
         label: 'Sub-Header Mobile Font Size',
         name: 'sub_header_config.font_size',
         type: 'number',
@@ -111,14 +121,14 @@ export const SUBHEADERCONFIGARRAY = [
 ]
 
 export const FOOTERCONFIGARRAY = [
-    // {
-    //     label: 'Footer Style',
-    //     name: 'footer_config.style',
-    //     type: 'text',
-    // },
     {
         label: 'Footer Text',
         name: 'footer_config.text',
+        type: 'text',
+    },
+    {
+        label: 'Web Footer Text',
+        name: 'footer_config.web_text',
         type: 'text',
     },
     {

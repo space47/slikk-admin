@@ -128,6 +128,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsOrderManagement.exchangeOrders',
+        path: `${APP_PREFIX_PATH}/exchangeOrders/`,
+        component: lazy(() => import('@/views/sales/ExchangeOrders/ExchangeOrders')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsOrderManagement.reverseDelivery',
         path: `${APP_PREFIX_PATH}/reverseDelivery/`,
         component: lazy(() => import('@/views/sales/reverseDelivery/ReverseDelivery')),
