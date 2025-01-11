@@ -49,7 +49,7 @@ const GDNSingleUpload = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, touched, errors, resetForm }) => (
                     <FormContainer className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4  rounded-lg shadow-md">
-                        {SingleUploadArray.slice(0, 9).map((item, key) => (
+                        {SingleUploadArray.slice(0, 10).map((item, key) => (
                             <FormItem key={key} label={item.label} className="col-span-1">
                                 <Field
                                     type={item.type}
@@ -102,7 +102,7 @@ const GDNSingleUpload = () => {
                             </FormContainer>
                         </div>
 
-                        {SingleUploadArray.slice(9).map((item, key) => (
+                        {SingleUploadArray.slice(10).map((item, key) => (
                             <FormItem key={key} label={item.label} className="">
                                 <Field type={item.type} name={item?.name} placeholder={`Place ${item.label}`} component={Input} />
                             </FormItem>
