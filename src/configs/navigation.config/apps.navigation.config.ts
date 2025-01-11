@@ -63,6 +63,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsOrderManagement.exchangeOrders',
+                        path: `${APP_PREFIX_PATH}/exchangeOrders`,
+                        title: 'Exchange Orders',
+                        translateKey: 'nav.appsOrderManagement.exchangeOrders',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsOrderManagement.reverseDelivery',
                         path: `${APP_PREFIX_PATH}/reverseDelivery`,
                         title: 'Reverse Delivery',
