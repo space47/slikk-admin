@@ -32,9 +32,6 @@ const GDNdetailTable = ({ data }: GDNdetailProps) => {
         {
             header: 'quantity received',
             accessorKey: 'quantity_received',
-            cell: ({ getValue }) => {
-                return <div>{getValue()}</div>
-            },
         },
         {
             header: 'term completion count',
@@ -53,9 +50,6 @@ const GDNdetailTable = ({ data }: GDNdetailProps) => {
         {
             header: 'synced to inventory',
             accessorKey: 'synced_to_inventory',
-            cell: ({ getValue }) => {
-                return <div>{getValue()}</div>
-            },
         },
         {
             header: 'create date',
@@ -71,7 +65,7 @@ const GDNdetailTable = ({ data }: GDNdetailProps) => {
                 return <div>{moment(getValue()).format('YYYY-MM-DD')}</div>
             },
         },
-    ]
+    ].filter((column) => column.header && column.accessorKey)
 
     return (
         <div>

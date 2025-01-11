@@ -9,7 +9,7 @@ const NotFoundData = () => {
                 <MdSearchOff className="text-red-600 text-6xl" aria-hidden="true" />
                 <div className="text-center">
                     <h3 className="mb-2 text-2xl font-semibold text-gray-800">Not Found!</h3>
-                    <p className="text-base text-gray-600">Enter Link Name or Place correct Link Name </p>
+                    <p className="text-base text-gray-600">No data found for the following parameters</p>
                 </div>
             </div>
         </div>

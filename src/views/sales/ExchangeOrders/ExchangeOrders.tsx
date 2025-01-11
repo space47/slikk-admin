@@ -2,35 +2,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import type { Order, OrderItem } from './commontypes'
 import { Button, Dropdown, Input } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import { FaExclamationCircle, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
-import FilterDialogOrder from './filterDialog/FilterDialog'
+import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import NotificationSound from '@/common/orderNotification'
-import PendingNotification from '@/common/pendingNotification'
-import { notification } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import EasyTable from '@/common/EasyTable'
 import RedMarkTable from '@/common/RedMarkTable'
-import { HiOutlineSearch, HiSearch } from 'react-icons/hi'
+import { HiSearch } from 'react-icons/hi'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
-
-const { Tr, Th, Td, THead, TBody, Sorter } = Table
-
-const CHANGE_DELIVERY_OPTIONS = [
-    { label: 'EXPRESS', value: 'EXPRESS' },
-    { label: 'STANDARD', value: 'STANDARD' },
-    { label: 'TRY_AND_BUY', value: 'TRY_AND_BUY' },
-]
 
 const pageSizeOptions = [
     { value: 10, label: '10 / page' },
@@ -48,10 +34,11 @@ const SEARCHOPTIONS = [
     { label: 'MOBILE', value: 'mobile' },
 ]
 
-const OrderList = () => {
+const Exchangeorders = () => {
     const location = useLocation()
     const { var1, var2 } = location.state || {}
-    const [orders, setOrders] = useState<Order[]>([])
+
+    const [orders, setOrders] = useState<any[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [deliveryType, setDeliveryType] = useState<DropdownStatus>({
         value: [],
@@ -77,14 +64,9 @@ const OrderList = () => {
 
     const [storeInvoiceId, setStoreInvoiceId] = useState()
     const [showFilter, setShowFilter] = useState(false)
-    const [soundEnabled, setSoundEnabled] = useState(false)
-    const [pendingSound, setPendingSound] = useState(false)
     const [numberClick, setNumberClick] = useState(false)
-    const [deliveryChangeType, setDeliveryChangeType] = useState<{
-        [key: string]: { value: string; label: string }
-    }>({})
 
-    const previousOrders = useRef<Order[]>([])
+    const previousOrders = useRef<any[]>([])
     const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
 
     const [showSpinner, setShowSpinner] = useState(false)
@@ -94,27 +76,23 @@ const OrderList = () => {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
 
-            let response
-            let deliveryStatus = ''
+            const deliveryStatus = `&delivery_type=EXCHANGE`
             let paymentStatus = ''
-
-            if (deliveryType?.value && deliveryType?.value?.length > 0) {
-                deliveryStatus = `&delivery_type=${deliveryType?.value}`
-            }
+            let searchingParam = ''
 
             if (paymentType?.value && paymentType?.value.length > 0) {
                 paymentStatus = `&payment_mode=${paymentType?.value}`
             }
-
             if (currentSelectedPage.value === 'invoice' && searchInput) {
-                response = await axiosInstance.get(`/merchant/orders?invoice_id=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
-                response = await axiosInstance.get(`/merchant/orders?mobile=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-            } else {
-                response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
-                )
+                searchingParam = `&invoice_id=${searchInput}`
             }
+            if (currentSelectedPage.value === 'mobile' && searchInput) {
+                searchingParam = `&mobile=${searchInput}`
+            }
+
+            const response = await axiosInstance.get(
+                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${searchingParam}${status}${deliveryStatus}${paymentStatus}`,
+            )
 
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
@@ -128,57 +106,7 @@ const OrderList = () => {
         }
     }
 
-    const checkingNewOrders = async (page: number, pageSize: number, from: string, to: string) => {
-        try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
-
-            let response
-            let deliveryStatus = ''
-            let paymentStatus = ''
-
-            if (deliveryType?.value && deliveryType?.value?.length > 0) {
-                deliveryStatus = `&delivery_type=${deliveryType?.value}`
-            }
-
-            if (paymentType?.value && paymentType?.value.length > 0) {
-                paymentStatus = `&payment_mode=${paymentType?.value}`
-            }
-
-            if (currentSelectedPage.value === 'invoice' && searchInput) {
-                response = await axiosInstance.get(`/merchant/orders?invoice_id=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
-                response = await axiosInstance.get(`/merchant/orders?mobile=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-            } else {
-                response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
-                )
-            }
-
-            const ordersData = response.data?.data.results
-            const orderCount = response.data?.data.count
-
-            if (previousOrders.current.length > 0) {
-                const latestPreviousOrderDate = new Date(Math.max(...previousOrders.current.map((order) => new Date(order.create_date))))
-
-                const newOrderExists = ordersData.some((newOrder: any) => new Date(newOrder.create_date) > latestPreviousOrderDate)
-
-                if (newOrderExists) {
-                    setSoundEnabled(true)
-                }
-            }
-
-            previousOrders.current = ordersData
-
-            setOrders(ordersData)
-            setOrderCount(orderCount)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
     useEffect(() => {
-        // Check if numberClick is false before fetching orders
         if (!numberClick) {
             fetchOrders(page, pageSize, from, to)
         }
@@ -189,48 +117,18 @@ const OrderList = () => {
             !searchInput &&
             !deliveryType.value.length &&
             !paymentType.value.length &&
-            numberClick === false // Ensure the interval only runs when numberClick is false
-
-        if (noFilters) {
-            const interval = setInterval(() => {
-                fetchOrders(page, pageSize, from, to)
-                checkingNewOrders(page, pageSize, from, to)
-            }, 30000)
-
-            return () => clearInterval(interval)
-        }
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType, numberClick, previousOrders])
-
-    useEffect(() => {
-        checkingNewOrders(page, pageSize, from, to)
-
-        const noFilters =
-            page !== 1 &&
-            !dropdownStatus.value.length &&
-            !searchInput &&
-            !deliveryType.value.length &&
-            !paymentType.value.length &&
             numberClick === false
 
         if (noFilters) {
             const interval = setInterval(() => {
-                checkingNewOrders(page, pageSize, from, to)
+                fetchOrders(page, pageSize, from, to)
             }, 30000)
 
             return () => clearInterval(interval)
         }
-    }, [previousOrders])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, paymentType, numberClick, previousOrders])
 
-    useEffect(() => {
-        if (soundEnabled) {
-            setTimeout(() => setSoundEnabled(false), 5000)
-        }
-        if (pendingSound) {
-            setTimeout(() => setPendingSound(false), 5000)
-        }
-    }, [soundEnabled, pendingSound])
-
-    const handleNumberClick = async (number) => {
+    const handleNumberClick = async (number: any) => {
         try {
             const response = await axiosInstance.get(`/merchant/orders?mobile=${number}&page_size=100`)
 
@@ -238,7 +136,7 @@ const OrderList = () => {
 
             setOrders(data.results)
             setOrderCount(data.count)
-            setNumberClick(true) // Set numberClick to true to stop interval and fetchOrders
+            setNumberClick(true)
         } catch (error) {
             console.error(error)
         }
@@ -249,15 +147,11 @@ const OrderList = () => {
             {
                 header: 'Invoice Id',
                 accessorKey: 'invoice_id',
-                cell: ({ getValue, row }) => {
+                cell: ({ getValue, row }: any) => {
                     const createDate = moment(row.original.create_date)
                     const currentDate = moment()
                     const differenceInSeconds = currentDate.diff(createDate, 'seconds')
                     setStoreInvoiceId(getValue())
-                    if (row.original.status === 'PENDING' && differenceInSeconds > 120) {
-                        setPendingSound(true)
-                        setTimeout(() => setPendingSound(false), 5000)
-                    }
 
                     return (
                         <div className="flex items-center gap-3">
@@ -310,33 +204,6 @@ const OrderList = () => {
             {
                 header: 'Delivery Type',
                 accessorKey: 'delivery_type',
-                cell: ({ row, getValue }: any) => {
-                    const Rowid = row?.original.invoice_id
-                    const deliveryForRedTable = getValue()
-                    const selectedDeliveryType = deliveryChangeType[Rowid]?.label || row.original?.delivery_type || 'SELECT'
-
-                    // setDeliveryForTable(deliveryForRedTable)
-
-                    return (
-                        <Dropdown
-                            className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                            title={selectedDeliveryType}
-                            onSelect={(value) => handleDeliveryChange(value, Rowid)}
-                        >
-                            <div className="max-h-60 overflow-y-auto">
-                                {CHANGE_DELIVERY_OPTIONS.map((item, key) => (
-                                    <DropdownItem
-                                        key={key}
-                                        eventKey={item.value}
-                                        className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                    >
-                                        <span>{item.label}</span>
-                                    </DropdownItem>
-                                ))}
-                            </div>
-                        </Dropdown>
-                    )
-                },
             },
             {
                 header: 'Customer Address',
@@ -353,7 +220,7 @@ const OrderList = () => {
             {
                 header: 'Status',
                 accessorKey: 'status',
-                cell: ({ getValue, row }) => {
+                cell: ({ row }) => {
                     const statuses = row?.original?.status
                     return (
                         <div>
@@ -391,8 +258,6 @@ const OrderList = () => {
         })
         setDeliveryTypes(initialDeliveryTypes)
     }, [orders])
-
-    console.log('Order Table', orders)
 
     const handleDownload = async () => {
         try {
@@ -436,54 +301,12 @@ const OrderList = () => {
         }
     }
 
-    const handleDeliveryChange = (selectedValue: any, row: any) => {
-        const selectedLabel = CHANGE_DELIVERY_OPTIONS.find((item) => item.value === selectedValue)?.label || ''
-
-        setDeliveryChangeType((prev) => ({
-            ...prev,
-            [row]: { value: selectedValue, label: selectedLabel },
-        }))
-        deliveryChangeAPI(selectedValue, row)
-    }
-
-    const deliveryChangeAPI = async (selectedValue: string, id: any) => {
-        try {
-            const body = {
-                action: 'CHANGE_DELIVERY_TYPE',
-                delivery_type: selectedValue,
-            }
-            const response = await axiosInstance.patch(`/merchant/order/${id}`, body)
-            notification.success({
-                message: response.data.message || 'DELIVERY TYPE UPDATED',
-            })
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
 
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
-    }
-
-    const handleFromChange = (date: Date | null) => {
-        if (date) {
-            setFrom(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setFrom(moment().format('YYYY-MM-DD'))
-        }
-    }
-
-    const handleToChange = (date: Date | null) => {
-        if (date) {
-            setTo(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setTo(moment().format('YYYY-MM-DD'))
-        }
     }
 
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
@@ -622,8 +445,6 @@ const OrderList = () => {
                                     setFrom={setFrom}
                                     to={to}
                                     setTo={setTo}
-                                    handleFromChange={handleFromChange}
-                                    handleToChange={handleToChange}
                                     handleDateChange={handleDateChange}
                                 />
                             </div>
@@ -683,12 +504,11 @@ const OrderList = () => {
             </div>
             {showFilter && (
                 <FilterDialogOrder
+                    forExchange
                     showFilter={showFilter}
                     handleFilterClose={handleFilterClose}
                     dropdownStatus={dropdownStatus}
                     handleDropdownSelect={handleDropdownSelect}
-                    handleFromChange={handleFromChange}
-                    handleToChange={handleToChange}
                     from={from}
                     to={to}
                     deliveryType={deliveryType}
@@ -700,11 +520,8 @@ const OrderList = () => {
                     setTo={setTo}
                 />
             )}
-
-            {soundEnabled && <NotificationSound shouldPlay={soundEnabled} />}
-            {pendingSound && <PendingNotification shouldPlay={pendingSound} />}
         </div>
     )
 }
 
-export default OrderList
+export default Exchangeorders

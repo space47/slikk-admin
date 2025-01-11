@@ -25,8 +25,8 @@ const EditGdn = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`/goods/dispatch/${selectedCompany?.id}/${document_number}`)
-            const inwardData = response.data?.data
+            const response = await axioisInstance.get(`/goods/dispatch/${selectedCompany?.id}?document_number=${document_number}`)
+            const inwardData = response.data?.data?.results[0]
             setDatas(inwardData)
             setImageView(inwardData?.images ? inwardData.images.split(',') : [])
             setDocsView(inwardData ? inwardData.document_url.split(',') : [])
