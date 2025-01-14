@@ -196,9 +196,7 @@ const EditUrlShortner = () => {
             ...OFFARRAY.filter((item) => values[item.name] !== undefined).map((item) => `${item.name}_${values[item.name]}`),
             ...(values.discountTags || []),
             ...(filterId ? [`filterId_${filterId}`] : []),
-        ]
-            .filter(Boolean)
-            .join(',')
+        ].join(',')
 
         const noSelectFilters = UtmArray.filter((item) => values[item.name] !== undefined)
             .map((item) => `${item.name.replace('_', '-')}=${values[item.name]}`)

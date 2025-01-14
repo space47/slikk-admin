@@ -265,7 +265,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
             return { buttonText, modalContent }
         }
-        if (status === 'SHIPPED') {
+        if (status === 'SHIPPED' || status === 'OUT_FOR_DELIVERY') {
             return { buttonText: 'MARK AS DELIVERED' }
         }
 
