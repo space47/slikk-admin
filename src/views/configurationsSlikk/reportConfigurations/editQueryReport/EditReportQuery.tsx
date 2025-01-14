@@ -49,7 +49,7 @@ const EditReportQuery = () => {
                 },
             },
         ],
-        required_fields: [{ key: '', value: '', dataType: 'String', prefix: '', suffix: '' }],
+        required_fields: [{ position: '', key: '', value: '', dataType: 'String', prefix: '', suffix: '' }],
     })
 
     const fetchReportApi = async () => {
@@ -77,8 +77,9 @@ const EditReportQuery = () => {
                 // value: [],
 
                 required_fields: Object.entries(data?.results[0]?.required_fields || {}).map(([key, fullValue]) => {
-                    const [dataType, value, prefix = '', suffix = ''] = fullValue
+                    const [position, dataType, value, prefix = '', suffix = ''] = fullValue
                     return {
+                        position,
                         key,
                         value: Array.isArray(value) ? value.join(', ') : value,
                         dataType: dataType || 'String',
@@ -102,13 +103,13 @@ const EditReportQuery = () => {
         console.log('start')
         const formattedRequiredFields = values.required_fields.reduce((result: any, item: any) => {
             if (item.key) {
-                let valueArray: [string, string | string[], string, string]
+                let valueArray: [number | undefined, string, string | string[], string, string]
                 if (item.dataType === 'MultiSelect') {
                     const multiSelectValues = item.value.split(',').map((val: string) => val.trim())
-                    valueArray = [item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
+                    valueArray = [item?.position, item.dataType, multiSelectValues, item.prefix || '', item.suffix || '']
                 } else {
                     const value = item.value.trim()
-                    valueArray = [item.dataType, value, item.prefix || '', item.suffix || '']
+                    valueArray = [item?.position, item.dataType, value, item.prefix || '', item.suffix || '']
                 }
                 result[item.key] = valueArray
             }
@@ -261,10 +262,17 @@ const EditReportQuery = () => {
                                             {values.required_fields?.map((item, index) => (
                                                 <div key={index} className="flex space-x-4 mt-2">
                                                     <Field
+                                                        name={`required_fields[${index}].position`}
+                                                        placeholder="position"
+                                                        component={Input}
+                                                        className="w-1/4"
+                                                        type="number"
+                                                    />
+                                                    <Field
                                                         name={`required_fields[${index}].key`}
                                                         placeholder="Key"
                                                         component={Input}
-                                                        className="w-1/3"
+                                                        className="w-1/2"
                                                     />
                                                     <Field name={`required_fields[${index}].dataType`}>
                                                         {({ field, form }: any) => (
@@ -309,7 +317,9 @@ const EditReportQuery = () => {
                                             ))}
                                             <button
                                                 type="button"
-                                                onClick={() => push({ key: '', value: '', dataType: 'String', prefix: '', suffix: '' })}
+                                                onClick={() =>
+                                                    push({ position: '', key: '', value: '', dataType: 'String', prefix: '', suffix: '' })
+                                                }
                                                 className="mt-3"
                                             >
                                                 <IoIosAddCircle className="text-green-600 text-xl" />

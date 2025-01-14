@@ -57,7 +57,7 @@ const ReportAnalytics = () => {
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.get(`/query/config`)
+            const response = await axioisInstance.get(`/query/config?p=1&page_size=100`)
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setReportQueryNames(
@@ -100,16 +100,15 @@ const ReportAnalytics = () => {
     const fetchApi = async () => {
         try {
             const response = await axioisInstance.get(`/query/config?name=${storeName}`)
-            const data = response?.data?.data
+            const dataxx = response?.data?.data?.results
+            const data = dataxx?.find((item) => item?.name.toLowerCase() === storeName?.toLowerCase())
             const formattedData = {
-                name: data?.results[0]?.name || '',
-                value: data?.results[0]?.value || '',
-                required_fields: Object.entries(data?.results[0]?.required_fields || {})
+                name: data?.name || '',
+                value: data?.value || '',
+                required_fields: Object.entries(data?.required_fields || {})
                     ?.reverse()
                     ?.map(([key, fullValue]) => {
-                        const [dataType, valueArray, prefix, suffix] = fullValue || []
-                        console.log('Prefix', prefix)
-
+                        const [position, dataType, valueArray, prefix, suffix] = fullValue || []
                         let transformedValue = valueArray
 
                         if (key === 'start_date') {
@@ -119,13 +118,15 @@ const ReportAnalytics = () => {
                         }
 
                         return {
+                            position: position,
                             key,
                             value: transformedValue,
                             prefix: prefix || '',
                             suffix: suffix || '',
                             dataType: dataType || 'String',
                         }
-                    }),
+                    })
+                    ?.sort((a, b) => a.position - b.position),
             }
             setReportData(formattedData)
             setReportValue(formattedData?.value)
