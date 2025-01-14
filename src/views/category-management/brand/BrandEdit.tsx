@@ -59,37 +59,6 @@ const BrandEdit = () => {
         fetchData()
     }, [])
 
-    const handleFileupload = async (files: File[]) => {
-        const formData = new FormData()
-
-        files.forEach((file) => {
-            formData.append('file', file)
-        })
-        formData.append('file_type', 'category')
-
-        try {
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-            const newData = response.data.url
-            setImageView(newData)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Failure',
-                description: error?.response?.data?.message || 'File Not uploaded',
-            })
-            return 'Error'
-        }
-    }
-
     const handleSubmit = async (values: FormModel) => {
         const formData = {
             ...values,
@@ -188,7 +157,6 @@ const BrandEdit = () => {
                                     name="logo"
                                     beforeUpload={beforeUpload}
                                     fileList={values.logo_array}
-                                    handleFileupload={handleFileupload}
                                     setImageView={setLogoView}
                                     imagview={logoview}
                                 />
@@ -199,7 +167,6 @@ const BrandEdit = () => {
                                     name="image"
                                     beforeUpload={beforeUpload}
                                     fileList={values.images}
-                                    handleFileupload={handleFileupload}
                                     setImageView={setImageView}
                                     imagview={imagview}
                                 />
