@@ -43,7 +43,7 @@ const CartPaymentSummary = () => {
                 </Card>
             ) : (
                 <div className="flex justify-center">
-                    <h3>No payment Summary Details</h3>
+                    <h3></h3>
                 </div>
             )}
         </div>

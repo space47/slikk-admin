@@ -18,7 +18,7 @@ import { Select } from '@/components/ui'
 
 const AddUrlShortner = () => {
     const navigate = useNavigate()
-
+    const base_url = import.meta.env.VITE_WEBSITE_URL
     const [shortUrlData, setShortUrlData] = useState('')
     const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
     const [filterShow, setFilterShow] = useState(false)
@@ -100,18 +100,18 @@ const AddUrlShortner = () => {
             ios_url: !values.select_filter
                 ? values.ios_url
                     ? `${values.ios_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
                     ? `${values.web_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
                     ? `${values.android_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    : `${base_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `${base_url}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
         }
 
         try {
@@ -183,7 +183,7 @@ const AddUrlShortner = () => {
                                     </Field>
                                 </FormItem>
 
-                                {values?.target_page && (
+                                {values?.target_page === 'products' && (
                                     <FormItem label="Page Title">
                                         <Field type="text" name="page_title" placeholder="Enter Page Title" component={Input} />
                                     </FormItem>
