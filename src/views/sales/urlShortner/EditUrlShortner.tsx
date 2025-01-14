@@ -57,29 +57,35 @@ const EditUrlShortner = () => {
         fetchUrlData()
     }, [short_code])
 
+    const baseUrl = import.meta.env.VITE_WEBSITE_URL
+
     const initialValues: any = {
         short_code: urlFieldDatas?.short_code || '',
-        web_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
-        android_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
-        ios_url: urlFieldDatas?.ios_url ? `https://slikk.club` : '',
+        web_url: urlFieldDatas?.ios_url ? `${baseUrl}` : '',
+        android_url: urlFieldDatas?.ios_url ? `${baseUrl}` : '',
+        ios_url: urlFieldDatas?.ios_url ? `${baseUrl}` : '',
         page_title: (() => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
-                const match = url.match(/https:\/\/slikk\.club\/(?:[^/]+\/)?([^/?]+)/)
-                return match ? match[1] : ''
+                const match = url?.match(/\.club\/(?:[^/]+\/)?([^/?]+)/)
+                const match2 = url?.match(/\.club\/([^/?]+)/)
+                console.log('Regex url is', match)
+                console.log('Regex url is 2', match2)
+                return match && match2[1] !== match[1] ? match[1] : ''
             }
             return ''
         })(),
         target_page: (() => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
-                const match = url.match(/https:\/\/slikk\.club\/([^/?]+)/)
+                const match = url.match(/\.club\/([^/?]+)/)
+                console.log('Target Page Regex url', match)
                 return match ? match[1] : ''
             }
             return ''
         })(),
         select_filter: urlFieldDatas?.web_url?.includes('filters') || urlFieldDatas?.android_url?.includes('filters'),
-        app: urlFieldDatas?.web_url?.includes('app') || urlFieldDatas?.android_url?.includes('app'),
+        app: urlFieldDatas?.web_url?.includes('&app') || urlFieldDatas?.android_url?.includes('&app'),
     }
 
     const [filterShow, setFilterShow] = useState(initialValues?.select_filter)
@@ -122,7 +128,7 @@ const EditUrlShortner = () => {
     }
 
     const extractTargetPage = (url: string) => {
-        const pageRegex = /slikk.club\/([^/?]+)/
+        const pageRegex = /.club\/([^/?]+)/
         const pageMatch = pageRegex.exec(url)
         const filterParams: Record<string, any> = {}
         if (pageMatch) {
@@ -180,6 +186,7 @@ const EditUrlShortner = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        console.log('Values of target page', values?.target_page)
         const filters = [
             ...(values.filters || []),
             ...UtmArray.filter((item) => values[item.name] !== undefined).map(
@@ -223,18 +230,18 @@ const EditUrlShortner = () => {
             ios_url: !values.select_filter
                 ? values.ios_url
                     ? `${values.ios_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    : `${baseUrl}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `${baseUrl}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             web_url: !values.select_filter
                 ? values.web_url
                     ? `${values.web_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `https://slikk.club/${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    : `${baseUrl}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `${baseUrl}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
                     ? `${values.android_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                    : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                    : `${baseUrl}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
+                : `${baseUrl}${target_page}${pageTitle}?filters=${filters}${appOnly}`,
         }
 
         try {
@@ -301,7 +308,7 @@ const EditUrlShortner = () => {
                                     </Field>
                                 </FormItem>
 
-                                {values?.target_page && (
+                                {values?.target_page === 'products' && (
                                     <FormItem label="Page Title">
                                         <Field type="text" name="page_title" placeholder="Enter Page Title" component={Input} />
                                     </FormItem>
