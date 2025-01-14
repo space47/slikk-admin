@@ -16,6 +16,8 @@ import InnternalError from '@/views/pages/InternalServerError/InternalError'
 import ReportFields from './ReportFields'
 import moment from 'moment'
 import BadRequest from '@/views/pages/BadRequest/BadRequest'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -43,11 +45,15 @@ const ReportAnalytics = () => {
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
     const brands = useAppSelector<BRAND_STATE>((state) => state.brands)
+    const subCategoryData = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const productTypeData = useAppSelector<PRODUCTTYPE_STATE>((state) => state.product_type)
     const [selectedOption, setSelectedOption] = useState('line')
     const [accessDenied, setAccessDenied] = useState(false)
     const [badRequest, setBadRequest] = useState(false)
     const [serverError, setServerError] = useState(false)
     const [reportValue, setReportValue] = useState()
+
+    console.log('Sub Category Data', productTypeData)
     const fetchReportApi = async () => {
         try {
             setShowSpinner(true)
@@ -76,10 +82,14 @@ const ReportAnalytics = () => {
     }, [])
 
     const optionDataMap: { [key: string]: any } = {
-        brand: brands.brands,
-        category: category.categories,
-        division: divisions.divisions,
+        brand: brands?.brands,
+        category: category?.categories,
+        division: divisions?.divisions,
+        subcategory: subCategoryData?.subcategories,
+        productType: productTypeData?.product_types,
     }
+
+    console.log('Option data map is', optionDataMap)
 
     const [reportData, setReportData] = useState({
         name: '',

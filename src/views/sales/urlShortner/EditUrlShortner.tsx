@@ -65,8 +65,9 @@ const EditUrlShortner = () => {
         page_title: (() => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
-                const match = url.match(/https:\/\/slikk\.club\/(?:[^/]+\/)?([^/?]+)/)
-                return match ? match[1] : ''
+                const match = url?.match(/https:\/\/slikk\.club\/(?:[^/]+\/)?([^/?]+)/)
+                const match2 = url?.match(/https:\/\/slikk\.club\/([^/?]+)/)
+                return match && match2[1] !== match[1] ? match[1] : ''
             }
             return ''
         })(),
@@ -74,6 +75,7 @@ const EditUrlShortner = () => {
             const url = urlFieldDatas?.web_url || urlFieldDatas?.android_url || urlFieldDatas?.ios_url
             if (url) {
                 const match = url.match(/https:\/\/slikk\.club\/([^/?]+)/)
+                console.log('Target Page Regex url', match)
                 return match ? match[1] : ''
             }
             return ''
@@ -229,7 +231,7 @@ const EditUrlShortner = () => {
                 ? values.web_url
                     ? `${values.web_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
                     : `https://slikk.club${target_page}${pageTitle}?${noSelectFilters}${appOnly}`
-                : `https://slikk.club/${target_page}${pageTitle}?filters=${filters}${appOnly}`,
+                : `https://slikk.club${target_page}${pageTitle}?filters=${filters}${appOnly}`,
             android_url: !values.select_filter
                 ? values.android_url
                     ? `${values.android_url}${target_page}${pageTitle}?${noSelectFilters}${appOnly}`

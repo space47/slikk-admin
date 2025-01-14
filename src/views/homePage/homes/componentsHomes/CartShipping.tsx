@@ -2,9 +2,6 @@ import { IconText } from '@/components/shared'
 import { Card } from '@/components/ui'
 import { useAppSelector } from '@/store'
 import { OrderSummaryTYPE } from '@/store/types/orderUserSummary.types'
-import React from 'react'
-import { HiExternalLink, HiPhone } from 'react-icons/hi'
-import { Link } from 'react-router-dom'
 
 const CartShipping = () => {
     const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
@@ -40,8 +37,10 @@ const CartShipping = () => {
                     </address>
                 </Card>
             ) : (
-                <div className="flex justify-center mt-10">
-                    <h3>NO BILLING DETAILS</h3>
+                <div className="flex justify-center mt-20 items-center">
+                    <br />
+                    <br />
+                    <div className="flex justify-center flex-wrap font-bold text-xl">NO SHIPPING OR BILLING DETAILS AVAILABLE</div>
                 </div>
             )}
         </div>
