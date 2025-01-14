@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef, useLayoutEffect } from 'react'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { DropResult } from 'react-beautiful-dnd'
@@ -17,11 +17,11 @@ import { WebType } from './PageSettingsCommon'
 import PageDraggavleTable from './PageDraggavleTable'
 import PreviousConfiguration from './PreviousConfiguration'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import AddPageNameModal from './AddPageNameModal'
 
 const PageSettings = () => {
     const navigate = useNavigate()
     const [data, setData] = useState<WebType[]>([])
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(BANNER_PAGE_NAME[0])
     const [yesModal, setYesModal] = useState(false)
     const [particularRow, setParticularRow] = useState<WebType | undefined>()
     const [addModal, setAddModal] = useState(false)
@@ -32,11 +32,48 @@ const PageSettings = () => {
     const [currentConfig, setCurentConfigs] = useState<any[]>([])
     const [isPreviousConfig, setIsPreviousConfig] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
+    const [pageNames, setPageNames] = useState<any[]>([])
+    const [showAddPageModal, setShowAddPageModal] = useState(false)
+
+    const fetchPageSettings = async () => {
+        try {
+            const response = await axioisInstance.get(`/page?p=1&page_size=100`)
+            const data = response?.data?.data
+            const results = data?.results || []
+
+            setPageNames(results)
+
+            if (results.length > 0) {
+                setCurrentSelectedPage({
+                    name: results[0]?.display_name,
+                    value: results[0]?.name,
+                })
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useLayoutEffect(() => {
+        fetchPageSettings()
+    }, [])
+
+    useLayoutEffect(() => {
+        fetchPageSettings()
+    }, [])
+
+    const BANNER_PAGE = pageNames?.map((item) => ({
+        name: item?.display_name,
+        value: item?.name,
+    }))
+
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(BANNER_PAGE[0])
 
     const fetchData = async () => {
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage.value}`)
+            if (!currentSelectedPage) return
+            const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage?.value}`)
             const responsedata = response.data?.data?.value?.Web || {}
             setData(Object.values(responsedata))
             setPreviousConfigs(response.data?.data?.previous_configs || [])
@@ -50,7 +87,9 @@ const PageSettings = () => {
     }
 
     useEffect(() => {
-        fetchData()
+        if (currentSelectedPage) {
+            fetchData()
+        }
     }, [currentSelectedPage])
 
     console.log(previousConfigs, 'is data')
@@ -248,7 +287,7 @@ const PageSettings = () => {
     }
 
     const handleSelectPage = (value: string) => {
-        const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
+        const selectedPage = BANNER_PAGE.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
 
@@ -269,14 +308,21 @@ const PageSettings = () => {
                     <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
                         <Dropdown
                             className="border bg-gray-200 text-black text-lg font-semibold"
-                            title={currentSelectedPage.name}
+                            title={currentSelectedPage?.name}
                             onSelect={handleSelectPage}
                         >
-                            {BANNER_PAGE_NAME.map((item) => (
+                            {BANNER_PAGE.map((item) => (
                                 <DropdownItem key={item.value} eventKey={item.value}>
                                     {item.name}
                                 </DropdownItem>
                             ))}
+                            <div
+                                className="flex items-center justify-center mt-2 bg-gray-50 text-green-600 p-2
+                             hover:bg-gray-100 hover:text-green-500 cursor-pointer"
+                                onClick={() => setShowAddPageModal(true)}
+                            >
+                                ADD NEW
+                            </div>
                         </Dropdown>
                     </div>
                     <Button variant="new" size="md" onClick={handlePageUpdate} type="button">
@@ -362,6 +408,8 @@ const PageSettings = () => {
             <div className="border border-gray-200 p-2 rounded-lg">
                 <PageDraggavleTable table={table} handleDragEnd={handleDragEnd} />
             </div>
+
+            {showAddPageModal && <AddPageNameModal setIsOpen={setShowAddPageModal} dialogIsOpen={showAddPageModal} />}
         </div>
     )
 }
