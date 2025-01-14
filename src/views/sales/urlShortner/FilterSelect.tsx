@@ -28,7 +28,7 @@ const DISCOUNTOPTIONS = [
 export const targetPageArray = [
     { label: 'product', value: 'product' },
     { label: 'login', value: 'login' },
-    { label: 'productListing', value: 'productListing' },
+    { label: 'productListing', value: 'products' },
     { label: 'wishlist', value: 'wishlist' },
     { label: 'order', value: 'order' },
     { label: 'cart', value: 'cart' },
