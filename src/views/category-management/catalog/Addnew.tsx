@@ -176,21 +176,25 @@ const AddProduct = () => {
         const imageUpload = await handleImageCheck(values.images)
         const colorlink = await handleImageCheck(values.color_code)
         const videoUpload = await handleVideoCheck(values.video)
+        const sizeUpload = await handleImageCheck(values.size_chart_image_array)
 
         const imageShow = fileShow(imageUpload, values.image)
         const videoShow = fileShow(videoUpload, values.video_link)
+        const sizeShow = fileShow(sizeUpload, values.size_chart_image_array)
 
         const formData = {
             ...values,
             color_code_link: colorlink ? colorlink : values.color_code_link,
             image: imageShow,
+            size_chart_image: sizeShow,
             colorfamily: values.colorfamily,
             video_link: videoShow,
         }
 
+        console.log('Body to be send', formData)
+
         try {
             const response = await axioisInstance.post('product/add', formData)
-
             console.log(response)
             notification.success({
                 message: 'Success',
@@ -349,6 +353,43 @@ const AddProduct = () => {
                                         />
                                     </FormItem>
                                 </FormContainer>
+
+                                {/* Add Size Chart */}
+
+                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden">
+                                    Size Chart Upload
+                                    <FormContainer className=" mt-5 ">
+                                        <FormItem label="" className="grid grid-rows-2">
+                                            <Field name="size_chart_image_array">
+                                                {({ form }: FieldProps<Product>) => (
+                                                    <>
+                                                        <Upload
+                                                            className="flex justify-center"
+                                                            multiple
+                                                            beforeUpload={beforeUpload}
+                                                            fileList={values.size_chart_image_array}
+                                                            onChange={(files) => form.setFieldValue('size_chart_image_array', files)}
+                                                            onFileRemove={(files) => form.setFieldValue('size_chart_image_array', files)}
+                                                            // uploadButtonText="Add Files"
+                                                        />
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+
+                                        <br />
+                                        <br />
+                                    </FormContainer>
+                                    <FormItem label="" className="col-span-1 w-[80%]">
+                                        <Field
+                                            type="text"
+                                            name="size_chart_image"
+                                            placeholder="Enter Size Chart or Upload size chart  file"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                </FormContainer>
+
                                 {PRODUCT_EDIT_COMMON_DOWN.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field

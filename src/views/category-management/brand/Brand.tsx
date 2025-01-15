@@ -105,8 +105,8 @@ const Brand = () => {
                 cell: (info) => info.getValue(),
             },
             {
-                header: 'Image',
-                accessorKey: 'image',
+                header: 'Logo',
+                accessorKey: 'logo',
                 cell: (info) => <img src={info.getValue() as string} alt="product" width="50" />,
             },
             {

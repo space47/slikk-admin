@@ -21,6 +21,7 @@ const EditProduct = () => {
     const [allImage, setAllImage] = useState<string[]>([])
     const [allVideo, setAllVideo] = useState<string[]>([])
     const [allColor, setAllColor] = useState<string[]>([])
+    const [allSizeChart, setAllSizeChart] = useState<string[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
 
     const { barcode } = useParams()
@@ -35,12 +36,14 @@ const EditProduct = () => {
             const colorList = userData.color_code_link ? userData.color_code_link.split(',') : []
             const imageList = userData.image.split(',')
             const videoList = userData.video_link ? userData.video_link.split(',') : []
+            const sizeList = userData.size_chart_image ? userData.size_chart_image.split(',') : []
 
             console.log('object...........', imageList)
 
             setAllImage(imageList)
             setAllVideo(videoList)
             setAllColor(colorList)
+            setAllSizeChart(sizeList)
         } catch (error) {
             console.log(error)
         }
@@ -61,6 +64,11 @@ const EditProduct = () => {
         const updatedVideo = allVideo.filter((_, i) => i !== index)
         setAllVideo(updatedVideo)
     }
+    const handleRemoveSizeChart = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
+        e.preventDefault()
+        const updatedChart = allSizeChart.filter((_, i) => i !== index)
+        setAllSizeChart(updatedChart)
+    }
 
     const handleRemoveColor = (e: React.MouseEvent<HTMLButtonElement>, index: number) => {
         e.preventDefault()
@@ -72,6 +80,9 @@ const EditProduct = () => {
         let img_url = allImage.join(','),
             video_url = allVideo.join(','),
             color_code_url = allColor.join(',')
+
+        let size_chart_url = allSizeChart?.join(',')
+
         console.log('image upload start')
         const imageUpload = await handleimage(values.images)
 
@@ -102,6 +113,15 @@ const EditProduct = () => {
             video_url = temp.filter((t) => t).join(',')
         }
 
+        const sizeLink = await handleimage(values.size_chart_image_array)
+
+        if (values.size_chart_image_array && values.size_chart_image_array.length && !sizeLink) {
+            return
+        } else if (values.size_chart_image_array && sizeLink) {
+            const temp = [size_chart_url, sizeLink]
+            size_chart_url = temp.filter((t) => t).join(',')
+        }
+
         console.log('COLORCODEURL', color_code_url)
 
         const formData = {
@@ -110,6 +130,7 @@ const EditProduct = () => {
             color_code_link: color_code_url,
             image: img_url,
             video_link: video_url,
+            size_chart_image: size_chart_url,
         }
 
         try {
@@ -198,6 +219,16 @@ const EditProduct = () => {
                                     fileLists={values.video}
                                     textName="video_link"
                                     placeholder="Enter Video Url"
+                                />
+                                <ImageCommonProduct
+                                    label="Size Chart Image"
+                                    allName={allSizeChart}
+                                    handleRemove={handleRemoveSizeChart}
+                                    name="size_chart_image_array"
+                                    fieldname="size_chart_image_array"
+                                    fileLists={values.size_chart_image_array}
+                                    textName="size_chart_image"
+                                    placeholder="Enter Size Chart Image"
                                 />
 
                                 {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
