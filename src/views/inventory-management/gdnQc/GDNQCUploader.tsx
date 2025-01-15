@@ -31,7 +31,7 @@ const GDNQCUploader = () => {
         const config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: 'goods/qcbulkupload',
+            url: '/goods/dispatchproductbulkupload',
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
