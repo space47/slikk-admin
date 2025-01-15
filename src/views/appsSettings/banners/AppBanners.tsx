@@ -120,20 +120,48 @@ const AppBanners = () => {
         setIsSectionheading(true)
     }
 
+    const handleSelectAllBanners = (e) => {
+        if (e.target.checked) {
+            const allIds = data.map((banner) => banner.id)
+            setBannerIdStore(allIds)
+            setIsSelectAllBanner(true)
+            setShowBannerIdButton(true)
+        } else {
+            handleSelectEmptyBanners()
+        }
+    }
+
+    const handleSelectEmptyBanners = () => {
+        setIsSelectAllBanner(false)
+        setBannerIdStore([])
+        setShowBannerIdButton(false)
+    }
+
     const columns = useMemo(
         () => [
             {
-                header: '',
-                accessorKey: 'id',
-                cell: ({ row }) => {
-                    const templateName = row.original.id
-                    return (
+                header: (
+                    <div className="flex flex-col gap-2 items-center justify-center">
                         <Input
                             type="checkbox"
-                            name="bannerId"
-                            checked={bannerIdStore?.includes(row?.original?.id)}
-                            onChange={(e) => handleSelectBannerId(templateName, e.target.checked)}
+                            name="selectAll"
+                            checked={data.length > 0 && bannerIdStore.length === data.length}
+                            onChange={handleSelectAllBanners}
                         />
+                    </div>
+                ),
+                accessorKey: 'id',
+                cell: ({ row }) => {
+                    const bannerId = row.original.id
+                    return (
+                        <div className="flex items-center justify-center">
+                            <Input
+                                type="checkbox"
+                                name="bannerId"
+                                checked={bannerIdStore.includes(bannerId)}
+                                onChange={(e) => handleSelectBannerId(bannerId, e.target.checked)}
+                            />
+                        </div>
                     )
                 },
             },
@@ -218,18 +246,6 @@ const AppBanners = () => {
                 return prev.filter((item) => item !== id)
             }
         })
-    }
-
-    const handleSelectAllBanners = () => {
-        const allIds = data.map((banner) => banner.id)
-        setShowBannerIdButton(true)
-        setIsSelectAllBanner(true)
-        setBannerIdStore(allIds)
-    }
-
-    const handleSelectEmptyBanners = () => {
-        setIsSelectAllBanner(false)
-        setBannerIdStore([])
     }
 
     console.log('Banner_Id', bannerIdStore)
@@ -332,7 +348,7 @@ const AppBanners = () => {
                 </div>
 
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    {isSelectAllBanner ? (
+                    {/* {isSelectAllBanner ? (
                         <div>
                             <CgPlayListRemove className="text-5xl cursor-pointer text-red-400" onClick={handleSelectEmptyBanners} />
                         </div>
@@ -340,7 +356,7 @@ const AppBanners = () => {
                         <div>
                             <FaListCheck className="text-3xl cursor-pointer" onClick={handleSelectAllBanners} />
                         </div>
-                    )}
+                    )} */}
                     <div className="mb-2">
                         {bannerIdStore.length > 0 && (
                             <div className="flex gap-2 items-center">
