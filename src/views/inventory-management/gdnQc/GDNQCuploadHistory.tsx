@@ -32,7 +32,7 @@ const GDNPaginationTable = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axioisInstance.get(`bulkupload/history?type=gdn&p=${page}&page_size=${pageSize}`) //
+            const response = await axioisInstance.get(`bulkupload/history?type=dispatch_product&p=${page}&page_size=${pageSize}`) //
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
