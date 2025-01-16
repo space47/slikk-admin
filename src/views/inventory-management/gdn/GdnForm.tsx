@@ -34,67 +34,70 @@ const GdnForm = ({
     return (
         <Form className="w-full">
             <FormContainer>
-                <FormContainer className="flex flex-row gap-3 ">
+                <FormContainer className="grid grid-cols-2 gap-3 ">
                     {DocumentArray.map((item, key) => {
                         return (
-                            <FormItem key={key} label={item.label} className="col-span-1 w-1/4">
+                            <FormItem key={key} label={item.label} className="col-span-1 w-2/3">
                                 <Field type={item.type} name={item?.name} placeholder={`place ${item.label}`} component={Input} />
                             </FormItem>
                         )
                     })}
                 </FormContainer>
 
-                <Field name="company">
-                    {({ form }: FieldProps<any>) => {
-                        const selectedCompany = companyList.find((option) => option.id === form.values.company)
+                <div className="grid grid-cols-2 gap-3">
+                    <FormItem label="Company">
+                        <Field name="company">
+                            {({ form }: FieldProps<any>) => {
+                                const selectedCompany = companyList.find((option) => option.id === form.values.company)
 
-                        return (
-                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                <div className="font-semibold">Select Company</div>
-                                <Select
-                                    className="w-full"
-                                    options={companyList}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id}
-                                    value={selectedCompany || null}
-                                    onChange={(newVal) => {
-                                        form.setFieldValue('company', newVal?.id)
-                                        setCompanyData(newVal?.id)
-                                    }}
-                                />
-                            </div>
-                        )
-                    }}
-                </Field>
+                                return (
+                                    <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                        <Select
+                                            className="w-full"
+                                            options={companyList}
+                                            getOptionLabel={(option) => option.name}
+                                            getOptionValue={(option) => option.id}
+                                            value={selectedCompany || null}
+                                            onChange={(newVal) => {
+                                                form.setFieldValue('company', newVal?.id)
+                                                setCompanyData(newVal?.id)
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            }}
+                        </Field>
+                    </FormItem>
 
-                <FormItem label="Store ">
-                    <Field name="store">
-                        {({ form, field }: FieldProps<any>) => {
-                            console.log('field id', field.value)
-                            console.log(
-                                'field value id store',
-                                storeResults.find((option) => option.id === field?.value),
-                            )
+                    <FormItem label="Store ">
+                        <Field name="store">
+                            {({ form, field }: FieldProps<any>) => {
+                                console.log('field id', field.value)
+                                console.log(
+                                    'field value id store',
+                                    storeResults.find((option) => option.id === field?.value),
+                                )
 
-                            const selectedCompany = storeResults.find((option) => option.id === field?.value)
+                                const selectedCompany = storeResults.find((option) => option.id === field?.value)
 
-                            return (
-                                <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                    <Select
-                                        className="w-1/2"
-                                        options={storeResults}
-                                        getOptionLabel={(option) => option.name}
-                                        getOptionValue={(option) => option.id}
-                                        value={selectedCompany || null}
-                                        onChange={(newVal) => {
-                                            form.setFieldValue('store', newVal)
-                                        }}
-                                    />
-                                </div>
-                            )
-                        }}
-                    </Field>
-                </FormItem>
+                                return (
+                                    <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                        <Select
+                                            className="w-full"
+                                            options={storeResults}
+                                            getOptionLabel={(option) => option.code}
+                                            getOptionValue={(option) => option.id}
+                                            value={selectedCompany || null}
+                                            onChange={(newVal) => {
+                                                form.setFieldValue('store', newVal)
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            }}
+                        </Field>
+                    </FormItem>
+                </div>
                 <br />
                 {receiveAddress.map((item, key) => {
                     return (

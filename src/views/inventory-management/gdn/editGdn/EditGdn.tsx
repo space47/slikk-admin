@@ -55,7 +55,7 @@ const EditGdn = () => {
         document_number: datas?.document_number || '',
         company: datas?.company || '',
         dispatched_by: datas?.dispatched_by?.mobile || '',
-        document_date: datas?.create_date ? moment(datas.create_date).format('YYYY-MM-DD') : '',
+        document_date: datas?.create_date ? moment(datas.document_date).format('YYYY-MM-DD') : '',
         origin_address: datas?.origin_address || '',
         delivery_address: datas?.delivery_address || '',
         total_sku: datas?.total_sku || null,
@@ -155,7 +155,7 @@ const EditGdn = () => {
         const formData = {
             ...(values?.document_number && { document_number: values.document_number }),
             ...(companyData && { company: companyData }),
-            ...(values?.document_date && { document_date: values.document_date }),
+            ...(values?.document_date && { document_date: moment(values.document_date).format('YYYY-MM-DD') }),
             ...(values?.dispatched_by && { dispatched_by: values.dispatched_by }),
             ...(values?.origin_address && { origin_address: values.origin_address }),
             ...(values?.delivery_address && { delivery_address: values.delivery_address }),
