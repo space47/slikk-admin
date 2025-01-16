@@ -37,18 +37,18 @@ const GdnTable = () => {
     }, [page, pageSize])
 
     const columns = [
-        {
-            header: 'Edit',
-            accessorKey: '',
-            cell: ({ row }) => (
-                <button className="border-none bg-none">
-                    <a href={`/app/goods/gdn/${row.original.document_number}`} target="_blank" rel="noreferrer">
-                        {' '}
-                        <FaEdit className="text-xl text-blue-500" />
-                    </a>
-                </button>
-            ),
-        },
+        // {
+        //     header: 'Edit',
+        //     accessorKey: '',
+        //     cell: ({ row }) => (
+        //         <button className="border-none bg-none">
+        //             <a href={`/app/goods/gdn/${row.original.document_number}`} target="_blank" rel="noreferrer">
+        //                 {' '}
+        //                 <FaEdit className="text-xl text-blue-500" />
+        //             </a>
+        //         </button>
+        //     ),
+        // },
         {
             header: 'Document Number',
             accessorKey: 'document_number',
