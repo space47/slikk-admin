@@ -444,6 +444,34 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
 
+    //Transfers
+    {
+        key: 'appsInventoryManagement.transfer',
+        path: `${APP_PREFIX_PATH}/goods/transfer`,
+        component: lazy(() => import('@/views/inventory-management/transfers/transferTable/TransferTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.transfer',
+        path: `${APP_PREFIX_PATH}/goods/transfer/:document_number`,
+        component: lazy(() => import('@/views/inventory-management/transfers/transferTable/components/TransferDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.transfer',
+        path: `${APP_PREFIX_PATH}/goods/transfer/addNew`,
+        component: lazy(() => import('@/views/inventory-management/transfers/addTransfer/AddTransfers')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.transfer',
+        path: `${APP_PREFIX_PATH}/goods/transfer/edit/:document_number`,
+        component: lazy(() => import('@/views/inventory-management/transfers/editTransfer/EditTransfers')),
+        authority: [ADMIN, USER],
+    },
+
+    //
+
     {
         key: 'appsInventoryManagement.quality_check',
         path: `${APP_PREFIX_PATH}/goods/qualitycheck/`,
@@ -454,6 +482,12 @@ const appsRoute: Routes = [
         key: 'appsInventoryManagement.gdn_quality_check',
         path: `${APP_PREFIX_PATH}/goods/gdn_qualitycheck/`,
         component: lazy(() => import('@/views/inventory-management/gdnQc/GDNQCbulkupload')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsInventoryManagement.transfer_quality_check',
+        path: `${APP_PREFIX_PATH}/goods/transfer_qualitycheck/`,
+        component: lazy(() => import('@/views/inventory-management/transferQC/TransferQCbulkupload')),
         authority: [ADMIN, USER],
     },
     {
