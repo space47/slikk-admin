@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { GDN_TYPES } from '../commonGdn'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import moment from 'moment'
 import { Button, Pagination, Select } from '@/components/ui'
 import EasyTable from '@/common/EasyTable'
@@ -10,6 +10,8 @@ import { Option } from '../../quality-check/qcCommon'
 import { pageSizeOptions } from '../../inward/inwardCommon'
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { IoWarningOutline } from 'react-icons/io5'
+import { Modal, notification } from 'antd'
 
 const GdnTable = () => {
     const [gdnData, setGdnData] = useState<GDN_TYPES[]>([])
@@ -17,6 +19,8 @@ const GdnTable = () => {
     const [pageSize, setPageSize] = useState(10)
     const [totalPage, setTotalPages] = useState(0)
     const [accessDenied, setAccessDenied] = useState(false)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [storeGdnId, setStoreGdnId] = useState<number>()
     const navigate = useNavigate()
     const fetchGdnData = async () => {
         try {
@@ -37,18 +41,18 @@ const GdnTable = () => {
     }, [page, pageSize])
 
     const columns = [
-        // {
-        //     header: 'Edit',
-        //     accessorKey: '',
-        //     cell: ({ row }) => (
-        //         <button className="border-none bg-none">
-        //             <a href={`/app/goods/gdn/${row.original.document_number}`} target="_blank" rel="noreferrer">
-        //                 {' '}
-        //                 <FaEdit className="text-xl text-blue-500" />
-        //             </a>
-        //         </button>
-        //     ),
-        // },
+        {
+            header: 'Edit',
+            accessorKey: '',
+            cell: ({ row }) => (
+                <button className="border-none bg-none">
+                    <a href={`/app/goods/gdn/${encodeURIComponent(row.original.document_number)}`} target="_blank" rel="noreferrer">
+                        {' '}
+                        <FaEdit className="text-xl text-blue-500" />
+                    </a>
+                </button>
+            ),
+        },
         {
             header: 'Document Number',
             accessorKey: 'document_number',
@@ -109,6 +113,15 @@ const GdnTable = () => {
             accessorKey: 'update_date',
             cell: ({ getValue }: any) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
         },
+        {
+            header: 'Delete',
+            accessorKey: 'id',
+            cell: ({ row }) => (
+                <button onClick={() => handleDeleteClick(row.original.id)} className="border-none bg-none">
+                    <FaTrash className="text-xl text-red-500" />
+                </button>
+            ),
+        },
     ]
     const onSelectChange = (value = 0) => {
         setPageSize(Number(value))
@@ -117,6 +130,30 @@ const GdnTable = () => {
     console.log('Data of gdn', gdnData)
     const hanldeAddGDN = () => {
         navigate(`/app/goods/gdn/addNew`)
+    }
+
+    const handleDeleteClick = (id: number) => {
+        setShowDeleteModal(true)
+        setStoreGdnId(id)
+    }
+
+    const deleteGDN = async () => {
+        try {
+            const response = await axioisInstance.delete(`/goods/dispatch/${storeGdnId}`)
+            notification.success({
+                message: 'Success',
+                description: response?.data?.message || 'GDN Successfully deleted',
+            })
+            navigate(0)
+        } catch (error: any) {
+            console.log(error)
+            notification.error({
+                message: error?.response?.data?.message,
+                description: 'Unable to delete GDN',
+            })
+        } finally {
+            setShowDeleteModal(false)
+        }
     }
 
     if (accessDenied) {
@@ -145,6 +182,23 @@ const GdnTable = () => {
                     />
                 </div>
             </div>
+            {showDeleteModal && (
+                <Modal
+                    title=""
+                    open={showDeleteModal}
+                    onOk={deleteGDN}
+                    onCancel={() => setShowDeleteModal(false)}
+                    okText="DELETE"
+                    okButtonProps={{
+                        style: { backgroundColor: 'red', borderColor: 'red' },
+                    }}
+                >
+                    <div className="italic text-lg flex flex-row items-center justify-start gap-2 mt-7">
+                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU WANT TO DELETE THE GDN:{' '}
+                        <span className="text-red-500 font-bold">{storeGdnId}</span> !!
+                    </div>
+                </Modal>
+            )}
         </div>
     )
 }

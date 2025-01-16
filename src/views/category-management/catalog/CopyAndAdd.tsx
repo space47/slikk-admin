@@ -15,7 +15,7 @@ import ImageCommonProduct from './ImageCommonProduct'
 import { handleimage, handleVideo } from './handlingProductImage'
 import { InitialValues } from './EditCommonProduct'
 
-const EditProduct = () => {
+const CopyAndAdd = () => {
     const navigate = useNavigate()
     const [productData, setProductData] = useState<any>()
     const [allImage, setAllImage] = useState<string[]>([])
@@ -76,8 +76,6 @@ const EditProduct = () => {
         setAllColor(updatedColor)
     }
 
-    console.log('pack size', productData?.filter_tags?.packsize?.map((item) => item).join(','))
-
     const handleSubmit = async (values: Product) => {
         let img_url = allImage.join(','),
             video_url = allVideo.join(','),
@@ -128,6 +126,7 @@ const EditProduct = () => {
 
         const formData = {
             ...values,
+
             color_code_link: color_code_url,
             image: img_url,
             video_link: video_url,
@@ -136,12 +135,12 @@ const EditProduct = () => {
 
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.patch(`product/${barcode}`, formData)
+            const response = await axioisInstance.post(`product/add`, formData)
 
             console.log(response)
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Product Edited Successfully',
+                description: response?.data?.message || 'Product Added Successfully',
             })
 
             navigate('/app/catalog/products')
@@ -149,7 +148,7 @@ const EditProduct = () => {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description: error?.response?.data?.message || 'Product not Updated ',
+                description: error?.response?.data?.message || 'Product not Added ',
             })
         } finally {
             setShowSpinner(false)
@@ -169,22 +168,11 @@ const EditProduct = () => {
         )
     }
 
-    const handleCopyProduct = () => {
-        navigate(`/app/catalog/addCopy/${barcode}`)
-    }
-
     return (
         <div>
-            <div className="flex justify-between">
-                <h3 className="mb-5 text-neutral-900">
-                    EDIT PRODUCT <span className="font-light text-md">#{barcode}</span>
-                </h3>
-                <div>
-                    <Button variant="accept" size="sm" onClick={handleCopyProduct}>
-                        Copy Product
-                    </Button>
-                </div>
-            </div>
+            <h3 className="mb-5 text-neutral-900">
+                ADD THE PRODUCT <span className="font-light text-md"></span>
+            </h3>
             <Formik
                 enableReinitialize
                 initialValues={InitialValues(productData)}
@@ -271,4 +259,4 @@ const EditProduct = () => {
     )
 }
 
-export default EditProduct
+export default CopyAndAdd

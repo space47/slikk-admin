@@ -3,18 +3,16 @@
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-// import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik'
-import * as Yup from 'yup'
 import { useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
-
-import Upload from '@/components/ui/Upload'
 import Product from '@/views/category-management/catalog/CommonType'
-import { Checkbox } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN, INITIALVALUES } from './ProductCommon'
+import AddProductImages from './AddProductImages'
+import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import { beforeUpload } from '@/common/beforeUpload'
 
 const AddProduct = () => {
     const [datas, setDatas] = useState()
@@ -22,70 +20,6 @@ const AddProduct = () => {
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
-
-    const MAX_UPLOAD = 100
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'image/JPEG',
-            'image/JPG',
-            'image/WEBP',
-            'image/PNG',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
-    const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = ['video/mp4', 'video/mov', 'video/flv', 'video/avi', 'video/wmv', 'video/webm', 'video/avchd']
-        const MAX_FILE_SIZE = 9000000000000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
 
     const handleimage = async (files: File[]) => {
         const formData = new FormData()
@@ -190,8 +124,7 @@ const AddProduct = () => {
             colorfamily: values.colorfamily,
             video_link: videoShow,
         }
-
-        console.log('Body to be send', formData)
+        console.log('body  of add', formData)
 
         try {
             const response = await axioisInstance.post('product/add', formData)
@@ -234,162 +167,34 @@ const AddProduct = () => {
                                     </FormItem>
                                 ))}
 
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden ">
-                                    Image
-                                    <FormContainer className=" mt-5 w-full ">
-                                        {/* DIV */}
-
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="image">
-                                                {({ form }: FieldProps<Product>) => (
-                                                    <>
-                                                        <Upload
-                                                            className="flex justify-center"
-                                                            multiple
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.images}
-                                                            onChange={(files) => form.setFieldValue('images', files)}
-                                                            onFileRemove={(files) => form.setFieldValue('images', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                    <FormItem
-                                        label=""
-                                        invalid={errors.image && touched.image}
-                                        errorMessage={errors.image}
-                                        className="col-span-1 w-[80%]"
-                                    >
-                                        <Field
-                                            type="text"
-                                            name="image"
-                                            placeholder="Enter ImageUrl or Upload Image file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* .............................................................. */}
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden">
-                                    Color Code Thumbnail
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="color_code">
-                                                {({ form }: FieldProps<Product>) => (
-                                                    <>
-                                                        <Upload
-                                                            className="flex justify-center"
-                                                            multiple
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.color_code}
-                                                            onChange={(files) => form.setFieldValue('color_code', files)}
-                                                            onFileRemove={(files) => form.setFieldValue('color_code', files)}
-                                                            // uploadButtonText="Add Files"
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                    <FormItem label="" className="col-span-1 w-[80%]">
-                                        <Field
-                                            type="text"
-                                            name="color_code_link"
-                                            placeholder="Enter Color Url or Upload Color file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* .......................video........................................ */}
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
-                                    Video
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem
-                                            label=""
-                                            invalid={Boolean(errors.video && touched.video)}
-                                            errorMessage={errors.video as string}
-                                            className="grid grid-rows-2"
-                                        >
-                                            <Field name="video_link">
-                                                {({ form }: FieldProps<Product>) => (
-                                                    <>
-                                                        <Upload
-                                                            multiple
-                                                            beforeUpload={beforeVideoUpload}
-                                                            fileList={values.video}
-                                                            onChange={(files) => form.setFieldValue('Video', files)}
-                                                            onFileRemove={(files) => form.setFieldValue('images', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                    <FormItem
-                                        label=""
-                                        invalid={errors.video_link && touched.video_link}
-                                        errorMessage={errors.video_link}
-                                        className="col-span-1 w-[80%]"
-                                    >
-                                        <Field
-                                            type="text"
-                                            name="video_link"
-                                            placeholder="Enter VideoUrl or Upload Video file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-
-                                {/* Add Size Chart */}
-
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden">
-                                    Size Chart Upload
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="size_chart_image_array">
-                                                {({ form }: FieldProps<Product>) => (
-                                                    <>
-                                                        <Upload
-                                                            className="flex justify-center"
-                                                            multiple
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.size_chart_image_array}
-                                                            onChange={(files) => form.setFieldValue('size_chart_image_array', files)}
-                                                            onFileRemove={(files) => form.setFieldValue('size_chart_image_array', files)}
-                                                            // uploadButtonText="Add Files"
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-
-                                        <br />
-                                        <br />
-                                    </FormContainer>
-                                    <FormItem label="" className="col-span-1 w-[80%]">
-                                        <Field
-                                            type="text"
-                                            name="size_chart_image"
-                                            placeholder="Enter Size Chart or Upload size chart  file"
-                                            component={Input}
-                                        />
-                                    </FormItem>
-                                </FormContainer>
-
+                                <AddProductImages
+                                    label="Image"
+                                    name="image"
+                                    fileList={values.images}
+                                    beforeUpload={beforeUpload}
+                                    fieldNames="images"
+                                />
+                                <AddProductImages
+                                    label="Color Code Thumbnail"
+                                    name="color_code_link"
+                                    fileList={values.color_code}
+                                    beforeUpload={beforeUpload}
+                                    fieldNames="color_code"
+                                />
+                                <AddProductImages
+                                    label="Video"
+                                    name="video_link"
+                                    fileList={values.video}
+                                    beforeUpload={beforeVideoUpload}
+                                    fieldNames="video"
+                                />
+                                <AddProductImages
+                                    label="Size Chart Upload"
+                                    name="size_chart_image"
+                                    fileList={values.size_chart_image_array}
+                                    beforeUpload={beforeUpload}
+                                    fieldNames="size_chart_image_array"
+                                />
                                 {PRODUCT_EDIT_COMMON_DOWN.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field
