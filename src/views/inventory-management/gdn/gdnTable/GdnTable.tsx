@@ -9,6 +9,7 @@ import EasyTable from '@/common/EasyTable'
 import { Option } from '../../quality-check/qcCommon'
 import { pageSizeOptions } from '../../inward/inwardCommon'
 import { useNavigate } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const GdnTable = () => {
     const [gdnData, setGdnData] = useState<GDN_TYPES[]>([])
@@ -112,6 +113,10 @@ const GdnTable = () => {
     console.log('Data of gdn', gdnData)
     const hanldeAddGDN = () => {
         navigate(`/app/goods/gdn/addNew`)
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (
