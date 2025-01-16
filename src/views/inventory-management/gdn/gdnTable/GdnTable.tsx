@@ -54,7 +54,11 @@ const GdnTable = () => {
             accessorKey: 'document_number',
             cell: ({ row }) => (
                 <div className="cursor-pointer bg-gray-200 px-2 py-2 items-center flex justify-center rounded-md text-black font-semibold">
-                    <a href={`/app/goods/gdnDetails/${row.original.document_number}`} target="_blank" rel="noreferrer">
+                    <a
+                        href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.document_number)}/${row?.original?.company}`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
                         {row.original.document_number}
                     </a>
                 </div>

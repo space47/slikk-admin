@@ -427,7 +427,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsInventoryManagement.gdn',
-        path: `${APP_PREFIX_PATH}/goods/gdnDetails/:document_number`,
+        path: `${APP_PREFIX_PATH}/goods/gdnDetails/:document_number/:id`,
         component: lazy(() => import('@/views/inventory-management/gdn/gdnTable/components/GdnDetails')),
         authority: [ADMIN, USER],
     },

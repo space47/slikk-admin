@@ -31,19 +31,19 @@ const GdnDetails = () => {
 
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<any>([])
-    const { document_number } = useParams()
+    const { document_number, id } = useParams()
     const [showSyncModal, setShowSyncModal] = useState(false)
     const [isSyncing, setIsSyncing] = useState(false)
     const [grnNumber, setGrnNumber] = useState('')
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
 
+    console.log('Decoded uri component', id)
+
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axioisInstance.get(
-                    `/goods/dispatch/${selectedCompany?.id}/detail?document_number=${document_number}`,
-                )
+                const response = await axioisInstance.get(`/goods/dispatch/${id}/detail?document_number=${document_number}`)
 
                 const ordersData = response.data?.data || []
                 setLoading(false)
