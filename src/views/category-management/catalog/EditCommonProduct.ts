@@ -50,7 +50,7 @@ export const InitialValues = (productData: any) => ({
     sunprotection: productData?.sunprotection,
     concious: productData?.concious,
     productHexCode: productData?.productHexCode,
-    packsize: productData?.size,
+    packsize: productData?.filter_tags?.packsize?.map((item) => item).join(','),
     size: productData?.filter_tags?.size?.join('/'),
     ingrediants: productData?.ingredients,
     vegnonveg: productData?.vegnonveg,
