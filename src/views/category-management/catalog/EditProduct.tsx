@@ -76,6 +76,8 @@ const EditProduct = () => {
         setAllColor(updatedColor)
     }
 
+    console.log('pack size', productData?.filter_tags?.packsize?.map((item) => item).join(','))
+
     const handleSubmit = async (values: Product) => {
         let img_url = allImage.join(','),
             video_url = allVideo.join(','),
@@ -126,7 +128,6 @@ const EditProduct = () => {
 
         const formData = {
             ...values,
-
             color_code_link: color_code_url,
             image: img_url,
             video_link: video_url,

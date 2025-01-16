@@ -87,16 +87,18 @@ const EditConfigurations = () => {
                                             <Field name={fieldName}>
                                                 {({ field, form }: FieldProps<any>) => {
                                                     const selectedTags = Array.isArray(field.value)
-                                                        ? field.value?.map((tag: any) => {
-                                                              const matchedOption = filters.filters.find(
-                                                                  (option: any) => option.value === tag,
-                                                              )
-                                                              return (
-                                                                  matchedOption || {
-                                                                      value: tag,
-                                                                      label: tag,
-                                                                  }
-                                                              )
+                                                        ? field.value.flatMap((tag: any) => {
+                                                              return tag?.map((item: any) => {
+                                                                  const matchedData = filters.filters.find(
+                                                                      (option: any) => option.value === item,
+                                                                  )
+                                                                  return (
+                                                                      matchedData || {
+                                                                          value: item,
+                                                                          label: item,
+                                                                      }
+                                                                  )
+                                                              })
                                                           })
                                                         : []
 
@@ -110,7 +112,8 @@ const EditConfigurations = () => {
                                                             getOptionValue={(option) => option.value}
                                                             onChange={(newVal) => {
                                                                 const newValues = newVal ? newVal.map((val) => val.value) : []
-                                                                form.setFieldValue(field.name, newValues)
+                                                                console.log('new val data', newValues)
+                                                                form.setFieldValue(field.name, [newValues])
                                                             }}
                                                         />
                                                     )
@@ -120,21 +123,32 @@ const EditConfigurations = () => {
                                     </>
                                 ) : key.toLowerCase().includes('image') ? (
                                     <FormItem className="xl:mt-6">
-                                        {/* <Field name={fieldName}>
+                                        <Field name={fieldName}>
                                             {({ field, form }) => (
-                                                <Upload
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={[fieldName]}
-                                                    onChange={async (info) => {
-                                                        
-                                                        form.setFieldValue(fieldName, processedImage)
-                                                    }}
-                                                >
-                                                    <Button type="button">Upload Image</Button>
-                                                </Upload>
+                                                <Field name={fieldName}>
+                                                    {({ form }: FieldProps) => (
+                                                        <Upload
+                                                            beforeUpload={beforeUpload}
+                                                            onChange={(files) => {
+                                                                console.log('files to be upload', fieldName)
+                                                                return form.setFieldValue(fieldName, files)
+                                                            }}
+                                                            onFileRemove={(files) => form.setFieldValue(fieldName, files)}
+                                                            className="flex justify-center"
+                                                        />
+                                                    )}
+                                                </Field>
                                             )}
-                                        </Field> */}
-                                        <Field name={fieldName} component={Input} type="text" placeholder="image" />
+                                        </Field>
+                                        <Field
+                                            component={Input}
+                                            type="text"
+                                            placeholder={`Enter ${key}`}
+                                            name={fieldName}
+                                            value={val}
+                                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
+                                            className="w-[500px]"
+                                        />
                                     </FormItem>
                                 ) : _.isPlainObject(val) || _.isArray(val) ? (
                                     <div className="w-full">{renderFields(val, fieldName, setFieldValue)}</div>
@@ -258,6 +272,8 @@ const EditConfigurations = () => {
             config_name: values.name,
             config_value: await processValues(values.value),
         }
+
+        console.log('body of the data is ', body)
 
         try {
             setShowSpinner(true)
