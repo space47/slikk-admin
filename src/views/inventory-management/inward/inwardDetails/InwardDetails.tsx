@@ -106,7 +106,7 @@ const InwardDetails = () => {
     const handleRegenerateGrn = async (doc_number: string) => {
         try {
             const response = await axioisInstance.get(
-                `/goods/received/${companyId}?document_number=${doc_number}&download=true&regenerate=true`,
+                `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${doc_number}`,
             )
             const preSignedUrl = response?.data?.data
 

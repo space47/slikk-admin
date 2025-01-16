@@ -15,14 +15,14 @@ import {
     getSortedRowModel,
     flexRender,
 } from '@tanstack/react-table'
-import { Option, pageSizeOptions, TableData } from './GDNqcCommon'
+import { Option, pageSizeOptions, TableData } from './TransferQCcommon'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { rankItem } from '@tanstack/match-sorter-utils'
 import { Table } from '@/components/ui'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const GDNPaginationTable = () => {
+const TransferPaginationTable = () => {
     const [data, setData] = useState<TableData[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
@@ -32,7 +32,7 @@ const GDNPaginationTable = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axioisInstance.get(`bulkupload/history?type=dispatch_product&p=${page}&page_size=${pageSize}`) //
+            const response = await axioisInstance.get(`bulkupload/history?type=internal_transfer&p=${page}&page_size=${pageSize}`) //
             const data = response.data.data.results
             const total = response.data.data.count
             setData(data)
@@ -293,7 +293,7 @@ const GDNPaginationTable = () => {
     )
 }
 
-export default GDNPaginationTable
+export default TransferPaginationTable
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value)

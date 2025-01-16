@@ -94,7 +94,7 @@ const EditUrlShortner = () => {
         const filterParams: Record<string, any> = {}
 
         if (!url.includes('filters')) {
-            const filterRegex = /([a-zA-Z0-9-_]+)=([a-zA-Z0-9-_]+)/g
+            const filterRegex = /([a-zA-Z0-9-_]+)=([^&]+)/g
             let match
             while ((match = filterRegex.exec(url)) !== null) {
                 const [_, key, value] = match

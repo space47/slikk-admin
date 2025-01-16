@@ -7,11 +7,8 @@ import { useState } from 'react'
 import FormData from 'form-data'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { useAppSelector } from '@/store'
 
-const GDNQCUploader = () => {
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+const TransferQCploader = () => {
     const [file, setFile] = useState(null)
 
     const onFileUpload = (fileList: any) => {
@@ -28,13 +25,13 @@ const GDNQCUploader = () => {
         console.log('File to be uploaded:', file)
 
         const data = new FormData()
-        data.append('dispatch_products_file', file)
-        data.append('company', selectedCompany?.id)
+        data.append('inventory_movement_file', file)
+        // data.append('company', '1')
 
         const config = {
             method: 'post',
             maxBodyLength: Infinity,
-            url: '/goods/dispatchproductbulkupload',
+            url: '/internal/transfer/products/bulk',
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -81,4 +78,4 @@ const GDNQCUploader = () => {
     )
 }
 
-export default GDNQCUploader
+export default TransferQCploader

@@ -169,7 +169,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
     const handleSubmit = async () => {
         await completeBannerFormData?.forEach(async (banner: any, index: number) => {
-            // console.log(banner);
+            console.log('maxOff value', banner?.maxoff, banner?.minoff)
             const webImageUpload = await HandleImage(banner.image_web_file)
             const mobileImageUpload = await HandleImage(banner.image_mobile_file)
             const webAspectratio = await calculateAspectRatio(banner.image_web_file)
@@ -202,6 +202,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     mobile_aspect_ratio: Number(mobileAspectratio[0]?.toFixed(2)) || null,
                     web_redirection_url: banner?.web_redirection_url || null,
                     mobile_redirection_url: banner?.mobile_redirection_url || null,
+                    max_off: banner?.maxoff,
+                    min_off: banner?.minoff,
                 },
                 image_web_file: null,
                 image_mobile_file: null,

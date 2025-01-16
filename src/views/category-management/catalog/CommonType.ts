@@ -73,6 +73,8 @@ type Product = {
     trendtype: string
     fit: string
     fabric: string
+    size_chart_image: string
+    size_chart_image_array: File[]
 }
 
 export const DROPDOWNARRAY = [

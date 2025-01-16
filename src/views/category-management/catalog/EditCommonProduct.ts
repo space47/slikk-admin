@@ -75,4 +75,6 @@ export const InitialValues = (productData: any) => ({
     trendtype: productData?.filter_tags?.trendtype?.join('/'),
     fit: productData?.filter_tags?.fit?.join('/'),
     fabric: productData?.filter_tags?.fabric?.join('/'),
+    size_chart_image: productData?.size_chart_image,
+    size_chart_image_array: productData?.size_chart_image_array || [],
 })

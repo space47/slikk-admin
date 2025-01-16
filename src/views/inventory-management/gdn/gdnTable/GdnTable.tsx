@@ -9,6 +9,7 @@ import EasyTable from '@/common/EasyTable'
 import { Option } from '../../quality-check/qcCommon'
 import { pageSizeOptions } from '../../inward/inwardCommon'
 import { useNavigate } from 'react-router-dom'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const GdnTable = () => {
     const [gdnData, setGdnData] = useState<GDN_TYPES[]>([])
@@ -36,24 +37,28 @@ const GdnTable = () => {
     }, [page, pageSize])
 
     const columns = [
-        {
-            header: 'Edit',
-            accessorKey: '',
-            cell: ({ row }) => (
-                <button className="border-none bg-none">
-                    <a href={`/app/goods/gdn/${row.original.document_number}`} target="_blank" rel="noreferrer">
-                        {' '}
-                        <FaEdit className="text-xl text-blue-500" />
-                    </a>
-                </button>
-            ),
-        },
+        // {
+        //     header: 'Edit',
+        //     accessorKey: '',
+        //     cell: ({ row }) => (
+        //         <button className="border-none bg-none">
+        //             <a href={`/app/goods/gdn/${row.original.document_number}`} target="_blank" rel="noreferrer">
+        //                 {' '}
+        //                 <FaEdit className="text-xl text-blue-500" />
+        //             </a>
+        //         </button>
+        //     ),
+        // },
         {
             header: 'Document Number',
             accessorKey: 'document_number',
             cell: ({ row }) => (
                 <div className="cursor-pointer bg-gray-200 px-2 py-2 items-center flex justify-center rounded-md text-black font-semibold">
-                    <a href={`/app/goods/gdnDetails/${row.original.document_number}`} target="_blank" rel="noreferrer">
+                    <a
+                        href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.document_number)}/${row?.original?.company}`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
                         {row.original.document_number}
                     </a>
                 </div>
@@ -112,6 +117,10 @@ const GdnTable = () => {
     console.log('Data of gdn', gdnData)
     const hanldeAddGDN = () => {
         navigate(`/app/goods/gdn/addNew`)
+    }
+
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (
