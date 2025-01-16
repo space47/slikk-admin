@@ -18,11 +18,11 @@ import moment from 'moment'
 import { Modal, notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { FaSync } from 'react-icons/fa'
+import { FaDownload, FaSync } from 'react-icons/fa'
 import PaymentSummary from '@/views/inventory-management/inward/inwardDetails/components/PaymentSummary'
 import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
 import ShippingInfo from '@/views/inventory-management/inward/inwardDetails/components/ShippingInfo'
-import { Card } from '@/components/ui'
+import { Button, Card } from '@/components/ui'
 import GDNdetailTable from './GDNdetailTable'
 // import { string } from 'yup'
 
@@ -64,7 +64,7 @@ const GdnDetails = () => {
 
     const syncGRN = async () => {
         const body = {
-            company: selectedCompany.id,
+            company: id,
             document_number: document_number,
         }
         setShowSyncModal(false)
@@ -92,6 +92,40 @@ const GdnDetails = () => {
         setShowSyncModal(false)
     }
 
+    const handleRegenerateGrn = async (doc_number: string) => {
+        try {
+            const response = await axioisInstance.get(
+                `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`,
+            )
+            const preSignedUrl = response?.data?.data
+
+            if (preSignedUrl) {
+                const fileResponse = await fetch(preSignedUrl)
+                if (!fileResponse.ok) {
+                    throw new Error(`Failed to fetch the file: ${fileResponse.statusText}`)
+                }
+                const blob = await fileResponse.blob()
+                const blobUrl = window.URL.createObjectURL(blob)
+
+                const link = document.createElement('a')
+                link.href = blobUrl
+                link.download = 'GDN_Document.pdf'
+                document.body.appendChild(link)
+                link.click()
+
+                window.URL.revokeObjectURL(blobUrl)
+                document.body.removeChild(link)
+            } else {
+                console.error('Failed to retrieve the pre-signed URL from the response.')
+            }
+        } catch (error: any) {
+            notification.error({
+                message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to Regenerate',
+            })
+            console.error('Error while regenerating the GDN:', error)
+        }
+    }
+
     const handleUrl = async (document_url: string) => {
         try {
             const response = await axioisInstance.get(`file/presign?file_url=${document_url}`)
@@ -109,19 +143,28 @@ const GdnDetails = () => {
                     <>
                         <div className="mb-6">
                             <div className="flex flex-col  mb-2">
-                                <div>
-                                    <h3>
-                                        <span>GDN:</span>
-                                        <span className="ltr:ml-2 rtl:mr-2">#{data.gdn_number}</span>
-                                    </h3>
-                                    <div className="docs flex flex-col">
-                                        <div className="flex gap-2">
-                                            {' '}
-                                            Document Number : <span className="font-bold">{data.document_number}</span>
+                                <div className="flex gap-4">
+                                    <div>
+                                        <h3>
+                                            <span>GDN:</span>
+                                            <span className="ltr:ml-2 rtl:mr-2">#{data.gdn_number}</span>
+                                        </h3>
+                                        <div className="docs flex flex-col">
+                                            <div className="flex gap-2">
+                                                {' '}
+                                                Document Number : <span className="font-bold">{data.document_number}</span>
+                                            </div>
                                         </div>
-                                        {/* <div className="cursor-pointer" onClick={() => handleUrl(data.document_url)}>
-                                            <p className=" underline">Document Url</p>
-                                        </div> */}
+                                    </div>
+
+                                    {/*  */}
+                                    <div>
+                                        <button
+                                            onClick={() => handleRegenerateGrn(data.document_number)}
+                                            className="flex gap-2 bg-gray-200 p-2 rounded-xl text-black hover:bg-gray-300 font-bold items-center justify-center"
+                                        >
+                                            <span className="font-bold">Export</span> <FaDownload className="" />
+                                        </button>
                                     </div>
                                 </div>
                             </div>
