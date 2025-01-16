@@ -2,13 +2,16 @@
 import { beforeUpload } from '@/common/beforeUpload'
 import { RichTextEditor } from '@/components/shared'
 import { Button, Checkbox, DatePicker, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { companyStore } from '@/store/types/companyStore.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import axios from 'axios'
 import { Field, FieldProps, Form, Formik } from 'formik'
-import React, { useState } from 'react'
+import moment from 'moment'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const CreateGdn = () => {
@@ -20,6 +23,13 @@ const CreateGdn = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
 
     const [companyData, setCompanyData] = useState<number>()
+
+    const dispatch = useAppDispatch()
+    const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
 
     const navigate = useNavigate()
 
@@ -130,17 +140,17 @@ const CreateGdn = () => {
         const plainOriginAddress = plainValue(values?.origin_address)
         const plainDeliveryAddress = plainValue(values?.delivery_address)
         const formData = {
-            document_number: values?.document_number,
-            company: companyData,
-            received_by: values?.received_by,
-            document_date: values?.document_date,
-            origin_address: plainOriginAddress,
-            delivery_address: plainDeliveryAddress,
-            total_sku: values?.total_sku,
-            total_quantity: values?.total_quantity,
-            document: docsShow,
-            images: imageShow,
-            // store: values?.store,
+            ...(values?.document_number && { document_number: values.document_number }),
+            ...(companyData && { company: companyData }),
+            ...(values?.dispatched_by && { dispatched_by: values.dispatched_by }),
+            ...(values?.document_date && { document_date: moment(values.document_date).format('YYYY-MM-DD') }),
+            ...(plainOriginAddress && { origin_address: plainOriginAddress }),
+            ...(plainDeliveryAddress && { delivery_address: plainDeliveryAddress }),
+            ...(values?.total_sku && { total_sku: values.total_sku }),
+            ...(values?.total_quantity && { total_quantity: values.total_quantity }),
+            ...(docsShow && { document: docsShow }),
+            ...(imageShow && { images: imageShow }),
+            ...(values?.store?.id && { store: values.store.id }),
         }
 
         try {
@@ -151,7 +161,7 @@ const CreateGdn = () => {
                 message: 'Success',
                 description: response?.data?.message || 'GRN created Successfully',
             })
-            navigate('/app/goods/received')
+            navigate('/app/goods/gdn')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
@@ -218,6 +228,29 @@ const CreateGdn = () => {
                                     )
                                 }}
                             </Field>
+
+                            <FormItem label="Store ">
+                                <Field name="store">
+                                    {({ form, field }: FieldProps<any>) => {
+                                        const selectedCompany = storeResults.find((option) => option.code === field?.value?.code)
+
+                                        return (
+                                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                <Select
+                                                    className="w-1/2"
+                                                    options={storeResults}
+                                                    getOptionLabel={(option) => option.code}
+                                                    getOptionValue={(option) => option.code}
+                                                    value={selectedCompany || null}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('store', newVal)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
+                            </FormItem>
                             <br />
                             {/* Second line/////////////////////////////////////////////////////////// */}
 
@@ -242,8 +275,8 @@ const CreateGdn = () => {
                             {/* fffffffffffffffffffffffffffffffffffffff */}
 
                             <FormContainer className="flex flex-row gap-3 ">
-                                <FormItem label="Received By" className="col-span-1 w-1/3">
-                                    <Field type="text" name="received_by" placeholder="Enter your Mobile Number" component={Input} />
+                                <FormItem label="Dispatched By" className="col-span-1 w-1/3">
+                                    <Field type="text" name="dispatched_by" placeholder="Enter your Mobile Number" component={Input} />
                                 </FormItem>
                                 <FormItem label="Total SKUs" className="col-span-1 w-1/3">
                                     <Field type="number" name="total_sku" placeholder="Enter total Skus" component={Input} />

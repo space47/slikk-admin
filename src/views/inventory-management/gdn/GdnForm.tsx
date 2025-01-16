@@ -15,6 +15,7 @@ interface GDN_FORM_PROPS {
     companyList: any[]
     setCompanyData: any
     receiveAddress: any[]
+    storeResults: any
 }
 
 const GdnForm = ({
@@ -28,6 +29,7 @@ const GdnForm = ({
     companyList,
     setCompanyData,
     receiveAddress,
+    storeResults,
 }: GDN_FORM_PROPS) => {
     return (
         <Form className="w-full">
@@ -64,6 +66,35 @@ const GdnForm = ({
                         )
                     }}
                 </Field>
+
+                <FormItem label="Store ">
+                    <Field name="store">
+                        {({ form, field }: FieldProps<any>) => {
+                            console.log('field id', field.value)
+                            console.log(
+                                'field value id store',
+                                storeResults.find((option) => option.id === field?.value),
+                            )
+
+                            const selectedCompany = storeResults.find((option) => option.id === field?.value)
+
+                            return (
+                                <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                    <Select
+                                        className="w-1/2"
+                                        options={storeResults}
+                                        getOptionLabel={(option) => option.name}
+                                        getOptionValue={(option) => option.id}
+                                        value={selectedCompany || null}
+                                        onChange={(newVal) => {
+                                            form.setFieldValue('store', newVal)
+                                        }}
+                                    />
+                                </div>
+                            )
+                        }}
+                    </Field>
+                </FormItem>
                 <br />
                 {receiveAddress.map((item, key) => {
                     return (
