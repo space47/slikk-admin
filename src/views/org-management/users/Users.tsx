@@ -48,10 +48,19 @@ const Seller = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const response = await axiosInstance.get(`company/${selectedCompany.id}/users`)
+            let filterParam = ''
+            if (globalFilter) {
+                filterParam = `?mobile=${globalFilter}`
+            }
+
+            const response = await axiosInstance.get(`company/${selectedCompany.id}/users${filterParam}`)
             const data = response.data.data
             const total = response.data.data.length
-            setData(data)
+            if (globalFilter) {
+                setData([data])
+            } else {
+                setData(data)
+            }
             setTotalData(total)
         } catch (error) {
             console.error(error)
@@ -62,8 +71,8 @@ const Seller = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, selectedCompany.id])
-    const paginatedData = data.slice((page - 1) * pageSize, page * pageSize)
+    }, [page, pageSize, selectedCompany.id, globalFilter])
+    const paginatedData = data?.slice((page - 1) * pageSize, page * pageSize)
 
     const navigate = useNavigate()
 
@@ -125,7 +134,6 @@ const Seller = () => {
             setPage(pageIndex + 1)
             setPageSize(pageSize)
         },
-        onGlobalFilterChange: setGlobalFilter,
     })
 
     const onPaginationChange = (page: number) => {
@@ -145,7 +153,7 @@ const Seller = () => {
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="mb-4">
                     <input
-                        type="text"
+                        type="search"
                         placeholder="Search here"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}

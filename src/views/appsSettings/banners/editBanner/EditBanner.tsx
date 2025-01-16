@@ -252,6 +252,8 @@ const EditBanner = () => {
                     : values?.extra_attributes?.web_aspect_ratio,
                 mobile_redirection_url: values?.extra_attributes?.mobile_redirection_url || null,
                 web_redirection_url: values?.extra_attributes?.web_redirection_url || null,
+                maxoff: values?.max_off,
+                minoff: values?.min_off,
             },
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',

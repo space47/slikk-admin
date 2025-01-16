@@ -21,6 +21,7 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
     }, [bannerForm])
 
     const handleInputChange = (index: number, field: string, value: any) => {
+        console.log('fieldss', field)
         setBannerFormData((prev) =>
             prev.map((form, idx) => {
                 if (idx === index) {
@@ -29,8 +30,11 @@ function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBan
                             ? [...form.tags.filter((tag: string) => !tag.startsWith(`${field}_`)), `${field}_${value}`]
                             : [`${field}_${value}`]
 
+                        console.log('FORM VALUE IN CHANGE', form)
+
                         return {
                             ...form,
+                            [field]: value,
                             tags: updatedTags,
                         }
                     }

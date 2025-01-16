@@ -10,13 +10,14 @@ import { FaEdit, FaSync, FaTrash } from 'react-icons/fa'
 import { Modal, notification } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
 import EasyTable from '@/common/EasyTable'
-import { Button, Dropdown } from '@/components/ui'
+import { Button, Dropdown, Input } from '@/components/ui'
 import { BANNER_PAGE_NAME } from '@/common/banner'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import _ from 'lodash'
 import { MdCancel } from 'react-icons/md'
 import BulkEditModal from './BulkEditModal'
 import { FaListCheck } from 'react-icons/fa6'
+import { CgPlayListRemove } from 'react-icons/cg'
 
 type Option = {
     value: number
@@ -51,6 +52,7 @@ const AppBanners = () => {
     const [updatedPosition, setUpdatedPosition] = useState<{
         [key: number]: number
     }>({})
+    const [isSelectAllBanner, setIsSelectAllBanner] = useState(false)
 
     console.log('var1', var1, 'var2', var2)
 
@@ -118,20 +120,48 @@ const AppBanners = () => {
         setIsSectionheading(true)
     }
 
+    const handleSelectAllBanners = (e) => {
+        if (e.target.checked) {
+            const allIds = data.map((banner) => banner.id)
+            setBannerIdStore(allIds)
+            setIsSelectAllBanner(true)
+            setShowBannerIdButton(true)
+        } else {
+            handleSelectEmptyBanners()
+        }
+    }
+
+    const handleSelectEmptyBanners = () => {
+        setIsSelectAllBanner(false)
+        setBannerIdStore([])
+        setShowBannerIdButton(false)
+    }
+
     const columns = useMemo(
         () => [
             {
-                header: '',
+                header: (
+                    <div className="flex flex-col gap-2 items-center justify-center">
+                        <Input
+                            type="checkbox"
+                            name="selectAll"
+                            checked={data.length > 0 && bannerIdStore.length === data.length}
+                            onChange={handleSelectAllBanners}
+                        />
+                    </div>
+                ),
                 accessorKey: 'id',
                 cell: ({ row }) => {
-                    const templateName = row.original.id
+                    const bannerId = row.original.id
                     return (
-                        <input
-                            type="checkbox"
-                            name="bannerId"
-                            onChange={() => handleSelectBannerId(templateName)}
-                            // checked={data.length === bannerIdStore.length}
-                        />
+                        <div className="flex items-center justify-center">
+                            <Input
+                                type="checkbox"
+                                name="bannerId"
+                                checked={bannerIdStore.includes(bannerId)}
+                                onChange={(e) => handleSelectBannerId(bannerId, e.target.checked)}
+                            />
+                        </div>
                     )
                 },
             },
@@ -143,7 +173,6 @@ const AppBanners = () => {
                         <a href={`/app/appSettings/banners/${row.original.id}`} target="_blank" rel="noreferrer">
                             <FaEdit className="text-xl text-blue-600" />
                         </a>
-                        {/* <FaEdit className="text-xl text-blue-600" /> */}
                     </button>
                 ),
             },
@@ -154,15 +183,7 @@ const AppBanners = () => {
                 cell: ({ getValue, row }) => {
                     const stockId = row.original.id
                     const location = updatedPosition[stockId] ?? row.original.position
-                    return (
-                        // <input
-                        //     type="number"
-                        //     className="rounded-xl w-[70px]"
-                        //     value={location}
-                        //     onChange={(e) => handlePositionChange(stockId, e.target.value)}
-                        // />
-                        <span>{getValue()}</span>
-                    )
+                    return <span>{getValue()}</span>
                 },
             },
             { header: 'Section Heading', accessorKey: 'section_heading' },
@@ -212,64 +233,20 @@ const AppBanners = () => {
                     </button>
                 ),
             },
-            // {
-            //     header: 'Update Position',
-            //     accessorKey: 'id',
-            //     cell: ({ getValue, row }) => (
-            //         // <button
-            //         //     onClick={() => handleUpdatePosition(row.original.id, row.original.position)}
-            //         //     className="px-4 py-2 bg-none text-2xl rounded font-bold text-green-600"
-            //         // >
-            //         //     <FaSync />
-            //         // </button>
-
-            //         <span>{getValue()}</span>
-            //     ),
-            // },
         ],
-        [],
+        [bannerIdStore],
     )
 
-    // const handleUpdatePosition = async (id: any, position: any) => {
-    //     const quantity = updatedPosition[id] >= 0 ? updatedPosition[id] : null
-
-    //     console.log('quantity', quantity)
-    //     const body = {
-    //         banner_id: id,
-    //         position: Number(quantity) ? Number(quantity) : position,
-    //     }
-    //     try {
-    //         const response = await axioisInstance.post(`/banners`, body)
-    //         notification.success({
-    //             message: response?.data?.message || 'Successfully Updated',
-    //         })
-    //     } catch (error) {
-    //         console.log(error)
-    //         notification.error({
-    //             message: 'Failed to update',
-    //         })
-    //     }
-    // }
-
-    const handleSelectBannerId = (id: number) => {
+    const handleSelectBannerId = (id: number, isChecked: boolean) => {
         setShowBannerIdButton(true)
-        setBannerIdStore((prev) => [...prev, id])
+        setBannerIdStore((prev) => {
+            if (isChecked) {
+                return [...prev, id]
+            } else {
+                return prev.filter((item) => item !== id)
+            }
+        })
     }
-
-    const handleSelectAllBanners = () => {
-        const allIds = data.map((banner) => banner.id)
-        setShowBannerIdButton(true)
-        setBannerIdStore(allIds)
-    }
-
-    const handlePositionChange = (id: number, newLocation: number) => {
-        setUpdatedPosition((prevQuantities) => ({
-            ...prevQuantities,
-            [id]: newLocation,
-        }))
-    }
-
-    console.log('Postiton', updatedPosition)
 
     console.log('Banner_Id', bannerIdStore)
 
@@ -331,8 +308,8 @@ const AppBanners = () => {
                         type="text"
                         placeholder="Search by name"
                         value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
                         className="p-2 border rounded"
+                        onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                     <div className="flex gap-2">
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
@@ -371,11 +348,17 @@ const AppBanners = () => {
                 </div>
 
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    <div>
-                        <FaListCheck className="text-2xl cursor-pointer" onClick={handleSelectAllBanners} />
-                    </div>
+                    {/* {isSelectAllBanner ? (
+                        <div>
+                            <CgPlayListRemove className="text-5xl cursor-pointer text-red-400" onClick={handleSelectEmptyBanners} />
+                        </div>
+                    ) : (
+                        <div>
+                            <FaListCheck className="text-3xl cursor-pointer" onClick={handleSelectAllBanners} />
+                        </div>
+                    )} */}
                     <div className="mb-2">
-                        {showBannerEditButton && (
+                        {bannerIdStore.length > 0 && (
                             <div className="flex gap-2 items-center">
                                 <Button variant="new" size="sm" onClick={handleBulkEditModal}>
                                     Bulk Edit
