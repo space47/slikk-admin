@@ -182,8 +182,26 @@ const AppBanners = () => {
                 accessorKey: 'position',
                 cell: ({ getValue, row }) => {
                     const stockId = row.original.id
-                    const location = updatedPosition[stockId] ?? row.original.position
-                    return <span>{getValue()}</span>
+                    const position = updatedPosition[stockId] ?? row.original.position
+                    return (
+                        <div className="flex gap-1 items-center">
+                            <input
+                                className="w-[60px] "
+                                type="number"
+                                min={0}
+                                value={position}
+                                onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
+                            />
+                            <div>
+                                <button
+                                    className="px-4 py-2 bg-none text-xl rounded font-bold text-green-600"
+                                    onClick={() => handleUpdate(row.original.id, row.original.position)}
+                                >
+                                    <FaSync />
+                                </button>
+                            </div>
+                        </div>
+                    )
                 },
             },
             { header: 'Section Heading', accessorKey: 'section_heading' },
@@ -234,7 +252,7 @@ const AppBanners = () => {
                 ),
             },
         ],
-        [bannerIdStore],
+        [bannerIdStore, updatedPosition],
     )
 
     const handleSelectBannerId = (id: number, isChecked: boolean) => {
@@ -248,7 +266,36 @@ const AppBanners = () => {
         })
     }
 
+    const handleQuantityChange = (id: number, newQuantity: number) => {
+        setUpdatedPosition((prevQuantities) => ({
+            ...prevQuantities,
+            [id]: newQuantity,
+        }))
+    }
+
     console.log('Banner_Id', bannerIdStore)
+
+    const handleUpdate = async (id: any, position: any) => {
+        const positionData = updatedPosition[id] ?? null
+        console.log('position data is', positionData, 'for the id', id)
+
+        const body = {
+            position: positionData ?? position,
+            banner_id: id,
+        }
+
+        console.log('bdou is', body)
+
+        try {
+            const response = await axiosInstance.patch(`/banners`, body)
+            notification.success({
+                message: 'SUCCESS',
+                description: response?.data?.message || 'UPDATE SUCCESS',
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     const handleSelectPage = (value: string) => {
         const selectedPage = BANNER_PAGE_NAME.find((page) => page.value === value)
