@@ -71,25 +71,31 @@ const GDNPaginationTable = () => {
         try {
             const requiredUrl = failure === 0 ? uploaded_file : error_file
 
-            const response = await axioisInstance.get(`file/presign?file_url=${requiredUrl}`)
+            const response = await axioisInstance.get(`file/presign?file_url=${encodeURIComponent(requiredUrl)}`)
 
             const preSignedUrl = response.data.data
-            const data = await fetch(preSignedUrl)
+            await fetch(preSignedUrl)
                 .then((res) => res.blob())
                 .then((blob) => {
-                    const url = URL.createObjectURL(blob)
+                    const reader = new FileReader()
 
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.download = `${requiredUrl.split('_').slice(0, 2).join('')}.csv`
+                    reader.onload = () => {
+                        const utf8Blob = new Blob([reader.result as string], { type: 'text/csv;charset=utf-8;' })
 
-                    document.body.appendChild(a)
+                        const url = URL.createObjectURL(utf8Blob)
 
-                    a.click()
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = `--GDN-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
 
-                    document.body.removeChild(a)
+                        document.body.appendChild(a)
+                        a.click()
+                        document.body.removeChild(a)
 
-                    URL.revokeObjectURL(url)
+                        URL.revokeObjectURL(url)
+                    }
+
+                    reader.readAsText(blob, 'utf-8')
                 })
                 .catch((err) => console.log(err))
         } catch (error) {
@@ -105,22 +111,28 @@ const GDNPaginationTable = () => {
             const response = await axioisInstance.get(`file/presign?file_url=${requiredUrl}`)
 
             const preSignedUrl = response.data.data
-            const data = await fetch(preSignedUrl)
+            await fetch(preSignedUrl)
                 .then((res) => res.blob())
                 .then((blob) => {
-                    const url = URL.createObjectURL(blob)
+                    const reader = new FileReader()
 
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.download = `${requiredUrl.split('_').slice(10, 15).join('')}.csv`
+                    reader.onload = () => {
+                        const utf8Blob = new Blob([reader.result as string], { type: 'text/csv;charset=utf-8;' })
 
-                    document.body.appendChild(a)
+                        const url = URL.createObjectURL(utf8Blob)
 
-                    a.click()
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = `GDN-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
 
-                    document.body.removeChild(a)
+                        document.body.appendChild(a)
+                        a.click()
+                        document.body.removeChild(a)
 
-                    URL.revokeObjectURL(url)
+                        URL.revokeObjectURL(url)
+                    }
+
+                    reader.readAsText(blob, 'utf-8')
                 })
                 .catch((err) => console.log(err))
         } catch (error) {

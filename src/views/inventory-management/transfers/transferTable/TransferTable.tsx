@@ -8,6 +8,7 @@ import EasyTable from '@/common/EasyTable'
 import { pageSizeOptions } from '../../inward/inwardCommon'
 import { useNavigate } from 'react-router-dom'
 import { FaEdit } from 'react-icons/fa'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const TransferTable = () => {
     const [transferTableData, setTransferTableData] = useState<InventoryTransferTypes[]>([])
@@ -15,6 +16,7 @@ const TransferTable = () => {
     const [pageSize, setPageSize] = useState<number>(10)
     const [totalCount, setTotalCount] = useState<number>(0)
     const [globalFilter, setGlobalFilter] = useState<string>('')
+    const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
     const fetchTransferData = async () => {
@@ -27,7 +29,10 @@ const TransferTable = () => {
             const data = response?.data?.data
             setTransferTableData(data?.results)
             setTotalCount(data?.count)
-        } catch (error) {
+        } catch (error: any) {
+            if (error?.response && error?.response?.status === 403) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -120,6 +125,9 @@ const TransferTable = () => {
 
     const handleAddTransfer = () => {
         navigate(`/app/goods/transfer/addNew`)
+    }
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (

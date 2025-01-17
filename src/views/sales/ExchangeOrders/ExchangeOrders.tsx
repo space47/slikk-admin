@@ -462,23 +462,15 @@ const Exchangeorders = () => {
                 </div>
                 <br />
 
-                {orders.length === 0 ? (
-                    <>
-                        <NotFoundData />
-                    </>
-                ) : (
-                    <>
-                        <div className="border border-gray-300 p-2 rounded-xl">
-                            <RedMarkTable
-                                mainData={orders}
-                                page={page}
-                                pageSize={pageSize}
-                                columns={columns}
-                                selectedDeliveryType={deliveryTypes ?? ''}
-                            />
-                        </div>
-                    </>
-                )}
+                <div className="border border-gray-300 p-2 rounded-xl">
+                    <RedMarkTable
+                        mainData={orders}
+                        page={page}
+                        pageSize={pageSize}
+                        columns={columns}
+                        selectedDeliveryType={deliveryTypes ?? ''}
+                    />
+                </div>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 {numberClick !== true && (
