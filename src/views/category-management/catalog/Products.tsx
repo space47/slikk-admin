@@ -105,6 +105,11 @@ const Products = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             let searchInputType = ''
+            let pageAndSize = `&p=${page}&page_size=${pageSize}`
+
+            if (globalFilter) {
+                pageAndSize = ''
+            }
 
             // setShowSpinner(true)
             if (currentSelectedPage.value === 'sku' && globalFilter) {
@@ -112,9 +117,7 @@ const Products = () => {
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
                 searchInputType = `&name=${globalFilter}`
             }
-            const response = await axiosInstance.get(
-                `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`,
-            )
+            const response = await axiosInstance.get(`merchant/products?dashboard=true${pageAndSize}&${typeFetch}${searchInputType}`)
 
             const data = response.data?.data?.results
             const total = response.data?.data?.count
@@ -300,18 +303,17 @@ const Products = () => {
             }
             const downloadUrl = `merchant/products?download=true&${typeFetch}${searchInputType}`
 
-            const response = await axiosInstance.get(downloadUrl, {
-                responseType: 'blob',
-            })
+            const response = await axiosInstance.get(downloadUrl)
 
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = 'Product.csv'
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-        } catch (error) {
+            console.log('response is  ssss', response?.data)
+
+            notification.success({
+                message: response?.data?.message,
+            })
+        } catch (error: any) {
+            notification.error({
+                message: error?.response?.data?.message || 'Failed ti export',
+            })
             console.error('Error downloading the file:', error)
         }
     }
@@ -476,18 +478,20 @@ const Products = () => {
             </div>
 
             <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
-            <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
-                    />
+            {!globalFilter && (
+                <div className="flex items-center justify-between mt-4">
+                    <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
+                    <div style={{ minWidth: 130 }}>
+                        <Select<Option>
+                            size="sm"
+                            isSearchable={false}
+                            value={pageSizeOptions.find((option) => option.value === pageSize)}
+                            options={pageSizeOptions}
+                            onChange={(option) => onSelectChange(option?.value)}
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
             {showImageModal && (
                 <ImageMODAL
                     dialogIsOpen={showImageModal}

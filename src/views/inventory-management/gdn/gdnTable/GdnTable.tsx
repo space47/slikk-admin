@@ -10,8 +10,7 @@ import { Option } from '../../quality-check/qcCommon'
 import { pageSizeOptions } from '../../inward/inwardCommon'
 import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { IoWarningOutline } from 'react-icons/io5'
-import { Modal, notification } from 'antd'
+import GdnDeleteModal from './components/GdnDeleteModal'
 
 const GdnTable = () => {
     const [gdnData, setGdnData] = useState<GDN_TYPES[]>([])
@@ -29,7 +28,7 @@ const GdnTable = () => {
             setGdnData(data?.results)
             setTotalPages(data?.count)
         } catch (error: any) {
-            if (error?.response || error?.response?.status === 403) {
+            if (error?.response && error?.response?.status === 403) {
                 setAccessDenied(true)
             }
             console.error(error)
@@ -44,7 +43,7 @@ const GdnTable = () => {
         {
             header: 'Edit',
             accessorKey: '',
-            cell: ({ row }) => (
+            cell: ({ row }: any) => (
                 <button className="border-none bg-none">
                     <a href={`/app/goods/gdn/${encodeURIComponent(row.original.document_number)}`} target="_blank" rel="noreferrer">
                         {' '}
@@ -56,7 +55,7 @@ const GdnTable = () => {
         {
             header: 'Document Number',
             accessorKey: 'document_number',
-            cell: ({ row }) => (
+            cell: ({ row }: any) => (
                 <div className="cursor-pointer bg-gray-200 px-2 py-2 items-center flex justify-center rounded-md text-black font-semibold">
                     <a
                         href={`/app/goods/gdnDetails/${encodeURIComponent(row.original.document_number)}/${row?.original?.company}`}
@@ -116,8 +115,8 @@ const GdnTable = () => {
         {
             header: 'Delete',
             accessorKey: 'id',
-            cell: ({ row }) => (
-                <button onClick={() => handleDeleteClick(row.original.id)} className="border-none bg-none">
+            cell: ({ row }: any) => (
+                <button className="border-none bg-none" onClick={() => handleDeleteClick(row.original.id)}>
                     <FaTrash className="text-xl text-red-500" />
                 </button>
             ),
@@ -137,25 +136,6 @@ const GdnTable = () => {
         setStoreGdnId(id)
     }
 
-    const deleteGDN = async () => {
-        try {
-            const response = await axioisInstance.delete(`/goods/dispatch/${storeGdnId}`)
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'GDN Successfully deleted',
-            })
-            navigate(0)
-        } catch (error: any) {
-            console.log(error)
-            notification.error({
-                message: error?.response?.data?.message,
-                description: 'Unable to delete GDN',
-            })
-        } finally {
-            setShowDeleteModal(false)
-        }
-    }
-
     if (accessDenied) {
         return <AccessDenied />
     }
@@ -168,7 +148,7 @@ const GdnTable = () => {
                 </Button>
             </div>
             <div>
-                <EasyTable mainData={gdnData} columns={columns} page={page} pageSize={pageSize} overflow />
+                <EasyTable overflow mainData={gdnData} columns={columns} page={page} pageSize={pageSize} />
             </div>
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalPage} onChange={() => setPage(page)} />
@@ -183,21 +163,7 @@ const GdnTable = () => {
                 </div>
             </div>
             {showDeleteModal && (
-                <Modal
-                    title=""
-                    open={showDeleteModal}
-                    onOk={deleteGDN}
-                    onCancel={() => setShowDeleteModal(false)}
-                    okText="DELETE"
-                    okButtonProps={{
-                        style: { backgroundColor: 'red', borderColor: 'red' },
-                    }}
-                >
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-2 mt-7">
-                        <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU WANT TO DELETE THE GDN:{' '}
-                        <span className="text-red-500 font-bold">{storeGdnId}</span> !!
-                    </div>
-                </Modal>
+                <GdnDeleteModal setShowDeleteModal={setShowDeleteModal} showDeleteModal={showDeleteModal} storeGdnId={storeGdnId} />
             )}
         </div>
     )
