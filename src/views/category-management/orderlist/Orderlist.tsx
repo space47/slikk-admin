@@ -2,11 +2,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import type { Order, OrderItem } from './commontypes'
+import type { Order } from './commontypes'
 import { Button, Dropdown, Input } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import { FaExclamationCircle, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
@@ -17,14 +16,10 @@ import NotificationSound from '@/common/orderNotification'
 import PendingNotification from '@/common/pendingNotification'
 import { notification } from 'antd'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import EasyTable from '@/common/EasyTable'
 import RedMarkTable from '@/common/RedMarkTable'
-import { HiOutlineSearch, HiSearch } from 'react-icons/hi'
+import { HiSearch } from 'react-icons/hi'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
-import NotFoundData from '@/views/pages/NotFound/Notfound'
-
-const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
 const CHANGE_DELIVERY_OPTIONS = [
     { label: 'EXPRESS', value: 'EXPRESS' },
@@ -62,9 +57,7 @@ const OrderList = () => {
         name: [],
     })
     const [searchInput, setSearchInput] = useState<string>('')
-
     const [pageSize, setPageSize] = useState(10)
-
     const [page, setPage] = useState(1)
     const navigate = useNavigate()
     const [from, setFrom] = useState(var1 ? var1 : moment().format('YYYY-MM-DD'))
@@ -74,8 +67,6 @@ const OrderList = () => {
         value: [],
         name: [],
     })
-
-    const [storeInvoiceId, setStoreInvoiceId] = useState()
     const [showFilter, setShowFilter] = useState(false)
     const [soundEnabled, setSoundEnabled] = useState(false)
     const [pendingSound, setPendingSound] = useState(false)
@@ -115,10 +106,8 @@ const OrderList = () => {
                     `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
                 )
             }
-
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
-
             setOrders(ordersData)
             setOrderCount(orderCount)
         } catch (error) {
@@ -230,7 +219,7 @@ const OrderList = () => {
         }
     }, [soundEnabled, pendingSound])
 
-    const handleNumberClick = async (number) => {
+    const handleNumberClick = async (number: number) => {
         try {
             const response = await axiosInstance.get(`/merchant/orders?mobile=${number}&page_size=100`)
 
@@ -238,7 +227,7 @@ const OrderList = () => {
 
             setOrders(data.results)
             setOrderCount(data.count)
-            setNumberClick(true) // Set numberClick to true to stop interval and fetchOrders
+            setNumberClick(true)
         } catch (error) {
             console.error(error)
         }
@@ -249,11 +238,10 @@ const OrderList = () => {
             {
                 header: 'Invoice Id',
                 accessorKey: 'invoice_id',
-                cell: ({ getValue, row }) => {
+                cell: ({ getValue, row }: any) => {
                     const createDate = moment(row.original.create_date)
                     const currentDate = moment()
                     const differenceInSeconds = currentDate.diff(createDate, 'seconds')
-                    setStoreInvoiceId(getValue())
                     if (row.original.status === 'PENDING' && differenceInSeconds > 120) {
                         setPendingSound(true)
                         setTimeout(() => setPendingSound(false), 5000)
@@ -310,13 +298,9 @@ const OrderList = () => {
             {
                 header: 'Delivery Type',
                 accessorKey: 'delivery_type',
-                cell: ({ row, getValue }: any) => {
+                cell: ({ row }: any) => {
                     const Rowid = row?.original.invoice_id
-                    const deliveryForRedTable = getValue()
                     const selectedDeliveryType = deliveryChangeType[Rowid]?.label || row.original?.delivery_type || 'SELECT'
-
-                    // setDeliveryForTable(deliveryForRedTable)
-
                     return (
                         <Dropdown
                             className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
@@ -353,7 +337,7 @@ const OrderList = () => {
             {
                 header: 'Status',
                 accessorKey: 'status',
-                cell: ({ getValue, row }) => {
+                cell: ({ row }) => {
                     const statuses = row?.original?.status
                     return (
                         <div>
@@ -391,8 +375,6 @@ const OrderList = () => {
         })
         setDeliveryTypes(initialDeliveryTypes)
     }, [orders])
-
-    console.log('Order Table', orders)
 
     const handleDownload = async () => {
         try {
@@ -601,9 +583,6 @@ const OrderList = () => {
                             </div>
                         </div>
                     </div>
-                    {/* From here */}
-
-                    {/* To here */}
                     <div className="flex gap-4">
                         <div className="flex flex-col md:flex-row items-end justify-end ">
                             <button
@@ -641,23 +620,15 @@ const OrderList = () => {
                 </div>
                 <br />
 
-                {orders.length === 0 ? (
-                    <>
-                        <NotFoundData />
-                    </>
-                ) : (
-                    <>
-                        <div className="border border-gray-300 p-2 rounded-xl">
-                            <RedMarkTable
-                                mainData={orders}
-                                page={page}
-                                pageSize={pageSize}
-                                columns={columns}
-                                selectedDeliveryType={deliveryTypes ?? ''}
-                            />
-                        </div>
-                    </>
-                )}
+                <div className="border border-gray-300 p-2 rounded-xl">
+                    <RedMarkTable
+                        mainData={orders}
+                        page={page}
+                        pageSize={pageSize}
+                        columns={columns}
+                        selectedDeliveryType={deliveryTypes ?? ''}
+                    />
+                </div>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 {numberClick !== true && (

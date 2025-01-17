@@ -190,6 +190,11 @@ const AppBanners = () => {
                                 type="number"
                                 min={0}
                                 value={position}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleUpdate(row.original.id, row.original.position)
+                                    }
+                                }}
                                 onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
                             />
                             <div>

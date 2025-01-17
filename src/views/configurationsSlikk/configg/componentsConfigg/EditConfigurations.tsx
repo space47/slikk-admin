@@ -233,7 +233,18 @@ const EditConfigurations = () => {
                             <button
                                 type="button"
                                 className="bg-black text-white px-2 py-2 rounded-xl flex gap-2"
-                                onClick={() => arrayHelpers.push('')}
+                                onClick={() => {
+                                    if (obj.length > 0) {
+                                        const newItem = _.isPlainObject(obj[0])
+                                            ? _.mapValues(obj[0], () => '')
+                                            : _.isArray(obj[0])
+                                              ? []
+                                              : ''
+                                        arrayHelpers.push(newItem)
+                                    } else {
+                                        arrayHelpers.push('')
+                                    }
+                                }}
                             >
                                 <IoIosAddCircle className="text-xl" /> Add Item
                             </button>
