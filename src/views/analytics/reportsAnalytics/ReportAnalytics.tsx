@@ -154,9 +154,10 @@ const ReportAnalytics = () => {
         let reportParameters = ''
         if (values?.required_fields) {
             reportParameters = values.required_fields
-                .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string }) => {
-                    const { key, value, prefix = '', suffix = '', dataType } = field
-
+                .map((field: { key: string; value: any; prefix?: string; suffix?: string; dataType?: string; position?: number }) => {
+                    const { key, value = '', prefix = '', suffix = '', dataType } = field
+                    console.log('value are', value)
+                    console.log('Field is', key)
                     if (dataType === 'MultiSelect' && Array.isArray(value)) {
                         console.log('value for muktiselect ', value)
                         if (value.length === 0 || value[0] === '') {
@@ -164,6 +165,7 @@ const ReportAnalytics = () => {
                         }
 
                         const formattedValues = value.map((item: any) => {
+                            console.log('Items is', item)
                             const transformedValue = item
                                 ? !['Date', 'Number', 'Boolean'].includes(dataType!)
                                     ? `${prefix.toUpperCase()}${item.toString().toUpperCase()}${suffix.toUpperCase()}`
@@ -177,12 +179,14 @@ const ReportAnalytics = () => {
                     }
 
                     if (value === undefined || value === null || value === '') {
-                        return null
+                        return `${key}=`
                     }
 
                     const transformedValue = !['Date', 'Number', 'Boolean'].includes(dataType!)
                         ? `${prefix.toUpperCase()}${value.toString().toUpperCase()}${suffix.toUpperCase()}`
                         : `${prefix.toUpperCase()}${value}${suffix.toUpperCase()}`
+
+                    console.log('Transformed value is ', transformedValue)
 
                     return `${key}=${transformedValue}`
                 })
