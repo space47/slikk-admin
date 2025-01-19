@@ -60,6 +60,7 @@ const AddCoupons = () => {
         user_add_action: userAction,
         is_public: couponsEdit?.is_public,
         delivery_free: couponsEdit?.extra_attributes?.delivery_free,
+        try_and_buy_free: couponsEdit?.extra_attributes?.try_and_buy_free,
         coupon_discount_type: couponsEdit?.coupon_discount_type,
         max_order_count: couponsEdit?.extra_attributes?.max_order_count,
         min_order_count: couponsEdit?.extra_attributes?.min_order_count,
@@ -91,6 +92,7 @@ const AddCoupons = () => {
             formData.append('coupon_discount_type', values?.coupon_discount_type || '')
             const extraAttributes = {
                 delivery_free: values?.delivery_free,
+                try_and_buy_free: values?.try_and_buy_free,
                 max_order_count: values?.max_order_count,
                 min_order_count: values?.min_order_count,
             }
