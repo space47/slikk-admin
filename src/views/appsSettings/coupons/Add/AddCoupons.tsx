@@ -62,6 +62,7 @@ const AddCoupons = () => {
             formData.append('coupon_discount_type', values?.coupon_discount_type || '')
             const extraAttributes = {
                 delivery_free: values?.delivery_free,
+                try_and_buy_free: values?.try_and_buy_free,
                 max_order_count: values?.max_order_count,
                 min_order_count: values?.min_order_count,
             }
