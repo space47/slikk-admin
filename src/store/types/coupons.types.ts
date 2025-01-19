@@ -1,9 +1,10 @@
 import { createAction } from '@reduxjs/toolkit'
 
 interface extra_attributes {
-    delivery_free: string
+    delivery_free: boolean
     max_order_count: number
     min_order_count: number
+    try_and_buy_free: boolean
 }
 
 export interface COUPONDATA {

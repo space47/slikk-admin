@@ -137,6 +137,15 @@ export const COUPON_FORM = [
         status: 'delivery_free',
     },
     {
+        label: 'Try And buy Free',
+        classname: 'col-span-1 w-full',
+        type: 'checkbox',
+        name: 'try_and_buy_free',
+        placeholder: 'Enter user',
+        component: { Input },
+        status: 'try_and_buy_free',
+    },
+    {
         label: 'User',
         classname: 'col-span-1 w-full',
         type: 'text',
