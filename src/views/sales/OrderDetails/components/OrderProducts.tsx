@@ -242,7 +242,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                         {data.map((pdts) => (
                             <div
                                 key={pdts.id}
-                                className="flex items-center p-6 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12"
+                                className="flex  p-3 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12"
                             >
                                 <div className="flex-shrink-0">
                                     <img
@@ -253,17 +253,23 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                     />
                                 </div>
                                 <div className="ml-6 w-full ">
-                                    <div className="font-bold text-md xl:text-2xl">{pdts.brand}</div>
-                                    <div className="font-normal text-md text-gray-500 xl:text-2xl w-[100px] xl:w-full">{pdts.name}</div>
+                                    <div className="font-bold text-[12px] xl:text-2xl">{pdts.brand}</div>
+                                    <div className="font-normal text-[12px] text-gray-500 xl:text-2xl w-[100px] xl:w-full">{pdts.name}</div>
+                                    <br />
                                     <div className=" mb-3 xl:text-lg w-[100px] text-red-700 xl:w-full">{pdts.sku}</div>
                                     <div className=" mb-3 xl:text-lg w-[100px] text-gray-700 xl:w-full">Size:{pdts.size}</div>
-                                    <div className=" mb-3 xl:text-lg w-[100px] text-gray-700 xl:w-full">price:{pdts.final_price}</div>
+
                                     <div className="flex items-center justify-between">
                                         <div className="flex flex-col xl:flex-row xl:gap-6 xl:items-center gap-2">
-                                            <div className="text-md xl:text-md">Qty: {pdts.quantity}</div>
+                                            <div className="text-md xl:text-md">Qty: {pdts.fulfilled_quantity}</div>
                                         </div>
                                     </div>
-                                    <div className="text-gray-900 mb-3 xl:text-lg w-[100px] xl:w-full font-bold">{pdts.location}</div>
+                                    {pdts.location && (
+                                        <div className="text-gray-900 mb-3 xl:text-md w-[100px] xl:w-full font-bold flex gap-1">
+                                            <span className="font-semibold">Loc:</span>
+                                            {pdts.location}
+                                        </div>
+                                    )}
                                     <div className="flex justify-end mt-10">
                                         <Button variant="reject" size="sm" onClick={() => handleReplace(pdts.id)}>
                                             Replace
