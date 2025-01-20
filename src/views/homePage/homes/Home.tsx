@@ -229,7 +229,7 @@ const Home = () => {
 
             <div className="flex flex-col xl:flex-row  xl:justify-between  mb-4 gap-5 ">
                 <div className="w-full xl:w-[50%]">
-                    <div className="font-bold text-2xl">Search By</div>
+                    <div className="font-bold text-2xl text-blue-900">Search By</div>
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
                         <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[400px] bg-white shadow-md dark:bg-gray-900">
                             <input
@@ -281,7 +281,11 @@ const Home = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
                 {CARDDATA.map((item, key) => (
-                    <Card className="shadow-lg cursor-pointer" onClick={() => item.handleClick()} key={key}>
+                    <Card
+                        className="shadow-lg cursor-pointer hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
+                        onClick={() => item.handleClick()}
+                        key={key}
+                    >
                         <div className="flex gap-10 items-center">
                             <div>{item.img}</div>
                             <div>
@@ -297,7 +301,10 @@ const Home = () => {
                 ))}
 
                 {CARDDATA2nd.map((item, key) => (
-                    <Card className="shadow-lg" key={key}>
+                    <Card
+                        key={key}
+                        className="shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer"
+                    >
                         <div className="flex gap-10 items-center">
                             <div className="mt-2">{item.img}</div>
                             <div>
@@ -310,7 +317,7 @@ const Home = () => {
                     </Card>
                 ))}
 
-                <Card className="shadow-lg">
+                <Card className="shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer">
                     <div className="flex gap-10 items-center">
                         <div>
                             <MdDeliveryDining className="text-5xl mx-4 text-blue-500 " />
@@ -324,7 +331,7 @@ const Home = () => {
                         </div>
                     </div>
                 </Card>
-                <Card className="shadow-lg">
+                <Card className="shadow-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer">
                     <div className="flex gap-10 items-center">
                         <div>
                             <PiDevicesFill className="text-5xl mx-4 " />
@@ -347,7 +354,8 @@ const Home = () => {
             <div className="mt-5 w-[350px] xl:w-full">
                 {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}
             </div>
-
+            <br />
+            <div className="text-2xl text-blue-900  font-bold">Location Wise Orders</div>
             <div className="flex justify-center items-start my-10 z-10">
                 <div className="w-full xl:w-3/4">
                     <MultipleMap

@@ -50,6 +50,7 @@ const EditConfigurations = () => {
                     {Object.entries(obj).map(([key, val]) => {
                         const fieldName = parentKey ? `${parentKey}.${key}` : key
                         const tempKey = editableKeys[key] ?? key
+                        console.log('Checking Tempkey is......')
                         return (
                             <div key={fieldName} className="flex gap-4 items-center mb-2">
                                 {/* Editable key */}
@@ -155,14 +156,18 @@ const EditConfigurations = () => {
                                 ) : (
                                     <Field
                                         name={fieldName}
-                                        render={({ field }) => (
-                                            <Input
-                                                {...field}
-                                                placeholder="Value"
-                                                className="w-full"
-                                                onChange={(e) => setFieldValue(fieldName, e.target.value)}
-                                            />
-                                        )}
+                                        render={({ field }) => {
+                                            const isPureNumber = /^[0-9]+$/.test(field.value)
+                                            return (
+                                                <Input
+                                                    {...field}
+                                                    type={isPureNumber ? 'number' : 'text'}
+                                                    placeholder="Value"
+                                                    className="w-full"
+                                                    onChange={(e) => setFieldValue(fieldName, e.target.value)}
+                                                />
+                                            )
+                                        }}
                                     />
                                 )}
 
@@ -211,13 +216,17 @@ const EditConfigurations = () => {
                                         ) : (
                                             <Field
                                                 name={arrayKey}
-                                                render={({ field }) => (
-                                                    <Input
-                                                        {...field}
-                                                        placeholder={`Enter value for ${parentKey}[${index}]`}
-                                                        className="w-full"
-                                                    />
-                                                )}
+                                                render={({ field }) => {
+                                                    const isPureNumber = /^[0-9]+$/.test(field.value)
+                                                    return (
+                                                        <Input
+                                                            {...field}
+                                                            type={isPureNumber ? 'number' : 'text'}
+                                                            placeholder={`Enter value for ${parentKey}[${index}]`}
+                                                            className="w-full"
+                                                        />
+                                                    )
+                                                }}
                                             />
                                         )}
 
@@ -263,14 +272,17 @@ const EditConfigurations = () => {
             if (_.isPlainObject(obj)) {
                 const entries = await Promise.all(
                     Object.entries(obj).map(async ([key, val]) => {
+                        console.log('Value is......', val)
+                        const value = /^[0-9]+$/.test(val) ? Number(val) : val
+                        console.log('Values to check is  nnumber', value)
                         if (key.toLowerCase().includes('image') && Array.isArray(val)) {
                             const processedImage = await handleimage('product', val)
                             return [key, processedImage]
                         }
                         if (_.isPlainObject(val) || Array.isArray(val)) {
-                            return [key, await processValues(val)]
+                            return [key, await processValues(value)]
                         }
-                        return [key, val]
+                        return [key, value]
                     }),
                 )
                 return Object.fromEntries(entries)

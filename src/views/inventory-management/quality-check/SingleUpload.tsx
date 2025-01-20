@@ -121,16 +121,20 @@ const SingleUpload = () => {
                         ))}
 
                         <div className="flex justify-start gap-5">
-                            <Button
-                                type="reset"
-                                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                                onClick={() => resetForm()}
-                            >
-                                Reset
-                            </Button>
-                            <Button variant="solid" type="submit" onClick={() => handleSubmit(values)}>
-                                Submit
-                            </Button>
+                            <div>
+                                <Button
+                                    type="reset"
+                                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                                    onClick={() => resetForm()}
+                                >
+                                    Reset
+                                </Button>
+                            </div>
+                            <div>
+                                <Button variant="solid" type="submit" onClick={() => handleSubmit(values)}>
+                                    Submit
+                                </Button>
+                            </div>
                         </div>
                     </FormContainer>
                 )}

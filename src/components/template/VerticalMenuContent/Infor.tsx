@@ -14,12 +14,8 @@ interface Users {
 }
 
 const Infor = () => {
-    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>(
-        (state) => state.company.company,
-    )
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>(
-        (state) => state.company.currCompany,
-    )
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
     const dispatch = useAppDispatch()
 
     const onDropdownItemClick = (index: string) => {
@@ -41,19 +37,11 @@ const Infor = () => {
     }
 
     return (
-        <div className="text-[14px] max-h-[140px] xl:text-[18px]">
-            <Dropdown
-                key={selectedCompany.id}
-                title={` ${selectedCompany.name}`}
-                onClick={onDropdownClick}
-            >
-                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll ">
+        <div className="text-[14px] max-h-[140px] xl:text-[18px]  font-bold">
+            <Dropdown key={selectedCompany.id} title={` ${selectedCompany.name}`} onClick={onDropdownClick}>
+                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll font-bold ">
                     {companyList.map((item, i) => (
-                        <Dropdown.Item
-                            key={i}
-                            eventKey={i.toString()}
-                            onSelect={onDropdownItemClick}
-                        >
+                        <Dropdown.Item key={i} eventKey={i.toString()} onSelect={onDropdownItemClick}>
                             <div
                                 onClick={handleOption}
                                 className="text-[12px] capitalize whitespace-break-spaces  min-w-[250px] xl:w-[500px] xl:text-[14px]"

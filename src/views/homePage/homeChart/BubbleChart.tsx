@@ -23,7 +23,7 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
 
     return (
         <div>
-            <div className="text-xl font-semibold">
+            <div className="text-xl font-bold text-blue-900">
                 BRAND WISE DATA CHART : <span>({sum})</span>
             </div>
             <Chart

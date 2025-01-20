@@ -34,3 +34,11 @@ export type qctable = {
     data: grn_quality_check[]
     totalData: number
 }
+
+export type skuUpdateType = {
+    qc_failed: number
+    qc_passed: number
+    quantity_received: number
+    location: string
+    sku: string
+}

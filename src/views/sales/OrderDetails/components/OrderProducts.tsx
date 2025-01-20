@@ -7,6 +7,7 @@ import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
 
 import ReplaceDrawer from './ReplaceDrawer'
+import { Button, Select } from '@/components/ui'
 
 import.meta.env.VITE_WEB_URI
 
@@ -97,6 +98,8 @@ const PriceAmount = ({ amount }: { amount: number }) => {
 const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) => {
     const [replaceDrawer, setReplaceDrawer] = useState(false)
     const [itemId, setItemId] = useState<number>()
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState('')
 
     const columns = [
         columnHelper.accessor('name', {
@@ -195,37 +198,96 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
         setReplaceDrawer(false)
     }
 
+    const handleImageView = (img: string) => {
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
+
     const handleReplaceSubmit = () => {}
 
     return (
         <AdaptableCard className="mb-4">
-            <Table overflow>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <Th key={header.id} colSpan={header.colSpan}>
-                                        {flexRender(header.column.columnDef.header, header.getContext())}
-                                    </Th>
-                                )
-                            })}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => {
-                        return (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => {
-                                    return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+            <div className="xl:block hidden">
+                <Table overflow>
+                    <THead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <Tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                    return (
+                                        <Th key={header.id} colSpan={header.colSpan}>
+                                            {flexRender(header.column.columnDef.header, header.getContext())}
+                                        </Th>
+                                    )
                                 })}
                             </Tr>
-                        )
-                    })}
-                </TBody>
-            </Table>
+                        ))}
+                    </THead>
+                    <TBody>
+                        {table.getRowModel().rows.map((row) => {
+                            return (
+                                <Tr key={row.id}>
+                                    {row.getVisibleCells().map((cell) => {
+                                        return <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
+                                    })}
+                                </Tr>
+                            )
+                        })}
+                    </TBody>
+                </Table>
+            </div>
 
+            <div>
+                {data && data.length > 0 && (
+                    <div className="grid grid-cols-1 gap-4 xl:hidden ">
+                        {data.map((pdts) => (
+                            <div
+                                key={pdts.id}
+                                className="flex  p-3 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12"
+                            >
+                                <div className="flex-shrink-0">
+                                    <img
+                                        src={pdts.image.split(',')[0]}
+                                        alt={pdts.name}
+                                        className="w-28 xl:w-44 h-52 object-cover rounded-lg"
+                                        onClick={() => handleImageView(pdts.image)}
+                                    />
+                                </div>
+                                <div className="ml-6 w-full ">
+                                    <div className="font-bold text-[12px] xl:text-2xl">{pdts.brand}</div>
+                                    <div className="font-normal text-[12px] text-gray-500 xl:text-2xl w-[100px] xl:w-full">{pdts.name}</div>
+                                    <br />
+                                    <div className=" mb-3 xl:text-lg w-[100px] text-red-700 xl:w-full">{pdts.sku}</div>
+                                    <div className=" mb-3 xl:text-lg w-[100px] text-gray-700 xl:w-full">Size:{pdts.size}</div>
+
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex flex-col xl:flex-row xl:gap-6 xl:items-center gap-2">
+                                            <div className="text-md xl:text-md">Qty: {pdts.fulfilled_quantity}</div>
+                                        </div>
+                                    </div>
+                                    {pdts.location && (
+                                        <div className="text-gray-900 mb-3 xl:text-md w-[100px] xl:w-full font-bold flex gap-1">
+                                            <span className="font-semibold">Loc:</span>
+                                            {pdts.location}
+                                        </div>
+                                    )}
+                                    <div className="flex justify-end mt-10">
+                                        <Button variant="reject" size="sm" onClick={() => handleReplace(pdts.id)}>
+                                            Replace
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+            {showImageModal && (
+                <ImageMODAL
+                    dialogIsOpen={showImageModal}
+                    setIsOpen={setShowImageModal}
+                    image={particularRowImage && particularRowImage?.split(',')}
+                />
+            )}
             {replaceDrawer && (
                 <ReplaceDrawer
                     dialogIsOpen={replaceDrawer}
