@@ -2,6 +2,7 @@
 import { Card, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
+import ActiveChart from './ActiveChart' // Import your ActiveChart component
 
 interface ActiveUserProps {
     from: string
@@ -75,30 +76,47 @@ const ActiveUserFlow = ({ from, to }: ActiveUserProps) => {
 
     if (showSpinner) {
         return (
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center h-screen">
                 <Spinner size={40} />
             </div>
         )
     }
 
+    const chartData = dynamicKeys.slice(6).reduce(
+        (acc, key) => {
+            acc[key.replace(/_/g, ' ')] = userData[0]?.[key] || 0
+            return acc
+        },
+        {} as { [key: string]: number },
+    )
+
     return (
-        <div className="flex flex-col gap-6 p-6">
-            <div className="font-bold text-2xl mb-4">Active User Stats</div>
-            <div className="flex flex-wrap xl:gap-4 gap-0 justify-center">
-                {dynamicKeys.map((key, index) => (
-                    <div key={key} className="flex flex-col items-center py-0 xl:py-2 xl:flex-row">
-                        <Card className="text-center shadow-xl cursor-pointer xl:w-full w-[200px]">
-                            <div className="font-bold text-xl text-gray-500 mb-2">{key.replace(/_/g, ' ')}</div>
-                            <div className="text-green-500 text-xl font-semibold">{userData[0]?.[key] ?? ''}</div>
-                        </Card>
-                        {index < dynamicKeys.length - 1 && (
-                            <div className="text-4xl text-red-400">
-                                <span className="hidden xl:inline">{'➔'}</span>
-                                <span className="inline xl:hidden">{'↓'}</span>
-                            </div>
-                        )}
+        <div className="flex flex-col gap-6 p-6 bg-gray-100 ">
+            <div className="font-bold text-2xl text-blue-900  mb-6">Active User Stats</div>
+
+            <div className="">
+                <div className="flex flex-wrap xl:gap-4 gap-0 justify-center">
+                    {dynamicKeys.map((key, index) => (
+                        <div key={key} className="flex flex-col items-center py-0 xl:py-2 xl:flex-row">
+                            <Card className="text-center shadow-xl cursor-pointer xl:w-full w-[200px] bg-white hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl">
+                                <div className="font-bold text-xl text-gray-700 mb-2">{key.replace(/_/g, ' ')}</div>
+                                <div className="text-green-600 text-2xl font-semibold">{userData[0]?.[key] ?? ''}</div>
+                            </Card>
+
+                            {index < dynamicKeys.length - 1 && (
+                                <div className="text-4xl text-red-400">
+                                    <span className="hidden xl:inline">{'➔'}</span>
+                                    <span className="inline xl:hidden">{'↓'}</span>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                {/* <div className="flex justify-center mb-8 ">
+                    <div className="w-full max-w-3xl xl:ml-10 mt-20">
+                        <ActiveChart data={chartData} />
                     </div>
-                ))}
+                </div> */}
             </div>
         </div>
     )

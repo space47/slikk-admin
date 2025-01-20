@@ -15,6 +15,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-react": "^9.4.0",
     "@floating-ui/react": "^0.26.22",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
@@ -37,6 +38,7 @@
     "apexcharts": "^3.52.0",
     "axios": "^1.7.3",
     "chart.js": "^4.4.4",
+    "ckeditor5": "^44.1.0",
     "classnames": "^2.5.1",
     "d3-dsv": "^3.0.1",
     "d3-fetch": "^3.0.1",

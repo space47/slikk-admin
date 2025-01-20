@@ -31,7 +31,7 @@ function DebouncedInput({ value: initialValue, onChange, debounce = 500, ...prop
 
     return (
         <div className="main">
-            <div className="text-xl font-bold mt-5 mb-4">QUALITY CHECKLIST</div>
+            <div className="text-xl font-bold mt-5 mb-4"></div>
             <div className="flex justify-start mb-6">
                 <div className="flex items-center mb-4">
                     <span className="mr-2"></span>

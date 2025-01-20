@@ -25,6 +25,7 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaDownload, FaSync } from 'react-icons/fa'
 import { inwardDetailsResponse } from './inwardCommon'
+import QcTabs from './components/QcTabs'
 // import { string } from 'yup'
 
 const InwardDetails = () => {
@@ -187,38 +188,18 @@ const InwardDetails = () => {
                             </div>
                             <hr className="" />
                         </div>
-                        <div className="mt-5 flex flex-col">
-                            {/* TABLE..................................................... */}
+                        {/* From Here */}
+                        <br />
+                        <QcTabs
+                            data={data}
+                            handleSyncClick={handleSyncClick}
+                            showSyncModal={showSyncModal}
+                            syncGRN={syncGRN}
+                            handleCloseModal={handleCloseModal}
+                            isSyncing={isSyncing}
+                        />
 
-                            <div className="flex justify-end mt-5 text-xl mr-7">
-                                <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
-                                    {' '}
-                                    <div className="flex gap-2 font-bold text-green-600">
-                                        SYNC GRN <FaSync className="text-2xl" />
-                                    </div>{' '}
-                                </button>
-                            </div>
-                            <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} />
-                        </div>
-                        {showSyncModal && (
-                            <Modal
-                                title=""
-                                okText="SYNC"
-                                okButtonProps={{
-                                    style: {
-                                        backgroundColor: 'green',
-                                        borderColor: 'green',
-                                        fontWeight: 'bold',
-                                    },
-                                }}
-                                open={showSyncModal}
-                                onOk={syncGRN}
-                                onCancel={handleCloseModal}
-                            >
-                                <div className="italic text-lg font-semibold">SYNC YOUR GRN NUMBER</div>
-                            </Modal>
-                        )}
-                        {isSyncing && <Loading loading={isSyncing} />}
+                        {/* To here */}
                     </>
                 )}
             </Loading>

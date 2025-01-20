@@ -197,6 +197,7 @@ const ReportAnalytics = () => {
         console.log('object required for', reportParameters)
 
         try {
+            setBadRequest(false)
             setShowSpinner(true)
             const response = await axioisInstance.get(`/query/execute/${storeName}?${reportParameters}`)
             const data = response?.data?.data
@@ -323,12 +324,14 @@ const ReportAnalytics = () => {
             </Formik>
             <br />
 
-            {badRequest && (
+            {badRequest ? (
                 <>
                     <div className="flex justify-center text-red-700 font-bold text-xl">
                         You have Passed wrong value or the data do not exist
                     </div>
                 </>
+            ) : (
+                ''
             )}
 
             {showSpinner ? (
