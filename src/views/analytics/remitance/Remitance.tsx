@@ -173,16 +173,6 @@ const Remitance = () => {
         getCoreRowModel: getCoreRowModel(),
     })
 
-    // const onPaginationChange = (page: number) => {
-    //     setPage(page)
-    // }
-    console.log('Data for company', companyData)
-
-    const handleRemoveCompanyId = () => {
-        setCompanyData(null)
-        setFieldValue([])
-    }
-
     if (accessDenied) {
         return <AccessDenied />
     }

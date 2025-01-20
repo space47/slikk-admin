@@ -287,9 +287,6 @@ const CreateGdn = () => {
                                 <FormItem label="Total Quantity" className="col-span-1 w-1/3">
                                     <Field type="number" name="total_quantity" placeholder="Enter total items received" component={Input} />
                                 </FormItem>
-                                {/* <FormItem label="Store" className="col-span-1 w-1/3">
-                                    <Field type="number" name="store" placeholder="Enter Store" component={Input} />
-                                </FormItem> */}
                             </FormContainer>
 
                             {/* ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo */}
@@ -308,13 +305,11 @@ const CreateGdn = () => {
                                                 <>
                                                     <Upload
                                                         beforeUpload={beforeUpload}
-                                                        fileList={values.files} // uploadedd the file
+                                                        fileList={values.files}
                                                         onChange={(files) => {
-                                                            console.log('OnchangeFiles', files, field.name, values.files)
                                                             form.setFieldValue('files', files)
                                                         }}
                                                         onFileRemove={(files) => form.setFieldValue('files', files)}
-                                                        // uploadButtonText="Add Files"
                                                     />
                                                 </>
                                             )}
@@ -338,10 +333,6 @@ const CreateGdn = () => {
                                 </FormItem>
                             </FormContainer>
 
-                            {/* <div className="border border-gray-500 w-[85%] items-center justify-center flex py-2 mb-4">
-                                {datas}
-                            </div> */}
-
                             {/* ...............................IMAGES.......................................... */}
                             <div className="font-bold mb-3 mt-8">Upload Supporting Image</div>
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
@@ -361,7 +352,6 @@ const CreateGdn = () => {
                                                         fileList={values.image}
                                                         onChange={(files) => form.setFieldValue('image', files)}
                                                         onFileRemove={(files) => form.setFieldValue('image', files)}
-                                                        // uploadButtonText="Add Files"
                                                     />
                                                 </>
                                             )}

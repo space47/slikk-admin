@@ -299,10 +299,10 @@ const EditConfigurations = () => {
         console.log('body of the data is ', body)
 
         try {
-            // setShowSpinner(true)
-            // const response = await axiosInstance.post('/app/configuration', body)
-            // notification.success({ message: response.data?.message || 'Successfully Configured' })
-            // navigate('/app/configurations')
+            setShowSpinner(true)
+            const response = await axiosInstance.post('/app/configuration', body)
+            notification.success({ message: response.data?.message || 'Successfully Configured' })
+            navigate('/app/configurations')
         } catch (error) {
             console.error('Submit Error:', error)
             notification.error({ message: 'Failed to configure' })

@@ -2,17 +2,37 @@ import Chart from 'react-apexcharts'
 import { COLORS } from '@/constants/chart.constant'
 
 interface ActiveChartProps {
-    data: any
+    data: { [key: string]: number }
 }
 
 const ActiveChart = ({ data }: ActiveChartProps) => {
-    console.log('Data of  the chart', data)
+    const labels = Object.keys(data)
+    const series = Object.values(data)
+
+    console.log('Chart Labels:', labels)
+    console.log('Chart Series:', series)
 
     return (
         <Chart
             options={{
                 colors: COLORS,
-                labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+                labels: labels,
+                dataLabels: {
+                    enabled: true,
+                    formatter: (val: number, opts: any) => {
+                        const index = opts.seriesIndex
+                        return series[index]
+                    },
+                    style: {
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                    },
+                },
+                tooltip: {
+                    y: {
+                        formatter: (value: number) => `${value}`,
+                    },
+                },
                 responsive: [
                     {
                         breakpoint: 480,
@@ -27,7 +47,7 @@ const ActiveChart = ({ data }: ActiveChartProps) => {
                     },
                 ],
             }}
-            series={[44, 55, 13, 43, 22]}
+            series={series}
             height={300}
             type="pie"
         />
