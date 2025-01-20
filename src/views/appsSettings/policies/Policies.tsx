@@ -296,7 +296,7 @@ const Policies = () => {
                 </Dropdown>
             </div>
 
-            <div className="editor-container editor-container_classic-editor" ref={editorContainerRef}>
+            {/* <div className="editor-container editor-container_classic-editor" ref={editorContainerRef}>
                 <div className="editor-container__editor">
                     <div ref={editorRef}>
                         {editorConfig && (
@@ -312,6 +312,9 @@ const Policies = () => {
                         )}
                     </div>
                 </div>
+            </div> */}
+            <div className="w-[90%]">
+                <RichTextEditor className="h-[400px]" value={richTextValue} onChange={(value: string) => setRichTextValue(value)} />
             </div>
             <div className="policy_save_button ">
                 <Button variant="solid" color="indigo" size="sm" type="submit" onClick={handlePolicySubmit}>
