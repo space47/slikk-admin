@@ -11,7 +11,6 @@ import SkuDataInputs from './SkuDataInputs'
 import { FaSync } from 'react-icons/fa'
 import { inwardDetailsResponse } from '../inwardCommon'
 import LoadingSpinner from '@/common/LoadingSpinner'
-import { IoIosRefresh, IoIosRefreshCircle } from 'react-icons/io'
 
 interface props {
     data: inwardDetailsResponse
@@ -23,7 +22,6 @@ const SkuUpdate = ({ data }: props) => {
     const [getSkuData, setGetSkuData] = useState<any[]>([])
     const [qcReceived, setQcReceived] = useState<number>()
     const [qcPass, setQcPass] = useState<number>()
-    const [qcSent, setQcSent] = useState<number>()
     const [locationInput, setLocationInput] = useState<string>('')
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
@@ -77,104 +75,6 @@ const SkuUpdate = ({ data }: props) => {
         location: '',
         sku: '',
     })
-
-    const getDataInputs = getSkuData?.find((item) => item.sku === formData?.sku)
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }))
-    }
-
-    const handleAddSku = async () => {
-        const { sku, location } = formData
-
-        if (!sku.trim()) return
-
-        const getSameData = getSkuData?.find((item) => item.sku === sku)
-
-        const updatedData = skuWiseData.map((item) => {
-            console.log('check start')
-            if (item.sku === sku) {
-                return {
-                    ...item,
-                    qc_passed: item.qc_passed + 1,
-                    quantity_received: item.quantity_received + 1,
-                    qc_failed: item.quantity_received + 1 - (item.qc_passed + 1),
-                    location: location || item.location,
-                }
-            }
-            return item
-        })
-
-        if (getSameData) {
-            updatedData[0] = {
-                sku,
-                qc_passed: getSameData?.qc_passed + 1,
-                quantity_received: getSameData?.quantity_received + 1,
-                qc_failed: getSameData.quantity_received + 1 - (getSameData.qc_passed + 1),
-                location: formData?.location ? [getSameData?.location, formData.location].filter(Boolean).join(',') : getSameData?.location,
-            }
-        }
-
-        if (!updatedData.find((item) => item.sku === sku) && !getSameData) {
-            updatedData[0] = {
-                sku,
-                qc_passed: 1,
-                quantity_received: 1,
-                qc_failed: 0,
-                location: location || '',
-                document_number: data?.document_number,
-                company_id: Number(company),
-                quantity_sent: 1,
-                batch_number: batchNumberInput ?? '',
-            }
-        }
-
-        setSkuWiseData(updatedData)
-
-        if (getSameData) {
-            try {
-                const firstSku = updatedData[0]
-
-                const response = await axioisInstance.patch(`/goods/qualitycheck/${getSameData?.id}`, firstSku)
-                console.log('Response:', response.data)
-                notification.success({
-                    message: response?.data?.message || 'Successfully Updated',
-                })
-            } catch (error) {
-                notification.error({
-                    message: 'Failed to Update',
-                })
-                console.error('Error during API call:', error)
-            }
-        }
-        if (!getSameData) {
-            try {
-                const firstSku = updatedData[0]
-
-                const response = await axioisInstance.post(`/goods/qualitycheck`, firstSku)
-                console.log('Response:', response.data)
-                notification.success({
-                    message: response?.data?.message || 'Successfully added',
-                })
-            } catch (error) {
-                notification.error({
-                    message: 'Failed to add',
-                })
-                console.error('Error during API call:', error)
-            }
-        }
-
-        setFormData((prev) => ({
-            ...prev,
-            sku: '',
-        }))
-        setQualitySentInput('')
-        setBatchNumberInput('')
-    }
 
     const columns = useMemo(
         () => [
@@ -231,7 +131,7 @@ const SkuUpdate = ({ data }: props) => {
                 header: 'LOCATION',
                 accessorKey: 'location',
                 cell: ({ row }: any) => {
-                    console.log(row?.original?.sku)
+                    console.log(row?.original?.sku, qualitySentInput)
                     const getSame = getSkuData?.find((item) => item.sku === formData?.sku)
                     let value = locationInput !== '' ? locationInput : formData?.location
                     if (getSame) {
@@ -291,7 +191,7 @@ const SkuUpdate = ({ data }: props) => {
                                 type="number"
                                 min={0}
                                 value={value}
-                                onChange={(e) => handleReceivedChange(stockId, Number(e.target.value))}
+                                onChange={(e) => handleChanges(stockId, Number(e.target.value), setUpdatedReceived)}
                             />
                         </div>
                     )
@@ -311,7 +211,7 @@ const SkuUpdate = ({ data }: props) => {
                                 type="number"
                                 min={0}
                                 value={value}
-                                onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
+                                onChange={(e) => handleChanges(stockId, Number(e.target.value), setUpdatedPassed)}
                             />
                         </div>
                     )
@@ -344,7 +244,7 @@ const SkuUpdate = ({ data }: props) => {
                                 className="w-[100px]"
                                 type="text"
                                 value={value}
-                                onChange={(e) => handleLocationChange(stockId, e.target.value)}
+                                onChange={(e) => handleChanges(stockId, e.target.value, setUpdatedLocation)}
                             />
                         </div>
                     )
@@ -375,29 +275,15 @@ const SkuUpdate = ({ data }: props) => {
         [updatedPassed, updatedReceived, updatedLocation, skuWiseData],
     )
 
-    const handleQuantityChange = (id: number, newQuantity: number) => {
-        setUpdatedPassed((prevQuantities) => ({
+    const handleChanges = (id: number, newQuantity: number | string, setValue: any) => {
+        setValue((prevQuantities: any) => ({
             ...prevQuantities,
             [id]: newQuantity,
-        }))
-    }
-    const handleReceivedChange = (id: number, newQuantity: number) => {
-        setUpdatedReceived((prevQuantities) => ({
-            ...prevQuantities,
-            [id]: newQuantity,
-        }))
-    }
-
-    const handleLocationChange = (id: number, newLocation: string) => {
-        setUpdatedLocation((prevLocations) => ({
-            ...prevLocations,
-            [id]: newLocation,
         }))
     }
 
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
         const getSame = getSkuData?.find((item) => item.sku === oSku)
-
         const body = {
             location: locationInput ?? oLocation,
             qc_passed: qcPass ?? oPassed,
@@ -438,45 +324,20 @@ const SkuUpdate = ({ data }: props) => {
         }
     }
 
-    console.log('SKU', formData.sku)
-
     return (
         <div className="p-4 flex flex-col gap-6">
-            <SkuDataInputs formData={formData} handleInputChange={handleInputChange} handleAddSku={handleAddSku} />
-
-            {getDataInputs === undefined && formData?.sku && (
-                <>
-                    <div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700">QC Sent</label>
-                            <input
-                                type="text"
-                                placeholder="Enter Quantity Sent"
-                                className="w-auto xl:w-1/6 border border-gray-300 rounded p-2"
-                                value={qualitySentInput}
-                                onChange={(e) => setQualitySentInput(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleAddSku()
-                                    }
-                                }}
-                            />
-                        </div>
-                        {/* <div className="grid grid-cols-4 gap-2">
-                            <div className="mb-4">
-                                <label className="block text-gray-700">Batch Number</label>
-                                <input
-                                    type="search"
-                                    placeholder="Enter Batch Number"
-                                    className="w-2/3 border border-gray-300 rounded p-2"
-                                    value={batchNumberInput}
-                                    onChange={(e) => setBatchNumberInput(e.target.value)}
-                                />
-                            </div>
-                        </div> */}
-                    </div>
-                </>
-            )}
+            <SkuDataInputs
+                formData={formData}
+                setBatchNumberInput={setBatchNumberInput}
+                getSkuData={getSkuData}
+                skuWiseData={skuWiseData}
+                data={data}
+                setQualitySentInput={setQualitySentInput}
+                setSkuWiseData={setSkuWiseData}
+                batchNumberInput={batchNumberInput}
+                company={company}
+                setFormData={setFormData}
+            />
 
             {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
             <br />
@@ -496,10 +357,6 @@ const SkuUpdate = ({ data }: props) => {
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target?.value)}
                     />
-
-                    {/* <button onClick={() => setRefreshTable(true)}>
-                        <IoIosRefreshCircle className="text-3xl font-bold text-green-600" />
-                    </button> */}
                 </div>
                 {showSpinner ? (
                     <>

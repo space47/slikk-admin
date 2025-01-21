@@ -84,3 +84,22 @@ export type SalesOrderDetailsResponse = {
     location_url: string
     return_order: RETURNORDER[]
 }
+
+export type ShippingInfoProps = {
+    data?: {
+        price: number
+        create_date: number
+        drop_time: number
+        shippingLogo: string
+
+        runner_name: string
+        runner_phone_number: string
+        runner_profile_pic_url: string
+        state: string
+        tracking_url: string
+        awb_code: any
+        task_id: any
+    }
+    logistic_partner: any
+    delivery_type: string
+}
