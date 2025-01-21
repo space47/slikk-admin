@@ -51,19 +51,23 @@ import {
 
 import 'ckeditor5/ckeditor5.css'
 
-const LICENSE_KEY = import.meta.env.VITE_LICENSE_KEY
+const LICENSE_KEY = import.meta.env.VITE_EDITOR_LICENSE
 
 const Policies = () => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(CONFIGOPTIONS[0])
-    const [data, setData] = useState()
-    const [richTextValue, setRichTextValue] = useState('')
+    const [data, setData] = useState<string | null>(null)
+    const [richTextValue, setRichTextValue] = useState('Hello')
     const editorContainerRef = useRef(null)
     const editorRef = useRef(null)
     const [isLayoutReady, setIsLayoutReady] = useState(false)
+    const [isReady, setIsReady] = useState(false)
+
+    useEffect(() => {
+        setIsReady(true)
+    }, [])
 
     useEffect(() => {
         setIsLayoutReady(true)
-
         return () => setIsLayoutReady(false)
     }, [])
 
@@ -205,6 +209,7 @@ const Policies = () => {
                     ],
                 },
                 licenseKey: LICENSE_KEY,
+
                 link: {
                     addTargetToExternalLinks: true,
                     defaultProtocol: 'https://',
@@ -218,9 +223,6 @@ const Policies = () => {
                         },
                     },
                 },
-                menuBar: {
-                    isVisible: true,
-                },
                 placeholder: 'Type or paste your content here!',
                 table: {
                     contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties'],
@@ -230,23 +232,21 @@ const Policies = () => {
     }, [isLayoutReady])
 
     const fetchData = async () => {
-        console.log('starting api')
+        console.log('Starting API call...')
         try {
-            axioisInstance
-                .get(`/page/config?page_name=${currentSelectedPage.value}`)
-                .then((response) => {
-                    const responsedata = response.data.data.value
-                    setData(responsedata)
-                    setRichTextValue(responsedata)
-                    console.log('ending api call', responsedata)
-                })
-                .catch((error) => {
-                    console.log(error)
-                    setRichTextValue('')
-                    setData([])
-                })
+            const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage.value}`)
+            console.log('API Response:', response)
+            const responsedata = response.data?.data?.value || ''
+            setData(responsedata)
+            setRichTextValue(responsedata)
         } catch (error) {
-            console.log(error)
+            console.error('Error fetching data:', error)
+            // notification.error({
+            //     message: 'Failed to fetch data',
+            //     description: error.message,
+            // })
+            setRichTextValue('')
+            setData(null)
         }
     }
 
@@ -254,10 +254,11 @@ const Policies = () => {
         fetchData()
     }, [currentSelectedPage])
 
-    const handleSelect = (a: any) => {
+    const handleSelect = (value: string) => {
+        const selectedOption = CONFIGOPTIONS.find((option) => option.value === value)
         setCurrentSelectedPage({
-            value: a,
-            name: CONFIGOPTIONS.find((p) => p.value == a)?.label || '',
+            value,
+            name: selectedOption?.label || '',
         })
     }
 
@@ -267,39 +268,35 @@ const Policies = () => {
                 page_name: currentSelectedPage.value,
                 value: richTextValue,
             }
-            console.log('BOOOODY', body)
-            const response = axioisInstance.post(`/page/config?page_name=${currentSelectedPage.value}`, body)
+            console.log('Submitting data:', body)
+            await axioisInstance.post(`/page/config?page_name=${currentSelectedPage.value}`, body)
             notification.success({
                 message: 'Successfully added',
             })
         } catch (error) {
-            console.log(error)
+            console.error('Error submitting policy:', error)
             notification.error({
                 message: 'Failed to Upload',
             })
         }
     }
 
-    console.log('Data', data)
-
     return (
         <div className="flex flex-col gap-10">
-            <div className=" text-black text-lg font-semibold inline-flex w-auto">
+            <div className="text-black text-lg font-semibold inline-flex w-auto">
                 <Dropdown className="text-xl text-black" title={currentSelectedPage.value} onSelect={handleSelect}>
-                    {CONFIGOPTIONS?.map((item, key) => {
-                        return (
-                            <DropdownItem key={key} eventKey={item.value}>
-                                <span>{item.label}</span>
-                            </DropdownItem>
-                        )
-                    })}
+                    {CONFIGOPTIONS.map((item, key) => (
+                        <DropdownItem key={key} eventKey={item.value}>
+                            <span>{item.label}</span>
+                        </DropdownItem>
+                    ))}
                 </Dropdown>
             </div>
 
-            {/* <div className="editor-container editor-container_classic-editor" ref={editorContainerRef}>
+            <div className="editor-container editor-container_classic-editor" ref={editorContainerRef}>
                 <div className="editor-container__editor">
                     <div ref={editorRef}>
-                        {editorConfig && (
+                        {isReady && (
                             <CKEditor
                                 editor={ClassicEditor}
                                 config={editorConfig}
@@ -312,15 +309,14 @@ const Policies = () => {
                         )}
                     </div>
                 </div>
-            </div> */}
-            <div className="w-[90%]">
-                <RichTextEditor className="h-[400px]" value={richTextValue} onChange={(value: string) => setRichTextValue(value)} />
             </div>
-            <div className="policy_save_button ">
+
+            <div className="policy_save_button">
                 <Button variant="solid" color="indigo" size="sm" type="submit" onClick={handlePolicySubmit}>
                     Submit
                 </Button>
             </div>
+
             <div className="flex flex-col gap-6 w-[80%] items-center flex-wrap justify-center mx-12">
                 <span className="text-4xl font-bold flex justify-center">Preview</span>
                 <div className="flex flex-col gap-4 justify-center" dangerouslySetInnerHTML={{ __html: richTextValue }} />
