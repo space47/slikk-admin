@@ -13,6 +13,9 @@ import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN, INITIALVALUES } from './
 import AddProductImages from './AddProductImages'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import { beforeUpload } from '@/common/beforeUpload'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { Select } from '@/components/ui'
 
 const AddProduct = () => {
     const [datas, setDatas] = useState()
@@ -20,6 +23,8 @@ const AddProduct = () => {
     const [showData, setShowData] = useState(false)
     const [showImage, setShowImage] = useState(false)
     const navigate = useNavigate()
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+    const [companyData, setCompanyData] = useState<number>()
 
     const handleimage = async (files: File[]) => {
         const formData = new FormData()
@@ -121,6 +126,7 @@ const AddProduct = () => {
             color_code_link: colorlink ? colorlink : values.color_code_link,
             image: imageShow,
             size_chart_image: sizeShow,
+            company: companyData,
             colorfamily: values.colorfamily,
             video_link: videoShow,
         }
@@ -195,7 +201,41 @@ const AddProduct = () => {
                                     beforeUpload={beforeUpload}
                                     fieldNames="size_chart_image_array"
                                 />
-                                {PRODUCT_EDIT_COMMON_DOWN.map((item, key) => (
+                                {PRODUCT_EDIT_COMMON_DOWN.slice(0, 5).map((item, key) => (
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item.component}
+                                        />
+                                    </FormItem>
+                                ))}
+
+                                <Field name="company">
+                                    {({ form }: FieldProps<any>) => {
+                                        const selectedCompany = companyList.find((option) => option.id === form.values.company)
+
+                                        return (
+                                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                <div className="font-semibold">Select Company</div>
+                                                <Select
+                                                    className="w-full"
+                                                    options={companyList}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    value={selectedCompany || null}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('company', newVal?.id)
+                                                        setCompanyData(newVal?.id)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
+
+                                {PRODUCT_EDIT_COMMON_DOWN.slice(5).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field
                                             type={item.type}
