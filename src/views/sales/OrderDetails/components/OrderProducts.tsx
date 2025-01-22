@@ -271,7 +271,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                     {pdts.location && (
                                         <div className="text-gray-900 mb-3 xl:text-md w-[100px]  flex-wrap break-words xl:w-full font-bold flex gap-1 dark:text-white">
                                             <span className="font-semibold">Loc:</span>
-                                            {pdts.location}
+                                            <span className="w-[50px] flex flex-wrap break-words">{pdts.location}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-end mt-10">

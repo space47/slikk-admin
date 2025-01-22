@@ -1152,6 +1152,45 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/configurationsSlikk/taskAndSchedular/TaskAndSchedular')),
         authority: [ADMIN, USER],
     },
+    //offers
+
+    {
+        key: 'appsOffers.offerAndPromotions',
+        path: `${APP_PREFIX_PATH}/offerAndPromotions`,
+        component: lazy(() => import('@/views/offerEngine/offerEngineTable/OfferEngineTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOffers.offerAndPromotions',
+        path: `${APP_PREFIX_PATH}/offerAndPromotions/addNew`,
+        component: lazy(() => import('@/views/offerEngine/createOfferEngine/AddOfferEngine')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOffers.offerAndPromotions',
+        path: `${APP_PREFIX_PATH}/offerAndPromotions/edit/:code`,
+        component: lazy(() => import('@/views/offerEngine/editOfferEngine/EditOfferEngine')),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appsOffers.markdownPrices',
+        path: `${APP_PREFIX_PATH}/markdownPrices`,
+        component: lazy(() => import('@/views/markdownPrices/markdownPricesDatas/MarkdownPrices')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOffers.markdownPrices',
+        path: `${APP_PREFIX_PATH}/markdownPrices/addNew`,
+        component: lazy(() => import('@/views/markdownPrices/addMarkdownPrices/AddmarkdownPrices')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOffers.markdownPrices',
+        path: `${APP_PREFIX_PATH}/markdownPrices/edit/:name`,
+        component: lazy(() => import('@/views/markdownPrices/editMarkdownProces/EditMarkdownProcess')),
+        authority: [ADMIN, USER],
+    },
 ]
 
 export default appsRoute

@@ -72,12 +72,6 @@ const GdnForm = ({
                     <FormItem label="Store ">
                         <Field name="store">
                             {({ form, field }: FieldProps<any>) => {
-                                console.log('field id', field.value)
-                                console.log(
-                                    'field value id store',
-                                    storeResults.find((option) => option.id === field?.value),
-                                )
-
                                 const selectedCompany = storeResults.find((option) => option.id === field?.value)
 
                                 return (

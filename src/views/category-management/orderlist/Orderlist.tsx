@@ -20,6 +20,7 @@ import RedMarkTable from '@/common/RedMarkTable'
 import { HiSearch } from 'react-icons/hi'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const CHANGE_DELIVERY_OPTIONS = [
     { label: 'EXPRESS', value: 'EXPRESS' },
@@ -77,7 +78,7 @@ const OrderList = () => {
 
     const previousOrders = useRef<Order[]>([])
     const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
-
+    const [showNoData, setShowNoData] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
@@ -108,8 +109,20 @@ const OrderList = () => {
             }
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
-            setOrders(ordersData)
+
+            const sortedOrders = ordersData.sort((a, b) => {
+                if (a.status === 'PENDING' && b.status !== 'PENDING') return -1
+                if (a.status !== 'PENDING' && b.status === 'PENDING') return 1
+                return 0
+            })
+
+            setOrders(sortedOrders)
             setOrderCount(orderCount)
+            if (sortedOrders?.length === 0 || ordersData?.length === 0) {
+                setShowNoData(true)
+            } else {
+                setShowNoData(false)
+            }
         } catch (error) {
             console.error(error)
         } finally {
@@ -159,7 +172,12 @@ const OrderList = () => {
 
             previousOrders.current = ordersData
 
-            setOrders(ordersData)
+            const sortedOrders = ordersData.sort((a, b) => {
+                if (a.status === 'PENDING' && b.status !== 'PENDING') return -1
+                if (a.status !== 'PENDING' && b.status === 'PENDING') return 1
+                return 0
+            })
+            setOrders(sortedOrders)
             setOrderCount(orderCount)
         } catch (error) {
             console.error(error)
@@ -621,15 +639,21 @@ const OrderList = () => {
                 </div>
                 <br />
 
-                <div className="border border-gray-300 p-2 rounded-xl">
-                    <RedMarkTable
-                        mainData={orders}
-                        page={page}
-                        pageSize={pageSize}
-                        columns={columns}
-                        selectedDeliveryType={deliveryTypes ?? ''}
-                    />
-                </div>
+                {showNoData ? (
+                    <>
+                        <NotFoundData />{' '}
+                    </>
+                ) : (
+                    <div className="border border-gray-300 p-2 rounded-xl">
+                        <RedMarkTable
+                            mainData={orders}
+                            page={page}
+                            pageSize={pageSize}
+                            columns={columns}
+                            selectedDeliveryType={deliveryTypes ?? ''}
+                        />
+                    </div>
+                )}
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 {numberClick !== true && (

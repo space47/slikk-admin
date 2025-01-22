@@ -33,7 +33,7 @@ const DiscountType = [
 
 const CouponForm = ({ CouponsType, values, ACTIONARRAY, userAction, setUserAction, setFieldValue, resetForm, isEdit }: CouponProps) => {
     return (
-        <Form className="w-2/3">
+        <Form className="w-3/4">
             <FormContainer>
                 <FormContainer className="grid grid-cols-2 gap-10">
                     {COUPON_FORM.slice(0, 5).map((item, key) => (

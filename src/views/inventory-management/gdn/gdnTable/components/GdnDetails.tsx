@@ -109,7 +109,7 @@ const GdnDetails = () => {
 
                 const link = document.createElement('a')
                 link.href = blobUrl
-                link.download = 'GDN_Document.pdf'
+                link.download = `${data.gdn_number}-${moment().format('YYYY-MM-DD HH-mm-ss a')}.pdf`
                 document.body.appendChild(link)
                 link.click()
 

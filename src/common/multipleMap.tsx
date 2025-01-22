@@ -5,7 +5,7 @@ import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import axios from 'axios'
-import _ from 'lodash'
+import _, { sum } from 'lodash'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import { MdClose, MdFullscreen } from 'react-icons/md'
@@ -240,6 +240,8 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
     const [distanceBelowFifteenToThirty, setDistanceBelowFifteenToThirty] = useState<any[]>([])
     const [distanceAboveThirty, setDistanceAboveThirty] = useState<any[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(MAP_STYLE_ARRAY[0])
+    const [averageAmoount, seAverageAmount] = useState(0)
+    const [sumAmoount, setSumAmount] = useState(0)
 
     const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
 
@@ -328,11 +330,20 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         return result
     }, [latitudes, longitudes, amount, currLat, currLong, R])
 
+    const sumsConvertToNumber = markers?.map((item) => parseInt(item?.amount))
+    const sumsofAmount = _.sum(sumsConvertToNumber)
+    const avgofAmount = _.mean(sumsConvertToNumber)
+    console.log('sum of amount', avgofAmount)
+
     const Belowdatas = [
         { name: 'Below 10 km', value: distanceBelowTen },
         { name: 'Between 10-15 km', value: distanceBelowTentoFifteen },
         { name: 'Between 15-20 km', value: distanceBelowFifteenToThirty },
         { name: 'Above 20 km', value: distanceAboveThirty },
+    ]
+    const averageAmounts = [
+        { name: 'Sum ', value: `₹ ${sumsofAmount}` },
+        { name: 'Average ', value: `₹ ${avgofAmount.toFixed(2)}` },
     ]
 
     const handleSelectPage = (value: string) => {
@@ -384,6 +395,15 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                         >
                             <span className="font-medium text-gray-700">{item?.name}:</span>
                             <span className="text-sm text-blue-700">{item?.value?.length}</span>
+                        </div>
+                    ))}
+                    {averageAmounts.map((item, key) => (
+                        <div
+                            key={key}
+                            className="flex justify-between  items-center bg-white px-4 py-2 rounded-md border border-gray-200 shadow-sm"
+                        >
+                            <span className="font-medium text-gray-700">{item?.name}:</span>
+                            <span className="text-sm text-blue-700">{item?.value}</span>
                         </div>
                     ))}
                     <div className="bg-gray-200 px-2 rounded-lg font-bold text-[17px] items-center flex justify-center">

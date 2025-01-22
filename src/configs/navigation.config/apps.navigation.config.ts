@@ -478,14 +478,14 @@ const appsNavigationConfig: NavigationTree[] = [
                 ],
             },
 
-            // .............................................................................................................
+            // Offers and Promotions.......
 
             {
-                key: 'apps.appSettings',
-                path: '',
-                title: 'App Settings',
-                translateKey: 'nav.appsAppSettings.appSettings',
-                icon: 'appsettings',
+                key: 'apps.offers',
+                path: `${APP_PREFIX_PATH}/userposts/approval`,
+                title: 'Offers & Promotions',
+                translateKey: 'nav.apps.offers.offers',
+                icon: 'offers',
                 type: NAV_ITEM_TYPE_COLLAPSE,
                 authority: [ADMIN, USER],
                 subMenu: [
@@ -499,6 +499,50 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsOffers.markdownPrices',
+                        path: `${APP_PREFIX_PATH}/markdownPrices`,
+                        title: 'Markdown Prices',
+                        translateKey: 'nav.appsOffers.markdownPrices',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
+                        key: 'appsOffers.offerAndPromotions',
+                        path: `${APP_PREFIX_PATH}/offerAndPromotions`,
+                        title: 'Promotion Engine',
+                        translateKey: 'nav.appsOffers.OfferAndPromotions',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    // {
+                    //     key: 'appsOffers.uploadPost',
+                    //     path: `${APP_PREFIX_PATH}/uploadPost`,
+                    //     title: 'Upload Post',
+                    //     translateKey: 'nav.appsOrgManagement.uploadPost',
+                    //     icon: '',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     subMenu: [],
+                    // },
+                ],
+            },
+
+            // .............................................................................................................
+
+            {
+                key: 'apps.appSettings',
+                path: '',
+                title: 'App Settings',
+                translateKey: 'nav.appsAppSettings.appSettings',
+                icon: 'appsettings',
+                type: NAV_ITEM_TYPE_COLLAPSE,
+                authority: [ADMIN, USER],
+                subMenu: [
                     {
                         key: 'appsAppSettings.banners',
                         path: `${APP_PREFIX_PATH}/appSettings/banners`,
