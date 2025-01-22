@@ -34,7 +34,8 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABL
                   },
               },
         getCoreRowModel: getCoreRowModel(),
-
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: !noPage,
     })

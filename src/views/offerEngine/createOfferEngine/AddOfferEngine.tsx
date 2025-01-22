@@ -122,11 +122,11 @@ const AddOfferEngine = () => {
         if (filterData && filterData.length > 0) {
             formData.append('filter_data', filterData)
         } else {
-            formData.append('filter_data', '') // Sending empty string for empty filter data
+            formData.append('filter_data', '')
         }
 
         if (csvFile && csvFile.length > 0) {
-            formData.append('skus', csvFile[0]) // Add CSV file if present
+            formData.append('skus', csvFile[0])
         } else {
             formData.append('skus', '') // Sending empty string if no CSV file is uploaded
         }
