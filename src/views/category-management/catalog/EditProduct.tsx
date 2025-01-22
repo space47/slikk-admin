@@ -8,12 +8,14 @@ import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import Product from '@/views/category-management/catalog/CommonType'
-import { Checkbox, Spinner } from '@/components/ui'
+import { Checkbox, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from './ProductCommon'
 import ImageCommonProduct from './ImageCommonProduct'
 import { handleimage, handleVideo } from './handlingProductImage'
 import { InitialValues } from './EditCommonProduct'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 const EditProduct = () => {
     const navigate = useNavigate()
@@ -23,6 +25,8 @@ const EditProduct = () => {
     const [allColor, setAllColor] = useState<string[]>([])
     const [allSizeChart, setAllSizeChart] = useState<string[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+    const [companyData, setCompanyData] = useState<number>()
 
     const { barcode } = useParams()
 
@@ -130,6 +134,7 @@ const EditProduct = () => {
             ...values,
             color_code_link: color_code_url,
             image: img_url,
+            company: companyData,
             video_link: video_url,
             size_chart_image: size_chart_url,
         }
@@ -243,7 +248,39 @@ const EditProduct = () => {
                                     placeholder="Enter Size Chart Image"
                                 />
 
-                                {PRODUCT_EDIT_COMMON_DOWN?.map((item, key) => (
+                                {PRODUCT_EDIT_COMMON_DOWN?.slice(0, 5).map((item, key) => (
+                                    <FormItem key={key} label={item.label} className={item.classname}>
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item.component}
+                                        />
+                                    </FormItem>
+                                ))}
+                                <Field name="company">
+                                    {({ form }: FieldProps<any>) => {
+                                        const selectedCompany = companyList.find((option) => option.id === form.values.company)
+
+                                        return (
+                                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                <div className="font-semibold">Select Company</div>
+                                                <Select
+                                                    className="w-full"
+                                                    options={companyList}
+                                                    getOptionLabel={(option) => option.name}
+                                                    getOptionValue={(option) => option.id}
+                                                    value={selectedCompany || null}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue('company', newVal?.id)
+                                                        setCompanyData(newVal?.id)
+                                                    }}
+                                                />
+                                            </div>
+                                        )
+                                    }}
+                                </Field>
+                                {PRODUCT_EDIT_COMMON_DOWN?.slice(5).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field
                                             type={item.type}
