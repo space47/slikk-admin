@@ -259,8 +259,14 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                     <div className="mb-3 xl:text-lg w-[80px] flex flex-wrap break-words text-red-700 xl:w-full dark:text-red-500">
                                         {pdts.sku}
                                     </div>
-                                    <div className=" mb-3 xl:text-lg w-[100px] text-gray-700 xl:w-full dark:text-white">
-                                        Size:{pdts.size}
+                                    <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
+                                        color:{pdts.color}
+                                    </div>
+                                    <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
+                                        price: ₹{pdts.final_price}
+                                    </div>
+                                    <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
+                                        size:{pdts.size}
                                     </div>
 
                                     <div className="flex items-center justify-between">

@@ -70,6 +70,7 @@ interface props {
           }
     )[]
     storeResults: StoreDetails[]
+    setCsvFile: any
 }
 
 const AddOfferCommon = ({
@@ -88,6 +89,7 @@ const AddOfferCommon = ({
     skuSearchData,
     columns,
     storeResults,
+    setCsvFile,
 }: props) => {
     return (
         <div className="">
@@ -184,7 +186,11 @@ const AddOfferCommon = ({
                             handleAddFilters={handleAddFilters}
                             handleRemoveFilter={handleRemoveFilter}
                             filters={filters}
+                            values={values}
+                            setCsvFile={setCsvFile}
                         />
+
+                        {/* formData.append('image', values.imageArray[0]) */}
 
                         {editMode ? (
                             <div>

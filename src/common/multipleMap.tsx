@@ -330,17 +330,60 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         return result
     }, [latitudes, longitudes, amount, currLat, currLong, R])
 
+    console.log('bwlow ten', distanceBelowTen)
+
     const sumsConvertToNumber = markers?.map((item) => parseInt(item?.amount))
     const sumsofAmount = _.sum(sumsConvertToNumber)
     const avgofAmount = _.mean(sumsConvertToNumber)
     console.log('sum of amount', avgofAmount)
 
+    const calculateSum = (distanceArray: any[]): number => {
+        const numbers = distanceArray?.map((item) => parseInt(item?.amount, 10) || 0)
+        return numbers.length === 0 ? 0 : _.sum(numbers)
+    }
+
+    const calculateAverage = (distanceArray: any[]): number => {
+        const numbers = distanceArray?.map((item) => parseInt(item?.amount, 10) || 0)
+        return numbers.length === 0 ? 0 : _.mean(numbers)
+    }
+
+    const calculatePerSquareCount = (distanceArrays: any[][], area: number): number => {
+        if (area === 0 || !distanceArrays) return 0
+        const totalSum = distanceArrays.reduce((sum, array) => sum + calculateSum(array), 0)
+        return totalSum / area
+    }
+
     const Belowdatas = [
-        { name: 'Below 10 km', value: distanceBelowTen },
-        { name: 'Between 10-15 km', value: distanceBelowTentoFifteen },
-        { name: 'Between 15-20 km', value: distanceBelowFifteenToThirty },
-        { name: 'Above 20 km', value: distanceAboveThirty },
+        {
+            name: 'Below 10 km',
+            value: distanceBelowTen,
+            total: calculateSum(distanceBelowTen),
+            average: calculateAverage(distanceBelowTen),
+            sqCount: calculatePerSquareCount([distanceBelowTen], 314.7),
+        },
+        {
+            name: 'Between 10-15 km',
+            value: distanceBelowTentoFifteen,
+            total: calculateSum(distanceBelowTentoFifteen),
+            average: calculateAverage(distanceBelowTentoFifteen),
+            sqCount: calculatePerSquareCount([distanceBelowTen, distanceBelowTentoFifteen], 706.5),
+        },
+        {
+            name: 'Between 15-20 km',
+            value: distanceBelowFifteenToThirty,
+            total: calculateSum(distanceBelowFifteenToThirty),
+            average: calculateAverage(distanceBelowFifteenToThirty),
+            sqCount: calculatePerSquareCount([distanceBelowTen, distanceBelowTentoFifteen, distanceBelowFifteenToThirty], 1256.24),
+        },
+        {
+            name: 'Above 20 km',
+            value: distanceAboveThirty,
+            total: calculateSum(distanceAboveThirty),
+            average: calculateAverage(distanceAboveThirty),
+            sqCount: null,
+        },
     ]
+
     const averageAmounts = [
         { name: 'Sum ', value: `₹ ${sumsofAmount}` },
         { name: 'Average ', value: `₹ ${avgofAmount.toFixed(2)}` },
@@ -387,17 +430,28 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                     {currentSelectedPage?.value === 'heat_map' && <HeatMapComponent markers={markers} />}
                     <FullScreenMap currLat={currLat} currLong={currLong} markers={markers} currentPage={currentSelectedPage?.value} />
                 </MapContainer>
-                <div className="space-y-2  xl:w-[250px]">
+                <div className="space-y-2  xl:w-[300px]">
                     {Belowdatas.map((item, key) => (
-                        <div
-                            key={key}
-                            className="flex justify-between  items-center bg-white px-4 py-2 rounded-md border border-gray-200 shadow-sm"
-                        >
-                            <span className="font-medium text-gray-700">{item?.name}:</span>
-                            <span className="text-sm text-blue-700">{item?.value?.length}</span>
+                        <div key={key} className="flex flex-col  bg-white px-4 py-2 rounded-md border border-gray-200 shadow-sm">
+                            <div className="flex justify-between">
+                                <span className="font-medium text-gray-700">{item?.name}:</span>
+                                <span className="text-sm text-blue-700">{item?.value?.length}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="font-medium text-gray-700">Total:</span>
+                                <span className="text-sm text-blue-700">₹ {item?.total}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="font-medium text-gray-700">Average:</span>
+                                <span className="text-sm text-blue-700">₹ {item?.average?.toFixed(2) ?? 0}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="font-medium text-gray-700">sales/sq.km:</span>
+                                <span className="text-sm text-blue-700">₹ {item?.sqCount?.toFixed(2) ?? 0}</span>
+                            </div>
                         </div>
                     ))}
-                    {averageAmounts.map((item, key) => (
+                    {/* {averageAmounts.map((item, key) => (
                         <div
                             key={key}
                             className="flex justify-between  items-center bg-white px-4 py-2 rounded-md border border-gray-200 shadow-sm"
@@ -405,7 +459,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                             <span className="font-medium text-gray-700">{item?.name}:</span>
                             <span className="text-sm text-blue-700">{item?.value}</span>
                         </div>
-                    ))}
+                    ))} */}
                     <div className="bg-gray-200 px-2 rounded-lg font-bold text-[17px] items-center flex justify-center">
                         <Dropdown
                             className="border bg-gray-200 text-black text-lg font-semibold"

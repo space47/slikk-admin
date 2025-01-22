@@ -22,6 +22,7 @@ const AddOfferEngine = () => {
     const [showAddFilter, setShowAddFilter] = useState<any[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState([])
+    const [csvFile, setCsvFile] = useState<any>()
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -108,17 +109,34 @@ const AddOfferEngine = () => {
         setFiltersData((prev) => {
             const updatedFilters = [...prev, newFilterData]
             const lastElement = updatedFilters.at(-1)
-            sendFilterData(lastElement)
+            sendFilterData(lastElement ?? '')
             return updatedFilters
         })
     }
 
+    console.log('csv is', csvFile)
+
     const sendFilterData = async (filterData: any) => {
+        const formData = new FormData()
+
+        if (filterData && filterData.length > 0) {
+            formData.append('filter_data', filterData)
+        } else {
+            formData.append('filter_data', '') // Sending empty string for empty filter data
+        }
+
+        if (csvFile && csvFile.length > 0) {
+            formData.append('skus', csvFile[0]) // Add CSV file if present
+        } else {
+            formData.append('skus', '') // Sending empty string if no CSV file is uploaded
+        }
+
         try {
-            const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
+            const response = await axioisInstance.post(`/product/search/criteria`, formData)
             setFilterId(response.data?.data?.id)
+
             notification.success({
-                message: 'Filter Id Added',
+                message: 'Filter ID Added Successfully',
             })
         } catch (error) {
             notification.error({
@@ -129,7 +147,7 @@ const AddOfferEngine = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        const imageUpload = await handleimage('product', values.image)
+        const imageUpload = values.imageList ? await handleimage('product', values.imageList) : null
         const body = {
             apply_offer_type: values?.apply_offer_type || '',
             apply_price_type: values?.apply_price_type || '',
@@ -192,6 +210,7 @@ const AddOfferEngine = () => {
                             skuSearchData={skuSearchData}
                             columns={columns}
                             storeResults={storeResults}
+                            setCsvFile={setCsvFile}
                         />
                         <FormContainer>
                             <Button variant="accept" type="submit">

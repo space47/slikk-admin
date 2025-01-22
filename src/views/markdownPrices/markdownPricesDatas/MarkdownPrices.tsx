@@ -75,7 +75,7 @@ const MarkdownPrices = () => {
                 accessorKey: 'offer_value',
             },
             {
-                header: 'apply on',
+                header: 'price type',
                 accessorKey: 'apply_on',
             },
             {

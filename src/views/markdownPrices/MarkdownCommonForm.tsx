@@ -13,6 +13,8 @@ interface props {
     handleAddFilters: any
     handleRemoveFilter: any
     filters: any
+    values: any
+    setCsvFile: any
 }
 
 const apply_Array = [
@@ -25,7 +27,15 @@ const discountType_Array = [
     { label: 'FLAT PRICE', value: 'FLATPRICE' },
 ]
 
-const MarkdownCommonForm = ({ handleAddFilter, showAddFilter, handleAddFilters, handleRemoveFilter, filters }: props) => {
+const MarkdownCommonForm = ({
+    handleAddFilter,
+    showAddFilter,
+    handleAddFilters,
+    handleRemoveFilter,
+    filters,
+    values,
+    setCsvFile,
+}: props) => {
     return (
         <div className="">
             <FormContainer className="grid grid-cols-2 gap-4">
@@ -47,13 +57,15 @@ const MarkdownCommonForm = ({ handleAddFilter, showAddFilter, handleAddFilters, 
 
                 <CommonSelectByLabel label="Discount Type" name="discount_type" fieldname="discount_type" options={discountType_Array} />
 
-                <CommonSelectByLabel label="Offer Value" name="apply_on" fieldname="apply_on" options={apply_Array} />
+                <CommonSelectByLabel label="Price Type" name="apply_on" fieldname="apply_on" options={apply_Array} />
                 <SearchStrings
                     handleAddFilter={handleAddFilter}
                     showAddFilter={showAddFilter}
                     handleAddFilters={handleAddFilters}
                     handleRemoveFilter={handleRemoveFilter}
                     filters={filters}
+                    values={values}
+                    setCsvFile={setCsvFile}
                 />
             </FormContainer>
         </div>

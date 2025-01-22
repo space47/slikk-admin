@@ -15,6 +15,7 @@ const AddmarkdownPrices = () => {
     const [showAddFilter, setShowAddFilter] = useState<any[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState<any[]>([])
+    const [csvFile, setCsvFile] = useState<any>()
 
     useEffect(() => {
         dispatch(getAllFiltersAPI())
@@ -41,11 +42,26 @@ const AddmarkdownPrices = () => {
     }
 
     const sendFilterData = async (filterData: any) => {
+        const formData = new FormData()
+
+        if (filterData && filterData.length > 0) {
+            formData.append('filter_data', filterData)
+        } else {
+            formData.append('filter_data', '')
+        }
+
+        if (csvFile && csvFile.length > 0) {
+            formData.append('skus', csvFile[0])
+        } else {
+            formData.append('skus', '')
+        }
+
         try {
-            const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
+            const response = await axioisInstance.post(`/product/search/criteria`, formData)
             setFilterId(response.data?.data?.id)
+
             notification.success({
-                message: 'Filter Id Added',
+                message: 'Filter ID Added Successfully',
             })
         } catch (error) {
             notification.error({
@@ -88,7 +104,7 @@ const AddmarkdownPrices = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {() => (
+                {({ values }) => (
                     <Form className="w-3/4">
                         <FormContainer className="">
                             <MarkdownCommonForm
@@ -97,6 +113,8 @@ const AddmarkdownPrices = () => {
                                 handleAddFilters={handleAddFilters}
                                 handleRemoveFilter={handleRemoveFilter}
                                 filters={filters?.filters}
+                                values={values}
+                                setCsvFile={setCsvFile}
                             />
                         </FormContainer>
                         <Button variant="accept" type="submit">
