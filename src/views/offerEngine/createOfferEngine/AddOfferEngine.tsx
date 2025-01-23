@@ -128,7 +128,7 @@ const AddOfferEngine = () => {
         if (csvFile && csvFile.length > 0) {
             formData.append('skus', csvFile[0])
         } else {
-            formData.append('skus', '') // Sending empty string if no CSV file is uploaded
+            formData.append('skus', '')
         }
 
         try {
@@ -147,12 +147,14 @@ const AddOfferEngine = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        console.log('start')
         const imageUpload = values.imageList ? await handleimage('product', values.imageList) : null
+        console.log('before body')
         const body = {
             apply_offer_type: values?.apply_offer_type || '',
             apply_price_type: values?.apply_price_type || '',
             code: values?.code || '',
-            days: values?.days?.length ? values.days.join(',') : '',
+            days: values?.days?.length ? values.days : '',
             description: values?.description || '',
             min_amount: values?.min_amount || 0,
             min_quantity: values?.min_quantity || 0,
@@ -166,11 +168,11 @@ const AddOfferEngine = () => {
             extra_attributes: {
                 image: imageUpload || '',
             },
-            skus: skuList?.length ? skuList.join(',') : '',
-            filter_id: filterId || undefined,
-            store_code: values?.store_code || undefined,
+            // skus: skuList?.length ? skuList.join(',') : '',
+            filter_id: filterId || '',
+            store: values?.store_code || '',
         }
-
+        console.log('make api')
         try {
             const response = await axioisInstance.post(`/offers`, body)
             notification.success({

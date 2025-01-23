@@ -203,7 +203,7 @@ const EditOfferEngine = () => {
             ...(values?.offer_type && { offer_type: values.offer_type }),
             ...(imageUpload && { extra_attributes: { image: imageUpload } }),
             ...(skuList?.length && { skus: skuList.join(',') }),
-            ...(values?.store_code && { store_code: values.store_code }),
+            ...(values?.store_code && { store: values.store_code }),
             filter_id: filterId || undefined,
         }
 
