@@ -50,7 +50,8 @@ const GetReportConfiguratiions = () => {
                                             <span className="font-bold">Name:</span> {item.name}
                                         </p>
                                         <p>
-                                            <span className="font-bold">Query:</span> {item.query}
+                                            <span className="font-bold">Query:</span>{' '}
+                                            <span className="w-[300px] h-[60px] flex-wrap break-words line-clamp-3">{item.query}</span>
                                         </p>
                                         <p>
                                             <span className="font-bold">Position:</span> {item.position}
