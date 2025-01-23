@@ -364,7 +364,7 @@ const AppBanners = () => {
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                     <div className="flex gap-2">
-                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                        <div className="bg-gray-200 px-1 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
                                 title={currentSelectedPage.name}
@@ -378,7 +378,7 @@ const AppBanners = () => {
                             </Dropdown>
                         </div>
 
-                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                        <div className="bg-gray-200 px-1 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border  bg-gray-200 text-black text-lg font-semibold"
                                 title={selectedHeading}

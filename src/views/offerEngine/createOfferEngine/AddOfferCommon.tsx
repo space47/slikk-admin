@@ -112,6 +112,7 @@ const AddOfferCommon = ({
                         <Field name="days">
                             {({ field, form }: FieldProps<any>) => {
                                 // Convert the string value to an array of objects
+
                                 const selectedValue = field.value
                                     ? field.value.split(',').map((val: string) => daysOfWeek_array.find((option) => option.value === val))
                                     : []

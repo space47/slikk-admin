@@ -16,12 +16,12 @@ const GetReportConfiguratiions = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [accessDenied, setAccessDenied] = useState(false)
+    const [globalFilter, setGlobalFilter] = useState<string>('')
     const navigate = useNavigate()
-    console.log('get Report')
 
     useEffect(() => {
         fetchReportApi()
-    }, [page, pageSize])
+    }, [page, pageSize, globalFilter])
 
     const columns = useMemo(
         () => [
@@ -100,10 +100,20 @@ const GetReportConfiguratiions = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex justify-end">
-                <Button variant="new" onClick={handleNewQuery}>
-                    Add New Query
-                </Button>
+            <div className="flex justify-between">
+                <div>
+                    <input
+                        type="search"
+                        value={globalFilter}
+                        placeholder="Search by name"
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                    />
+                </div>
+                <div className="flex ">
+                    <Button variant="new" onClick={handleNewQuery}>
+                        Add New Query
+                    </Button>
+                </div>
             </div>
             <EasyTable mainData={reportQueryData} page={page} pageSize={pageSize} columns={columns} />
 
@@ -131,7 +141,11 @@ const GetReportConfiguratiions = () => {
 
     async function fetchReportApi() {
         try {
-            const response = await axioisInstance.get(`/query/config?p=${page}&page_size=${pageSize}`)
+            let searchFilter = ''
+            if (globalFilter) {
+                searchFilter = `&name=${globalFilter}`
+            }
+            const response = await axioisInstance.get(`/query/config?p=${page}&page_size=${pageSize}${searchFilter}`)
             const data = response?.data?.data
             setReportQueryData(data?.results)
             setTotalCount(data?.count)
