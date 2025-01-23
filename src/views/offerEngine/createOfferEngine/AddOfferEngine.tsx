@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from 'react'
-import { COUPONDATA } from '@/store/types/coupons.types'
 import { Form, Formik } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
@@ -9,7 +8,6 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import AddOfferCommon from './AddOfferCommon'
-import EasyTable from '@/common/EasyTable'
 import { Button, FormContainer } from '@/components/ui'
 import { handleimage } from '@/common/handleImage'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
@@ -18,10 +16,9 @@ import { companyStore } from '@/store/types/companyStore.types'
 const AddOfferEngine = () => {
     const navigate = useNavigate()
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
-    const [skuInput, setSkuInput] = useState<string>('')
     const [showAddFilter, setShowAddFilter] = useState<any[]>([])
     const [filterId, setFilterId] = useState()
-    const [filtersData, setFiltersData] = useState([])
+    const [filtersData, setFiltersData] = useState<any[]>([])
     const [csvFile, setCsvFile] = useState<any>()
 
     const dispatch = useAppDispatch()
@@ -34,64 +31,6 @@ const AddOfferEngine = () => {
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
-
-    const [skuSearchData, setSkuSearchData] = useState<any[]>([])
-    const fetchSkuData = async () => {
-        try {
-            const response = await axioisInstance.get(`/merchant/products?sku=${skuInput}`)
-            const data = response?.data?.data?.results
-
-            setSkuSearchData((prev) => {
-                const newData = Array.isArray(data) ? data : [data]
-                return [...prev, ...newData.filter((item) => !prev.some((prevItem) => prevItem.sku === item.sku))]
-            })
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    // Add SKU
-    const handleAddSku = () => {
-        fetchSkuData()
-    }
-
-    const handleRemoveSku = (sku: string) => {
-        setSkuSearchData((prev) => prev.filter((item) => item.sku !== sku))
-    }
-
-    const [skuList, setSkuList] = useState<string[]>([])
-
-    // Update the SKU list when `skuSearchData` changes
-    useEffect(() => {
-        const allSkus = skuSearchData.map((item: any) => item.sku)
-        setSkuList(allSkus)
-    }, [skuSearchData])
-
-    const columns = useMemo(
-        () => [
-            {
-                header: 'SKU',
-                accessorKey: 'sku',
-                cell: ({ row }: any) => {
-                    return <div>{row?.original?.sku}</div>
-                },
-            },
-            { header: 'Product Name', accessorKey: 'name' },
-            { header: 'Brand', accessorKey: 'brand' },
-            { header: 'Category', accessorKey: 'category' },
-            { header: 'Color', accessorKey: 'color' },
-            { header: 'Size', accessorKey: 'size' },
-            {
-                header: 'Actions',
-                cell: ({ row }: any) => (
-                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
-                        Remove
-                    </button>
-                ),
-            },
-        ],
-        [skuSearchData],
-    )
 
     const initialValue: any = {}
 
@@ -193,22 +132,17 @@ const AddOfferEngine = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ resetForm, setFieldValue, values }) => (
+                {({ values }) => (
                     <Form className="w-full">
                         <AddOfferCommon
                             initialValue={initialValue}
                             filters={filters?.filters}
-                            setSkuInput={setSkuInput}
-                            skuInput={skuInput}
                             showAddFilter={showAddFilter}
                             handleAddFilter={handleAddFilter}
                             handleAddFilters={handleAddFilters}
                             handleRemoveFilter={handleRemoveFilter}
                             values={values}
                             editMode={false}
-                            handleAddSku={handleAddSku}
-                            skuSearchData={skuSearchData}
-                            columns={columns}
                             storeResults={storeResults}
                             setCsvFile={setCsvFile}
                         />

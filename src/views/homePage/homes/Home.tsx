@@ -220,6 +220,11 @@ const Home = () => {
         },
     ]
 
+    console.log(
+        'item sddsdsaadqdqw',
+        orders.map((item) => item.latitude || []),
+    )
+
     if (accessDenied) {
         return <AccessDenied />
     }
