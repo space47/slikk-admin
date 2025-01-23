@@ -262,23 +262,17 @@ const AddOfferCommon = ({
                                 {({ form, field }: FieldProps<any>) => {
                                     console.log('field value for store code', field?.value)
                                     const selectedCompany = storeResults.find((option) => option.id === field?.value)
-                                    // const selectedValue = field.value
-                                    //     ? field?.value?.split(',').map((val: any) => storeResults.find((option) => option.id === val))
-                                    //     : []
 
-                                    // console.log()
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                             <Select
-                                                isMulti
                                                 className="w-full"
                                                 options={storeResults}
                                                 getOptionLabel={(option) => option.code}
                                                 getOptionValue={(option) => option.id}
                                                 value={selectedCompany || null}
                                                 onChange={(newVal) => {
-                                                    const newValues = newVal ? newVal.map((val) => val.id).join(',') : ''
-                                                    form.setFieldValue('store_code', newValues)
+                                                    form.setFieldValue('store_code', newVal?.id)
                                                 }}
                                             />
                                         </div>
