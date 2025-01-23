@@ -114,8 +114,6 @@ const AddOfferEngine = () => {
         })
     }
 
-    console.log('csv is', csvFile)
-
     const sendFilterData = async (filterData: any) => {
         const formData = new FormData()
 

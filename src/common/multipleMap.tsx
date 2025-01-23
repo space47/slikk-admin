@@ -380,7 +380,10 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
             value: distanceAboveThirty,
             total: calculateSum(distanceAboveThirty),
             average: calculateAverage(distanceAboveThirty),
-            sqCount: null,
+            sqCount: calculatePerSquareCount(
+                [distanceBelowTen, distanceBelowTentoFifteen, distanceBelowFifteenToThirty, distanceAboveThirty],
+                1256.24,
+            ),
         },
     ]
 

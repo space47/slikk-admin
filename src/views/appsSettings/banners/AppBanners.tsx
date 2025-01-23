@@ -212,12 +212,12 @@ const AppBanners = () => {
             { header: 'Section Heading', accessorKey: 'section_heading' },
             {
                 header: 'Brand Name',
-                accessorKey: 'brand.name',
+                accessorKey: 'brand',
                 cell: (info: any) => info.row.original.brand.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
             {
                 header: 'DIVISION Name',
-                accessorKey: 'division.name',
+                accessorKey: 'division',
                 cell: (info: any) => info.row.original.division.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
 
