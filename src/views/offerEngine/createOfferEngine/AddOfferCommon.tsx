@@ -154,136 +154,131 @@ const AddOfferCommon = ({
                 <CommonSelectByLabel label="Offer Type" name="offer_type" fieldname="offer_type" options={offerType_array} />
                 <FullDateForm label="Start Date" name="start_date" fieldname="start_date" />
                 <FullDateForm label="End Date" name="end_date" fieldname="end_date" />
-
-                <div>
-                    <h2>Product Selection</h2>
-                    <br />
-                    <div className="">
-                        <div className="mb-4 w-full gap-7">
-                            <label className="block text-gray-700">SKU</label>
-                            <div className="flex gap-2 items-center">
-                                <input
-                                    name="sku"
-                                    type="search"
-                                    placeholder="Enter SKU"
-                                    className="w-1/2 border border-gray-300 rounded p-2"
-                                    value={skuInput}
-                                    onChange={(e) => setSkuInput(e.target.value)}
-                                />
-                                <div>
-                                    <FaSearch className="text-2xl cursor-pointer" onClick={handleAddSku} />
-                                </div>
-                            </div>
-                            <br />
-                            <div className="xl:w-[800px]">
-                                <EasyTable mainData={skuSearchData} columns={columns} overflow />
+            </FormContainer>
+            <div>
+                <h2>Product Selection</h2>
+                <br />
+                <div className="">
+                    <div className="mb-4 w-1/2 gap-7">
+                        <label className="block text-gray-700">SKU</label>
+                        <div className="flex gap-2 items-center">
+                            <input
+                                name="sku"
+                                type="search"
+                                placeholder="Enter SKU"
+                                className="w-1/2 border border-gray-300 rounded p-2"
+                                value={skuInput}
+                                onChange={(e) => setSkuInput(e.target.value)}
+                            />
+                            <div>
+                                <FaSearch className="text-2xl cursor-pointer" onClick={handleAddSku} />
                             </div>
                         </div>
                         <br />
-                        <br />
-                        <SearchStrings
-                            handleAddFilter={handleAddFilter}
-                            showAddFilter={showAddFilter}
-                            handleAddFilters={handleAddFilters}
-                            handleRemoveFilter={handleRemoveFilter}
-                            filters={filters}
-                            values={values}
-                            setCsvFile={setCsvFile}
-                        />
-
-                        {/* formData.append('image', values.imageArray[0]) */}
-
-                        {editMode ? (
-                            <div>
-                                <span className="text-[16px] font-bold">Image</span>
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    {initialValue.image ? (
-                                        <div className="flex flex-col items-center justify-center w-[150px]">
-                                            <img
-                                                src={initialValue.image}
-                                                alt={`Image `}
-                                                className="w-[150px] h-[40px] flex object-contain "
-                                            />
-                                            <button className="text-red-500 text-md " onClick={() => handleRemoveImage('image')}>
-                                                <MdCancel className="text-red-500 bg-none text-lg" />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        'No Image'
-                                    )}
-                                    <FormContainer className=" ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="imageList">
-                                                {({ form }: FieldProps<any>) => (
-                                                    <>
-                                                        <div className="font-semibold flex justify-center">Image</div>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.imageList} // uploadedd the file
-                                                            className="flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('imageList', files)}
-                                                            onChange={(files) => form.setFieldValue('imageList', files)}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
-                            </div>
-                        ) : (
-                            <div>
-                                <span className="text-[16px] font-bold">Image</span>
-                                <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                                    <FormContainer className=" mt-5 ">
-                                        <FormItem label="" className="grid grid-rows-2">
-                                            <Field name="image">
-                                                {({ field, form }: FieldProps<any>) => (
-                                                    <>
-                                                        <Upload
-                                                            beforeUpload={beforeUpload}
-                                                            fileList={values.image}
-                                                            className="items-center flex justify-center"
-                                                            onFileRemove={(files) => form.setFieldValue('image', files)}
-                                                            onChange={(files) => {
-                                                                form.setFieldValue('image', files)
-                                                            }}
-                                                        />
-                                                    </>
-                                                )}
-                                            </Field>
-                                        </FormItem>
-                                    </FormContainer>
-                                </FormContainer>
-                            </div>
-                        )}
-
-                        <FormItem label="Store ">
-                            <Field name="store_code">
-                                {({ form, field }: FieldProps<any>) => {
-                                    console.log('field value for store code', field?.value)
-                                    const selectedCompany = storeResults.find((option) => option.id === field?.value)
-
-                                    return (
-                                        <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
-                                            <Select
-                                                className="w-full"
-                                                options={storeResults}
-                                                getOptionLabel={(option) => option.code}
-                                                getOptionValue={(option) => option.id}
-                                                value={selectedCompany || null}
-                                                onChange={(newVal) => {
-                                                    form.setFieldValue('store_code', newVal?.id)
-                                                }}
-                                            />
-                                        </div>
-                                    )
-                                }}
-                            </Field>
-                        </FormItem>
+                        <div className="xl:w-[800px]">
+                            <EasyTable mainData={skuSearchData} columns={columns} overflow />
+                        </div>
                     </div>
+                    <br />
+                    <br />
+                    <SearchStrings
+                        handleAddFilter={handleAddFilter}
+                        showAddFilter={showAddFilter}
+                        handleAddFilters={handleAddFilters}
+                        handleRemoveFilter={handleRemoveFilter}
+                        filters={filters}
+                        values={values}
+                        setCsvFile={setCsvFile}
+                    />
+
+                    {/* formData.append('image', values.imageArray[0]) */}
+
+                    {editMode ? (
+                        <div>
+                            <span className="text-[16px] font-bold">Image</span>
+                            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                {initialValue.image ? (
+                                    <div className="flex flex-col items-center justify-center w-[150px]">
+                                        <img src={initialValue.image} alt={`Image `} className="w-[150px] h-[40px] flex object-contain " />
+                                        <button className="text-red-500 text-md " onClick={() => handleRemoveImage('image')}>
+                                            <MdCancel className="text-red-500 bg-none text-lg" />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    'No Image'
+                                )}
+                                <FormContainer className=" ">
+                                    <FormItem label="" className="grid grid-rows-2">
+                                        <Field name="imageList">
+                                            {({ form }: FieldProps<any>) => (
+                                                <>
+                                                    <div className="font-semibold flex justify-center">Image</div>
+                                                    <Upload
+                                                        beforeUpload={beforeUpload}
+                                                        fileList={values.imageList} // uploadedd the file
+                                                        className="flex justify-center"
+                                                        onFileRemove={(files) => form.setFieldValue('imageList', files)}
+                                                        onChange={(files) => form.setFieldValue('imageList', files)}
+                                                    />
+                                                </>
+                                            )}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+                            </FormContainer>
+                        </div>
+                    ) : (
+                        <div>
+                            <span className="text-[16px] font-bold">Image</span>
+                            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+                                <FormContainer className=" mt-5 ">
+                                    <FormItem label="" className="grid grid-rows-2">
+                                        <Field name="image">
+                                            {({ field, form }: FieldProps<any>) => (
+                                                <>
+                                                    <Upload
+                                                        beforeUpload={beforeUpload}
+                                                        fileList={values.image}
+                                                        className="items-center flex justify-center"
+                                                        onFileRemove={(files) => form.setFieldValue('image', files)}
+                                                        onChange={(files) => {
+                                                            form.setFieldValue('image', files)
+                                                        }}
+                                                    />
+                                                </>
+                                            )}
+                                        </Field>
+                                    </FormItem>
+                                </FormContainer>
+                            </FormContainer>
+                        </div>
+                    )}
+
+                    <FormItem label="Store ">
+                        <Field name="store_code">
+                            {({ form, field }: FieldProps<any>) => {
+                                console.log('field value for store code', field?.value)
+                                const selectedCompany = storeResults.find((option) => option.id === field?.value)
+
+                                return (
+                                    <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                        <Select
+                                            className="w-full"
+                                            options={storeResults}
+                                            getOptionLabel={(option) => option.code}
+                                            getOptionValue={(option) => option.id}
+                                            value={selectedCompany || null}
+                                            onChange={(newVal) => {
+                                                form.setFieldValue('store_code', newVal?.id)
+                                            }}
+                                        />
+                                    </div>
+                                )
+                            }}
+                        </Field>
+                    </FormItem>
                 </div>
-            </FormContainer>
+            </div>
         </div>
     )
 }

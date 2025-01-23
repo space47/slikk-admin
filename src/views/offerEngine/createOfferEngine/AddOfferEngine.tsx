@@ -158,7 +158,7 @@ const AddOfferEngine = () => {
             min_quantity: values?.min_quantity || 0,
             name: values?.name || '',
             offer_value: values?.offer_value || '',
-            quantity_x: values?.quantity_x || 0,
+            quantity_x: values?.min_quantity || 0,
             start_date: values?.start_date || '',
             end_date: values?.end_date || '',
             upto_off: values?.upto_off || 0,

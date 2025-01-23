@@ -55,11 +55,11 @@ export const offerFormArray = [
         type: 'number',
         label: 'Offer Value',
     },
-    {
-        name: 'quantity_x',
-        type: 'number',
-        label: 'Quantity X',
-    },
+    // {
+    //     name: 'quantity_x',
+    //     type: 'number',
+    //     label: 'Quantity X',
+    // },
     {
         name: 'min_quantity',
         type: 'number',

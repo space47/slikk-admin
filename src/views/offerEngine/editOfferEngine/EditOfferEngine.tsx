@@ -196,7 +196,7 @@ const EditOfferEngine = () => {
             ...(values?.min_quantity && { min_quantity: values.min_quantity }),
             ...(values?.name && { name: values.name }),
             ...(values?.offer_value && { offer_value: values.offer_value }),
-            ...(values?.quantity_x && { quantity_x: values.quantity_x }),
+            ...(values?.quantity_x && { quantity_x: values.min_quantity }),
             ...(values?.start_date && { start_date: values.start_date }),
             ...(values?.end_date && { end_date: values.end_date }),
             ...(values?.upto_off && { upto_off: values.upto_off }),
