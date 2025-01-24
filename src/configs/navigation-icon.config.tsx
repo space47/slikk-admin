@@ -25,7 +25,7 @@ import {
     HiOutlineCode,
     HiOutlineUsers,
 } from 'react-icons/hi'
-import { BiCategory } from 'react-icons/bi'
+import { BiCategory, BiSolidOffer } from 'react-icons/bi'
 import { LiaUserTagSolid } from 'react-icons/lia'
 import { MdOutlineInventory, MdDisplaySettings, MdBusinessCenter, MdMessage } from 'react-icons/md'
 import { CgOrganisation } from 'react-icons/cg'
@@ -46,6 +46,7 @@ const navigationIcon: NavigationIcons = {
     sales: <HiOutlineTrendingUp />,
     org: <CgOrganisation />,
     reels: <BsCameraReels />,
+    offers: <BiSolidOffer />,
     config: <FcDataConfiguration />,
     users: <HiOutlineUsers />,
     bill: <RiBillLine />,

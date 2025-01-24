@@ -7,7 +7,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table'
-import React from 'react'
+import React, { useState } from 'react'
 import Table from '@/components/ui/Table'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
@@ -22,21 +22,27 @@ interface TABLEPROPS {
 }
 
 const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABLEPROPS) => {
+    const [sorting, setSorting] = useState<any[]>([]) // To store the sorting state
+
     const table = useReactTable({
         data: mainData,
         columns,
-        state: noPage
-            ? {}
-            : {
-                  pagination: {
+        state: {
+            sorting, // Pass sorting state
+            pagination: noPage
+                ? undefined
+                : {
                       pageIndex: page - 1,
                       pageSize: pageSize,
                   },
-              },
+        },
+        onSortingChange: setSorting, // Update the sorting state when it changes
         getCoreRowModel: getCoreRowModel(),
-
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(), // Enable sorting
         getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: !noPage,
+        manualPagination: true, // You might want to control pagination manually
+        enableMultiSort: true, // Allow multiple columns to be sorted
     })
 
     return (
@@ -48,8 +54,12 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABL
                             {headerGroup.headers.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {header.isPlaceholder ? null : (
-                                        <div className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}>
+                                        <div
+                                            className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
                                             {flexRender(header.column.columnDef.header, header.getContext())}
+                                            <Sorter sort={header.column.getIsSorted()} />
                                         </div>
                                     )}
                                 </Th>

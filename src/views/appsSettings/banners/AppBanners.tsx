@@ -92,7 +92,7 @@ const AppBanners = () => {
             while (hasMore) {
                 const response = await axiosInstance.get(`/banners?p=${page}&page=${currentSelectedPage.value}`)
                 const data = response.data.data
-                const newSectionHeadings = data.results.map((item) => item.section_heading)
+                const newSectionHeadings = data.results.map((item: any) => item.section_heading)
                 allSectionHeadings = _.uniq(allSectionHeadings.concat(newSectionHeadings))
                 if (data.next) {
                     page++
@@ -212,12 +212,12 @@ const AppBanners = () => {
             { header: 'Section Heading', accessorKey: 'section_heading' },
             {
                 header: 'Brand Name',
-                accessorKey: 'brand.name',
+                accessorKey: 'brand',
                 cell: (info: any) => info.row.original.brand.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
             {
                 header: 'DIVISION Name',
-                accessorKey: 'division.name',
+                accessorKey: 'division',
                 cell: (info: any) => info.row.original.division.map((item: any, key: number) => <div key={key}>{item.name}</div>),
             },
 
@@ -364,7 +364,7 @@ const AppBanners = () => {
                         onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                     <div className="flex gap-2">
-                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                        <div className="bg-gray-200 px-1 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"
                                 title={currentSelectedPage.name}
@@ -378,7 +378,7 @@ const AppBanners = () => {
                             </Dropdown>
                         </div>
 
-                        <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
+                        <div className="bg-gray-200 px-1 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border  bg-gray-200 text-black text-lg font-semibold"
                                 title={selectedHeading}

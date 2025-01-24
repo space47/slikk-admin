@@ -259,8 +259,14 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                     <div className="mb-3 xl:text-lg w-[80px] flex flex-wrap break-words text-red-700 xl:w-full dark:text-red-500">
                                         {pdts.sku}
                                     </div>
-                                    <div className=" mb-3 xl:text-lg w-[100px] text-gray-700 xl:w-full dark:text-white">
-                                        Size:{pdts.size}
+                                    <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
+                                        color:{pdts.color}
+                                    </div>
+                                    <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
+                                        price: ₹{pdts.final_price}
+                                    </div>
+                                    <div className=" mb-3 xl:text-sm w-[100px] text-gray-700 xl:w-full dark:text-white">
+                                        size:{pdts.size}
                                     </div>
 
                                     <div className="flex items-center justify-between">
@@ -271,7 +277,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                     {pdts.location && (
                                         <div className="text-gray-900 mb-3 xl:text-md w-[100px]  flex-wrap break-words xl:w-full font-bold flex gap-1 dark:text-white">
                                             <span className="font-semibold">Loc:</span>
-                                            {pdts.location}
+                                            <span className="w-[50px] flex flex-wrap break-words">{pdts.location}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-end mt-10">
