@@ -64,7 +64,7 @@ const OrderList = () => {
     const navigate = useNavigate()
     const [from, setFrom] = useState(var1 ? var1 : moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(var2 ? var2 : moment().format('YYYY-MM-DD'))
-    const [orderCount, setOrderCount] = useState()
+    const [orderCount, setOrderCount] = useState(0)
     const [dropdownStatus, setDropdownStatus] = useState<DropdownStatus>({
         value: [],
         name: [],
@@ -82,7 +82,7 @@ const OrderList = () => {
     const [showNoData, setShowNoData] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
 
-    const [tabSelect, setTabSelect] = useState('pending')
+    const [tabSelect, setTabSelect] = useState('all')
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
     }
@@ -92,7 +92,9 @@ const OrderList = () => {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             // const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
             let status = ''
-
+            if (tabSelect === 'all') {
+                status = ``
+            }
             if (tabSelect === 'pending') {
                 status = `&status=PENDING`
             }
@@ -100,7 +102,7 @@ const OrderList = () => {
                 status = `&status=PACKED`
             }
             if (tabSelect === 'out_for_delivery') {
-                status = `&status=OUT_FOR_DELIVERY`
+                status = `&status=OUT_FOR_DELIVERY,SHIPPED`
             }
             if (tabSelect === 'delivered') {
                 status = `&status=DELIVERED`
@@ -151,7 +153,9 @@ const OrderList = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             let status = ''
-
+            if (tabSelect === 'all') {
+                status = ``
+            }
             if (tabSelect === 'pending') {
                 status = `&status=PENDING`
             }
@@ -159,7 +163,7 @@ const OrderList = () => {
                 status = `&status=PACKED`
             }
             if (tabSelect === 'out_for_delivery') {
-                status = `&status=OUT_FOR_DELIVERY`
+                status = `&status=OUT_FOR_DELIVERY,SHIPPED`
             }
             if (tabSelect === 'delivered') {
                 status = `&status=DELIVERED`
@@ -664,7 +668,7 @@ const OrderList = () => {
                     </div>
                 </div>
 
-                <TabSelectOrder handleSelectTab={handleSelectTab} tabSelect={tabSelect} />
+                <TabSelectOrder handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={orderCount} />
 
                 <br />
 
