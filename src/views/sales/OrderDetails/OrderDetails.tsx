@@ -21,6 +21,7 @@ import { FaDownload } from 'react-icons/fa'
 import { notification } from 'antd'
 import { SalesOrderDetailsResponse } from './orderList.common'
 import { Dialog } from '@/components/ui'
+import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 // import { string } from 'yup'
 
 const scheduleSlots: any = {
@@ -37,7 +38,7 @@ const OrderDetails = () => {
     const [showCancelModal, setShowCancelModal] = useState(false)
     const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
     const navigate = useNavigate()
-
+    const [showRiderData, setShowRiderData] = useState(false)
     const { invoice_id } = useParams()
 
     useEffect(() => {
@@ -139,6 +140,18 @@ const OrderDetails = () => {
         } finally {
             setShowCancelExchangeModal(false)
         }
+    }
+
+    useEffect(() => {
+        if (data?.status === 'DELIVERY_CREATED' && data?.logistic?.partner === 'Slikk' && data?.logistic?.runner_phone_number === '') {
+            setShowRiderData(true)
+        } else {
+            setShowRiderData(false)
+        }
+    }, [data?.logistic])
+
+    const handleCloseTrackModal = () => {
+        setShowRiderData(false)
     }
 
     return (
@@ -303,6 +316,7 @@ const OrderDetails = () => {
                                         product={data.order_items}
                                         payment={data.payment}
                                         invoice_id={data.invoice_id}
+                                        logistic={data.logistic}
                                     />
                                 </div>
                             </div>
@@ -356,6 +370,14 @@ const OrderDetails = () => {
                                         </Dialog>
                                     </div>
                                 </>
+                            )}
+                            {showRiderData && (
+                                <TrackModal
+                                    showTaskModal={showRiderData}
+                                    setShowAssignModal={setShowRiderData}
+                                    storeTaskId={data?.logistic?.task_id}
+                                    handleCloseModal={handleCloseTrackModal}
+                                />
                             )}
                         </div>
                     </>

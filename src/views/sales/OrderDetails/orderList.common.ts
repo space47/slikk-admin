@@ -32,7 +32,7 @@ export type SalesOrderDetailsResponse = {
     tax: string | number
     address_name: string
     logistic?: {
-        partner: number
+        partner: string
         price: number
         create_date: number
         drop_time: number

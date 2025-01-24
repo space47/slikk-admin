@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5 } from './Modal'
 import { LOGISTIC, LOGISTIC_PARTNER, Payment, Product } from './activityCommon'
 import { SalesOrderDetailsResponse } from '../orderList.common'
+import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 
 type Event = {
     timestamp: string
@@ -45,6 +46,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
     const fulfilledIDs = Object.keys(fulfilledQuantities)
+    const [showRiderData, setShowRiderData] = useState(false)
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
@@ -229,8 +231,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const handleClose = () => {
         setIsModalOpen(false)
     }
-
-    console.log('Data of the log', data)
 
     const getButtonAndModalContent = (data: Event[]) => {
         const lastLogStatus = data.length > 0 ? data[data.length - 1].status : null
@@ -421,13 +421,12 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     isButtonClick={buttonAfterClick}
                 />
             )}
-            {/* {data[data.length - 1]?.status === 'OUT_FOR_DELIVERY' && isPacked && (
-                <CustomModal4
-                    isModalOpen={isModalOpen}
-                    handlePack={handleDelivery}
-                    handleClose={handleClose}
-                    modalContent={modalContent}
-                    status={status}
+            {/* {showRiderData && (
+                <TrackModal
+                    showTaskModal={showRiderData}
+                    setShowAssignModal={setShowRiderData}
+                    storeTaskId={logistic?.task_id}
+                    handleCloseModal={handleCloseModal}
                 />
             )} */}
         </Card>
