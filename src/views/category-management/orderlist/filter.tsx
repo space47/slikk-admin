@@ -25,7 +25,7 @@ const TabSelectOrder = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                     className={`flex   cursor-pointer  ${tabSelect === 'packed' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
                     onClick={() => handleSelectTab('packed')}
                 >
-                    <span className="text-xl font-bold">{tabSelect === 'packed' && <>({orderCount})</>}</span>
+                    <span className="text-xl font-bold">PACKED{tabSelect === 'packed' && <>({orderCount})</>}</span>
                 </div>
                 <div
                     className={`flex   cursor-pointer  ${tabSelect === 'out_for_delivery' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}

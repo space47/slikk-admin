@@ -400,7 +400,7 @@ const OrderList = () => {
                     )
                 },
             },
-
+            { header: 'Picker Name', accessorKey: 'picker.name' },
             { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }) => <span>{getValue()} km</span> },
             { header: 'Payment Mode', accessorKey: 'payment.mode' },
             { header: 'Payment Status', accessorKey: 'payment.status' },

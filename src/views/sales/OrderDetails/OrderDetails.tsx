@@ -22,6 +22,7 @@ import { notification } from 'antd'
 import { SalesOrderDetailsResponse } from './orderList.common'
 import { Dialog } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
+import OrderPickerSummary from './components/OrderPickersummary'
 // import { string } from 'yup'
 
 const scheduleSlots: any = {
@@ -306,6 +307,10 @@ const OrderDetails = () => {
                                             status={data.status}
                                             handlePODAction={handlePODAction}
                                         />
+                                    </div>
+
+                                    <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
+                                        <OrderPickerSummary data={data} />
                                     </div>
                                 </div>
                                 <div className="mt-6">
