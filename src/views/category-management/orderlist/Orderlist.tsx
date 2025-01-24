@@ -105,7 +105,7 @@ const OrderList = () => {
                 status = `&status=OUT_FOR_DELIVERY,SHIPPED`
             }
             if (tabSelect === 'delivered') {
-                status = `&status=DELIVERED`
+                status = `&status=COMPLETED`
             }
             if (dropdownStatus?.value?.length > 0) {
                 status = `&status=${dropdownStatus?.value}`
@@ -166,7 +166,7 @@ const OrderList = () => {
                 status = `&status=OUT_FOR_DELIVERY,SHIPPED`
             }
             if (tabSelect === 'delivered') {
-                status = `&status=DELIVERED`
+                status = `&status=COMPLETED`
             }
             if (dropdownStatus?.value?.length > 0) {
                 status = `&status=${dropdownStatus?.value}`

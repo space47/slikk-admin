@@ -5,6 +5,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
 import { notification, Radio } from 'antd'
+import { useNavigate } from 'react-router-dom'
 
 type ModalProps = {
     showTaskModal: any
@@ -28,6 +29,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
 
     const [ridersData, setRidersData] = useState<RiderProfile[]>([])
     const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
+    const navigate = useNavigate(0)
 
     const fetchData = async () => {
         try {
@@ -67,6 +69,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                 description: `Rider with moblie ${selectedRiderMobile} is assigned`,
             })
             setShowAssignModal(false)
+            navigate(0)
             return response
         } catch (error) {
             console.log(error)
@@ -97,6 +100,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                 onOk={assignTask}
             >
                 <div className="main">
+                    <div className="text-xl font-bold text-red-700 mb-6">ASSIGN RIDER</div>
                     {ridersData && (
                         <div className="details">
                             <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection}>
