@@ -13,31 +13,31 @@ const TabSelectOrder = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                     className={`flex  cursor-pointer ${tabSelect === 'all' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
                     onClick={() => handleSelectTab('all')}
                 >
-                    <span className="text-xl font-bold">ALL</span>
+                    <span className="text-xl font-bold">ALL {tabSelect === 'all' && <>({orderCount})</>}</span>
                 </div>
                 <div
                     className={`flex  cursor-pointer ${tabSelect === 'pending' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
                     onClick={() => handleSelectTab('pending')}
                 >
-                    <span className="text-xl font-bold">PENDING</span>
+                    <span className="text-xl font-bold">PENDING {tabSelect === 'pending' && <>({orderCount})</>}</span>
                 </div>
                 <div
                     className={`flex   cursor-pointer  ${tabSelect === 'packed' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
                     onClick={() => handleSelectTab('packed')}
                 >
-                    <span className="text-xl font-bold">PACKED</span>
+                    <span className="text-xl font-bold">{tabSelect === 'packed' && <>({orderCount})</>}</span>
                 </div>
                 <div
                     className={`flex   cursor-pointer  ${tabSelect === 'out_for_delivery' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
                     onClick={() => handleSelectTab('out_for_delivery')}
                 >
-                    <span className="text-xl font-bold">OUT FOR DELIVERY</span>
+                    <span className="text-xl font-bold">OUT FOR DELIVERY {tabSelect === 'out_for_delivery' && <>({orderCount})</>}</span>
                 </div>
                 <div
                     className={`flex   cursor-pointer  ${tabSelect === 'delivered' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
                     onClick={() => handleSelectTab('delivered')}
                 >
-                    <span className="text-xl font-bold">DELIVERED</span>
+                    <span className="text-xl font-bold">DELIVERED {tabSelect === 'delivered' && <>({orderCount})</>}</span>
                 </div>
             </div>
         </div>
