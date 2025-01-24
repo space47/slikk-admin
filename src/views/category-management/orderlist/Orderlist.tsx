@@ -20,6 +20,8 @@ import RedMarkTable from '@/common/RedMarkTable'
 import { HiSearch } from 'react-icons/hi'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
+import TabSelectOrder from './filter'
 
 const CHANGE_DELIVERY_OPTIONS = [
     { label: 'EXPRESS', value: 'EXPRESS' },
@@ -77,13 +79,35 @@ const OrderList = () => {
 
     const previousOrders = useRef<Order[]>([])
     const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
-
+    const [showNoData, setShowNoData] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
+
+    const [tabSelect, setTabSelect] = useState('pending')
+    const handleSelectTab = (value: string) => {
+        setTabSelect(value)
+    }
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            // const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            let status = ''
+
+            if (tabSelect === 'pending') {
+                status = `&status=PENDING`
+            }
+            if (tabSelect === 'packed') {
+                status = `&status=PACKED`
+            }
+            if (tabSelect === 'out_for_delivery') {
+                status = `&status=OUT_FOR_DELIVERY`
+            }
+            if (tabSelect === 'delivered') {
+                status = `&status=DELIVERED`
+            }
+            if (dropdownStatus?.value?.length > 0) {
+                status = `&status=${dropdownStatus?.value}`
+            }
 
             let response
             let deliveryStatus = ''
@@ -108,8 +132,14 @@ const OrderList = () => {
             }
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
+
             setOrders(ordersData)
             setOrderCount(orderCount)
+            if (ordersData?.length === 0 || ordersData?.length === 0) {
+                setShowNoData(true)
+            } else {
+                setShowNoData(false)
+            }
         } catch (error) {
             console.error(error)
         } finally {
@@ -120,7 +150,23 @@ const OrderList = () => {
     const checkingNewOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            let status = ''
+
+            if (tabSelect === 'pending') {
+                status = `&status=PENDING`
+            }
+            if (tabSelect === 'packed') {
+                status = `&status=PACKED`
+            }
+            if (tabSelect === 'out_for_delivery') {
+                status = `&status=OUT_FOR_DELIVERY`
+            }
+            if (tabSelect === 'delivered') {
+                status = `&status=DELIVERED`
+            }
+            if (dropdownStatus?.value?.length > 0) {
+                status = `&status=${dropdownStatus?.value}`
+            }
 
             let response
             let deliveryStatus = ''
@@ -167,18 +213,16 @@ const OrderList = () => {
     }
 
     useEffect(() => {
-        // Check if numberClick is false before fetching orders
         if (!numberClick) {
             fetchOrders(page, pageSize, from, to)
         }
-
         const noFilters =
             page === 1 &&
             !dropdownStatus.value.length &&
             !searchInput &&
             !deliveryType.value.length &&
             !paymentType.value.length &&
-            numberClick === false // Ensure the interval only runs when numberClick is false
+            numberClick === false
 
         if (noFilters) {
             const interval = setInterval(() => {
@@ -188,7 +232,7 @@ const OrderList = () => {
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType, numberClick, previousOrders])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType, numberClick, previousOrders, tabSelect])
 
     useEffect(() => {
         checkingNewOrders(page, pageSize, from, to)
@@ -619,17 +663,26 @@ const OrderList = () => {
                         </div>
                     </div>
                 </div>
+
+                <TabSelectOrder handleSelectTab={handleSelectTab} tabSelect={tabSelect} />
+
                 <br />
 
-                <div className="border border-gray-300 p-2 rounded-xl">
-                    <RedMarkTable
-                        mainData={orders}
-                        page={page}
-                        pageSize={pageSize}
-                        columns={columns}
-                        selectedDeliveryType={deliveryTypes ?? ''}
-                    />
-                </div>
+                {showNoData ? (
+                    <>
+                        <NotFoundData />{' '}
+                    </>
+                ) : (
+                    <div className="border border-gray-300 p-2 rounded-xl">
+                        <RedMarkTable
+                            mainData={orders}
+                            page={page}
+                            pageSize={pageSize}
+                            columns={columns}
+                            selectedDeliveryType={deliveryTypes ?? ''}
+                        />
+                    </div>
+                )}
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 {numberClick !== true && (

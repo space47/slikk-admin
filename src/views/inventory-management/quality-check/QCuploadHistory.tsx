@@ -86,7 +86,7 @@ const PaginationTable = () => {
 
                         const a = document.createElement('a')
                         a.href = url
-                        a.download = `GRN-${moment().format('YYYY-MM-DD HH-mm-ss a')}.csv`
+                        a.download = `QC-fail-${moment().format('YYYY-MM-DD HH-mm-ss a')}.csv`
 
                         document.body.appendChild(a)
                         a.click()
@@ -123,7 +123,7 @@ const PaginationTable = () => {
 
                         const a = document.createElement('a')
                         a.href = url
-                        a.download = `GRN-${moment().format('YYYY-MM-DD HH-mm-ss a')}.csv`
+                        a.download = `QC-PASS-${moment().format('YYYY-MM-DD HH-mm-ss a')}.csv`
 
                         document.body.appendChild(a)
                         a.click()

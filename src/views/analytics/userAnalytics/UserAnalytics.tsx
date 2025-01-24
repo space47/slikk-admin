@@ -1,18 +1,14 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
-import Table from '@/components/ui/Table'
 import { USERANALYTICS_TYPE } from '@/store/types/userAnalytics.types'
 import { fetchUserAnalytics, setFrom, setTo, setPage, setPage_size } from '@/store/slices/userAnalytics/userAnalytics.slice'
 import moment from 'moment'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
 import { FaCheckCircle, FaUsers } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { Pagination } from '@/components/ui'
 import AccessDenied from '@/views/pages/AccessDenied'
-
-const { Tr, Th, Td, THead, TBody } = Table
+import EasyTable from '@/common/EasyTable'
+import UltimateDatePicker from '@/common/UltimateDateFilter'
+import UserMap from './UserMap'
 
 const UserAnalyticsTable = () => {
     const dispatch = useAppDispatch()
@@ -34,27 +30,12 @@ const UserAnalyticsTable = () => {
         [],
     )
 
-    const table = useReactTable({
-        data: data?.results || [],
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        manualPagination: false,
-        // state: {
-        //     pagination: {
-        //         pageIndex: 0,
-        //         pageSize: data?.results?.length || 10,
-        //     },
-        // },
-    })
-
-    console.log('AccessDenied', accessDenied)
-
-    const handleFromChange = (date: Date | null) => {
-        dispatch(setFrom(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
-    }
-
-    const handleToChange = (date: Date | null) => {
-        dispatch(setTo(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            dispatch(setFrom(moment(dates[0]).format('YYYY-MM-DD')))
+            const toDate = dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')
+            dispatch(setTo(toDate))
+        }
     }
 
     const onPaginationChange = (page: number) => {
@@ -78,58 +59,32 @@ const UserAnalyticsTable = () => {
                         <span className="text-lg font-semibold">Total Logged Users: {total_logged_in}</span>
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row md:gap-6">
-                    <div className="mb-4 md:mb-0">
-                        <div className="mb-1 font-semibold text-xs md:text-sm">FROM DATE:</div>
-                        <DatePicker
-                            inputPrefix={<HiOutlineCalendar className="text-base md:text-lg" />}
-                            value={new Date(from)}
-                            onChange={handleFromChange}
-                            className="w-full md:w-[240px]"
-                        />
-                    </div>
-                    <div>
-                        <div className="mb-1 font-semibold text-xs md:text-sm">TO DATE:</div>
-                        <DatePicker
-                            inputSuffix={<TbCalendarStats className="text-base md:text-xl" />}
-                            value={moment(to).toDate()}
-                            onChange={handleToChange}
-                            minDate={moment(from).toDate()}
-                            className="w-full md:w-[240px]"
-                        />
-                    </div>
+                <div>
+                    <UltimateDatePicker
+                        from={from}
+                        setFrom={setFrom}
+                        to={to}
+                        setTo={setTo}
+                        handleDateChange={handleDateChange}
+                        dispatch={dispatch}
+                    />
                 </div>
             </div>
             <div className="overflow-x-auto">
-                {data?.results && data?.results.length === 0 ? (
+                {data?.results && data?.results?.length === 0 ? (
                     <div className="flex flex-col gap-1 justify-center items-center h-screen">
                         <h3>No Data Available</h3>
                         <p>Try changing the date </p>
                     </div>
                 ) : (
-                    <Table className="min-w-full">
-                        <THead>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <Tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => (
-                                        <Th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</Th>
-                                    ))}
-                                </Tr>
-                            ))}
-                        </THead>
-                        <TBody>
-                            {table.getRowModel().rows.map((row) => (
-                                <Tr key={row.id}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                                    ))}
-                                </Tr>
-                            ))}
-                        </TBody>
-                    </Table>
+                    <EasyTable overflow columns={columns} mainData={data?.results || []} page={page} pageSize={page_size} />
                 )}
             </div>
             <Pagination pageSize={page_size} currentPage={page} total={data?.count} onChange={onPaginationChange} />
+
+            <div>
+                <UserMap from={from} to={moment(to).add(1, 'days').format('YYYY-MM-DD')} />
+            </div>
         </div>
     )
 }

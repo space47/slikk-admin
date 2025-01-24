@@ -86,7 +86,7 @@ const GDNPaginationTable = () => {
 
                         const a = document.createElement('a')
                         a.href = url
-                        a.download = `--GDN-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
+                        a.download = `GDN-FAIL-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
 
                         document.body.appendChild(a)
                         a.click()
@@ -123,7 +123,7 @@ const GDNPaginationTable = () => {
 
                         const a = document.createElement('a')
                         a.href = url
-                        a.download = `GDN-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
+                        a.download = `GDN-PASS-${moment().format('YYYY-MM-DD HH-mm-ss a')}`
 
                         document.body.appendChild(a)
                         a.click()

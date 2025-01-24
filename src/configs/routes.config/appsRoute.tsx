@@ -857,6 +857,24 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/appsSettings/policies/Policies')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsAppSettings.careers',
+        path: `${APP_PREFIX_PATH}/appSettings/careers`,
+        component: lazy(() => import('@/views/appsSettings/careers/careerDetails/CareerDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.careers',
+        path: `${APP_PREFIX_PATH}/appSettings/careers/edit/:job_id`,
+        component: lazy(() => import('@/views/appsSettings/careers/editCareers/EditCareers')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.careers',
+        path: `${APP_PREFIX_PATH}/appSettings/careers/addNew`,
+        component: lazy(() => import('@/views/appsSettings/careers/addCareers/AddCareers')),
+        authority: [ADMIN, USER],
+    },
 
     {
         key: 'appsAppSettings.seoSettings',
@@ -1150,6 +1168,45 @@ const appsRoute: Routes = [
         key: 'appsConfiguration.tasksAndSchedular',
         path: `${APP_PREFIX_PATH}/tasksAndSchedular`,
         component: lazy(() => import('@/views/configurationsSlikk/taskAndSchedular/TaskAndSchedular')),
+        authority: [ADMIN, USER],
+    },
+    //offers
+
+    {
+        key: 'appsOffers.offerAndPromotions',
+        path: `${APP_PREFIX_PATH}/offerAndPromotions`,
+        component: lazy(() => import('@/views/offerEngine/offerEngineTable/OfferEngineTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOffers.offerAndPromotions',
+        path: `${APP_PREFIX_PATH}/offerAndPromotions/addNew`,
+        component: lazy(() => import('@/views/offerEngine/createOfferEngine/AddOfferEngine')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOffers.offerAndPromotions',
+        path: `${APP_PREFIX_PATH}/offerAndPromotions/edit/:code`,
+        component: lazy(() => import('@/views/offerEngine/editOfferEngine/EditOfferEngine')),
+        authority: [ADMIN, USER],
+    },
+
+    {
+        key: 'appsOffers.markdownPrices',
+        path: `${APP_PREFIX_PATH}/markdownPrices`,
+        component: lazy(() => import('@/views/markdownPrices/markdownPricesDatas/MarkdownPrices')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOffers.markdownPrices',
+        path: `${APP_PREFIX_PATH}/markdownPrices/addNew`,
+        component: lazy(() => import('@/views/markdownPrices/addMarkdownPrices/AddmarkdownPrices')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsOffers.markdownPrices',
+        path: `${APP_PREFIX_PATH}/markdownPrices/edit/:name`,
+        component: lazy(() => import('@/views/markdownPrices/editMarkdownProces/EditMarkdownProcess')),
         authority: [ADMIN, USER],
     },
 ]

@@ -17,6 +17,7 @@ import { FaMoneyBillTrendUp } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import AccessDenied from '@/views/pages/AccessDenied'
 import ActiveUserTable from './componentsHomes/ActiveUserTable'
+import { IoBagCheck } from 'react-icons/io5'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -184,7 +185,7 @@ const Home = () => {
         },
         {
             handleClick: () => handleCompleted(from, To_Date),
-            img: <RiFileList3Fill className="text-4xl mx-4 text-blue-700" />,
+            img: <IoBagCheck className="text-4xl mx-4 text-green-600" />,
             label: 'Completed Orders',
             p1Data: homeData?.completed.count,
             p2Data: homeData?.completed.total_amount?.toFixed(2),
@@ -218,6 +219,11 @@ const Home = () => {
             p1Data: basketSize ? basketSize.toFixed(2) : 0,
         },
     ]
+
+    console.log(
+        'item sddsdsaadqdqw',
+        orders.map((item) => item.latitude || []),
+    )
 
     if (accessDenied) {
         return <AccessDenied />
