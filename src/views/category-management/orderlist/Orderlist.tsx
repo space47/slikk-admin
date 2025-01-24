@@ -21,6 +21,7 @@ import { HiSearch } from 'react-icons/hi'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import TabSelectOrder from './filter'
 
 const CHANGE_DELIVERY_OPTIONS = [
     { label: 'EXPRESS', value: 'EXPRESS' },
@@ -132,15 +133,9 @@ const OrderList = () => {
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
 
-            const sortedOrders = ordersData.sort((a, b) => {
-                if (a.status === 'PENDING' && b.status !== 'PENDING') return -1
-                if (a.status !== 'PENDING' && b.status === 'PENDING') return 1
-                return 0
-            })
-
-            setOrders(sortedOrders)
+            setOrders(ordersData)
             setOrderCount(orderCount)
-            if (sortedOrders?.length === 0 || ordersData?.length === 0) {
+            if (ordersData?.length === 0 || ordersData?.length === 0) {
                 setShowNoData(true)
             } else {
                 setShowNoData(false)
@@ -155,7 +150,23 @@ const OrderList = () => {
     const checkingNewOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            let status = ''
+
+            if (tabSelect === 'pending') {
+                status = `&status=PENDING`
+            }
+            if (tabSelect === 'packed') {
+                status = `&status=PACKED`
+            }
+            if (tabSelect === 'out_for_delivery') {
+                status = `&status=OUT_FOR_DELIVERY`
+            }
+            if (tabSelect === 'delivered') {
+                status = `&status=DELIVERED`
+            }
+            if (dropdownStatus?.value?.length > 0) {
+                status = `&status=${dropdownStatus?.value}`
+            }
 
             let response
             let deliveryStatus = ''
@@ -194,12 +205,7 @@ const OrderList = () => {
 
             previousOrders.current = ordersData
 
-            const sortedOrders = ordersData.sort((a, b) => {
-                if (a.status === 'PENDING' && b.status !== 'PENDING') return -1
-                if (a.status !== 'PENDING' && b.status === 'PENDING') return 1
-                return 0
-            })
-            setOrders(sortedOrders)
+            setOrders(ordersData)
             setOrderCount(orderCount)
         } catch (error) {
             console.error(error)
@@ -207,18 +213,16 @@ const OrderList = () => {
     }
 
     useEffect(() => {
-        // Check if numberClick is false before fetching orders
         if (!numberClick) {
             fetchOrders(page, pageSize, from, to)
         }
-
         const noFilters =
             page === 1 &&
             !dropdownStatus.value.length &&
             !searchInput &&
             !deliveryType.value.length &&
             !paymentType.value.length &&
-            numberClick === false // Ensure the interval only runs when numberClick is false
+            numberClick === false
 
         if (noFilters) {
             const interval = setInterval(() => {
@@ -660,32 +664,7 @@ const OrderList = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-10 justify-start">
-                    <div
-                        className={`flex  cursor-pointer ${tabSelect === 'pending' ? ' border-b-4 border-black' : ''}`}
-                        onClick={() => handleSelectTab('pending')}
-                    >
-                        <span className="text-xl font-bold">PENDING</span>
-                    </div>
-                    <div
-                        className={`flex   cursor-pointer  ${tabSelect === 'packed' ? ' border-b-4 border-black' : ''}`}
-                        onClick={() => handleSelectTab('packed')}
-                    >
-                        <span className="text-xl font-bold">PACKED</span>
-                    </div>
-                    <div
-                        className={`flex   cursor-pointer  ${tabSelect === 'out_for_delivery' ? ' border-b-4 border-black' : ''}`}
-                        onClick={() => handleSelectTab('out_for_delivery')}
-                    >
-                        <span className="text-xl font-bold">OUT FOR DELIVERY</span>
-                    </div>
-                    <div
-                        className={`flex   cursor-pointer  ${tabSelect === 'delivered' ? ' border-b-4 border-black' : ''}`}
-                        onClick={() => handleSelectTab('delivered')}
-                    >
-                        <span className="text-xl font-bold">DELIVERED</span>
-                    </div>
-                </div>
+                <TabSelectOrder handleSelectTab={handleSelectTab} tabSelect={tabSelect} />
 
                 <br />
 
