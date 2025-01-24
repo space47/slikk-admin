@@ -74,7 +74,7 @@ export const notificationListData = [
 ]
 
 export const searchQueryPoolData = [
-   //slikk nav menu(category)
+    //slikk nav menu(category)
     {
         title: 'Division',
         url: '/app/category/division-new',
@@ -103,12 +103,8 @@ export const searchQueryPoolData = [
         category: 'Category',
         categoryTitle: 'Apps',
     },
-//slikk nav menu(category)
+    //slikk nav menu(category)
 
-
-
-
-    
     {
         title: 'Project Dashboard',
         url: '/app/project/dashboard',
