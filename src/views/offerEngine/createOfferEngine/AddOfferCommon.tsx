@@ -8,6 +8,8 @@ import CommonSelectByLabel from '@/common/CommonSelectByLabel'
 import FullDateForm from '@/common/FullDateForm'
 import SearchStrings from '@/common/SearchStrings'
 import { StoreDetails } from '@/store/types/companyStore.types'
+import { FaSearch } from 'react-icons/fa'
+import EasyTable from '@/common/EasyTable'
 
 const apply_offer_type_array = [
     { label: 'In Sets of Minimum Quantity', value: 'MIN_QTY_SETS' },
@@ -36,6 +38,8 @@ const daysOfWeek_array = [
 ]
 
 interface props {
+    skuInput: string
+    setSkuInput: React.Dispatch<React.SetStateAction<string>>
     showAddFilter: any[]
     filters: Record<any, any>[]
     handleAddFilter: () => void
@@ -47,9 +51,33 @@ interface props {
     handleRemoveImage?: any
     storeResults: StoreDetails[]
     setCsvFile: any
+    handleAddSku: () => void
+    skuSearchData: any[]
+    columns: (
+        | {
+              header: string
+              accessorKey: string
+              cell: ({ row }: any) => JSX.Element
+          }
+        | {
+              header: string
+              accessorKey: string
+              cell?: undefined
+          }
+        | {
+              header: string
+              cell: ({ row }: any) => JSX.Element
+              accessorKey?: undefined
+          }
+    )[]
 }
 
 const AddOfferCommon = ({
+    setSkuInput,
+    skuInput,
+    skuSearchData,
+    columns,
+    handleAddSku,
     showAddFilter,
     filters,
     handleAddFilter,
@@ -128,8 +156,30 @@ const AddOfferCommon = ({
             </FormContainer>
             <div>
                 <h2>Product Selection</h2>
-
+                <br />
                 <div className="">
+                    <div className="mb-4 w-full gap-7">
+                        <label className="block text-gray-700">SKU</label>
+                        <div className="flex gap-2 items-center">
+                            <div>
+                                <input
+                                    name="sku"
+                                    type="search"
+                                    placeholder="Enter SKU"
+                                    className="w-full border border-gray-300 rounded p-2"
+                                    value={skuInput}
+                                    onChange={(e) => setSkuInput(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <FaSearch className="text-2xl cursor-pointer" onClick={handleAddSku} />
+                            </div>
+                        </div>
+                        <br />
+                        <div className="xl:w-[1200px]">
+                            <EasyTable mainData={skuSearchData} columns={columns} overflow />
+                        </div>
+                    </div>
                     <br />
                     <br />
                     <SearchStrings

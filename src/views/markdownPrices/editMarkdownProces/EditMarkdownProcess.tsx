@@ -5,7 +5,7 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { Form, Formik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import MarkdownCommonForm from '../MarkdownCommonForm'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { useParams } from 'react-router-dom'
@@ -19,6 +19,10 @@ const EditMarkdownPrices = () => {
     const [filtersData, setFiltersData] = useState<any[]>([])
     const [editMarkdownData, setEditMarkdownData] = useState<Record<string, string | number | boolean>>()
     const [csvFile, setCsvFile] = useState<any>()
+
+    // for sku table
+    const [skuInput, setSkuInput] = useState<string>('')
+    const [skuSearchData, setSkuSearchData] = useState<any[]>([])
 
     const fetchEditMarkdown = async () => {
         try {
@@ -38,6 +42,62 @@ const EditMarkdownPrices = () => {
     useEffect(() => {
         dispatch(getAllFiltersAPI())
     }, [dispatch])
+
+    const fetchSkuData = async () => {
+        try {
+            const response = await axioisInstance.get(`/merchant/products?sku=${skuInput}`)
+            const data = response?.data?.data?.results
+
+            setSkuSearchData((prev) => {
+                const newData = Array.isArray(data) ? data : [data]
+                return [...prev, ...newData.filter((item) => !prev.some((prevItem) => prevItem.sku === item.sku))]
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    // Add SKU
+    const handleAddSku = () => {
+        fetchSkuData()
+    }
+
+    const handleRemoveSku = (sku: string) => {
+        setSkuSearchData((prev) => prev.filter((item) => item.sku !== sku))
+    }
+
+    const [skuList, setSkuList] = useState<string[]>([])
+
+    useEffect(() => {
+        const allSkus = skuSearchData.map((item: any) => item.barcode)
+        setSkuList(allSkus)
+    }, [skuSearchData])
+
+    const columns = useMemo(
+        () => [
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
+                cell: ({ row }: any) => {
+                    return <div>{row?.original?.sku}</div>
+                },
+            },
+            { header: 'Barcode', accessorKey: 'barcode' },
+            { header: 'Brand', accessorKey: 'brand' },
+            { header: 'Category', accessorKey: 'category' },
+            { header: 'Color', accessorKey: 'color' },
+            { header: 'Size', accessorKey: 'size' },
+            {
+                header: 'Actions',
+                cell: ({ row }: any) => (
+                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
+                        Remove
+                    </button>
+                ),
+            },
+        ],
+        [skuSearchData],
+    )
 
     const handleAddFilter = () => {
         setShowAddFilter([...showAddFilter, showAddFilter.length])
@@ -71,6 +131,11 @@ const EditMarkdownPrices = () => {
             formData.append('skus', csvFile[0])
         } else {
             formData.append('skus', '')
+        }
+        if (skuList && skuList.length > 0) {
+            formData.append('barcodes', skuList.join(','))
+        } else {
+            formData.append('barcodes', '')
         }
 
         try {
@@ -141,6 +206,11 @@ const EditMarkdownPrices = () => {
                                 filters={filters?.filters}
                                 values={values}
                                 setCsvFile={setCsvFile}
+                                handleAddSku={handleAddSku}
+                                skuSearchData={skuSearchData}
+                                columns={columns}
+                                skuInput={skuInput}
+                                setSkuInput={setSkuInput}
                             />
                         </FormContainer>
                         <Button variant="accept" type="submit">

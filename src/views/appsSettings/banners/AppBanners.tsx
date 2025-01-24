@@ -92,7 +92,7 @@ const AppBanners = () => {
             while (hasMore) {
                 const response = await axiosInstance.get(`/banners?p=${page}&page=${currentSelectedPage.value}`)
                 const data = response.data.data
-                const newSectionHeadings = data.results.map((item) => item.section_heading)
+                const newSectionHeadings = data.results.map((item: any) => item.section_heading)
                 allSectionHeadings = _.uniq(allSectionHeadings.concat(newSectionHeadings))
                 if (data.next) {
                     page++

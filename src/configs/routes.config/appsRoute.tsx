@@ -857,6 +857,24 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/appsSettings/policies/Policies')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsAppSettings.careers',
+        path: `${APP_PREFIX_PATH}/appSettings/careers`,
+        component: lazy(() => import('@/views/appsSettings/careers/careerDetails/CareerDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.careers',
+        path: `${APP_PREFIX_PATH}/appSettings/careers/edit/:job_id`,
+        component: lazy(() => import('@/views/appsSettings/careers/editCareers/EditCareers')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.careers',
+        path: `${APP_PREFIX_PATH}/appSettings/careers/addNew`,
+        component: lazy(() => import('@/views/appsSettings/careers/addCareers/AddCareers')),
+        authority: [ADMIN, USER],
+    },
 
     {
         key: 'appsAppSettings.seoSettings',

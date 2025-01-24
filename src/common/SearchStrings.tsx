@@ -19,7 +19,29 @@ interface props {
 const SearchStrings = ({ handleAddFilter, showAddFilter, handleAddFilters, handleRemoveFilter, filters, setCsvFile, values }: props) => {
     return (
         <div>
-            <FormItem label="SEARCH STRINGS" className="items-center">
+            <FormItem label="" className="grid mt-8 w-1/3 bg-gray-100 p-2">
+                <Field name="csvList">
+                    {({ form }: FieldProps<any>) => (
+                        <>
+                            <div className="font-semibold flex justify-start ">Upload Csv</div>
+                            <Upload
+                                beforeUpload={beforeUpload}
+                                fileList={values.csvList} // uploadedd the file
+                                className="flex justify-center mt-6"
+                                onFileRemove={(files) => {
+                                    form.setFieldValue('csvList', files)
+                                }}
+                                onChange={(files) => {
+                                    form.setFieldValue('csvList', files)
+                                    setCsvFile(files)
+                                }}
+                            />
+                        </>
+                    )}
+                </Field>
+            </FormItem>
+
+            <FormItem label="SEARCH STRINGS" className="">
                 <FormContainer className="items-center mt-4">
                     <button onClick={handleAddFilter} type="button">
                         <IoMdAddCircle className="text-3xl text-green-500" />
@@ -53,28 +75,8 @@ const SearchStrings = ({ handleAddFilter, showAddFilter, handleAddFilters, handl
                         </div>
                     </FormItem>
                 ))}
-
-                <FormItem label="" className="grid mt-8 w-1/3 bg-gray-100 p-2">
-                    <Field name="csvList">
-                        {({ form }: FieldProps<any>) => (
-                            <>
-                                <div className="font-semibold flex justify-start ">Upload Csv</div>
-                                <Upload
-                                    beforeUpload={beforeUpload}
-                                    fileList={values.csvList} // uploadedd the file
-                                    className="flex justify-center mt-6"
-                                    onFileRemove={(files) => {
-                                        form.setFieldValue('csvList', files)
-                                    }}
-                                    onChange={(files) => {
-                                        form.setFieldValue('csvList', files)
-                                        setCsvFile(files)
-                                    }}
-                                />
-                            </>
-                        )}
-                    </Field>
-                </FormItem>
+                <br />
+                <br />
 
                 <>
                     <Field>

@@ -574,6 +574,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsAppSettings.careers',
+                        path: `${APP_PREFIX_PATH}/appSettings/careers`,
+                        title: 'careers',
+                        translateKey: 'nav.appsAppSettings.careers',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsAppSettings.seoSettings',
                         path: `${APP_PREFIX_PATH}/appSettings/seoSettings`,
                         title: 'Seo Settings',

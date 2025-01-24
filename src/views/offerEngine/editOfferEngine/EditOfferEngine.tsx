@@ -23,6 +23,8 @@ const EditOfferEngine = () => {
     const [filtersData, setFiltersData] = useState<any[]>([])
     const [particularOfferData, setParticularOfferData] = useState<OfferTypes>()
     const [csvFile, setCsvFile] = useState<any>()
+    const [skuInput, setSkuInput] = useState<string>('')
+    const [skuSearchData, setSkuSearchData] = useState<any[]>([])
 
     const { code } = useParams()
 
@@ -49,6 +51,65 @@ const EditOfferEngine = () => {
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
+
+    const fetchSkuData = async () => {
+        try {
+            const response = await axioisInstance.get(`/merchant/products?sku=${skuInput}`)
+            const data = response?.data?.data?.results
+
+            setSkuSearchData((prev) => {
+                const newData = Array.isArray(data) ? data : [data]
+                return [...prev, ...newData.filter((item) => !prev.some((prevItem) => prevItem.sku === item.sku))]
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    // Add SKU
+    const handleAddSku = () => {
+        fetchSkuData()
+    }
+
+    const handleRemoveSku = (sku: string) => {
+        setSkuSearchData((prev) => prev.filter((item) => item.sku !== sku))
+    }
+
+    const [skuList, setSkuList] = useState<string[]>([])
+
+    // Update the SKU list when `skuSearchData` changes
+    useEffect(() => {
+        const allSkus = skuSearchData.map((item: any) => item.barcode)
+        setSkuList(allSkus)
+    }, [skuSearchData])
+
+    const columns = useMemo(
+        () => [
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
+                cell: ({ row }: any) => {
+                    return <div>{row?.original?.sku}</div>
+                },
+            },
+            { header: 'Barcode', accessorKey: 'barcode' },
+            { header: 'Brand', accessorKey: 'brand' },
+            { header: 'Category', accessorKey: 'category' },
+            { header: 'Color', accessorKey: 'color' },
+            { header: 'Size', accessorKey: 'size' },
+            {
+                header: 'Actions',
+                cell: ({ row }: any) => (
+                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
+                        Remove
+                    </button>
+                ),
+            },
+        ],
+        [skuSearchData],
+    )
+
+    console.log('Barcodes', skuList)
 
     const initialValue: any = {
         apply_offer_type: particularOfferData?.apply_offer_type || '',
@@ -105,6 +166,11 @@ const EditOfferEngine = () => {
             formData.append('skus', csvFile[0])
         } else {
             formData.append('skus', '')
+        }
+        if (skuList && skuList.length > 0) {
+            formData.append('barcodes', skuList.join(','))
+        } else {
+            formData.append('barcodes', '')
         }
 
         try {
@@ -177,6 +243,11 @@ const EditOfferEngine = () => {
                             editMode={true}
                             storeResults={storeResults}
                             setCsvFile={setCsvFile}
+                            handleAddSku={handleAddSku}
+                            skuSearchData={skuSearchData}
+                            columns={columns}
+                            skuInput={skuInput}
+                            setSkuInput={setSkuInput}
                         />
                         <FormContainer>
                             <Button variant="accept" type="submit">

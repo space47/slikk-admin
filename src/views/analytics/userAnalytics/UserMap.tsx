@@ -1,6 +1,7 @@
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
 import UserMapValue from './UserMapValue'
+import moment from 'moment'
 
 interface props {
     from: string
@@ -12,7 +13,9 @@ const UserMap = ({ from, to }: props) => {
 
     const fetchUserDatas = async () => {
         try {
-            const response = await axioisInstance.get(`/query/execute/User_location?start_date=${from}&end_date=${to}`)
+            const response = await axioisInstance.get(
+                `/query/execute/User_location?start_date=${moment().format('YYYY-MM-DD')}&end_date=${moment().add(1, 'days').format('YYYY-MM-DD')}`,
+            )
             const data = response?.data?.data
             const tab = Object.keys(data).map((key) => ({
                 key,

@@ -18,6 +18,7 @@ const AddOfferEngine = () => {
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [showAddFilter, setShowAddFilter] = useState<any[]>([])
     const [filterId, setFilterId] = useState()
+    const [skuInput, setSkuInput] = useState<string>('')
     const [filtersData, setFiltersData] = useState<any[]>([])
     const [csvFile, setCsvFile] = useState<any>()
 
@@ -31,6 +32,68 @@ const AddOfferEngine = () => {
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
+
+    const [skuSearchData, setSkuSearchData] = useState<any[]>([])
+    const fetchSkuData = async () => {
+        try {
+            const response = await axioisInstance.get(`/merchant/products?sku=${skuInput}`)
+            const data = response?.data?.data?.results
+
+            setSkuSearchData((prev) => {
+                const newData = Array.isArray(data) ? data : [data]
+                return [...prev, ...newData.filter((item) => !prev.some((prevItem) => prevItem.sku === item.sku))]
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    // Add SKU
+    const handleAddSku = () => {
+        fetchSkuData()
+    }
+
+    const handleRemoveSku = (sku: string) => {
+        setSkuSearchData((prev) => prev.filter((item) => item.sku !== sku))
+    }
+
+    const [skuList, setSkuList] = useState<string[]>([])
+
+    // Update the SKU list when `skuSearchData` changes
+    useEffect(() => {
+        const allSkus = skuSearchData.map((item: any) => item.barcode)
+        setSkuList(allSkus)
+    }, [skuSearchData])
+
+    console.log('Barcodes', skuList)
+
+    const columns = useMemo(
+        () => [
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
+
+                cell: ({ row }: any) => {
+                    return <div>{row?.original?.sku}</div>
+                },
+            },
+            { header: 'Barcode', accessorKey: 'barcode' },
+            { header: 'Product Name', accessorKey: 'name' },
+            { header: 'Brand', accessorKey: 'brand' },
+            { header: 'Category', accessorKey: 'category' },
+            { header: 'Color', accessorKey: 'color' },
+            { header: 'Size', accessorKey: 'size' },
+            {
+                header: 'Actions',
+                cell: ({ row }: any) => (
+                    <button className="text-red-500" onClick={() => handleRemoveSku(row.original.sku)}>
+                        Remove
+                    </button>
+                ),
+            },
+        ],
+        [skuSearchData],
+    )
 
     const initialValue: any = {}
 
@@ -66,6 +129,11 @@ const AddOfferEngine = () => {
             formData.append('skus', csvFile[0])
         } else {
             formData.append('skus', '')
+        }
+        if (skuList && skuList.length > 0) {
+            formData.append('barcodes', skuList.join(','))
+        } else {
+            formData.append('barcodes', '')
         }
 
         try {
@@ -143,6 +211,11 @@ const AddOfferEngine = () => {
                             handleRemoveFilter={handleRemoveFilter}
                             values={values}
                             editMode={false}
+                            handleAddSku={handleAddSku}
+                            skuSearchData={skuSearchData}
+                            columns={columns}
+                            skuInput={skuInput}
+                            setSkuInput={setSkuInput}
                             storeResults={storeResults}
                             setCsvFile={setCsvFile}
                         />

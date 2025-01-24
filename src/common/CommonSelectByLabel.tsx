@@ -20,7 +20,7 @@ const CommonSelectByLabel = ({ label, name, fieldname, options }: props) => {
             <FormItem label={label}>
                 <Field name={name}>
                     {({ form, field }: FieldProps) => {
-                        const selectedCompany = options.find((option) => option.value === field?.value)
+                        const selectedCompany = options?.find((option) => option.value === field?.value)
 
                         return (
                             <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">

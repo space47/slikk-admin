@@ -78,19 +78,36 @@ interface MarkerComponentProps {
 
 const MarkerComponent = ({ markers, currLat, currLong }: MarkerComponentProps) => {
     const map = useMap()
+    const [visibleMarkers, setVisibleMarkers] = useState<any[]>([])
 
     useEffect(() => {
         map?.setView([currLat, currLong])
     }, [currLat, currLong, map])
 
+    const updateVisibleMarkers = useCallback(() => {
+        if (map) {
+            const bounds = map.getBounds()
+            const filteredMarkers = markers.filter((marker) => bounds.contains([marker.lat, marker.lon]))
+            setVisibleMarkers(filteredMarkers)
+        }
+    }, [map, markers])
+
+    useEffect(() => {
+        updateVisibleMarkers()
+        map.on('moveend', updateVisibleMarkers)
+        return () => {
+            map.off('moveend', updateVisibleMarkers)
+        }
+    }, [map, updateVisibleMarkers])
+
     return (
-        <div>
-            {markers?.map((marker, index) => <Marker key={index} position={[marker.lat, marker.lon]}></Marker>)}
-
+        <>
+            {visibleMarkers.map((marker, index) => (
+                <Marker key={index} position={[marker.lat, marker.lon]}></Marker>
+            ))}
             <Marker position={[currLat, currLong]} icon={officeIcon}></Marker>
-
             <CurrentLocationButton setCenter={() => {}} currLat={currLat} currLong={currLong} />
-        </div>
+        </>
     )
 }
 

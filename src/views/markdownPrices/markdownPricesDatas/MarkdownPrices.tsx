@@ -2,12 +2,15 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { markdownPriceTypes } from '../markdownCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaFacebook } from 'react-icons/fa'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import PageCommon from '@/common/PageCommon'
 import { Button } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
+import DialogConfirm from '@/common/DialogConfirm'
+import { notification } from 'antd'
+import { RxUpdate } from 'react-icons/rx'
 
 const MarkdownPrices = () => {
     const [markdownPricesData, setMarkdownPricesData] = useState<markdownPriceTypes>([])
@@ -15,6 +18,7 @@ const MarkdownPrices = () => {
     const [pageSize, setPageSize] = useState<number>(10)
     const [globalFilter, setGlobalFilter] = useState<string | null>('')
     const [totalPages, setTotalPages] = useState<number>(0)
+    const [showSync, setShowSync] = useState(false)
     const navigate = useNavigate()
 
     const fetchMarkdownPrices = async () => {
@@ -109,6 +113,27 @@ const MarkdownPrices = () => {
         navigate(`/app/markdownPrices/addNew`)
     }
 
+    const handleFacebookSync = async () => {
+        notification.info({
+            message: 'SYNC IN PROCESS',
+        })
+        const body = {
+            task_name: 'update_product_pricing_data',
+        }
+        setShowSync(false)
+        try {
+            const response = await axioisInstance.post(`/backend/task/process`, body)
+            notification.success({
+                message: response?.data?.message || 'SYNCED',
+            })
+        } catch (error: any) {
+            console.error(error)
+            notification.error({
+                message: error.response?.data?.message || 'FAILED TO SYNC',
+            })
+        }
+    }
+
     return (
         <div>
             <div className="flex flex-col gap-4">
@@ -122,11 +147,20 @@ const MarkdownPrices = () => {
                             onChange={(e) => setGlobalFilter(e.target?.value)}
                         />
                     </div>
-
                     <div>
-                        <Button onClick={hanldeAddMarkdownPrices} variant="new">
-                            Add New
-                        </Button>
+                        <div className="flex gap-2">
+                            <button
+                                className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-green-600 rounded-lg text-white bg-green-500"
+                                onClick={() => setShowSync(true)}
+                            >
+                                <span className="font-bold">Sync</span> <RxUpdate className="text-xl" />
+                            </button>
+                            <div>
+                                <Button onClick={hanldeAddMarkdownPrices} variant="new">
+                                    Add New
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <EasyTable overflow mainData={markdownPricesData} columns={columns} page={page} pageSize={pageSize} />
@@ -134,6 +168,15 @@ const MarkdownPrices = () => {
                     <PageCommon page={page} setPage={setPage} pageSize={pageSize} totalData={totalPages} setPageSize={setPageSize} />
                 )}
             </div>
+            {showSync && (
+                <DialogConfirm
+                    IsOpen={showSync}
+                    setIsOpen={setShowSync}
+                    onDialogOk={handleFacebookSync}
+                    IsConfirm
+                    headingName="Update Pricing"
+                />
+            )}
         </div>
     )
 }
