@@ -157,9 +157,9 @@ const EditOfferEngine = () => {
         const formData = new FormData()
 
         if (filterData && filterData.length > 0) {
-            formData.append('filter_data', filterData)
+            formData.append('filter_data[]', JSON.stringify(filterData))
         } else {
-            formData.append('filter_data', '')
+            formData.append('filter_data', JSON.stringify([]))
         }
 
         if (csvFile && csvFile.length > 0) {
@@ -174,7 +174,11 @@ const EditOfferEngine = () => {
         }
 
         try {
-            const response = await axioisInstance.post(`/product/search/criteria`, formData)
+            const response = await axioisInstance.post(`/product/search/criteria`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             setFilterId(response.data?.data?.id)
 
             notification.success({

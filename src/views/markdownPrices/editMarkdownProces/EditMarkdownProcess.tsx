@@ -119,10 +119,11 @@ const EditMarkdownPrices = () => {
     }
 
     const sendFilterData = async (filterData: any) => {
+        console.log('filter data is', filterData)
         const formData = new FormData()
 
         if (filterData && filterData.length > 0) {
-            formData.append('filter_data', filterData)
+            formData.append('filter_data', JSON.stringify(filterData))
         } else {
             formData.append('filter_data', '')
         }
@@ -141,7 +142,6 @@ const EditMarkdownPrices = () => {
         try {
             const response = await axioisInstance.post(`/product/search/criteria`, formData)
             setFilterId(response.data?.data?.id)
-
             notification.success({
                 message: 'Filter ID Added Successfully',
             })

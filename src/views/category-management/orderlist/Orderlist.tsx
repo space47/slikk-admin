@@ -81,10 +81,32 @@ const OrderList = () => {
     const [showNoData, setShowNoData] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
 
+    const [tabSelect, setTabSelect] = useState('pending')
+    const handleSelectTab = (value: string) => {
+        setTabSelect(value)
+    }
+
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            // const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            let status = ''
+
+            if (tabSelect === 'pending') {
+                status = `&status=PENDING`
+            }
+            if (tabSelect === 'packed') {
+                status = `&status=PACKED`
+            }
+            if (tabSelect === 'out_for_delivery') {
+                status = `&status=OUT_FOR_DELIVERY`
+            }
+            if (tabSelect === 'delivered') {
+                status = `&status=DELIVERED`
+            }
+            if (dropdownStatus?.value?.length > 0) {
+                status = `&status=${dropdownStatus?.value}`
+            }
 
             let response
             let deliveryStatus = ''
@@ -206,7 +228,7 @@ const OrderList = () => {
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType, numberClick, previousOrders])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType, numberClick, previousOrders, tabSelect])
 
     useEffect(() => {
         checkingNewOrders(page, pageSize, from, to)
@@ -637,6 +659,34 @@ const OrderList = () => {
                         </div>
                     </div>
                 </div>
+
+                <div className="flex gap-10 justify-start">
+                    <div
+                        className={`flex  cursor-pointer ${tabSelect === 'pending' ? ' border-b-4 border-black' : ''}`}
+                        onClick={() => handleSelectTab('pending')}
+                    >
+                        <span className="text-xl font-bold">PENDING</span>
+                    </div>
+                    <div
+                        className={`flex   cursor-pointer  ${tabSelect === 'packed' ? ' border-b-4 border-black' : ''}`}
+                        onClick={() => handleSelectTab('packed')}
+                    >
+                        <span className="text-xl font-bold">PACKED</span>
+                    </div>
+                    <div
+                        className={`flex   cursor-pointer  ${tabSelect === 'out_for_delivery' ? ' border-b-4 border-black' : ''}`}
+                        onClick={() => handleSelectTab('out_for_delivery')}
+                    >
+                        <span className="text-xl font-bold">OUT FOR DELIVERY</span>
+                    </div>
+                    <div
+                        className={`flex   cursor-pointer  ${tabSelect === 'delivered' ? ' border-b-4 border-black' : ''}`}
+                        onClick={() => handleSelectTab('delivered')}
+                    >
+                        <span className="text-xl font-bold">DELIVERED</span>
+                    </div>
+                </div>
+
                 <br />
 
                 {showNoData ? (

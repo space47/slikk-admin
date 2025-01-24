@@ -104,7 +104,7 @@ const AddmarkdownPrices = () => {
         const formData = new FormData()
 
         if (filterData && filterData.length > 0) {
-            formData.append('filter_data', filterData)
+            formData.append('filter_data', JSON.stringify(filterData))
         } else {
             formData.append('filter_data', '')
         }
