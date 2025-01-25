@@ -127,13 +127,13 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     data,
                 }
                 console.log('Accepted Data', data)
+
                 const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                 console.log(response)
                 setIsModalOpen(false)
                 setTriggerApiCall(false)
                 navigate(0)
             }
-
             sendApiRequest()
         }
     }, [triggerApiCall, navigate])
