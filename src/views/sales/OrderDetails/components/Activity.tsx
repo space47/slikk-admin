@@ -231,7 +231,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     useEffect(() => {
         handleApiCall(triggerAcceptedCall, setTriggerAcceptedCall, false)
         handleApiCall(triggerOutDeliveryCall, setTriggerOutDeliveryCall, false)
-        handleApiCall(triggerpackCall, setTriggerpackCall, false)
+        handleApiCall(triggerpackCall, setTriggerpackCall, true)
         handleApiCall(triggerShipCall, setTriggerShipCall, false)
         handleApiCall(triggerDeliveryCall, setTriggerDeliveryCall, false)
     }, [triggerpackCall, triggerShipCall, triggerDeliveryCall, action, invoice_id, partner, navigate])
