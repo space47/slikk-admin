@@ -22,7 +22,7 @@ const DialogConfirm = ({ IsOpen, setIsOpen, onDialogOk, IsDelete, IsConfirm, hea
     }
 
     return (
-        <div>
+        <div className="z-50">
             <Dialog isOpen={IsOpen} onClose={onDialogClose} onRequestClose={onDialogClose}>
                 {IsConfirm && (
                     <>
