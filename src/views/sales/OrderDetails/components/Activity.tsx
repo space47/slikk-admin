@@ -6,13 +6,14 @@ import Card from '@/components/ui/Card'
 import moment from 'moment'
 import Button from '@/components/ui/Button'
 import React, { useState, useEffect } from 'react'
-import { notification } from 'antd'
+import { Modal, notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5 } from './Modal'
 import { LOGISTIC, LOGISTIC_PARTNER, Payment, Product } from './activityCommon'
 import { SalesOrderDetailsResponse } from '../orderList.common'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
+import DialogConfirm from '@/common/DialogConfirm'
 
 type Event = {
     timestamp: string
@@ -46,7 +47,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
     const fulfilledIDs = Object.keys(fulfilledQuantities)
-    const [showRiderData, setShowRiderData] = useState(false)
+    const [rejectModal, setRejectModal] = useState(false)
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
@@ -72,6 +73,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         if (triggerApiCall) {
             const sendApiRequest = async () => {
                 try {
+                    // Process fulfilledQuantities to filter out 0 or negative values
                     const data = Object.entries(fulfilledQuantities).reduce(
                         (acc, [id, quantity]) => {
                             if (quantity > 0) {
@@ -82,20 +84,55 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                         {} as { [key: number]: number },
                     )
 
-                    const body = {
-                        action,
-                        data,
+                    // If data is empty, show notification and prevent the API call
+                    if (Object.keys(data).length === 0) {
+                        notification.warning({
+                            message: 'No Quantities Selected',
+                            description: 'Please select at least one item with a valid quantity to proceed.',
+                        })
+                        setTriggerApiCall(false) // Reset triggerApiCall
+                        return
                     }
-                    console.log('Accepted Data', data)
-                    const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
-                    console.log(response)
-                    setIsModalOpen(false)
-                    setTriggerApiCall(false)
-                    navigate(0)
+
+                    // If any quantity is 0, show a confirmation modal
+                    const hasZeroQuantity = Object.values(fulfilledQuantities).some((q) => q === 0)
+                    if (hasZeroQuantity) {
+                        Modal.confirm({
+                            title: 'Confirm Zero Quantity',
+                            content: 'One or more items have a quantity of 0. Do you still want to proceed?',
+                            okText: 'Yes',
+                            cancelText: 'No',
+                            onOk: async () => {
+                                await makeApiCall(data)
+                            },
+                            onCancel: () => {
+                                setTriggerApiCall(false)
+                            },
+                        })
+                        return
+                    }
+
+                    // If all checks pass, call the API
+                    await makeApiCall(data)
                 } catch (error) {
                     console.error(error)
-                    setTriggerApiCall(false)
+                    setTriggerApiCall(false) // Reset triggerApiCall on error
                 }
+            }
+
+            // Helper function to make the API call
+            const makeApiCall = async (data: { [key: number]: number }) => {
+                const body = {
+                    action,
+                    data,
+                }
+                console.log('Accepted Data', data)
+
+                const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
+                console.log(response)
+                setIsModalOpen(false)
+                setTriggerApiCall(false)
+                navigate(0)
             }
             sendApiRequest()
         }
@@ -109,10 +146,15 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 setErrorMessage('QUANTITY OF ITEMS SHOULD BE 0')
             }, 2000)
         } else {
-            setAction('PACKED')
-            // setButtonAfterClick(true)
-            setCancelCall(true)
+            setRejectModal(true)
+            setIsModalOpen(false)
         }
+    }
+
+    const handleRejectModalConfirm = () => {
+        setAction('PACKED')
+
+        setCancelCall(true)
     }
 
     const handleCancel = () => {
@@ -187,9 +229,9 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     }
 
     useEffect(() => {
-        handleApiCall(triggerAcceptedCall, setTriggerAcceptedCall, true)
-        handleApiCall(triggerOutDeliveryCall, setTriggerOutDeliveryCall, true)
-        handleApiCall(triggerpackCall, setTriggerpackCall, true)
+        handleApiCall(triggerAcceptedCall, setTriggerAcceptedCall, false)
+        handleApiCall(triggerOutDeliveryCall, setTriggerOutDeliveryCall, false)
+        handleApiCall(triggerpackCall, setTriggerpackCall, false)
         handleApiCall(triggerShipCall, setTriggerShipCall, false)
         handleApiCall(triggerDeliveryCall, setTriggerDeliveryCall, false)
     }, [triggerpackCall, triggerShipCall, triggerDeliveryCall, action, invoice_id, partner, navigate])
@@ -335,6 +377,18 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                         {buttonText}
                     </Button>
                 )
+            )}
+
+            {rejectModal && (
+                <div className="z-1000">
+                    <DialogConfirm
+                        IsOpen={rejectModal}
+                        headingName="Reject Orders"
+                        setIsOpen={setRejectModal}
+                        IsConfirm
+                        onDialogOk={handleRejectModalConfirm}
+                    />
+                </div>
             )}
 
             {data.length === 0 && (
