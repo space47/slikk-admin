@@ -65,33 +65,31 @@ const OrderPickerSummary = ({ data }: OrderPickerSummaryProps) => {
 
     return (
         <Card className="mb-4">
-            <h5 className="mb-4">PICKER</h5>
-            <div className="flex flex-col mb-6 gap-5">
-                <span className="font-bold"> PICKER DETAILS:</span>
-                <div className="flex flex-col gap-3 ">
-                    <div className="flex flex-col gap-3">
-                        <Avatar shape="circle" src={data?.picker?.image} size="lg" />
-                        <div className="mx-3">
-                            <div className="items-start flex flex-col gap-1">
-                                <div className="flex gap-2 items-center">
-                                    <FaUserAlt /> <span>{data?.picker?.name}</span>
-                                </div>
-                                <div className="flex gap-2 items-center">
-                                    <HiPhone className="font-bold" /> <span>{data?.picker?.mobile}</span>
-                                </div>
+            <h5 className="mb-4 text-lg font-semibold">PICKER</h5>
+            <div className="flex flex-col gap-6">
+                <span className="font-bold text-sm sm:text-base">PICKER DETAILS:</span>
+                <div className="flex flex-col sm:flex-row gap-3 items-center sm:items-start">
+                    <Avatar shape="circle" src={data?.picker?.image} size="lg" />
+                    <div className="sm:ml-3">
+                        <div className="flex flex-col gap-1">
+                            <div className="flex gap-2 items-center">
+                                <FaUserAlt /> <span className="text-sm sm:text-base">{data?.picker?.name}</span>
+                            </div>
+                            <div className="flex gap-2 items-center">
+                                <HiPhone className="font-bold" /> <span className="text-sm sm:text-base">{data?.picker?.mobile}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <hr />
-                <div className=" font-bold ">
+                <hr className="border-t" />
+                <div className="font-bold">
                     <div>
-                        <div className="flex justify-between items-center">
-                            <div className="flex gap-2">Change Picker:</div>
-                            <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div className="flex gap-2 text-sm sm:text-base">Change Picker:</div>
+                            <div className="w-full max-w-md">
                                 <Select
                                     isClearable
-                                    className="w-1/2"
+                                    className="w-full sm:w-1/2"
                                     options={options}
                                     getOptionLabel={(option) => option.label}
                                     getOptionValue={(option) => option.value}
@@ -100,10 +98,14 @@ const OrderPickerSummary = ({ data }: OrderPickerSummaryProps) => {
                                     }}
                                 />
                             </div>
-
-                            {/* button for api */}
                             <div>
-                                <Button variant="accept" size="sm" onClick={handlePickerChange} disabled={!pickerChange}>
+                                <Button
+                                    variant="accept"
+                                    size="sm"
+                                    onClick={handlePickerChange}
+                                    disabled={!pickerChange}
+                                    className="w-full sm:w-auto"
+                                >
                                     Change
                                 </Button>
                             </div>
