@@ -59,6 +59,8 @@ const SEARCHOPTIONS = [
     { label: 'INVOICE', value: 'invoice' },
     { label: 'MOBILE', value: 'mobile' },
     { label: 'AWB', value: 'awb' },
+    { label: 'Runner Name', value: 'runner_name' },
+    { label: 'Runner Mobile', value: 'runner_mobile' },
 ]
 
 export const DELIVERY_OPTIONS = [

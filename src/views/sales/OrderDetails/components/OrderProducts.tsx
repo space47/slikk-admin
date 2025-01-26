@@ -271,7 +271,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
 
                                     <div className="flex items-center justify-between">
                                         <div className="flex flex-col xl:flex-row xl:gap-6 xl:items-center gap-2">
-                                            <div className="text-md xl:text-md dark:text-white">Qty: {pdts.fulfilled_quantity}</div>
+                                            <div className="text-md xl:text-md dark:text-white">Qty: {pdts.quantity}</div>
                                         </div>
                                     </div>
                                     {pdts.location && (
