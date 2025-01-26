@@ -98,6 +98,9 @@ const OrderList = () => {
             if (tabSelect === 'pending') {
                 status = `&status=PENDING`
             }
+            if (tabSelect === 'accepted') {
+                status = `&status=ACCEPTED`
+            }
             if (tabSelect === 'packed') {
                 status = `&status=PACKED`
             }
@@ -158,6 +161,12 @@ const OrderList = () => {
             }
             if (tabSelect === 'pending') {
                 status = `&status=PENDING`
+            }
+            if (tabSelect === 'accepted') {
+                status = `&status=ACCEPTED`
+            }
+            if (tabSelect === 'accepted') {
+                status = `&status=ACCEPTED`
             }
             if (tabSelect === 'packed') {
                 status = `&status=PACKED`
