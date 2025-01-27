@@ -44,7 +44,7 @@ export const CustomModal: React.FC<Props> = ({
     return (
         <Modal
             title=""
-            okText={isButtonClick ? 'PACK' : 'PACK'}
+            okText={isButtonClick ? 'PACKING...' : 'PACK'}
             cancelText={status === 'ACCEPTED' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal overflow-scroll scrollbar-hide"
