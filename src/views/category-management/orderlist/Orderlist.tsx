@@ -90,33 +90,41 @@ const OrderList = () => {
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            // const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
             let status = ''
-            if (tabSelect === 'all') {
-                status = ``
-            }
-            if (tabSelect === 'pending') {
-                status = `&status=PENDING`
-            }
-            if (tabSelect === 'accepted') {
-                status = `&status=ACCEPTED`
-            }
-            if (tabSelect === 'packed') {
-                status = `&status=PACKED`
-            }
-            if (tabSelect === 'out_for_delivery') {
-                status = `&status=OUT_FOR_DELIVERY,SHIPPED`
-            }
-            if (tabSelect === 'delivered') {
-                status = `&status=COMPLETED`
+            switch (tabSelect) {
+                case 'pending':
+                    status = '&status=PENDING'
+                    break
+                case 'accepted':
+                    status = '&status=ACCEPTED'
+                    break
+                case 'packed':
+                    status = '&status=PACKED'
+                    break
+                case 'out_for_delivery':
+                    status = '&status=OUT_FOR_DELIVERY,SHIPPED'
+                    break
+                case 'delivered':
+                    status = '&status=COMPLETED'
+                    break
+                case 'cancelled':
+                    status = '&status=CANCELLED'
+                    break
+                case 'all':
+                default:
+                    status = ''
+                    break
             }
             if (dropdownStatus?.value?.length > 0) {
-                status = `&status=${dropdownStatus?.value}`
+                status = `&status=${dropdownStatus.value}`
             }
-
             let response
             let deliveryStatus = ''
             let paymentStatus = ''
+
+            if (tabSelect === 'exchange') {
+                deliveryStatus = `&delivery_type=EXCHANGE`
+            }
 
             if (deliveryType?.value && deliveryType?.value?.length > 0) {
                 deliveryStatus = `&delivery_type=${deliveryType?.value}`
@@ -156,26 +164,29 @@ const OrderList = () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             let status = ''
-            if (tabSelect === 'all') {
-                status = ``
-            }
-            if (tabSelect === 'pending') {
-                status = `&status=PENDING`
-            }
-            if (tabSelect === 'accepted') {
-                status = `&status=ACCEPTED`
-            }
-            if (tabSelect === 'accepted') {
-                status = `&status=ACCEPTED`
-            }
-            if (tabSelect === 'packed') {
-                status = `&status=PACKED`
-            }
-            if (tabSelect === 'out_for_delivery') {
-                status = `&status=OUT_FOR_DELIVERY,SHIPPED`
-            }
-            if (tabSelect === 'delivered') {
-                status = `&status=COMPLETED`
+            switch (tabSelect) {
+                case 'pending':
+                    status = '&status=PENDING'
+                    break
+                case 'accepted':
+                    status = '&status=ACCEPTED'
+                    break
+                case 'packed':
+                    status = '&status=PACKED'
+                    break
+                case 'out_for_delivery':
+                    status = '&status=OUT_FOR_DELIVERY,SHIPPED'
+                    break
+                case 'delivered':
+                    status = '&status=COMPLETED'
+                    break
+                case 'cancelled':
+                    status = '&status=CANCELLED'
+                    break
+                case 'all':
+                default:
+                    status = ''
+                    break
             }
             if (dropdownStatus?.value?.length > 0) {
                 status = `&status=${dropdownStatus?.value}`
@@ -184,6 +195,10 @@ const OrderList = () => {
             let response
             let deliveryStatus = ''
             let paymentStatus = ''
+
+            if (tabSelect === 'exchange') {
+                deliveryStatus = `&delivery_type=EXCHANGE`
+            }
 
             if (deliveryType?.value && deliveryType?.value?.length > 0) {
                 deliveryStatus = `&delivery_type=${deliveryType?.value}`

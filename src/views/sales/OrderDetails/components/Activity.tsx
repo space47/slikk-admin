@@ -294,7 +294,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             return { buttonText: 'OUT FOR DELIVERY', modalContent: 'Out for Delivery' }
         }
         if (isDeliveryCreated && !isPacked && !isOrderDone && !isOrderCANCELLED) {
-            return { buttonText: 'PICK/Reject', modalContent: 'Pick and Pack' }
+            return { buttonText: 'PACK/Reject', modalContent: 'Pick and Pack' }
         }
 
         if (isDeliveryCreated && isPacked && !isOutForDelivery && !isOrderDone && !isOrderCANCELLED) {
@@ -320,7 +320,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             case 'PACKED':
                 return { buttonText: 'CREATE DELIVERY' }
             case 'ACCEPTED':
-                return { buttonText: 'PICK/REJECT', modalContent: 'Pick and Pack' }
+                return { buttonText: 'PACK/REJECT', modalContent: 'Pick and Pack' }
             case 'OUT_FOR_PICKUP': {
                 const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
                 const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
@@ -369,7 +369,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
 
             {isDeliveryCreated && !isPacked && !isOrderDone ? (
                 <Button variant="solid" onClick={() => showModal('Pick and Pack')}>
-                    PICK/REJECT
+                    PACK/REJECT
                 </Button>
             ) : (
                 buttonText && (
