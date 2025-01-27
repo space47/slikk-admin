@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { FaHamburger } from 'react-icons/fa'
 interface props {
     tabSelect: string
     handleSelectTab: (tab: string) => void
@@ -6,49 +7,79 @@ interface props {
 }
 
 const TabSelectOrder = ({ tabSelect, handleSelectTab, orderCount }: props) => {
-    return (
-        <div>
-            <div className="flex xl:gap-10 xl:justify-start xl:flex-row flex-col w-1/2 xl:w-full ">
-                <div
-                    className={`flex   cursor-pointer ${tabSelect === 'all' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
-                    onClick={() => handleSelectTab('all')}
-                >
-                    <span className="xl:text-xl text-sm font-bold">ALL {tabSelect === 'all' && <>({orderCount})</>}</span>
-                </div>
-                <div
-                    className={`flex  cursor-pointer ${tabSelect === 'pending' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
-                    onClick={() => handleSelectTab('pending')}
-                >
-                    <span className="xl:text-xl text-sm font-bold">PENDING {tabSelect === 'pending' && <>({orderCount})</>}</span>
-                </div>
-                <div
-                    className={`flex   cursor-pointer  ${tabSelect === 'accepted' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
-                    onClick={() => handleSelectTab('accepted')}
-                >
-                    <span className="xl:text-xl text-sm font-bold">ACCEPTED{tabSelect === 'accepted' && <>({orderCount})</>}</span>
-                </div>
-                <div
-                    className={`flex   cursor-pointer  ${tabSelect === 'packed' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
-                    onClick={() => handleSelectTab('packed')}
-                >
-                    <span className="xl:text-xl text-sm font-bold">PACKED{tabSelect === 'packed' && <>({orderCount})</>}</span>
-                </div>
+    const [showMobileViewDetails, setShowMobileViewDetails] = useState(false)
 
-                <div
-                    className={`flex   cursor-pointer  ${tabSelect === 'out_for_delivery' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
-                    onClick={() => handleSelectTab('out_for_delivery')}
-                >
-                    <span className="xl:text-xl text-sm font-bold">
-                        OUT FOR DELIVERY {tabSelect === 'out_for_delivery' && <>({orderCount})</>}
-                    </span>
-                </div>
-                <div
-                    className={`flex   cursor-pointer  ${tabSelect === 'delivered' ? ' border-b-4 border-black text-green-600' : 'text-green-500 border-b-2'}`}
-                    onClick={() => handleSelectTab('delivered')}
-                >
-                    <span className="xl:text-xl text-sm font-bold">DELIVERED {tabSelect === 'delivered' && <>({orderCount})</>}</span>
-                </div>
+    const handleHamburger = () => {
+        setShowMobileViewDetails(!showMobileViewDetails)
+    }
+
+    return (
+        <div className=" p-4 rounded-lg xl:shadow-md">
+            <div className="xl:flex xl:gap-6 gap-2 xl:justify-start justify-around xl:flex-row flex-col w-full hidden">
+                {[
+                    { label: 'ALL', key: 'all' },
+                    { label: 'PENDING', key: 'pending' },
+                    { label: 'ACCEPTED', key: 'accepted' },
+                    { label: 'PACKED', key: 'packed' },
+                    { label: 'OUT FOR DELIVERY', key: 'out_for_delivery' },
+                    { label: 'DELIVERED', key: 'delivered' },
+                    { label: 'EXCHANGE', key: 'exchange' },
+                    { label: 'CANCELLED', key: 'cancelled' },
+                ].map((tab) => (
+                    <div
+                        key={tab.key}
+                        className={`flex items-center justify-center cursor-pointer px-4 py-2 rounded-lg transition-all duration-300 ${
+                            tabSelect === tab.key
+                                ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md'
+                        }`}
+                        onClick={() => handleSelectTab(tab.key)}
+                    >
+                        <span className="xl:text-lg text-sm font-semibold">
+                            {tab.label} {tabSelect === tab.key && <>({orderCount})</>}
+                        </span>
+                    </div>
+                ))}
             </div>
+
+            <div className="xl:hidden flex items-center justify-center cursor-pointer " onClick={handleHamburger}>
+                {showMobileViewDetails ? (
+                    <div className="flex justify-end"> X </div>
+                ) : (
+                    <div>
+                        <FaHamburger />
+                    </div>
+                )}
+            </div>
+
+            {showMobileViewDetails && (
+                <div className="flex xl:gap-6 gap-2 xl:justify-start justify-around xl:flex-row flex-col w-full ">
+                    {[
+                        { label: 'ALL', key: 'all' },
+                        { label: 'PENDING', key: 'pending' },
+                        { label: 'ACCEPTED', key: 'accepted' },
+                        { label: 'PACKED', key: 'packed' },
+                        { label: 'OUT FOR DELIVERY', key: 'out_for_delivery' },
+                        { label: 'DELIVERED', key: 'delivered' },
+                        { label: 'EXCHANGE', key: 'exchange' },
+                        { label: 'CANCELLED', key: 'cancelled' },
+                    ].map((tab) => (
+                        <div
+                            key={tab.key}
+                            className={`flex items-center justify-center cursor-pointer px-4 py-2 rounded-lg transition-all duration-300 ${
+                                tabSelect === tab.key
+                                    ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md'
+                            }`}
+                            onClick={() => handleSelectTab(tab.key)}
+                        >
+                            <span className="xl:text-lg text-sm font-semibold">
+                                {tab.label} {tabSelect === tab.key && <>({orderCount})</>}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     )
 }
