@@ -252,7 +252,7 @@ const OrderList = () => {
             !paymentType.value.length &&
             numberClick === false
 
-        if (noFilters) {
+        if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
                 fetchOrders(page, pageSize, from, to)
                 checkingNewOrders(page, pageSize, from, to)
@@ -273,7 +273,7 @@ const OrderList = () => {
             !paymentType.value.length &&
             numberClick === false
 
-        if (noFilters) {
+        if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
                 checkingNewOrders(page, pageSize, from, to)
             }, 30000)

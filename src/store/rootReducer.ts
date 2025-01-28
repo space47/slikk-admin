@@ -30,6 +30,7 @@ import userSummaryReducer from './slices/orderUserSummary/UserSummary.slice'
 import queryNameReducer from './slices/queryName/queryName.slice'
 import loyaltyReducer from './slices/slikkLoyalty/loyalty.slice'
 import companyStoreReducer from './slices/companyStoreSlice/companyStore.slice'
+import departmentReducer from './slices/departmentSlice/Department.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -74,6 +75,7 @@ const staticReducers = {
     queryName: queryNameReducer,
     companyStore: companyStoreReducer,
     loyalty: loyaltyReducer,
+    departmentsData: departmentReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }

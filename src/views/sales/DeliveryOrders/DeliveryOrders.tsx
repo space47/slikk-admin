@@ -78,12 +78,18 @@ const DeliveryOrders = () => {
 
     useEffect(() => {
         dispatch(fetchOrders())
-        const interval = setInterval(() => {
-            dispatch(fetchOrders())
-        }, 60000)
 
-        return () => clearInterval(interval)
-    }, [dispatch, page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
+        const noFilters =
+            page === 1 && !dropdownStatus.value.length && !searchInput && !deliveryType.value.length && !paymentType.value.length
+
+        if (noFilters) {
+            const interval = setInterval(() => {
+                dispatch(fetchOrders())
+            }, 30000)
+
+            return () => clearInterval(interval)
+        }
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
 
     const [showFilter, setShowFilter] = useState(false)
 
