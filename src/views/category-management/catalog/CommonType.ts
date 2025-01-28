@@ -1,4 +1,4 @@
-type Product = {
+export type Product = {
     company: number | null
     brand_name: string
     name: string
@@ -85,4 +85,26 @@ export const DROPDOWNARRAY = [
     { label: 'Product Type', value: 'Product_type' },
 ]
 
-export default Product
+export type ProductVariant = {
+    name: string
+    variant_type: string
+    color_code_link: string
+    size: string[]
+    barcode: string
+    sku: string
+    mrp: string
+    sp: string
+    inventory_count: number
+}
+
+export type Option = {
+    value: number
+    label: string
+}
+
+export const pageSizeOptions = [
+    { value: 10, label: '10 / page' },
+    { value: 25, label: '25 / page' },
+    { value: 50, label: '50 / page' },
+    { value: 100, label: '100 / page' },
+]

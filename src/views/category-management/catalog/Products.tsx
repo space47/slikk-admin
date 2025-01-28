@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
@@ -10,7 +9,6 @@ import { useNavigate } from 'react-router-dom'
 import { IoMdDownload } from 'react-icons/io'
 import ImageMODAL from '@/common/ImageModal'
 import { FaEdit, FaFacebook, FaFacebookF, FaFilter } from 'react-icons/fa'
-import StockOverviewFilter from '@/views/inventory-management/stock-overview/stockOverviewComponents/StockOverviewFilter'
 import EasyTable from '@/common/EasyTable'
 import ProductFilterNest from './ProductFilter'
 import { useAppSelector } from '@/store'
@@ -18,24 +16,13 @@ import { DIVISION_STATE } from '@/store/types/division.types'
 import { notification } from 'antd'
 import DialogConfirm from '@/common/DialogConfirm'
 import axios from 'axios'
-import CatalogActions from './CalatogActions'
+
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { Dropdown } from '@/components/ui'
 import { ProductFilterArray } from './ProductCommon'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import LoadingSpinner from '@/common/LoadingSpinner'
-
-type ProductVariant = {
-    name: string
-    variant_type: string
-    color_code_link: string
-    size: string[]
-    barcode: string
-    sku: string
-    mrp: string
-    sp: string
-    inventory_count: number
-}
+import { Option, pageSizeOptions, ProductVariant } from './CommonType'
 
 type Product = {
     barcode: string
@@ -58,19 +45,6 @@ type Product = {
     sku: string
     filter_to_display_map: any
 }
-
-type Option = {
-    value: number
-    label: string
-}
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
-
 const Products = () => {
     const [data, setData] = useState<Product[]>([])
     const [totalData, setTotalData] = useState(0)
@@ -78,11 +52,9 @@ const Products = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const navigate = useNavigate()
-    const [filterInput, setFilterInput] = useState('')
     const [searchType, setSearchType] = useState<string>('')
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState<any[]>([])
-    const [showActionButtons, setShowActionButtons] = useState(false)
     const [divisionList, setDivisionList] = useState<string[]>([])
     const [categoryList, setCategoryList] = useState([])
     const [subCategoryList, setSubCategoryList] = useState([])

@@ -1,28 +1,44 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useMemo, useState } from 'react'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { FaEdit } from 'react-icons/fa'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import PageCommon from '@/common/PageCommon'
-import { Button, Dropdown } from '@/components/ui'
+import { Button, Dropdown, FormItem, Select } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import { JobPostingTypes, SEARCHOPTIONS } from '../careersCommon'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import NewDeptModal from './NewDeptModal'
+import ActiveInactiveModal from './ActiveInactiveModal'
+import { Switch } from 'antd'
+import { Field, FieldProps } from 'formik'
+import { departmentTypes } from '@/store/types/departments.types'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { fetchDepartments } from '@/store/slices/departmentSlice/Department.slice'
 
 const CareerDetails = () => {
+    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
     const [careerDatas, setCareerDatas] = useState<JobPostingTypes[]>([])
     const [page, setPage] = useState<number>(1)
     const [pageSize, setPageSize] = useState<number>(10)
-    const [globalFilter, setGlobalFilter] = useState<string | null>('')
+    const [globalFilter, setGlobalFilter] = useState<string>('')
     const [totalPages, setTotalPages] = useState<number>(0)
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
+    const [showAddNewDept, setShowAddNewDept] = useState<boolean>(false)
+    const [storeForActive, setStoreForActive] = useState<any>()
+    const [showModalForActive, setShowModalForActive] = useState(false)
+    const [checkActive, setCheckActive] = useState(false)
+    const [departmentName, setDepartmentName] = useState<any>('')
 
-    const navigate = useNavigate()
+    console.log('department id', departmentName)
+
+    const { departmentsData } = useAppSelector<departmentTypes>((state) => state.departmentsData)
 
     const fetchCareerDatas = async () => {
         try {
+            let departmentIds = ''
             let searchFilter = ''
             // if (globalFilter) {
             //     searchFilter = `&job_id=${globalFilter}`
@@ -34,7 +50,11 @@ const CareerDetails = () => {
                 searchFilter = `&location=${globalFilter}`
             }
 
-            const response = await axioisInstance.get(`/jobs?p=${page}&ps=${pageSize}${searchFilter}`)
+            if (departmentName !== '' || departmentName !== null || departmentName !== undefined) {
+                departmentIds = `&department=${departmentName}`
+            }
+
+            const response = await axioisInstance.get(`/jobs?p=${page}&ps=${pageSize}${searchFilter}${departmentIds}&dashboard=true`)
             const data = response?.data?.data
             setCareerDatas(data?.results)
             setTotalPages(data?.count)
@@ -45,10 +65,29 @@ const CareerDetails = () => {
 
     useEffect(() => {
         fetchCareerDatas()
-    }, [page, pageSize, globalFilter, currentSelectedPage])
+    }, [page, pageSize, globalFilter, currentSelectedPage, departmentName])
+
+    useEffect(() => {
+        dispatch(fetchDepartments())
+    }, [dispatch])
 
     const columns = useMemo(
         () => [
+            {
+                header: 'Activate / Inactivate',
+                accessorKey: 'is_active',
+                cell: ({ row }: any) => {
+                    return (
+                        <div>
+                            <Switch
+                                className="bg-red-500"
+                                checked={row.original.is_active}
+                                onChange={(checked) => handleActiveCareer(row.original.id, checked, row.original.is_active)}
+                            />
+                        </div>
+                    )
+                },
+            },
             {
                 header: 'Edit',
                 accessorKey: 'job_id',
@@ -142,8 +181,23 @@ const CareerDetails = () => {
                 cell: ({ row }: any) => moment(row.original.updated_at).format('YYYY-MM-DD HH:mm:ss'),
             },
         ],
-        [],
+        [storeForActive],
     )
+
+    const formattedData = departmentsData?.map((item) => ({
+        label: item?.name,
+        value: item?.id,
+    }))
+
+    console.log('Checkinh active', departmentsData)
+
+    const handleActiveCareer = (id, e, checked) => {
+        setStoreForActive(id)
+        setShowModalForActive(true)
+        setCheckActive(checked)
+    }
+
+    console.log('Id for Active', checkActive)
 
     const handleEditCareers = (id: string) => {
         navigate(`/app/appSettings/careers/edit/${id}`)
@@ -193,8 +247,24 @@ const CareerDetails = () => {
                         </div>
                     </div>
 
-                    <div>
-                        <Button onClick={hanldeAddCareers} variant="new">
+                    <div className="flex gap-2">
+                        <Select
+                            isMulti
+                            isClearable
+                            className="xl:w-[300px]"
+                            options={formattedData}
+                            getOptionLabel={(option) => option.label}
+                            getOptionValue={(option) => option.value}
+                            onChange={(newVal) => {
+                                const values = newVal?.map((item) => item?.value)
+                                return setDepartmentName(values?.join(','))
+                            }}
+                        />
+
+                        <Button variant="new" size="sm" onClick={() => setShowAddNewDept(true)}>
+                            Add Department
+                        </Button>
+                        <Button variant="new" size="sm" onClick={hanldeAddCareers}>
                             Add New
                         </Button>
                     </div>
@@ -204,6 +274,15 @@ const CareerDetails = () => {
                     <PageCommon page={page} setPage={setPage} pageSize={pageSize} totalData={totalPages} setPageSize={setPageSize} />
                 )}
             </div>
+            {showAddNewDept && <NewDeptModal dialogIsOpen={showAddNewDept} setIsOpen={setShowAddNewDept} />}
+            {showModalForActive && (
+                <ActiveInactiveModal
+                    dialogIsOpen={showModalForActive}
+                    setIsOpen={setShowModalForActive}
+                    idForUpdate={storeForActive}
+                    isActive={checkActive}
+                />
+            )}
         </div>
     )
 }

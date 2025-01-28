@@ -1,9 +1,10 @@
+import { useRef } from 'react'
+import jsPDF from 'jspdf'
 import Card from '@/components/ui/Card'
-// import Avatar from '@/components/ui/Avatar'
 import IconText from '@/components/shared/IconText'
-import { HiPhone, HiExternalLink, HiLocationMarker } from 'react-icons/hi'
-import { Link } from 'react-router-dom'
+import { HiPhone, HiExternalLink } from 'react-icons/hi'
 import { FaMapMarkedAlt } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
 type CustomerInfoProps = {
     user: {
@@ -20,44 +21,133 @@ type CustomerInfoProps = {
 }
 
 const CustomerInfo = ({ user, billing_address, store, location_url }: CustomerInfoProps) => {
-    return (
-        <Card>
-            <h5 className="mb-4">Customer Details</h5>
-            <Link className="group flex items-center justify-between" to={`/app/customerAnalytics/${user.mobile}`}>
-                <div className="flex items-center">
-                    {/* <Avatar shape="circle" src={data?.img} /> */}
-                    <div className="ltr:ml-2 rtl:mr-2">
-                        {/* <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
-                            {data?.name}
-                        </div> */}
-                        <span className="text-xl font-bold">{user.name}</span>
+    const printRef = useRef<HTMLDivElement>(null)
+
+    const generatePDF = () => {
+        const doc = new jsPDF()
+        const maxWidth = 180
+        doc.setFontSize(14)
+        doc.text('To:', 10, 20)
+        doc.setFontSize(12)
+        const toAddressLines = doc.splitTextToSize(billing_address, maxWidth)
+        doc.text(toAddressLines, 10, 30)
+        doc.setFontSize(14)
+        doc.text('From:', 10, 50)
+        doc.setFontSize(12)
+        const fromAddressLines = doc.splitTextToSize(store.address, maxWidth)
+        doc.text(fromAddressLines, 10, 60)
+
+        doc.save('ToFromDetails.pdf')
+    }
+
+    const generatePrint = () => {
+        const printContent = `
+            <div style="font-family: Arial, sans-serif; padding: 20px; line-height: 1.6;">
+                <div style="margin-bottom: 40px;">
+                    <h3>To:</h3>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <p>${user.name}</p>
+                        <p>${billing_address.replace(/\n/g, '<br>')}</p>
+                        <p>Mob no.-${user.mobile}</p>
                     </div>
                 </div>
-                <HiExternalLink className="text-xl hidden group-hover:block" />
-            </Link>
-            <hr className="my-5" />
+    
+                <div>
+                    <h3>From:</h3>
+                    <div>
+                        <p>${store.address.replace(/\n/g, '<br>')}</p>
+                        <p>Bhupesh Saran</p>
+                        <p>9351037494</p>
+                    </div>
+                </div>
+            </div>
+        `
 
-            <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                <span className="font-semibold">
-                    <a href={`tel:${user.mobile}`} className="hover:text-blue-600">
-                        {user.mobile}
+        const printWindow = window.open('', '_blank', 'width=800,height=600')
+        if (printWindow) {
+            printWindow.document.open()
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>''</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                margin: 20px;
+                            }
+                            h3 {
+                                margin-bottom: 10px;
+                            }
+                            p {
+                                margin: 0;
+                                word-wrap: break-word;
+                            }
+                            .to-section,
+                            .from-section {
+                                margin-bottom: 40px;
+                            }
+                            .to-section > div {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 10px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${printContent}
+                    </body>
+                </html>
+            `)
+            printWindow.document.close()
+            printWindow.print()
+        }
+    }
+
+    return (
+        <Card>
+            <div ref={printRef}>
+                <h5 className="mb-4">Customer Details</h5>
+                <Link className="group flex items-center justify-between" to={`/app/customerAnalytics/${user.mobile}`}>
+                    <div className="flex items-center">
+                        <div className="ltr:ml-2 rtl:mr-2">
+                            <span className="text-xl font-bold">{user.name}</span>
+                        </div>
+                    </div>
+                    <HiExternalLink className="text-xl hidden group-hover:block" />
+                </Link>
+                <hr className="my-5" />
+
+                <IconText icon={<HiPhone className="text-xl opacity-70" />}>
+                    <span className="font-semibold">
+                        <a href={`tel:${user.mobile}`} className="hover:text-blue-600">
+                            {user.mobile}
+                        </a>
+                    </span>
+                </IconText>
+                <hr className="my-5" />
+                <h6 className="mb-4">Shipping Address</h6>
+                <address className="not-italic">
+                    <div>{store.address}</div>
+                </address>
+                <hr className="my-5" />
+                <h6 className="mb-4">
+                    <a href={location_url} target="_blank" rel="noreferrer" className="flex gap-2 items-center">
+                        Billing address <FaMapMarkedAlt className="text-lg" />
                     </a>
-                </span>
-            </IconText>
-            <hr className="my-5" />
-            <h6 className="mb-4">Shipping Address</h6>
-            <address className="not-italic">
-                <div>{store.address}</div>
-            </address>
-            <hr className="my-5" />
-            <h6 className="mb-4 ">
-                <a href={location_url} target="_blank" rel="noreferrer" className="flex gap-2 items-center">
-                    Billing address <FaMapMarkedAlt className="text-lg" />
-                </a>
-            </h6>
-            <address className="not-italic">
-                <div className="mb-1">{billing_address}</div>
-            </address>
+                </h6>
+                <address className="not-italic">
+                    <div className="mb-1">{billing_address}</div>
+                </address>
+                <hr className="my-5" />
+            </div>
+            <div className="mt-4 flex gap-4">
+                {/* <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={generatePDF}>
+                    Convert to PDF
+                </button> */}
+                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={generatePrint}>
+                    Print
+                </button>
+            </div>
         </Card>
     )
 }
