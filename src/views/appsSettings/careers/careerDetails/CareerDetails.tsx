@@ -32,8 +32,6 @@ const CareerDetails = () => {
     const [checkActive, setCheckActive] = useState(false)
     const [departmentName, setDepartmentName] = useState<any>('')
 
-    console.log('department id', departmentName)
-
     const { departmentsData } = useAppSelector<departmentTypes>((state) => state.departmentsData)
 
     const fetchCareerDatas = async () => {
@@ -262,7 +260,7 @@ const CareerDetails = () => {
                         />
 
                         <Button variant="new" size="sm" onClick={() => setShowAddNewDept(true)}>
-                            Add Department
+                            Department anagement
                         </Button>
                         <Button variant="new" size="sm" onClick={hanldeAddCareers}>
                             Add New
