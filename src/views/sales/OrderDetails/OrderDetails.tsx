@@ -306,6 +306,7 @@ const OrderDetails = () => {
                                             points_discount={data.points_discount}
                                             handleMarkAsPaid={handlemarkAsPaid}
                                             status={data.status}
+                                            mainData={data}
                                             handlePODAction={handlePODAction}
                                         />
                                     </div>

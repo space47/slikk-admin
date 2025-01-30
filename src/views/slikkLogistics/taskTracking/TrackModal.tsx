@@ -29,11 +29,18 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
 
     const [ridersData, setRidersData] = useState<RiderProfile[]>([])
     const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
-    const navigate = useNavigate(0)
+    const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
+    const navigate = useNavigate()
+    const [hitSearchApi, setHitSearchApi] = useState<boolean>(false)
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`logistic/riders`)
+            let filterData = ''
+            if (globalFilter) {
+                filterData = `?name=${globalFilter}`
+            }
+
+            const response = await axioisInstance.get(`logistic/riders${filterData}`)
             const riderdata = response.data?.data?.map((item) => item?.profile)
 
             console.log('Rider Data:', riderdata)
@@ -45,7 +52,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
 
     useEffect(() => {
         fetchData()
-    }, [])
+    }, [globalFilter])
 
     const assignTask = async () => {
         if (!selectedRiderMobile) {
@@ -84,6 +91,10 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
         setSelectedRiderMobile(e.target.value)
     }
 
+    const handleSearch = () => {
+        setHitSearchApi(true)
+    }
+
     return (
         <div>
             <Modal
@@ -98,11 +109,23 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                 }}
                 onCancel={handleCloseModal}
                 onOk={assignTask}
+                width={450}
             >
-                <div className="main">
+                <div className="main h-[500px] xl:h-[650px] ">
                     <div className="text-xl font-bold text-red-700 mb-6">ASSIGN RIDER</div>
+                    <div className="mb-8 flex gap-2">
+                        <input
+                            type="search"
+                            name="globalFilter"
+                            placeholder="Enter Rider name"
+                            value={globalFilter}
+                            className="rounded-xl"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+
                     {ridersData && (
-                        <div className="details">
+                        <div className="details overflow-y-scroll scrollbar-hide h-[340px] xl:h-[500px]  ">
                             <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection}>
                                 {ridersData.map((item, key) => {
                                     return (

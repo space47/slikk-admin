@@ -24,6 +24,7 @@ type PaymentSummaryProps = {
     handleMarkAsPaid: any
     status: string
     handlePODAction: any
+    mainData: any
 }
 
 export const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
@@ -63,7 +64,9 @@ const PaymentSummary = ({
     handleMarkAsPaid,
     status,
     handlePODAction,
+    mainData,
 }: PaymentSummaryProps) => {
+    console.log('Data of the Data', data)
     return (
         <Card className="mb-4">
             <div className="flex justify-between items-center xl:items-baseline">
@@ -99,7 +102,10 @@ const PaymentSummary = ({
                 </div>
                 {coupon_discount !== '0.00' && (
                     <div className="flex justify-between mb-2">
-                        Coupon Discount <span className="font-semibold">Rs.{coupon_discount}</span>
+                        Coupon Discount{' '}
+                        <span className="font-semibold">
+                            Rs.{coupon_discount} <span className="text-blue-600">({mainData?.coupon_code})</span>
+                        </span>
                     </div>
                 )}
                 {loyalty_discount !== '0.00' && (
