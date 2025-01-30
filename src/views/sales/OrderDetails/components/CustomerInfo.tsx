@@ -5,6 +5,7 @@ import IconText from '@/components/shared/IconText'
 import { HiPhone, HiExternalLink } from 'react-icons/hi'
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import { BsFillPrinterFill } from 'react-icons/bs'
 
 type CustomerInfoProps = {
     user: {
@@ -18,9 +19,10 @@ type CustomerInfoProps = {
     }
     billing_address: string
     location_url: string
+    delivery_type: string
 }
 
-const CustomerInfo = ({ user, billing_address, store, location_url }: CustomerInfoProps) => {
+const CustomerInfo = ({ user, billing_address, store, location_url, delivery_type }: CustomerInfoProps) => {
     const printRef = useRef<HTMLDivElement>(null)
 
     const generatePDF = () => {
@@ -141,12 +143,11 @@ const CustomerInfo = ({ user, billing_address, store, location_url }: CustomerIn
                 <hr className="my-5" />
             </div>
             <div className="mt-4 flex gap-4">
-                {/* <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={generatePDF}>
-                    Convert to PDF
-                </button> */}
-                <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={generatePrint}>
-                    Print
-                </button>
+                {delivery_type === 'STANDARD' && (
+                    <button className="px-4 py-2 bg-none text-gray-500 rounded hover:text-blue-600 " onClick={generatePrint}>
+                        <BsFillPrinterFill className="text-2xl " />
+                    </button>
+                )}
             </div>
         </Card>
     )

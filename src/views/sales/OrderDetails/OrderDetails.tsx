@@ -285,6 +285,7 @@ const OrderDetails = () => {
                                             billing_address={data.billing_address}
                                             store={data.store}
                                             location_url={data.location_url}
+                                            delivery_type={data.delivery_type}
                                         />
                                     </div>
                                     <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">
@@ -305,6 +306,7 @@ const OrderDetails = () => {
                                             points_discount={data.points_discount}
                                             handleMarkAsPaid={handlemarkAsPaid}
                                             status={data.status}
+                                            mainData={data}
                                             handlePODAction={handlePODAction}
                                         />
                                     </div>
