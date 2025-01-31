@@ -15,7 +15,7 @@ const AvatarImage = () => {
     const beforeUpload = (files: FileList | null) => {
         let valid: string | boolean = true
 
-        const allowedFileType = ['image/jpeg', 'image/png']
+        const allowedFileType = ['image/jpeg', 'image/png', 'application/zip', 'application/json']
         if (files) {
             for (const file of files) {
                 if (!allowedFileType.includes(file.type)) {
@@ -29,18 +29,8 @@ const AvatarImage = () => {
 
     return (
         <div>
-            <Upload
-                className="cursor-pointer"
-                showList={false}
-                uploadLimit={1}
-                beforeUpload={beforeUpload}
-                onChange={onFileUpload}
-            >
-                <Avatar
-                    size={80}
-                    src={avatarImg as string}
-                    icon={<HiOutlinePlus />}
-                />
+            <Upload className="cursor-pointer" showList={false} uploadLimit={1} beforeUpload={beforeUpload} onChange={onFileUpload}>
+                <Avatar size={80} src={avatarImg as string} icon={<HiOutlinePlus />} />
             </Upload>
         </div>
     )

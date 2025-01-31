@@ -26,28 +26,29 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
     }, [])
     return (
         <FormContainer>
-            <FormItem asterisk label="Required Fields" className="col-span-1 w-[60%] h-[80%]">
+            <FormItem asterisk label="Required Fields" className="col-span-1 w-full sm:w-[80%] md:w-[70%] lg:w-[60%] h-auto">
                 <FieldArray name="required_fields">
                     {({ push, remove }) => (
                         <div>
                             {values?.map((item: any, index: number) => (
-                                <div
-                                    key={index}
-                                    className="flex space-x-4 mt-2 xl:flex-row flex-col  items-center
-                                                    rounded-lg px-4 py-2"
-                                >
+                                <div key={index} className="flex flex-col sm:flex-row sm:space-x-4 mt-2 items-center rounded-lg px-4 py-2">
                                     <Field
                                         name={`required_fields[${index}].position`}
                                         placeholder="Key"
                                         component={Input}
-                                        className="w-2/3 hidden"
+                                        className="w-full sm:w-2/3 hidden"
                                         type="number"
                                     />
-                                    <Field name={`required_fields[${index}].key`} placeholder="Key" component={Input} className="w-2/3" />
+                                    <Field
+                                        name={`required_fields[${index}].key`}
+                                        placeholder="Key"
+                                        component={Input}
+                                        className="w-full sm:w-2/3"
+                                    />
                                     <Field name={`required_fields[${index}].dataType`}>
                                         {({ field, form }: FieldProps) => (
                                             <Select
-                                                className=" w-full"
+                                                className="w-full"
                                                 placeholder="Select dataType"
                                                 options={reportQueryArray}
                                                 isDisabled
@@ -123,34 +124,19 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                     type={dataType === 'Date' ? 'date' : 'text'}
                                                     placeholder={dataType === 'Date' ? 'Select date' : 'Enter value'}
                                                     {...field}
-                                                    className=" w-full"
+                                                    className="w-full"
                                                 />
                                             )
                                         }}
                                     </Field>
-
-                                    <FormContainer className="hidden">
-                                        <Field
-                                            name={`required_fields[${index}].prefix`}
-                                            placeholder="Key"
-                                            component={Input}
-                                            className="w-full"
-                                        />
-                                        <Field
-                                            name={`required_fields[${index}].suffix`}
-                                            placeholder="Key"
-                                            component={Input}
-                                            className="w-full"
-                                        />
-                                    </FormContainer>
                                 </div>
                             ))}
                         </div>
                     )}
                 </FieldArray>
                 {storeName !== null && storeName !== undefined && storeName !== '' && (
-                    <FormContainer className="flex  mt-8 mb-9">
-                        <Button variant="new" type="submit" className="text-white ">
+                    <FormContainer className="flex justify-center mt-8 mb-9">
+                        <Button variant="new" type="submit" className="text-white">
                             Generate
                         </Button>
                     </FormContainer>

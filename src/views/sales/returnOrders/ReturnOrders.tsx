@@ -27,6 +27,7 @@ import { FaFilter } from 'react-icons/fa'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { returnOrderApi } from '@/services/ReturnOrders.services'
 import { HiSearch } from 'react-icons/hi'
+import ReturnOrderlistMobile from './ReturnOrderMobile'
 
 interface ReturnOrderItem {
     order_item: number
@@ -396,15 +397,6 @@ const ReturnOrders = () => {
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
                 <div className="flex gap-2">
                     <div className="flex justify-start ">
-                        {/* <input
-                            type="search"
-                            name="search"
-                            id=""
-                            placeholder="search here"
-                            value={searchInput}
-                            className=" xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
-                            onChange={handleSearch}
-                        /> */}
                         <Input
                             type="search"
                             name="search"
@@ -470,7 +462,7 @@ const ReturnOrders = () => {
                 </div>
             </div>
 
-            <div className="border p-2 border-gray-300 rounded-md">
+            <div className="border p-2 border-gray-300 rounded-md hidden xl:block">
                 <Table>
                     <THead>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -502,6 +494,10 @@ const ReturnOrders = () => {
                     </TBody>
                 </Table>
             </div>
+            <div>
+                <ReturnOrderlistMobile orders={orders} />
+            </div>
+
             <div className="flex flex-col md:flex-row items-center justify-between mt-4 gap-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
                 <div className="min-w-[130px] flex gap-5">

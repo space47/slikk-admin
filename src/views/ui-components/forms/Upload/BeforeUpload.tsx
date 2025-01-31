@@ -6,7 +6,7 @@ const BeforeUpload = () => {
     const beforeUpload = (files: FileList | null, fileList: File[]) => {
         let valid: string | boolean = true
 
-        const allowedFileType = ['image/jpeg', 'image/png']
+        const allowedFileType = ['image/jpeg', 'image/png', 'application/zip', 'application/json']
         const maxFileSize = 500000
 
         if (fileList.length >= maxUpload) {
@@ -32,11 +32,7 @@ const BeforeUpload = () => {
 
     return (
         <div>
-            <Upload
-                beforeUpload={beforeUpload}
-                uploadLimit={maxUpload}
-                tip={tip}
-            />
+            <Upload beforeUpload={beforeUpload} uploadLimit={maxUpload} tip={tip} />
         </div>
     )
 }

@@ -66,6 +66,8 @@ const UploadBanner = () => {
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/zip',
+            'application/json',
         ]
         const MAX_FILE_SIZE = 5000000
 
@@ -104,16 +106,14 @@ const UploadBanner = () => {
             const newData = response.data.url
             notification.success({
                 message: 'Success',
-                description:
-                    response?.data?.message || 'Image uploaded successfully',
+                description: response?.data?.message || 'Image uploaded successfully',
             })
             return newData
         } catch (error: any) {
             console.error(error)
             notification.error({
                 message: 'Upload Failed',
-                description:
-                    error?.response?.data?.message || 'Image upload failed',
+                description: error?.response?.data?.message || 'Image upload failed',
             })
             return 'Error'
         }
@@ -148,14 +148,7 @@ const UploadBanner = () => {
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <div className=" image w-[10%] h-[20%] mt-5  ">
                                     {imagview && imagview.length > 0 ? (
-                                        imagview.map((img, index) => (
-                                            <img
-                                                key={index}
-                                                src={img}
-                                                alt="img"
-                                                className="rounded-xl"
-                                            />
-                                        ))
+                                        imagview.map((img, index) => <img key={index} src={img} alt="img" className="rounded-xl" />)
                                     ) : (
                                         <p>No image</p>
                                     )}
@@ -163,45 +156,22 @@ const UploadBanner = () => {
                                 <FormContainer className="mt-5">
                                     <FormItem
                                         label="ADD NEW IMAGE"
-                                        invalid={Boolean(
-                                            errors.image && touched.image,
-                                        )}
+                                        invalid={Boolean(errors.image && touched.image)}
                                         errorMessage={errors.image as string}
                                         className="grid grid-rows-2"
                                     >
                                         <Field name="image_upload_array">
-                                            {({
-                                                form,
-                                            }: FieldProps<Submission>) => (
+                                            {({ form }: FieldProps<Submission>) => (
                                                 <>
                                                     <Upload
-                                                        beforeUpload={
-                                                            beforeUpload
-                                                        }
-                                                        fileList={
-                                                            values.image_upload_array
-                                                        }
-                                                        onChange={async (
-                                                            files,
-                                                        ) => {
-                                                            const uploadedImage =
-                                                                await handleFileupload(
-                                                                    files,
-                                                                )
-                                                            form.setFieldValue(
-                                                                'image_upload_array',
-                                                                [uploadedImage],
-                                                            )
-                                                            setImageView([
-                                                                uploadedImage,
-                                                            ])
+                                                        beforeUpload={beforeUpload}
+                                                        fileList={values.image_upload_array}
+                                                        onChange={async (files) => {
+                                                            const uploadedImage = await handleFileupload(files)
+                                                            form.setFieldValue('image_upload_array', [uploadedImage])
+                                                            setImageView([uploadedImage])
                                                         }}
-                                                        onFileRemove={(files) =>
-                                                            form.setFieldValue(
-                                                                'image_upload_array',
-                                                                files,
-                                                            )
-                                                        }
+                                                        onFileRemove={(files) => form.setFieldValue('image_upload_array', files)}
                                                         showList={false}
                                                     />
                                                 </>
@@ -213,28 +183,14 @@ const UploadBanner = () => {
                             </FormContainer>
 
                             <FormItem label="Name">
-                                <Field
-                                    type="text"
-                                    name="name"
-                                    placeholder="Enter Name"
-                                    component={Input}
-                                />
+                                <Field type="text" name="name" placeholder="Enter Name" component={Input} />
                             </FormItem>
                             <FormItem label="Value">
-                                <Field
-                                    type="text"
-                                    name="value"
-                                    placeholder="Enter value"
-                                    component={Input}
-                                />
+                                <Field type="text" name="value" placeholder="Enter value" component={Input} />
                             </FormItem>
 
                             <FormItem>
-                                <Button
-                                    type="reset"
-                                    className="ltr:mr-2 rtl:ml-2"
-                                    onClick={() => resetForm()}
-                                >
+                                <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
                                 <Button variant="solid" type="submit">
@@ -251,11 +207,7 @@ const UploadBanner = () => {
                     <div key={key} className="flex">
                         <div className="flex flex-row gap-10  bg-gray-100   min-w-[400px] items-center justify-center py-2 rounded-xl ">
                             <div className="flex flex-col justify-center">
-                                <img
-                                    src={item.image as string}
-                                    alt=""
-                                    className="w-[70px] h-[60px]"
-                                />
+                                <img src={item.image as string} alt="" className="w-[70px] h-[60px]" />
                             </div>
 
                             <div className="flex flex-col">
