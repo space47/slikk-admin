@@ -738,7 +738,7 @@ const OrderList = () => {
                 )}
 
                 <div className="xl:hidden">
-                    <OrderlistMobile orders={orders} />
+                    <OrderlistMobile orders={orders} handleNumberClick={handleNumberClick} />
                 </div>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
