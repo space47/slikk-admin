@@ -132,13 +132,25 @@ const Products = () => {
         console.log('value inside  apply', values)
         let query = ''
 
-        if (brandList?.length > 0) {
+        if (brandList?.length > 0 && !selectFilterString) {
             const brandIds = brandList.join(',')
             if (query) query += '&'
             query += `brand=${brandIds}`
         }
-        if (selectFilterString) {
+        if (selectFilterString && brandList?.length === 0) {
             query += `&${selectFilterString}`
+        }
+        if (selectFilterString && brandList?.length > 0) {
+            const brandIds = brandList.join(',')
+            const data = selectFilterString
+                ?.split('=')
+                ?.filter((item) => item !== 'brand')
+                ?.join('')
+            if (selectFilterString.includes('brand')) {
+                query += `&brand=${brandIds},${data},`
+            } else {
+                query += `&${selectFilterString}&brand=${brandIds}`
+            }
         }
 
         setTypeFetch(query)
