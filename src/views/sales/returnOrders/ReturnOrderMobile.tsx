@@ -20,6 +20,9 @@ const ReturnOrderlistMobile = ({ orders }: props) => {
     const handleOrderCall = (id: any) => {
         navigate(`/app/orders/${id}`)
     }
+    const handleReturnCall = (id: any) => {
+        navigate(`/app/returnOrders/${id}`)
+    }
 
     return (
         <div>
@@ -36,21 +39,21 @@ const ReturnOrderlistMobile = ({ orders }: props) => {
                         >
                             <div className="flex justify-between">
                                 <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                                    Return ID:{' '}
+                                    Return:{' '}
                                     <span
                                         className="px-2 py-1 bg-red-500 text-white dark:bg-red-700 dark:text-gray-200 rounded-lg"
-                                        onClick={() => handleOrderCall(item.return_order_id)}
+                                        onClick={() => handleReturnCall(item.return_order_id)}
                                     >
-                                        {item.invoice_id}
+                                        {item.return_order_id}
                                     </span>
                                 </h3>
                                 <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                                    Invoice ID:{' '}
+                                    Invoice:{' '}
                                     <span
                                         className="px-2 py-1 bg-red-500 text-white dark:bg-red-700 dark:text-gray-200 rounded-lg"
                                         onClick={() => handleOrderCall(item.order)}
                                     >
-                                        {item.invoice_id}
+                                        {item.order}
                                     </span>
                                 </h3>
                             </div>
