@@ -39,6 +39,7 @@ const Uploader = () => {
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'application/json',
             'image/gif',
+            'application/zip',
         ]
         const MAX_FILE_SIZE = 5000000000
 
