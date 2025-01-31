@@ -3,7 +3,7 @@ import EasyTable from '@/common/EasyTable'
 import { Button, Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import moment from 'moment'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 interface ReportTableProps {
     tableData: any[]
@@ -48,12 +48,18 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName,
         }))
     }, [tableData])
 
+    useEffect(() => {
+        if (pageSize > 10) {
+            setPage(1)
+        }
+    }, [])
+
     return (
         <div>
             <div className="flex justify-between mb-5">
-                <div className="font-bold text-2xl text-blue-700 ">{keyName ? keyName.toUpperCase() : ''}</div>
-                <div className="flex justify-end ">
-                    <Button variant="new" onClick={() => handleDownloadCsv(tableName)}>
+                <div className="font-bold text-xl w-1/2 xl:text-2xl text-blue-700 ">{keyName ? keyName.toUpperCase() : ''}</div>
+                <div className="flex justify-end  ">
+                    <Button variant="new" onClick={() => handleDownloadCsv(tableName)} size="sm">
                         Download CSV
                     </Button>
                 </div>

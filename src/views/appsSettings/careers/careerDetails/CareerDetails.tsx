@@ -100,6 +100,13 @@ const CareerDetails = () => {
             {
                 header: 'Job ID',
                 accessorKey: 'job_id',
+                cell: ({ row }: any) => {
+                    return (
+                        <div className="hover:text-blue-500 cursor-pointer " onClick={() => handleJobApplicants(row?.original?.job_id)}>
+                            {row.original.job_id}
+                        </div>
+                    )
+                },
             },
             {
                 header: 'Title',
@@ -182,6 +189,10 @@ const CareerDetails = () => {
         [storeForActive],
     )
 
+    const handleJobApplicants = (job_id: number | string) => {
+        navigate(`/app/appSettings/careers/applicants/${job_id}`)
+    }
+
     const formattedData = departmentsData?.map((item) => ({
         label: item?.name,
         value: item?.id,
@@ -260,7 +271,7 @@ const CareerDetails = () => {
                         />
 
                         <Button variant="new" size="sm" onClick={() => setShowAddNewDept(true)}>
-                            Department anagement
+                            Department Management
                         </Button>
                         <Button variant="new" size="sm" onClick={hanldeAddCareers}>
                             Add New
