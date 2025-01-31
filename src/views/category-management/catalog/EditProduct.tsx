@@ -180,9 +180,9 @@ const EditProduct = () => {
 
     return (
         <div>
-            <div className="flex justify-between">
+            <div className="flex xl:justify-between flex-col gap-2 mb-7 ">
                 <h3 className="mb-5 text-neutral-900">
-                    EDIT PRODUCT <span className="font-light text-md">#{barcode}</span>
+                    EDIT PRODUCT <span className="font-light xl:text-md text-sm ">#{barcode}</span>
                 </h3>
                 <div>
                     <Button variant="accept" size="sm" onClick={handleCopyProduct}>
@@ -199,7 +199,7 @@ const EditProduct = () => {
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
                     <Form className="w-2/3" onKeyDown={handleKeyDown}>
                         <FormContainer>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
                                 {PRODUCT_EDIT_COMMON?.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
