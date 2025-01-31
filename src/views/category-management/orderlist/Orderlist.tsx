@@ -22,6 +22,7 @@ import LoadingSpinner from '@/common/LoadingSpinner'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import TabSelectOrder from './filter'
+import OrderlistMobile from './OrderlistMobile'
 
 const CHANGE_DELIVERY_OPTIONS = [
     { label: 'EXPRESS', value: 'EXPRESS' },
@@ -616,13 +617,37 @@ const OrderList = () => {
     return (
         <div className="p-4">
             <div className="overflow-x-auto scrollbar-hide">
-                <div className="flex justify-end">
-                    <button
-                        className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden"
-                        onClick={handleDownload}
-                    >
-                        <IoMdDownload className="text-xl md:text-xl" />
-                    </button>
+                <div className="xl:hidden flex justify-between mb-10 items-center">
+                    <div className="flex gap-2 items-center ">
+                        <div>
+                            <UltimateDatePicker
+                                from={from}
+                                setFrom={setFrom}
+                                to={to}
+                                setTo={setTo}
+                                handleFromChange={handleFromChange}
+                                handleToChange={handleToChange}
+                                handleDateChange={handleDateChange}
+                            />
+                        </div>
+                        <div className="xl:mt-7">
+                            <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
+                                <CiFilter className="text-xl font-extrabold" /> FILTER
+                            </Button>
+
+                            <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden mt-5">
+                                <FaFilter className="text-xl font-extrabold" />
+                            </Button>
+                        </div>
+                    </div>
+                    <div>
+                        <button
+                            className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden"
+                            onClick={handleDownload}
+                        >
+                            <IoMdDownload className="text-xl md:text-xl" />
+                        </button>
+                    </div>
                 </div>
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
                     <div className="flex gap-1 xl:gap-2  xl:flex-row  ">
@@ -656,7 +681,7 @@ const OrderList = () => {
                         </div>
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="xl:flex gap-4 hidden">
                         <div className="flex flex-col md:flex-row items-end justify-end ">
                             <button
                                 className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
@@ -701,7 +726,7 @@ const OrderList = () => {
                         <NotFoundData />{' '}
                     </>
                 ) : (
-                    <div className="border border-gray-300 p-2 rounded-xl">
+                    <div className="border border-gray-300 p-2 rounded-xl hidden xl:block">
                         <RedMarkTable
                             mainData={orders}
                             page={page}
@@ -711,6 +736,10 @@ const OrderList = () => {
                         />
                     </div>
                 )}
+
+                <div className="xl:hidden">
+                    <OrderlistMobile orders={orders} />
+                </div>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between mt-4">
                 {numberClick !== true && (

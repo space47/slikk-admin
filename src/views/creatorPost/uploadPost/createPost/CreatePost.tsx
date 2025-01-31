@@ -123,6 +123,8 @@ const CreatePost = () => {
             'video/avchd',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/zip',
+            'application/json',
         ]
         const MAX_FILE_SIZE = 50000000000000
 

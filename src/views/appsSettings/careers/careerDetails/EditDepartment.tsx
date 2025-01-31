@@ -101,10 +101,7 @@ const EditDepartment = ({ setIsOpen }: Props) => {
                         >
                             {({ values }) => (
                                 <Form className="w-3/4">
-                                    <FormItem label="Acitve" className="mt-5">
-                                        <Field name="is_active" type="checkbox" component={Input} />
-                                    </FormItem>
-                                    <DepartmentsForm values={values} />
+                                    <DepartmentsForm values={values} isEdit />
 
                                     <Button variant="accept" type="submit">
                                         Submit

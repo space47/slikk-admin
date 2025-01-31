@@ -66,42 +66,21 @@ const ImageList = (props: ImageListProps) => {
     return (
         <>
             {imgList.map((img) => (
-                <div
-                    key={img.id}
-                    className="group relative rounded border p-2 flex"
-                >
-                    <img
-                        className="rounded max-h-[140px] max-w-full"
-                        src={img.img}
-                        alt={img.name}
-                    />
+                <div key={img.id} className="group relative rounded border p-2 flex">
+                    <img className="rounded max-h-[140px] max-w-full" src={img.img} alt={img.name} />
                     <div className="absolute inset-2 bg-gray-900/[.7] group-hover:flex hidden text-xl items-center justify-center">
-                        <span
-                            className="text-gray-100 hover:text-gray-300 cursor-pointer p-1.5"
-                            onClick={() => onViewOpen(img)}
-                        >
+                        <span className="text-gray-100 hover:text-gray-300 cursor-pointer p-1.5" onClick={() => onViewOpen(img)}>
                             <HiEye />
                         </span>
-                        <span
-                            className="text-gray-100 hover:text-gray-300 cursor-pointer p-1.5"
-                            onClick={() => onDeleteConfirmation(img)}
-                        >
+                        <span className="text-gray-100 hover:text-gray-300 cursor-pointer p-1.5" onClick={() => onDeleteConfirmation(img)}>
                             <HiTrash />
                         </span>
                     </div>
                 </div>
             ))}
-            <Dialog
-                isOpen={viewOpen}
-                onClose={onDialogClose}
-                onRequestClose={onDialogClose}
-            >
+            <Dialog isOpen={viewOpen} onClose={onDialogClose} onRequestClose={onDialogClose}>
                 <h5 className="mb-4">{selectedImg.name}</h5>
-                <img
-                    className="w-full"
-                    src={selectedImg.img}
-                    alt={selectedImg.name}
-                />
+                <img className="w-full" src={selectedImg.img} alt={selectedImg.name} />
             </Dialog>
             <ConfirmDialog
                 isOpen={deleteConfirmationOpen}
@@ -125,7 +104,7 @@ const ProductImages = (props: ProductImagesProps) => {
     const beforeUpload = (file: FileList | null) => {
         let valid: boolean | string = true
 
-        const allowedFileType = ['image/jpeg', 'image/png']
+        const allowedFileType = ['image/jpeg', 'image/png', 'application/zip', 'application/json']
         const maxFileSize = 500000
 
         if (file) {
@@ -143,11 +122,7 @@ const ProductImages = (props: ProductImagesProps) => {
         return valid
     }
 
-    const onUpload = (
-        form: FormikProps<FormModel>,
-        field: FieldInputProps<FormModel>,
-        files: File[]
-    ) => {
+    const onUpload = (form: FormikProps<FormModel>, field: FieldInputProps<FormModel>, files: File[]) => {
         let imageId = '1-img-0'
         const latestUpload = files.length - 1
         if (values.imgList.length > 0) {
@@ -168,11 +143,7 @@ const ProductImages = (props: ProductImagesProps) => {
         form.setFieldValue(field.name, imageList)
     }
 
-    const handleImageDelete = (
-        form: FormikProps<FormModel>,
-        field: FieldInputProps<FormModel>,
-        deletedImg: Image
-    ) => {
+    const handleImageDelete = (form: FormikProps<FormModel>, field: FieldInputProps<FormModel>, deletedImg: Image) => {
         let imgList = cloneDeep(values.imgList)
         imgList = imgList.filter((img) => img.id !== deletedImg.id)
         form.setFieldValue(field.name, imgList)
@@ -190,27 +161,18 @@ const ProductImages = (props: ProductImagesProps) => {
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                                     <ImageList
                                         imgList={values.imgList}
-                                        onImageDelete={(img: Image) =>
-                                            handleImageDelete(form, field, img)
-                                        }
+                                        onImageDelete={(img: Image) => handleImageDelete(form, field, img)}
                                     />
                                     <Upload
                                         draggable
                                         className="min-h-fit"
                                         beforeUpload={beforeUpload}
                                         showList={false}
-                                        onChange={(files) =>
-                                            onUpload(form, field, files)
-                                        }
+                                        onChange={(files) => onUpload(form, field, files)}
                                     >
                                         <div className="max-w-full flex flex-col px-4 py-2 justify-center items-center">
-                                            <DoubleSidedImage
-                                                src="/img/others/upload.png"
-                                                darkModeSrc="/img/others/upload-dark.png"
-                                            />
-                                            <p className="font-semibold text-center text-gray-800 dark:text-white">
-                                                Upload
-                                            </p>
+                                            <DoubleSidedImage src="/img/others/upload.png" darkModeSrc="/img/others/upload-dark.png" />
+                                            <p className="font-semibold text-center text-gray-800 dark:text-white">Upload</p>
                                         </div>
                                     </Upload>
                                 </div>
@@ -222,9 +184,7 @@ const ProductImages = (props: ProductImagesProps) => {
                                 draggable
                                 beforeUpload={beforeUpload}
                                 showList={false}
-                                onChange={(files) =>
-                                    onUpload(form, field, files)
-                                }
+                                onChange={(files) => onUpload(form, field, files)}
                             >
                                 <div className="my-16 text-center">
                                     <DoubleSidedImage
@@ -233,16 +193,10 @@ const ProductImages = (props: ProductImagesProps) => {
                                         darkModeSrc="/img/others/upload-dark.png"
                                     />
                                     <p className="font-semibold">
-                                        <span className="text-gray-800 dark:text-white">
-                                            Drop your image here, or{' '}
-                                        </span>
-                                        <span className="text-blue-500">
-                                            browse
-                                        </span>
+                                        <span className="text-gray-800 dark:text-white">Drop your image here, or </span>
+                                        <span className="text-blue-500">browse</span>
                                     </p>
-                                    <p className="mt-1 opacity-60 dark:text-white">
-                                        Support: jpeg, png
-                                    </p>
+                                    <p className="mt-1 opacity-60 dark:text-white">Support: jpeg, png</p>
                                 </div>
                             </Upload>
                         )
