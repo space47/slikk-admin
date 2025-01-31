@@ -285,7 +285,7 @@ const ReportAnalytics = () => {
         <div>
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
-                    <Form className="w-3/4 p-6  bg-white shadow-lg rounded-lg">
+                    <Form className="xl:w-3/4 w-full p-6  bg-white shadow-lg rounded-lg">
                         <FormContainer>
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                 <FormItem className="font-semibold text-gray-700">

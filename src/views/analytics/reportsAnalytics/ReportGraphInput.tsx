@@ -95,7 +95,7 @@ const ReportGraphInput = ({
 
                 {table?.data?.extra_attributes?.is_graph === true ? (
                     <div>
-                        <div key={table.key} className="flex gap-3">
+                        <div key={table.key} className="flex gap-3 flex-col xl:flex-row mb-10">
                             <div className="flex flex-col gap-2">
                                 <label>X-Axis ({table.key})</label>
                                 <Select
