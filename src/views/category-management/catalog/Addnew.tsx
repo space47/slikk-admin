@@ -166,7 +166,7 @@ const AddProduct = () => {
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
                     <Form className="w-2/3" onKeyDown={handleKeyDown}>
                         <FormContainer>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
                                 {PRODUCT_EDIT_COMMON.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />

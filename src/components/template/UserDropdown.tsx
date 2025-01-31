@@ -56,7 +56,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
     }
 
     return (
-        <div className="cursor-pointer flex flex-row text-xl items-center">
+        <div className="cursor-pointer flex flex-row text-xl items-center mr-8 ">
             <HiOutlineUser />
             <Dropdown menuStyle={{ minWidth: 240 }} renderTitle={selectedCompany.first_name} placement="bottom-end">
                 <Dropdown.Item variant="header">

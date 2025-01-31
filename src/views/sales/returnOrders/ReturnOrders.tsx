@@ -494,7 +494,7 @@ const ReturnOrders = () => {
                     </TBody>
                 </Table>
             </div>
-            <div>
+            <div className="block xl:hidden">
                 <ReturnOrderlistMobile orders={orders} />
             </div>
 
