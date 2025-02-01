@@ -29,8 +29,8 @@ const OrderlistMobile = ({ orders, handleNumberClick }: props) => {
                             key={item.invoice_id}
                             className={
                                 item?.status === 'PENDING' && differenceInSeconds > 60
-                                    ? 'bg-red-300 dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg'
-                                    : 'bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg'
+                                    ? 'bg-red-300 dark:bg-gray-800 rounded-lg shadow-md p-2 cursor-pointer hover:shadow-lg'
+                                    : 'bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 cursor-pointer hover:shadow-lg'
                             }
                         >
                             <h3
@@ -42,34 +42,38 @@ const OrderlistMobile = ({ orders, handleNumberClick }: props) => {
                                     {item.invoice_id}
                                 </span>
                             </h3>
-                            <div className="p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
-                                <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Order Details</h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-sm">
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
-                                        <span className="font-medium text-gray-700 dark:text-gray-400">Status:</span>
-                                        <span className=" font-bold">{item.status}</span>
-                                    </div>
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
-                                        <span className="font-medium text-gray-700 dark:text-gray-400">Mobile:</span>
-                                        <span
-                                            className={`font-bold ${orderCount > 1 ? 'text-green-500' : 'text-gray-500'}`}
-                                            onClick={() => handleNumberClick(item.user?.mobile)}
-                                        >
-                                            {item.user?.mobile}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
-                                        <span className="font-medium text-gray-700 dark:text-gray-400">Customer:</span>
-                                        <span className=" font-bold">{item.user.name}</span>
-                                    </div>
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
-                                        <span className="font-medium text-gray-700 dark:text-gray-400">Delivery Type</span>
-                                        <span className=" font-bold">{item.delivery_type}</span>
-                                    </div>
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
-                                        <span className="font-medium text-gray-700 dark:text-gray-400">Order Total:</span>
-                                        <span className=" font-bold">₹{item.amount}</span>
-                                    </div>
+                            <div className="p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
+                                <div className="grid grid-cols-1 gap-6 text-sm sm:text-base">
+                                    {[
+                                        { label: 'Status', value: item.status },
+                                        { label: 'Date', value: moment(item?.create_date).format('YYYY-MM-DD hh:mm:ss a') },
+                                        {
+                                            label: 'Mobile',
+                                            value: (
+                                                <span
+                                                    className={`font-bold transition-colors cursor-pointer ${
+                                                        orderCount > 1 ? 'text-green-500 hover:text-green-400' : 'text-gray-500'
+                                                    }`}
+                                                    onClick={() => handleNumberClick(item.user?.mobile)}
+                                                >
+                                                    {item.user?.mobile} ({item?.user_order_count})
+                                                </span>
+                                            ),
+                                        },
+                                        { label: 'Customer', value: item.user.name },
+                                        { label: 'Delivery Type', value: item.delivery_type },
+                                        { label: 'Payment Mode', value: item?.payment?.mode },
+                                        { label: 'Payment Status', value: item?.payment?.status },
+                                        { label: 'Total Items', value: item?.order_items.length },
+                                        { label: 'Order Total', value: `₹${item.amount}` },
+                                    ].map(({ label, value }, index) => (
+                                        <div key={index} className="flex justify-between items-center">
+                                            <span className="font-medium text-gray-600 dark:text-gray-400">{label}:</span>
+                                            <span className="font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text ">
+                                                {value}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
