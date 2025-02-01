@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { TASKDETAILS } from '@/store/types/tasks.type'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import polyline from '@mapbox/polyline'
 import axios from 'axios'
-import { fetchTaskData } from '@/store/slices/taskData/taskData.slice'
-import { useParams } from 'react-router-dom'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+
+interface props {
+    task_id: string
+}
 
 const customIcon = (iconUrl: string) =>
     new L.Icon({
@@ -25,21 +26,31 @@ const icons = {
     runner: customIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png'),
 }
 
-const TaskTrackingMap = () => {
-    const dispatch = useAppDispatch()
-    const { task_id } = useParams()
+const OrderMap = ({ task_id }: props) => {
     const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
     const [waypoints, setWaypoints] = useState<[number, number][]>([])
-    const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
+    // const { taskData } = useAppSelector<TASKDETAILS>((state) => state.taskData)
+
+    const [taskData, setTaskData] = useState<any>()
+
+    const fetchTableData = async () => {
+        try {
+            const response = await axioisInstance.get(`/logistic/slikk/task?task_id=${task_id}`)
+            const data = response.data.data
+            setTaskData(data)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     useEffect(() => {
-        dispatch(fetchTaskData(task_id ?? ''))
+        fetchTableData()
         const intervalId = setInterval(() => {
-            dispatch(fetchTaskData(task_id ?? ''))
+            fetchTableData()
         }, 60000)
 
         return () => clearInterval(intervalId)
-    }, [dispatch, task_id])
+    }, [task_id])
 
     const [polyLine, setPolyLine] = useState('')
     const [sourceLatLong, setSourceLatLong] = useState<[number, number]>([0, 0])
@@ -75,11 +86,13 @@ const TaskTrackingMap = () => {
         fetchRouteDetails()
     }, [sourceLatLong, destinationLatLong])
 
+    console.log('Runner ka lat and long', taskData?.runner_latitude, taskData?.runner_longitude)
+
     useEffect(() => {
         if (taskData?.pickup_details && taskData?.drop_details) {
-            const origin: [number, number] = [taskData.pickup_details.latitude, taskData.pickup_details.longitude]
-            const destination: [number, number] = [taskData.drop_details.latitude, taskData.drop_details.longitude]
-            setMapCenter(destination)
+            const origin: [number, number] = [taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]
+            const destination: [number, number] = [taskData?.drop_details?.latitude, taskData?.drop_details?.longitude]
+            setMapCenter(origin)
             setWaypoints([origin, destination])
 
             setSourceLatLong(origin)
@@ -129,22 +142,22 @@ const TaskTrackingMap = () => {
 
                     {/* Pickup Marker */}
                     {taskData?.pickup_details && (
-                        <Marker position={[taskData.pickup_details.latitude, taskData.pickup_details.longitude]} icon={icons.pickup}>
-                            <Popup>{taskData.pickup_details.name}</Popup>
+                        <Marker position={[taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]} icon={icons.pickup}>
+                            <Popup>{taskData?.pickup_details?.name}</Popup>
                         </Marker>
                     )}
 
                     {/* Drop Marker */}
                     {taskData?.drop_details && (
-                        <Marker position={[taskData.drop_details.latitude, taskData.drop_details.longitude]} icon={icons.drop}>
-                            <Popup>{taskData.drop_details.name}</Popup>
+                        <Marker position={[taskData?.drop_details?.latitude, taskData?.drop_details?.longitude]} icon={icons.drop}>
+                            <Popup>{taskData?.drop_details?.name}</Popup>
                         </Marker>
                     )}
 
                     {/* Runner Marker */}
                     {taskData?.runner_latitude && taskData?.runner_longitude && (
-                        <Marker position={[taskData.runner_latitude, taskData.runner_longitude]} icon={icons.runner}>
-                            <Popup>{taskData.runner_detail?.name}</Popup>
+                        <Marker position={[taskData?.runner_latitude, taskData?.runner_longitude]} icon={icons.runner}>
+                            <Popup>{taskData?.runner_detail?.name}</Popup>
                         </Marker>
                     )}
 
@@ -156,4 +169,4 @@ const TaskTrackingMap = () => {
     )
 }
 
-export default TaskTrackingMap
+export default OrderMap

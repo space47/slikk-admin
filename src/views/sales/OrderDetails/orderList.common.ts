@@ -41,6 +41,9 @@ export type SalesOrderDetailsResponse = {
         runner_phone_number: string
         runner_profile_pic_url: string
         state: string
+        task_id: any
+        tracking_url: string
+        awb_code: any
     }
 
     logistic_partner: any
