@@ -329,7 +329,32 @@ const OrderDetails = () => {
                                         />
                                     </div>
                                     <div className="xl:w-[1000px] mt-10">
-                                        <OrderMap task_id={data?.logistic?.task_id} />
+                                        {data?.logistic === null && (
+                                            <>
+                                                <div className="flex font-bold mt-24 justify-center xl:h-screen items-center text-red-700">
+                                                    No Logistic Data Created
+                                                </div>
+                                            </>
+                                        )}
+                                        {data?.logistic?.partner === 'Slikk' && <OrderMap task_id={data?.logistic?.task_id} />}
+                                        {data?.logistic?.partner !== 'Slikk' && (
+                                            <div style={{ width: '100%', height: '600px' }}>
+                                                <iframe
+                                                    src={data?.tracking_url}
+                                                    style={{ width: '100%', height: '100%', border: 'none' }}
+                                                    title="Live Order Tracking"
+                                                />
+                                            </div>
+                                        )}
+                                        {/* {data?.logistic?.partner !== 'Porter' && data?.logistic?.partner !== 'slikk' && (
+                                            <div style={{ width: '100%', height: '600px' }}>
+                                                <iframe
+                                                    src={data?.location_url}
+                                                    style={{ width: '100%', height: '100%', border: 'none' }}
+                                                    title="Live Order Tracking"
+                                                />
+                                            </div>
+                                        )} */}
                                     </div>
                                 </div>
                             </div>

@@ -86,6 +86,7 @@ export type SalesOrderDetailsResponse = {
     points_discount: string
     location_url: string
     return_order: RETURNORDER[]
+    tracking_url: string
 }
 
 export type ShippingInfoProps = {
