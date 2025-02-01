@@ -23,6 +23,7 @@ import { SalesOrderDetailsResponse } from './orderList.common'
 import { Dialog } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
+import OrderMap from './OrderMap'
 // import { string } from 'yup'
 
 const scheduleSlots: any = {
@@ -315,16 +316,21 @@ const OrderDetails = () => {
                                         <OrderPickerSummary data={data} />
                                     </div>
                                 </div>
-                                <div className="mt-6">
-                                    <Activity
-                                        mainData={data}
-                                        data={data.log}
-                                        status={data.status}
-                                        product={data.order_items}
-                                        payment={data.payment}
-                                        invoice_id={data.invoice_id}
-                                        logistic={data.logistic}
-                                    />
+                                <div className="flex xl:justify-between flex-col xl:flex-row ">
+                                    <div className="mt-6">
+                                        <Activity
+                                            mainData={data}
+                                            data={data.log}
+                                            status={data.status}
+                                            product={data.order_items}
+                                            payment={data.payment}
+                                            invoice_id={data.invoice_id}
+                                            logistic={data.logistic}
+                                        />
+                                    </div>
+                                    <div className="xl:w-[1000px] mt-10">
+                                        <OrderMap task_id={data?.logistic?.task_id} />
+                                    </div>
                                 </div>
                             </div>
                             <div className="mt-6 xl:mt-0 xl:max-w-xs xl:w-full"></div>
