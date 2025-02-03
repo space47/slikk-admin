@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { DeliveredModal, OutForDeliveryModal, OutforDeliveryModal, PickedUpModal } from './RefundModal'
+import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 
 interface ReturnActionProps {
     returnDetails: any
@@ -22,11 +23,18 @@ const ReturnActionActivity = ({
     return (
         <div>
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'RIDER_ASSIGNED') && (
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') && (
+                <TrackModal
+                    handleCloseModal={() => setIsModalOpen(false)}
+                    showTaskModal={isModalOpen}
+                    setShowAssignModal={setIsModalOpen}
+                    storeTaskId={returnDetails?.return_order_delivery[0]?.task_id}
+                />
+            )}
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'RIDER_ASSIGNED' && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
-                    handleoutForDelivery={() => handleAction('out_for_pickup')}
+                    handleoutForDelivery={() => handleAction('out_for_delivery')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails.status}
