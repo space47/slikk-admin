@@ -28,6 +28,7 @@ import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { returnOrderApi } from '@/services/ReturnOrders.services'
 import { HiSearch } from 'react-icons/hi'
 import ReturnOrderlistMobile from './ReturnOrderMobile'
+import ReturnOrderTabs from './ReturnOrderTabs'
 
 interface ReturnOrderItem {
     order_item: number
@@ -105,22 +106,59 @@ const ReturnOrders = () => {
     const [searchInput, setSearchInput] = useState<string>('')
     const [page, setPage] = useState(1)
 
-    const [from, setFrom] = useState(var1 ? var1 : null)
-    const [to, setTo] = useState(var2 ? var2 : null)
-    const [orderCount, setOrderCount] = useState()
-    const [dropdownStatus, setDropdownStatus] = useState<{ name: string; value: string[] }>({
-        name: 'PICKUP CREATED',
-        value: ['PICKUP_CREATED'],
+    const [from, setFrom] = useState(var1 ? var1 : moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState(var2 ? var2 : moment().format('YYYY-MM-DD'))
+    const [orderCount, setOrderCount] = useState<number>(0)
+    const [dropdownStatus, setDropdownStatus] = useState<{ name: string[]; value: string[] }>({
+        name: [],
+        value: [],
     })
     const [showFilter, setShowFilter] = useState(false)
+    const [tabSelect, setTabSelect] = useState('all')
+    const handleSelectTab = (value: string) => {
+        setTabSelect(value)
+    }
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             let status = ''
-            if (!searchInput) {
-                status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            switch (tabSelect) {
+                case 'pending':
+                    status = '&status=PENDING'
+                    break
+                case 'accepted':
+                    status = '&status=ACCEPTED'
+                    break
+                case 'approved':
+                    status = '&status=APPROVED'
+                    break
+                case 'pickup_created':
+                    status = '&status=PICKUP_CREATED'
+                    break
+                case 'out_for_delivery':
+                    status = '&status=OUT_FOR_DELIVERY,SHIPPED'
+                    break
+                case 'refunded':
+                    status = '&status=REFUNDED'
+                    break
+                case 'completed':
+                    status = '&status=COMPLETED'
+                    break
+                case 'cancelled':
+                    status = '&status=CANCELLED'
+                    break
+                case 'all':
+                default:
+                    status = ''
+                    break
             }
+
+            if (dropdownStatus?.value?.length > 0) {
+                status = `&status=${dropdownStatus?.value}`
+            }
+
+            console.log('status is', status)
 
             let deliveryStatus = ''
             if (deliveryType?.value && deliveryType?.value.length > 0) {
@@ -133,12 +171,12 @@ const ReturnOrders = () => {
             } else if (currentSelectedPage.value === 'invoice_id' && searchInput) {
                 searwiseDownload = `&invoice_id=${searchInput.toUpperCase()}`
             }
-            let fromToParams = ''
-            if (from && to && !searchInput) {
-                fromToParams = `&from=${from}&to=${To_Date}`
-            }
 
-            const response = await returnOrderApi(page, pageSize, searwiseDownload, status, fromToParams, deliveryStatus)
+            const fromToParams = `&from=${from}&to=${To_Date}`
+
+            const response = await axioisInstance.get(
+                `merchant/return_orders?p=${page}&page_size=${pageSize}${status}${searwiseDownload}${fromToParams}${deliveryStatus}`,
+            )
 
             const ordersData = response?.data?.data.results
             const orderCount = response?.data?.data.count
@@ -152,7 +190,7 @@ const ReturnOrders = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType])
+    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, tabSelect])
 
     const columns = useMemo(
         () => [
@@ -338,7 +376,41 @@ const ReturnOrders = () => {
     const handleDownload = async () => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            let status = ''
+            switch (tabSelect) {
+                case 'pending':
+                    status = '&status=PENDING'
+                    break
+                case 'accepted':
+                    status = '&status=ACCEPTED'
+                    break
+                case 'approved':
+                    status = '&status=APPROVED'
+                    break
+                case 'pickup_created':
+                    status = '&status=PICKUP_CREATED'
+                    break
+                case 'out_for_delivery':
+                    status = '&status=OUT_FOR_DELIVERY,SHIPPED'
+                    break
+                case 'refunded':
+                    status = '&status=REFUNDED'
+                    break
+                case 'completed':
+                    status = '&status=COMPLETED'
+                    break
+                case 'cancelled':
+                    status = '&status=CANCELLED'
+                    break
+                case 'all':
+                default:
+                    status = ''
+                    break
+            }
+
+            if (dropdownStatus?.value?.length > 0) {
+                status = `&status=${dropdownStatus?.value}`
+            }
 
             let deliveryStatus = ''
 
@@ -461,7 +533,9 @@ const ReturnOrders = () => {
                     </div>
                 </div>
             </div>
-
+            <br />
+            <ReturnOrderTabs handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={orderCount} />
+            <br />
             <div className="border p-2 border-gray-300 rounded-md hidden xl:block">
                 <Table>
                     <THead>

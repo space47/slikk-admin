@@ -4,9 +4,12 @@ export const getButtonAndModalContent = (status: string) => {
             return {
                 buttonText: 'CREATE REVERSE PICKUP',
             }
-        case 'RIDER_ASSIGNED':
         case 'PICKUP_CREATED':
         case 'REVERSE_PICKUP_CREATED':
+            return {
+                buttonText: 'ASSIGN TO RUNNER',
+            }
+        case 'RIDER_ASSIGNED':
             return {
                 buttonText: 'OUT FOR PICKUP',
             }
