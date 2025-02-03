@@ -180,6 +180,12 @@ const RefundActivity = () => {
                     {buttonText}
                 </Button>
             )}
+            {/* {(buttonText && returnDetails?.status === 'REVERSE_PICKUP_CREATED') ||
+                (returnDetails?.status === 'OUT_FOR_PICKUP' && (
+                    <Button variant="solid" onClick={() => showModal(content)}>
+                        ASSIGN
+                    </Button>
+                ))} */}
 
             {returnDetails?.log.length === 0 && (
                 <PickedUpModal

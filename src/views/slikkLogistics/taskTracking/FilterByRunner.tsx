@@ -49,6 +49,8 @@ const FilterByRunner = ({
         }
     }
 
+    console.log('datatata', ridersData)
+
     useEffect(() => {
         fetchData()
     }, [])
@@ -90,13 +92,13 @@ const FilterByRunner = ({
                                         <Card key={key} className="w-[350px] mb-4 bg-gray-200">
                                             <div className="flex items-center gap-2 justify-between">
                                                 <div className="flex gap-3 items-center">
-                                                    <Avatar shape="circle" src={item?.image} />
+                                                    <Avatar shape="circle" src={item?.profile?.image} />
                                                     <div className="flex gap-1">
-                                                        <span className="text-xl font-bold">{item.first_name}</span>
-                                                        <span className="text-xl font-bold">{item.last_name}</span>
+                                                        <span className="text-xl font-bold">{item?.profile?.first_name}</span>
+                                                        <span className="text-xl font-bold">{item.profile?.last_name}</span>
                                                     </div>
                                                 </div>
-                                                <Radio value={item.mobile} />
+                                                <Radio value={item?.profile?.mobile} />
                                             </div>
                                         </Card>
                                     )
