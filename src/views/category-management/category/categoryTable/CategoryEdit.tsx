@@ -425,7 +425,7 @@ const CategoryEdit = () => {
                                     className="col-span-1 w-1/2"
                                 >
                                     <Field
-                                        type="text"
+                                        type="number"
                                         name="position"
                                         component={Input}
                                         onKeyDown={(e) => {
