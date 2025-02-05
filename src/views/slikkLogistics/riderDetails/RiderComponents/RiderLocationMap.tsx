@@ -23,11 +23,13 @@ const icons = {
 }
 
 interface props {
-    taskData: TaskData | undefined
+    taskData?: TaskData | undefined
+    runnerLat: number
+    runnerLong: number
 }
 
-const RiderLocationMap = ({ taskData }: props) => {
-    const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
+const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
+    const [mapCenter, setMapCenter] = useState<[number, number] | null>([12.9001879, 77.6510959])
     const [waypoints, setWaypoints] = useState<[number, number][]>([])
 
     const [polyLine, setPolyLine] = useState('')
@@ -35,6 +37,8 @@ const RiderLocationMap = ({ taskData }: props) => {
     const [destinationLatLong, setDestinationLatLong] = useState<[number, number]>([0, 0])
 
     const decodedPolyline = polyline.decode(polyLine)
+
+    console.log('Datatatata', runnerLat, runnerLong)
 
     const fetchRouteDetails = async () => {
         const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
@@ -62,7 +66,7 @@ const RiderLocationMap = ({ taskData }: props) => {
 
     useEffect(() => {
         fetchRouteDetails()
-    }, [sourceLatLong, destinationLatLong])
+    }, [sourceLatLong, destinationLatLong, runnerLat, runnerLong])
 
     useEffect(() => {
         if (taskData?.pickup_details && taskData?.drop_details) {
@@ -75,10 +79,6 @@ const RiderLocationMap = ({ taskData }: props) => {
             setDestinationLatLong(destination)
         }
     }, [taskData])
-
-    if (!mapCenter) {
-        return <p>Loading map...</p>
-    }
 
     const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.SetStateAction<[number, number]>> }) => {
         const map = useMap()
@@ -131,11 +131,10 @@ const RiderLocationMap = ({ taskData }: props) => {
                     )}
 
                     {/* Runner Marker */}
-                    {taskData?.runner_latitude && taskData?.runner_longitude && (
-                        <Marker position={[taskData.runner_latitude, taskData.runner_longitude]} icon={icons.runner}>
-                            <Popup>{taskData.runner_detail?.name}</Popup>
-                        </Marker>
-                    )}
+
+                    <Marker position={[runnerLat, runnerLong]} icon={icons.runner}>
+                        <Popup>{taskData?.runner_detail?.name}</Popup>
+                    </Marker>
 
                     <Polyline positions={decodedPolyline} color="blue" />
                     <CurrentLocationButton setCenter={() => {}} />

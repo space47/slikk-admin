@@ -8,6 +8,10 @@ export type RiderProfile = {
     gender: string | null
     image: string | null
     device_id: string
+    current_location: {
+        latitude: string
+        longitude: string
+    }
 }
 
 export type RiderTaskData = {

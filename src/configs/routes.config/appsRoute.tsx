@@ -1171,6 +1171,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsConfiguration.scrapper',
+        path: `${APP_PREFIX_PATH}/scrapper`,
+        component: lazy(() => import('@/views/sales/scrapper/ScrapData')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsConfiguration.tasksAndSchedular',
         path: `${APP_PREFIX_PATH}/tasksAndSchedular`,
         component: lazy(() => import('@/views/configurationsSlikk/taskAndSchedular/TaskAndSchedular')),

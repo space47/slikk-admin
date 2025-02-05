@@ -15,16 +15,16 @@ export const EDITFIELDSARRAY = [
         type: 'text',
         placeholder: 'Enter Name',
     },
-    {
-        label: 'Last Updated By',
-        name: 'last_updated_by',
-        type: 'text',
-        placeholder: 'Enter Last Updated By',
-    },
-    {
-        label: 'Is Active',
-        name: 'is_active',
-        type: 'checkbox',
-        placeholder: 'Enter Name',
-    },
+    // {
+    //     label: 'Last Updated By',
+    //     name: 'last_updated_by',
+    //     type: 'text',
+    //     placeholder: 'Enter Last Updated By',
+    // },
+    // {
+    //     label: 'Is Active',
+    //     name: 'is_active',
+    //     type: 'checkbox',
+    //     placeholder: 'Enter Name',
+    // },
 ]
