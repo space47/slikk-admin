@@ -887,6 +887,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     // {
+                    //     key: 'appsConfiguration.scrapper',
+                    //     path: `${APP_PREFIX_PATH}/scrapper`,
+                    //     title: 'scrapper',
+                    //     translateKey: 'nav.appsConfiguration.scrapper',
+                    //     icon: '',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     subMenu: [],
+                    // },
+                    // {
                     //     key: 'appsConfiguration.tasksAndSchedular',
                     //     path: `${APP_PREFIX_PATH}/tasksAndSchedular`,
                     //     title: 'Tasks&Schedular',
