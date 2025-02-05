@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -6,6 +6,8 @@ import { FaMapMarkerAlt } from 'react-icons/fa'
 import polyline from '@mapbox/polyline'
 import axios from 'axios'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { BsFullscreenExit } from 'react-icons/bs'
+import { MdFullscreen } from 'react-icons/md'
 
 interface props {
     task_id: string
@@ -24,6 +26,84 @@ const icons = {
     pickup: customIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png'),
     drop: customIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png'),
     runner: customIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png'),
+}
+
+const FullScreenMap = ({ mapCenter, taskData, style = { height: '70vh', width: '100%' }, decodedPolyline }: any) => {
+    const mapContainerRef = useRef<HTMLDivElement>(null)
+    const [isFullScreen, setIsFullScreen] = useState(false)
+
+    const toggleFullScreen = () => {
+        if (mapContainerRef.current) {
+            if (!document.fullscreenElement) {
+                mapContainerRef.current
+                    .requestFullscreen()
+                    .then(() => {
+                        setIsFullScreen(true)
+                    })
+                    .catch((err) => {
+                        console.error('Error attempting to enable fullscreen mode:', err)
+                    })
+            } else {
+                document
+                    .exitFullscreen()
+                    .then(() => {
+                        setIsFullScreen(false)
+                    })
+                    .catch((err) => {
+                        console.error('Error attempting to exit fullscreen mode:', err)
+                    })
+            }
+        }
+    }
+
+    return (
+        <div ref={mapContainerRef} style={{ position: 'relative', ...style }}>
+            <button
+                onClick={toggleFullScreen}
+                style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 10,
+                    zIndex: 1000,
+                    padding: '8px 12px',
+                    backgroundColor: 'white',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                }}
+            >
+                {isFullScreen ? <BsFullscreenExit className="text-2xl font-bold" /> : <MdFullscreen className="text-2xl font-bold" />}
+            </button>
+            {isFullScreen && (
+                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%' }}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+                    {/* Pickup Marker */}
+                    {taskData?.pickup_details && (
+                        <Marker position={[taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]} icon={icons.pickup}>
+                            <Popup>{taskData?.pickup_details?.name}</Popup>
+                        </Marker>
+                    )}
+
+                    {/* Drop Marker */}
+                    {taskData?.drop_details && (
+                        <Marker position={[taskData?.drop_details?.latitude, taskData?.drop_details?.longitude]} icon={icons.drop}>
+                            <Popup>{taskData?.drop_details?.name}</Popup>
+                        </Marker>
+                    )}
+
+                    {/* Runner Marker */}
+                    {taskData?.runner_latitude && taskData?.runner_longitude && (
+                        <Marker position={[taskData?.runner_latitude, taskData?.runner_longitude]} icon={icons.runner}>
+                            <Popup>{taskData?.runner_detail?.name}</Popup>
+                        </Marker>
+                    )}
+
+                    <Polyline positions={decodedPolyline} color="blue" />
+                </MapContainer>
+            )}
+        </div>
+    )
 }
 
 const OrderMap = ({ task_id }: props) => {
@@ -163,6 +243,7 @@ const OrderMap = ({ task_id }: props) => {
 
                     <Polyline positions={decodedPolyline} color="blue" />
                     <CurrentLocationButton setCenter={() => {}} />
+                    <FullScreenMap mapCenter={mapCenter} taskData={taskData} decodedPolyline={decodedPolyline} />
                 </MapContainer>
             </div>
         </div>
