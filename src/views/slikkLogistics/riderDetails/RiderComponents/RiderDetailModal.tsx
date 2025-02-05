@@ -147,15 +147,13 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) 
 
                     {/* Right Section */}
                     <div className="flex-1 flex items-center justify-center">
-                        {riderTask === undefined ? (
-                            <div className="flex justify-center items-center font-bold text-gray-600 text-lg text-center">
-                                NO CURRENT TASK ASSIGNED
-                            </div>
-                        ) : (
-                            <div className="w-full h-64 lg:h-full">
-                                <RiderLocationMap taskData={riderTask} />
-                            </div>
-                        )}
+                        <div className="w-full h-64 lg:h-full">
+                            <RiderLocationMap
+                                taskData={riderTask}
+                                runnerLat={Number(riderData?.profile?.current_location?.latitude) || 0}
+                                runnerLong={Number(riderData?.profile?.current_location?.longitude) || 0}
+                            />
+                        </div>
                     </div>
                 </div>
             </Dialog>

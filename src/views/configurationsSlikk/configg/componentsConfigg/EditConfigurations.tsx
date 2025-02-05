@@ -20,6 +20,7 @@ const EditConfigurations = () => {
     const [showSpinner, setShowSpinner] = useState(false)
     const { id } = useParams()
     const [editableKeys, setEditableKeys] = useState<Record<string, string>>({})
+    const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const dispatch = useAppDispatch()
@@ -101,7 +102,7 @@ const EditConfigurations = () => {
                         id: '',
                         name: '',
                         is_active: false,
-                        last_updated_by: '',
+                        last_updated_by: selectedCompany?.mobile || '',
                         create_date: '',
                         update_date: '',
                         value: {},
@@ -119,6 +120,19 @@ const EditConfigurations = () => {
                                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                 </FormItem>
                             ))}
+                            <FormItem label="Updated By" className="col-span-1 w-1/2">
+                                <Field
+                                    type="text"
+                                    name="last_updated_by"
+                                    placeholder="Enter updated by"
+                                    component={Input}
+                                    value={selectedCompany?.mobile}
+                                    disabled
+                                />
+                            </FormItem>
+                            <FormItem label="Is Active" className="col-span-1 w-1/2">
+                                <Field type="checkbox" name="is_active" placeholder="Enter updated by" component={Input} />
+                            </FormItem>
 
                             <FormContainer className="grid grid-cols-1 gap-10">
                                 {/* {renderFields(values.value, 'value', setFieldValue, editableKeys, setEditableKeys, filters)} */}
