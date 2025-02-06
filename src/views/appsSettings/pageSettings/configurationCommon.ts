@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const HEADERCONFIGARRAY = [
     // {
     //     label: 'Header Style',
@@ -248,3 +249,54 @@ export const TimeFieldsArray = [
         type: 'text',
     },
 ]
+
+export interface CommonProps {
+    setComponentOptions: any
+    initialValue: any
+    formikRef: any
+    handleSubmit: any
+    setBorderForm: any
+    borderForm: any
+    setSectioBorderShow: any
+    sectionBorderShow: any
+    setWebBorderForm: any
+    webBorderForm: any
+    setWebSectioBorderShow: any
+    webSectionBorderShow: any
+    setNameForm: any
+    nameForm: any
+    setFooterAlignForm: any
+    footerAlignForm: any
+    setWebNameForm: any
+    webNameForm: any
+    setWebFooterAlignForm: any
+    webFooterAlignForm: any
+    searchInput: any
+    handleSearch: any
+    currentSelectedPage: any
+    handleSelect: any
+    showTable: any
+    handleActionClick: any
+    productData: any
+    setProductData: any
+    postInput: any
+    handlePOSTSearch: any
+    showPostTable: any
+    postTableData: any
+    handlePostClick: any
+    postData: any
+    setPostData: any
+    filters: any
+    tableData: any
+    editMode?: boolean
+    handleRemoveImage?: any
+    particularRow?: any
+    handleRemoveHeaderImage?: any
+    handleRemoveSubImage?: any
+    handleRemoveVideo?: any
+    validationSchema?: any
+    handleAddFilter: any
+    showAddFilter: any
+    handleAddFilters: any
+    handleRemoveFilter: any
+}

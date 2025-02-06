@@ -396,6 +396,20 @@ const OrderList = () => {
                 },
             },
             {
+                header: 'Area/Pincode',
+                accessorKey: 'area',
+                cell: ({ row }) => {
+                    const area = row?.original?.area
+                    const pin = row?.original?.pincode
+
+                    return (
+                        <div>
+                            {area}/{pin}
+                        </div>
+                    )
+                },
+            },
+            {
                 header: 'Customer Address',
                 accessorKey: 'location_url',
                 cell: ({ getValue }) => (

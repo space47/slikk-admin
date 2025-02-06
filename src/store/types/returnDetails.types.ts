@@ -102,6 +102,14 @@ export interface ReturnOrder {
     logistic: Logistic
     pickup_schedule_date: string
     pickup_schedule_slot: number
+    user_account_details: {
+        account_details: {
+            account_number: string
+            beneficiary_name: string
+            ifsc_code: string
+        }
+        upi: string
+    }
 }
 
 export interface ReturnOrderState {
