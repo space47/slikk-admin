@@ -19,9 +19,10 @@ interface TABLEPROPS {
     mainData: any
     noPage?: boolean
     overflow?: boolean
+    isNotSort?: boolean
 }
 
-const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABLEPROPS) => {
+const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow, isNotSort }: TABLEPROPS) => {
     const [sorting, setSorting] = useState<any[]>([]) // To store the sorting state
 
     const table = useReactTable({
@@ -36,13 +37,13 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow }: TABL
                       pageSize: pageSize,
                   },
         },
-        onSortingChange: setSorting, // Update the sorting state when it changes
+        onSortingChange: isNotSort ? undefined : setSorting,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(), // Enable sorting
         getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: true, // You might want to control pagination manually
-        enableMultiSort: true, // Allow multiple columns to be sorted
+        manualPagination: isNotSort ? false : true,
+        enableMultiSort: isNotSort ? false : true,
     })
 
     return (

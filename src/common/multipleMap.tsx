@@ -240,8 +240,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
     const [distanceBelowFifteenToThirty, setDistanceBelowFifteenToThirty] = useState<any[]>([])
     const [distanceAboveThirty, setDistanceAboveThirty] = useState<any[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(MAP_STYLE_ARRAY[0])
-    const [averageAmoount, seAverageAmount] = useState(0)
-    const [sumAmoount, setSumAmount] = useState(0)
 
     const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
 
@@ -387,11 +385,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         },
     ]
 
-    const averageAmounts = [
-        { name: 'Sum ', value: `₹ ${sumsofAmount}` },
-        { name: 'Average ', value: `₹ ${avgofAmount.toFixed(2)}` },
-    ]
-
     const handleSelectPage = (value: string) => {
         const selectedPage = MAP_STYLE_ARRAY.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
@@ -454,15 +447,6 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                             </div>
                         </div>
                     ))}
-                    {/* {averageAmounts.map((item, key) => (
-                        <div
-                            key={key}
-                            className="flex justify-between  items-center bg-white px-4 py-2 rounded-md border border-gray-200 shadow-sm"
-                        >
-                            <span className="font-medium text-gray-700">{item?.name}:</span>
-                            <span className="text-sm text-blue-700">{item?.value}</span>
-                        </div>
-                    ))} */}
                     <div className="bg-gray-200 px-2 rounded-lg font-bold text-[17px] items-center flex justify-center">
                         <Dropdown
                             className="border bg-gray-200 text-black text-lg font-semibold"

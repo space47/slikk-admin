@@ -16,8 +16,6 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import _ from 'lodash'
 import { MdCancel } from 'react-icons/md'
 import BulkEditModal from './BulkEditModal'
-import { FaListCheck } from 'react-icons/fa6'
-import { CgPlayListRemove } from 'react-icons/cg'
 
 type Option = {
     value: number
@@ -400,15 +398,6 @@ const AppBanners = () => {
                 </div>
 
                 <div className="flex gap-3 items-center justify-center order-first xl:order-none">
-                    {/* {isSelectAllBanner ? (
-                        <div>
-                            <CgPlayListRemove className="text-5xl cursor-pointer text-red-400" onClick={handleSelectEmptyBanners} />
-                        </div>
-                    ) : (
-                        <div>
-                            <FaListCheck className="text-3xl cursor-pointer" onClick={handleSelectAllBanners} />
-                        </div>
-                    )} */}
                     <div className="mb-2">
                         {bannerIdStore.length > 0 && (
                             <div className="flex gap-2 items-center">
@@ -425,7 +414,7 @@ const AppBanners = () => {
                     </div>
                 </div>
             </div>
-            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+            <EasyTable isNotSort mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
                 <div style={{ minWidth: 130 }}>

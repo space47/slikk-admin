@@ -66,6 +66,7 @@ const OrderlistMobile = ({ orders, handleNumberClick }: props) => {
                                         { label: 'Payment Status', value: item?.payment?.status },
                                         { label: 'Total Items', value: item?.order_items.length },
                                         { label: 'Order Total', value: `₹${item.amount}` },
+                                        { label: 'Area/pin', value: `${item.area}/${item.pincode}` },
                                     ].map(({ label, value }, index) => (
                                         <div key={index} className="flex justify-between items-center">
                                             <span className="font-medium text-gray-600 dark:text-gray-400">{label}:</span>

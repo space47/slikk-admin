@@ -166,8 +166,6 @@ const OrderMap = ({ task_id }: props) => {
         fetchRouteDetails()
     }, [sourceLatLong, destinationLatLong])
 
-    console.log('Runner ka lat and long', taskData?.runner_latitude, taskData?.runner_longitude)
-
     useEffect(() => {
         if (taskData?.pickup_details && taskData?.drop_details) {
             const origin: [number, number] = [taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]
