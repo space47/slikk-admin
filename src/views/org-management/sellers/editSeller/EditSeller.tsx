@@ -115,7 +115,7 @@ const EditSeller = () => {
         id: sellerData?.id || 0,
         ifsc: sellerData?.ifsc || '',
         is_active: sellerData?.is_active || false,
-        confirm: sellerData?.ifsc || '',
+        confirm: sellerData?.account_number || '',
         name: sellerData?.name || '',
         poc: sellerData?.poc || '',
         poc_email: sellerData?.poc_email || '',
