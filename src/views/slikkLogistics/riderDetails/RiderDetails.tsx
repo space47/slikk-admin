@@ -41,7 +41,7 @@ const RiderDetails = () => {
 
     const fetchRiderDetails = async () => {
         try {
-            const response = await axioisInstance.get(`/logistic/riders`)
+            const response = await axioisInstance.get(`/logistic/riders?from=${from}&to=${to}`)
             const data = response?.data?.data
             setRiderDetails(data)
         } catch (error) {
