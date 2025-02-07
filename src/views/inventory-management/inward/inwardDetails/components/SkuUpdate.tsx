@@ -11,6 +11,7 @@ import SkuDataInputs from './SkuDataInputs'
 import { FaSync } from 'react-icons/fa'
 import { inwardDetailsResponse } from '../inwardCommon'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import PrinterComp from './PrinterComp'
 
 interface props {
     data: inwardDetailsResponse
@@ -40,6 +41,7 @@ const SkuUpdate = ({ data }: props) => {
     }>({})
     const [refreshTable, setRefreshTable] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
+    const [dataForPrinter, setDataForPrinter] = useState([])
 
     const fetchSkuData = async () => {
         try {
@@ -75,6 +77,22 @@ const SkuUpdate = ({ data }: props) => {
         location: '',
         sku: '',
     })
+
+    const fetchDataForPrinter = async () => {
+        try {
+            const response = await axioisInstance.get(`inventory?p=1&page_size=10&&sku=${formData?.sku}`)
+            const data = response?.data?.data
+            setDataForPrinter(data?.results)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+        if (formData?.sku) {
+            fetchDataForPrinter()
+        }
+    }, [formData?.sku])
 
     const columns = useMemo(
         () => [
@@ -282,6 +300,8 @@ const SkuUpdate = ({ data }: props) => {
         }))
     }
 
+    console.log('Printers data is', dataForPrinter)
+
     const handleEditSku = async (oLocation: string, oPassed: number, oReceived: number, oFailed: number, oSku: string) => {
         const getSame = getSkuData?.find((item) => item.sku === oSku)
         const body = {
@@ -338,8 +358,11 @@ const SkuUpdate = ({ data }: props) => {
                 company={company}
                 setFormData={setFormData}
             />
-
             {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
+            <div className="flex justify-start items-center">
+                <span className="text-xl font-bold">Print Product Data: </span>
+                <span>{skuWiseData?.length > 0 && <PrinterComp dataForPrinter={dataForPrinter} />}</span>
+            </div>
             <br />
             <br />
             <div className="flex flex-col gap-6">

@@ -30,6 +30,8 @@ export type USER_PROFILE_DATA = {
     loading: boolean
     message: string
     currCompany: SINGLE_COMPANY_DATA
+    permissions: []
+    roles: []
 }
 
 export const companyRequest = 'companyRequest'
