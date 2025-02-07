@@ -246,7 +246,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                                         <Input
                                                             {...field}
                                                             type={isPureNumber ? 'number' : 'text'}
-                                                            placeholder={`Enter value for ${parentKey}[${index}]`}
+                                                            placeholder={`Enter value `}
                                                             className="w-full"
                                                         />
                                                     )
@@ -261,24 +261,32 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                 )
                             })}
 
+                            {/* Updated button to open modal */}
                             <button
                                 type="button"
                                 className="bg-black text-white px-2 py-2 rounded-xl flex gap-2"
-                                onClick={() => {
-                                    if (obj.length > 0) {
-                                        const newItem = _.isPlainObject(obj[0])
-                                            ? _.mapValues(obj[0], () => '')
-                                            : _.isArray(obj[0])
-                                              ? []
-                                              : ''
-                                        arrayHelpers.push(newItem)
-                                    } else {
-                                        arrayHelpers.push('')
-                                    }
-                                }}
+                                onClick={() => setIsAddModalOpen(true)} // Open modal instead of adding directly
                             >
                                 <IoIosAddCircle className="text-xl" /> Add Item
                             </button>
+
+                            {/* Modal for selecting field type */}
+                            <Modal title="Select Field Type" open={isAddModalOpen} onCancel={() => setIsAddModalOpen(false)} footer={null}>
+                                <div className="flex flex-col gap-2">
+                                    {['string', 'array', 'object'].map((type) => (
+                                        <button
+                                            key={type}
+                                            className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg"
+                                            onClick={() => {
+                                                setIsAddModalOpen(false)
+                                                arrayHelpers.push(type === 'string' ? '' : type === 'array' ? [] : {})
+                                            }}
+                                        >
+                                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                                        </button>
+                                    ))}
+                                </div>
+                            </Modal>
                         </div>
                     )}
                 />
