@@ -120,13 +120,13 @@ const EditConfigurations = () => {
                                     <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                 </FormItem>
                             ))}
-                            <FormItem label="Updated By" className="col-span-1 w-1/2">
+                            <FormItem label="Last Updated By" className="col-span-1 w-1/2">
                                 <Field
                                     type="text"
                                     name="last_updated_by"
                                     placeholder="Enter updated by"
                                     component={Input}
-                                    value={selectedCompany?.mobile}
+                                    // value={selectedCompany?.mobile}
                                     disabled
                                 />
                             </FormItem>

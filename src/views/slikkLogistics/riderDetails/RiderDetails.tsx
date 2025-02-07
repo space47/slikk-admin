@@ -4,11 +4,36 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import RiderDetailModal from './RiderComponents/RiderDetailModal'
+import RiderFullMap from './RiderFullMap'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { companyStore } from '@/store/types/companyStore.types'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
+import { Select } from '@/components/ui'
+import { FaRegCircleDot } from 'react-icons/fa6'
 
 const RiderDetails = () => {
+    const dispatch = useAppDispatch()
     const [riderDetails, setRiderDetails] = useState<RiderData[]>([])
     const [showRiderDetailModal, setShowRiderDetailModal] = useState(false)
     const [mobileForParticularRider, setMobileForParticularRider] = useState<string>()
+    const [currentStoreLocation, setCurrentStoreLocation] = useState<Record<string, number | undefined>>({
+        lat: 12.9001879,
+        long: 77.6510959,
+    })
+
+    const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
+
+    const formattedData = storeResults?.map((item) => ({
+        label: item?.name,
+        value: {
+            lat: item?.latitude,
+            long: item?.longitude,
+        },
+    }))
 
     const fetchRiderDetails = async () => {
         try {
@@ -22,16 +47,43 @@ const RiderDetails = () => {
 
     useEffect(() => {
         fetchRiderDetails()
-    }, [])
+    }, [currentStoreLocation])
 
     const columns = [
+        {
+            header: 'Status',
+            accessorKey: 'profile.checked_in_status',
+            cell: ({ row }) => {
+                const isStatusTrue = row?.original?.profile?.checked_in_status
+                return (
+                    <div>
+                        {isStatusTrue ? (
+                            <>
+                                <div className="items-center flex justify-center">
+                                    <FaRegCircleDot className="text-green-500 text-xl" />
+                                </div>
+                            </>
+                        ) : (
+                            <div className="items-center flex justify-center">
+                                <FaRegCircleDot className="text-red-500 text-xl" />
+                            </div>
+                        )}
+                    </div>
+                )
+            },
+        },
         {
             header: 'Name',
             accessorKey: 'profile',
             cell: ({ row }) => {
+                const isStatusTrue = row?.original?.profile?.checked_in_status
                 return (
                     <div
-                        className="flex gap-2  hover:text-blue-800 hover:underline cursor-pointer "
+                        className={
+                            isStatusTrue
+                                ? 'text-green-500 flex gap-2  hover:text-blue-800 hover:underline cursor-pointer '
+                                : 'text-red-500 flex gap-2  hover:text-blue-800 hover:underline cursor-pointer '
+                        }
                         onClick={() => hanldeProfileClick(row?.original?.profile?.mobile)}
                     >
                         <span className=""> {row?.original?.profile?.first_name}</span>
@@ -41,14 +93,20 @@ const RiderDetails = () => {
             },
         },
         { header: 'Mobile', accessorKey: 'profile.mobile' },
+        { header: 'Assigned', accessorKey: 'task_data.ASSIGNED' },
+        { header: 'Out for pickup', accessorKey: 'task_data.OUT_FOR_PICKUP' },
+        { header: 'Out for delivery', accessorKey: 'task_data.OUT_FOR_DELIVERY' },
+        { header: 'Pickup', accessorKey: 'task_data.PICKED_UP' },
+        { header: 'Pickup failed', accessorKey: 'task_data.PICKUP_FAILED' },
         {
-            header: 'DOB',
-            accessorKey: 'profile.dob',
-            cell: ({ getValue }) => {
-                return <div>{moment(getValue()).format('YYYY-MM-DD')}</div>
+            header: 'Distance covered',
+            accessorKey: 'task_data.distance_covered',
+            cell: ({ row }) => {
+                const distance = row?.original?.task_data?.distance_covered
+                return <div>{distance ?? 0} km</div>
             },
         },
-        { header: 'Email', accessorKey: 'profile.email' },
+        { header: 'Total', accessorKey: 'task_data.TOTAL' },
     ]
 
     const hanldeProfileClick = (mobile: string) => {
@@ -58,7 +116,36 @@ const RiderDetails = () => {
 
     return (
         <div>
-            <EasyTable mainData={riderDetails} columns={columns} />
+            <div className="flex flex-col gap-10">
+                <div className="flex flex-col gap-3">
+                    <div className="text-xl font-bold">Select Warehouse:</div>
+                    <Select
+                        isClearable
+                        placeholder="select slikk store"
+                        options={formattedData}
+                        getOptionLabel={(option) => option.label}
+                        getOptionValue={(option) => option.value}
+                        className="w-1/2"
+                        onChange={(newVal) => {
+                            console.log('value of the data', newVal)
+                            setCurrentStoreLocation({
+                                lat: newVal?.value?.lat,
+                                long: newVal?.value?.long,
+                            })
+                        }}
+                    />
+                </div>
+
+                <div className="xl:w-[90%]  items-center">
+                    <div className="text-xl font-bold">Full Rider Location</div>
+                    <RiderFullMap riderDetails={riderDetails} currentStore={currentStoreLocation} />
+                </div>
+
+                <div className="flex flex-col gap-3">
+                    <div className="text-xl font-bold">Rider Tables:</div>
+                    <EasyTable mainData={riderDetails} columns={columns} />
+                </div>
+            </div>
             {showRiderDetailModal && (
                 <RiderDetailModal
                     dialogIsOpen={showRiderDetailModal}
