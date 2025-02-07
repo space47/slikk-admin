@@ -32,7 +32,7 @@ const PrinterComp = ({ dataForPrinter }: Props) => {
             )
             .join('')
 
-        const printWindow = window.open('', '_blank', 'width=400,height=500')
+        const printWindow = window.open('', '_blank', 'width=800,height=800')
 
         if (printWindow) {
             printWindow.document.open()

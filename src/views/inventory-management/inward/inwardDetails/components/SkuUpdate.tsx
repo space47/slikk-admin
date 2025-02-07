@@ -360,7 +360,7 @@ const SkuUpdate = ({ data }: props) => {
             />
             {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
             <div className="flex justify-start items-center">
-                <span className="text-xl font-bold">Print Product Data: </span>
+                {skuWiseData?.length > 0 && <span className="text-xl font-bold">Print Product Data: </span>}
                 <span>{skuWiseData?.length > 0 && <PrinterComp dataForPrinter={dataForPrinter} />}</span>
             </div>
             <br />
