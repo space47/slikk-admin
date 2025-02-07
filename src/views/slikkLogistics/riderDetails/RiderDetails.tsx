@@ -12,12 +12,16 @@ import { Select } from '@/components/ui'
 import { FaRegCircleDot } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { MdLocationOff, MdLocationOn, MdOutlineLocationOn } from 'react-icons/md'
+import { FaMapMarkedAlt } from 'react-icons/fa'
+import PageCommon from '@/common/PageCommon'
 
 const RiderDetails = () => {
     const dispatch = useAppDispatch()
     const [riderDetails, setRiderDetails] = useState<RiderData[]>([])
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
     const [showRiderDetailModal, setShowRiderDetailModal] = useState(false)
     const [mobileForParticularRider, setMobileForParticularRider] = useState<string>()
     const [currentStoreLocation, setCurrentStoreLocation] = useState<Record<string, number | undefined>>({
@@ -26,6 +30,7 @@ const RiderDetails = () => {
     })
     const [showRideeMap, setShowRiderMap] = useState<boolean>(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
+    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -41,7 +46,7 @@ const RiderDetails = () => {
 
     const fetchRiderDetails = async () => {
         try {
-            const response = await axioisInstance.get(`/logistic/riders?from=${from}&to=${to}`)
+            const response = await axioisInstance.get(`/logistic/riders?from=${from}&to=${To_Date}&p=${page}&page_size=${pageSize}`)
             const data = response?.data?.data
             setRiderDetails(data)
         } catch (error) {
@@ -51,7 +56,7 @@ const RiderDetails = () => {
 
     useEffect(() => {
         fetchRiderDetails()
-    }, [currentStoreLocation, from, to])
+    }, [currentStoreLocation, from, to, page, pageSize])
 
     const columns = [
         {
@@ -147,18 +152,19 @@ const RiderDetails = () => {
                         />
                     </div>
 
-                    <div className="flex gap-2 items-center">
-                        <div>
-                            <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
-                        </div>
-                        <div onClick={() => setShowRiderMap((prev) => !prev)} className="items-center xl:mt-8">
+                    <div className="flex flex-col  xl:flex-row xl:gap-10 items-center">
+                        <div onClick={() => setShowRiderMap((prev) => !prev)} className="items-center xl:mt-8 flex gap-1">
+                            <span className="text-xl font-bold cursor-pointer">{showRideeMap ? 'Close Map:' : 'View Map:'}</span>
                             <button>
                                 {showRideeMap ? (
-                                    <MdLocationOff className="text-4xl text-red-700 " />
+                                    <FaMapMarkedAlt className="text-4xl text-red-700 " />
                                 ) : (
-                                    <MdLocationOn className="text-4xl text-green-600 " />
+                                    <FaMapMarkedAlt className="text-4xl text-green-600 " />
                                 )}
                             </button>
+                        </div>
+                        <div>
+                            <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
                         </div>
                     </div>
                 </div>
@@ -173,6 +179,13 @@ const RiderDetails = () => {
                 <div className="flex flex-col gap-3">
                     <div className="text-xl font-bold">Rider Tables:</div>
                     <EasyTable mainData={riderDetails} columns={columns} />
+                    <PageCommon
+                        page={page}
+                        setPage={setPage}
+                        pageSize={pageSize}
+                        setPageSize={setPageSize}
+                        totalData={riderDetails?.length}
+                    />
                 </div>
             </div>
             {showRiderDetailModal && (
