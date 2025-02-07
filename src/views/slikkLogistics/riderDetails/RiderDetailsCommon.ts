@@ -12,6 +12,7 @@ export type RiderProfile = {
         latitude: string
         longitude: string
     }
+    checked_in_status: boolean
 }
 
 export type RiderTaskData = {

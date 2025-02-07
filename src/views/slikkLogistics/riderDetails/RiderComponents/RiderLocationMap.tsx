@@ -19,7 +19,7 @@ const customIcon = (iconUrl: string) =>
 const icons = {
     pickup: customIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png'),
     drop: customIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png'),
-    runner: customIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png'),
+    runner: customIcon('/img/logo/riderOnline-logo.png'),
 }
 
 interface props {
@@ -80,11 +80,16 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
         }
     }, [taskData])
 
-    const CurrentLocationButton = ({ setCenter }: { setCenter: React.Dispatch<React.SetStateAction<[number, number]>> }) => {
+    interface currentProps {
+        runnerLat: number
+        runnerLong: number
+    }
+
+    const CurrentLocationButton = ({ runnerLat, runnerLong }: currentProps) => {
         const map = useMap()
 
         const handleClick = () => {
-            map.setView([12.9014, 77.65122], 13)
+            map.setView([runnerLat, runnerLong], 13)
         }
 
         return (
@@ -112,7 +117,7 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
 
     return (
         <div className="relative flex flex-col gap-10">
-            <div className="relative xl:w-[400px] rounded-xl" style={{ height: '500px' }}>
+            <div className="relative xl:w-[500px] rounded-xl" style={{ height: '520px' }}>
                 <MapContainer center={mapCenter} zoom={16} style={{ width: 'auto', height: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
@@ -137,7 +142,7 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
                     </Marker>
 
                     <Polyline positions={decodedPolyline} color="blue" />
-                    <CurrentLocationButton setCenter={() => {}} />
+                    <CurrentLocationButton runnerLat={runnerLat} runnerLong={runnerLong} />
                 </MapContainer>
             </div>
         </div>

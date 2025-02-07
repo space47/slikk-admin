@@ -12,7 +12,7 @@ import RiderLocationMap from './RiderLocationMap'
 interface RiderModalProps {
     dialogIsOpen: boolean
     setIsOpen: (x: boolean) => void
-    mobile: string | undefined
+    mobile: string | number | undefined
 }
 
 const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) => {
