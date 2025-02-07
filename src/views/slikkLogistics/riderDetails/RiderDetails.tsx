@@ -51,7 +51,7 @@ const RiderDetails = () => {
 
     useEffect(() => {
         fetchRiderDetails()
-    }, [currentStoreLocation])
+    }, [currentStoreLocation, from, to])
 
     const columns = [
         {
