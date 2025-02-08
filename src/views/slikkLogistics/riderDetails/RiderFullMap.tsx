@@ -86,7 +86,7 @@ const MarkerComponent = ({ markers, currLat, currLong, handleDetails }: MarkerCo
         <div>
             {markers.map((marker, index) => {
                 const ridersIcon = L.icon({
-                    iconUrl: marker?.status === false ? '/img/logo/riderOnline-logo.png' : '/img/logo/riderOffline-logo.png',
+                    iconUrl: marker?.status === false ? '/img/logo/riderOffline-logo.png' : '/img/logo/riderOnline-logo.png',
                     iconSize: [20, 40],
                     iconAnchor: [12, 41],
                     popupAnchor: [1, -34],

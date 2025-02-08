@@ -31,6 +31,7 @@ const RiderDetails = () => {
     const [showRideeMap, setShowRiderMap] = useState<boolean>(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const [globalFilter, setGlobalFilter] = useState('')
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -46,7 +47,13 @@ const RiderDetails = () => {
 
     const fetchRiderDetails = async () => {
         try {
-            const response = await axioisInstance.get(`/logistic/riders?from=${from}&to=${To_Date}&p=${page}&page_size=${pageSize}`)
+            let filter = ''
+            if (globalFilter) {
+                filter = `&name=${globalFilter}`
+            }
+            const response = await axioisInstance.get(
+                `/logistic/riders?from=${from}&to=${To_Date}&p=${page}&page_size=${pageSize}${filter}`,
+            )
             const data = response?.data?.data
             setRiderDetails(data)
         } catch (error) {
@@ -55,8 +62,16 @@ const RiderDetails = () => {
     }
 
     useEffect(() => {
-        fetchRiderDetails()
-    }, [currentStoreLocation, from, to, page, pageSize])
+        const fetchData = () => {
+            fetchRiderDetails()
+        }
+
+        fetchData()
+
+        const interval = setInterval(fetchData, 60000)
+
+        return () => clearInterval(interval)
+    }, [currentStoreLocation, from, to, page, pageSize, globalFilter])
 
     const columns = [
         {
@@ -178,14 +193,18 @@ const RiderDetails = () => {
 
                 <div className="flex flex-col gap-3">
                     <div className="text-xl font-bold">Rider Tables:</div>
+
+                    <div>
+                        <input name="filter" value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} />
+                    </div>
                     <EasyTable mainData={riderDetails} columns={columns} />
-                    <PageCommon
+                    {/* <PageCommon
                         page={page}
                         setPage={setPage}
                         pageSize={pageSize}
                         setPageSize={setPageSize}
                         totalData={riderDetails?.length}
-                    />
+                    /> */}
                 </div>
             </div>
             {showRiderDetailModal && (
