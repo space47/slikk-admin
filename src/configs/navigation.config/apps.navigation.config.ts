@@ -188,6 +188,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsInventoryManagement.printer',
+                        path: `${APP_PREFIX_PATH}/printer`,
+                        title: 'Sku Tag Printer',
+                        translateKey: 'nav.appsInventoryManagement.printer',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 

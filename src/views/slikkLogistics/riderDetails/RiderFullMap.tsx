@@ -30,6 +30,7 @@ const officeIcon = L.icon({
 interface RiderFullMapProps {
     riderDetails: RiderData[]
     currentStore: Record<string, number | undefined>
+    specificRider?: Record<string, number | undefined>
 }
 
 interface CenterProps {
@@ -73,9 +74,10 @@ interface MarkerComponentProps {
     currLong?: any
     setShowRiderModal: (x: boolean) => void
     handleDetails: (x: number) => void
+    specificRider?: Record<string, number | undefined>
 }
 
-const MarkerComponent = ({ markers, currLat, currLong, handleDetails }: MarkerComponentProps) => {
+const MarkerComponent = ({ markers, currLat, currLong, handleDetails, specificRider }: MarkerComponentProps) => {
     const map = useMap()
 
     useEffect(() => {
@@ -125,7 +127,7 @@ const MarkerComponent = ({ markers, currLat, currLong, handleDetails }: MarkerCo
     )
 }
 
-const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore }) => {
+const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore, specificRider }) => {
     const [currLat, setCurrLat] = useState(currentStore?.lat || 12.9001879)
     const [currLong, setCurrLong] = useState(currentStore?.long || 77.6510959)
     const R = 6371
