@@ -22,7 +22,7 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) 
 
     const fetchTaskData = async () => {
         try {
-            const response = await axioisInstance.get(`/logistic/rider/task`)
+            const response = await axioisInstance.get(`/logistic/slikk/task`)
             const data = response?.data?.data?.results
             setTaskData(data)
         } catch (error) {
@@ -59,6 +59,7 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) 
     }
     console.log('rider name is:', riderData?.profile?.first_name)
     console.log('rider Table:', taskData)
+    console.log('rider data v2', riderData)
     console.log(
         'rider details is:',
         taskData?.find((item) => item?.runner_detail?.name.includes(riderData?.profile?.first_name)),

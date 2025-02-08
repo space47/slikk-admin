@@ -508,6 +508,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/inventory-management/stock-overview/StockOverview')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsInventoryManagement.printer',
+        path: `${APP_PREFIX_PATH}/printer/`,
+        component: lazy(() => import('@/views/inventory-management/inward/printerModuls/PrinterModule')),
+        authority: [ADMIN, USER],
+    },
 
     {
         key: 'appsInventoryManagement.updateInventory',

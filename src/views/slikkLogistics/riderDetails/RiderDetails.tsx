@@ -14,6 +14,9 @@ import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { MdLocationOff, MdLocationOn, MdOutlineLocationOn } from 'react-icons/md'
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import PageCommon from '@/common/PageCommon'
+import { useNavigate } from 'react-router-dom'
+import { ref } from 'yup'
+import { IoIosRefresh } from 'react-icons/io'
 
 const RiderDetails = () => {
     const dispatch = useAppDispatch()
@@ -32,6 +35,17 @@ const RiderDetails = () => {
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [globalFilter, setGlobalFilter] = useState('')
+    const [tabSelect, setTabSelect] = useState('checkin')
+    const handleSelectTab = (value: string) => {
+        setTabSelect(value)
+    }
+    const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
+
+    const [specificRider, setSpecificRider] = useState<Record<string, number | undefined>>({
+        lat: undefined,
+        long: undefined,
+    })
+    const navigate = useNavigate()
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -71,7 +85,7 @@ const RiderDetails = () => {
         const interval = setInterval(fetchData, 60000)
 
         return () => clearInterval(interval)
-    }, [currentStoreLocation, from, to, page, pageSize, globalFilter])
+    }, [currentStoreLocation, from, to, page, pageSize, globalFilter, refreshTrigger])
 
     const columns = [
         {
@@ -158,7 +172,6 @@ const RiderDetails = () => {
                             getOptionValue={(option) => option.value}
                             className="w-full"
                             onChange={(newVal) => {
-                                console.log('value of the data', newVal)
                                 setCurrentStoreLocation({
                                     lat: newVal?.value?.lat,
                                     long: newVal?.value?.long,
@@ -186,25 +199,90 @@ const RiderDetails = () => {
 
                 {showRideeMap && (
                     <div className="xl:w-[90%]  items-center">
-                        <div className="text-xl font-bold">Full Rider Location</div>
+                        <div className="text-xl font-bold">Rider Location</div>
+                        <div className="flex flex-col gap-3">
+                            {/* <div className="text-xl font-bold">Select Riders:</div> */}
+                            <div className="flex justify-end">
+                                {/* <div>
+                                    <Select
+                                        isClearable
+                                        placeholder="select slikk store"
+                                        options={riderDetails}
+                                        getOptionLabel={(option) => option.profile?.first_name}
+                                        getOptionValue={(option) => option.profile?.current_location}
+                                        className="w-full"
+                                        onChange={(newVal) => {
+                                            console.log('new value is', newVal)
+                                            setSpecificRider({
+                                                lat: Number(newVal?.profile?.current_location?.latitude),
+                                                long: Number(newVal?.profile?.current_location?.longitude),
+                                            })
+                                        }}
+                                    />
+                                </div> */}
+                                <div>
+                                    <button onClick={() => setRefreshTrigger((prev) => prev + 1)}>
+                                        <IoIosRefresh className="text-2xl font-extrabold" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         <RiderFullMap riderDetails={riderDetails} currentStore={currentStoreLocation} />
                     </div>
                 )}
 
                 <div className="flex flex-col gap-3">
-                    <div className="text-xl font-bold">Rider Tables:</div>
+                    {/* <div className="text-xl font-bold">Rider Tables:</div> */}
 
-                    <div>
-                        <input name="filter" value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} />
+                    <div className="flex gap-10 justify-start mb-5">
+                        <div
+                            className={`flex  cursor-pointer ${tabSelect === 'checkin' ? ' border-b-4 border-black text-green-500' : ''}`}
+                            onClick={() => handleSelectTab('checkin')}
+                        >
+                            <span className="text-xl font-bold">Active Riders</span>
+                        </div>
+                        <div
+                            className={`flex   cursor-pointer  ${tabSelect === 'checkout' ? ' border-b-4 border-black text-green-500' : ''}`}
+                            onClick={() => handleSelectTab('checkout')}
+                        >
+                            <span className="text-xl font-bold">In-Active Riders</span>
+                        </div>
                     </div>
-                    <EasyTable mainData={riderDetails} columns={columns} />
-                    {/* <PageCommon
-                        page={page}
-                        setPage={setPage}
-                        pageSize={pageSize}
-                        setPageSize={setPageSize}
-                        totalData={riderDetails?.length}
-                    /> */}
+
+                    {tabSelect === 'checkin' && (
+                        <>
+                            <div className="mb-4 ">
+                                <input
+                                    name="filter"
+                                    value={globalFilter}
+                                    className="rounded-xl"
+                                    placeholder="Search by riders name"
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                />
+                            </div>
+                            <EasyTable
+                                mainData={riderDetails?.filter((item) => item?.profile?.checked_in_status === true)}
+                                columns={columns}
+                            />
+                        </>
+                    )}
+                    {tabSelect === 'checkout' && (
+                        <>
+                            <div className="mb-4 ">
+                                <input
+                                    name="filter"
+                                    value={globalFilter}
+                                    className="rounded-xl"
+                                    placeholder="Search by riders name"
+                                    onChange={(e) => setGlobalFilter(e.target.value)}
+                                />
+                            </div>
+                            <EasyTable
+                                mainData={riderDetails?.filter((item) => item?.profile?.checked_in_status === false)}
+                                columns={columns}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
             {showRiderDetailModal && (
