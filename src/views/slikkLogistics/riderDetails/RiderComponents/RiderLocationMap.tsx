@@ -29,7 +29,9 @@ interface props {
 }
 
 const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
-    const [mapCenter, setMapCenter] = useState<[number, number] | null>([12.9001879, 77.6510959])
+    console.log('runner lat and lond', runnerLat, runnerLong)
+    const [mapCenter, setMapCenter] = useState<[number, number]>([runnerLat, runnerLong])
+
     const [waypoints, setWaypoints] = useState<[number, number][]>([])
 
     const [polyLine, setPolyLine] = useState('')
@@ -38,7 +40,9 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
 
     const decodedPolyline = polyline.decode(polyLine)
 
-    console.log('Datatatata', runnerLat, runnerLong)
+    useEffect(() => {
+        setMapCenter([runnerLat, runnerLong])
+    }, [runnerLat, runnerLong])
 
     const fetchRouteDetails = async () => {
         const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
@@ -72,7 +76,7 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
         if (taskData?.pickup_details && taskData?.drop_details) {
             const origin: [number, number] = [taskData.pickup_details.latitude, taskData.pickup_details.longitude]
             const destination: [number, number] = [taskData.drop_details.latitude, taskData.drop_details.longitude]
-            setMapCenter(destination)
+            // setMapCenter(destination)
             setWaypoints([origin, destination])
 
             setSourceLatLong(origin)
@@ -118,7 +122,7 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
     return (
         <div className="relative flex flex-col gap-10">
             <div className="relative xl:w-[500px] rounded-xl" style={{ height: '520px' }}>
-                <MapContainer center={mapCenter} zoom={16} style={{ width: 'auto', height: '100%' }}>
+                <MapContainer center={mapCenter} zoom={16} style={{ width: 'auto', height: '100%' }} key={mapCenter.toString()}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                     {/* Pickup Marker */}
