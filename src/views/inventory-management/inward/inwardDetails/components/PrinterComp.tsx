@@ -1,13 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { notification } from 'antd'
 import React from 'react'
 import { BsFillPrinterFill } from 'react-icons/bs'
+
+import JsBarcode from 'jsbarcode'
 
 interface Props {
     dataForPrinter: any[]
 }
 
 const PrinterComp = ({ dataForPrinter }: Props) => {
-    const generatePrint = () => {
+    const generatePrint = async () => {
         const checkForLocation = dataForPrinter?.some((item) => item?.location)
         if (!checkForLocation) {
             notification.error({
@@ -16,21 +19,44 @@ const PrinterComp = ({ dataForPrinter }: Props) => {
             return
         }
 
-        const printContent = dataForPrinter
-            .map(
-                (item) => `
-            <div class="barcode-label">
-                <h3>${item?.product?.brand_name}</h3>
-                <p><strong>Name:</strong> <span>${item?.product?.name ?? ''}</span></p>
-                <p><strong>SKU:</strong> ${item?.product?.sku}</p>
-                <p><strong>Color:</strong> ${item?.product?.color ?? ''}</p>
-                <p><strong>Size:</strong> ${item?.product?.size}</p>
-                <p><strong>Location:</strong> ${item?.location}</p>
-                <p><strong>Barcode:</strong> ${item?.product?.barcode}</p>
-                
-            </div>
-        `,
-            )
+        const dataPromise = dataForPrinter?.map((item) => {
+            const sku = item?.product?.barcode || ''
+            const canvas = document.createElement('canvas')
+
+            return new Promise((resolve) => {
+                JsBarcode(canvas, sku, {
+                    height: 50,
+                    width: 1,
+                    displayValue: true,
+                })
+                const barcode = canvas.toDataURL()
+                resolve(barcode)
+            }).then((barcode) => ({
+                ...item,
+                barcodeImage: barcode,
+            }))
+        })
+
+        const printingData = await Promise.all(dataPromise)
+        console.log('Printing data is', printingData)
+
+        const printContent = printingData
+            .map((item) => {
+                return `
+              <div class="barcode-label">
+                <h3>${item.product.brand_name}</h3>
+                <p><strong>Name:</strong> <span>${item.product.name || ''}</span></p>
+                <p><strong>SKU:</strong> ${item.product.sku}</p>
+                <p><strong>Color:</strong> ${item.product.color || ''}</p>
+                <p><strong>Size:</strong> ${item.product.size}</p>
+                <p><strong>Location:</strong> ${item.location}</p>
+                <p><strong>Barcode:</strong> ${item.product.barcode}</p>
+                <div> 
+                  <img src=${item?.barcodeImage} alt=${item?.sku} onload="window.imageLoaded()" />
+                </div>
+              </div>
+            `
+            })
             .join('')
 
         const printWindow = window.open('', '_blank', 'width=800,height=800')
@@ -85,6 +111,15 @@ const PrinterComp = ({ dataForPrinter }: Props) => {
                                 }
                             }
                         </style>
+                        <script>
+                            let imagesToLoad = ${printingData.length};
+                            window.imageLoaded = function() {
+                                imagesToLoad--;
+                                if (imagesToLoad === 0) {
+                                    window.print();
+                                }
+                            };
+                        </script>
                     </head>
                     <body>
                         ${printContent}
@@ -92,7 +127,6 @@ const PrinterComp = ({ dataForPrinter }: Props) => {
                 </html>
             `)
             printWindow.document.close()
-            printWindow.print()
         }
     }
 

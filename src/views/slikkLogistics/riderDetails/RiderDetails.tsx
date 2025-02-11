@@ -144,6 +144,8 @@ const RiderDetails = () => {
                 return <div>{distance ?? 0} km</div>
             },
         },
+        { header: 'Completed', accessorKey: 'task_data.COMPLETED' },
+        { header: 'Delivered', accessorKey: 'task_data.DELIVERED' },
         { header: 'Total', accessorKey: 'task_data.TOTAL' },
     ]
 

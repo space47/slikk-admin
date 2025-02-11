@@ -198,6 +198,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    {
+                        key: 'appsInventoryManagement.material',
+                        path: `${APP_PREFIX_PATH}/material`,
+                        title: 'Name later',
+                        translateKey: 'nav.appsInventoryManagement.material',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
                 ],
             },
 
