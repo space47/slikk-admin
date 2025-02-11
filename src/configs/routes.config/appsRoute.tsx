@@ -424,6 +424,12 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/inventory-management/inward/inwardDetails')),
         authority: [ADMIN, USER],
     },
+    {
+        key: 'appsInventoryManagement.material',
+        path: `${APP_PREFIX_PATH}/material`,
+        component: lazy(() => import('@/views/inventory-management/transfers/transferTable/components/TransferMaterial')),
+        authority: [ADMIN, USER],
+    },
     // GDN
     {
         key: 'appsInventoryManagement.gdn',
