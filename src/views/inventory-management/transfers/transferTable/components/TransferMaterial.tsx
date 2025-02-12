@@ -17,6 +17,7 @@ const SEARCHOPTIONS = [
 const TransferModule = () => {
     const [skuWiseData, setSkuWiseData] = useState<any[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
+    const [locationInput, setLocationInput] = useState('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
     const [storeSkuFromBarcode, setStoreSkuFromBarcode] = useState<string | null>(null)
 
@@ -27,80 +28,38 @@ const TransferModule = () => {
         }
     }, [])
 
-    const fetchSkuFromBarcode = async () => {
-        if (currentSelectedPage?.value === 'barcode' && globalFilter) {
-            try {
-                const response = await axioisInstance.get(`/merchant/products?barcode=${globalFilter}`)
-                const data = response?.data?.data?.results[0]
-                if (data?.sku) {
-                    setStoreSkuFromBarcode(data.sku)
-                }
-            } catch (error) {
-                console.error(error)
-            }
-        }
-    }
-
-    useEffect(() => {
-        fetchSkuFromBarcode()
-    }, [globalFilter, currentSelectedPage])
-
-    const fetchSkuData = async () => {
-        try {
-            let searchFilter = ''
-
-            if (currentSelectedPage?.value === 'sku' && globalFilter) {
-                searchFilter = `sku=${globalFilter}`
-            }
-            if (currentSelectedPage?.value === 'barcode' && storeSkuFromBarcode) {
-                searchFilter = `sku=${storeSkuFromBarcode}`
-            }
-            if (currentSelectedPage?.value === 'name' && globalFilter) {
-                searchFilter = `name=${globalFilter}`
-            }
-
-            const response = await axioisInstance.get(`/inventory?${searchFilter}`)
-            const data = response?.data?.data
-
-            if (data?.results?.length > 0) {
-                setSkuWiseData((prev) => {
-                    const updatedData = [...prev, ...data.results]
-                    localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
-                    return updatedData
-                })
-            }
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    useEffect(() => {
-        if (globalFilter && currentSelectedPage?.value !== 'barcode') {
-            fetchSkuData()
-        }
-        if (currentSelectedPage?.value === 'barcode' && storeSkuFromBarcode) {
-            fetchSkuData()
-        }
-    }, [globalFilter, storeSkuFromBarcode])
-
     const handleDeleteRow = (sku: string) => {
         const updatedData = skuWiseData.filter((item) => item.sku !== sku)
         setSkuWiseData(updatedData)
         localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
     }
 
+    const handleAddOrUpdateRow = (sku: string) => {
+        if (!sku) return
+        const existingRow = skuWiseData.find((item) => item.sku === sku)
+        if (existingRow) {
+            const updatedData = skuWiseData.map((item) =>
+                item.sku === sku
+                    ? { ...item, quantity_returned: item.quantity_returned + 1, location: `${item?.location}/${locationInput}` }
+                    : item,
+            )
+            setSkuWiseData(updatedData)
+            localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
+        } else {
+            const newRow = { sku, quantity_returned: 1, location: locationInput }
+            const updatedData = [...skuWiseData, newRow]
+            setSkuWiseData(updatedData)
+            localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
+        }
+    }
+
     const columns = useMemo(
         () => [
-            { header: 'SKU', accessorKey: 'product.sku' },
-            { header: 'Name', accessorKey: 'product.name' },
-            { header: 'Brand Name', accessorKey: 'product.brand_name' },
-            { header: 'QUANTITY RECEIVED', accessorKey: 'quantity_received' },
-            { header: 'quantity ordered', accessorKey: 'quantity_ordered' },
-            { header: 'quantity returned', accessorKey: 'quantity_returned' },
-            { header: 'out of stock', accessorKey: 'show_out_of_stock' },
-            { header: 'LOCATION', accessorKey: 'location' },
+            { header: 'SKU', accessorKey: 'sku' },
+            { header: 'Quantity', accessorKey: 'quantity_returned' },
+            { header: 'Location', accessorKey: 'location' },
             {
-                header: 'Delete',
+                header: '-',
                 accessorKey: '',
                 cell: ({ row }: { row: any }) => (
                     <button onClick={() => handleDeleteRow(row.original.sku)} className="text-red-500">
@@ -116,6 +75,24 @@ const TransferModule = () => {
         const selected = SEARCHOPTIONS.find((item) => item.value === value)
         if (selected) {
             setCurrentSelectedPage(selected)
+        }
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputSku = e.target.value.trim()
+        if (inputSku) {
+            handleAddOrUpdateRow(inputSku)
+            setGlobalFilter('')
+        }
+    }
+
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            const inputSku = (e.target as HTMLInputElement).value.trim()
+            if (inputSku) {
+                handleAddOrUpdateRow(inputSku)
+                setGlobalFilter('')
+            }
         }
     }
 
@@ -156,8 +133,17 @@ const TransferModule = () => {
                     <input
                         name="filter"
                         value={globalFilter}
+                        // onChange={handleInputChange}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        placeholder="Search"
+                        onKeyDown={handleInputKeyDown}
+                        placeholder="Enter SKU"
+                        className="border p-2 rounded-md"
+                    />
+                    <input
+                        name="location"
+                        value={locationInput}
+                        onChange={(e) => setLocationInput(e.target.value)}
+                        placeholder="Location"
                         className="border p-2 rounded-md"
                     />
                     <div className="bg-gray-100 items-center text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
