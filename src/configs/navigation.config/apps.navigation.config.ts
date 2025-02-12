@@ -201,7 +201,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsInventoryManagement.material',
                         path: `${APP_PREFIX_PATH}/material`,
-                        title: 'Name later',
+                        title: 'Location CSV Download',
                         translateKey: 'nav.appsInventoryManagement.material',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
