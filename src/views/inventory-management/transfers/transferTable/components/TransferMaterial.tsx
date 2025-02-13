@@ -35,6 +35,7 @@ const TransferModule = () => {
     const handleProductFetch = async () => {
         if (!globalFilter) return
         if (dataForName !== '') return
+
         let queryParam = ''
         if (currentSelectedPage.value === 'barcode') {
             queryParam = `barcode=${globalFilter}`
@@ -47,15 +48,42 @@ const TransferModule = () => {
         try {
             const response = await axioisInstance.get(`/merchant/products?${queryParam}`)
             const product = response?.data?.data?.results?.[0]
+
             if (product?.sku) {
                 handleAddOrUpdateRow(product.sku, product?.brand)
             } else {
-                console.error('No product found with the given input.')
+                console.error('No product found, adding entry with globalFilter.')
+                handleAddOrUpdateRow(globalFilter, '')
             }
         } catch (error) {
             console.error(error)
+            handleAddOrUpdateRow(globalFilter, '')
         }
+
         setGlobalFilter('')
+    }
+
+    const handleActionClick = async (value: any) => {
+        setDataForName(value)
+        if (!value) return
+
+        try {
+            const response = await axioisInstance.get(`/merchant/products?barcode=${value}`)
+            const product = response?.data?.data?.results?.[0]
+
+            if (product?.sku) {
+                handleAddOrUpdateRow(product.sku, product?.brand)
+            } else {
+                console.error('No product found, adding entry with globalFilter.')
+                handleAddOrUpdateRow(globalFilter, '')
+            }
+        } catch (error) {
+            console.error(error)
+            handleAddOrUpdateRow(globalFilter, '')
+        } finally {
+            setDataForName('')
+            setMoreData(false)
+        }
     }
 
     useEffect(() => {
@@ -65,26 +93,6 @@ const TransferModule = () => {
             setMoreData(false)
         }
     }, [currentSelectedPage?.value, globalFilter])
-
-    const handleActionClick = async (value: any) => {
-        setDataForName(value)
-        if (!value) return
-
-        try {
-            const response = await axioisInstance.get(`/merchant/products?barcode=${value}`)
-            const product = response?.data?.data?.results?.[0]
-            if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand)
-            } else {
-                console.error('No product found with the given input.')
-            }
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setDataForName('')
-            setMoreData(false)
-        }
-    }
 
     const handleAddOrUpdateRow = (sku: string, brand: string) => {
         if (!sku) return

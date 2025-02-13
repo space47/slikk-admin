@@ -42,6 +42,7 @@ const SkuUpdate = ({ data }: props) => {
     const [refreshTable, setRefreshTable] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
     const [dataForPrinter, setDataForPrinter] = useState([])
+    const [qtySent, setQtySent] = useState(0)
 
     const fetchSkuData = async () => {
         try {
@@ -97,6 +98,10 @@ const SkuUpdate = ({ data }: props) => {
     const columns = useMemo(
         () => [
             { header: 'SKU', accessorKey: 'sku' },
+            {
+                header: 'QUANTITY SENT',
+                accessorKey: 'quantity_sent',
+            },
             {
                 header: 'QUANTITY RECEIVED',
                 accessorKey: 'quantity_received',
@@ -195,6 +200,10 @@ const SkuUpdate = ({ data }: props) => {
     const columns2 = useMemo(
         () => [
             { header: 'SKU', accessorKey: 'sku' },
+            {
+                header: 'QUANTITY SENT',
+                accessorKey: 'quantity_sent',
+            },
             {
                 header: 'QUANTITY RECEIVED',
                 accessorKey: 'quantity_received',
