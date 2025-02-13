@@ -40,8 +40,8 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
         try {
             if (searchInput) {
                 const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
-                const response = await axioisInstance.get(`/search/product?dashboard=true&${qname}=${searchInput}`)
-                const data = response.data.results
+                const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
+                const data = response.data?.data?.results
                 setTableData(data)
                 console.log(data)
             }
