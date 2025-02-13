@@ -50,6 +50,7 @@ const SkuDataInputs = ({
                     quantity_received: item.quantity_received + 1,
                     qc_failed: item.quantity_received + 1 - (item.qc_passed + 1),
                     location: location || item.location,
+                    quantity_sent: item.quantity_sent + 1,
                 }
             }
             return item
@@ -59,6 +60,7 @@ const SkuDataInputs = ({
             updatedData[0] = {
                 sku,
                 qc_passed: getSameData?.qc_passed + 1,
+                quantity_sent: getSameData?.quantity_sent + 1,
                 quantity_received: getSameData?.quantity_received + 1,
                 qc_failed: getSameData.quantity_received + 1 - (getSameData.qc_passed + 1),
                 location: formData?.location ? [getSameData?.location, formData.location].filter(Boolean).join(',') : getSameData?.location,
