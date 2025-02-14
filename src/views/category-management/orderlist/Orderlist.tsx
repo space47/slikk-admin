@@ -102,6 +102,9 @@ const OrderList = () => {
                 case 'packed':
                     status = '&status=PACKED'
                     break
+                case 'delivery_created':
+                    status = '&status=DELIVERY_CREATED'
+                    break
                 case 'out_for_delivery':
                     status = '&status=OUT_FOR_DELIVERY,SHIPPED'
                     break
@@ -175,6 +178,10 @@ const OrderList = () => {
                 case 'packed':
                     status = '&status=PACKED'
                     break
+                case 'delivery_created':
+                    status = '&status=DELIVERY_CREATED'
+                    break
+
                 case 'out_for_delivery':
                     status = '&status=OUT_FOR_DELIVERY,SHIPPED'
                     break
