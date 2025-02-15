@@ -104,7 +104,7 @@ const TransferModule = () => {
                           ...item,
                           brand: brand || item.brand,
                           quantity_returned: (item.quantity_returned || 0) + 1,
-                          location: item.location === locationInput ? item.location : `${item.location}/${locationInput}`,
+                          location: item.location.includes(locationInput) ? item.location : `${item.location}/${locationInput}`,
                       }
                     : item,
             )
@@ -112,7 +112,7 @@ const TransferModule = () => {
             localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
         } else {
             const newRow = { sku, brand: brand || '', quantity_returned: 1, location: locationInput }
-            const updatedData = [...skuWiseData, newRow]
+            const updatedData = [newRow, ...skuWiseData]
             setSkuWiseData(updatedData)
             localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
         }
