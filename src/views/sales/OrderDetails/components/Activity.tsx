@@ -204,6 +204,12 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     ) => {
         try {
             const body = isDelivery ? { action, delivery_partner: partnerValue } : { action }
+            if (isDelivery && !partnerValue) {
+                notification.error({
+                    message: 'Select Partner to continue',
+                })
+                return
+            }
             const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
 
             notification.success({
@@ -222,6 +228,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     }
 
     const handleApiCall = (trigger: boolean, setTrigger: React.Dispatch<React.SetStateAction<boolean>>, isPacking: boolean) => {
+        console.log('sett')
         if (trigger) {
             particularApiCall(action, invoice_id, partner?.value, navigate, isPacking)
             setTrigger(false)
