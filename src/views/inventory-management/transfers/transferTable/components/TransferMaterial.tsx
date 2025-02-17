@@ -134,7 +134,7 @@ const TransferModule = () => {
                 header: '-',
                 accessorKey: '',
                 cell: ({ row }: { row: any }) => (
-                    <button onClick={() => handleDeleteRow(row.original.sku)} className="text-red-500">
+                    <button className="text-red-500" onClick={() => handleDeleteRow(row.original.sku)}>
                         <MdCancel />
                     </button>
                 ),
@@ -209,9 +209,9 @@ const TransferModule = () => {
                 <input
                     name="location"
                     value={locationInput}
-                    onChange={(e) => setLocationInput(e.target.value)}
                     placeholder="Location"
                     className="border p-2 rounded-md"
+                    onChange={(e) => setLocationInput(e.target.value)}
                 />
             </div>
             <div className="flex justify-between">
@@ -219,10 +219,10 @@ const TransferModule = () => {
                     <input
                         name="filter"
                         value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        onKeyDown={handleInputKeyDown}
                         placeholder="Enter SKU, Name or Barcode"
                         className="border p-2 rounded-md"
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        onKeyDown={handleInputKeyDown}
                     />
 
                     <div className="bg-gray-100 items-center text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
@@ -240,10 +240,10 @@ const TransferModule = () => {
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <Button onClick={clearStorage} variant="reject">
+                    <Button variant="reject" onClick={clearStorage}>
                         Clear
                     </Button>
-                    <Button onClick={() => setDownloadModal(true)} variant="accept">
+                    <Button variant="accept" onClick={() => setDownloadModal(true)}>
                         Download
                     </Button>
                 </div>
@@ -258,10 +258,10 @@ const TransferModule = () => {
                     <Modal
                         title="Clear Data"
                         open={clearStorageModal}
-                        onOk={handleClearStorage}
-                        onCancel={() => setClearStorageModal(false)}
                         okText="Proceed"
                         okButtonProps={{ style: { backgroundColor: 'red', borderColor: 'red' } }}
+                        onOk={handleClearStorage}
+                        onCancel={() => setClearStorageModal(false)}
                     >
                         <p className="text-red-500 text-xl font-semibold">Are you sure you want to clear all the Data in the table ?</p>
                     </Modal>
@@ -272,7 +272,7 @@ const TransferModule = () => {
                     <Modal title="Save Download File As" open={downloadModal} onOk={downloadCSV} onCancel={() => setDownloadModal(false)}>
                         <div className="flex flex-col">
                             <div>
-                                <input value={saveAsInput} onChange={(e) => setSaveAsInput(e.target.value)} placeholder="Save As" />
+                                <input value={saveAsInput} placeholder="Save As" onChange={(e) => setSaveAsInput(e.target.value)} />
                             </div>
                         </div>
                     </Modal>

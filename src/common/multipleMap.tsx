@@ -27,11 +27,30 @@ const officeIcon = L.icon({
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 })
+const wareHouseIcon = L.icon({
+    iconUrl: '/img/logo/slikkWare.png',
+    iconSize: [35, 45],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+})
+const completedIcon = L.icon({
+    iconUrl: '/img/logo/greenMarker.png',
+    iconSize: [40, 45],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+})
+const midIcon = L.icon({
+    iconUrl: '/img/logo/yellowMaker.png',
+    iconSize: [40, 45],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+})
 
 interface MultipleMapProps {
     latitudes: number[]
     longitudes: number[]
     amount: any[]
+    currentStatus: string[]
 }
 
 interface CenterProps {
@@ -77,6 +96,7 @@ interface MarkerComponentProps {
     distanceBetweenFifteenToThirty?: any
     distanceBelowTen?: any
     distanceBelowTentoFifteen?: any
+    CurrentStatus?: any
 }
 
 const MarkerComponent = ({
@@ -87,6 +107,7 @@ const MarkerComponent = ({
     distanceBetweenFifteenToThirty,
     distanceBelowTen,
     distanceBelowTentoFifteen,
+    CurrentStatus,
 }: MarkerComponentProps) => {
     const map = useMap()
 
@@ -116,17 +137,28 @@ const MarkerComponent = ({
     return (
         <div>
             {markers.map((marker, index) => (
-                <Marker key={index} position={[marker.lat, marker.lon]}>
+                <Marker
+                    key={index}
+                    position={[marker.lat, marker.lon]}
+                    icon={
+                        marker?.status === 'COMPLETED'
+                            ? completedIcon
+                            : ['PENDING', 'DECLINED', 'CANCELLED'].includes(marker?.status)
+                              ? officeIcon
+                              : midIcon
+                    }
+                >
                     <Popup>
                         <div>
                             <p>Amount: Rs.{marker.amount}</p>
                             <p>Distance: {marker.distance} km</p>
+                            <p>Status: {marker.status} </p>
                         </div>
                     </Popup>
                 </Marker>
             ))}
 
-            <Marker position={[currLat, currLong]} icon={officeIcon}>
+            <Marker position={[currLat, currLong]} icon={wareHouseIcon}>
                 <Popup>
                     <div>
                         <p>SlikkSync Technologies</p>
@@ -229,7 +261,7 @@ const MAP_STYLE_ARRAY = [
     { name: 'Marker', value: 'marker' },
 ]
 
-const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount }) => {
+const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount, currentStatus }) => {
     const [currLat, setCurrLat] = useState(12.9014)
     const [currLong, setCurrLong] = useState(77.65122)
     const R = 6371
@@ -298,6 +330,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
             const lon = longitudes[index]
             const dLat = (lat - currLat) * (Math.PI / 180)
             const dLon = (lon - currLong) * (Math.PI / 180)
+            const status = currentStatus[index]
 
             const rLat1 = currLat * (Math.PI / 180)
             const rLat2 = lat * (Math.PI / 180)
@@ -317,7 +350,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                 aboveThirty.push({ lat, lon, amount: amount[index], distance })
             }
 
-            return { lat, lon, amount: amount[index], distance }
+            return { lat, lon, amount: amount[index], distance, status }
         })
 
         setDistanceBelowTen(belowTen)
@@ -421,6 +454,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                             distanceBetweenFifteenToThirty={distanceBelowFifteenToThirty?.length}
                             distanceBelowTen={distanceBelowTen?.length}
                             distanceBelowTentoFifteen={distanceBelowTentoFifteen?.length}
+                            CurrentStatus={currentStatus}
                         />
                     )}
                     {currentSelectedPage?.value === 'heat_map' && <HeatMapComponent markers={markers} />}
