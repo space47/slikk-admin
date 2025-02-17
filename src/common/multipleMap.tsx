@@ -29,7 +29,7 @@ const officeIcon = L.icon({
 })
 const wareHouseIcon = L.icon({
     iconUrl: '/img/logo/slikkWare.png',
-    iconSize: [35, 45],
+    iconSize: [35, 50],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 })
@@ -140,13 +140,7 @@ const MarkerComponent = ({
                 <Marker
                     key={index}
                     position={[marker.lat, marker.lon]}
-                    icon={
-                        marker?.status === 'COMPLETED'
-                            ? completedIcon
-                            : ['PENDING', 'DECLINED', 'CANCELLED'].includes(marker?.status)
-                              ? officeIcon
-                              : midIcon
-                    }
+                    icon={['PENDING', 'DECLINED', 'CANCELLED'].includes(marker?.status) ? officeIcon : DefaultIcon}
                 >
                     <Popup>
                         <div>
@@ -257,8 +251,8 @@ const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', w
 }
 
 const MAP_STYLE_ARRAY = [
-    { name: 'HeatMap', value: 'heat_map' },
     { name: 'Marker', value: 'marker' },
+    { name: 'HeatMap', value: 'heat_map' },
 ]
 
 const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount, currentStatus }) => {
