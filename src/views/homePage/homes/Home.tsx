@@ -369,6 +369,7 @@ const Home = () => {
                         longitudes={orders?.map((item) => item?.longitude || [])}
                         amount={orders?.map((item) => item?.amount || [])}
                         currentStatus={orders?.map((item) => item?.status || [])}
+                        currentInvoice={orders?.map((item) => item?.invoice_id || [])}
                     />
                 </div>
             </div>

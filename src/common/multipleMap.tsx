@@ -13,6 +13,7 @@ import { BsFullscreenExit } from 'react-icons/bs'
 import 'leaflet.heat'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { useNavigate } from 'react-router-dom'
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
@@ -33,14 +34,14 @@ const wareHouseIcon = L.icon({
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 })
-const completedIcon = L.icon({
-    iconUrl: '/img/logo/greenMarker.png',
+const blackIcon = L.icon({
+    iconUrl: '/img/logo/blackImageMarker.png',
     iconSize: [40, 45],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
 })
-const midIcon = L.icon({
-    iconUrl: '/img/logo/yellowMaker.png',
+const orangeIcon = L.icon({
+    iconUrl: '/img/logo/orangeMarker.png',
     iconSize: [40, 45],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
@@ -51,6 +52,7 @@ interface MultipleMapProps {
     longitudes: number[]
     amount: any[]
     currentStatus: string[]
+    currentInvoice: string[]
 }
 
 interface CenterProps {
@@ -110,7 +112,7 @@ const MarkerComponent = ({
     CurrentStatus,
 }: MarkerComponentProps) => {
     const map = useMap()
-
+    const navigate = useNavigate()
     useEffect(() => {
         let currPos = 13
 
@@ -140,10 +142,18 @@ const MarkerComponent = ({
                 <Marker
                     key={index}
                     position={[marker.lat, marker.lon]}
-                    icon={['PENDING', 'DECLINED', 'CANCELLED'].includes(marker?.status) ? officeIcon : DefaultIcon}
+                    icon={
+                        marker?.status === 'PENDING'
+                            ? officeIcon
+                            : marker?.status === 'EXCHANGE'
+                              ? orangeIcon // orange
+                              : ['DECLINED', 'CANCELLED'].includes(marker?.status)
+                                ? blackIcon //black
+                                : DefaultIcon
+                    }
                 >
-                    <Popup>
-                        <div>
+                    <Popup className="hover:bg-blue-50">
+                        <div onClick={() => navigate(`/app/orders/${marker?.invoice_id}`)} className="cursor-pointer">
                             <p>Amount: Rs.{marker.amount}</p>
                             <p>Distance: {marker.distance} km</p>
                             <p>Status: {marker.status} </p>
@@ -255,7 +265,7 @@ const MAP_STYLE_ARRAY = [
     { name: 'HeatMap', value: 'heat_map' },
 ]
 
-const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount, currentStatus }) => {
+const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount, currentStatus, currentInvoice }) => {
     const [currLat, setCurrLat] = useState(12.9014)
     const [currLong, setCurrLong] = useState(77.65122)
     const R = 6371
@@ -325,6 +335,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
             const dLat = (lat - currLat) * (Math.PI / 180)
             const dLon = (lon - currLong) * (Math.PI / 180)
             const status = currentStatus[index]
+            const invoice_id = currentInvoice[index] ?? ''
 
             const rLat1 = currLat * (Math.PI / 180)
             const rLat2 = lat * (Math.PI / 180)
@@ -344,7 +355,7 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                 aboveThirty.push({ lat, lon, amount: amount[index], distance })
             }
 
-            return { lat, lon, amount: amount[index], distance, status }
+            return { lat, lon, amount: amount[index], distance, status, invoice_id }
         })
 
         setDistanceBelowTen(belowTen)
