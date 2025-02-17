@@ -60,11 +60,11 @@ const OrderlistMobile = ({ orders, handleNumberClick }: props) => {
                                                 </span>
                                             ),
                                         },
-                                        { label: 'Customer', value: item.user.name },
+                                        { label: 'Customer', value: item?.user?.name },
                                         { label: 'Delivery Type', value: item.delivery_type },
                                         { label: 'Payment Mode', value: item?.payment?.mode },
                                         { label: 'Payment Status', value: item?.payment?.status },
-                                        { label: 'Picker:', value: item?.picker.name },
+                                        { label: 'Picker:', value: item?.picker?.name },
                                         { label: 'Total Items', value: item?.order_items.length },
                                         { label: 'Order Total', value: `₹${item.amount}` },
                                         { label: 'Area/pin', value: `${item.area}/${item.pincode}` },
