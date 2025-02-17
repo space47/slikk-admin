@@ -368,6 +368,7 @@ const Home = () => {
                         latitudes={orders.map((item) => item.latitude || [])}
                         longitudes={orders?.map((item) => item?.longitude || [])}
                         amount={orders?.map((item) => item?.amount || [])}
+                        currentStatus={orders?.map((item) => item?.status || [])}
                     />
                 </div>
             </div>

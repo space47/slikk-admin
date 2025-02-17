@@ -77,3 +77,43 @@ export const initialValue: FormModel = {
     images: '',
     image: [],
 }
+
+export const ProductFilterArray = [
+    { label: 'SKU', value: 'sku' },
+    { label: 'Barcode', value: 'barcode' },
+    { label: 'Name', value: 'name' },
+]
+
+export type Product = {
+    id: number
+    name: string
+    sku: string
+    barcode: string
+    brand_name: string
+    color: string
+    image: string
+    size: string
+    variant_id: string
+}
+
+export type InventoryItemType = {
+    id: number
+    batch_number: string | null
+    create_date: string
+    expiry_date: string | null
+    gdn: string | null
+    grn: string | null
+    is_active: boolean
+    last_updated_by: string
+    location: string
+    offer_is_active: boolean
+    product: Product
+    quantity: number
+    quantity_ordered: number
+    quantity_received: number
+    quantity_returned: number
+    quantity_sold: number
+    show_out_of_stock: boolean
+    store: number
+    update_date: string
+}

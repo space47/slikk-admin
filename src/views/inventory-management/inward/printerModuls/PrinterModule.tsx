@@ -4,17 +4,17 @@ import React, { useEffect, useState } from 'react'
 import PrinterComp from '../inwardDetails/components/PrinterComp'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-
-const ProductFilterArray = [
-    { label: 'SKU', value: 'sku' },
-    { label: 'Barcode', value: 'barcode' },
-]
+import MoreDataTable from '../../transfers/transferTable/components/MoreDataTable'
+import { InventoryItemType, ProductFilterArray } from '../inwardCommon'
+import { GenericCommonTypes } from '@/common/allTypesCommon'
 
 const PrinterModule = () => {
-    const [skuData, setSkuData] = useState()
-    const [printerData, setPrinterData] = useState([])
-    const [skuInput, setSkuInput] = useState('')
+    const [printerData, setPrinterData] = useState<InventoryItemType[]>([])
+    const [skuInput, setSkuInput] = useState<string>('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(ProductFilterArray[0])
+    const [moreData, setMoreData] = useState<boolean>(false)
+    const [dataFromBarcode, setDataFromBarcode] = useState<string>('')
+    const [getSkuFromName, setGetSkuFromName] = useState<string>('')
 
     const fetchDetails = async () => {
         try {
@@ -22,7 +22,13 @@ const PrinterModule = () => {
             if (currentSelectedPage?.value === 'sku' && skuInput) {
                 skuFilter = `&sku=${skuInput}`
             }
-            const response = await axioisInstance.get(`inventory?p=1&page_size=10&${skuFilter}`)
+            if (currentSelectedPage?.value === 'name' && getSkuFromName) {
+                skuFilter = `&sku=${getSkuFromName}`
+            }
+            if (currentSelectedPage?.value === 'barcode' && dataFromBarcode) {
+                skuFilter = `&sku=${dataFromBarcode}`
+            }
+            const response = await axioisInstance.get(`inventory?p=1&page_size=10${skuFilter}`)
             const data = response?.data?.data
             setPrinterData(data?.results)
         } catch (error) {
@@ -32,22 +38,57 @@ const PrinterModule = () => {
 
     const fetchByBarcode = async () => {
         try {
-            let barcodeData = ''
-            if (currentSelectedPage?.value === 'barcode' && skuInput) {
-                barcodeData = `&barcode=${skuInput}`
+            const response = await axioisInstance.get(`/merchant/products?dashboard=true&barcode=${skuInput}`)
+            const product = response?.data?.data?.results?.[0]
+            if (product?.sku) {
+                setDataFromBarcode(product?.sku)
+            } else {
+                setDataFromBarcode('')
             }
-            const response = await axioisInstance.get(`/merchant/products?dashboard=true${barcodeData}`)
-            const data = response?.data?.data
         } catch (error) {
             console.error(error)
+        } finally {
+            setMoreData(false)
         }
     }
+
+    useEffect(() => {
+        if (currentSelectedPage?.value === 'barcode' && skuInput) {
+            fetchByBarcode()
+        }
+    }, [currentSelectedPage?.value, skuInput])
 
     useEffect(() => {
         if (skuInput) {
             fetchDetails()
         }
-    }, [skuInput])
+    }, [skuInput, currentSelectedPage?.value, getSkuFromName])
+
+    useEffect(() => {
+        if (currentSelectedPage?.value === 'name' && skuInput) {
+            setMoreData(true)
+        } else {
+            setMoreData(false)
+        }
+    }, [currentSelectedPage?.value, skuInput])
+
+    const handleActionClick = async (value: GenericCommonTypes['ChangeEventCommon']) => {
+        if (!value) return
+        try {
+            const response = await axioisInstance.get(`/merchant/products?barcode=${value}`)
+            const product = response?.data?.data?.results?.[0]
+
+            if (product?.sku) {
+                setGetSkuFromName(product.sku)
+            } else {
+                setGetSkuFromName('')
+            }
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setMoreData(false)
+        }
+    }
 
     const columns = [
         { header: 'SKU', accessorKey: 'product.sku' },
@@ -75,13 +116,13 @@ const PrinterModule = () => {
         {
             header: 'QC PASSED',
             accessorKey: 'qc_passed',
-            cell: ({ getValue }) => <div>{getValue() ?? 0}</div>,
+            cell: ({ getValue }: any) => <div>{getValue() ?? 0}</div>,
         },
 
         {
             header: 'QC FAILED',
             accessorKey: 'qc_failed',
-            cell: ({ row }) => {
+            cell: ({ row }: any) => {
                 const qc_received = row?.original?.quantity_received ?? 0
                 const qc_passed = row?.original?.qc_passed ?? 0
                 const qc_failed = qc_received - qc_passed
@@ -100,8 +141,6 @@ const PrinterModule = () => {
             setCurrentSelectedPage(selected)
         }
     }
-
-    console.log('printer data', printerData)
 
     return (
         <div className="flex flex-col gap-2">
@@ -124,7 +163,10 @@ const PrinterModule = () => {
                 </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mb-10">{moreData && <MoreDataTable nameInput={skuInput} handleActionClick={handleActionClick} />}</div>
+
+            <div className="mt-6 flex flex-col gap-2">
+                <div className="text-xl font-bold">Sku Details:</div>
                 <EasyTable columns={columns} mainData={printerData} noPage overflow />
             </div>
             <div className="flex justify-start items-center">
