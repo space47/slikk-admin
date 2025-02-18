@@ -19,6 +19,7 @@ import { IoMdCloseCircle } from 'react-icons/io'
 import { USERCOMMUNICATION, USERDETAILS } from './addUserCommon'
 import { Spinner } from '@/components/ui'
 import AccessDenied from '@/views/pages/AccessDenied'
+import StoreAssignComponent from '../StoreAssignComponent'
 
 interface GROUPS {
     id: number
@@ -58,6 +59,9 @@ const AddUser = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [showSpinner, setShowSpinner] = useState(false)
     const [accessDenied, setAccessDenied] = useState(false)
+    const [storeAssign, setStoreAssign] = useState(false)
+    const [storePicker, setStorePicker] = useState('')
+    const [mobileNumber, setMobileNumber] = useState('')
 
     const navigate = useNavigate()
 
@@ -158,6 +162,7 @@ const AddUser = () => {
     }
 
     const handleAddGroups = () => {
+        console.log('1st step of groups')
         const alreadyAdded = selectedGroups.filter((permId) => addedGroups.some((added) => added.id === permId))
 
         if (alreadyAdded.length > 0) {
@@ -171,6 +176,18 @@ const AddUser = () => {
         setAddedGroups((prevAdded) => [...prevAdded, ...selected])
         setSelectedGroups([])
     }
+
+    console.log('Groups data  is', addedGroups?.map((item) => item.name.includes('picker')).includes(true))
+
+    useEffect(() => {
+        if (addedGroups?.map((item) => item.name.includes('picker')).includes(true)) {
+            setStoreAssign(true)
+        } else {
+            setStoreAssign(false)
+        }
+    }, [addedGroups])
+
+    console.log('if store assign', storeAssign)
 
     const handleRemovePermissions = (id: number) => {
         setAddedPermissions((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
@@ -189,6 +206,7 @@ const AddUser = () => {
         const company_ids = addedCompanyList.map((item) => item.id)
         const bodyData = {
             ...values,
+            mobile: mobileNumber,
             company_ids: `${company_ids.join(',')}`,
             group_id: `${groupIds.join(',')}`,
             permission_id: `${permissionIds.join(',')}`,
@@ -292,6 +310,14 @@ const AddUser = () => {
                                         />
                                     </FormItem>
                                 ))}
+                                <FormItem label="Mobile">
+                                    <input
+                                        type="text"
+                                        name="mobile"
+                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                        onChange={(e: any) => setMobileNumber(e.target.value)}
+                                    />
+                                </FormItem>
                             </FormContainer>
                             {/* ........................................................................................ */}
 
@@ -443,6 +469,10 @@ const AddUser = () => {
                                 </FormContainer>
                             </FormContainer>
 
+                            {storeAssign && (
+                                <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobileNumber} />
+                            )}
+
                             {/* ............................................................................................ */}
 
                             <div className="text-xl font-semibold">USER PERMISSIONS</div>
@@ -537,6 +567,10 @@ const AddUser = () => {
                     </Form>
                 )}
             </Formik>
+            {/* 
+                {
+                   storeAssign  && 
+                } */}
         </div>
     )
 }

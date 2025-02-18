@@ -143,7 +143,7 @@ const MarkerComponent = ({
                     key={index}
                     position={[marker.lat, marker.lon]}
                     icon={
-                        marker?.status === 'PENDING'
+                        ['PENDING', 'ACCEPTED', 'PACKED'].includes(marker?.status)
                             ? officeIcon
                             : marker?.status === 'EXCHANGE'
                               ? orangeIcon // orange

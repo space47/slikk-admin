@@ -15,6 +15,7 @@ import { USER_EDIT_FROM } from './UserEditForm'
 import CardComponent from './cardComponents/CardComponent'
 import { Spinner } from '@/components/ui'
 import AccessDenied from '@/views/pages/AccessDenied'
+import StoreAssignComponent from '../StoreAssignComponent'
 
 type FormModel = {
     first_name: string
@@ -54,6 +55,8 @@ const BrandUserEdit = () => {
     const [companySearchInput, setCompanySearchInput] = useState('')
     const [loadingEdit, setLoadingEdit] = useState(false)
     const [accessDenied, setAccessDenied] = useState(false)
+    const [storeAssign, setStoreAssign] = useState(false)
+    const [storePicker, setStorePicker] = useState<string | number | undefined>('')
     const { mobile } = useParams()
 
     const navigate = useNavigate()
@@ -256,6 +259,18 @@ const BrandUserEdit = () => {
         setSelectedGroups([])
     }
 
+    console.log('Groups data  is', addedGroups?.map((item) => item.name.includes('picker')).includes(true))
+
+    useEffect(() => {
+        if (addedGroups?.map((item) => item.name.includes('picker')).includes(true)) {
+            setStoreAssign(true)
+        } else {
+            setStoreAssign(false)
+        }
+    }, [addedGroups])
+
+    console.log('if store assign', storeAssign)
+
     const handleRemoveGroups = async (id: number) => {
         setAddedGroups((prevAdded) => prevAdded.filter((perm) => perm.id !== id))
 
@@ -446,6 +461,10 @@ const BrandUserEdit = () => {
                                         handleSearch={handleGroupSearch}
                                     />
                                 </FormContainer>
+
+                                {storeAssign && (
+                                    <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobile} />
+                                )}
                                 <br />
 
                                 <FormContainer className="">

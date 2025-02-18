@@ -33,7 +33,10 @@ const RefundActivity = () => {
         setModalContent(content)
         setIsModalOpen(true)
     }
-    const { buttonText, modalContent: content } = getButtonAndModalContent(returnDetails?.log?.[returnDetails.log.length - 1]?.status || '')
+    const { buttonText, modalContent: content } = getButtonAndModalContent(
+        returnDetails?.log?.[returnDetails.log.length - 1]?.status || '',
+        returnDetails?.return_order_delivery[0]?.partner,
+    )
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setValueInsideModal((prev) => ({
@@ -41,6 +44,8 @@ const RefundActivity = () => {
             [name]: value,
         }))
     }
+
+    console.log('returnOrderDetails', returnDetails?.return_order_delivery[0]?.partner)
 
     const [currentButton, setCurrentButton] = useState(false)
     const handlePICKUPGenerate = () => {
@@ -180,12 +185,6 @@ const RefundActivity = () => {
                     {buttonText}
                 </Button>
             )}
-            {/* {(buttonText && returnDetails?.status === 'REVERSE_PICKUP_CREATED') ||
-                (returnDetails?.status === 'OUT_FOR_PICKUP' && (
-                    <Button variant="solid" onClick={() => showModal(content)}>
-                        ASSIGN
-                    </Button>
-                ))} */}
 
             {returnDetails?.log.length === 0 && (
                 <PickedUpModal
@@ -207,30 +206,41 @@ const RefundActivity = () => {
                 currentButton={currentButton}
             />
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' && (
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
+                !returnDetails?.log?.some((item) => item?.status === 'REFUNDED') && (
+                    <Modal
+                        open={isModalOpen}
+                        onOk={() => handleAction('return_completed')}
+                        onCancel={() => setIsModalOpen(false)}
+                        okText={currentButton ? 'Returning....' : 'Return Order'}
+                    >
+                        <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">INPUTS</div>
+                        <div className="italic text-lg flex flex-row items-center justify-start gap-5">
+                            <input
+                                type="text"
+                                name="refundAmount"
+                                value={valueInsideModal.refundAmount}
+                                placeholder="Enter Refund Amount"
+                                onChange={handleInputChange}
+                            />
+                            <input
+                                type="text"
+                                name="refundId"
+                                value={valueInsideModal.refundId}
+                                placeholder="Enter Refund Id"
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                    </Modal>
+                )}
+            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' && (
                 <Modal
                     open={isModalOpen}
                     onOk={() => handleAction('return_completed')}
                     onCancel={() => setIsModalOpen(false)}
                     okText={currentButton ? 'Returning....' : 'Return Order'}
                 >
-                    <div className="text-2xl font-bold text-gray-800 mb-6 border-b-2 border-gray-300 pb-2">INPUTS</div>
-                    <div className="italic text-lg flex flex-row items-center justify-start gap-5">
-                        <input
-                            type="text"
-                            name="refundAmount"
-                            value={valueInsideModal.refundAmount}
-                            placeholder="Enter Refund Amount"
-                            onChange={handleInputChange}
-                        />
-                        <input
-                            type="text"
-                            name="refundId"
-                            value={valueInsideModal.refundId}
-                            placeholder="Enter Refund Id"
-                            onChange={handleInputChange}
-                        />
-                    </div>
+                    <p className="text-xl">Complete Retur Order</p>
                 </Modal>
             )}
         </Card>
