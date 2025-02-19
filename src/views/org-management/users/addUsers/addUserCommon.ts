@@ -12,11 +12,11 @@ export const USERDETAILS = [
 ]
 
 export const USERCOMMUNICATION = [
-    {
-        type: 'text',
-        label: 'Mobile',
-        name: 'mobile',
-    },
+    // {
+    //     type: 'text',
+    //     label: 'Mobile',
+    //     name: 'mobile',
+    // },
     {
         type: 'text',
         label: 'Email',

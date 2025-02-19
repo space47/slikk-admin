@@ -236,6 +236,12 @@ const EditCustomerProfile = () => {
     }
 
     const handleSubmit = async (values: StoreTypes) => {
+        let uploadedImage = ''
+        if (values?.images_array && values?.images_array?.length > 0) {
+            uploadedImage = await handleFileupload(values?.images_array)
+            setImageView([uploadedImage])
+        }
+
         const formData = {
             ...values,
             area: address.area,
@@ -248,7 +254,7 @@ const EditCustomerProfile = () => {
             return_state: returnAddress.return_state,
             description: descriptiontextarea,
             instruction: instructiontextarea,
-            image: values.images_array,
+            image: uploadedImage ?? '',
         }
 
         console.log('formDaata', formData)
@@ -375,11 +381,7 @@ const EditCustomerProfile = () => {
                                                         beforeUpload={beforeUpload}
                                                         fileList={values.images_array}
                                                         onChange={async (files) => {
-                                                            const uploadedImage = await handleFileupload(files)
-                                                            {
-                                                                form.setFieldValue('images_array', uploadedImage)
-                                                                setImageView([uploadedImage])
-                                                            }
+                                                            form.setFieldValue('images_array', files)
                                                         }}
                                                         onFileRemove={(files) => form.setFieldValue('images_array', files)}
                                                         showList={false}

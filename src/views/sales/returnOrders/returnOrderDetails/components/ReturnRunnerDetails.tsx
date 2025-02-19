@@ -1,17 +1,38 @@
 import Card from '@/components/ui/Card'
 // import Avatar from '@/components/ui/Avatar'
-import IconText from '@/components/shared/IconText'
-import { HiPhone, HiExternalLink } from 'react-icons/hi'
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
-import { Avatar } from '@/components/ui'
+import { Avatar, Dropdown } from '@/components/ui'
+import { LOGISTIC_PARTNER } from '@/views/sales/OrderDetails/components/activityCommon'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { useState } from 'react'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
 
 const ReturnRunnerDetails = () => {
+    const [partnerChange, setPartnerChange] = useState<string>('')
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const returnProducts = returnOrder?.returnOrders?.return_order_delivery
+    const return_Partner = returnProducts ? returnProducts[0]?.partner : ''
 
-    const return_Delivery = returnProducts?.map((item) => item.awb_code)
-    console.log('OKOK', return_Delivery)
+    const handleDeliveryChange = async (value: string) => {
+        console.log('value for it', value)
+        const body = {
+            action: 'create_reverse_pickup',
+            re_create: 'yes',
+            logistic_partner: value,
+        }
+        try {
+            const response = await axioisInstance.patch(`merchant/return_order/${returnOrder?.returnOrders?.return_order_id}`, body)
+            notification.success({
+                message: 'Success',
+                description: response?.data?.message || 'Created Task Successfully',
+            })
+            setPartnerChange(value)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     return (
         <Card className="card">
@@ -24,6 +45,28 @@ const ReturnRunnerDetails = () => {
                 </div>
                 <div className="time">
                     <span className="font-bold">AWB: {returnProducts?.at(-1)?.awb_code}</span>
+                </div>
+                <div className="flex gap-2 items-center">
+                    <div> Change Partner: </div>
+                    <div className="w-auto bg-slate-200 rounded-lg">
+                        <Dropdown
+                            className="w-full px-1 py-1 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm font-bold"
+                            title={partnerChange !== '' ? partnerChange : (return_Partner ?? 'SELECT')}
+                            onSelect={(value) => handleDeliveryChange(value)}
+                        >
+                            <div className="max-h-60 overflow-y-auto">
+                                {LOGISTIC_PARTNER.map((item, key) => (
+                                    <DropdownItem
+                                        key={key}
+                                        eventKey={item.value}
+                                        className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
+                                    >
+                                        <span>{item.label}</span>
+                                    </DropdownItem>
+                                ))}
+                            </div>
+                        </Dropdown>
+                    </div>
                 </div>
             </div>
         </Card>

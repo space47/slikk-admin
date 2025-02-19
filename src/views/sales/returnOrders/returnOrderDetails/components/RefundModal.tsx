@@ -88,7 +88,7 @@ type props2 = {
     handleoutForDelivery: () => void
     handleClose: () => void
     modalContent?: string
-    status: string
+    status?: string
     currentButton: boolean
 }
 

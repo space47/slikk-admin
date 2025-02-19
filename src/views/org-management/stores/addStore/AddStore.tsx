@@ -17,29 +17,6 @@ import { StoreTypes } from '../commonStores'
 
 const MAX_UPLOAD = 8
 
-// const validationSchema = Yup.object().shape({
-//     document_number: Yup.string().required('Document Number is required'),
-//     document_date: Yup.date().required('Document Date is required').nullable(),
-//     origin_address: Yup.string()
-//         .required('Supplier Address is required')
-//         .transform((value) => value.trim()),
-//     received_address: Yup.string()
-//         .required('Receiver Address is required')
-//         .transform((value) => value.trim()),
-//     received_by: Yup.string()
-//         .required('Received By is required')
-//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-//     total_sku: Yup.number()
-//         .required('Total SKUs is required')
-//         .integer('Must be an integer'),
-//     total_quantity: Yup.number()
-//         .required('Total Quantity is required')
-//         .integer('Must be an integer'),
-//     singleCheckbox: Yup.boolean(),
-//     // images: Yup.string().nullable(),
-//     // document: Yup.string().nullable(),
-// })
-
 const options = [
     { label: 'Mall', value: 'Mall' },
     {
@@ -207,6 +184,13 @@ const AddStore = () => {
     }
 
     const handleSubmit = async (values: StoreTypes) => {
+        console.log('values of store', values)
+        let uploadedImage = ''
+        if (values?.images_array && values?.images_array?.length > 0) {
+            uploadedImage = await handleFileupload(values?.images_array)
+            setImageView([uploadedImage])
+        }
+
         const formData = {
             ...values,
             area: address.area,
@@ -219,7 +203,7 @@ const AddStore = () => {
             return_state: returnAddress.return_state,
             description: descriptiontextarea,
             instruction: instructiontextarea,
-            image: values.images_array,
+            image: uploadedImage ?? '',
         }
 
         console.log('formDaata', formData)
@@ -342,11 +326,7 @@ const AddStore = () => {
                                                         beforeUpload={beforeUpload}
                                                         fileList={values.images_array}
                                                         onChange={async (files) => {
-                                                            const uploadedImage = await handleFileupload(files)
-                                                            {
-                                                                form.setFieldValue('images_array', uploadedImage)
-                                                                setImageView([uploadedImage])
-                                                            }
+                                                            form.setFieldValue('images_array', files)
                                                         }}
                                                         onFileRemove={(files) => form.setFieldValue('images_array', files)}
                                                         showList={false}

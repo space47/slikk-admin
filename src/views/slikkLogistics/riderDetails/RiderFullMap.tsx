@@ -79,7 +79,7 @@ interface MarkerComponentProps {
 
 const MarkerComponent = ({ markers, currLat, currLong, handleDetails, specificRider }: MarkerComponentProps) => {
     const map = useMap()
-
+    console.log('specific rider', currLat, currLong)
     useEffect(() => {
         map.setView([currLat, currLong])
     }, [currLat, currLong, map])
@@ -128,8 +128,8 @@ const MarkerComponent = ({ markers, currLat, currLong, handleDetails, specificRi
 }
 
 const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore, specificRider }) => {
-    const [currLat, setCurrLat] = useState(currentStore?.lat || 12.9001879)
-    const [currLong, setCurrLong] = useState(currentStore?.long || 77.6510959)
+    // const [currLat, setCurrLat] = useState(currentStore?.lat ?? 0)
+    // const [currLong, setCurrLong] = useState(currentStore?.long ?? 0)
     const R = 6371
     const [location, setLocation] = useState('')
     const [suggestions, setSuggestions] = useState<any>([])
@@ -142,9 +142,9 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore,
     const mobileOfRiders = riderDetails?.map((rider) => rider?.profile?.mobile)
     const ifStatusTrue = riderDetails?.map((rider) => rider?.profile?.checked_in_status)
 
+    console.log('current Store', currentStore)
+
     const handleSelectSuggestion = (suggestion: any) => {
-        setCurrLat(suggestion.lat)
-        setCurrLong(suggestion.lng)
         setSuggestions([])
         setLocation(suggestion.name)
     }
@@ -156,10 +156,10 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore,
             const riderMobile = mobileOfRiders[index]
             const riderStatus = ifStatusTrue[index]
 
-            const dLat = (lat - currLat) * (Math.PI / 180)
-            const dLon = (lon - currLong) * (Math.PI / 180)
+            const dLat = (lat - (currentStore?.lat ?? 0)) * (Math.PI / 180)
+            const dLon = (lon - (currentStore?.long ?? 0)) * (Math.PI / 180)
 
-            const rLat1 = currLat * (Math.PI / 180)
+            const rLat1 = (currentStore?.lat ?? 0) * (Math.PI / 180)
             const rLat2 = lat * (Math.PI / 180)
 
             const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2)
@@ -171,14 +171,12 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore,
         })
 
         return result
-    }, [latitudes, longitudes, currLat, currLong, R])
+    }, [latitudes, longitudes, currentStore?.lat, currentStore?.long, R])
 
     const handleDetails = (mobile: number) => {
         setMobileData(mobile)
         setShowRiderModal(true)
     }
-
-    console.log('is true', showRiderModal, mobileData)
 
     return (
         <div className="flex flex-col gap-4">
@@ -199,12 +197,16 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore,
             </div>
 
             <div className="flex flex-col gap-10 xl:flex-row z-0">
-                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '70vh', width: '100%' }}>
+                <MapContainer
+                    center={[currentStore?.lat ?? 0, currentStore?.long ?? 0]}
+                    zoom={13}
+                    style={{ height: '70vh', width: '100%' }}
+                >
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                     <MarkerComponent
-                        currLat={currLat}
-                        currLong={currLong}
+                        currLat={currentStore?.lat}
+                        currLong={currentStore?.long}
                         markers={markers}
                         setShowRiderModal={setShowRiderModal}
                         handleDetails={handleDetails}
