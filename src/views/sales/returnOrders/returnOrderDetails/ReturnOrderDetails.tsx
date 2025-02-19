@@ -11,6 +11,7 @@ import ReturnSummary from './components/ReturnSummary'
 import ReturnUserInfo from './components/ReturnUserInfo'
 import ReturnRunnerDetails from './components/ReturnRunnerDetails'
 import RefundActivity from './components/RefundActivity'
+import OrderMap from '../../OrderDetails/OrderMap'
 
 const scheduleSlots: Record<string, { start: string; end: string }> = {
     '1': { start: '10:00 AM', end: '01:00 PM' },
@@ -28,6 +29,8 @@ const ReturnOrderDetails = () => {
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
     }, [return_order_id, dispatch])
+
+    console.log('Datat of rider', returnDetails?.return_order_delivery[0]?.partner)
 
     return (
         <div>
@@ -79,7 +82,41 @@ const ReturnOrderDetails = () => {
             <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-900">
                     <ReturnProductsDetails />
-                    <RefundActivity data={returnDetails?.log} status="completed" task_id={returnDetails?.id} latitude="11" longitude="22" />
+                    <div className="flex xl:flex-row xl:justify-between flex-col gap-5">
+                        <RefundActivity
+                            data={returnDetails?.log}
+                            status="completed"
+                            task_id={returnDetails?.id}
+                            latitude="11"
+                            longitude="22"
+                        />
+
+                        <div>
+                            {returnDetails?.return_order_delivery.length !== 0 && (
+                                <div className=" mt-10">
+                                    {returnDetails?.return_order_delivery === null && (
+                                        <>
+                                            <div className="flex font-bold mt-24 justify-center xl:h-screen items-center text-red-700">
+                                                No Logistic Data Created
+                                            </div>
+                                        </>
+                                    )}
+                                    {returnDetails?.return_order_delivery[0]?.partner === 'Slikk' && (
+                                        <OrderMap task_id={returnDetails?.return_order_delivery[0]?.task_id} />
+                                    )}
+                                    {returnDetails?.return_order_delivery[0]?.partner !== 'Slikk' && (
+                                        <div className="h-[300px] xl:w-[600px]">
+                                            <iframe
+                                                src={returnDetails?.return_order_delivery[0]?.tracking_url}
+                                                style={{ width: '100%', height: '100%', border: 'none' }}
+                                                title="Live Order Tracking"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
                 <div className="flex flex-col bg-gray-100 p-4 rounded-lg shadow-md gap-5 w-full xl:w-1/3 dark:bg-gray-900">
                     <ReturnUserInfo />
