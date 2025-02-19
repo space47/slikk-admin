@@ -41,6 +41,8 @@ const RiderDetails = () => {
     }
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
 
+    console.log('check for current location is:', currentStoreLocation)
+
     const [specificRider, setSpecificRider] = useState<Record<string, number | undefined>>({
         lat: undefined,
         long: undefined,
@@ -131,11 +133,15 @@ const RiderDetails = () => {
             },
         },
         { header: 'Mobile', accessorKey: 'profile.mobile' },
-        { header: 'Assigned', accessorKey: 'task_data.ASSIGNED' },
-        { header: 'Out for pickup', accessorKey: 'task_data.OUT_FOR_PICKUP' },
+        { header: 'Order Assigned', accessorKey: 'task_data.ASSIGNED' },
         { header: 'Out for delivery', accessorKey: 'task_data.OUT_FOR_DELIVERY' },
-        { header: 'Pickup', accessorKey: 'task_data.PICKED_UP' },
-        { header: 'Pickup failed', accessorKey: 'task_data.PICKUP_FAILED' },
+        { header: 'Out for Return pickup', accessorKey: 'task_data.OUT_FOR_PICKUP' },
+        { header: 'Return Pickup', accessorKey: 'task_data.PICKED_UP' },
+        { header: 'Return Pickup failed', accessorKey: 'task_data.PICKUP_FAILED' },
+
+        { header: 'Orders Completed', accessorKey: 'task_data.COMPLETED' },
+        { header: 'Return Delivered', accessorKey: 'task_data.DELIVERED' },
+        { header: 'Total Task', accessorKey: 'task_data.TOTAL' },
         {
             header: 'Distance covered',
             accessorKey: 'task_data.distance_covered',
@@ -144,9 +150,6 @@ const RiderDetails = () => {
                 return <div>{distance ?? 0} km</div>
             },
         },
-        { header: 'Completed', accessorKey: 'task_data.COMPLETED' },
-        { header: 'Delivered', accessorKey: 'task_data.DELIVERED' },
-        { header: 'Total', accessorKey: 'task_data.TOTAL' },
     ]
 
     const hanldeProfileClick = (mobile: string) => {
