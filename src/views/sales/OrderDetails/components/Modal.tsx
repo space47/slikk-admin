@@ -170,7 +170,7 @@ export const CustomModal2: React.FC<props2> = ({
     return (
         <Modal
             title=""
-            okText={isButtonClick ? 'SETTTING PARTNER...' : 'SELECT PARTNER'}
+            okText={isButtonClick ? 'SELECT PARTNER' : 'SELECT PARTNER'}
             cancelText={status === 'PENDING' ? 'REJECT ORDERS' : 'CANCEL'}
             width={800}
             className="custom-modal"

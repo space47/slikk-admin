@@ -23,14 +23,18 @@ const ReturnActionActivity = ({
     return (
         <div>
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') && (
-                <TrackModal
-                    handleCloseModal={() => setIsModalOpen(false)}
-                    showTaskModal={isModalOpen}
-                    setShowAssignModal={setIsModalOpen}
-                    storeTaskId={returnDetails?.return_order_delivery[0]?.task_id}
-                />
-            )}
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') &&
+                (returnDetails?.return_order_delivery[0]?.partner === 'Slikk' ||
+                    returnDetails?.return_order_delivery[0]?.partner === '' ||
+                    undefined ||
+                    null) && (
+                    <TrackModal
+                        handleCloseModal={() => setIsModalOpen(false)}
+                        showTaskModal={isModalOpen}
+                        setShowAssignModal={setIsModalOpen}
+                        storeTaskId={returnDetails?.return_order_delivery[0]?.task_id}
+                    />
+                )}
             {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'RIDER_ASSIGNED' && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
@@ -41,6 +45,20 @@ const ReturnActionActivity = ({
                     currentButton={currentButton}
                 />
             )}
+
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') &&
+                (returnDetails?.return_order_delivery[0]?.partner !== 'Slikk' || '' || undefined || null) && (
+                    <OutforDeliveryModal
+                        isModalOpen={isModalOpen}
+                        handleoutForDelivery={() => handleAction('out_for_pickup')}
+                        handleClose={() => setIsModalOpen(false)}
+                        modalContent={modalContent}
+                        currentButton={currentButton}
+                    />
+                )}
+
+            {}
 
             {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'OUT_FOR_PICKUP' && (
                 <PickedUpModal
