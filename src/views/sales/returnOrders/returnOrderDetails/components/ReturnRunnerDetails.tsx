@@ -8,6 +8,8 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useState } from 'react'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import { FaUserAlt } from 'react-icons/fa'
+import { HiLocationMarker, HiPhone } from 'react-icons/hi'
 
 const ReturnRunnerDetails = () => {
     const [partnerChange, setPartnerChange] = useState<string>('')
@@ -38,13 +40,41 @@ const ReturnRunnerDetails = () => {
         <Card className="card">
             <h5 className="mb-4">Runner Details</h5>
             <div className="group flex flex-col gap-2">
-                <div className="flex items-center">
-                    <div className="ltr:ml-2 rtl:mr-2">
+                <div className="flex gap-5  flex-col">
+                    <div className="ltr:ml-2 rtl:mr-2 flex  justify-center items-center">
                         <span className="text-xl font-bold flex gap-1">{returnProducts?.at(-1)?.partner}</span>
+                    </div>
+                    <div className="flex flex-col gap-3 ">
+                        <div className="flex flex-col gap-3">
+                            <Avatar shape="circle" src={returnProducts?.at(-1)?.runner_profile_pic_url} size="lg" />
+                            <div className="mx-3">
+                                <div className="items-start flex flex-col gap-1">
+                                    <div className="flex gap-2 items-center">
+                                        <FaUserAlt /> <span>{returnProducts?.at(-1)?.runner_name}</span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                        <HiPhone className="font-bold" /> <span>{returnProducts?.at(-1)?.runner_phone_number}</span>
+                                    </div>
+
+                                    <div className="url">
+                                        <a href={returnProducts?.at(-1)?.tracking_url} className="flex items-center cursor-pointer">
+                                            <HiLocationMarker className="text-xl" />
+                                            <p className="text-blue-600 hover:underline">Track location</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="time">
-                    <span className="font-bold">AWB: {returnProducts?.at(-1)?.awb_code}</span>
+                    <span className="font-bold">
+                        {returnProducts?.at(-1)?.awb_code ? (
+                            <span>AWB :{returnProducts?.at(-1)?.awb_code}</span>
+                        ) : (
+                            <span>Task_id:{returnProducts?.at(-1)?.task_id}</span>
+                        )}
+                    </span>
                 </div>
                 <div className="flex gap-2 items-center">
                     <div> Change Partner: </div>
