@@ -233,7 +233,8 @@ const RefundActivity = () => {
                         </div>
                     </Modal>
                 )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' ||
+                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED') && (
                 <Modal
                     open={isModalOpen}
                     onOk={() => handleAction('return_completed')}
