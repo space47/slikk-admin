@@ -82,7 +82,7 @@ const ReturnOrderDetails = () => {
             <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-900">
                     <ReturnProductsDetails />
-                    <div className="flex xl:flex-row xl:justify-between flex-col gap-5">
+                    <div className="flex xl:flex-row xl:gap-10 flex-col gap-5">
                         <RefundActivity
                             data={returnDetails?.log}
                             status="completed"
@@ -102,7 +102,9 @@ const ReturnOrderDetails = () => {
                                         </>
                                     )}
                                     {returnDetails?.return_order_delivery[0]?.partner === 'Slikk' && (
-                                        <OrderMap task_id={returnDetails?.return_order_delivery[0]?.task_id} />
+                                        <div className="xl:w-[800px]">
+                                            <OrderMap task_id={returnDetails?.return_order_delivery[0]?.task_id} />
+                                        </div>
                                     )}
                                     {returnDetails?.return_order_delivery[0]?.partner !== 'Slikk' && (
                                         <div className="h-[300px] xl:w-[600px]">
