@@ -233,27 +233,18 @@ const RefundActivity = () => {
                         </div>
                     </Modal>
                 )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' && (
+            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' ||
+                (returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
+                    returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED')))) && (
                 <Modal
                     open={isModalOpen}
                     onOk={() => handleAction('return_completed')}
                     onCancel={() => setIsModalOpen(false)}
                     okText={currentButton ? 'Returning....' : 'Return Order'}
                 >
-                    <p className="text-xl">Complete Retur Order</p>
+                    <p className="text-xl">Complete Return Order</p>
                 </Modal>
             )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
-                returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED')) && (
-                    <Modal
-                        open={isModalOpen}
-                        onOk={() => handleAction('return_completed')}
-                        onCancel={() => setIsModalOpen(false)}
-                        okText={currentButton ? 'Returning....' : 'Return Order'}
-                    >
-                        <p className="text-xl">Complete Retur Order</p>
-                    </Modal>
-                )}
         </Card>
     )
 }
