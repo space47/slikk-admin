@@ -85,6 +85,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     )
 
                     // If data is empty, show notification and prevent the API call
+
                     if (Object.keys(data).length === 0) {
                         notification.warning({
                             message: 'No Quantities Selected',
@@ -100,6 +101,25 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                         Modal.confirm({
                             title: 'Confirm Zero Quantity',
                             content: 'One or more items have a quantity of 0. Do you still want to proceed?',
+                            okText: 'Yes',
+                            cancelText: 'No',
+                            onOk: async () => {
+                                await makeApiCall(data)
+                            },
+                            onCancel: () => {
+                                setTriggerApiCall(false)
+                            },
+                        })
+                        return
+                    }
+
+                    const hasLessQuantity =
+                        product.reduce((sum, item) => sum + Number(item?.quantity || 0), 0) >
+                        Object.values(fulfilledQuantities).reduce((sum, q) => sum + (q || 0), 0)
+                    if (hasLessQuantity && !hasZeroQuantity) {
+                        Modal.confirm({
+                            title: 'Confirm Quantity for Packing',
+                            content: 'The number of fullfilled quantity is less then actual quantity !',
                             okText: 'Yes',
                             cancelText: 'No',
                             onOk: async () => {
