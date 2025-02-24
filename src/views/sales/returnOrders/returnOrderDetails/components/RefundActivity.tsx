@@ -35,7 +35,8 @@ const RefundActivity = () => {
     }
     const { buttonText, modalContent: content } = getButtonAndModalContent(
         returnDetails?.log?.[returnDetails.log.length - 1]?.status || '',
-        returnDetails?.return_order_delivery[0]?.partner,
+        returnDetails?.return_order_delivery.find((item) => item?.state !== 'CANCELLED')?.partner,
+        returnDetails?.log,
     )
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -44,8 +45,6 @@ const RefundActivity = () => {
             [name]: value,
         }))
     }
-
-    console.log('returnOrderDetails', returnDetails?.return_order_delivery[0]?.partner)
 
     const [currentButton, setCurrentButton] = useState(false)
     const handlePICKUPGenerate = () => {
@@ -235,6 +234,7 @@ const RefundActivity = () => {
                 )}
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REFUNDED' ||
                 (returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&
+                    !returnDetails?.log?.some((item) => item?.status?.includes('COMPLETED')) &&
                     returnDetails?.log?.some((item) => item?.status?.includes('REFUNDED')))) && (
                 <Modal
                     open={isModalOpen}

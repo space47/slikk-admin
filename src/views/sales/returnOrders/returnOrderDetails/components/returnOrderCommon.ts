@@ -1,10 +1,13 @@
-export const getButtonAndModalContent = (status: string, data: string) => {
+export const getButtonAndModalContent = (status: string, data: string, log: any[]) => {
     if ((status === 'PICKUP_CREATED' || status === 'REVERSE_PICKUP_CREATED') && (data === 'Slikk' || data === '')) {
         return { buttonText: 'ASSIGN TO RUNNER' }
     }
 
     if (status === 'PICKUP_CREATED' || (status === 'REVERSE_PICKUP_CREATED' && (data !== 'Slikk' || '' || undefined || null))) {
         return { buttonText: 'OUT FOR PICKUP' }
+    }
+    if (!log?.some((item) => item?.status?.includes('COMPLETED')) && status === 'REFUNDED') {
+        return { buttonText: 'COMPLETE' }
     }
 
     switch (status) {
@@ -23,8 +26,6 @@ export const getButtonAndModalContent = (status: string, data: string) => {
             return { buttonText: 'DELIVERED' }
         case 'DELIVERED':
             return { buttonText: 'COMPLETE RETURN' }
-        case 'REFUNDED':
-            return { buttonText: 'COMPLETE' }
         default:
             return { buttonText: '', modalContent: '' }
     }

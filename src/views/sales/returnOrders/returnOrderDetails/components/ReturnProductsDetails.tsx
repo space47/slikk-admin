@@ -47,6 +47,9 @@ const columns = [
     columnHelper.accessor('quantity', {
         header: 'Quantity',
     }),
+    columnHelper.accessor('location', {
+        header: 'Location',
+    }),
     columnHelper.accessor('return_amount', {
         header: 'Return Amount',
         cell: (props) => {

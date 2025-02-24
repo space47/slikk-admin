@@ -10,12 +10,14 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { FaUserAlt } from 'react-icons/fa'
 import { HiLocationMarker, HiPhone } from 'react-icons/hi'
+import { useNavigate } from 'react-router-dom'
 
 const ReturnRunnerDetails = () => {
+    const navigate = useNavigate()
     const [partnerChange, setPartnerChange] = useState<string>('')
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const returnProducts = returnOrder?.returnOrders?.return_order_delivery
-    const return_Partner = returnProducts ? returnProducts[0]?.partner : ''
+    const return_Partner = returnProducts?.find((item) => item?.state !== 'CANCELLED')?.partner
 
     const handleDeliveryChange = async (value: string) => {
         console.log('value for it', value)
@@ -31,6 +33,7 @@ const ReturnRunnerDetails = () => {
                 description: response?.data?.message || 'Created Task Successfully',
             })
             setPartnerChange(value)
+            navigate(0)
         } catch (error) {
             console.error(error)
         }
