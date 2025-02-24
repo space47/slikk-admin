@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Loading } from '@/components/shared'
 import React, { useState } from 'react'
-import { FaSync } from 'react-icons/fa'
+import { FaDownload, FaSync } from 'react-icons/fa'
 import QCtable from './QCtable'
 import { Modal } from 'antd'
 import SkuUpdate from './SkuUpdate'
+import { Select } from '@/components/ui'
 
 interface props {
     handleSyncClick: any
@@ -13,9 +14,24 @@ interface props {
     handleCloseModal: any
     isSyncing: any
     data: any
+    setSelectValue: any
+    handleRegenerateGrn: (doc_number: string) => Promise<void>
 }
+const options = [
+    { label: 'PDF', value: 'pdf' },
+    { label: 'CSV', value: 'csv' },
+]
 
-const QcTabs = ({ data, handleSyncClick, showSyncModal, syncGRN, handleCloseModal, isSyncing }: props) => {
+const QcTabs = ({
+    data,
+    handleSyncClick,
+    showSyncModal,
+    syncGRN,
+    handleCloseModal,
+    isSyncing,
+    setSelectValue,
+    handleRegenerateGrn,
+}: props) => {
     const [tabSelect, setTabSelect] = useState('quality_checklist')
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
@@ -42,15 +58,40 @@ const QcTabs = ({ data, handleSyncClick, showSyncModal, syncGRN, handleCloseModa
                 <div>
                     <div className="mt-5 flex flex-col">
                         {/* TABLE..................................................... */}
+                        <div className="flex gap-10 items-center justify-end mt-5 text-xl mr-7">
+                            <div className="flex gap-2 items-center">
+                                <div>
+                                    <Select
+                                        size="sm"
+                                        isClearable
+                                        isSearchable={false}
+                                        options={options}
+                                        onChange={(e) => setSelectValue(e?.value)}
+                                    />
+                                </div>
 
-                        <div className="flex justify-end mt-5 text-xl mr-7">
-                            <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
-                                {' '}
-                                <div className="flex gap-2 font-bold text-green-600">
-                                    SYNC GRN <FaSync className="text-2xl" />
-                                </div>{' '}
-                            </button>
+                                <div className="p-2 rounded-lg bg-gray-200">
+                                    <button
+                                        onClick={() => handleRegenerateGrn(data.document_number)}
+                                        className="border-none bg-none flex gap-5"
+                                    >
+                                        {' '}
+                                        <div className="flex gap-2 font-bold text-gray-600">
+                                            Export <FaDownload className="text-2xl" />
+                                        </div>{' '}
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
+                                    {' '}
+                                    <div className="flex gap-2 font-bold text-green-600">
+                                        SYNC GRN <FaSync className="text-2xl" />
+                                    </div>{' '}
+                                </button>
+                            </div>
                         </div>
+
                         <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} />
                     </div>
                     {showSyncModal && (

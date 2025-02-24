@@ -22,9 +22,14 @@ import { FaDownload, FaSync } from 'react-icons/fa'
 import PaymentSummary from '@/views/inventory-management/inward/inwardDetails/components/PaymentSummary'
 import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
 import ShippingInfo from '@/views/inventory-management/inward/inwardDetails/components/ShippingInfo'
-import { Button, Card } from '@/components/ui'
+import { Button, Card, Select } from '@/components/ui'
 import GDNdetailTable from './GDNdetailTable'
 // import { string } from 'yup'
+
+const options = [
+    { label: 'PDF', value: 'pdf' },
+    { label: 'CSV', value: 'csv' },
+]
 
 const GdnDetails = () => {
     // const location = useLocation()
@@ -37,8 +42,7 @@ const GdnDetails = () => {
     const [grnNumber, setGrnNumber] = useState('')
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-
-    console.log('Decoded uri component', id)
+    const [selectValue, setSelectValue] = useState('')
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -94,45 +98,55 @@ const GdnDetails = () => {
 
     const handleRegenerateGrn = async (doc_number: string) => {
         try {
-            const response = await axioisInstance.get(
-                `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`,
-            )
-            const preSignedUrl = response?.data?.data
+            let responseData = `/goods/dispatch/${id}/detail?download=true&regenerate=true&document_number=${doc_number}`
+            if (selectValue === 'csv') {
+                responseData += `&download_type=csv`
+            }
 
-            if (preSignedUrl) {
+            const response = await axioisInstance.get(responseData)
+
+            if (selectValue === 'csv') {
+                // Handle CSV response directly as raw text data
+                const csvText = response?.data // Assuming the response contains raw CSV data
+                const blob = new Blob([csvText], { type: 'text/csv' })
+
+                const link = document.createElement('a')
+                link.href = URL.createObjectURL(blob)
+                link.download = `${data.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`
+
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                URL.revokeObjectURL(link.href)
+                console.log('CSV file downloaded.')
+            } else {
+                const preSignedUrl = response?.data?.data
+                if (!preSignedUrl) {
+                    console.error('Failed to retrieve the pre-signed URL from the response.')
+                    return
+                }
+
                 const fileResponse = await fetch(preSignedUrl)
                 if (!fileResponse.ok) {
                     throw new Error(`Failed to fetch the file: ${fileResponse.statusText}`)
                 }
-                const blob = await fileResponse.blob()
-                const blobUrl = window.URL.createObjectURL(blob)
 
+                const blob = await fileResponse.blob()
                 const link = document.createElement('a')
-                link.href = blobUrl
-                link.download = `${data.gdn_number}-${moment().format('YYYY-MM-DD HH-mm-ss a')}.pdf`
+                link.href = URL.createObjectURL(blob)
+                link.download = `${data.gdn_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`
+
                 document.body.appendChild(link)
                 link.click()
-
-                window.URL.revokeObjectURL(blobUrl)
                 document.body.removeChild(link)
-            } else {
-                console.error('Failed to retrieve the pre-signed URL from the response.')
+                URL.revokeObjectURL(link.href)
+                console.log('PDF file downloaded.')
             }
         } catch (error: any) {
+            console.error('Error while regenerating the GDN:', error)
             notification.error({
                 message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to Regenerate',
             })
-            console.error('Error while regenerating the GDN:', error)
-        }
-    }
-
-    const handleUrl = async (document_url: string) => {
-        try {
-            const response = await axioisInstance.get(`file/presign?file_url=${document_url}`)
-            const val = response.data?.data
-            window.open(val)
-        } catch (error) {
-            console.error(error)
         }
     }
 
@@ -202,13 +216,38 @@ const GdnDetails = () => {
                         <div className="mt-5 flex flex-col">
                             {/* TABLE..................................................... */}
 
-                            <div className="flex justify-end mt-5 text-xl mr-7">
-                                <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
-                                    {' '}
-                                    <div className="flex gap-2 font-bold text-green-600">
-                                        SYNC GDN <FaSync className="text-2xl" />
-                                    </div>{' '}
-                                </button>
+                            <div className="flex gap-10 items-center justify-end mt-5 text-xl mr-7">
+                                <div className="flex gap-2 items-center">
+                                    <div>
+                                        <Select
+                                            size="sm"
+                                            isClearable
+                                            isSearchable={false}
+                                            options={options}
+                                            onChange={(e) => setSelectValue(e?.value)}
+                                        />
+                                    </div>
+
+                                    <div className="p-2 rounded-lg bg-gray-200">
+                                        <button
+                                            onClick={() => handleRegenerateGrn(data.document_number)}
+                                            className="border-none bg-none flex gap-5"
+                                        >
+                                            {' '}
+                                            <div className="flex gap-2 font-bold text-gray-600">
+                                                Export <FaDownload className="text-2xl" />
+                                            </div>{' '}
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button onClick={() => handleSyncClick(data.grn_number)} className="border-none bg-none flex gap-5">
+                                        {' '}
+                                        <div className="flex gap-2 font-bold text-green-600">
+                                            SYNC GDN <FaSync className="text-2xl" />
+                                        </div>{' '}
+                                    </button>
+                                </div>
                             </div>
                             {/* <QCtable data={data.grn_quality_check} totalData={data.grn_quality_check.length} /> */}
                             {data?.gdn_products?.length === 0 ? (

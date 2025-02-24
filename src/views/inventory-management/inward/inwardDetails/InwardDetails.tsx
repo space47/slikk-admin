@@ -40,6 +40,7 @@ const InwardDetails = () => {
     const [companyId, setCompanyId] = useState<number>()
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const [selectValue, setSelectValue] = useState<string>('')
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -106,35 +107,56 @@ const InwardDetails = () => {
 
     const handleRegenerateGrn = async (doc_number: string) => {
         try {
-            const response = await axioisInstance.get(
-                `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${doc_number}`,
-            )
-            const preSignedUrl = response?.data?.data
+            let responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${doc_number}`
+            if (selectValue === 'csv') {
+                responseData = `/goods/received/${companyId}/detail?download=true&regenerate=true&document_number=${doc_number}&download_type=csv`
+            }
 
-            if (preSignedUrl) {
+            const response = await axioisInstance.get(responseData)
+
+            if (selectValue === 'csv') {
+                const csvText = response?.data
+                const blob = new Blob([csvText], { type: 'text/csv' })
+
+                const link = document.createElement('a')
+                link.href = URL.createObjectURL(blob)
+                link.download = `${data?.document_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.csv`
+
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                URL.revokeObjectURL(link.href)
+                console.log('CSV file downloaded.')
+            } else {
+                const preSignedUrl = response?.data?.data
+                if (!preSignedUrl) {
+                    console.error('Failed to retrieve the pre-signed URL from the response.')
+                    return
+                }
+
                 const fileResponse = await fetch(preSignedUrl)
                 if (!fileResponse.ok) {
                     throw new Error(`Failed to fetch the file: ${fileResponse.statusText}`)
                 }
+
                 const blob = await fileResponse.blob()
                 const blobUrl = window.URL.createObjectURL(blob)
 
                 const link = document.createElement('a')
                 link.href = blobUrl
-                link.download = 'GRN_Document.pdf'
+                link.download = `${data?.document_number}-${moment().format('YYYY-MM-DD_HH-mm-ss')}.pdf`
+
                 document.body.appendChild(link)
                 link.click()
-
-                window.URL.revokeObjectURL(blobUrl)
                 document.body.removeChild(link)
-            } else {
-                console.error('Failed to retrieve the pre-signed URL from the response.')
+                window.URL.revokeObjectURL(blobUrl)
+                console.log('PDF file downloaded.')
             }
         } catch (error: any) {
+            console.error('Error while regenerating the GRN:', error)
             notification.error({
                 message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to Regenerate',
             })
-            console.error('Error while regenerating the GRN:', error)
         }
     }
 
@@ -197,6 +219,8 @@ const InwardDetails = () => {
                             syncGRN={syncGRN}
                             handleCloseModal={handleCloseModal}
                             isSyncing={isSyncing}
+                            setSelectValue={setSelectValue}
+                            handleRegenerateGrn={handleRegenerateGrn}
                         />
 
                         {/* To here */}
