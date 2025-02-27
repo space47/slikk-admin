@@ -12,7 +12,7 @@ const SkuOrderHistory = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axiosInstance.get(`/merchant/product/sku/sales?sku=${globalFilter}`)
+            const response = await axiosInstance.get(`/merchant/product/sku/sales?sku=${encodeURIComponent(globalFilter)}`)
             const data = response.data.data
             setData(data)
         } catch (error) {
