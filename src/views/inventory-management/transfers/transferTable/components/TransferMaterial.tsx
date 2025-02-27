@@ -38,9 +38,9 @@ const TransferModule = () => {
 
         let queryParam = ''
         if (currentSelectedPage.value === 'barcode') {
-            queryParam = `barcode=${globalFilter}`
+            queryParam = `barcode=${globalFilter?.trim()}`
         } else if (currentSelectedPage.value === 'sku') {
-            queryParam = `sku=${globalFilter}`
+            queryParam = `sku=${globalFilter?.trim()}`
         } else if (currentSelectedPage.value === 'name' && dataForName) {
             queryParam = `barcode=${dataForName}`
         }
@@ -96,10 +96,11 @@ const TransferModule = () => {
 
     const handleAddOrUpdateRow = (sku: string, brand: string) => {
         if (!sku) return
-        const existingRow = skuWiseData.find((item) => item.sku === sku)
+        const existingRow = skuWiseData.find((item) => item.sku?.trim() === sku?.trim())
+        console.log('existing row', existingRow)
         if (existingRow) {
             const updatedData = skuWiseData.map((item) =>
-                item.sku === sku
+                item.sku === sku?.trim()
                     ? {
                           ...item,
                           brand: brand || item.brand,
