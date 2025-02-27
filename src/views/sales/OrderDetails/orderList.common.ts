@@ -87,6 +87,7 @@ export type SalesOrderDetailsResponse = {
     location_url: string
     return_order: RETURNORDER[]
     tracking_url: string
+    utm_params: any
 }
 
 export type ShippingInfoProps = {
