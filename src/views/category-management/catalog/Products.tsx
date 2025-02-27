@@ -85,9 +85,9 @@ const Products = () => {
 
             // setShowSpinner(true)
             if (currentSelectedPage.value === 'sku' && globalFilter) {
-                searchInputType = `&sku=${globalFilter}`
+                searchInputType = `&sku=${encodeURIComponent(globalFilter)}`
             } else if (currentSelectedPage.value === 'name' && globalFilter) {
-                searchInputType = `&name=${globalFilter}`
+                searchInputType = `&name=${encodeURIComponent(globalFilter)}`
             }
             const response = await axiosInstance.get(`merchant/products?dashboard=true${pageAndSize}&${typeFetch}${searchInputType}`)
 
