@@ -20,10 +20,11 @@ import CancelModal from './components/CancelModal'
 import { FaDownload } from 'react-icons/fa'
 import { notification } from 'antd'
 import { SalesOrderDetailsResponse } from './orderList.common'
-import { Dialog } from '@/components/ui'
+import { Button, Dialog } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
 import OrderMap from './OrderMap'
+import UtmModal from './components/UtmModal'
 // import { string } from 'yup'
 
 const scheduleSlots: any = {
@@ -38,6 +39,7 @@ const OrderDetails = () => {
     const [data, setData] = useState<SalesOrderDetailsResponse>()
     const [returnOrderDrawer, setReturnOrderDrawer] = useState(false)
     const [showCancelModal, setShowCancelModal] = useState(false)
+    const [showUTMModal, setShowUTMModal] = useState(false)
     const [showCancelExchangeModal, setShowCancelExchangeModal] = useState(false)
     const navigate = useNavigate()
     const [showRiderData, setShowRiderData] = useState(false)
@@ -173,6 +175,11 @@ const OrderDetails = () => {
                                                     <FaDownload className="bg-none text-gray-700" />
                                                 </button>
                                             </div>
+                                            <div>
+                                                <Button variant="new" size="sm" onClick={() => setShowUTMModal(true)}>
+                                                    ADD TICKET
+                                                </Button>
+                                            </div>
                                         </span>
                                     </div>
                                 </div>
@@ -233,27 +240,6 @@ const OrderDetails = () => {
                                             CONVERT
                                         </button>
                                     )}
-                                    {/* {data.status === 'COMPLETED' &&
-                                    (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') ? (
-                                        <button
-                                            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
-                                            onClick={handleReturnOrder}
-                                        >
-                                            RETURN ORDER
-                                        </button>
-                                    ) : (
-                                        data.status !== 'DECLINED' &&
-                                        data.status !== 'CANCELLED' &&
-                                        (data.status === 'COMPLETED' || data.payment?.status !== 'PAID') &&
-                                        (data.status !== 'COMPLETED' || data.payment?.status === 'PAID') && (
-                                            <button
-                                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
-                                                onClick={handleCancelOrder}
-                                            >
-                                                CANCEL ORDER
-                                            </button>
-                                        )
-                                    )} */}
                                 </div>
                                 {data.return_order.length > 0 && (
                                     <div className="flex flex-col xl:flex-row gap-2 items-center">
@@ -411,6 +397,7 @@ const OrderDetails = () => {
                                     handleCloseModal={handleCloseTrackModal}
                                 />
                             )}
+                            {showUTMModal && <UtmModal isOpen={showUTMModal} setIsOpen={setShowUTMModal} orderData={data} />}
                         </div>
                     </>
                 )}
