@@ -175,11 +175,24 @@ const OrderDetails = () => {
                                                     <FaDownload className="bg-none text-gray-700" />
                                                 </button>
                                             </div>
-                                            <div>
-                                                <Button variant="new" size="sm" onClick={() => setShowUTMModal(true)}>
-                                                    ADD TICKET
-                                                </Button>
-                                            </div>
+                                            {data?.log?.some((item) => item?.status?.includes('PACKED')) &&
+                                            data?.utm_params?.ticket === true ? (
+                                                <>
+                                                    <div>
+                                                        <Button variant="reject" size="sm" onClick={() => setShowUTMModal(true)}>
+                                                            REMOVE TICKET
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div>
+                                                        <Button variant="accept" size="sm" onClick={() => setShowUTMModal(true)}>
+                                                            ADD TICKET
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            )}
                                         </span>
                                     </div>
                                 </div>
