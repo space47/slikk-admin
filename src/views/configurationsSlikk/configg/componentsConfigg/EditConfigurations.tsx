@@ -51,7 +51,7 @@ const EditConfigurations = () => {
                 const entries = await Promise.all(
                     Object.entries(obj).map(async ([key, val]) => {
                         console.log('Value is......', val)
-                        const value = /^[0-9]+$/.test(val) ? Number(val) : val
+                        const value = /^[0-9]+$/.test(val) ? Number(val) : val === 'true' ? true : val === 'false' ? false : val
                         console.log('Values to check is  nnumber', value)
                         if (key.toLowerCase().includes('image') && Array.isArray(val)) {
                             const processedImage = await handleimage('product', val)
