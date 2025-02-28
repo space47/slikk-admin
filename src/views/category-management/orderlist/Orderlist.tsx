@@ -105,6 +105,9 @@ const OrderList = () => {
                 case 'delivery_created':
                     status = '&status=DELIVERY_CREATED'
                     break
+                case 'delivery_cancelled':
+                    status = '&status=DELIVERY_CANCELLED'
+                    break
                 case 'out_for_delivery':
                     status = '&status=OUT_FOR_DELIVERY,SHIPPED'
                     break
@@ -181,7 +184,9 @@ const OrderList = () => {
                 case 'delivery_created':
                     status = '&status=DELIVERY_CREATED'
                     break
-
+                case 'delivery_cancelled':
+                    status = '&status=DELIVERY_CANCELLED'
+                    break
                 case 'out_for_delivery':
                     status = '&status=OUT_FOR_DELIVERY,SHIPPED'
                     break
