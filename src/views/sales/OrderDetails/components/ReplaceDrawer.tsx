@@ -99,7 +99,7 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
 
     return (
         <div>
-            <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose} width={800}>
+            <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose} width={1000}>
                 <h5 className="mb-4">Replace Order Item Here</h5>
                 <div className="flex flex-col xl:gap-4 gap-1 ">
                     <div className="text-xl">Barcode</div>

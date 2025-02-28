@@ -10,6 +10,7 @@ type ProductTableProps = {
         image: string[]
         brand: string
         name: string
+        size: string
     }[]
     handleActionClick: (e: any) => void
 }
@@ -28,6 +29,10 @@ const OrderCreateTable = ({ data, handleActionClick }: ProductTableProps) => {
             {
                 header: 'Name',
                 accessorKey: 'name',
+            },
+            {
+                header: 'Size',
+                accessorKey: 'size',
             },
             {
                 header: 'Product',
