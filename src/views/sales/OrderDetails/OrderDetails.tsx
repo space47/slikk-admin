@@ -341,6 +341,7 @@ const OrderDetails = () => {
                                             {data?.logistic?.partner !== 'Slikk' && (
                                                 <div style={{ width: '100%', height: '600px' }}>
                                                     <iframe
+                                                        allowFullScreen
                                                         src={data?.logistic?.tracking_url}
                                                         style={{ width: '100%', height: '100%', border: 'none' }}
                                                         title="Live Order Tracking"
