@@ -33,6 +33,12 @@ const SEARCHOPTIONS = [
     { label: 'INVOICE', value: 'invoice' },
     { label: 'MOBILE', value: 'mobile' },
 ]
+const scheduleSlots: any = {
+    '1': { start: '10:00 AM', end: '01:00 PM' },
+    '2': { start: '01:00 PM', end: '04:00 PM' },
+    '3': { start: '04:00 PM', end: '07:00 PM' },
+    '4': { start: '07:00 PM', end: '10:00 PM' },
+}
 
 const Exchangeorders = () => {
     const location = useLocation()
@@ -237,10 +243,22 @@ const Exchangeorders = () => {
             },
 
             { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }) => <span>{getValue()} km</span> },
-            { header: 'Payment Mode', accessorKey: 'payment.mode' },
-            { header: 'Payment Status', accessorKey: 'payment.status' },
+            {
+                header: 'Slot',
+                accessorKey: 'delivery_schedule_slot',
+                cell: ({ row }) => {
+                    return (
+                        <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
+                            <span className="ml-2 ">
+                                {scheduleSlots[row?.original.delivery_schedule_slot]
+                                    ? `${scheduleSlots[row?.original.delivery_schedule_slot].start} - ${scheduleSlots[row?.original.delivery_schedule_slot].end}`
+                                    : '-'}
+                            </span>
+                        </span>
+                    )
+                },
+            },
             { header: 'Total Items', accessorKey: 'order_items.length' },
-            { header: 'Order Total', accessorKey: 'payment.amount' },
 
             {
                 header: 'Last Update',
