@@ -8,7 +8,7 @@ import moment from 'moment'
 import type { Order } from './commontypes'
 import { Button, Dropdown, Input } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
-import { FaExclamationCircle, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
+import { FaExclamationCircle, FaFilter, FaMapMarkedAlt, FaSearch } from 'react-icons/fa'
 import FilterDialogOrder from './filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -23,6 +23,8 @@ import { Option } from '@/views/org-management/sellers/sellerCommon'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import TabSelectOrder from './filter'
 import OrderlistMobile from './OrderlistMobile'
+import { BsFillPrinterFill } from 'react-icons/bs'
+import { generatePrintingData } from './orderListFunctions'
 
 const CHANGE_DELIVERY_OPTIONS = [
     { label: 'EXPRESS', value: 'EXPRESS' },
@@ -82,16 +84,18 @@ const OrderList = () => {
     const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
     const [showNoData, setShowNoData] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
-
+    const [searchOnEnter, setSearchOnEnter] = useState('')
     const [tabSelect, setTabSelect] = useState('all')
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
     }
+    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
-    const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
+    const fetchOrders = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+            let filterParams = ''
             let status = ''
+            let pageFilters = ''
             switch (tabSelect) {
                 case 'pending':
                     status = '&status=PENDING'
@@ -128,7 +132,7 @@ const OrderList = () => {
             if (dropdownStatus?.value?.length > 0) {
                 status = `&status=${dropdownStatus.value}`
             }
-            let response
+
             let deliveryStatus = ''
             let paymentStatus = ''
 
@@ -145,14 +149,18 @@ const OrderList = () => {
             }
 
             if (currentSelectedPage.value === 'invoice' && searchInput) {
-                response = await axiosInstance.get(`/merchant/orders?invoice_id=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
-                response = await axiosInstance.get(`/merchant/orders?mobile=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-            } else {
-                response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
-                )
+                filterParams = `&invoice_id=${searchInput}`
             }
+
+            if (currentSelectedPage.value === 'mobile' && searchInput) {
+                filterParams = `&mobile=${searchInput}`
+            }
+            if (!searchInput) {
+                pageFilters = `p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
+            }
+            const response = await axiosInstance.get(
+                `/merchant/orders?${pageFilters}${filterParams}${status}${deliveryStatus}${paymentStatus}`,
+            )
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
 
@@ -170,9 +178,8 @@ const OrderList = () => {
         }
     }
 
-    const checkingNewOrders = async (page: number, pageSize: number, from: string, to: string) => {
+    const checkingNewOrders = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             let status = ''
             switch (tabSelect) {
                 case 'pending':
@@ -211,7 +218,7 @@ const OrderList = () => {
                 status = `&status=${dropdownStatus?.value}`
             }
 
-            let response
+            let filterParams = ''
             let deliveryStatus = ''
             let paymentStatus = ''
 
@@ -228,15 +235,19 @@ const OrderList = () => {
             }
 
             if (currentSelectedPage.value === 'invoice' && searchInput) {
-                response = await axiosInstance.get(`/merchant/orders?invoice_id=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
-                response = await axiosInstance.get(`/merchant/orders?mobile=${searchInput}${status}${deliveryStatus}${paymentStatus}`)
-            } else {
-                response = await axiosInstance.get(
-                    `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${status}${deliveryStatus}${paymentStatus}`,
-                )
+                filterParams = `&invoice_id=${searchInput}`
             }
 
+            if (currentSelectedPage.value === 'mobile' && searchInput) {
+                filterParams = `&mobile=${searchInput}`
+            }
+            let pageFilters = ''
+            if (!searchInput) {
+                pageFilters = `p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
+            }
+            const response = await axiosInstance.get(
+                `/merchant/orders?${pageFilters}${filterParams}${status}${deliveryStatus}${paymentStatus}`,
+            )
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
 
@@ -261,7 +272,7 @@ const OrderList = () => {
 
     useEffect(() => {
         if (!numberClick) {
-            fetchOrders(page, pageSize, from, to)
+            fetchOrders()
         }
         const noFilters =
             page === 1 &&
@@ -273,16 +284,16 @@ const OrderList = () => {
 
         if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
-                fetchOrders(page, pageSize, from, to)
-                checkingNewOrders(page, pageSize, from, to)
+                fetchOrders()
+                checkingNewOrders()
             }, 30000)
 
             return () => clearInterval(interval)
         }
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType, numberClick, previousOrders, tabSelect])
+    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, paymentType, numberClick, previousOrders, tabSelect])
 
     useEffect(() => {
-        checkingNewOrders(page, pageSize, from, to)
+        checkingNewOrders()
 
         const noFilters =
             page !== 1 &&
@@ -294,7 +305,7 @@ const OrderList = () => {
 
         if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
-                checkingNewOrders(page, pageSize, from, to)
+                checkingNewOrders()
             }, 30000)
 
             return () => clearInterval(interval)
@@ -326,6 +337,28 @@ const OrderList = () => {
 
     const columns = useMemo(
         () => [
+            {
+                header: 'Printer',
+                accessorKey: 'invoice_id',
+                cell: ({ row }: any) => {
+                    return (
+                        <div className="flex items-center justify-center">
+                            <BsFillPrinterFill
+                                className="text-xl text-blue-500 cursor-pointer "
+                                onClick={() =>
+                                    generatePrintingData(
+                                        row?.original?.invoice_id,
+                                        row?.original?.payment.mode,
+                                        row?.original?.payment.status,
+                                        row?.original?.order_items.length,
+                                        row?.original?.payment.amount,
+                                    )
+                                }
+                            />
+                        </div>
+                    )
+                },
+            },
             {
                 header: 'Invoice Id',
                 accessorKey: 'invoice_id',
@@ -587,7 +620,10 @@ const OrderList = () => {
         }
     }
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchInput(e.target.value)
+        setSearchOnEnter(e.target.value)
+    }
+    const handleSearchWithIcon = () => {
+        setSearchOnEnter(searchInput)
     }
 
     const handleDeliverySelect = (selectedValue: string) => {
@@ -682,20 +718,29 @@ const OrderList = () => {
                     </div>
                 </div>
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
-                    <div className="flex gap-1 xl:gap-2  xl:flex-row  ">
-                        <div className="flex justify-start ">
+                    <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3  ">
+                        <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
                             <Input
                                 type="search"
                                 name="search"
-                                placeholder="search here"
+                                placeholder="Search here..."
                                 value={searchInput}
-                                className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
-                                prefix={<HiSearch className="text-xl items-center flex justify-center" />}
-                                onChange={handleSearch}
+                                className="w-[200px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                                onChange={(e) => setSearchInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault()
+                                        handleSearch(e)
+                                    }
+                                }}
                             />
+                            <div className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer">
+                                <HiSearch className="text-white  dark:text-gray-400 text-xl" onClick={() => handleSearchWithIcon()} />
+                            </div>
                         </div>
-                        <div>
-                            <div className="bg-gray-100 items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+
+                        <div className="flex justify-center xl:justify-normal">
+                            <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-1/3 xl:w-auto rounded-md dark:bg-blue-600 dark:text-white">
                                 <Dropdown
                                     className=" text-xl text-black bg-gray-200 font-bold  "
                                     title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}

@@ -14,7 +14,7 @@ const TabSelectOrder = ({ tabSelect, handleSelectTab, orderCount }: props) => {
     }
 
     return (
-        <div className=" p-4 rounded-lg xl:shadow-md">
+        <div className=" p-4 rounded-lg xl:shadow-md overflow-x-scroll scrollbar-hide">
             <div className="xl:flex xl:gap-6 gap-2 xl:justify-start justify-around xl:flex-row flex-col w-full hidden">
                 {[
                     { label: 'ALL', key: 'all' },

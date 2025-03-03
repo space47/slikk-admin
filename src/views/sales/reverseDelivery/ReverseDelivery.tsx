@@ -30,6 +30,7 @@ const pageSizeOptions = [
 ]
 
 const LOGISTIC_PARTNER = [
+    { value: 'porter', label: 'PORTER' },
     { value: 'shiprocket', label: 'SHIPROCKET' },
     { value: 'shadowfax', label: 'SHADOWFAX' },
     { value: 'slikk', label: 'SLIKK' },

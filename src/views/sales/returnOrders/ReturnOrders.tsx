@@ -118,6 +118,7 @@ const ReturnOrders = () => {
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
     }
+    const [searchOnEnter, setSearchOnEnter] = useState('')
 
     const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
         try {
@@ -173,10 +174,12 @@ const ReturnOrders = () => {
             }
 
             const fromToParams = `&from=${from}&to=${To_Date}`
+            let paramsFilter = ''
+            if (!searchInput) {
+                paramsFilter = `p=${page}&page_size=${pageSize}${fromToParams}`
+            }
 
-            const response = await axioisInstance.get(
-                `merchant/return_orders?p=${page}&page_size=${pageSize}${status}${searwiseDownload}${fromToParams}${deliveryStatus}`,
-            )
+            const response = await axioisInstance.get(`merchant/return_orders?${paramsFilter}${status}${searwiseDownload}${deliveryStatus}`)
 
             const ordersData = response?.data?.data.results
             const orderCount = response?.data?.data.count
@@ -190,7 +193,7 @@ const ReturnOrders = () => {
 
     useEffect(() => {
         fetchOrders(page, pageSize, from, to)
-    }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, tabSelect])
+    }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, tabSelect])
 
     const columns = useMemo(
         () => [
@@ -312,7 +315,10 @@ const ReturnOrders = () => {
         }
     }
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchInput(e.target.value)
+        setSearchOnEnter(e.target.value)
+    }
+    const handleSearchWithIcon = () => {
+        setSearchOnEnter(searchInput)
     }
 
     const onSelectChange = (value = 0) => {
@@ -467,20 +473,28 @@ const ReturnOrders = () => {
                 </button>
             </div>
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
-                <div className="flex gap-2">
-                    <div className="flex justify-start ">
+                <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3 ">
+                    <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
                         <Input
                             type="search"
                             name="search"
-                            placeholder="search here"
+                            placeholder="Search here..."
                             value={searchInput}
-                            className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
-                            prefix={<HiSearch className="text-xl items-center flex justify-center" />}
-                            onChange={handleSearch}
+                            className="w-[200px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    handleSearch(e)
+                                }
+                            }}
                         />
+                        <div className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer">
+                            <HiSearch className="text-white  dark:text-gray-400 text-xl" onClick={() => handleSearchWithIcon()} />
+                        </div>
                     </div>
-                    <div>
-                        <div className="bg-gray-100 xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                    <div className="flex justify-center xl:justify-normal">
+                        <div className="bg-gray-100 xl:mt-1  items-center flex justify-center font-bold  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
                             <Dropdown
                                 className=" text-xl text-black bg-gray-200 font-bold  "
                                 title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
