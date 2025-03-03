@@ -301,68 +301,52 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         setIsModalOpen(false)
     }
 
-    const getButtonAndModalContent = (data: Event[]) => {
-        const lastLogStatus = data.length > 0 ? data[data.length - 1].status : null
-        const isPacked = data.some((log) => log.status === 'PACKED')
-        const isDeliveryCreated = data.some((log) => log.status === 'DELIVERY_CREATED')
-        const isOutForDelivery = data.some((log) => log.status === 'OUT_FOR_DELIVERY' || log.status === 'SHIPPED')
-        const isDriverAssigned = data[data.length - 1]?.status === 'DRIVER_ASSIGNED'
-        const isOrderDone = data.some((log) => log.status === 'DELIVERED' || 'COMPLETED')
-        const isOrderCANCELLED = data.some((log) => log.status === 'DECLINED' || 'CANCELLED')
-
+    const getButtonAndModalContent = (data: Event[], mainData?: { delivery_type?: string }) => {
         if (data.length === 0) {
             return { buttonText: 'ACCEPT' }
         }
 
-        if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD' && !isOrderDone && !isOrderCANCELLED) {
+        const lastLogStatus = data[data.length - 1]?.status || null
+        const hasStatus = (status: string) => data.some((log) => log.status === status)
+        const isPacked = hasStatus('PACKED')
+        const isDeliveryCreated = hasStatus('DELIVERY_CREATED')
+        const isOutForDelivery = hasStatus('OUT_FOR_DELIVERY') || hasStatus('SHIPPED')
+        const isDriverAssigned = lastLogStatus === 'DRIVER_ASSIGNED'
+        const isOrderDone = hasStatus('DELIVERED') || hasStatus('COMPLETED')
+        const isOrderCancelled = hasStatus('DECLINED') || hasStatus('CANCELLED')
+
+        if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD' && !isOrderDone && !isOrderCancelled) {
             return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
         }
-        if (isDriverAssigned && isPacked && mainData?.delivery_type !== 'STANDARD' && !isOrderDone && !isOrderCANCELLED) {
+        if (isDriverAssigned && isPacked && mainData?.delivery_type !== 'STANDARD' && !isOrderDone && !isOrderCancelled) {
             return { buttonText: 'OUT FOR DELIVERY', modalContent: 'Out for Delivery' }
         }
-        if (isDeliveryCreated && !isPacked && !isOrderDone && !isOrderCANCELLED) {
-            return { buttonText: 'PACK/Reject', modalContent: 'Pick and Pack' }
+        if (isDeliveryCreated && !isPacked && !isOrderDone && !isOrderCancelled) {
+            return { buttonText: 'PACK/REJECT', modalContent: 'Pick and Pack' }
         }
-
-        if (isDeliveryCreated && isPacked && !isOutForDelivery && !isOrderDone && !isOrderCANCELLED) {
+        if (isDeliveryCreated && isPacked && !isOutForDelivery && !isOrderDone && !isOrderCancelled) {
             const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
-            const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
-            return { buttonText, modalContent }
+            return { buttonText, modalContent: buttonText.replace('MARK AS ', '') }
         }
-        if (status === 'DELIVERY_CREATED') {
+        if (lastLogStatus === 'DELIVERY_CREATED' || lastLogStatus === 'OUT_FOR_PICKUP') {
             const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
-            const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
-            return { buttonText, modalContent }
+            return { buttonText, modalContent: buttonText.replace('MARK AS ', '') }
         }
-        if (status === 'SHIPPED' || status === 'OUT_FOR_DELIVERY') {
+        if (lastLogStatus === 'PACKED') {
+            return { buttonText: 'CREATE DELIVERY' }
+        }
+        if (lastLogStatus === 'ACCEPTED') {
+            return { buttonText: 'PACK/REJECT', modalContent: 'Pick and Pack' }
+        }
+        if (lastLogStatus === 'OUT_FOR_DELIVERY' || lastLogStatus === 'SHIPPED') {
             return { buttonText: 'MARK AS DELIVERED' }
         }
-
-        switch (lastLogStatus) {
-            case 'DELIVERY_CREATED': {
-                const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
-                const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
-                return { buttonText, modalContent }
-            }
-            case 'PACKED':
-                return { buttonText: 'CREATE DELIVERY' }
-            case 'ACCEPTED':
-                return { buttonText: 'PACK/REJECT', modalContent: 'Pick and Pack' }
-            case 'OUT_FOR_PICKUP': {
-                const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
-                const modalContent = mainData?.delivery_type === 'STANDARD' ? 'Mark as Shipped' : 'Out for Delivery'
-                return { buttonText, modalContent }
-            }
-            case 'OUT_FOR_DELIVERY':
-            case 'SHIPPED':
-                return { buttonText: 'MARK AS DELIVERED' }
-            case 'CANCELLED':
-                return { buttonText: '' }
-            default:
-                return { buttonText: '', modalContent: '' }
+        if (lastLogStatus === 'CANCELLED') {
+            return { buttonText: '' }
         }
-    }
 
+        return { buttonText: '', modalContent: '' }
+    }
     const { buttonText, modalContent: content } = getButtonAndModalContent(data)
     const isPacked = data.some((log) => log?.status === 'PACKED')
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
