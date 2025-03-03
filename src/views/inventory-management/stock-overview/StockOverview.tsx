@@ -15,6 +15,13 @@ import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, Stock } from './stockOverviewCommon'
+import { Dropdown } from '@/components/ui'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+
+const FilterArray = [
+    { label: 'SKU', value: 'sku' },
+    { label: 'NAME', value: 'name' },
+]
 
 const StockOverview = () => {
     const [data, setData] = useState<Stock[]>([])
@@ -31,7 +38,7 @@ const StockOverview = () => {
     }>({})
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState([])
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(FilterArray[0])
     const [searchType, setSearchType] = useState<string>('')
     const navigate = useNavigate()
     // FOR THE LISTS
@@ -44,23 +51,17 @@ const StockOverview = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
 
-    const fetchAndFilterData = async (page: number, pageSize: number, filter: string = '') => {
+    const fetchAndFilterData = async () => {
         try {
-            let searchInputType = ''
-
-            if (filter) {
-                searchInputType = `&sku=${encodeURIComponent(filter)}`
-                setFilterInput(searchInputType)
+            let filterValue = ''
+            if (currentSelectedPage?.value === 'sku' && globalFilter) {
+                filterValue = `&sku=${encodeURIComponent(globalFilter)}`
+            }
+            if (currentSelectedPage?.value === 'name' && globalFilter) {
+                filterValue = `&name=${encodeURIComponent(globalFilter)}`
             }
 
-            console.log('FilterValue', searchInputType)
-            let response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`)
-
-            if (filter && response?.data?.data?.results?.length === 0) {
-                searchInputType = `&name=${encodeURIComponent(filter)}`
-                setFilterInput(searchInputType)
-                response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${searchInputType}`)
-            }
+            const response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}`)
 
             const data = response.data.data.results
             const total = response.data.data.count
@@ -75,10 +76,9 @@ const StockOverview = () => {
         }
     }
 
-    // Update useEffect hooks to use the combined function
     useEffect(() => {
-        fetchAndFilterData(page, pageSize, globalFilter)
-    }, [page, pageSize, globalFilter, searchType, typeFetch, currentSelectedPage])
+        fetchAndFilterData()
+    }, [page, pageSize, globalFilter, searchType, typeFetch])
 
     const columns = useMemo<ColumnDef<Stock>[]>(
         () => [
@@ -297,13 +297,12 @@ const StockOverview = () => {
         }
 
         setTypeFetch(query)
+        setPage(1)
         setShowDrawer(false)
     }
     const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
         const location = updatedLocation[id] ?? null
         const quantity = updatedQuantities[id] >= 0 ? updatedQuantities[id] : null
-
-        console.log('Quantity', quantity)
 
         try {
             const body = {
@@ -324,22 +323,29 @@ const StockOverview = () => {
     }
 
     const onPaginationChange = (page: number) => {
-        setPage(page)
+        const maxPages = Math.ceil(totalData / pageSize)
+        if (page > maxPages) {
+            setPage(1)
+        } else {
+            setPage(page)
+        }
     }
 
     const onSelectChange = (value = 0) => {
+        setPage(1)
         setPageSize(Number(value))
     }
 
     const handleDownload = async () => {
         try {
-            let filterParam = ''
-            if (filterInput.includes('&name=')) {
-                filterParam = `&name=${globalFilter}`
-            } else if (filterInput.includes('&sku=')) {
-                filterParam = `&sku=${globalFilter}`
+            let filterValue = ''
+            if (currentSelectedPage?.value === 'sku' && globalFilter) {
+                filterValue = `&sku=${encodeURIComponent(globalFilter)}`
             }
-            const downloadUrl = `inventory?download=true&${typeFetch}${filterParam}`
+            if (currentSelectedPage?.value === 'name' && globalFilter) {
+                filterValue = `&name=${encodeURIComponent(globalFilter)}`
+            }
+            const downloadUrl = `inventory?download=true&${typeFetch}${filterValue}`
             const response = await axiosInstance.get(downloadUrl, {
                 responseType: 'blob',
             })
@@ -352,6 +358,13 @@ const StockOverview = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading the file:', error)
+        }
+    }
+
+    const handleSelect = (value: any) => {
+        const selected = FilterArray.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
         }
     }
 
@@ -372,17 +385,36 @@ const StockOverview = () => {
                 >
                     <IoMdDownload className="text-xl" />
                 </button>
-                <div className="mb-4 w-full md:w-auto">
-                    <input
-                        type="search"
-                        placeholder="Search SKU/Name"
-                        value={globalFilter}
-                        onChange={(e) => {
-                            console.log('final Value', e.target.value)
-                            setGlobalFilter(e.target.value)
-                        }}
-                        className="p-2 border rounded shadow-md w-full md:w-auto"
-                    />
+                <div className="flex gap-2">
+                    <div className="mb-4 w-full md:w-auto">
+                        <input
+                            type="search"
+                            placeholder="Search SKU/Name"
+                            value={globalFilter}
+                            onChange={(e) => {
+                                console.log('final Value', e.target.value)
+                                setGlobalFilter(e.target.value)
+                            }}
+                            className="p-2 border rounded shadow-md w-full md:w-auto"
+                        />
+                    </div>
+                    <div>
+                        <div className="bg-gray-100 items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                            <Dropdown
+                                className=" text-xl text-black bg-gray-200 font-bold  "
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                onSelect={handleSelect}
+                            >
+                                {FilterArray?.map((item, key) => {
+                                    return (
+                                        <DropdownItem key={key} eventKey={item.value}>
+                                            <span>{item.label}</span>
+                                        </DropdownItem>
+                                    )
+                                })}
+                            </Dropdown>
+                        </div>
+                    </div>
                 </div>
                 <div className="flex flex-col gap-7 xl:flex-row items-center xl:items-baseline ">
                     <div className="drop flex flex-row gap-5 w-full md:w-auto items-center">
