@@ -243,6 +243,7 @@ const Exchangeorders = () => {
             },
 
             { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }) => <span>{getValue()} km</span> },
+            { header: 'Schedule Date', accessorKey: 'delivery_schedule_date' },
             {
                 header: 'Slot',
                 accessorKey: 'delivery_schedule_slot',
