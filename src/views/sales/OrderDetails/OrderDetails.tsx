@@ -294,6 +294,7 @@ const OrderDetails = () => {
                                             data={data.logistic}
                                             logistic_partner={data.logistic?.partner}
                                             delivery_type={data.delivery_type}
+                                            setShowRiderModal={setShowRiderData}
                                         />
                                     </div>
                                     <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">

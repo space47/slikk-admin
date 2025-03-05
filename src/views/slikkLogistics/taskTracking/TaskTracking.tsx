@@ -43,6 +43,7 @@ const TaskTracking = () => {
             let filterRunnerName = ''
             let currentStatusName = ''
             let fromDate = ''
+            let deliveryType = ''
             if (particularMobileOfRunner) {
                 filterRunnerName = `&runner_mobile=${particularMobileOfRunner}`
             }
@@ -59,9 +60,12 @@ const TaskTracking = () => {
             if (from && to && !globalFilter) {
                 fromDate = `&from=${from}&to=${To_Date}`
             }
+            if (!globalFilter) {
+                deliveryType = `task_type=FORWARD,EXCHANGE`
+            }
 
             const response = await axioisInstance.get(
-                `logistic/slikk/task?task_type=FORWARD&page_size=100${fromDate}${searchData}${filterRunnerName}${currentStatusName}`,
+                `logistic/slikk/task?${deliveryType}&page_size=100${fromDate}${searchData}${filterRunnerName}${currentStatusName}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
