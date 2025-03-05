@@ -43,6 +43,7 @@ const TaskTracking = () => {
             let filterRunnerName = ''
             let currentStatusName = ''
             let fromDate = ''
+            let deliveryType = ''
             if (particularMobileOfRunner) {
                 filterRunnerName = `&runner_mobile=${particularMobileOfRunner}`
             }
@@ -59,9 +60,12 @@ const TaskTracking = () => {
             if (from && to && !globalFilter) {
                 fromDate = `&from=${from}&to=${To_Date}`
             }
+            if (!globalFilter) {
+                deliveryType = `task_type=FORWARD,EXCHANGE`
+            }
 
             const response = await axioisInstance.get(
-                `logistic/slikk/task?task_type=FORWARD&page_size=100${fromDate}${searchData}${filterRunnerName}${currentStatusName}`,
+                `logistic/slikk/task?${deliveryType}&p=${page}&page_size=${pageSize}${fromDate}${searchData}${filterRunnerName}${currentStatusName}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -76,15 +80,16 @@ const TaskTracking = () => {
         }
     }
 
+    console.log('data of results', data)
+
     useEffect(() => {
         fetchData()
-    }, [from, to, particularMobileOfRunner, globalFilter, currentStatus])
+    }, [from, to, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize])
 
     const filteredData = data.filter((item) =>
         Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
-
-    console.log('Mobile', filteredData)
+    console.log('filtered Data', filteredData)
 
     const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(totalData / pageSize)
@@ -330,7 +335,7 @@ const TaskTracking = () => {
                     </Tr>
                 </THead>
                 <TBody>
-                    {paginatedData.map((row: any) => (
+                    {data.map((row: any) => (
                         <Tr key={row.task_id}>
                             {columns.map((column, index) => (
                                 <Td key={index}>{column.format ? column.format(row[column.accessor], row) : row[column.accessor] || ''}</Td>
@@ -346,7 +351,10 @@ const TaskTracking = () => {
                     isSearchable={false}
                     value={pageSizeOptions.find((option) => option.value === pageSize)}
                     options={pageSizeOptions}
-                    onChange={(option) => setPageSize(Number(option?.value))}
+                    onChange={(option) => {
+                        setPage(1)
+                        setPageSize(Number(option?.value))
+                    }}
                 />
             </div>
             {showAssignModal && (

@@ -4,17 +4,18 @@ import { HiLocationMarker, HiPhone } from 'react-icons/hi'
 import Avatar from '@/components/ui/Avatar'
 import { FaUserAlt } from 'react-icons/fa'
 import { ShippingInfoProps } from '../orderList.common'
-import { Dropdown } from '@/components/ui'
+import { Button, Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useState } from 'react'
 import { LOGISTIC_PARTNER } from './activityCommon'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
-const ShippingInfo = ({ data, logistic_partner, delivery_type }: ShippingInfoProps) => {
+const ShippingInfo = ({ data, logistic_partner, delivery_type, setShowRiderModal }: ShippingInfoProps) => {
     const [partnerChange, setPartnerChange] = useState<string>('')
     const { invoice_id } = useParams()
+    const navigate = useNavigate()
 
     const handleDeliveryChange = async (value: string) => {
         setPartnerChange(value)
@@ -28,6 +29,7 @@ const ShippingInfo = ({ data, logistic_partner, delivery_type }: ShippingInfoPro
                 message: 'Success',
                 description: response?.data?.message || 'Created Task Successfully',
             })
+            navigate(0)
         } catch (error) {
             console.error(error)
             notification.error({
@@ -96,6 +98,13 @@ const ShippingInfo = ({ data, logistic_partner, delivery_type }: ShippingInfoPro
                             </Dropdown>
                         </div>
                     </div>
+                    {logistic_partner === 'Slikk' && (
+                        <div className="mt-5">
+                            <Button variant="new" size="sm" onClick={() => setShowRiderModal(true)}>
+                                Assign Rider
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
         </Card>

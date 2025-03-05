@@ -109,4 +109,5 @@ export type ShippingInfoProps = {
     }
     logistic_partner: any
     delivery_type: string
+    setShowRiderModal: (x: boolean) => void
 }
