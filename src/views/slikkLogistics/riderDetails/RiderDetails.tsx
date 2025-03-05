@@ -11,11 +11,8 @@ import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore
 import { Select } from '@/components/ui'
 import { FaRegCircleDot } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
-import { MdLocationOff, MdLocationOn, MdOutlineLocationOn } from 'react-icons/md'
 import { FaMapMarkedAlt } from 'react-icons/fa'
-import PageCommon from '@/common/PageCommon'
 import { useNavigate } from 'react-router-dom'
-import { ref } from 'yup'
 import { IoIosRefresh } from 'react-icons/io'
 
 const RiderDetails = () => {
@@ -28,8 +25,8 @@ const RiderDetails = () => {
     const [showRiderDetailModal, setShowRiderDetailModal] = useState(false)
     const [mobileForParticularRider, setMobileForParticularRider] = useState<string>()
     const [currentStoreLocation, setCurrentStoreLocation] = useState<Record<string, number | undefined>>({
-        lat: 12.9001879,
-        long: 77.6510959,
+        lat: 12.920216,
+        long: 77.649326,
     })
     const [showRideeMap, setShowRiderMap] = useState<boolean>(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)

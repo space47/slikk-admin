@@ -17,6 +17,8 @@ export type SalesOrderDetailsResponse = {
     payementStatus?: number
     create_date?: string
     dateTime?: number
+    latitude: number
+    longitude: number
     payment?: {
         amount: number
         mode: string
