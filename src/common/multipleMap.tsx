@@ -11,9 +11,12 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import { MdClose, MdFullscreen } from 'react-icons/md'
 import { BsFullscreenExit } from 'react-icons/bs'
 import 'leaflet.heat'
-import { Dropdown } from '@/components/ui'
+import { Dropdown, Select } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useNavigate } from 'react-router-dom'
+import { companyStore } from '@/store/types/companyStore.types'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
@@ -266,8 +269,9 @@ const MAP_STYLE_ARRAY = [
 ]
 
 const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount, currentStatus, currentInvoice }) => {
-    const [currLat, setCurrLat] = useState(12.9014)
-    const [currLong, setCurrLong] = useState(77.65122)
+    const dispatch = useAppDispatch()
+    const [currLat, setCurrLat] = useState<number>(12.920216)
+    const [currLong, setCurrLong] = useState<number>(77.649326)
     const R = 6371
     const [location, setLocation] = useState('')
     const [suggestions, setSuggestions] = useState<any>([])
@@ -276,6 +280,19 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
     const [distanceBelowFifteenToThirty, setDistanceBelowFifteenToThirty] = useState<any[]>([])
     const [distanceAboveThirty, setDistanceAboveThirty] = useState<any[]>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(MAP_STYLE_ARRAY[0])
+    const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
+
+    useEffect(() => {
+        dispatch(fetchCompanyStore())
+    }, [dispatch])
+
+    const formattedData = storeResults?.map((item) => ({
+        label: item?.name,
+        value: {
+            lat: item?.latitude,
+            long: item?.longitude,
+        },
+    }))
 
     const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
 
@@ -427,24 +444,27 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
         const selectedPage = MAP_STYLE_ARRAY.find((page) => page.value === value)
         if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
+    console.log('currLat', currLat)
 
     return (
         <div className="flex flex-col gap-4">
-            <div>
-                <input className="rounded-xl" placeholder="Enter location" value={location} onChange={handleChangeLocation} />
-                {suggestions.length > 0 && (
-                    <ul className="mt-2 border rounded-xl bg-white shadow-md">
-                        {suggestions.map((suggestion: any, index: any) => (
-                            <li
-                                key={index}
-                                className="p-2 cursor-pointer hover:bg-gray-200"
-                                onClick={() => handleSelectSuggestion(suggestion)}
-                            >
-                                {suggestion.name}
-                            </li>
-                        ))}
-                    </ul>
-                )}
+            <div className="flex gap-4 ">
+                <div>
+                    <input className="rounded-xl" placeholder="Enter location" value={location} onChange={handleChangeLocation} />
+                    {suggestions.length > 0 && (
+                        <ul className="mt-2 border rounded-xl bg-white shadow-md">
+                            {suggestions.map((suggestion: any, index: any) => (
+                                <li
+                                    key={index}
+                                    className="p-2 cursor-pointer hover:bg-gray-200"
+                                    onClick={() => handleSelectSuggestion(suggestion)}
+                                >
+                                    {suggestion.name}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
             </div>
 
             <div className="flex flex-col gap-10 xl:flex-row">
@@ -498,6 +518,20 @@ const MultipleMap: React.FC<MultipleMapProps> = ({ latitudes, longitudes, amount
                                 </DropdownItem>
                             ))}
                         </Dropdown>
+                    </div>
+                    <div className="flex flex-col gap-3 mt-6">
+                        <Select
+                            isClearable
+                            placeholder="select Warehouse"
+                            options={formattedData}
+                            getOptionLabel={(option) => option.label}
+                            getOptionValue={(option) => option.value}
+                            className="w-full"
+                            onChange={(newVal) => {
+                                setCurrLat(newVal?.value?.lat || 0)
+                                setCurrLong(newVal?.value?.long || 0)
+                            }}
+                        />
                     </div>
                 </div>
             </div>
