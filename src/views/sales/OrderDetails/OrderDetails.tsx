@@ -25,6 +25,7 @@ import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
 import OrderMap from './OrderMap'
 import UtmModal from './components/UtmModal'
+import TwoPointMap from './components/TwoPointMap'
 // import { string } from 'yup'
 
 const scheduleSlots: any = {
@@ -316,7 +317,7 @@ const OrderDetails = () => {
                                     </div>
                                 </div>
                                 {/* "" */}
-                                <div className={data?.logistic !== null ? 'flex xl:justify-between flex-col xl:flex-row ' : ''}>
+                                <div className={'flex xl:justify-between flex-col xl:flex-row '}>
                                     <div className="mt-6">
                                         <Activity
                                             mainData={data}
@@ -328,28 +329,30 @@ const OrderDetails = () => {
                                             logistic={data.logistic}
                                         />
                                     </div>
-                                    {data?.logistic !== null && (
-                                        <div className="xl:w-[1000px] mt-10">
-                                            {data?.logistic === null && (
-                                                <>
-                                                    <div className="flex font-bold mt-24 justify-center xl:h-screen items-center text-red-700">
-                                                        No Logistic Data Created
-                                                    </div>
-                                                </>
-                                            )}
-                                            {data?.logistic?.partner === 'Slikk' && <OrderMap task_id={data?.logistic?.task_id} />}
-                                            {data?.logistic?.partner !== 'Slikk' && (
-                                                <div style={{ width: '100%', height: '600px' }}>
-                                                    <iframe
-                                                        allowFullScreen
-                                                        src={data?.logistic?.tracking_url}
-                                                        style={{ width: '100%', height: '100%', border: 'none' }}
-                                                        title="Live Order Tracking"
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
+
+                                    <div className="xl:w-[1000px] mt-10">
+                                        {data?.logistic === null && (
+                                            <>
+                                                <TwoPointMap
+                                                    lat={data?.latitude}
+                                                    long={data?.longitude}
+                                                    storeLat={data?.store.latitude}
+                                                    storeLong={data?.store.longitude}
+                                                />
+                                            </>
+                                        )}
+                                        {data?.logistic?.partner === 'Slikk' && <OrderMap task_id={data?.logistic?.task_id} />}
+                                        {data?.logistic?.partner !== 'Slikk' && (
+                                            <div style={{ width: '100%', height: '600px' }}>
+                                                <iframe
+                                                    allowFullScreen
+                                                    src={data?.logistic?.tracking_url}
+                                                    style={{ width: '100%', height: '100%', border: 'none' }}
+                                                    title="Live Order Tracking"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="mt-6 xl:mt-0 xl:max-w-xs xl:w-full"></div>
