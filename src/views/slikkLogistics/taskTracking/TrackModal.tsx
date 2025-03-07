@@ -20,8 +20,7 @@ type RiderProfile = {
     email: string
     mobile: string
     image: string
-
-    business_email: string | null
+    checked_in_status: boolean
 }
 
 const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssignModal }: ModalProps) => {
@@ -49,6 +48,8 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
             console.log(error)
         }
     }
+
+    console.log('rider data for given is', ridersData)
 
     useEffect(() => {
         fetchData()
@@ -127,22 +128,24 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                     {ridersData && (
                         <div className="details overflow-y-scroll scrollbar-hide h-[340px] xl:h-[500px]  ">
                             <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection}>
-                                {ridersData.map((item, key) => {
-                                    return (
-                                        <Card key={key} className="w-[350px] mb-4 bg-gray-200">
-                                            <div className="flex items-center gap-2 justify-between">
-                                                <div className="flex gap-3 items-center">
-                                                    <Avatar shape="circle" src={item?.image} />
-                                                    <div className="flex gap-1">
-                                                        <span className="text-xl font-bold">{item.first_name}</span>
-                                                        <span className="text-xl font-bold">{item.last_name}</span>
+                                {ridersData
+                                    ?.filter((item) => item?.checked_in_status === true)
+                                    ?.map((item, key) => {
+                                        return (
+                                            <Card key={key} className="w-[350px] mb-4 bg-gray-200">
+                                                <div className="flex items-center gap-2 justify-between">
+                                                    <div className="flex gap-3 items-center">
+                                                        <Avatar shape="circle" src={item?.image} />
+                                                        <div className="flex gap-1">
+                                                            <span className="text-xl font-bold">{item.first_name}</span>
+                                                            <span className="text-xl font-bold">{item.last_name}</span>
+                                                        </div>
                                                     </div>
+                                                    <Radio value={item.mobile} />
                                                 </div>
-                                                <Radio value={item.mobile} />
-                                            </div>
-                                        </Card>
-                                    )
-                                })}
+                                            </Card>
+                                        )
+                                    })}
                             </Radio.Group>
                         </div>
                     )}

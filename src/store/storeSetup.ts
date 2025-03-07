@@ -5,9 +5,10 @@ import { PERSIST_STORE_NAME } from '@/constants/app.constant'
 import rootReducer, { RootState, AsyncReducers } from './rootReducer'
 import RtkQueryService from '@/services/RtkQueryService'
 import { remitanceApi } from './query/remitance.query'
+import { ridersService } from './services/riderServices'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const middlewares: any[] = [RtkQueryService.middleware, remitanceApi.middleware]
+const middlewares: any[] = [RtkQueryService.middleware, remitanceApi.middleware, ridersService.middleware]
 
 const persistConfig = {
     key: PERSIST_STORE_NAME,

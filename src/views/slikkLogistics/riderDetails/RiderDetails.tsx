@@ -8,7 +8,7 @@ import RiderFullMap from './RiderFullMap'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
-import { Select } from '@/components/ui'
+import { Button, Select } from '@/components/ui'
 import { FaRegCircleDot } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { FaMapMarkedAlt } from 'react-icons/fa'
@@ -182,7 +182,7 @@ const RiderDetails = () => {
                         />
                     </div>
 
-                    <div className="flex flex-col  xl:flex-row xl:gap-10 items-center">
+                    <div className="flex flex-col gap-2 xl:flex-row xl:gap-10 items-center">
                         <div onClick={() => setShowRiderMap((prev) => !prev)} className="items-center xl:mt-8 flex gap-1">
                             <span className="text-xl font-bold cursor-pointer">{showRideeMap ? 'Close Map:' : 'View Map:'}</span>
                             <button>
@@ -192,6 +192,11 @@ const RiderDetails = () => {
                                     <FaMapMarkedAlt className="text-4xl text-green-600 " />
                                 )}
                             </button>
+                        </div>
+                        <div className="xl:mt-8">
+                            <Button variant="new" onClick={() => navigate(`/app/riders/addNew`)}>
+                                ADD RIDERS
+                            </Button>
                         </div>
                         <div>
                             <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
@@ -203,25 +208,7 @@ const RiderDetails = () => {
                     <div className="xl:w-[90%]  items-center">
                         <div className="text-xl font-bold">Rider Location</div>
                         <div className="flex flex-col gap-3">
-                            {/* <div className="text-xl font-bold">Select Riders:</div> */}
                             <div className="flex justify-end">
-                                {/* <div>
-                                    <Select
-                                        isClearable
-                                        placeholder="select slikk store"
-                                        options={riderDetails}
-                                        getOptionLabel={(option) => option.profile?.first_name}
-                                        getOptionValue={(option) => option.profile?.current_location}
-                                        className="w-full"
-                                        onChange={(newVal) => {
-                                            console.log('new value is', newVal)
-                                            setSpecificRider({
-                                                lat: Number(newVal?.profile?.current_location?.latitude),
-                                                long: Number(newVal?.profile?.current_location?.longitude),
-                                            })
-                                        }}
-                                    />
-                                </div> */}
                                 <div>
                                     <button onClick={() => setRefreshTrigger((prev) => prev + 1)}>
                                         <IoIosRefresh className="text-2xl font-extrabold" />
@@ -234,8 +221,6 @@ const RiderDetails = () => {
                 )}
 
                 <div className="flex flex-col gap-3">
-                    {/* <div className="text-xl font-bold">Rider Tables:</div> */}
-
                     <div className="flex gap-10 justify-start mb-5">
                         <div
                             className={`flex  cursor-pointer ${tabSelect === 'checkin' ? ' border-b-4 border-black text-green-500' : ''}`}
