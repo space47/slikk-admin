@@ -14,6 +14,7 @@ import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { IoIosRefresh } from 'react-icons/io'
+import RiderCheckinModal from './RiderCheckinModal'
 
 const RiderDetails = () => {
     const dispatch = useAppDispatch()
@@ -24,6 +25,7 @@ const RiderDetails = () => {
     const [pageSize, setPageSize] = useState(10)
     const [showRiderDetailModal, setShowRiderDetailModal] = useState(false)
     const [mobileForParticularRider, setMobileForParticularRider] = useState<string>()
+    const [nameForParticularRider, setNameForParticularRider] = useState<string>()
     const [currentStoreLocation, setCurrentStoreLocation] = useState<Record<string, number | undefined>>({
         lat: 12.920216,
         long: 77.649326,
@@ -37,13 +39,9 @@ const RiderDetails = () => {
         setTabSelect(value)
     }
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
+    const [isCheckModal, setIsCheckModal] = useState<boolean>(false)
+    const [riderMobile, setRiderMobile] = useState<string>('')
 
-    console.log('check for current location is:', currentStoreLocation)
-
-    const [specificRider, setSpecificRider] = useState<Record<string, number | undefined>>({
-        lat: undefined,
-        long: undefined,
-    })
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -101,8 +99,11 @@ const RiderDetails = () => {
                                 </div>
                             </>
                         ) : (
-                            <div className="items-center flex justify-center">
-                                <FaRegCircleDot className="text-red-500 text-xl" />
+                            <div className="items-center flex justify-center cursor-pointer">
+                                <FaRegCircleDot
+                                    className="text-red-500 text-xl"
+                                    onClick={() => handleCheckinRider(row?.original?.profile?.mobile, row?.original?.profile?.first_name)}
+                                />
                             </div>
                         )}
                     </div>
@@ -148,6 +149,12 @@ const RiderDetails = () => {
             },
         },
     ]
+
+    const handleCheckinRider = (mobile: string, name: string) => {
+        setIsCheckModal(true)
+        setMobileForParticularRider(mobile)
+        setNameForParticularRider(name)
+    }
 
     const hanldeProfileClick = (mobile: string) => {
         setShowRiderDetailModal(true)
@@ -277,6 +284,14 @@ const RiderDetails = () => {
                     dialogIsOpen={showRiderDetailModal}
                     setIsOpen={setShowRiderDetailModal}
                     mobile={mobileForParticularRider}
+                />
+            )}
+            {isCheckModal && (
+                <RiderCheckinModal
+                    dialogIsOpen={isCheckModal}
+                    setIsOpen={setIsCheckModal}
+                    mobile={mobileForParticularRider || ''}
+                    name={nameForParticularRider || ''}
                 />
             )}
         </div>
