@@ -12,6 +12,7 @@ type ModalProps = {
     handleCloseModal: any
     storeTaskId: number
     setShowAssignModal: any
+    isReturn?: boolean
 }
 
 type RiderProfile = {
@@ -23,7 +24,7 @@ type RiderProfile = {
     checked_in_status: boolean
 }
 
-const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssignModal }: ModalProps) => {
+const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssignModal, isReturn }: ModalProps) => {
     console.log('TaskId', storeTaskId)
 
     const [ridersData, setRidersData] = useState<RiderProfile[]>([])
@@ -71,7 +72,6 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
             }
 
             const response = await axioisInstance.patch(`logistic/slikk/task/${storeTaskId}`, riderBody)
-            console.log('rssssssssssssssss:', response)
             notification.success({
                 message: 'SUCCESS',
                 description: `Rider with moblie ${selectedRiderMobile} is assigned`,
@@ -95,6 +95,8 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
     const handleSearch = () => {
         setHitSearchApi(true)
     }
+
+    const riderDataArray = isReturn ? ridersData : ridersData?.filter((item) => item?.checked_in_status === true)
 
     return (
         <div>
@@ -128,24 +130,22 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                     {ridersData && (
                         <div className="details overflow-y-scroll scrollbar-hide h-[340px] xl:h-[500px]  ">
                             <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection}>
-                                {ridersData
-                                    ?.filter((item) => item?.checked_in_status === true)
-                                    ?.map((item, key) => {
-                                        return (
-                                            <Card key={key} className="w-[350px] mb-4 bg-gray-200">
-                                                <div className="flex items-center gap-2 justify-between">
-                                                    <div className="flex gap-3 items-center">
-                                                        <Avatar shape="circle" src={item?.image} />
-                                                        <div className="flex gap-1">
-                                                            <span className="text-xl font-bold">{item.first_name}</span>
-                                                            <span className="text-xl font-bold">{item.last_name}</span>
-                                                        </div>
+                                {riderDataArray?.map((item, key) => {
+                                    return (
+                                        <Card key={key} className="w-[350px] mb-4 bg-gray-200">
+                                            <div className="flex items-center gap-2 justify-between">
+                                                <div className="flex gap-3 items-center">
+                                                    <Avatar shape="circle" src={item?.image} />
+                                                    <div className="flex gap-1">
+                                                        <span className="text-xl font-bold">{item.first_name}</span>
+                                                        <span className="text-xl font-bold">{item.last_name}</span>
                                                     </div>
-                                                    <Radio value={item.mobile} />
                                                 </div>
-                                            </Card>
-                                        )
-                                    })}
+                                                <Radio value={item.mobile} />
+                                            </div>
+                                        </Card>
+                                    )
+                                })}
                             </Radio.Group>
                         </div>
                     )}

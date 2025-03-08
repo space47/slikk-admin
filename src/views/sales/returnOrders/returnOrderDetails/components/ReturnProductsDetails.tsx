@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
+import RescheduleModal from './RescheduleModal'
 
 const columnHelper = createColumnHelper<any>()
 
@@ -71,6 +72,7 @@ const ReturnProductsDetails = () => {
     const [showCancelModal, setShowCancelModal] = useState(false)
     const returnOrderId = returnOrder?.returnOrders?.return_order_id
     const returnProducts = returnOrder?.returnOrders?.return_order_items.map((item) => item) || []
+    const [isReschedule, setIsReschedule] = useState(false)
     const navigate = useNavigate()
 
     const handleCancelOrder = () => {
@@ -106,12 +108,24 @@ const ReturnProductsDetails = () => {
 
             {returnProducts?.length > 0 ? (
                 <div className="flex justify-end mr-7 ">
-                    <button
-                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
-                        onClick={handleCancelOrder}
-                    >
-                        CANCEL
-                    </button>
+                    <div className="flex gap-3">
+                        <div>
+                            <button
+                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                onClick={handleCancelOrder}
+                            >
+                                CANCEL
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                onClick={() => setIsReschedule(true)}
+                            >
+                                Reschedule
+                            </button>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 ''
@@ -126,6 +140,7 @@ const ReturnProductsDetails = () => {
                     />
                 </>
             )}
+            {isReschedule && <RescheduleModal isReschedule={isReschedule} setIsReschedule={setIsReschedule} />}
         </AdaptableCard>
     )
 }
