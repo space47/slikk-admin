@@ -129,7 +129,43 @@ const TransferModule = () => {
         () => [
             { header: 'SKU', accessorKey: 'sku' },
             { header: 'Brand', accessorKey: 'brand' },
-            { header: 'Quantity', accessorKey: 'quantity_returned' },
+            {
+                header: 'Quantity',
+                accessorKey: 'quantity_returned',
+                cell: ({ row }: { row: any }) => (
+                    <div className="flex items-center gap-2">
+                        <button
+                            className=" text-green-500 text-xl font-bold"
+                            onClick={() => {
+                                const updatedData = skuWiseData.map((item) =>
+                                    item.sku === row.original.sku
+                                        ? { ...item, quantity_returned: (item.quantity_returned || 0) + 1 }
+                                        : item,
+                                )
+                                setSkuWiseData(updatedData)
+                                localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
+                            }}
+                        >
+                            +
+                        </button>
+                        <span>{row.original.quantity_returned}</span>
+                        <button
+                            className="text-red-500 text-2xl font-bold"
+                            onClick={() => {
+                                const updatedData = skuWiseData.map((item) =>
+                                    item.sku === row.original.sku
+                                        ? { ...item, quantity_returned: Math.max((item.quantity_returned || 0) - 1, 0) }
+                                        : item,
+                                )
+                                setSkuWiseData(updatedData)
+                                localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
+                            }}
+                        >
+                            -
+                        </button>
+                    </div>
+                ),
+            },
             { header: 'Location', accessorKey: 'location' },
             {
                 header: '-',
