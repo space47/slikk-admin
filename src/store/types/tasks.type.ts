@@ -30,6 +30,7 @@ type EventLog = {
     status: string
     timestamp: string
     failure_reason?: string
+    rto_reason?: string
 }
 
 type ClientOrderDetails = {

@@ -29,6 +29,7 @@ const ReturnActionActivity = ({
                     undefined ||
                     null) && (
                     <TrackModal
+                        isReturn
                         handleCloseModal={() => setIsModalOpen(false)}
                         showTaskModal={isModalOpen}
                         setShowAssignModal={setIsModalOpen}
