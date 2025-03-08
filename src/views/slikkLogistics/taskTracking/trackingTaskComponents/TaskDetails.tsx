@@ -22,8 +22,6 @@ const TaskDetails = () => {
         return () => clearInterval(intervalId)
     }, [dispatch, task_id])
 
-    console.log('LOG', taskData)
-
     const CARDDATA = [
         { name: 'Task_ID', value: taskData?.task_id, hyper: false },
         { name: 'Created', value: moment(taskData?.create_date).format('YYYY-MM-DD hh:mm:ss a'), hyper: false },
