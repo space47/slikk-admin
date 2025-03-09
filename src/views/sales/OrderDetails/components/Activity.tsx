@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom'
 import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5 } from './Modal'
 import { LOGISTIC, LOGISTIC_PARTNER, Payment, Product } from './activityCommon'
 import { SalesOrderDetailsResponse } from '../orderList.common'
-import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import DialogConfirm from '@/common/DialogConfirm'
 
 type Event = {
@@ -75,7 +74,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 try {
                     // Process fulfilledQuantities to filter out 0 or negative values
                     const data = Object.entries(fulfilledQuantities).reduce(
-                        (acc, [id, quantity]) => {
+                        (acc, [id, quantity]: any) => {
                             if (quantity > 0) {
                                 acc[id] = quantity
                             }
@@ -184,12 +183,10 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     useEffect(() => {
         if (cancelCall) {
             const sendApiRequest = async () => {
-                console.log('fullfilled quantities', fulfilledQuantities)
-
                 try {
                     const data = Object.entries(fulfilledQuantities)?.reduce((acc) => acc, {} as { [key: number]: number })
-
-                    const cancelData = rejectData?.reduce((acc, id) => {
+                    console.log(data)
+                    const cancelData = rejectData?.reduce((acc: any, id: any) => {
                         acc[id] = 0
                         return acc
                     }, {})
@@ -200,7 +197,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                         action,
                         data: cancelData,
                     }
-                    console.log('Data after Reject', body)
                     const response = await axiosInstance.patch(`merchant/order/${invoice_id}`, body)
                     console.log(response)
                     setIsModalOpen(false)
@@ -280,11 +276,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         setTriggerShipCall(true)
         setButtonAfterClick(true)
     }
-    const handleOutForDelivery = () => {
-        setAction('SHIPPED')
-        setTriggerOutDeliveryCall(true)
-        setButtonAfterClick(true)
-    }
 
     const handleDelivery = () => {
         setAction('DELIVERED')
@@ -352,6 +343,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
     const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
 
+    console.log('buttontext is ', buttonText)
+
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
@@ -414,8 +407,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {/* {status === ''} */}
-
             {data[data.length - 1]?.status === 'PACKED' && (
                 <CustomModal2
                     isModalOpen={isModalOpen}
@@ -447,7 +438,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {status === 'DELIVERY_CREATED' && mainData?.delivery_type === 'STANDARD' && (
+            {buttonText === 'OUT FOR DELIVERY' && mainData?.delivery_type === 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={handleShip}
@@ -456,7 +447,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     status={status}
                 />
             )}
-            {status === 'DELIVERY_CREATED' && mainData?.delivery_type !== 'STANDARD' && (
+            {buttonText === 'OUT FOR DELIVERY' && mainData?.delivery_type !== 'STANDARD' && (
                 <CustomModal3
                     isModalOpen={isModalOpen}
                     handlePack={handleShip}
@@ -466,7 +457,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                 />
             )}
 
-            {status === 'OUT_FOR_DELIVERY' && (
+            {buttonText === 'MARK AS DELIVERED' && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
@@ -476,7 +467,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     isButtonClick={buttonAfterClick}
                 />
             )}
-            {status === 'SHIPPED' && (
+            {buttonText === 'MARK AS DELIVERED' && (
                 <CustomModal4
                     isModalOpen={isModalOpen}
                     handlePack={handleDelivery}
@@ -486,14 +477,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     isButtonClick={buttonAfterClick}
                 />
             )}
-            {/* {showRiderData && (
-                <TrackModal
-                    showTaskModal={showRiderData}
-                    setShowAssignModal={setShowRiderData}
-                    storeTaskId={logistic?.task_id}
-                    handleCloseModal={handleCloseModal}
-                />
-            )} */}
         </Card>
     )
 }

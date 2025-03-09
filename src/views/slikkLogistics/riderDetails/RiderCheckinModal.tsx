@@ -10,9 +10,10 @@ interface props {
     setIsOpen: (x: boolean) => void
     mobile: string
     name: string
+    checkOutRider?: boolean
 }
 
-const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name }: props) => {
+const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name, checkOutRider }: props) => {
     const navigate = useNavigate()
     const onDialogClose = (e: MouseEvent) => {
         console.log('onDialogClose', e)
@@ -20,20 +21,27 @@ const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name }: props) => 
     }
 
     const onDialogOk = async () => {
-        const body = {
-            check_in_status: true,
-            check_proximity: false,
-            mobile: mobile,
-        }
+        let body
+        checkOutRider
+            ? (body = {
+                  check_in_status: false,
+                  force_checkout: true,
+                  mobile: mobile,
+              })
+            : (body = {
+                  check_in_status: true,
+                  check_proximity: false,
+                  mobile: mobile,
+              })
         try {
             const response = await axioisInstance.post(`/user/checkin`, body)
             notification.success({
-                message: response?.data?.message || 'Successfully Checked in rider',
+                message: response?.data?.message || checkOutRider ? 'Rider Checked out' : 'Successfully Checked in rider',
             })
         } catch (error) {
             console.error(error)
             notification.error({
-                message: 'Failed to checkin rider',
+                message: 'Failed to update rider status',
             })
         } finally {
             setIsOpen(false)
@@ -45,9 +53,9 @@ const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name }: props) => 
         <div>
             <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose}>
                 <h5 className="mb-4">
-                    Checkin Rider : <span className="text-blue-600">{name}</span>
+                    {checkOutRider ? 'check-out Rider' : 'Checkin Rider '}: <span className="text-blue-600">{name}</span>
                 </h5>
-                <p className="text-green-700">Are you sure you want to check in this rider</p>
+                <p className="text-green-700">Are you sure you want to {checkOutRider ? 'check-out Rider' : 'Checkin Rider '}</p>
                 <div className="text-right mt-6">
                     <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
                         Cancel

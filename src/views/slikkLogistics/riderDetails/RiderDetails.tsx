@@ -40,7 +40,7 @@ const RiderDetails = () => {
     }
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
     const [isCheckModal, setIsCheckModal] = useState<boolean>(false)
-    const [riderMobile, setRiderMobile] = useState<string>('')
+    const [isCheckOutModal, setIsCheckOutModal] = useState<boolean>(false)
 
     const navigate = useNavigate()
 
@@ -94,14 +94,19 @@ const RiderDetails = () => {
                     <div>
                         {isStatusTrue ? (
                             <>
-                                <div className="items-center flex justify-center">
-                                    <FaRegCircleDot className="text-green-500 text-xl" />
+                                <div className="items-center flex justify-center cursor-pointer">
+                                    <FaRegCircleDot
+                                        className="text-green-500 text-xl hover:text-green-400"
+                                        onClick={() =>
+                                            handleCheckoutRider(row?.original?.profile?.mobile, row?.original?.profile?.first_name)
+                                        }
+                                    />
                                 </div>
                             </>
                         ) : (
                             <div className="items-center flex justify-center cursor-pointer">
                                 <FaRegCircleDot
-                                    className="text-red-500 text-xl"
+                                    className="text-red-500 text-xl hover:text-red-400"
                                     onClick={() => handleCheckinRider(row?.original?.profile?.mobile, row?.original?.profile?.first_name)}
                                 />
                             </div>
@@ -152,6 +157,11 @@ const RiderDetails = () => {
 
     const handleCheckinRider = (mobile: string, name: string) => {
         setIsCheckModal(true)
+        setMobileForParticularRider(mobile)
+        setNameForParticularRider(name)
+    }
+    const handleCheckoutRider = (mobile: string, name: string) => {
+        setIsCheckOutModal(true)
         setMobileForParticularRider(mobile)
         setNameForParticularRider(name)
     }
@@ -290,6 +300,15 @@ const RiderDetails = () => {
                 <RiderCheckinModal
                     dialogIsOpen={isCheckModal}
                     setIsOpen={setIsCheckModal}
+                    mobile={mobileForParticularRider || ''}
+                    name={nameForParticularRider || ''}
+                />
+            )}
+            {isCheckOutModal && (
+                <RiderCheckinModal
+                    checkOutRider
+                    dialogIsOpen={isCheckOutModal}
+                    setIsOpen={setIsCheckOutModal}
                     mobile={mobileForParticularRider || ''}
                     name={nameForParticularRider || ''}
                 />
