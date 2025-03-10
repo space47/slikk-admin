@@ -13,32 +13,48 @@ import { setCount, setRidersAttendanceData } from '@/store/slices/riderSlice/rid
 import { RiderSlice } from '@/store/types/riderAddTypes'
 import { useNavigate } from 'react-router-dom'
 import EasyTable from '@/common/EasyTable'
+import { notification } from 'antd'
 
 interface RiderModalProps {
     dialogIsOpen: boolean
     setIsOpen: (x: boolean) => void
     mobile: string | string[]
+    fromDate: string
+    toDate: string
 }
 
-const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) => {
+const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }: RiderModalProps) => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [riderData, setRiderData] = useState<RiderData>()
     const [taskData, setTaskData] = useState<TaskData[]>([])
     const { riderAttendance, from, to, page, pageSize } = useAppSelector<RiderSlice>((state) => state.riderData)
 
-    const { data: riderDataForAttendance, isSuccess } = ridersService.useRiderAttendanceQuery({
-        from: from || '',
+    const {
+        data: riderDataForAttendance,
+        isSuccess,
+        isError,
+        error,
+        isLoading,
+    } = ridersService.useRiderAttendanceQuery({
+        from: fromDate ?? from,
         mobile: mobile,
         page: page,
         pageSize: pageSize,
-        to: to || '',
+        to: toDate ?? to,
     })
 
     useEffect(() => {
         if (isSuccess) {
             dispatch(setRidersAttendanceData(riderDataForAttendance?.data?.results || []))
             dispatch(setCount(riderDataForAttendance?.data?.count || 0))
+        }
+        if (isError) {
+            notification.error({
+                message: `Error is ${error}}`,
+            })
+            dispatch(setRidersAttendanceData([]))
+            dispatch(setCount(0))
         }
     }, [riderDataForAttendance, isSuccess, dispatch])
 
@@ -90,6 +106,8 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile }: RiderModalProps) 
     const hanldeAttendance = () => {
         navigate(`/app/riders/attendance`)
     }
+
+    console.log('data', isError, error, isSuccess, isLoading)
 
     const columns = [
         {

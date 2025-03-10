@@ -295,6 +295,8 @@ const RiderDetails = () => {
                     dialogIsOpen={showRiderDetailModal}
                     setIsOpen={setShowRiderDetailModal}
                     mobile={mobileForParticularRider}
+                    fromDate={from}
+                    toDate={To_Date}
                 />
             )}
             {isCheckModal && (

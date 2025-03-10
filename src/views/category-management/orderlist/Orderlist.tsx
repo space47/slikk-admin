@@ -590,22 +590,6 @@ const OrderList = () => {
         setPageSize(Number(value))
     }
 
-    const handleFromChange = (date: Date | null) => {
-        if (date) {
-            setFrom(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setFrom(moment().format('YYYY-MM-DD'))
-        }
-    }
-
-    const handleToChange = (date: Date | null) => {
-        if (date) {
-            setTo(moment(date).format('YYYY-MM-DD'))
-        } else {
-            setTo(moment().format('YYYY-MM-DD'))
-        }
-    }
-
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (dates && dates[0]) {
             setFrom(moment(dates[0]).format('YYYY-MM-DD'))
@@ -676,8 +660,6 @@ const OrderList = () => {
         setShowFilter(false)
     }, [setShowFilter])
 
-    console.log(`Table for red ---`, deliveryType?.value)
-
     if (showSpinner) {
         return <LoadingSpinner />
     }
@@ -685,49 +667,17 @@ const OrderList = () => {
     return (
         <div className="p-4">
             <div className="overflow-x-auto scrollbar-hide">
-                <div className="xl:hidden flex justify-between mb-10 items-center">
-                    <div className="flex gap-2 items-center ">
-                        <div>
-                            <UltimateDatePicker
-                                from={from}
-                                setFrom={setFrom}
-                                to={to}
-                                setTo={setTo}
-                                handleFromChange={handleFromChange}
-                                handleToChange={handleToChange}
-                                handleDateChange={handleDateChange}
-                            />
-                        </div>
-                        <div className="xl:mt-7">
-                            <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
-                                <CiFilter className="text-xl font-extrabold" /> FILTER
-                            </Button>
-
-                            <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden mt-5">
-                                <FaFilter className="text-xl font-extrabold" />
-                            </Button>
-                        </div>
-                    </div>
-                    <div>
-                        <button
-                            className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden"
-                            onClick={handleDownload}
-                        >
-                            <IoMdDownload className="text-xl md:text-xl" />
-                        </button>
-                    </div>
-                </div>
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
-                    <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3  ">
+                    <div className="flex  xl:gap-2  flex-row   gap-3  ">
                         <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
                             <Input
                                 type="search"
                                 name="search"
                                 placeholder="Search here..."
                                 value={searchInput}
-                                className="w-[200px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                                className="w-[150px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
                                 onChange={(e) => setSearchInput(e.target.value)}
-                                onKeyDown={(e) => {
+                                onKeyDown={(e: any) => {
                                     if (e.key === 'Enter') {
                                         e.preventDefault()
                                         handleSearch(e)
@@ -740,7 +690,7 @@ const OrderList = () => {
                         </div>
 
                         <div className="flex justify-center xl:justify-normal">
-                            <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-1/3 xl:w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                            <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
                                 <Dropdown
                                     className=" text-xl text-black bg-gray-200 font-bold  "
                                     title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
@@ -758,43 +708,43 @@ const OrderList = () => {
                         </div>
                     </div>
 
-                    <div className="xl:flex gap-4 hidden">
-                        <div className="flex flex-col md:flex-row items-end justify-end ">
-                            <button
-                                className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
-                                onClick={handleDownload}
-                            >
-                                <IoMdDownload className="text-xl md:text-xl font-extrabold" />
-                                EXPORT
-                            </button>
-                        </div>
-
-                        <div className="flex gap-2 items-center">
+                    <div className="xl:flex gap-4 ">
+                        <div className="flex gap-2 items-center justify-center xl:justify-normal">
                             <div>
                                 <UltimateDatePicker
                                     from={from}
                                     setFrom={setFrom}
                                     to={to}
                                     setTo={setTo}
-                                    handleFromChange={handleFromChange}
-                                    handleToChange={handleToChange}
                                     handleDateChange={handleDateChange}
                                 />
                             </div>
+
                             <div className="xl:mt-7">
                                 <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
                                     <CiFilter className="text-xl font-extrabold" /> FILTER
                                 </Button>
 
-                                <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden mt-5">
+                                <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden mt-8">
                                     <FaFilter className="text-xl font-extrabold" />
                                 </Button>
+                            </div>
+                            <div className="flex  md:flex-row items-end justify-end ">
+                                <div className="mt-10 xl:mt-7">
+                                    <button
+                                        className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
+                                        onClick={handleDownload}
+                                    >
+                                        <IoMdDownload className="text-xl md:text-xl font-extrabold hidden xl:flex" />
+                                        EXPORT
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <TabSelectOrder handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={orderCount} />
+                <TabSelectOrder handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={orderCount || 0} />
 
                 <br />
 
@@ -846,17 +796,11 @@ const OrderList = () => {
                     handleFilterClose={handleFilterClose}
                     dropdownStatus={dropdownStatus}
                     handleDropdownSelect={handleDropdownSelect}
-                    handleFromChange={handleFromChange}
-                    handleToChange={handleToChange}
-                    from={from}
-                    to={to}
                     deliveryType={deliveryType}
                     handleDeliverySelect={handleDeliverySelect}
                     paymentType={paymentType}
                     handlePaymentSelect={handlePaymentSelect}
                     handleDateChange={handleDateChange}
-                    setFrom={setFrom}
-                    setTo={setTo}
                 />
             )}
 

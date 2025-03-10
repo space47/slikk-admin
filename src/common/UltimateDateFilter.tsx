@@ -29,7 +29,7 @@ interface DATEPROPS {
     dispatch?: any
 }
 
-const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, from, to }: DATEPROPS) => {
+const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATEPROPS) => {
     const [selectedOption, setSelectedOption] = useState('TODAY')
     const [showinfDatePicker, setShowingDatePicker] = useState(false)
 
@@ -85,8 +85,6 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch, from, 
             setTo(endDate)
         }
     }
-
-    console.log('set dates', from, to)
 
     return (
         <div className="flex gap-1 items-center xl:mr-10">

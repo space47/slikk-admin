@@ -32,6 +32,7 @@ import loyaltyReducer from './slices/slikkLoyalty/loyalty.slice'
 import companyStoreReducer from './slices/companyStoreSlice/companyStore.slice'
 import departmentReducer from './slices/departmentSlice/Department.slice'
 import riderDataReducer from './slices/riderSlice/rider.slice'
+import newOrderReducer from './slices/neworderLists/newOrderList.slice'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -78,6 +79,7 @@ const staticReducers = {
     loyalty: loyaltyReducer,
     departmentsData: departmentReducer,
     riderData: riderDataReducer,
+    newOrderList: newOrderReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }

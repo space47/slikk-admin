@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 const RtkQueryService = createApi({
     reducerPath: 'rtkApi',
+    keepUnusedDataFor: 0,
     baseQuery: fetchBaseQuery({
         baseUrl: import.meta.env.VITE_BACKEND_URI,
         prepareHeaders: (headers, api) => {
