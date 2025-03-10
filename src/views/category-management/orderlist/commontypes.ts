@@ -1,3 +1,5 @@
+import { DateCalendarSlotProps } from '@mui/x-date-pickers/DateCalendar'
+
 export type ORDER_ITEM_RATING = {
     rating: string
     review: string
@@ -72,7 +74,7 @@ export type ordercommon = {
 
 export interface Order {
     invoice_id: string
-    create_date: string
+    create_date: string | Date
     user: {
         name: string
         mobile: string
@@ -135,4 +137,26 @@ export const PAYMENTOPTIONS = [
     { label: 'COD', value: 'COD' },
     { label: 'ONLINE', value: 'ONLINE' },
     { label: 'POD', value: 'POD' },
+]
+
+export const CHANGE_DELIVERY_OPTIONS = [
+    { label: 'EXPRESS', value: 'EXPRESS' },
+    { label: 'STANDARD', value: 'STANDARD' },
+    { label: 'TRY_AND_BUY', value: 'TRY_AND_BUY' },
+]
+
+export const pageSizeOptions = [
+    { value: 10, label: '10 / page' },
+    { value: 25, label: '25 / page' },
+    { value: 50, label: '50 / page' },
+    { value: 100, label: '100 / page' },
+]
+export interface DropdownStatus {
+    value: string[]
+    name: string[]
+}
+
+export const SEARCHOPTIONS = [
+    { label: 'INVOICE', value: 'invoice' },
+    { label: 'MOBILE', value: 'mobile' },
 ]

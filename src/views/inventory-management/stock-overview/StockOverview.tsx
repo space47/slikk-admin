@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
@@ -50,6 +50,8 @@ const StockOverview = () => {
     const [typeFetch, setTypeFetch] = useState('')
     const [accessDenied, setAccessDenied] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
+    const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
+    const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
 
     const fetchAndFilterData = async () => {
         try {
@@ -131,8 +133,9 @@ const StockOverview = () => {
                         <input
                             type="text"
                             className="rounded-xl w-[150px]"
-                            value={location}
+                            value={updatedLocation[stockId] ?? row.original.location}
                             onChange={(e) => handleLocationChange(stockId, e.target.value)}
+                            ref={(el) => (locationInputRef.current[stockId] = el)}
                         />
                     )
                 },
@@ -158,13 +161,13 @@ const StockOverview = () => {
                 accessorKey: 'quantity',
                 cell: ({ row }) => {
                     const stockId = row.original.id
-                    const quantity = updatedQuantities[stockId] ?? row.original.quantity
                     return (
                         <input
                             className="w-[70px] rounded-xl"
                             type="number"
-                            value={quantity}
+                            value={updatedQuantities[stockId] ?? row.original.quantity}
                             onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
+                            ref={(el) => (qtyInputRef.current[stockId] = el)}
                         />
                     )
                 },
@@ -231,17 +234,23 @@ const StockOverview = () => {
     }
 
     const handleQuantityChange = (id: number, newQuantity: number) => {
-        setUpdatedQuantities((prevQuantities) => ({
-            ...prevQuantities,
-            [id]: newQuantity,
-        }))
+        setUpdatedQuantities((prevQuantity) => {
+            if (prevQuantity[id] === newQuantity) return prevQuantity
+            return { ...prevQuantity, [id]: newQuantity }
+        })
+        setTimeout(() => {
+            qtyInputRef.current[id]?.focus()
+        }, 0)
     }
 
     const handleLocationChange = (id: number, newLocation: string) => {
-        setUpdatedLocation((prev) => ({
-            ...prev,
-            [id]: newLocation,
-        }))
+        setUpdatedLocation((prevLocations) => {
+            if (prevLocations[id] === newLocation) return prevLocations
+            return { ...prevLocations, [id]: newLocation }
+        })
+        setTimeout(() => {
+            locationInputRef.current[id]?.focus()
+        }, 0)
     }
 
     const hanldeFilter = () => {
