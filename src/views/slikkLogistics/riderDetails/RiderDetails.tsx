@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { RiderData } from './RiderDetailsCommon'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -24,7 +25,7 @@ const RiderDetails = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [showRiderDetailModal, setShowRiderDetailModal] = useState(false)
-    const [mobileForParticularRider, setMobileForParticularRider] = useState<string>()
+    const [mobileForParticularRider, setMobileForParticularRider] = useState<any>()
     const [nameForParticularRider, setNameForParticularRider] = useState<string>()
     const [currentStoreLocation, setCurrentStoreLocation] = useState<Record<string, number | undefined>>({
         lat: 12.920216,

@@ -2,41 +2,49 @@
 import { Button, FormContainer, FormItem, Input, Select } from '@/components/ui'
 // import { ridersService } from '@/store/services/riderServices'
 import { Field, FieldProps, Form, Formik } from 'formik'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { RiderFieldArray, RiderTypeArray } from './riderUtils'
 import AddRiderMap from './AddRiderMap'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import FullTimePicker from '@/common/FullTimePicker'
+import { ridersService } from '@/store/services/riderServices'
+import { RiderAddTypes } from '@/store/types/riderAddTypes'
+import { useNavigate } from 'react-router-dom'
 
 const AddRider = () => {
+    const navigate = useNavigate()
     const [currLat, setCurrLat] = useState<number>(12.920216)
     const [currLong, setCurrLong] = useState<number>(77.649326)
-    // const [ridersData] = ridersService.useAddRidersMutation()
+    const [ridersData, riderDataResponse] = ridersService.useAddRidersMutation()
     const initialValue = {}
-    //TODO: connvert this to rtk query and define its type
-    const handleSubmit = async (values: any) => {
-        const body = {
-            mobile: values?.mobile,
-            first_name: values?.first_name,
-            last_name: values?.last_name,
-            rider_type: values?.rider_type,
-            service_latitude: currLat,
-            service_longitude: currLong,
-            shift_start_time: values?.shift_start_time,
-            shift_end_time: values?.shift_end_time,
-        }
-        console.log('body is', body)
-        try {
-            const response = await axioisInstance.post(`/rider/profile`, body)
+
+    useEffect(() => {
+        if (riderDataResponse?.isSuccess) {
             notification.success({
-                message: response?.data?.message || 'Successfully Added Rider',
+                message: riderDataResponse?.data?.success || 'Successfully Added Rider',
             })
-        } catch (error: any) {
-            notification.error({
-                message: error?.response?.data?.message || 'Failed to add Rider',
+            navigate(-1)
+        }
+    }, [riderDataResponse?.isSuccess])
+
+    const handleSubmit = (values: RiderAddTypes) => {
+        if (values?.mobile) {
+            ridersData({
+                mobile: values?.mobile,
+                first_name: values?.first_name,
+                last_name: values?.last_name,
+                rider_type: values?.rider_type,
+                service_latitude: currLat,
+                service_longitude: currLong,
+                shift_start_time: values?.shift_start_time,
+                shift_end_time: values?.shift_end_time,
             })
-            console.error(error)
+                .then(() => {})
+                .catch(() => {
+                    notification.error({
+                        message: 'Failed to add Rider',
+                    })
+                })
         }
     }
 

@@ -1,14 +1,55 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
+import { RiderAddTypes, RiderAttendanceResponseType } from '../types/riderAddTypes'
 
 export const ridersService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
-        addRiders: builder.mutation<{ success: string }, { mobile: number; task_id: number }>({
+        addRiders: builder.mutation<{ success: string }, RiderAddTypes>({
             query: (params) => {
                 return {
-                    url: `logistic/slikk/task/${params.task_id}`,
+                    url: `/rider/profile`,
                     method: 'POST',
-                    body: { action: 'assign_rider', rider_mobile: params.mobile },
+                    body: {
+                        mobile: params.mobile,
+                        first_name: params.first_name,
+                        last_name: params.last_name,
+                        rider_type: params.rider_type,
+                        service_latitude: params.service_latitude,
+                        service_longitude: params.service_longitude,
+                        shift_start_time: params.shift_start_time,
+                        shift_end_time: params.shift_end_time,
+                    },
+                }
+            },
+        }),
+        riderAttendance: builder.query<
+            RiderAttendanceResponseType,
+            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[] }
+        >({
+            query: (params) => {
+                const parameters: Record<string, string | string[]> = {}
+
+                if (params.page) {
+                    parameters.p = params.page?.toString()
+                }
+
+                if (params.pageSize) {
+                    parameters.page_size = params.pageSize?.toString()
+                }
+                if (params.from) {
+                    parameters.from = params.from
+                }
+                if (params.to) {
+                    parameters.to = params.to
+                }
+                if (params.mobile) {
+                    parameters.mobile = params.mobile
+                }
+
+                return {
+                    url: `/rider/attendance`,
+                    method: 'GET',
+                    params: parameters,
                 }
             },
         }),
