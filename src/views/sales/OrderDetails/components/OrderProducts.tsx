@@ -72,6 +72,8 @@ const ProductColumn = ({ row }: { row: Product }) => {
                         <a
                             href={`https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`}
                             className="hover:text-blue-500 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
                         >
                             {row.name}
                         </a>
