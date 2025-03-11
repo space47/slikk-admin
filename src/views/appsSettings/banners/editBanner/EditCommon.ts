@@ -1,8 +1,6 @@
 import Input from '@/components/ui/Input'
 import Checkbox from '@/components/ui/Checkbox'
-import { formatDate } from '@/common/date'
 import { BANNERMODEL } from '../BannerCommon'
-import moment from 'moment'
 
 export const BANNER_FIELDS_TYPE = [
     {
@@ -246,6 +244,8 @@ export const getInitialBannerValue = (bannerData: BANNERMODEL | undefined) => ({
 
     video_web_array: bannerData?.video_web_array || [],
     video_mobile_array: bannerData?.video_mobile_array || [],
+    lottie_web_array: bannerData?.lottie_web_array || [],
+    lottie_mobile_array: bannerData?.lottie_mobile_array || [],
     extra_attributes: bannerData?.extra_attributes || {},
     sub_category: bannerData?.sub_category || [],
     product_type: bannerData?.product_type || [],

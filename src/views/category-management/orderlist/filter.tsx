@@ -22,8 +22,8 @@ const TabSelectOrder = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                     { label: 'ACCEPTED', key: 'accepted' },
                     { label: 'PACKED', key: 'packed' },
                     { label: 'DEL. CREATED', key: 'delivery_created' },
-                    { label: 'DEL .ASSIGNED', key: 'delivery_assigned' },
-                    { label: 'DEL .CANCELLED', key: 'delivery_cancelled' },
+                    { label: 'DEL. ASSIGNED', key: 'delivery_assigned' },
+                    { label: 'DEL. CANCELLED', key: 'delivery_cancelled' },
                     { label: 'OUT FOR DELIVERY', key: 'out_for_delivery' },
                     { label: 'DELIVERED', key: 'delivered' },
                     { label: 'EXCHANGE', key: 'exchange' },
@@ -31,7 +31,7 @@ const TabSelectOrder = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                 ].map((tab) => (
                     <div
                         key={tab.key}
-                        className={`flex items-center justify-center cursor-pointer px-4 py-2 rounded-lg transition-all duration-300 ${
+                        className={`flex items-center justify-center cursor-pointer px-4  rounded-lg transition-all duration-300 ${
                             tabSelect === tab.key
                                 ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md'

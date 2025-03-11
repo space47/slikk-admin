@@ -68,6 +68,10 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         sub_header_config: particularRow.sub_header_config,
         mobile_background_image: particularRow.background_config?.mobile_background_image,
         mobile_background_video: particularRow.background_config?.mobile_background_video,
+        // lottie
+
+        background_lottie: particularRow.background_config?.background_lottie,
+        mobile_background_lottie: particularRow.background_config?.mobile_background_lottie,
         is_section_clickable: particularRow.is_section_clickable,
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
@@ -304,11 +308,15 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
             const headerIconUpload = await handleimage(row.header_config_icon_Array)
 
+            const backgroundLottieUpload = await handleimage(row?.background_lottie_array)
+            const mobileBackgroundLottieUpload = await handleimage(row?.mobile_background_lottie_array)
+
             const footervideoUpload = await handleVideo(row.footer_config_video_Array)
             const headerVideoUpload = await handleVideo(row.header_config_video_Array)
             const subHeaderVideoUpload = await handleVideo(row.sub_header_config_video_Array)
             const backgroundVideoUpload = await handleVideo(row?.background_video_array)
             const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
+
             console.log('New Row below')
             const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
             const mobileImageAspectRatios = await calculateAspectRatio(row.mobile_background_array)
@@ -337,6 +345,12 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         : {}),
                     ...(mobileBackgroundVideoUpload || row?.mobile_background_video
                         ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
+                        : {}),
+                    ...(backgroundLottieUpload || row?.background_lottie
+                        ? { background_lottie: backgroundLottieUpload || row?.background_lottie }
+                        : {}),
+                    ...(mobileBackgroundLottieUpload || row?.mobile_background_Lottie
+                        ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
                         : {}),
                 },
                 footer_config: {
@@ -432,7 +446,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     mobile_background_image: null,
                 },
             }))
-            console.log('Remive mobile Bg done')
         }
     }
     const handleRemoveVideo = (val: string) => {
@@ -445,6 +458,24 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             setInitalValue((prev: any) => ({
                 ...prev,
                 mobile_background_video: null,
+            }))
+        } else if (val === 'background_lottie') {
+            setInitalValue((prev: any) => ({
+                ...prev,
+                background_lottie: null,
+                background_config: {
+                    ...prev.background_config,
+                    background_lottie: null,
+                },
+            }))
+        } else if (val === 'mobile_background_lottie') {
+            setInitalValue((prev: any) => ({
+                ...prev,
+                mobile_background_lottie: null,
+                background_config: {
+                    ...prev.background_config,
+                    mobile_background_lottie: null,
+                },
             }))
         }
     }

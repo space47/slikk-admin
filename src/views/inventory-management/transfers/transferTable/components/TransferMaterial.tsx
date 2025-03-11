@@ -166,7 +166,32 @@ const TransferModule = () => {
                     </div>
                 ),
             },
-            { header: 'Location', accessorKey: 'location' },
+            {
+                header: 'Location',
+                accessorKey: 'location',
+                cell: ({ row }: { row: any }) => (
+                    <div className="flex items-center gap-2">
+                        <span>{row.original.location}</span>
+                        <button
+                            className="text-red-500 text-xl font-bold"
+                            onClick={() => {
+                                const updatedData = skuWiseData.map((item) =>
+                                    item.sku === row.original.sku
+                                        ? {
+                                              ...item,
+                                              location: item.location ? item.location.split('/').slice(0, -1).join('/') : '',
+                                          }
+                                        : item,
+                                )
+                                setSkuWiseData(updatedData)
+                                localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
+                            }}
+                        >
+                            -
+                        </button>
+                    </div>
+                ),
+            },
             {
                 header: '-',
                 accessorKey: '',

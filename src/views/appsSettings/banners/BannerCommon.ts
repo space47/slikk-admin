@@ -30,6 +30,8 @@ export interface BANNERMODEL {
     image_mobile_array: []
     video_web_array: []
     video_mobile_array: []
+    lottie_web_array: []
+    lottie_mobile_array: []
     sub_category: DIVTYPES[]
     product_type: DIVTYPES[]
     type: string | null
@@ -60,4 +62,6 @@ export interface BANNERMODEL {
     redirection_url: string | null
     tags_input: string
     position: number | null
+    lottie_web: string
+    lottie_mobile: string
 }

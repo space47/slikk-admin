@@ -193,6 +193,59 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
                     />
                 </>
             )}
+            {/* Lottie */}
+
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        isLottie
+                        label="background lottie"
+                        rowName={initialValue.background_lottie}
+                        removeName="background_lottie"
+                        handleRemoveVideo={() => handleRemoveVideo('background_lottie')}
+                        name="background_lottie_array"
+                        beforeVideoUpload={beforeUpload}
+                        fileList={values.background_lottie_array}
+                        fieldName="background_lottie_array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Background lottie"
+                        name="background_lottie_array"
+                        fieldName="background_lottie_array"
+                        fileList={values.background_lottie_array}
+                        beforeUpload={beforeUpload}
+                    />
+                </>
+            )}
+
+            {editMode ? (
+                <>
+                    <PageEditVideo
+                        isLottie
+                        label="Mobile background lottie"
+                        rowName={initialValue.mobile_background_lottie}
+                        removeName="mobile_background_lottie"
+                        handleRemoveVideo={() => handleRemoveVideo('mobile_background_lottie')}
+                        name="mobile_background_lottie_array"
+                        beforeVideoUpload={beforeUpload}
+                        fileList={values.mobile_background_lottie_array}
+                        fieldName="mobile_background_lottie_array"
+                    />
+                </>
+            ) : (
+                <>
+                    <PageAddVideo
+                        label="Mobile Background lottie"
+                        name="mobile_background_lottie_array"
+                        fieldName="mobile_background_lottie_array"
+                        fileList={values.mobile_background_lottie_array}
+                        beforeUpload={beforeUpload}
+                    />
+                </>
+            )}
 
             {BackGroundArray.map((item, key) => (
                 <FormItem key={key} asterisk label={item.label} className="w-1/2">
