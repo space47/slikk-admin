@@ -113,7 +113,7 @@ const AddTemplates = () => {
 
         const formattedBody = {
             name: values.name || '',
-            parameter_format: 'NAMED',
+            // parameter_format: 'NAMED',
             language: values.language || 'en',
             category: values.category || 'MARKETING',
             components: [
@@ -135,12 +135,11 @@ const AddTemplates = () => {
                             ? {
                                   text: headerTextExample || '',
                                   example: {
-                                      header_text_named_params: btnsArray
-                                          .map((item) => ({
-                                              param_name: item,
-                                              example: sampleValues[item] || '',
-                                          }))
-                                          .filter((item) => item.example),
+                                      header_text: btnsArray
+                                          .map((item) => {
+                                              return sampleValues[item]
+                                          })
+                                          .filter((item) => item !== undefined),
                                   },
                               }
                             : {
@@ -161,12 +160,11 @@ const AddTemplates = () => {
                     ...(Object.keys(sampleBodyValues || {}).length > 0
                         ? {
                               example: {
-                                  body_text_named_params: btnsArray
-                                      .map((item) => ({
-                                          param_name: item,
-                                          example: sampleBodyValues[item] || '',
-                                      }))
-                                      .filter((item) => item.example),
+                                  body_text: btnsArray
+                                      .map((item) => {
+                                          return sampleBodyValues[item]
+                                      })
+                                      .filter((item) => item !== undefined),
                               },
                           }
                         : {}),

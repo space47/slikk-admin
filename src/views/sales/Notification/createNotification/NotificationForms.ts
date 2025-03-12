@@ -20,14 +20,14 @@ export const NotificationARRAY = [
         placeholder: 'Place your Title',
         component: { Input },
     },
-    {
-        label: 'Template Id/Name',
-        classname: 'col-span-1 w-full',
-        type: 'text',
-        name: 'template_id',
-        placeholder: 'Place your Template ID',
-        component: { Input },
-    },
+    // {
+    //     label: 'Template Id/Name',
+    //     classname: 'col-span-1 w-full',
+    //     type: 'text',
+    //     name: 'template_id',
+    //     placeholder: 'Place your Template ID',
+    //     component: { Input },
+    // },
     {
         label: 'Active',
         classname: 'col-span-1 w-full',
@@ -37,3 +37,13 @@ export const NotificationARRAY = [
         component: { Checkbox },
     },
 ]
+
+export const extractPlaceholders = (text: string) => {
+    const regex = /{{(.*?)}}/g
+    const matches = []
+    let match
+    while ((match = regex.exec(text)) !== null) {
+        matches.push(match[1]) // Extract placeholder name
+    }
+    return matches.length > 0 ? matches : [] // Return an empty array if no matches
+}

@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import Modal from 'antd/es/modal/Modal'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
 import { notification, Radio } from 'antd'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { RiderDetailType, setRiderDetails } from '@/store/slices/riderDetails/riderDetails.slice'
+import { ridersService } from '@/store/services/riderServices'
 
 type ModalProps = {
     showTaskModal: any
@@ -16,45 +18,31 @@ type ModalProps = {
     particularMobileOfRunner: any
 }
 
-type RiderProfile = {
-    first_name: string
-    last_name: string
-    email: string
-    mobile: string
-    image: string
-
-    business_email: string | null
-}
-
 const FilterByRunner = ({
     showTaskModal,
     handleCloseModal,
-    storeTaskId,
     setShowAssignModal,
     SetParticularMobileOfRunner,
     particularMobileOfRunner,
 }: ModalProps) => {
-    const [ridersData, setRidersData] = useState<RiderProfile[]>([])
+    const dispatch = useAppDispatch()
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
-    const fetchData = async () => {
-        let filterData = ''
-        if (globalFilter) {
-            filterData = `?name=${globalFilter}`
-        }
-        try {
-            const response = await axioisInstance.get(`logistic/riders${filterData}`)
-            const riderdata = response.data.data
-            setRidersData(riderdata)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
 
-    console.log('datatata', ridersData)
+    const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
+        {
+            page: 1,
+            pageSize: 100,
+            name: globalFilter,
+        },
+        { refetchOnMountOrArgChange: true },
+    )
 
     useEffect(() => {
-        fetchData()
-    }, [globalFilter])
+        if (isSuccess) {
+            dispatch(setRiderDetails(riders.data?.results || []))
+        }
+    }, [riders, isSuccess, dispatch, globalFilter])
 
     const assignTask = () => {
         notification.success({
@@ -95,15 +83,15 @@ const FilterByRunner = ({
                             onChange={(e) => setGlobalFilter(e.target.value)}
                         />
                     </div>
-                    {ridersData && (
+                    {riderDetails && (
                         <div className="overflow-y-scroll scrollbar-hide h-[340px] xl:h-[500px]">
                             <Radio.Group value={particularMobileOfRunner} onChange={handleRiderSelection}>
-                                {ridersData.map((item, key) => {
+                                {riderDetails.map((item, key) => {
                                     return (
                                         <Card key={key} className="w-[350px] mb-4 bg-gray-200">
                                             <div className="flex items-center gap-2 justify-between">
                                                 <div className="flex gap-3 items-center">
-                                                    <Avatar shape="circle" src={item?.profile?.image} />
+                                                    <Avatar shape="circle" src={item?.profile?.image || ''} />
                                                     <div className="flex gap-1">
                                                         <span className="text-xl font-bold">{item?.profile?.first_name}</span>
                                                         <span className="text-xl font-bold">{item.profile?.last_name}</span>

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -8,13 +10,18 @@ import { useEffect, useState } from 'react'
 import { message, notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { NotificationTYPE } from '../createNotification/createNotification.common'
-import { NotificationARRAY } from '../createNotification/NotificationForms'
+import { NotificationTYPE, ParametersArray } from '../createNotification/createNotification.common'
+import { extractPlaceholders, NotificationARRAY } from '../createNotification/NotificationForms'
 import { RichTextEditor } from '@/components/shared'
+import axios from 'axios'
+import WhatsAppForm from '../WhatsAppForm'
 
 const EditNotification = () => {
     const [notificationData, setNotificationData] = useState<any>()
     const { id } = useParams()
+    const [messageTemplateData, setMessageTemplateData] = useState<any>([])
+    const [messageParticular, setMessageParticular] = useState<any>({})
+    const [selectedTemplateName, setSelectedTemplateName] = useState<string>()
 
     const notificationTypeArray = [
         { value: 'SMS', label: 'SMS' },
@@ -22,6 +29,47 @@ const EditNotification = () => {
         { value: 'WHATSAPP', label: 'WHATSAPP' },
         { value: 'APP', label: 'APP' },
     ]
+
+    const fetchMessageTemplate = async () => {
+        const params: Record<string, any> = {}
+
+        const body = { params }
+
+        try {
+            const response = await axios.post(`https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/get_message_templates`, body)
+            const data = response?.data?.data?.data
+            setMessageTemplateData(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        fetchMessageTemplate()
+    }, [])
+
+    const fetchSelectedMessage = async () => {
+        const params: Record<string, any> = {}
+
+        const body = { params }
+
+        if (selectedTemplateName) {
+            params.name = selectedTemplateName
+            try {
+                const response = await axios.post(`https://sw507e3znc.execute-api.ap-south-1.amazonaws.com/api/get_message_templates`, body)
+                const data = response?.data?.data?.data
+                setMessageParticular(data?.find((item) => item?.name === selectedTemplateName))
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchSelectedMessage()
+    }, [selectedTemplateName])
+
+    console.log('messsasasasasas', messageParticular)
 
     const fetchNotificationEditData = async () => {
         try {
@@ -42,39 +90,68 @@ const EditNotification = () => {
         event_name: notificationData?.event_name || '',
         notification_type: notificationData?.notification_type || '',
         title: notificationData?.title || '',
-        message: notificationData?.message || '',
-        template_id: notificationData?.template_id || '',
+        // message: notificationData?.message || '',
+        message: messageParticular
+            ? `${messageParticular?.components?.filter((comp) => comp.type === 'HEADER')?.map((item) => item.text)}
+            ${messageParticular?.components?.filter((comp) => comp.type === 'BODY')?.map((item) => item.text)}
+            `
+            : notificationData?.message,
+        template_id: messageParticular ? selectedTemplateName : notificationData?.template_id,
         is_active: notificationData?.is_active || false,
         config_data: {
-            body_config: notificationData?.config_data?.body_config || [{ text: '', type: 'text' }],
-            header_config: notificationData?.config_data?.header_config || [],
-            button_config: notificationData?.config_data?.button_config || [{ url: '', sub_type: 'url', index: 0 }],
+            body_config:
+                messageParticular?.components
+                    ?.filter((comp) => comp.type === 'BODY')
+                    ?.flatMap((comp) => extractPlaceholders(comp.text).map((placeholder) => ({ textParam: placeholder, type: 'text' }))) ||
+                [],
+            header_config:
+                messageParticular?.components
+                    ?.filter((comp) => comp.type === 'HEADER')
+                    ?.flatMap((comp) => extractPlaceholders(comp.text).map((placeholder) => ({ textParam: placeholder, type: 'text' }))) ||
+                [],
+            button_config: messageParticular?.components
+                ?.filter((comp: any) => comp.type === 'BUTTONS')
+                ?.flatMap((comp: any) =>
+                    comp.buttons?.map((btn, index) => ({
+                        text: btn.text || '',
+                        sub_type: btn.sub_type || 'url',
+                        index,
+                    })),
+                ) || [{ url: '', sub_type: 'url', index: 0 }],
         },
     }
 
     const handleSubmit = async (values: NotificationTYPE) => {
+        console.log('hi')
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
+        const updatedConfigData = {
+            ...values.config_data,
+            body_config: values?.config_data?.body_config.map(({ textParam, ...rest }) => rest),
+            header_config: values?.config_data?.header_config.map(({ textParam, ...rest }) => rest),
+        }
+
         const formData = {
             ...values,
+            config_data: updatedConfigData,
             message: plainTextMessage,
         }
         console.log('FORMDATA', formData)
 
-        try {
-            const response = await axioisInstance.post(`/notifications/config`, formData)
-            notification.success({
-                message: 'SUCCESS',
-                description: response.data.message || 'Notification has been updated successfully',
-            })
-        } catch (error) {
-            console.error(error)
-            notification.error({
-                message: 'FAILURE',
-                description: 'Failed to update notification',
-            })
-        }
+        // try {
+        //     const response = await axioisInstance.post(`/notifications/config`, formData)
+        //     notification.success({
+        //         message: 'SUCCESS',
+        //         description: response.data.message || 'Notification has been updated successfully',
+        //     })
+        // } catch (error) {
+        //     console.error(error)
+        //     notification.error({
+        //         message: 'FAILURE',
+        //         description: 'Failed to update notification',
+        //     })
+        // }
     }
 
     return (
@@ -91,6 +168,41 @@ const EditNotification = () => {
                                         </FormItem>
                                     ))}
 
+                                    {values.notification_type === 'WHATSAPP' ? (
+                                        <>
+                                            <FormItem label="Template Name/Id">
+                                                <div>
+                                                    <select
+                                                        defaultValue={'SELECT'}
+                                                        value={selectedTemplateName}
+                                                        className="flex-1 border rounded px-2 py-1"
+                                                        onChange={(e) => setSelectedTemplateName(e.target.value)}
+                                                    >
+                                                        <option key={'SELECT'} value={'SELECT'} disabled={true}>
+                                                            SELECT ID
+                                                        </option>
+                                                        {messageTemplateData.map((item: any, index: number) => (
+                                                            <option key={index} value={item.name}>
+                                                                {item.name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </FormItem>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FormItem label="Template Name/Id" className="">
+                                                <Field
+                                                    type="text"
+                                                    name="template_id"
+                                                    placeholder="Enter template name or id"
+                                                    component={Input}
+                                                />
+                                            </FormItem>
+                                        </>
+                                    )}
+
                                     <FormItem label="Notification Type" className="col-span-1 w-1/2">
                                         <Field name="notification_type">
                                             {({ field, form }: FieldProps<any>) => (
@@ -105,152 +217,7 @@ const EditNotification = () => {
                                         </Field>
                                     </FormItem>
                                 </FormContainer>
-                                {values?.notification_type === 'WHATSAPP' && (
-                                    <>
-                                        {/* Body Config */}
-                                        <FormItem label="Body Config" className="w-full">
-                                            <FieldArray
-                                                name="config_data.body_config"
-                                                render={(arrayHelpers) => (
-                                                    <div>
-                                                        {values?.config_data?.body_config?.map((config, index) => (
-                                                            <div key={index} className="flex items-center space-x-4 mb-2">
-                                                                <Field
-                                                                    name={`config_data.body_config[${index}].text`}
-                                                                    placeholder="Enter text (e.g., {name})"
-                                                                    className="flex-1"
-                                                                    component={Input}
-                                                                />
-                                                                <Field
-                                                                    name={`config_data.body_config[${index}].type`}
-                                                                    as="select"
-                                                                    className="flex-1 border rounded px-2 py-1"
-                                                                >
-                                                                    <option value="text">Text</option>
-                                                                    <option value="image">Image</option>
-                                                                    <option value="video">Video</option>
-                                                                </Field>
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="reject"
-                                                                    onClick={() => arrayHelpers.remove(index)}
-                                                                >
-                                                                    Remove
-                                                                </Button>
-                                                            </div>
-                                                        ))}
-                                                        <Button
-                                                            type="button"
-                                                            variant="accept"
-                                                            onClick={() => arrayHelpers.push({ text: '', type: 'text' })}
-                                                        >
-                                                            Add Body Config
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            />
-                                        </FormItem>
-
-                                        <FormItem label="Header Config" className="w-full">
-                                            <FieldArray
-                                                name="config_data.header_config"
-                                                render={(arrayHelpers) => (
-                                                    <div>
-                                                        {values?.config_data?.header_config?.map((config, index) => (
-                                                            <div key={index} className="flex items-center space-x-4 mb-2">
-                                                                <Field
-                                                                    name={`config_data.header_config[${index}].text`}
-                                                                    placeholder="Enter text (e.g., {name})"
-                                                                    className="flex-1"
-                                                                    component={Input}
-                                                                />
-                                                                <Field
-                                                                    name={`config_data.header_config[${index}].type`}
-                                                                    as="select"
-                                                                    className="flex-1 border rounded px-2 py-1"
-                                                                >
-                                                                    <option value="text">Text</option>
-                                                                    <option value="image">Image</option>
-                                                                    <option value="video">Video</option>
-                                                                </Field>
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="reject"
-                                                                    onClick={() => arrayHelpers.remove(index)}
-                                                                >
-                                                                    Remove
-                                                                </Button>
-                                                            </div>
-                                                        ))}
-                                                        <Button
-                                                            type="button"
-                                                            variant="accept"
-                                                            onClick={() => arrayHelpers.push({ text: '', type: 'text' })}
-                                                        >
-                                                            Add Body Config
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            />
-                                        </FormItem>
-
-                                        {/* Button Config */}
-                                        <FormItem label="Button Config" className="w-full mt-5">
-                                            <FieldArray
-                                                name="config_data.button_config"
-                                                render={(arrayHelpers) => (
-                                                    <div>
-                                                        {values?.config_data?.button_config?.map((config, index) => (
-                                                            <div key={index} className="flex items-center space-x-4 mb-2">
-                                                                <Field
-                                                                    name={`config_data.button_config[${index}].url`}
-                                                                    placeholder="Enter URL (e.g., {order_id})"
-                                                                    className="flex-1"
-                                                                    component={Input}
-                                                                />
-                                                                <Field
-                                                                    name={`config_data.button_config[${index}].sub_type`}
-                                                                    as="select"
-                                                                    className="flex-1 border rounded px-2 py-1"
-                                                                >
-                                                                    <option value="url">URL</option>
-                                                                    <option value="call">Phone</option>
-                                                                </Field>
-                                                                <Field
-                                                                    name={`config_data.button_config[${index}].index`}
-                                                                    type="number"
-                                                                    placeholder="Enter Index"
-                                                                    className="flex-1"
-                                                                    component={Input}
-                                                                />
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="reject"
-                                                                    onClick={() => arrayHelpers.remove(index)}
-                                                                >
-                                                                    Remove
-                                                                </Button>
-                                                            </div>
-                                                        ))}
-                                                        <Button
-                                                            type="button"
-                                                            variant="accept"
-                                                            onClick={() =>
-                                                                arrayHelpers.push({
-                                                                    url: '',
-                                                                    index: values?.config_data?.button_config?.length || 0,
-                                                                    sub_type: 'url',
-                                                                })
-                                                            }
-                                                        >
-                                                            Add Button Config
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                            />
-                                        </FormItem>
-                                    </>
-                                )}
+                                {values?.notification_type === 'WHATSAPP' && <WhatsAppForm values={values} />}
 
                                 <FormItem label="Schedular Message" labelClass="!justify-start" className="col-span-1 w-full">
                                     <Field name="message">

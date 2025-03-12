@@ -6,56 +6,40 @@ import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
 import { notification, Radio } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import { RiderDetailType, setRiderDetails } from '@/store/slices/riderDetails/riderDetails.slice'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { ridersService } from '@/store/services/riderServices'
 
 type ModalProps = {
-    showTaskModal: any
-    handleCloseModal: any
+    showTaskModal: boolean
+    handleCloseModal: (x: any) => void
     storeTaskId: number
-    setShowAssignModal: any
+    setShowAssignModal: (x: boolean) => void
     isReturn?: boolean
 }
 
-type RiderProfile = {
-    first_name: string
-    last_name: string
-    email: string
-    mobile: string
-    image: string
-    checked_in_status: boolean
-}
-
 const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssignModal, isReturn }: ModalProps) => {
-    console.log('TaskId', storeTaskId)
-
-    const [ridersData, setRidersData] = useState<RiderProfile[]>([])
+    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
+    // const [ridersData, setRidersData] = useState<RiderProfile[]>([])
     const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
-    const navigate = useNavigate()
+    const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
 
-    const fetchData = async () => {
-        try {
-            let filterData = ''
-            if (globalFilter) {
-                filterData = `&name=${globalFilter}`
-            }
-            let filterParams = ''
-            if (!globalFilter) {
-                filterParams = `p=1&page_size=100`
-            }
-
-            const response = await axioisInstance.get(`logistic/riders?${filterParams}${filterData}`)
-            const riderdata = response.data?.data?.results.map((item: any) => item?.profile)
-            setRidersData(riderdata)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    console.log('rider data for given is', ridersData)
+    const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
+        {
+            page: 1,
+            pageSize: 100,
+            name: globalFilter,
+        },
+        { refetchOnMountOrArgChange: true },
+    )
 
     useEffect(() => {
-        fetchData()
-    }, [globalFilter])
+        if (isSuccess) {
+            dispatch(setRiderDetails(riders.data?.results || []))
+        }
+    }, [riders, isSuccess, dispatch, globalFilter])
 
     const assignTask = async () => {
         if (!selectedRiderMobile) {
@@ -93,7 +77,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
         setSelectedRiderMobile(e.target.value)
     }
 
-    const riderDataArray = isReturn ? ridersData : ridersData?.filter((item) => item?.checked_in_status === true)
+    const riderDataArray = isReturn ? riderDetails : riderDetails?.filter((item) => item?.profile?.checked_in_status === true)
 
     return (
         <div>
@@ -107,9 +91,9 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                         borderColor: 'darkgreen',
                     },
                 }}
-                onCancel={handleCloseModal}
-                onOk={assignTask}
                 width={450}
+                onOk={assignTask}
+                onCancel={handleCloseModal}
             >
                 <div className="main h-[500px] xl:h-[650px] ">
                     <div className="text-xl font-bold text-red-700 mb-6">ASSIGN RIDER</div>
@@ -124,7 +108,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                         />
                     </div>
 
-                    {ridersData && (
+                    {riderDetails && (
                         <div className="details overflow-y-scroll scrollbar-hide h-[340px] xl:h-[500px]  ">
                             <Radio.Group value={selectedRiderMobile} onChange={handleRiderSelection}>
                                 {riderDataArray?.map((item, key) => {
@@ -132,13 +116,13 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
                                         <Card key={key} className="w-[350px] mb-4 bg-gray-200">
                                             <div className="flex items-center gap-2 justify-between">
                                                 <div className="flex gap-3 items-center">
-                                                    <Avatar shape="circle" src={item?.image} />
+                                                    <Avatar shape="circle" src={item?.profile?.image || ''} />
                                                     <div className="flex gap-1">
-                                                        <span className="text-xl font-bold">{item.first_name}</span>
-                                                        <span className="text-xl font-bold">{item.last_name}</span>
+                                                        <span className="text-xl font-bold">{item?.profile?.first_name}</span>
+                                                        <span className="text-xl font-bold">{item?.profile?.last_name}</span>
                                                     </div>
                                                 </div>
-                                                <Radio value={item.mobile} />
+                                                <Radio value={item?.profile?.mobile} />
                                             </div>
                                         </Card>
                                     )
