@@ -65,14 +65,15 @@ const AddNotification = () => {
 
     const initialValue: any = {
         event_name: '',
-        notification_type: '',
+
         title: '',
-        template_id: messageParticular ? selectedTemplateName : '',
-        message: messageParticular
-            ? `${messageParticular?.components?.filter((comp: any) => comp.type === 'HEADER')?.map((item: any) => item.text)}
+        template_id: Object.keys(messageParticular).length > 0 ? selectedTemplateName : '',
+        message:
+            Object.keys(messageParticular).length > 0
+                ? `${messageParticular?.components?.filter((comp: any) => comp.type === 'HEADER')?.map((item: any) => item.text)}
                     ${messageParticular?.components?.filter((comp: any) => comp.type === 'BODY')?.map((item: any) => item.text)}
                     `
-            : '',
+                : '',
         is_active: false,
         config_data: {
             body_config:
@@ -100,6 +101,7 @@ const AddNotification = () => {
     }
 
     const handleSubmit = async (values: any) => {
+        console.log(values?.notification_type)
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
@@ -114,6 +116,7 @@ const AddNotification = () => {
             ...values,
             config_data: updatedConfigData,
             message: plainTextMessage,
+            notification_type: Object.keys(messageParticular).length > 0 ? 'WHATSAPP' : values.notification_type,
         }
         console.log('FORMDATA', formData)
 
