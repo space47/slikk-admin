@@ -586,6 +586,21 @@ export const BackGroundArray = [
         placeholder: 'Place Web Redirection Url',
     },
     {
+        label: 'Aspect Ratio',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        name: 'background_config.background_image_aspect_ratio',
+        placeholder: 'Place your Web Aspect Ratio',
+    },
+    {
+        label: 'Mobile Aspect Ratio',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        name: 'background_config.mobile_image_aspect_ratio',
+        placeholder: 'Place your mobile Aspect Ratio',
+    },
+
+    {
         label: 'Video',
         type: 'checkbox',
         name: 'background_config.is_background_video',

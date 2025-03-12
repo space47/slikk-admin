@@ -58,6 +58,18 @@ export const ADD_BANNER_BASIC_FIELDS: BannerFields = {
         defVal: 0,
         placeHolder: 'Enter Min off %',
     },
+    mobile_aspect_ratio: {
+        label: 'Mobile Aspect ratio',
+        type: 'number',
+        defVal: 0,
+        placeHolder: 'Enter Mobile Aspect ratio',
+    },
+    web_aspect_ratio: {
+        label: 'Web Aspect ratio',
+        type: 'number',
+        defVal: 0,
+        placeHolder: 'Enter Web Aspect ratio',
+    },
 
     redirection_url: {
         label: 'Url',
