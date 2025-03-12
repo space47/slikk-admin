@@ -143,19 +143,19 @@ const EditNotification = () => {
         }
         console.log('FORMDATA', formData)
 
-        // try {
-        //     const response = await axioisInstance.post(`/notifications/config`, formData)
-        //     notification.success({
-        //         message: 'SUCCESS',
-        //         description: response.data.message || 'Notification has been updated successfully',
-        //     })
-        // } catch (error) {
-        //     console.error(error)
-        //     notification.error({
-        //         message: 'FAILURE',
-        //         description: 'Failed to update notification',
-        //     })
-        // }
+        try {
+            const response = await axioisInstance.post(`/notifications/config`, formData)
+            notification.success({
+                message: 'SUCCESS',
+                description: response.data.message || 'Notification has been updated successfully',
+            })
+        } catch (error) {
+            console.error(error)
+            notification.error({
+                message: 'FAILURE',
+                description: 'Failed to update notification',
+            })
+        }
     }
 
     return (
