@@ -31,7 +31,6 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
     const [selectedRiderMobile, setSelectedRiderMobile] = useState<string>('')
     const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
     const navigate = useNavigate()
-    const [hitSearchApi, setHitSearchApi] = useState<boolean>(false)
 
     const fetchData = async () => {
         try {
@@ -41,7 +40,7 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
             }
 
             const response = await axioisInstance.get(`logistic/riders${filterData}`)
-            const riderdata = response.data?.data?.map((item) => item?.profile)
+            const riderdata = response.data?.data?.map((item: any) => item?.profile)
 
             console.log('Rider Data:', riderdata)
             setRidersData(riderdata)
@@ -90,10 +89,6 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
 
     const handleRiderSelection = (e: any) => {
         setSelectedRiderMobile(e.target.value)
-    }
-
-    const handleSearch = () => {
-        setHitSearchApi(true)
     }
 
     const riderDataArray = isReturn ? ridersData : ridersData?.filter((item) => item?.checked_in_status === true)

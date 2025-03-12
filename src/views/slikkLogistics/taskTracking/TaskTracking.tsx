@@ -57,7 +57,7 @@ const TaskTracking = () => {
             if (currentStatus) {
                 currentStatusName = `&status=${statusName}`
             }
-            if (from && to && !globalFilter) {
+            if (from && to && !globalFilter && !particularMobileOfRunner) {
                 fromDate = `&from=${from}&to=${To_Date}`
             }
             if (!globalFilter) {
@@ -86,12 +86,6 @@ const TaskTracking = () => {
         fetchData()
     }, [from, to, particularMobileOfRunner, globalFilter, currentStatus, page, pageSize])
 
-    const filteredData = data.filter((item) =>
-        Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
-    )
-    console.log('filtered Data', filteredData)
-
-    const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(totalData / pageSize)
 
     const handleAssignClick = (task_id: any) => {
@@ -266,8 +260,6 @@ const TaskTracking = () => {
         return <AccessDenied />
     }
 
-    console.log('Data', paginatedData)
-
     const handleRiderProfile = (mobile: any) => {
         navigate(`/app/riderProfile/${mobile}`)
     }
@@ -275,7 +267,6 @@ const TaskTracking = () => {
     return (
         <div>
             <div className="flex flex-wrap gap-4 justify-between  mb-7">
-                {/* Search Input and Dropdown */}
                 <div className="flex gap-4 items-center xl:mt-4 ">
                     <input
                         type="text"
@@ -309,6 +300,18 @@ const TaskTracking = () => {
                                     <span>{item.label}</span>
                                 </DropdownItem>
                             ))}
+                            <div
+                                className="flex justify-center items-center text-red-500 font-bold cursor-pointer hover:bg-gray-100 p-2 "
+                                onClick={() => {
+                                    setCurrentStatus({
+                                        label: 'ALL',
+                                        value: 'ALL',
+                                    })
+                                    setStatusName('')
+                                }}
+                            >
+                                REMOVE
+                            </div>
                         </Dropdown>
                     </div>
                 </div>

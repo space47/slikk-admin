@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { RiderData } from './RiderDetailsCommon'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import RiderDetailModal from './RiderComponents/RiderDetailModal'
@@ -9,21 +7,28 @@ import RiderFullMap from './RiderFullMap'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
-import { Button, Select } from '@/components/ui'
-import { FaRegCircleDot } from 'react-icons/fa6'
+import { Button, Pagination, Select } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { IoIosRefresh } from 'react-icons/io'
 import RiderCheckinModal from './RiderCheckinModal'
+import { Switch } from 'antd'
+import { ridersService } from '@/store/services/riderServices'
+import {
+    RiderDetailType,
+    setCount,
+    setFrom,
+    setRiderDetails,
+    setTo,
+    setPage,
+    setPageSize,
+} from '@/store/slices/riderDetails/riderDetails.slice'
+import { Option, pageSizeOptions } from '../taskTracking/TaskCommonType'
 
 const RiderDetails = () => {
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const [riderDetails, setRiderDetails] = useState<RiderData[]>([])
-    const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
     const [showRiderDetailModal, setShowRiderDetailModal] = useState(false)
     const [mobileForParticularRider, setMobileForParticularRider] = useState<any>()
     const [nameForParticularRider, setNameForParticularRider] = useState<string>()
@@ -33,17 +38,29 @@ const RiderDetails = () => {
     })
     const [showRideeMap, setShowRiderMap] = useState<boolean>(false)
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
-    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [globalFilter, setGlobalFilter] = useState('')
     const [tabSelect, setTabSelect] = useState('checkin')
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
     }
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0)
+    const { riderDetails, count, from, page, pageSize, to } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
+    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [isCheckModal, setIsCheckModal] = useState<boolean>(false)
     const [isCheckOutModal, setIsCheckOutModal] = useState<boolean>(false)
+    const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
+        {
+            from: from,
+            to: To_Date,
+            page: page,
+            pageSize: pageSize,
+            mobile: globalFilter,
+            isActive: tabSelect === 'checkin' ? 'true' : 'false',
+        },
+        { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
+    )
 
-    const navigate = useNavigate()
+    console.log('dates are', tabSelect)
 
     useEffect(() => {
         dispatch(fetchCompanyStore())
@@ -52,66 +69,39 @@ const RiderDetails = () => {
     const formattedData = storeResults?.map((item) => ({
         label: item?.name,
         value: {
-            lat: item?.latitude,
-            long: item?.longitude,
+            lat: item?.latitude || 0,
+            long: item?.longitude || 0,
         },
     }))
 
-    const fetchRiderDetails = async () => {
-        try {
-            let filter = ''
-            if (globalFilter) {
-                filter = `&name=${globalFilter}`
-            }
-            const response = await axioisInstance.get(
-                `/logistic/riders?from=${from}&to=${To_Date}&p=${page}&page_size=${pageSize}${filter}`,
-            )
-            const data = response?.data?.data
-            setRiderDetails(data)
-        } catch (error) {
-            console.error('error', error)
-        }
-    }
-
     useEffect(() => {
-        const fetchData = () => {
-            fetchRiderDetails()
+        if (isSuccess) {
+            dispatch(setRiderDetails(riders.data?.results || []))
+            dispatch(setCount(riders.data?.count || 0))
         }
-
-        fetchData()
-
-        const interval = setInterval(fetchData, 60000)
-
-        return () => clearInterval(interval)
-    }, [currentStoreLocation, from, to, page, pageSize, globalFilter, refreshTrigger])
+    }, [riders, isSuccess, dispatch, from, to, page, pageSize, globalFilter, currentStoreLocation, refreshTrigger, tabSelect])
 
     const columns = [
         {
             header: 'Status',
             accessorKey: 'profile.checked_in_status',
-            cell: ({ row }) => {
+            cell: ({ row }: any) => {
                 const isStatusTrue = row?.original?.profile?.checked_in_status
                 return (
                     <div>
-                        {isStatusTrue ? (
-                            <>
-                                <div className="items-center flex justify-center cursor-pointer">
-                                    <FaRegCircleDot
-                                        className="text-green-500 text-xl hover:text-green-400"
-                                        onClick={() =>
-                                            handleCheckoutRider(row?.original?.profile?.mobile, row?.original?.profile?.first_name)
-                                        }
-                                    />
-                                </div>
-                            </>
-                        ) : (
-                            <div className="items-center flex justify-center cursor-pointer">
-                                <FaRegCircleDot
-                                    className="text-red-500 text-xl hover:text-red-400"
-                                    onClick={() => handleCheckinRider(row?.original?.profile?.mobile, row?.original?.profile?.first_name)}
-                                />
-                            </div>
-                        )}
+                        <Switch
+                            className="bg-red-500"
+                            checked={isStatusTrue}
+                            onChange={(checked) =>
+                                handleActiveCareer(
+                                    row.original.id,
+                                    checked,
+                                    isStatusTrue,
+                                    row.original.profile.mobile,
+                                    row.original.profile.first_name,
+                                )
+                            }
+                        />
                     </div>
                 )
             },
@@ -137,12 +127,48 @@ const RiderDetails = () => {
             },
         },
         { header: 'Mobile', accessorKey: 'profile.mobile' },
+        {
+            header: 'Checked In',
+            accessorKey: 'task_data.check_in_time',
+            cell: ({ row }) => {
+                const time = row?.original?.task_data?.check_in_time
+                const properTime = time?.split('.')[0]
+                return <div>{properTime ?? 'N/A'}</div>
+            },
+        },
+        {
+            header: 'Checked Out',
+            accessorKey: 'task_data.checkout_time',
+            cell: ({ row }) => {
+                const time = row?.original?.task_data?.checkout_time
+                const properTime = time?.split('.')[0]
+                return <div>{properTime ?? 'N/A'}</div>
+            },
+        },
+        {
+            header: 'Active Time',
+            accessorKey: 'task_data.active_time',
+            cell: ({ row }) => {
+                return (
+                    <div className="flex gap-1">
+                        <span>{row?.original?.task_data?.active_time ?? 0}</span> mins
+                    </div>
+                )
+            },
+        },
+        {
+            header: 'Distance covered',
+            accessorKey: 'task_data.distance_covered',
+            cell: ({ row }) => {
+                const distance = row?.original?.task_data?.distance_covered
+                return <div>{distance ?? 0} km</div>
+            },
+        },
         { header: 'Order Assigned', accessorKey: 'task_data.ASSIGNED' },
         { header: 'Out for delivery', accessorKey: 'task_data.OUT_FOR_DELIVERY' },
         { header: 'Out for Return pickup', accessorKey: 'task_data.OUT_FOR_PICKUP' },
         { header: 'Return Pickup', accessorKey: 'task_data.PICKED_UP' },
         { header: 'Return Pickup failed', accessorKey: 'task_data.PICKUP_FAILED' },
-
         { header: 'Orders Completed', accessorKey: 'task_data.COMPLETED' },
         { header: 'Return Delivered', accessorKey: 'task_data.DELIVERED' },
         { header: 'Total Task', accessorKey: 'task_data.TOTAL' },
@@ -156,15 +182,23 @@ const RiderDetails = () => {
         },
     ]
 
-    const handleCheckinRider = (mobile: string, name: string) => {
-        setIsCheckModal(true)
+    const handleActiveCareer = (id: number, e: any, checked: boolean, mobile: string, name: string) => {
         setMobileForParticularRider(mobile)
         setNameForParticularRider(name)
+        if (checked === true) {
+            setIsCheckOutModal(true)
+        }
+        if (checked === false) {
+            setIsCheckModal(true)
+        }
     }
-    const handleCheckoutRider = (mobile: string, name: string) => {
-        setIsCheckOutModal(true)
-        setMobileForParticularRider(mobile)
-        setNameForParticularRider(name)
+
+    const onPaginationChange = (value: number) => {
+        dispatch(setPage(value))
+    }
+    const onSelectChange = (value?: number) => {
+        dispatch(setPage(1))
+        dispatch(setPageSize(Number(value)))
     }
 
     const hanldeProfileClick = (mobile: string) => {
@@ -173,8 +207,8 @@ const RiderDetails = () => {
     }
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (dates && dates[0]) {
-            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
-            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+            dispatch(setFrom(moment(dates[0]).format('YYYY-MM-DD')))
+            dispatch(setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
         }
     }
 
@@ -217,7 +251,14 @@ const RiderDetails = () => {
                             </Button>
                         </div>
                         <div>
-                            <UltimateDatePicker from={from} setFrom={setFrom} to={to} setTo={setTo} handleDateChange={handleDateChange} />
+                            <UltimateDatePicker
+                                dispatch={dispatch}
+                                from={from}
+                                setFrom={setFrom}
+                                to={to}
+                                setTo={setTo}
+                                handleDateChange={handleDateChange}
+                            />
                         </div>
                     </div>
                 </div>
@@ -234,7 +275,7 @@ const RiderDetails = () => {
                                 </div>
                             </div>
                         </div>
-                        <RiderFullMap riderDetails={riderDetails} currentStore={currentStoreLocation} />
+                        <RiderFullMap riderDetails={riderDetails || []} currentStore={currentStoreLocation} />
                     </div>
                 )}
 
@@ -254,40 +295,43 @@ const RiderDetails = () => {
                         </div>
                     </div>
 
-                    {tabSelect === 'checkin' && (
-                        <>
-                            <div className="mb-4 ">
-                                <input
-                                    name="filter"
-                                    value={globalFilter}
-                                    className="rounded-xl"
-                                    placeholder="Search by riders name"
-                                    onChange={(e) => setGlobalFilter(e.target.value)}
-                                />
-                            </div>
-                            <EasyTable
-                                mainData={riderDetails?.filter((item) => item?.profile?.checked_in_status === true)}
-                                columns={columns}
+                    <div className="mb-4 ">
+                        <input
+                            name="filter"
+                            value={globalFilter}
+                            className="rounded-xl"
+                            placeholder="Search by riders name"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    {/* {tabSelect === 'checkin' ? (
+                        <EasyTable mainData={riderDetails?.filter((item) => item?.profile?.checked_in_status === true)} columns={columns} />
+                    ) : (
+                        <EasyTable
+                            mainData={riderDetails?.filter((item) => item?.profile?.checked_in_status === false)}
+                            columns={columns}
+                        />
+                    )} */}
+                    <EasyTable mainData={riderDetails} columns={columns} />
+                    <div className="flex justify-between items-center">
+                        <Pagination
+                            pageSize={pageSize}
+                            currentPage={page}
+                            total={count}
+                            className="mb-4 md:mb-0"
+                            onChange={onPaginationChange}
+                        />
+
+                        <span>
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                options={pageSizeOptions}
+                                onChange={(option) => onSelectChange(option?.value)}
                             />
-                        </>
-                    )}
-                    {tabSelect === 'checkout' && (
-                        <>
-                            <div className="mb-4 ">
-                                <input
-                                    name="filter"
-                                    value={globalFilter}
-                                    className="rounded-xl"
-                                    placeholder="Search by riders name"
-                                    onChange={(e) => setGlobalFilter(e.target.value)}
-                                />
-                            </div>
-                            <EasyTable
-                                mainData={riderDetails?.filter((item) => item?.profile?.checked_in_status === false)}
-                                columns={columns}
-                            />
-                        </>
-                    )}
+                        </span>
+                    </div>
                 </div>
             </div>
             {showRiderDetailModal && (

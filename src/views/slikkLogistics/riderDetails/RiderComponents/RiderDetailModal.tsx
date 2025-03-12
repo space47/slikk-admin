@@ -99,7 +99,7 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
 
     const TaskDetailsData = [
         { name: 'Total', value: riderData?.task_data?.TOTAL, color: 'red' },
-        { name: 'Delivered', value: riderData?.task_data?.DELIVERED, color: 'blue' },
+        { name: 'Return Completed', value: riderData?.task_data?.DELIVERED, color: 'blue' },
         { name: 'Completed', value: riderData?.task_data?.COMPLETED, color: 'green' },
     ]
 
@@ -219,7 +219,9 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
                                     >
                                         <div className="flex flex-col justify-center items-center">
                                             <div className="text-gray-700 text-lg font-medium">{item?.value}</div>
-                                            <div className={`mt-2 px-4 py-2 text-white rounded-full text-sm bg-${item?.color}-500`}>
+                                            <div
+                                                className={`mt-2 px-4 py-2 text-white rounded-xl items-center text-sm bg-${item?.color}-500`}
+                                            >
                                                 {item?.name}
                                             </div>
                                         </div>
