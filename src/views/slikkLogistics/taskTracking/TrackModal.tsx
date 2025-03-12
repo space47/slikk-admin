@@ -36,13 +36,15 @@ const TrackModal = ({ showTaskModal, handleCloseModal, storeTaskId, setShowAssig
         try {
             let filterData = ''
             if (globalFilter) {
-                filterData = `?name=${globalFilter}`
+                filterData = `&name=${globalFilter}`
+            }
+            let filterParams = ''
+            if (!globalFilter) {
+                filterParams = `p=1&page_size=100`
             }
 
-            const response = await axioisInstance.get(`logistic/riders${filterData}`)
-            const riderdata = response.data?.data?.map((item: any) => item?.profile)
-
-            console.log('Rider Data:', riderdata)
+            const response = await axioisInstance.get(`logistic/riders?${filterParams}${filterData}`)
+            const riderdata = response.data?.data?.results.map((item: any) => item?.profile)
             setRidersData(riderdata)
         } catch (error) {
             console.log(error)

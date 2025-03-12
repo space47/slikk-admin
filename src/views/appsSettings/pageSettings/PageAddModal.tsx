@@ -300,8 +300,16 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 ...(mobileimageUpload || row?.mobile_background_image
                     ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                     : {}),
-                ...(backgroundImageAspectRatios?.[0] ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] } : {}),
-                ...(mobileImageAspectRatios?.[0] ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] } : {}),
+                ...(row?.background_config.background_image_aspect_ratio
+                    ? { background_image_aspect_ratio: row?.background_config.background_image_aspect_ratio }
+                    : backgroundImageAspectRatios[0]
+                      ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
+                      : {}),
+                ...(row?.background_config.mobile_image_aspect_ratio
+                    ? { mobile_image_aspect_ratio: row?.background_config.mobile_image_aspect_ratio }
+                    : mobileImageAspectRatios[0]
+                      ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
+                      : {}),
 
                 ...(backgroundVideoUpload || row?.background_video
                     ? { background_video: backgroundVideoUpload || row?.background_video }
