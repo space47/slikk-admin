@@ -305,6 +305,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         const isDriverAssigned = lastLogStatus === 'DRIVER_ASSIGNED'
         const isOrderDone = hasStatus('DELIVERED') || hasStatus('COMPLETED')
         const isOrderCancelled = hasStatus('DECLINED') || hasStatus('CANCELLED')
+        const isShipped = hasStatus('SHIPPED') || hasStatus('OUT_FOR_DELIVERY')
 
         if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD' && !isOrderDone && !isOrderCancelled) {
             return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
@@ -329,7 +330,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         if (lastLogStatus === 'ACCEPTED') {
             return { buttonText: 'PACK/REJECT', modalContent: 'Pick and Pack' }
         }
-        if (lastLogStatus === 'OUT_FOR_DELIVERY' || lastLogStatus === 'SHIPPED') {
+        if (isShipped && !isOrderDone && !isOrderCancelled) {
             return { buttonText: 'MARK AS DELIVERED' }
         }
         if (lastLogStatus === 'CANCELLED') {

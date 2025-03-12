@@ -109,7 +109,7 @@ const RiderDetails = () => {
         {
             header: 'Name',
             accessorKey: 'profile',
-            cell: ({ row }) => {
+            cell: ({ row }: any) => {
                 const isStatusTrue = row?.original?.profile?.checked_in_status
                 return (
                     <div
@@ -130,7 +130,7 @@ const RiderDetails = () => {
         {
             header: 'Checked In',
             accessorKey: 'task_data.check_in_time',
-            cell: ({ row }) => {
+            cell: ({ row }: any) => {
                 const time = row?.original?.task_data?.check_in_time
                 const properTime = time?.split('.')[0]
                 return <div>{properTime ?? 'N/A'}</div>
@@ -139,7 +139,7 @@ const RiderDetails = () => {
         {
             header: 'Checked Out',
             accessorKey: 'task_data.checkout_time',
-            cell: ({ row }) => {
+            cell: ({ row }: any) => {
                 const time = row?.original?.task_data?.checkout_time
                 const properTime = time?.split('.')[0]
                 return <div>{properTime ?? 'N/A'}</div>
@@ -148,7 +148,7 @@ const RiderDetails = () => {
         {
             header: 'Active Time',
             accessorKey: 'task_data.active_time',
-            cell: ({ row }) => {
+            cell: ({ row }: any) => {
                 return (
                     <div className="flex gap-1">
                         <span>{row?.original?.task_data?.active_time ?? 0}</span> mins
@@ -159,7 +159,7 @@ const RiderDetails = () => {
         {
             header: 'Distance covered',
             accessorKey: 'task_data.distance_covered',
-            cell: ({ row }) => {
+            cell: ({ row }: any) => {
                 const distance = row?.original?.task_data?.distance_covered
                 return <div>{distance ?? 0} km</div>
             },
@@ -175,7 +175,7 @@ const RiderDetails = () => {
         {
             header: 'Distance covered',
             accessorKey: 'task_data.distance_covered',
-            cell: ({ row }) => {
+            cell: ({ row }: any) => {
                 const distance = row?.original?.task_data?.distance_covered
                 return <div>{distance ?? 0} km</div>
             },
