@@ -55,12 +55,14 @@ const RiderCheckinModal = ({ dialogIsOpen, setIsOpen, mobile, name, checkOutRide
                 <h5 className="mb-4">
                     {checkOutRider ? 'check-out Rider' : 'Checkin Rider '}: <span className="text-blue-600">{name}</span>
                 </h5>
-                <p className="text-green-700">Are you sure you want to {checkOutRider ? 'check-out Rider' : 'Checkin Rider '}</p>
+                <p className={checkOutRider ? 'text-red-700' : 'text-green-700'}>
+                    Are you sure you want to {checkOutRider ? 'check-out Rider' : 'Checkin Rider '}
+                </p>
                 <div className="text-right mt-6">
                     <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
                         Cancel
                     </Button>
-                    <Button variant="solid" onClick={onDialogOk}>
+                    <Button variant={checkOutRider ? 'reject' : 'accept'} onClick={onDialogOk}>
                         Confirm
                     </Button>
                 </div>

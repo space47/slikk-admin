@@ -32,6 +32,10 @@ const EditBanner = () => {
     const [webImagview, setWebImageView] = useState<string[]>([])
     const [mobileImagview, setMobileImageView] = useState<string[]>([])
 
+    // lottie
+    const [weblottieview, setWeblottieView] = useState<string[]>([])
+    const [mobilelottieview, setMobilelottieView] = useState<string[]>([])
+    //
     const [webVideoview, setWebVideoView] = useState<string[]>([])
     const [mobileVideoview, setMobileVideoView] = useState<string[]>([])
     const [sectionBGweb, setSectionBGweb] = useState<string[]>([])
@@ -69,6 +73,8 @@ const EditBanner = () => {
             setMobileVideoView(data?.extra_attributes?.video_mobile ? [data?.extra_attributes?.video_mobile] : [])
             setSectionBGweb(data?.section_background_web ? [data.section_background_web] : [])
             setSectionBGmobile(data.section_background_mobile ? [data.section_background_mobile] : [])
+            setMobilelottieView(data?.extra_attributes?.lottie_mobile ? [data?.extra_attributes?.lottie_mobile] : [])
+            setWeblottieView(data?.extra_attributes?.lottie_web ? [data?.extra_attributes?.lottie_web] : [])
         } catch (error) {
             console.log(error)
         }
@@ -86,6 +92,8 @@ const EditBanner = () => {
             SecMob: setSectionBGmobile,
             mobile_video: setMobileVideoView,
             web_video: setWebVideoView,
+            mobile_lottie: setMobilelottieView,
+            web_lottie: setWeblottieView,
         }
 
         const updater = typeToUpdater[type as keyof typeof typeToUpdater]
@@ -224,6 +232,9 @@ const EditBanner = () => {
         const webVideoUpload = await processVideoUpload(values?.video_web_array, values?.video_web)
         const mobileVideoUpload = await processVideoUpload(values?.video_mobile_array, values?.video_mobile)
 
+        const webLottieUpload = await processImageUpload(values?.lottie_web_array, values?.lottie_web)
+        const mobileLottieUpload = await processImageUpload(values?.lottie_mobile_array, values?.lottie_mobile)
+
         const {
             max_off,
             min_off,
@@ -233,9 +244,20 @@ const EditBanner = () => {
             image_mobile_array,
             video_web_array,
             video_mobile_array,
+            lottie_web_array,
+            lottie_mobile_array,
             ...rest
         } = values
-        console.log(max_off, min_off, image_web_array, image_mobile_array, video_web_array, video_mobile_array)
+        console.log(
+            max_off,
+            min_off,
+            image_web_array,
+            image_mobile_array,
+            video_web_array,
+            video_mobile_array,
+            lottie_web_array,
+            lottie_mobile_array,
+        )
 
         console.log('start')
         const formData = {
@@ -254,6 +276,8 @@ const EditBanner = () => {
                 web_redirection_url: values?.extra_attributes?.web_redirection_url || null,
                 maxoff: values?.max_off,
                 minoff: values?.min_off,
+                lottie_web: webLottieUpload || values?.extra_attributes?.lottie_web,
+                lottie_mobile: mobileLottieUpload || values?.extra_attributes?.lottie_mobile,
             },
             section_background_web: sectionBgWebUpload || '',
             section_background_mobile: sectionBgMobileUpload || '',
@@ -385,6 +409,25 @@ const EditBanner = () => {
                                 name="video_web_array"
                                 beforeUpload={beforeVideoUpload}
                                 fileList={values.video_web_array}
+                            />
+
+                            <div>Mobile Lottie</div>
+                            <ImageComponent
+                                imageView={mobilelottieview}
+                                imageremove="mobile_lottie"
+                                handleImageRemove={handleImageRemove}
+                                name="lottie_mobile_array"
+                                beforeUpload={beforeUpload}
+                                fileList={values.lottie_mobile_array}
+                            />
+                            <div>Web Lottie</div>
+                            <ImageComponent
+                                imageView={weblottieview}
+                                imageremove="web_lottie"
+                                handleImageRemove={handleImageRemove}
+                                name="lottie_web_array"
+                                beforeUpload={beforeUpload}
+                                fileList={values.lottie_web_array}
                             />
 
                             {/* ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, */}

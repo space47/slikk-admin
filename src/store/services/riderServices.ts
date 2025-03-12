@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { RiderAddTypes, RiderAttendanceResponseType } from '../types/riderAddTypes'
+import { RiderAddTypes, RiderAttendanceResponseType, RiderDetailResponseType } from '../types/riderAddTypes'
 
 export const ridersService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -27,33 +27,62 @@ export const ridersService = RtkQueryService.injectEndpoints({
             { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[] }
         >({
             query: (params) => {
-                console.log('1st')
                 const parameters: Record<string, string | string[]> = {}
 
                 if (params.page) {
                     parameters.p = params.page?.toString()
                 }
-                console.log('2st')
+
                 if (params.pageSize) {
                     parameters.page_size = params.pageSize?.toString()
                 }
-                console.log('3st')
+
                 if (params.from) {
                     parameters.from = params.from
                 }
 
-                console.log('4st')
                 if (params.to) {
                     parameters.to = params.to
                 }
-                console.log('5st')
+
                 if (params.mobile) {
                     parameters.mobile = params.mobile
                 }
-                console.log('6st')
 
                 return {
                     url: `/rider/attendance`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
+
+        riderDetails: builder.query<
+            RiderDetailResponseType,
+            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[]; isActive?: string }
+        >({
+            query: (params) => {
+                const parameters: Record<string, string | string[] | boolean> = {}
+                if (params.page) {
+                    parameters.p = params.page?.toString()
+                }
+                if (params.pageSize) {
+                    parameters.page_size = params.pageSize?.toString()
+                }
+                if (params.from) {
+                    parameters.from = params.from
+                }
+                if (params.to) {
+                    parameters.to = params.to
+                }
+                if (params.mobile) {
+                    parameters.mobile = params.mobile
+                }
+                if (params.isActive) {
+                    parameters.is_active = params.isActive
+                }
+                return {
+                    url: `/logistic/riders`,
                     method: 'GET',
                     params: parameters,
                 }

@@ -7,11 +7,9 @@ import { FaMapMarkerAlt } from 'react-icons/fa'
 import _ from 'lodash'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
-import { MdFullscreen } from 'react-icons/md'
-import { BsFullscreenExit } from 'react-icons/bs'
 import 'leaflet.heat'
-import { RiderData } from './RiderDetailsCommon'
 import RiderDetailModal from './RiderComponents/RiderDetailModal'
+import { RiderDetails } from '@/store/types/riderAddTypes'
 
 const DefaultIcon = L.icon({
     iconUrl: icon,
@@ -28,7 +26,7 @@ const officeIcon = L.icon({
 })
 
 interface RiderFullMapProps {
-    riderDetails: RiderData[]
+    riderDetails: RiderDetails[]
     currentStore: Record<string, number | undefined>
     specificRider?: Record<string, number | undefined>
 }
@@ -127,7 +125,7 @@ const MarkerComponent = ({ markers, currLat, currLong, handleDetails, specificRi
     )
 }
 
-const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore, specificRider }) => {
+const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore }) => {
     // const [currLat, setCurrLat] = useState(currentStore?.lat ?? 0)
     // const [currLong, setCurrLong] = useState(currentStore?.long ?? 0)
     const R = 6371
@@ -141,8 +139,6 @@ const RiderFullMap: React.FC<RiderFullMapProps> = ({ riderDetails, currentStore,
     const namesOfRiders = riderDetails?.map((rider) => rider?.profile?.first_name)
     const mobileOfRiders = riderDetails?.map((rider) => rider?.profile?.mobile)
     const ifStatusTrue = riderDetails?.map((rider) => rider?.profile?.checked_in_status)
-
-    console.log('current Store', currentStore)
 
     const handleSelectSuggestion = (suggestion: any) => {
         setSuggestions([])

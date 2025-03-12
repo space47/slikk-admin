@@ -24,7 +24,7 @@ const ImageComponent = ({ imageView, imageremove, handleImageRemove, beforeUploa
                             <div key={index} className="flex flex-col">
                                 <img src={img} alt={`image-${index}`} className="rounded-sm w-[50px] h-[50px]" />
 
-                                <button onClick={() => handleImageRemove(index, imageremove)} className="flex justify-center">
+                                <button type="button" onClick={() => handleImageRemove(index, imageremove)} className="flex justify-center">
                                     <MdCancel className="text-red-500 bg-none text-lg" />
                                 </button>
                             </div>

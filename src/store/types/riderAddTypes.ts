@@ -40,6 +40,55 @@ export type RiderAttendanceResponseType = {
     }
 }
 
+// Rider Data
+
+export type TaskData = Partial<{
+    TOTAL: number
+    DELIVERED: number
+    ASSIGNED: number
+    OUT_FOR_PICKUP: number
+    OUT_FOR_DELIVERY: number
+    PICKED_UP: number
+    PICKUP_FAILED: number
+    COMPLETED: number
+    distance_covered: number
+    active_time: number
+    check_in_time: string | null
+    checkout_time: string | null
+}>
+
+export type UserProfile = Partial<{
+    first_name: string
+    last_name: string
+    email: string
+    mobile: number
+    gender: string
+    dob: string
+    country_code: string
+    device_id: string
+    date_joined: string
+    last_otp_tried_time: string
+    image: string | null
+    checked_in_status: boolean
+    current_location: {
+        latitude: string
+        longitude: string
+    }
+}>
+
+export type RiderDetails = Partial<{
+    profile: UserProfile
+    task_data: TaskData
+}>
+
+export type RiderDetailResponseType = {
+    status?: string
+    data?: {
+        count: number
+        results?: RiderDetails[]
+    }
+}
+
 export type RiderSlice = {
     riderAttendance: RiderAttendanceResults[]
     count: number

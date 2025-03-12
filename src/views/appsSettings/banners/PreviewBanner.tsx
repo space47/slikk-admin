@@ -176,6 +176,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             const mobileAspectratio = await calculateAspectRatio(banner.image_mobile_file)
             const mobileVideoUpload = await handleVideo(banner?.video_file)
             const webVideoUpload = await handleVideo(banner?.video_mobile_file)
+            const webLottieUpload = await HandleImage(banner?.lottie_web)
+            const mobileLottieUpload = await HandleImage(banner?.lottie_mobile)
 
             console.log(webImageUpload, mobileImageUpload, mobileVideoUpload, webVideoUpload)
 
@@ -204,6 +206,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     mobile_redirection_url: banner?.mobile_redirection_url || null,
                     max_off: banner?.maxoff,
                     min_off: banner?.minoff,
+                    lottie_web: webLottieUpload || '',
+                    lottie_mobile: mobileLottieUpload || '',
                 },
                 image_web_file: null,
                 image_mobile_file: null,

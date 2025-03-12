@@ -591,6 +591,12 @@ export const BackGroundArray = [
         name: 'background_config.is_background_video',
         placeholder: '',
     },
+    {
+        label: 'Lottie',
+        type: 'checkbox',
+        name: 'background_config.is_background_lottie',
+        placeholder: '',
+    },
 ]
 
 export const NAMEPOSITION = [
