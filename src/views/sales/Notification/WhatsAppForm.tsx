@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormItem, Input } from '@/components/ui'
 import { Field, FieldArray } from 'formik'
 import React from 'react'
@@ -17,7 +18,7 @@ const WhatsAppForm = ({ values }: props) => {
                         name="config_data.body_config"
                         render={(arrayHelpers) => (
                             <div>
-                                {values?.config_data?.body_config?.map((config, index) => (
+                                {values?.config_data?.body_config?.map((config: any, index: any) => (
                                     <div key={index} className="flex items-center space-x-4 mb-2">
                                         <div className="">{`{${config.textParam}}`}</div>
                                         <Field
@@ -48,13 +49,6 @@ const WhatsAppForm = ({ values }: props) => {
                                         </Button>
                                     </div>
                                 ))}
-                                <Button
-                                    type="button"
-                                    variant="accept"
-                                    onClick={() => arrayHelpers.push({ textParam: '', text: '', type: 'text' })}
-                                >
-                                    Add Body Config
-                                </Button>
                             </div>
                         )}
                     />
@@ -65,7 +59,7 @@ const WhatsAppForm = ({ values }: props) => {
                         name="config_data.header_config"
                         render={(arrayHelpers) => (
                             <div>
-                                {values?.config_data?.header_config?.map((config, index) => (
+                                {values?.config_data?.header_config?.map((config: any, index: any) => (
                                     <div key={index} className="flex items-center space-x-4 mb-2">
                                         <div className="">{`{${config.textParam}}`}</div>
                                         <Field
@@ -96,13 +90,6 @@ const WhatsAppForm = ({ values }: props) => {
                                         </Button>
                                     </div>
                                 ))}
-                                <Button
-                                    type="button"
-                                    variant="accept"
-                                    onClick={() => arrayHelpers.push({ textParam: '', text: '', type: 'text' })}
-                                >
-                                    Add Header Config
-                                </Button>
                             </div>
                         )}
                     />
@@ -114,7 +101,7 @@ const WhatsAppForm = ({ values }: props) => {
                         name="config_data.button_config"
                         render={(arrayHelpers) => (
                             <div>
-                                {values?.config_data?.button_config?.map((config, index) => (
+                                {values?.config_data?.button_config?.map((config: any, index: any) => (
                                     <div key={index} className="flex items-center space-x-4 mb-2">
                                         <Field
                                             name={`config_data.button_config[${index}].url`}
@@ -130,12 +117,7 @@ const WhatsAppForm = ({ values }: props) => {
                                                 </option>
                                             ))}
                                         </Field>
-                                        {/* <Field
-                                            name={`config_data.button_config[${index}].text`}
-                                            placeholder="Enter Text"
-                                            className="flex-1"
-                                            component={Input}
-                                        /> */}
+
                                         <Field
                                             name={`config_data.button_config[${index}].sub_type`}
                                             as="select"
@@ -156,19 +138,6 @@ const WhatsAppForm = ({ values }: props) => {
                                         </Button>
                                     </div>
                                 ))}
-                                <Button
-                                    type="button"
-                                    variant="accept"
-                                    onClick={() =>
-                                        arrayHelpers.push({
-                                            url: '',
-                                            index: values?.config_data?.button_config?.length || 0,
-                                            sub_type: 'url',
-                                        })
-                                    }
-                                >
-                                    Add Button Config
-                                </Button>
                             </div>
                         )}
                     />

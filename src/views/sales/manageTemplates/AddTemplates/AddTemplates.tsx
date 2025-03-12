@@ -7,9 +7,7 @@ import ContentSetup, { btnsArray } from './components/ContentSetup'
 import TemplateMobilePreview from '../templateMobilePreview/TemplateMobilePreview'
 import ButtonTemplate from './components/ButtonTemplate'
 import axios from 'axios'
-import { handleimage } from '@/common/handleImage'
 import { notification } from 'antd'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const AddTemplates = () => {
     const [currentStep, setCurrentStep] = useState(0)
@@ -26,7 +24,6 @@ const AddTemplates = () => {
     const [textButtonVariable, setTextButtonVariable] = useState<any[]>([])
     const [h, setH] = useState('')
 
-    const [storeUploadId, setStoreUploadId] = useState('')
     const initialValue = {}
 
     const handleNext = () => {
@@ -260,7 +257,7 @@ const AddTemplates = () => {
 
             <div className="flex justify-between">
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                    {({ values, resetForm }) => (
+                    {({ values }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                             <FormContainer>
                                 {currentStep === 0 && <TemplateDetails />}

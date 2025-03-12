@@ -16,19 +16,19 @@ import { RichTextEditor } from '@/components/shared'
 import axios from 'axios'
 import WhatsAppForm from '../WhatsAppForm'
 
+const notificationTypeArray = [
+    { value: 'SMS', label: 'SMS' },
+    { value: 'EMAIL', label: 'EMAIL' },
+    { value: 'WHATSAPP', label: 'WHATSAPP' },
+    { value: 'APP', label: 'APP' },
+]
+
 const EditNotification = () => {
     const [notificationData, setNotificationData] = useState<any>()
     const { id } = useParams()
     const [messageTemplateData, setMessageTemplateData] = useState<any>([])
     const [messageParticular, setMessageParticular] = useState<any>({})
     const [selectedTemplateName, setSelectedTemplateName] = useState<string>()
-
-    const notificationTypeArray = [
-        { value: 'SMS', label: 'SMS' },
-        { value: 'EMAIL', label: 'EMAIL' },
-        { value: 'WHATSAPP', label: 'WHATSAPP' },
-        { value: 'APP', label: 'APP' },
-    ]
 
     const fetchMessageTemplate = async () => {
         const params: Record<string, any> = {}
