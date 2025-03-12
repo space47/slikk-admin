@@ -13,7 +13,6 @@ import { FaMapMarkedAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { IoIosRefresh } from 'react-icons/io'
 import RiderCheckinModal from './RiderCheckinModal'
-import { Switch } from 'antd'
 import { ridersService } from '@/store/services/riderServices'
 import {
     RiderDetailType,
@@ -25,6 +24,7 @@ import {
     setPageSize,
 } from '@/store/slices/riderDetails/riderDetails.slice'
 import { Option, pageSizeOptions } from '../taskTracking/TaskCommonType'
+import { RiderColumns } from './RiderUtils/RiderDetailsColumns'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -60,8 +60,6 @@ const RiderDetails = () => {
         { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
     )
 
-    console.log('dates are', tabSelect)
-
     useEffect(() => {
         dispatch(fetchCompanyStore())
     }, [dispatch])
@@ -80,107 +78,6 @@ const RiderDetails = () => {
             dispatch(setCount(riders.data?.count || 0))
         }
     }, [riders, isSuccess, dispatch, from, to, page, pageSize, globalFilter, currentStoreLocation, refreshTrigger, tabSelect])
-
-    const columns = [
-        {
-            header: 'Status',
-            accessorKey: 'profile.checked_in_status',
-            cell: ({ row }: any) => {
-                const isStatusTrue = row?.original?.profile?.checked_in_status
-                return (
-                    <div>
-                        <Switch
-                            className="bg-red-500"
-                            checked={isStatusTrue}
-                            onChange={(checked) =>
-                                handleActiveCareer(
-                                    row.original.id,
-                                    checked,
-                                    isStatusTrue,
-                                    row.original.profile.mobile,
-                                    row.original.profile.first_name,
-                                )
-                            }
-                        />
-                    </div>
-                )
-            },
-        },
-        {
-            header: 'Name',
-            accessorKey: 'profile',
-            cell: ({ row }: any) => {
-                const isStatusTrue = row?.original?.profile?.checked_in_status
-                return (
-                    <div
-                        className={
-                            isStatusTrue
-                                ? 'text-green-500 flex gap-2  hover:text-blue-800 hover:underline cursor-pointer '
-                                : 'text-red-500 flex gap-2  hover:text-blue-800 hover:underline cursor-pointer '
-                        }
-                        onClick={() => hanldeProfileClick(row?.original?.profile?.mobile)}
-                    >
-                        <span className=""> {row?.original?.profile?.first_name}</span>
-                        <span className="">{row?.original?.profile?.last_name}</span>
-                    </div>
-                )
-            },
-        },
-        { header: 'Mobile', accessorKey: 'profile.mobile' },
-        {
-            header: 'Checked In',
-            accessorKey: 'task_data.check_in_time',
-            cell: ({ row }: any) => {
-                const time = row?.original?.task_data?.check_in_time
-                const properTime = time?.split('.')[0]
-                return <div>{properTime ?? 'N/A'}</div>
-            },
-        },
-        {
-            header: 'Checked Out',
-            accessorKey: 'task_data.checkout_time',
-            cell: ({ row }: any) => {
-                const time = row?.original?.task_data?.checkout_time
-                const properTime = time?.split('.')[0]
-                return <div>{properTime ?? 'N/A'}</div>
-            },
-        },
-        {
-            header: 'Active Time',
-            accessorKey: 'task_data.active_time',
-            cell: ({ row }: any) => {
-                return (
-                    <div className="flex gap-1">
-                        <span>{row?.original?.task_data?.active_time ?? 0}</span> mins
-                    </div>
-                )
-            },
-        },
-        {
-            header: 'Distance covered',
-            accessorKey: 'task_data.distance_covered',
-            cell: ({ row }: any) => {
-                const distance = row?.original?.task_data?.distance_covered
-                return <div>{distance ?? 0} km</div>
-            },
-        },
-        { header: 'Order Assigned', accessorKey: 'task_data.ASSIGNED' },
-        { header: 'Out for delivery', accessorKey: 'task_data.OUT_FOR_DELIVERY' },
-        { header: 'Out for Return pickup', accessorKey: 'task_data.OUT_FOR_PICKUP' },
-        { header: 'Return Pickup', accessorKey: 'task_data.PICKED_UP' },
-        { header: 'Return Pickup failed', accessorKey: 'task_data.PICKUP_FAILED' },
-        { header: 'Orders Completed', accessorKey: 'task_data.COMPLETED' },
-        { header: 'Return Delivered', accessorKey: 'task_data.DELIVERED' },
-        { header: 'Total Task', accessorKey: 'task_data.TOTAL' },
-        {
-            header: 'Distance covered',
-            accessorKey: 'task_data.distance_covered',
-            cell: ({ row }: any) => {
-                const distance = row?.original?.task_data?.distance_covered
-                return <div>{distance ?? 0} km</div>
-            },
-        },
-    ]
 
     const handleActiveCareer = (id: number, e: any, checked: boolean, mobile: string, name: string) => {
         setMobileForParticularRider(mobile)
@@ -211,6 +108,8 @@ const RiderDetails = () => {
             dispatch(setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
         }
     }
+
+    const columns = RiderColumns({ handleActiveCareer, hanldeProfileClick })
 
     return (
         <div>
@@ -304,14 +203,6 @@ const RiderDetails = () => {
                             onChange={(e) => setGlobalFilter(e.target.value)}
                         />
                     </div>
-                    {/* {tabSelect === 'checkin' ? (
-                        <EasyTable mainData={riderDetails?.filter((item) => item?.profile?.checked_in_status === true)} columns={columns} />
-                    ) : (
-                        <EasyTable
-                            mainData={riderDetails?.filter((item) => item?.profile?.checked_in_status === false)}
-                            columns={columns}
-                        />
-                    )} */}
                     <EasyTable mainData={riderDetails} columns={columns} />
                     <div className="flex justify-between items-center">
                         <Pagination
