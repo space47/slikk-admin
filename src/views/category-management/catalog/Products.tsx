@@ -77,11 +77,7 @@ const Products = () => {
     const fetchData = async (page: number, pageSize: number) => {
         try {
             let searchInputType = ''
-            let pageAndSize = `&p=${page}&page_size=${pageSize}`
-
-            if (globalFilter) {
-                pageAndSize = ''
-            }
+            const pageAndSize = `&p=${page}&page_size=${pageSize}`
 
             // setShowSpinner(true)
             if (currentSelectedPage.value === 'sku' && globalFilter) {
@@ -162,6 +158,7 @@ const Products = () => {
     }
 
     const onSelectChange = (value = 0) => {
+        setPage(1)
         setPageSize(Number(value))
     }
 
@@ -462,7 +459,7 @@ const Products = () => {
             </div>
 
             <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
-            {!globalFilter && (
+            {
                 <div className="flex items-center justify-between mt-4">
                     <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
                     <div style={{ minWidth: 130 }}>
@@ -475,7 +472,7 @@ const Products = () => {
                         />
                     </div>
                 </div>
-            )}
+            }
             {showImageModal && (
                 <ImageMODAL
                     dialogIsOpen={showImageModal}
