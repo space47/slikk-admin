@@ -213,31 +213,31 @@ const AddTemplates = () => {
         }
 
         console.log('formattedBody', formattedBody)
-        // try {
-        //     const response = await fetch('https://graph.facebook.com/v21.0/397892343406101/message_templates', {
-        //         method: 'POST',
-        //         headers: {
-        //             Authorization: `Bearer ${tokenAouth}`,
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify(formattedBody),
-        //     })
+        try {
+            const response = await fetch('https://graph.facebook.com/v21.0/397892343406101/message_templates', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${tokenAouth}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formattedBody),
+            })
 
-        //     if (!response.ok) {
-        //         throw new Error(`HTTP error! status: ${response.status}`)
-        //     }
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
 
-        //     const data = await response.json()
+            const data = await response.json()
 
-        //     notification.success({
-        //         message: data?.message || 'Message Template Added',
-        //     })
-        // } catch (error: any) {
-        //     notification.error({
-        //         message: error?.message || 'Unable to Add',
-        //     })
-        //     console.error(error)
-        // }
+            notification.success({
+                message: data?.message || 'Message Template Added',
+            })
+        } catch (error: any) {
+            notification.error({
+                message: error?.message || 'Unable to Add',
+            })
+            console.error(error)
+        }
     }
 
     return (
