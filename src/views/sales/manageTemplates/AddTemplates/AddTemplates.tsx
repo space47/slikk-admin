@@ -7,9 +7,7 @@ import ContentSetup, { btnsArray } from './components/ContentSetup'
 import TemplateMobilePreview from '../templateMobilePreview/TemplateMobilePreview'
 import ButtonTemplate from './components/ButtonTemplate'
 import axios from 'axios'
-import { handleimage } from '@/common/handleImage'
 import { notification } from 'antd'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const AddTemplates = () => {
     const [currentStep, setCurrentStep] = useState(0)
@@ -26,7 +24,6 @@ const AddTemplates = () => {
     const [textButtonVariable, setTextButtonVariable] = useState<any[]>([])
     const [h, setH] = useState('')
 
-    const [storeUploadId, setStoreUploadId] = useState('')
     const initialValue = {}
 
     const handleNext = () => {
@@ -113,7 +110,7 @@ const AddTemplates = () => {
 
         const formattedBody = {
             name: values.name || '',
-            parameter_format: 'NAMED',
+            // parameter_format: 'NAMED',
             language: values.language || 'en',
             category: values.category || 'MARKETING',
             components: [
@@ -135,12 +132,11 @@ const AddTemplates = () => {
                             ? {
                                   text: headerTextExample || '',
                                   example: {
-                                      header_text_named_params: btnsArray
-                                          .map((item) => ({
-                                              param_name: item,
-                                              example: sampleValues[item] || '',
-                                          }))
-                                          .filter((item) => item.example),
+                                      header_text: btnsArray
+                                          .map((item) => {
+                                              return sampleValues[item]
+                                          })
+                                          .filter((item) => item !== undefined),
                                   },
                               }
                             : {
@@ -161,12 +157,11 @@ const AddTemplates = () => {
                     ...(Object.keys(sampleBodyValues || {}).length > 0
                         ? {
                               example: {
-                                  body_text_named_params: btnsArray
-                                      .map((item) => ({
-                                          param_name: item,
-                                          example: sampleBodyValues[item] || '',
-                                      }))
-                                      .filter((item) => item.example),
+                                  body_text: btnsArray
+                                      .map((item) => {
+                                          return sampleBodyValues[item]
+                                      })
+                                      .filter((item) => item !== undefined),
                               },
                           }
                         : {}),
@@ -184,11 +179,18 @@ const AddTemplates = () => {
                             ? values.buttons
                                   .flatMap((button: any) => {
                                       if (button?.type?.value === 'website') {
-                                          return {
-                                              type: 'URL',
-                                              text: button.buttonText || 'Default Button',
-                                              url: button.websiteUrl,
-                                          }
+                                          return button.urlType === 'dynamic'
+                                              ? {
+                                                    type: 'URL',
+                                                    text: button.buttonText || 'Default Button',
+                                                    url: `${button.websiteUrl}{{1}}`,
+                                                    example: [button.sampleUrl],
+                                                }
+                                              : {
+                                                    type: 'URL',
+                                                    text: button.buttonText || 'Default Button',
+                                                    url: button.websiteUrl,
+                                                }
                                       }
                                       if (button?.type?.value === 'phone') {
                                           return {
@@ -210,31 +212,32 @@ const AddTemplates = () => {
             ].filter(Boolean),
         }
 
-        try {
-            const response = await fetch('https://graph.facebook.com/v21.0/397892343406101/message_templates', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${tokenAouth}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formattedBody),
-            })
+        console.log('formattedBody', formattedBody)
+        // try {
+        //     const response = await fetch('https://graph.facebook.com/v21.0/397892343406101/message_templates', {
+        //         method: 'POST',
+        //         headers: {
+        //             Authorization: `Bearer ${tokenAouth}`,
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify(formattedBody),
+        //     })
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
+        //     if (!response.ok) {
+        //         throw new Error(`HTTP error! status: ${response.status}`)
+        //     }
 
-            const data = await response.json()
+        //     const data = await response.json()
 
-            notification.success({
-                message: data?.message || 'Message Template Added',
-            })
-        } catch (error: any) {
-            notification.error({
-                message: error?.message || 'Unable to Add',
-            })
-            console.error(error)
-        }
+        //     notification.success({
+        //         message: data?.message || 'Message Template Added',
+        //     })
+        // } catch (error: any) {
+        //     notification.error({
+        //         message: error?.message || 'Unable to Add',
+        //     })
+        //     console.error(error)
+        // }
     }
 
     return (
@@ -262,7 +265,7 @@ const AddTemplates = () => {
 
             <div className="flex justify-between">
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
-                    {({ values, resetForm }) => (
+                    {({ values }) => (
                         <Form className="w-full lg:w-2/3 mx-auto xl:mx-0">
                             <FormContainer>
                                 {currentStep === 0 && <TemplateDetails />}
