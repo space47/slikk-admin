@@ -213,6 +213,25 @@ export const BANNER_FIELDS_TYPE = [
         status: 'mobile_redirection_url',
     },
     {
+        label: 'Web Aspect Ratio',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        name: 'extra_attributes.web_aspect_ratio',
+        placeholder: 'Place your Web Aspect Ratio',
+        component: { Input },
+        status: 'web_aspect_ratio',
+    },
+    {
+        label: 'Mobile Aspect Ratio',
+        classname: 'col-span-1 w-full',
+        type: 'number',
+        name: 'extra_attributes.mobile_aspect_ratio',
+        placeholder: 'Place your mobile Aspect Ratio',
+        component: { Input },
+        status: 'mobile_aspect_ratio',
+    },
+
+    {
         label: 'Offers',
         classname: '',
         type: 'checkbox',
