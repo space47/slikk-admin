@@ -34,15 +34,16 @@ const FilterByRunner = ({
     SetParticularMobileOfRunner,
     particularMobileOfRunner,
 }: ModalProps) => {
-    console.log('TaskId', storeTaskId)
-
     const [ridersData, setRidersData] = useState<RiderProfile[]>([])
-
+    const [globalFilter, setGlobalFilter] = useState<string | undefined>('')
     const fetchData = async () => {
+        let filterData = ''
+        if (globalFilter) {
+            filterData = `?name=${globalFilter}`
+        }
         try {
-            const response = await axioisInstance.get(`logistic/riders`)
+            const response = await axioisInstance.get(`logistic/riders${filterData}`)
             const riderdata = response.data.data
-            console.log('Rider Data:', riderdata)
             setRidersData(riderdata)
         } catch (error) {
             console.log(error)
@@ -53,7 +54,7 @@ const FilterByRunner = ({
 
     useEffect(() => {
         fetchData()
-    }, [])
+    }, [globalFilter])
 
     const assignTask = () => {
         notification.success({
@@ -83,9 +84,19 @@ const FilterByRunner = ({
                 onCancel={handleCloseModal}
                 onOk={assignTask}
             >
-                <div className="main">
+                <div className="h-[500px] xl:h-[650px] ">
+                    <div className="mb-8 flex gap-2">
+                        <input
+                            type="search"
+                            name="globalFilter"
+                            placeholder="Enter Rider name"
+                            value={globalFilter}
+                            className="rounded-xl"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
                     {ridersData && (
-                        <div className="details">
+                        <div className="overflow-y-scroll scrollbar-hide h-[340px] xl:h-[500px]">
                             <Radio.Group value={particularMobileOfRunner} onChange={handleRiderSelection}>
                                 {ridersData.map((item, key) => {
                                     return (

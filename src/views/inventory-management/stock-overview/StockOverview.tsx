@@ -29,7 +29,6 @@ const StockOverview = () => {
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
-    const [filterInput, setFilterInput] = useState('')
     const [updatedQuantities, setUpdatedQuantities] = useState<{
         [key: number]: number
     }>({})
@@ -37,7 +36,7 @@ const StockOverview = () => {
         [key: number]: string
     }>({})
     const [showImageModal, setShowImageModal] = useState(false)
-    const [particularRowImage, setParticularROwImage] = useState([])
+    const [particularRowImage, setParticularROwImage] = useState<any>([])
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(FilterArray[0])
     const [searchType, setSearchType] = useState<string>('')
     const navigate = useNavigate()
@@ -87,7 +86,7 @@ const StockOverview = () => {
             {
                 header: 'Update Row',
                 accessorKey: 'id',
-                cell: ({ getValue, row }) => (
+                cell: ({ row }) => (
                     <button
                         onClick={() => handleUpdate(row.original.id, row.original.quantity, row.original.location)}
                         className="px-4 py-2 bg-none text-2xl rounded font-bold text-green-600"
@@ -109,7 +108,7 @@ const StockOverview = () => {
             {
                 header: 'Image',
                 accessorKey: 'product.image',
-                cell: ({ getValue, row }) => (
+                cell: ({ getValue, row }: any) => (
                     <img
                         src={getValue().split(',')[0]}
                         alt="Image"
@@ -128,7 +127,6 @@ const StockOverview = () => {
                 accessorKey: 'location',
                 cell: ({ row }) => {
                     const stockId = row.original.id
-                    const location = updatedLocation[stockId] ?? row.original.location
                     return (
                         <input
                             type="text"
@@ -154,7 +152,7 @@ const StockOverview = () => {
             {
                 header: 'Size',
                 accessorKey: 'product.size',
-                cell: ({ getValue }) => <span>{getValue().toUpperCase()}</span>,
+                cell: ({ getValue }: any) => <span>{getValue().toUpperCase()}</span>,
             },
             {
                 header: 'Stock',
@@ -311,7 +309,7 @@ const StockOverview = () => {
     }
     const handleUpdate = async (id: any, originalQuantity: any, originalLocation: any) => {
         const location = updatedLocation[id] ?? null
-        const quantity = updatedQuantities[id] >= 0 ? updatedQuantities[id] : null
+        const quantity: any = updatedQuantities[id] >= 0 ? updatedQuantities[id] : null
 
         try {
             const body = {

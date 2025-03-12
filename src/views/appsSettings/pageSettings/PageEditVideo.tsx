@@ -16,6 +16,7 @@ interface VIDEOPROPS {
     fileList: any
     fieldName: string
     noVideo?: boolean
+    isLottie?: boolean
 }
 
 const PageEditVideo = ({
@@ -28,6 +29,7 @@ const PageEditVideo = ({
     fieldName,
     fileList,
     noVideo = true,
+    isLottie,
 }: VIDEOPROPS) => {
     return (
         <div>
@@ -35,7 +37,11 @@ const PageEditVideo = ({
                 <div className="font-semibold mb-1">{label}</div>
                 {noVideo && rowName && (
                     <div className="flex flex-col items-center justify-center min-w-[100px]">
-                        <video src={rowName} controls className="w-[200px] h-[120px] flex object-contain" />
+                        {isLottie ? (
+                            <img src={rowName} alt={`Image `} className="w-[150px] h-[40px] flex object-contain " />
+                        ) : (
+                            <video src={rowName} controls className="w-[200px] h-[120px] flex object-contain" />
+                        )}
                         <button type="button" className="text-red-500 text-md " onClick={() => handleRemoveVideo(removeName)}>
                             <MdCancel className="text-red-500 bg-none text-lg" />
                         </button>

@@ -273,6 +273,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         const backgroundVideoUpload = await handleVideo(row?.background_video_array)
         const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
 
+        const backgroundLottieUpload = await handleimage(row?.background_lottie_array)
+        const mobileBackgroundLottieUpload = await handleimage(row?.mobile_background_lottie_array)
+
         console.log('headerIconImage')
         // Aspect Ratio handles
         const backgroundImageAspectRatios = await calculateAspectRatio(row.background_image_array)
@@ -305,6 +308,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     : {}),
                 ...(mobileBackgroundVideoUpload || row?.mobile_background_video
                     ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
+                    : {}),
+                ...(backgroundLottieUpload || row?.background_lottie
+                    ? { background_lottie: backgroundLottieUpload || row?.background_lottie }
+                    : {}),
+                ...(mobileBackgroundLottieUpload || row?.mobile_background_Lottie
+                    ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
                     : {}),
             },
             footer_config: {

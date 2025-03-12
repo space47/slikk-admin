@@ -224,6 +224,14 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 <span>Select Mobile Banner Video</span>
                 <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('video_mobile_file', file[0])} />
             </div>
+            <div className="flex flex-col gap-y-2 items-center justify-center">
+                <span>Select Banner Lottie</span>
+                <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('lottie_web', file[0])} />
+            </div>
+            <div className="flex flex-col gap-y-2 items-center justify-center">
+                <span>Select Mobile Banner Lottie</span>
+                <Upload uploadLimit={1} onChange={(file) => handleSetDataInForm('lottie_mobile', file[0])} />
+            </div>
 
             <form className="p-4 flex flex-row gap-3 flex-wrap">
                 {Object.keys(ADD_BANNER_BASIC_FIELDS).map((field, ind) => (
