@@ -65,7 +65,7 @@ const AddNotification = () => {
 
     const initialValue: any = {
         event_name: '',
-
+        language: Object.keys(messageParticular).length > 0 ? messageParticular?.language : '',
         title: '',
         template_id: Object.keys(messageParticular).length > 0 ? selectedTemplateName : '',
         message:
@@ -110,6 +110,7 @@ const AddNotification = () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             body_config: values?.config_data?.body_config.map(({ textParam, ...rest }: any) => rest),
             header_config: values?.config_data?.header_config.map(({ textParam, ...rest }: any) => rest),
+            button_config: values?.config_data?.button_config.map(({ text, ...rest }: any) => rest),
         }
 
         const formData = {
@@ -181,6 +182,12 @@ const AddNotification = () => {
                                             />
                                         </FormItem>
                                     </>
+                                )}
+
+                                {Object.keys(messageParticular).length > 0 && (
+                                    <FormItem label="Language" className="">
+                                        <Field type="text" name="language" placeholder="Enter Language" component={Input} />
+                                    </FormItem>
                                 )}
 
                                 <FormItem label="Notification Type" className="col-span-1 w-1/2">

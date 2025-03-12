@@ -91,12 +91,14 @@ const EditNotification = () => {
         notification_type: notificationData?.notification_type || '',
         title: notificationData?.title || '',
         // message: notificationData?.message || '',
-        message: messageParticular
-            ? `${messageParticular?.components?.filter((comp) => comp.type === 'HEADER')?.map((item) => item.text)}
+        language: Object.keys(messageParticular).length > 0 ? messageParticular?.language : '',
+        message:
+            Object.keys(messageParticular).length > 0
+                ? `${messageParticular?.components?.filter((comp) => comp.type === 'HEADER')?.map((item) => item.text)}
             ${messageParticular?.components?.filter((comp) => comp.type === 'BODY')?.map((item) => item.text)}
             `
-            : notificationData?.message,
-        template_id: messageParticular ? selectedTemplateName : notificationData?.template_id,
+                : notificationData?.message,
+        template_id: Object.keys(messageParticular).length > 0 ? selectedTemplateName : notificationData?.template_id,
         is_active: notificationData?.is_active || false,
         config_data: {
             body_config:
@@ -130,28 +132,30 @@ const EditNotification = () => {
             ...values.config_data,
             body_config: values?.config_data?.body_config.map(({ textParam, ...rest }) => rest),
             header_config: values?.config_data?.header_config.map(({ textParam, ...rest }) => rest),
+            button_config: values?.config_data?.button_config.map(({ text, ...rest }: any) => rest),
         }
 
         const formData = {
             ...values,
             config_data: updatedConfigData,
             message: plainTextMessage,
+            notification_type: Object.keys(messageParticular).length > 0 ? 'WHATSAPP' : values.notification_type,
         }
         console.log('FORMDATA', formData)
 
-        try {
-            const response = await axioisInstance.post(`/notifications/config`, formData)
-            notification.success({
-                message: 'SUCCESS',
-                description: response.data.message || 'Notification has been updated successfully',
-            })
-        } catch (error) {
-            console.error(error)
-            notification.error({
-                message: 'FAILURE',
-                description: 'Failed to update notification',
-            })
-        }
+        // try {
+        //     const response = await axioisInstance.post(`/notifications/config`, formData)
+        //     notification.success({
+        //         message: 'SUCCESS',
+        //         description: response.data.message || 'Notification has been updated successfully',
+        //     })
+        // } catch (error) {
+        //     console.error(error)
+        //     notification.error({
+        //         message: 'FAILURE',
+        //         description: 'Failed to update notification',
+        //     })
+        // }
     }
 
     return (
@@ -168,7 +172,7 @@ const EditNotification = () => {
                                         </FormItem>
                                     ))}
 
-                                    {values.notification_type === 'WHATSAPP' ? (
+                                    {values.notification_type === 'WHATSAPP' || Object.keys(messageParticular).length > 0 ? (
                                         <>
                                             <FormItem label="Template Name/Id">
                                                 <div>
@@ -203,6 +207,12 @@ const EditNotification = () => {
                                         </>
                                     )}
 
+                                    {Object.keys(messageParticular).length > 0 && (
+                                        <FormItem label="Language" className="">
+                                            <Field type="text" name="language" placeholder="Enter Language" component={Input} />
+                                        </FormItem>
+                                    )}
+
                                     <FormItem label="Notification Type" className="col-span-1 w-1/2">
                                         <Field name="notification_type">
                                             {({ field, form }: FieldProps<any>) => (
@@ -217,7 +227,7 @@ const EditNotification = () => {
                                         </Field>
                                     </FormItem>
                                 </FormContainer>
-                                {values?.notification_type === 'WHATSAPP' && <WhatsAppForm values={values} />}
+                                {Object.keys(messageParticular).length > 0 && <WhatsAppForm values={values} />}
 
                                 <FormItem label="Schedular Message" labelClass="!justify-start" className="col-span-1 w-full">
                                     <Field name="message">
