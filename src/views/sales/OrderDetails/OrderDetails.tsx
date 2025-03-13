@@ -328,6 +328,7 @@ const OrderDetails = () => {
                                             payment={data.payment}
                                             invoice_id={data.invoice_id}
                                             logistic={data.logistic}
+                                            delivery_type={data.delivery_type}
                                         />
                                     </div>
 

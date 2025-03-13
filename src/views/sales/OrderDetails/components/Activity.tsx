@@ -27,9 +27,10 @@ type ActivityProps = {
     payment?: Payment
     invoice_id?: string
     logistic: LOGISTIC
+    delivery_type: string
 }
 
-const Activity = ({ data = [], status, product = [], payment, invoice_id, logistic, mainData }: ActivityProps) => {
+const Activity = ({ data = [], status, product = [], payment, invoice_id, logistic, mainData, delivery_type }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const [fulfilledQuantities, setFulfilledQuantities] = useState<{ [key: number]: number }>({})
@@ -317,6 +318,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         const isShipped = hasStatus('SHIPPED') || hasStatus('OUT_FOR_DELIVERY')
         const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
 
+        console.log('mainData?.delivery_type', delivery_type)
+
         if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD' && !isOrderDone && !isOrderCancelled) {
             return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
         }
@@ -334,7 +337,8 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
             return { buttonText, modalContent: buttonText.replace('MARK AS ', '') }
         }
-        if (isOrderDone && mainData?.delivery_type === 'EXCHANGE' && !isExchangeComplete) {
+        if (isOrderDone && delivery_type === 'EXCHANGE' && !isExchangeComplete) {
+            console.log('yhis statw')
             return { buttonText: 'EXCHANGE DELIVERED', modalContent: 'Exchange Delivered' }
         }
         if (lastLogStatus === 'PACKED') {

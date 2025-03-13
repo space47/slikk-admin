@@ -81,24 +81,27 @@ const SendWhatsAppMessage = () => {
         campaign_name: '',
         template_name: messageParticular?.name,
         language_code: messageParticular?.language,
-        header_image_link: '',
-        header: messageParticular?.components?.find((item) => item?.type === 'HEADER')?.format,
-        body: messageParticular?.components?.find((item) => item?.type === 'BODY')?.format,
-        header_text: messageParticular?.components
-            ?.find((item) => item?.example?.header_text_named_params)
-            ?.example?.header_text_named_params?.map((item) => `{${item?.param_name}}`),
-        body_text: messageParticular?.components
-            ?.find((item) => item?.example?.body_text_named_params)
-            ?.example?.body_text_named_params?.map((item) => `{${item?.param_name}}`),
-        button_text: messageParticular?.components
-            ?.find((item) => item?.example?.button_text_named_params)
-            ?.example?.button_text_named_params?.map((item) => `{${item?.param_name}}`),
 
+        header: messageParticular?.components?.find((item) => item?.type === 'HEADER')?.format,
+        body: messageParticular?.components?.find((item) => item?.type === 'BODY')?.text,
+        header_text: messageParticular?.components
+            ?.find((item) => item?.type === 'HEADER')
+            ?.example?.header_text?.map((item) => `{${item}}`),
+        body_text: messageParticular?.components
+            ?.find((item) => item?.type === 'BODY')
+            ?.example?.body_text?.flat()
+            ?.map((item) => `{${item}}`),
+        button_text: messageParticular?.components?.find((item) => item?.type === 'BUTTONS')?.buttons?.map((button) => button.text),
         button: messageParticular?.components
             ?.find((item) => item?.buttons)
             ?.buttons?.map((button) => button.type)
             .join(','),
+        header_image_link: messageParticular?.components?.find((item) => item?.type === 'HEADER')?.example?.header_handle?.[0],
     }
+
+    useEffect(() => {
+        setHeaderImageLink(initialValue?.header_image_link)
+    }, [messageParticular])
 
     console.log('initial ava', initialValue)
 
