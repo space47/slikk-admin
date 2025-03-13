@@ -45,6 +45,14 @@ const ReturnOrderDetails = () => {
                             {returnDetails?.order.invoice_id}
                         </a>
                     </div>
+                    {returnDetails?.exchange_order && (
+                        <div className="">
+                            Exchange Order:
+                            <a href={`/app/orders/${returnDetails?.exchange_order}`} className="text-blue-500 hover:underline">
+                                {returnDetails?.exchange_order}
+                            </a>
+                        </div>
+                    )}
                     <div>
                         <span className="flex items-center">
                             <HiOutlineCalendar className="text-lg" />

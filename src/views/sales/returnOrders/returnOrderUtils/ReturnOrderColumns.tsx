@@ -42,6 +42,25 @@ export const useReturnOrderColumns = () => {
                 ),
             },
             {
+                header: 'Exchange Order',
+                accessorKey: 'exchange_order',
+                cell: ({ getValue }: { getValue: () => string }) => {
+                    const value = getValue()
+                    return value ? (
+                        <a
+                            href={`/app/orders/${value}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white w-[70%] bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                        >
+                            <div>{value}</div>
+                        </a>
+                    ) : (
+                        'N/A'
+                    )
+                },
+            },
+            {
                 header: 'Order Date',
                 accessorKey: 'create_date',
                 cell: ({ getValue }: { getValue: () => string }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
