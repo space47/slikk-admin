@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { fetchReturnOrders } from '@/store/slices/returnOrderDetails/returnOrderDetails'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { useParams } from 'react-router-dom'
@@ -29,8 +29,6 @@ const ReturnOrderDetails = () => {
     useEffect(() => {
         dispatch(fetchReturnOrders(return_order_id))
     }, [return_order_id, dispatch])
-
-    console.log('Datat of rider', returnDetails?.return_order_delivery[0]?.partner)
 
     return (
         <div>
@@ -91,13 +89,7 @@ const ReturnOrderDetails = () => {
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-900">
                     <ReturnProductsDetails />
                     <div className="flex xl:flex-row xl:gap-10 flex-col gap-5">
-                        <RefundActivity
-                            data={returnDetails?.log}
-                            status="completed"
-                            task_id={returnDetails?.id}
-                            latitude="11"
-                            longitude="22"
-                        />
+                        <RefundActivity />
 
                         <div>
                             {returnDetails?.return_order_delivery.length !== 0 && (

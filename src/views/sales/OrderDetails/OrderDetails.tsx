@@ -287,10 +287,10 @@ const OrderDetails = () => {
                                         </div>
                                     </div>
                                 )}
-                                {(data?.original_order !== undefined || data?.original_order !== null) && (
+                                {data?.delivery_type === 'EXCHANGE' && (
                                     <div>
                                         <a
-                                            href={`/app/returnOrders/${data?.original_order}`}
+                                            href={`/app/orders/${data?.original_order}`}
                                             className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
                                         >
                                             <span className="text-gray-700">Original Order:</span> {data?.original_order}
@@ -389,7 +389,7 @@ const OrderDetails = () => {
                                 <ReturnOrderDrawer
                                     isOpen={returnOrderDrawer}
                                     setIsOpen={setReturnOrderDrawer}
-                                    product={data.order_items}
+                                    product={data.order_items || []}
                                     invoice_id={invoice_id}
                                     delivery_type={data?.delivery_type}
                                 />
@@ -397,10 +397,9 @@ const OrderDetails = () => {
 
                             {showCancelModal && (
                                 <CancelModal
-                                    product={data.order_items}
                                     isModalOpen={showCancelModal}
                                     handleClose={handleCloseModal}
-                                    invoice_id={invoice_id}
+                                    invoice_id={invoice_id || ''}
                                     setIsModalOpen={setShowCancelModal}
                                 />
                             )}
