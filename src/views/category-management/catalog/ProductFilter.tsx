@@ -15,7 +15,7 @@ interface PROPS {
     showDrawer: boolean
     handleCloseDrawer: any
     handleApply: any
-    handleMultiSelect: any
+    handleMultiSelect?: any
     divisionList: any
     categroyList: any
     productTypeList: any
@@ -42,7 +42,6 @@ const ProductFilterNest = ({
     showDrawer,
     handleCloseDrawer,
     handleApply,
-    handleMultiSelect,
     divisionList,
     categroyList,
     productTypeList,
@@ -51,16 +50,9 @@ const ProductFilterNest = ({
     setDivisionList,
     setCategoryList,
     setSubCategoryList,
-    setTypeFetch,
-    setBrandList,
     setProductTypeList,
-    setFilteredCategories,
-    setFilteredProductTypes,
-    setFilteredSubCategories,
-    filteredCategories,
-    filteredProductTypes,
-    filteredSubCategories,
-    options,
+    setBrandList,
+
     filters,
     setFilterString,
 }: PROPS) => {
@@ -70,7 +62,21 @@ const ProductFilterNest = ({
     useEffect(() => {
         dispatch(getAllBrandsAPI())
         dispatch(getAllFiltersAPI())
-    }, [])
+    }, [dispatch])
+
+    const handleMultiSelect = (fieldName: string, selectedValues: any) => {
+        if (fieldName === 'division') {
+            setDivisionList(selectedValues)
+        } else if (fieldName === 'category') {
+            setCategoryList(selectedValues)
+        } else if (fieldName === 'sub_category') {
+            setSubCategoryList(selectedValues)
+        } else if (fieldName === 'product_type') {
+            setProductTypeList(selectedValues)
+        } else if (fieldName === 'brand') {
+            setBrandList(selectedValues)
+        }
+    }
 
     useEffect(() => {
         if (showDrawer) {
@@ -92,159 +98,12 @@ const ProductFilterNest = ({
         brand: brandList,
     })
 
-    // const handleFilterEmpty = (resetForm: any) => {
-    //     // Clear the form values
-    //     resetForm({
-    //         values: {
-    //             division: [],
-    //             category: [],
-    //             sub_category: [],
-    //             product_type: [],
-    //             brand: [],
-    //         },
-    //     })
-
-    //     // Clear the external state
-    //     setDivisionList([])
-    //     setCategoryList([])
-    //     setSubCategoryList([])
-    //     setProductTypeList([])
-    //     setBrandList([])
-    //     setTypeFetch('')
-    // }
-
     return (
         <div>
-            <Drawer title="" isOpen={showDrawer} onClose={handleCloseDrawer} onRequestClose={handleCloseDrawer} lockScroll={false}>
+            <Drawer title="" isOpen={showDrawer} lockScroll={false} onRequestClose={handleCloseDrawer} onClose={handleCloseDrawer}>
                 <Formik initialValues={initialValues} onSubmit={handleApply}>
-                    {({ setFieldValue, values, resetForm }) => (
+                    {({ setFieldValue }) => (
                         <Form className="flex flex-col gap-10 w-full items-start">
-                            {/* Division */}
-
-                            {/* <FormItem asterisk label="Division" className="col-span-1 w-full">
-                                <Field name="division">
-                                    {({ field }: FieldProps) => {
-                                        console.log('FieldValue ok ok', field.value)
-                                        console.log('FieldValue Division List', divisionList)
-
-                                        return (
-                                            <Select
-                                                isMulti
-                                                className="w-full"
-                                                options={options}
-                                                getOptionLabel={(option: any) => option?.name}
-                                                getOptionValue={(option) => option.id?.toString() || ''}
-                                                value={field.value}
-                                                onChange={(newVal) => {
-                                                    console.log('setting Field value', newVal)
-
-                                                    setFieldValue('division', newVal ? newVal : [])
-
-                                                    setDivisionList(newVal)
-
-                                                    const selectedDivision = newVal
-                                                        ? newVal.map((division) => division.categories).flat()
-                                                        : []
-
-                                                    setFieldValue('category', [])
-                                                    setFieldValue('sub_category', [])
-                                                    setFieldValue('product_type', [])
-                                                    setFilteredCategories(selectedDivision)
-                                                }}
-                                            />
-                                        )
-                                    }}
-                                </Field>
-                            </FormItem> */}
-
-                            {/* CATEGORY ...................................... */}
-
-                            {/* <FormItem asterisk label="Category" className="col-span-1 w-full">
-                                <Field name="category">
-                                    {({ field }: FieldProps<any>) => {
-                                        return (
-                                            <Select
-                                                isMulti
-                                                className="w-full"
-                                                field={field}
-                                                defaultValue={field.value || []}
-                                                options={filteredCategories}
-                                                getOptionLabel={(option: any) => option.name}
-                                                getOptionValue={(option) => option.id?.toString() || ''}
-                                                onChange={(newVal) => {
-                                                    setFieldValue('category', newVal ? newVal : [])
-                                                    setCategoryList(newVal)
-
-                                                    const selectedSubCategories = newVal
-                                                        ? newVal.map((category) => category.sub_categories).flat()
-                                                        : []
-
-                                                    setFieldValue('sub_category', [])
-                                                    setFieldValue('product_type', [])
-                                                    setFilteredSubCategories(selectedSubCategories)
-                                                }}
-                                            />
-                                        )
-                                    }}
-                                </Field>
-                            </FormItem> */}
-
-                            {/* SUB-CATEGORY ...................................... */}
-
-                            {/* <FormItem asterisk label="Sub-Category" className="col-span-1 w-full">
-                                <Field name="sub_category">
-                                    {({ field }: FieldProps<any>) => {
-                                        return (
-                                            <Select
-                                                isMulti
-                                                className="w-full"
-                                                field={field}
-                                                defaultValue={field.value || []}
-                                                options={filteredSubCategories}
-                                                getOptionLabel={(option: any) => option?.name}
-                                                getOptionValue={(option) => option?.id?.toString() || ''}
-                                                onChange={(newVal) => {
-                                                    setFieldValue('sub_category', newVal ? newVal : [])
-                                                    setSubCategoryList(newVal)
-                                                    const selectedProductTypes = newVal
-                                                        ? newVal.map((sub_category) => sub_category?.product_types)?.flat()
-                                                        : []
-
-                                                    setFieldValue('product_type', [])
-
-                                                    setFilteredProductTypes(selectedProductTypes)
-                                                }}
-                                            />
-                                        )
-                                    }}
-                                </Field>
-                            </FormItem> */}
-
-                            {/* PRODUCT TYPE ...................................... */}
-
-                            {/* <FormItem asterisk label="Product Type" className="col-span-1 w-full">
-                                <Field name="product_type">
-                                    {({ field }: FieldProps<any>) => {
-                                        return (
-                                            <Select
-                                                isMulti
-                                                className="w-full"
-                                                field={field}
-                                                defaultValue={field.value || []}
-                                                options={filteredProductTypes}
-                                                getOptionLabel={(option: any) => option?.name}
-                                                getOptionValue={(option) => option?.id?.toString() || ''}
-                                                onChange={(newVal) => {
-                                                    setFieldValue('product_type', newVal ? newVal : [])
-                                                    setProductTypeList(newVal)
-                                                }}
-                                            />
-                                        )
-                                    }}
-                                </Field>
-                            </FormItem>
-                            */}
-
                             <Field name="brand">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
@@ -252,8 +111,8 @@ const ProductFilterNest = ({
                                         <div className="flex flex-col gap-1 w-full items-center xl:items-baseline max-w-md">
                                             <div className="font-semibold">Brands</div>
                                             <Select
-                                                className="w-full"
                                                 isMulti
+                                                className="w-full"
                                                 options={brands.brands}
                                                 getOptionLabel={(option) => option?.name}
                                                 getOptionValue={(option) => option?.id?.toString()}
@@ -284,7 +143,7 @@ const ProductFilterNest = ({
                                                 </button>
                                             </FormContainer>
 
-                                            {form.values.filtersAdd?.map((_, index) => (
+                                            {form.values.filtersAdd?.map((_: any, index: any) => (
                                                 <FormItem key={index} className="flex gap-2">
                                                     <div className="flex gap-3 items-center">
                                                         <Field name={`filtersAdd[${index}]`}>
@@ -292,6 +151,7 @@ const ProductFilterNest = ({
                                                                 <Select
                                                                     isMulti
                                                                     placeholder="Select Filter Tags"
+                                                                    className="xl:w-[300px]"
                                                                     options={filters.filters}
                                                                     getOptionLabel={(option: any) => option.label}
                                                                     getOptionValue={(option: any) => option.value}
@@ -314,20 +174,14 @@ const ProductFilterNest = ({
                                                                             .map(([key, values]) => `${key}=${values.join(',')}`)
                                                                             .join('&')
 
-                                                                        console.log('Transformed Query String:', queryString)
-
                                                                         form.setFieldValue(field.name, queryString)
                                                                         setFilterString(queryString)
                                                                     }}
-                                                                    className="xl:w-[300px]"
                                                                 />
                                                             )}
                                                         </Field>
 
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => remove(index)} // Remove the specific index
-                                                        >
+                                                        <button type="button" onClick={() => remove(index)}>
                                                             <MdCancel className="text-xl text-red-500" />
                                                         </button>
                                                     </div>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
-import { NOTIFYSTATS, OtherConfig, pageSizeOptions, Rules, SchedularTypes, SchedulerConfig, User } from '../getNotiStats.common'
+import { pageSizeOptions, Rules, SchedularTypes, SchedulerConfig } from '../getNotiStats.common'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import { Pagination, Select } from '@/components/ui'
@@ -32,14 +32,6 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
                 accessorKey: 'name',
                 cell: (info) => info.getValue(),
             },
-            // {
-            //     header: 'User Name',
-            //     accessorKey: 'users',
-            //     cell: (info) => {
-            //         const value = info.getValue();
-
-            //     },
-            // },
 
             {
                 header: 'Title',
@@ -79,24 +71,6 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
                     return `${day} ${month} ${year} at ${hour}:${minute}`
                 },
             },
-            // {
-            //     header: 'Next Run Time',
-            //     accessorKey: 'next_run_time',
-            //     cell: (info) => (info.getValue() ? moment(info.getValue() as string).format('YYYY-MM-DD hh:mm:ss a') : '-'),
-            // },
-            // {
-            //     header: 'Last Run Time',
-            //     accessorKey: 'last_run_time',
-            //     cell: (info) => (info.getValue() ? moment(info.getValue() as string).format('YYYY-MM-DD hh:mm:ss a') : '-'),
-            // },
-            // {
-            //     header: 'Other Config',
-            //     accessorKey: 'other_config',
-            //     cell: (info) => {
-            //         const { key, filters, page_title, target_page } = info.getValue() as OtherConfig
-            //         return `${key} | Filters: ${filters.join(', ')} | Page: ${page_title} | Target: ${target_page}`
-            //     },
-            // },
             {
                 header: 'Min Purchase',
                 accessorKey: 'rules',
@@ -127,8 +101,7 @@ const SchedularTable = ({ data, page, pageSize, onPaginationChange, onSelectChan
     )
 
     return (
-        <div className="flex flex-col gap-2">
-            <div className="font-bold text-xl">Schedular Notification</div>
+        <div className="flex flex-col gap-2 mt-10">
             <EasyTable overflow mainData={data} page={page} pageSize={pageSize} columns={columns} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(e) => onPaginationChange('schedule', e)} />

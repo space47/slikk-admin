@@ -359,3 +359,52 @@ export const CustomModal5: React.FC<props5> = ({ isModalOpen, handlePack, handle
         </Modal>
     )
 }
+
+type prop6 = {
+    isModalOpen: boolean
+    handlePack: () => void
+    handleClose: () => void
+    modalContent?: string
+    status: string
+    invoice: any
+    isButtonClick?: any
+}
+
+export const ExchangeModal: React.FC<prop6> = ({ isModalOpen, handlePack, handleClose, modalContent, status, invoice, isButtonClick }) => {
+    return (
+        <Modal
+            title=""
+            okText={isButtonClick ? 'COMPLETING...' : 'COMPLETE'}
+            cancelText={status === 'PENDING' ? 'CANCEL' : 'CANCEL'}
+            width={800}
+            className="custom-modal"
+            okButtonProps={{
+                className: 'font-bold',
+                style: {
+                    backgroundColor: '#1D4ED8',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
+                },
+            }}
+            cancelButtonProps={{
+                className: 'font-bold',
+                style: {
+                    backgroundColor: '#6B7280',
+                    color: '#FFFFFF',
+                    borderRadius: '8px',
+                },
+            }}
+            open={isModalOpen}
+            onOk={handlePack}
+            onCancel={handleClose}
+        >
+            <p className="text-lg font-semibold mb-4">{modalContent}</p>
+
+            <h1 className="text-center text-lg font-bold text-green-600">COMPLETE EXCHANGE ORDER</h1>
+            <p className="text-center text-xl font-semibold ">
+                Mark to set the Excange Delivery Complete for order:<span className="font-bold underline text-red-600">{invoice}</span>{' '}
+            </p>
+            <br />
+        </Modal>
+    )
+}

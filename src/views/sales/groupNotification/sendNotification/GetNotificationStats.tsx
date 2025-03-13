@@ -8,6 +8,7 @@ import UltimateDatePicker from '@/common/UltimateDateFilter'
 import AccessDenied from '@/views/pages/AccessDenied'
 import SentNotif from './GetNotificationComponents/SentNotif'
 import SchedularTable from './GetNotificationComponents/SchedularTable'
+import { DoubleSidedImage } from '@/components/shared'
 
 const GetNotificationStats = () => {
     const [data, setData] = useState<NOTIFYSTATS[]>([])
@@ -22,34 +23,32 @@ const GetNotificationStats = () => {
     const [schedulePageSize, setSchedulePageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [accessDenied, setAccessDenied] = useState(false)
+    const [activeTab, setActiveTab] = useState<'sent' | 'schedule'>('sent')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(`/notification/stats?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`)
-            const data = response.data.data.results
-            const total = response.data.data.count
-            setData(data)
-            setTotalData(total)
+            setData(response.data.data.results)
+            setTotalData(response.data.data.count)
         } catch (error: any) {
-            if (error.response && error.response.status === 403) {
+            if (error.response?.status === 403) {
                 setAccessDenied(true)
             }
             console.error(error)
         }
     }
+
     const fetchSchedularData = async (schedulePage: number, schedulePageSize: number) => {
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
                 `/user_notification?p=${schedulePage}&page_size=${schedulePageSize}&from=${from}&to=${To_Date}`,
             )
-            const data = response.data.message.results
-            const total = response.data.message.count
-            setScheduleData(data)
-            setTotalScheduleData(total)
+            setScheduleData(response.data.message.results)
+            setTotalScheduleData(response.data.message.count)
         } catch (error: any) {
-            if (error.response && error.response.status === 403) {
+            if (error.response?.status === 403) {
                 setAccessDenied(true)
             }
             console.error(error)
@@ -57,12 +56,12 @@ const GetNotificationStats = () => {
     }
 
     useEffect(() => {
-        fetchData(page, pageSize)
-    }, [page, pageSize, globalFilter, from, to])
-
-    useEffect(() => {
-        fetchSchedularData(schedulePage, schedulePageSize)
-    }, [schedulePage, schedulePageSize, globalFilter, from, to])
+        if (activeTab === 'sent') {
+            fetchData(page, pageSize)
+        } else if (activeTab === 'schedule') {
+            fetchSchedularData(schedulePage, schedulePageSize)
+        }
+    }, [page, pageSize, schedulePage, schedulePageSize, globalFilter, from, to, activeTab])
 
     const onPaginationChange = (type: string, page: number) => {
         if (type === 'sent') {
@@ -107,8 +106,8 @@ const GetNotificationStats = () => {
                             type="text"
                             placeholder="Search here"
                             value={globalFilter}
-                            onChange={(e) => setGlobalFilter(e.target.value)}
                             className="p-2 border rounded"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
                         />
                     </div>
                 </div>
@@ -124,28 +123,60 @@ const GetNotificationStats = () => {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col gap-10 mt-6">
-                {data?.length > 0 && (
-                    <SentNotif
-                        data={data}
-                        page={page}
-                        pageSize={pageSize}
-                        onPaginationChange={onPaginationChange}
-                        onSelectChange={onSelectChange}
-                        totalData={totalData}
-                    />
-                )}
-                {Scheduledata?.length > 0 && (
-                    <SchedularTable
-                        data={Scheduledata}
-                        page={schedulePage}
-                        pageSize={schedulePageSize}
-                        onPaginationChange={onPaginationChange}
-                        onSelectChange={onSelectChange}
-                        totalData={totalScheduleData}
-                    />
-                )}
+
+            <div className="flex gap-6 mt-10">
+                <div
+                    className={`flex  cursor-pointer ${activeTab === 'sent' ? ' border-b-4 border-black' : ''}`}
+                    onClick={() => setActiveTab('sent')}
+                >
+                    <span className="text-xl font-bold">Sent Notifications</span>
+                </div>
+                <div
+                    className={`flex   cursor-pointer  ${activeTab === 'schedule' ? ' border-b-4 border-black' : ''}`}
+                    onClick={() => setActiveTab('schedule')}
+                >
+                    <span className="text-xl font-bold">Schedular Notifications</span>
+                </div>
             </div>
+
+            {activeTab === 'sent' && (
+                <div>
+                    {data?.length > 0 ? (
+                        <SentNotif
+                            data={data}
+                            page={page}
+                            pageSize={pageSize}
+                            totalData={totalData}
+                            onSelectChange={onSelectChange}
+                            onPaginationChange={onPaginationChange}
+                        />
+                    ) : (
+                        <div className="flex justify-center flex-col gap-3 items-center xl:mt-20 ">
+                            <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="NO DATA FOUND" />
+                            <div className="text-xl font-bold">NO DATA FOUND</div>
+                        </div>
+                    )}
+                </div>
+            )}
+            {activeTab === 'schedule' && (
+                <div>
+                    {Scheduledata?.length > 0 ? (
+                        <SchedularTable
+                            data={Scheduledata}
+                            page={schedulePage}
+                            pageSize={schedulePageSize}
+                            totalData={totalScheduleData}
+                            onPaginationChange={onPaginationChange}
+                            onSelectChange={onSelectChange}
+                        />
+                    ) : (
+                        <div className="flex justify-center flex-col gap-3 items-center xl:mt-20 ">
+                            <DoubleSidedImage src="/img/others/img-2.png" darkModeSrc="/img/others/img-2-dark.png" alt="NO DATA FOUND" />
+                            <div className="text-xl font-bold">NO DATA FOUND</div>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

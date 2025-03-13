@@ -1,4 +1,4 @@
-export type Product = {
+export type Product = Partial<{
     company: number | null
     brand_name: string
     name: string
@@ -75,7 +75,7 @@ export type Product = {
     fabric: string
     size_chart_image: string
     size_chart_image_array: File[]
-}
+}>
 
 export const DROPDOWNARRAY = [
     { label: 'Brand', value: 'brand' },

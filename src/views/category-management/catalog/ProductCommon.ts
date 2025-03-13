@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Input from '@/components/ui/Input'
 import { Checkbox } from '@/components/ui'
-import Product from '@/views/category-management/catalog/CommonType'
+import { ProductVariant, Product } from '@/views/category-management/catalog/CommonType'
 
 export const PRODUCT_EDIT_COMMON = [
     {
@@ -334,7 +335,7 @@ export const PRODUCT_EDIT_COMMON_DOWN = [
 
 export const INITIALVALUES: Product = {
     company: 1,
-    brand: '',
+
     colorfamily: '',
     name: '',
     description: '',
@@ -412,4 +413,27 @@ export const INITIALVALUES: Product = {
 export const ProductFilterArray = [
     { label: 'SKU', value: 'sku' },
     { label: 'Name', value: 'name' },
+    { label: 'Barcode', value: 'barcode' },
 ]
+
+export type ProductTypes = {
+    barcode: string
+    mrp: string
+    sp: string
+    name: string
+    brand: string
+    product_feedback: string | null
+    is_wish_listed: boolean
+    is_try_and_buy: boolean
+    trends: boolean
+    styles: any
+    inventory_count: number
+    image: string
+    division: string
+    category: string
+    sub_category: string
+    product_type: string
+    variants: ProductVariant[]
+    sku: string
+    filter_to_display_map: any
+}

@@ -10,25 +10,37 @@ import { useEffect, useState } from 'react'
 import { message, notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { NotificationTYPE, ParametersArray } from '../createNotification/createNotification.common'
+import { NotificationTYPE, notificationTypeArray, ParametersArray } from '../createNotification/createNotification.common'
 import { extractPlaceholders, NotificationARRAY } from '../createNotification/NotificationForms'
 import { RichTextEditor } from '@/components/shared'
 import axios from 'axios'
 import WhatsAppForm from '../WhatsAppForm'
-
-const notificationTypeArray = [
-    { value: 'SMS', label: 'SMS' },
-    { value: 'EMAIL', label: 'EMAIL' },
-    { value: 'WHATSAPP', label: 'WHATSAPP' },
-    { value: 'APP', label: 'APP' },
-]
+import { useAppDispatch, useAppSelector } from '@/store'
+import { EventNamesSliceType, setEventNamesData } from '@/store/slices/eventNameSlice/eventName.slice'
+import { eventNameService } from '@/store/services/eventNameSerices'
 
 const EditNotification = () => {
-    const [notificationData, setNotificationData] = useState<any>()
+    const dispatch = useAppDispatch()
     const { id } = useParams()
+    const [notificationData, setNotificationData] = useState<any>()
     const [messageTemplateData, setMessageTemplateData] = useState<any>([])
     const [messageParticular, setMessageParticular] = useState<any>({})
     const [selectedTemplateName, setSelectedTemplateName] = useState<string>()
+
+    const { eventNamesData } = useAppSelector<EventNamesSliceType>((state) => state.eventNames)
+
+    const { data: eventNameList, isSuccess } = eventNameService.useEventNamesDataQuery({})
+
+    useEffect(() => {
+        if (isSuccess) {
+            dispatch(setEventNamesData(eventNameList?.results || []))
+        }
+    }, [dispatch, isSuccess])
+
+    const EventNamesArray = eventNamesData?.map((item) => ({
+        label: item.name,
+        value: item.name,
+    }))
 
     const fetchMessageTemplate = async () => {
         const params: Record<string, any> = {}
@@ -94,8 +106,8 @@ const EditNotification = () => {
         language: Object.keys(messageParticular).length > 0 ? messageParticular?.language : '',
         message:
             Object.keys(messageParticular).length > 0
-                ? `${messageParticular?.components?.filter((comp) => comp.type === 'HEADER')?.map((item) => item.text)}
-            ${messageParticular?.components?.filter((comp) => comp.type === 'BODY')?.map((item) => item.text)}
+                ? `${messageParticular?.components?.filter((comp: any) => comp.type === 'HEADER')?.map((item: any) => item.text)}
+            ${messageParticular?.components?.filter((comp: any) => comp.type === 'BODY')?.map((item: any) => item.text)}
             `
                 : notificationData?.message,
         template_id: Object.keys(messageParticular).length > 0 ? selectedTemplateName : notificationData?.template_id,
@@ -103,18 +115,20 @@ const EditNotification = () => {
         config_data: {
             body_config:
                 messageParticular?.components
-                    ?.filter((comp) => comp.type === 'BODY')
-                    ?.flatMap((comp) => extractPlaceholders(comp.text).map((placeholder) => ({ textParam: placeholder, type: 'text' }))) ||
-                [],
+                    ?.filter((comp: any) => comp.type === 'BODY')
+                    ?.flatMap((comp: any) =>
+                        extractPlaceholders(comp.text).map((placeholder) => ({ textParam: placeholder, type: 'text' })),
+                    ) || [],
             header_config:
                 messageParticular?.components
-                    ?.filter((comp) => comp.type === 'HEADER')
-                    ?.flatMap((comp) => extractPlaceholders(comp.text).map((placeholder) => ({ textParam: placeholder, type: 'text' }))) ||
-                [],
+                    ?.filter((comp: any) => comp.type === 'HEADER')
+                    ?.flatMap((comp: any) =>
+                        extractPlaceholders(comp.text).map((placeholder) => ({ textParam: placeholder, type: 'text' })),
+                    ) || [],
             button_config: messageParticular?.components
                 ?.filter((comp: any) => comp.type === 'BUTTONS')
                 ?.flatMap((comp: any) =>
-                    comp.buttons?.map((btn, index) => ({
+                    comp.buttons?.map((btn: any, index: any) => ({
                         text: btn.text || '',
                         sub_type: btn.sub_type || 'url',
                         index,
@@ -124,27 +138,28 @@ const EditNotification = () => {
     }
 
     const handleSubmit = async (values: NotificationTYPE) => {
-        console.log('hi')
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(values.message, 'text/html')
         const plainTextMessage = htmlDoc.body.textContent || ''
         const updatedConfigData = {
             ...values.config_data,
+            language: values?.language,
             body_config: values?.config_data?.body_config.map(({ textParam, ...rest }) => rest),
             header_config: values?.config_data?.header_config.map(({ textParam, ...rest }) => rest),
             button_config: values?.config_data?.button_config.map(({ text, ...rest }: any) => rest),
         }
-
+        const { language, ...rest } = values
         const formData = {
-            ...values,
+            ...rest,
             config_data: updatedConfigData,
+            event_name: values?.event_name,
             message: plainTextMessage,
             notification_type: Object.keys(messageParticular).length > 0 ? 'WHATSAPP' : values.notification_type,
         }
         console.log('FORMDATA', formData)
 
         try {
-            const response = await axioisInstance.post(`/notifications/config`, formData)
+            const response = await axioisInstance.patch(`/notifications/config/${id}`, formData)
             notification.success({
                 message: 'SUCCESS',
                 description: response.data.message || 'Notification has been updated successfully',
@@ -165,12 +180,20 @@ const EditNotification = () => {
                     {({ values, setFieldValue, resetForm }) => (
                         <Form className="w-2/3">
                             <FormContainer>
-                                <FormContainer className="grid grid-cols-2 gap-10">
-                                    {NotificationARRAY.slice(0, 3).map((item, key) => (
-                                        <FormItem key={key} label={item.label} className={item.classname}>
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
-                                        </FormItem>
-                                    ))}
+                                <FormContainer className="grid grid-cols-1 gap-10">
+                                    <FormItem label="Notification Type" className="col-span-1 w-1/2">
+                                        <Field name="notification_type">
+                                            {({ field, form }: FieldProps<any>) => (
+                                                <Select
+                                                    field={field}
+                                                    form={form}
+                                                    options={notificationTypeArray}
+                                                    value={notificationTypeArray.find((option) => option.value === field.value)}
+                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
+                                                />
+                                            )}
+                                        </Field>
+                                    </FormItem>
 
                                     {values.notification_type === 'WHATSAPP' || Object.keys(messageParticular).length > 0 ? (
                                         <>
@@ -212,20 +235,6 @@ const EditNotification = () => {
                                             <Field type="text" name="language" placeholder="Enter Language" component={Input} />
                                         </FormItem>
                                     )}
-
-                                    <FormItem label="Notification Type" className="col-span-1 w-1/2">
-                                        <Field name="notification_type">
-                                            {({ field, form }: FieldProps<any>) => (
-                                                <Select
-                                                    field={field}
-                                                    form={form}
-                                                    options={notificationTypeArray}
-                                                    value={notificationTypeArray.find((option) => option.value === field.value)}
-                                                    onChange={(option) => form.setFieldValue(field.name, option?.value)}
-                                                />
-                                            )}
-                                        </Field>
-                                    </FormItem>
                                 </FormContainer>
                                 {Object.keys(messageParticular).length > 0 && <WhatsAppForm values={values} />}
 
@@ -238,7 +247,26 @@ const EditNotification = () => {
                                 </FormItem>
 
                                 <FormItem>
-                                    {NotificationARRAY.slice(3).map((item, key) => (
+                                    <FormItem asterisk label="EVENT NAMES" className="col-span-1 w-1/2">
+                                        <Field name="event_name">
+                                            {({ field, form }: FieldProps<any>) => {
+                                                return (
+                                                    <Select
+                                                        isClearable
+                                                        field={field}
+                                                        form={form}
+                                                        options={EventNamesArray || []}
+                                                        value={EventNamesArray?.find((option) => option.value === field.value)}
+                                                        onChange={(newVal) => {
+                                                            console.log(newVal?.value)
+                                                            form.setFieldValue(field.name, newVal?.value)
+                                                        }}
+                                                    />
+                                                )
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                                    {NotificationARRAY.map((item, key) => (
                                         <FormItem key={key} label={item.label} className={item.classname}>
                                             <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                         </FormItem>
