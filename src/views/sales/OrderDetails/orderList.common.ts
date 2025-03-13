@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 type RETURNORDER = {
     amount: string
     create_date: string
@@ -12,6 +13,8 @@ type RETURNORDER = {
 
 export type SalesOrderDetailsResponse = {
     amount: string
+    original_order: string
+    exchange_order_id: string[]
     invoice_id?: string
     progressStatus?: number
     payementStatus?: number
@@ -58,6 +61,7 @@ export type SalesOrderDetailsResponse = {
         product_type: string
         image: string
         sp: number
+        delivery_type?: string
         quantity: string
         location: string
         sub_category: string

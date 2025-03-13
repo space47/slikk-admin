@@ -10,15 +10,15 @@ import Spinner from '@/components/ui/Spinner'
 const { Option } = Select
 
 export type Product = {
-    image: string
-    quantity: string
-    fulfilled_quantity: string
-    final_price: number
-    sku: string
-    name: string
-    id: number
-    returnable_quantity: number
-    delivery_Type: string
+    image?: string
+    quantity?: string
+    fulfilled_quantity?: string
+    final_price?: number
+    sku?: string
+    name?: string
+    id?: number
+    returnable_quantity?: number
+    delivery_Type?: string
 }
 
 type ReturnOrderProps = {
@@ -61,17 +61,6 @@ const returnReasons = [
         name: 'Try & Buy',
     },
 ]
-
-// const returnType = [
-//     {
-//         label: 'Try and Buy',
-//         value: 'TRY_AND_BUY',
-//     },
-//     {
-//         label: 'DASHBOARD',
-//         value: 'DASHBOARD_INITIATIVE',
-//     },
-// ]
 
 const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_type }: ReturnOrderProps) => {
     const [returnQuantities, setReturnQuantities] = useState<{
@@ -215,14 +204,14 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
                                             <div className="font-semibold text-gray-600 text-center sm:text-left sm:col-span-1">
                                                 RETURN QTY
                                                 <div className="sm:col-span-1 text-center sm:text-left">
-                                                    {pdts.returnable_quantity > 0 ? (
+                                                    {pdts?.returnable_quantity > 0 ? (
                                                         <Select
-                                                            value={returnQuantities[pdts.id] || 0}
+                                                            value={returnQuantities[pdts?.id] || 0}
                                                             className="w-1/4 border border-gray-300 rounded-lg"
-                                                            onChange={(value) => handleSelectChange(pdts.id, value)}
+                                                            onChange={(value) => handleSelectChange(pdts?.id, value)}
                                                         >
                                                             {Array.from(
-                                                                { length: parseInt(pdts.returnable_quantity.toString(), 10) + 1 },
+                                                                { length: parseInt(pdts?.returnable_quantity.toString(), 10) + 1 },
                                                                 (_, i) => (
                                                                     <Option key={i} value={i}>
                                                                         {i}
@@ -261,7 +250,7 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
                                         </div>
 
                                         {/* Return Reason Display */}
-                                        {currentSelectedPage[pdts.id]?.label && (
+                                        {currentSelectedPage[pdts?.id]?.label && (
                                             <div className="mt-4">
                                                 <p className="text-gray-800 text-lg">
                                                     <span className="font-semibold">Return Reason:</span>{' '}

@@ -271,6 +271,32 @@ const OrderDetails = () => {
                                         </div>
                                     </div>
                                 )}
+                                {data?.exchange_order_id?.length > 0 && (
+                                    <div className="flex flex-col xl:flex-row gap-2 items-center">
+                                        <span className="text-gray-700">Exchange Orders:</span>
+                                        <div className="flex flex-wrap gap-2">
+                                            {data?.exchange_order_id?.map((item, key) => (
+                                                <a
+                                                    href={`/app/orders/${item}`}
+                                                    key={key}
+                                                    className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                                                >
+                                                    {item}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                {data?.delivery_type === 'EXCHANGE' && (
+                                    <div>
+                                        <a
+                                            href={`/app/orders/${data?.original_order}`}
+                                            className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                                        >
+                                            <span className="text-gray-700">Original Order:</span> {data?.original_order}
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -328,6 +354,7 @@ const OrderDetails = () => {
                                             payment={data.payment}
                                             invoice_id={data.invoice_id}
                                             logistic={data.logistic}
+                                            delivery_type={data.delivery_type}
                                         />
                                     </div>
 
@@ -362,7 +389,7 @@ const OrderDetails = () => {
                                 <ReturnOrderDrawer
                                     isOpen={returnOrderDrawer}
                                     setIsOpen={setReturnOrderDrawer}
-                                    product={data.order_items}
+                                    product={data.order_items || []}
                                     invoice_id={invoice_id}
                                     delivery_type={data?.delivery_type}
                                 />
@@ -370,10 +397,9 @@ const OrderDetails = () => {
 
                             {showCancelModal && (
                                 <CancelModal
-                                    product={data.order_items}
                                     isModalOpen={showCancelModal}
                                     handleClose={handleCloseModal}
-                                    invoice_id={invoice_id}
+                                    invoice_id={invoice_id || ''}
                                     setIsModalOpen={setShowCancelModal}
                                 />
                             )}

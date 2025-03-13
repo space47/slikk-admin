@@ -69,6 +69,7 @@ export interface ReturnOrder {
     id: number
     return_order_items: ReturnOrderItem[]
     return_order_delivery: any[]
+    exchange_order?: string
     order: {
         order_id: string
         invoice_id: string

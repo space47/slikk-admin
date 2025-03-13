@@ -72,14 +72,14 @@ const BrandEdit = () => {
 
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Category Changed Successfully',
+                description: response?.data?.message || 'Brand has been Successfully Updated',
             })
             navigate('/app/category/brand')
         } catch (error: any) {
             console.error('Error submitting form:', error)
             notification.error({
                 message: 'Failure',
-                description: error?.response?.data?.message || 'Failed to edit',
+                description: error?.response?.data?.message || 'Failed to edit Brand',
             })
         }
     }

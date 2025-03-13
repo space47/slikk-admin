@@ -1,4 +1,4 @@
-import { DateCalendarSlotProps } from '@mui/x-date-pickers/DateCalendar'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type ORDER_ITEM_RATING = {
     rating: string

@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react'
 import { Modal, notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5 } from './Modal'
+import { CustomModal, CustomModal2, CustomModal3, CustomModal4, CustomModal5, ExchangeModal } from './Modal'
 import { LOGISTIC, LOGISTIC_PARTNER, Payment, Product } from './activityCommon'
 import { SalesOrderDetailsResponse } from '../orderList.common'
 import DialogConfirm from '@/common/DialogConfirm'
@@ -27,9 +27,10 @@ type ActivityProps = {
     payment?: Payment
     invoice_id?: string
     logistic: LOGISTIC
+    delivery_type: string
 }
 
-const Activity = ({ data = [], status, product = [], payment, invoice_id, logistic, mainData }: ActivityProps) => {
+const Activity = ({ data = [], status, product = [], payment, invoice_id, logistic, mainData, delivery_type }: ActivityProps) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalContent, setModalContent] = useState<string>()
     const [fulfilledQuantities, setFulfilledQuantities] = useState<{ [key: number]: number }>({})
@@ -41,12 +42,14 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const [triggerShipCall, setTriggerShipCall] = useState(false)
     const [triggerOutDeliveryCall, setTriggerOutDeliveryCall] = useState(false)
     const [triggerDeliveryCall, setTriggerDeliveryCall] = useState(false)
+    const [triggerExchangeCall, setTriggerExchangeCall] = useState(false)
     const [cancelCall, setCancelCall] = useState(false)
     const [buttonAfterClick, setButtonAfterClick] = useState(false)
     const navigate = useNavigate()
     const [partner, setPartner] = useState<{ value: string; label: string } | null>(null)
     const fulfilledIDs = Object.keys(fulfilledQuantities)
     const [rejectModal, setRejectModal] = useState(false)
+    const hasStatus = (status: string) => data.some((log) => log.status === status)
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
@@ -257,6 +260,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         handleApiCall(triggerpackCall, setTriggerpackCall, true)
         handleApiCall(triggerShipCall, setTriggerShipCall, false)
         handleApiCall(triggerDeliveryCall, setTriggerDeliveryCall, false)
+        handleApiCall(triggerExchangeCall, setTriggerExchangeCall, false)
     }, [triggerpackCall, triggerShipCall, triggerDeliveryCall, action, invoice_id, partner, navigate])
 
     const handlePack = () => {
@@ -283,6 +287,12 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         setButtonAfterClick(true)
     }
 
+    const handleExchange = () => {
+        setAction('EXCHANGE_DELIVERED')
+        setTriggerExchangeCall(true)
+        setButtonAfterClick(true)
+    }
+
     const handlePartnerSelect = (selectedValue: any) => {
         const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
         setPartner({ value: selectedValue, label: selectedLabel })
@@ -306,6 +316,9 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         const isOrderDone = hasStatus('DELIVERED') || hasStatus('COMPLETED')
         const isOrderCancelled = hasStatus('DECLINED') || hasStatus('CANCELLED')
         const isShipped = hasStatus('SHIPPED') || hasStatus('OUT_FOR_DELIVERY')
+        const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
+
+        console.log('mainData?.delivery_type', delivery_type)
 
         if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD' && !isOrderDone && !isOrderCancelled) {
             return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
@@ -323,6 +336,10 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
         if (lastLogStatus === 'DELIVERY_CREATED' || lastLogStatus === 'OUT_FOR_PICKUP') {
             const buttonText = mainData?.delivery_type === 'STANDARD' ? 'MARK AS SHIPPED' : 'OUT FOR DELIVERY'
             return { buttonText, modalContent: buttonText.replace('MARK AS ', '') }
+        }
+        if (isOrderDone && delivery_type === 'EXCHANGE' && !isExchangeComplete) {
+            console.log('yhis statw')
+            return { buttonText: 'EXCHANGE DELIVERED', modalContent: 'Exchange Delivered' }
         }
         if (lastLogStatus === 'PACKED') {
             return { buttonText: 'CREATE DELIVERY' }
@@ -343,8 +360,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
     const isPacked = data.some((log) => log?.status === 'PACKED')
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
     const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
-
-    console.log('buttontext is ', buttonText)
+    const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -387,10 +403,10 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             {rejectModal && (
                 <div className="z-1000">
                     <DialogConfirm
+                        IsConfirm
                         IsOpen={rejectModal}
                         headingName="Reject Orders"
                         setIsOpen={setRejectModal}
-                        IsConfirm
                         onDialogOk={handleRejectModalConfirm}
                     />
                 </div>
@@ -475,6 +491,18 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
                     handleClose={handleClose}
                     modalContent={modalContent}
                     status={status}
+                    isButtonClick={buttonAfterClick}
+                />
+            )}
+
+            {buttonText === 'EXCHANGE DELIVERED' && !isExchangeComplete && (
+                <ExchangeModal
+                    isModalOpen={isModalOpen}
+                    handlePack={handleExchange}
+                    handleClose={handleClose}
+                    modalContent={modalContent}
+                    status={status}
+                    invoice={invoice_id}
                     isButtonClick={buttonAfterClick}
                 />
             )}
