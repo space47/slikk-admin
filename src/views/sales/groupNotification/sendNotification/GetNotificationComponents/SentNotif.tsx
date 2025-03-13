@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ColumnDef } from '@tanstack/react-table'
 import React, { useMemo } from 'react'
 import { NOTIFYSTATS, pageSizeOptions } from '../getNotiStats.common'
@@ -74,8 +75,7 @@ const SentNotif = ({ data, page, pageSize, onPaginationChange, onSelectChange, t
     )
 
     return (
-        <div className="flex flex-col gap-2">
-            <div className="font-bold text-xl">Sent Notification</div>
+        <div className="flex flex-col gap-2 mt-10">
             <EasyTable overflow mainData={data} page={page} pageSize={pageSize} columns={columns} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(e) => onPaginationChange('sent', e)} />

@@ -35,6 +35,7 @@ const ThirdStep = ({ values, headerImageLink, setHeaderImageLink, setHeaderVideo
                                 name="header_image_link"
                                 placeholder="Enter Title"
                                 component={Input}
+                                value={headerImageLink}
                                 onChange={(e) => setHeaderImageLink(e.target.value)}
                             />
                         </FormItem>

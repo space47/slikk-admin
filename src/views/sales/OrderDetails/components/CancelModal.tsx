@@ -1,17 +1,15 @@
 import React, { useCallback, useState } from 'react'
-import { Modal, Select, notification } from 'antd'
+import { notification } from 'antd'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Dropdown, Button } from '@/components/ui'
+import { Dropdown } from '@/components/ui'
 import Dialog from '@/components/ui/Dialog'
 import { IoIosAddCircle, IoIosWarning } from 'react-icons/io'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
-const { Option } = Select
-
 type Props5 = {
     isModalOpen: boolean
     handleClose: () => void
-    invoice_id: any
+    invoice_id: string | number
     setIsModalOpen: (open: boolean) => void
 }
 

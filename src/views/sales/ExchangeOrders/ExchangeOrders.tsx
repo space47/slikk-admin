@@ -169,11 +169,43 @@ const Exchangeorders = () => {
                             >
                                 {getValue()}
                             </a>
-                            {row.original.status === 'PENDING' && differenceInSeconds > 60 && (
-                                <div className="flex items-center justify-center mt-2">
-                                    <FaExclamationCircle className="text-red-600 text-xl" />
-                                </div>
-                            )}
+                        </div>
+                    )
+                },
+            },
+
+            {
+                header: 'Original Order',
+                accessorKey: 'original_order',
+                cell: ({ getValue, row }: any) => {
+                    return (
+                        <div className="flex items-center gap-3">
+                            <a
+                                href={`/app/orders/${getValue()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                            >
+                                {getValue()}
+                            </a>
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'Return Order',
+                accessorKey: 'reference_return',
+                cell: ({ getValue, row }: any) => {
+                    return (
+                        <div className="flex items-center gap-3">
+                            <a
+                                href={`/app/returnOrders/${getValue()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                            >
+                                {getValue()}
+                            </a>
                         </div>
                     )
                 },

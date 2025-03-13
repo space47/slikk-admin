@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { fetchReturnOrders } from '@/store/slices/returnOrderDetails/returnOrderDetails'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { useParams } from 'react-router-dom'
@@ -30,8 +30,6 @@ const ReturnOrderDetails = () => {
         dispatch(fetchReturnOrders(return_order_id))
     }, [return_order_id, dispatch])
 
-    console.log('Datat of rider', returnDetails?.return_order_delivery[0]?.partner)
-
     return (
         <div>
             <div className="flex flex-col justify-between xl:flex-row xl:justify-between">
@@ -45,6 +43,14 @@ const ReturnOrderDetails = () => {
                             {returnDetails?.order.invoice_id}
                         </a>
                     </div>
+                    {returnDetails?.exchange_order && (
+                        <div className="">
+                            Exchange Order:
+                            <a href={`/app/orders/${returnDetails?.exchange_order}`} className="text-blue-500 hover:underline">
+                                {returnDetails?.exchange_order}
+                            </a>
+                        </div>
+                    )}
                     <div>
                         <span className="flex items-center">
                             <HiOutlineCalendar className="text-lg" />
@@ -83,13 +89,7 @@ const ReturnOrderDetails = () => {
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-900">
                     <ReturnProductsDetails />
                     <div className="flex xl:flex-row xl:gap-10 flex-col gap-5">
-                        <RefundActivity
-                            data={returnDetails?.log}
-                            status="completed"
-                            task_id={returnDetails?.id}
-                            latitude="11"
-                            longitude="22"
-                        />
+                        <RefundActivity />
 
                         <div>
                             {returnDetails?.return_order_delivery.length !== 0 && (

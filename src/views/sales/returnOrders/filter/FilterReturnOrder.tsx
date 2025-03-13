@@ -1,36 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
 import Drawer from '@/components/ui/Drawer'
-import type { MouseEvent } from 'react'
-import DatePicker from '@/components/ui/DatePicker'
-import { HiOutlineCalendar } from 'react-icons/hi'
-import { TbCalendarStats } from 'react-icons/tb'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { Button, Dropdown } from '@/components/ui'
-
-// import { IoMdDownload } from 'react-icons/io'
-// import { FaLocationDot } from 'react-icons/fa6'
-// import { FaMapMarkedAlt } from 'react-icons/fa'
-// import { RiEBike2Fill } from 'react-icons/ri'
-import moment from 'moment'
 import { RETURN_ORDERS } from '@/views/category-management/orderlist/commontypes'
-import { DELEIVERYRETRUNOPTIONS } from '../ReturnOrders'
-import UltimateDatePicker from '@/common/UltimateDateFilter'
+import { DELEIVERYRETRUNOPTIONS } from '../returnOrderCommon'
 
 type OrderFilterProps = {
     showFilter: any
     handleFilterClose: any
     dropdownStatus?: any
     handleDropdownSelect?: any
-    handleFromChange?: any
-    from: any
-    setFrom: any
-    setTo: any
-    to: any
-    handleToChange?: any
     deliveryType: any
     handleDeliveryType: any
-    handleDateChange: any
 }
 
 const FilterReturnOrder = ({
@@ -38,29 +17,13 @@ const FilterReturnOrder = ({
     handleFilterClose,
     dropdownStatus,
     handleDropdownSelect,
-    handleFromChange,
-    from,
-    to,
-    handleToChange,
     deliveryType,
     handleDeliveryType,
-    setFrom,
-    setTo,
-    handleDateChange,
 }: OrderFilterProps) => {
     return (
         <div>
-            <Drawer title="" isOpen={showFilter} onClose={handleFilterClose} onRequestClose={handleFilterClose} lockScroll={false}>
+            <Drawer title="" isOpen={showFilter} lockScroll={false} onRequestClose={handleFilterClose} onClose={handleFilterClose}>
                 <div className="flex flex-col  gap-7 items-start justify-start w-full lg:w-auto">
-                    {/* <UltimateDatePicker
-                        from={from}
-                        setFrom={setFrom}
-                        to={to}
-                        setTo={setTo}
-                        handleFromChange={handleFromChange}
-                        handleToChange={handleToChange}
-                        handleDateChange={handleDateChange}
-                    /> */}
                     <div className="flex flex-col ">
                         <label htmlFor="" className="font-semibold text-lg mb-2">
                             SELECT STATUS
@@ -78,8 +41,8 @@ const FilterReturnOrder = ({
                                             <input
                                                 type="checkbox"
                                                 checked={dropdownStatus.value.includes(item.value)}
-                                                onChange={() => handleDropdownSelect(item.value)}
                                                 className="mr-2"
+                                                onChange={() => handleDropdownSelect(item.value)}
                                             />
                                             <span>{item.name}</span>
                                         </div>
@@ -106,8 +69,8 @@ const FilterReturnOrder = ({
                                             <input
                                                 type="checkbox"
                                                 checked={deliveryType?.value?.includes(item.value)}
-                                                onChange={() => handleDeliveryType(item.value)}
                                                 className="mr-2"
+                                                onChange={() => handleDeliveryType(item.value)}
                                             />
                                             <span>{item.label}</span>
                                         </div>

@@ -24,3 +24,10 @@ export const ParametersArray = [
     'return_amount',
     'refund_amount',
 ]
+
+export const notificationTypeArray = [
+    { value: 'SMS', label: 'SMS' },
+    { value: 'EMAIL', label: 'EMAIL' },
+    { value: 'WHATSAPP', label: 'WHATSAPP' },
+    { value: 'APP', label: 'APP' },
+]
