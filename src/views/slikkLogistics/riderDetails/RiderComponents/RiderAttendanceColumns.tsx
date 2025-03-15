@@ -8,8 +8,8 @@ const getDaysInMonth = (year: string, month: string) => {
 export const generateColumns = (year: string, month: string, handleUserData: any, isWeek?: boolean, from?: string, to?: string) => {
     const columns = [
         {
-            header: 'User', // For display
-            csvHeader: 'User', // For CSV download
+            header: 'User',
+            csvHeader: 'User',
             accessorKey: 'user',
             cell: ({ row }: any) => {
                 return (
