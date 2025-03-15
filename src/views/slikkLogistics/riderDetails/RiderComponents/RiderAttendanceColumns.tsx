@@ -51,3 +51,55 @@ export const generateColumns = (year: string, month: string, handleUserData: any
 
     return columns
 }
+
+export const particularRiderColumns = [
+    {
+        header: 'User',
+        accessorKey: 'user',
+        cell: ({ row }: any) => {
+            return <div>{row.original.user}</div>
+        },
+    },
+    {
+        header: 'Checkin Date',
+        accessorKey: 'checkin_date',
+        cell: ({ row }: any) => {
+            return <div>{row.original.attendanceData[0].checkin_date}</div>
+        },
+    },
+    {
+        header: 'Order Count',
+        accessorKey: 'totalOrdersCount',
+        cell: ({ row }: any) => {
+            return <div>{row.original.totalOrdersCount ?? 0}</div>
+        },
+    },
+    {
+        header: 'Cash Collected',
+        accessorKey: 'totalCashCollected',
+        cell: ({ row }: any) => {
+            return <div>{row.original.totalCashCollected ?? 0} Rs</div>
+        },
+    },
+    {
+        header: 'Actual Distance',
+        accessorKey: 'totalActualDistance',
+        cell: ({ row }: any) => {
+            return <div>{row.original.totalActualDistance ?? 0} Km</div>
+        },
+    },
+    {
+        header: 'Estimated Distance',
+        accessorKey: 'totalEstimatedDistance',
+        cell: ({ row }: any) => {
+            return <div>{row.original.totalEstimatedDistance} Km</div>
+        },
+    },
+    {
+        header: 'Distance Covered',
+        accessorKey: 'totalDistanceCovered',
+        cell: ({ row }: any) => {
+            return <div>{row.original.totalDistanceCovered} Km</div>
+        },
+    },
+]

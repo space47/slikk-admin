@@ -10,6 +10,7 @@ import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { useParams } from 'react-router-dom'
+import { particularRiderColumns } from './RiderAttendanceColumns'
 
 const ParticularRiderAttendance = () => {
     const { mobile } = useParams()
@@ -48,71 +49,67 @@ const ParticularRiderAttendance = () => {
         }
     }
 
-    const columns = [
-        {
-            header: 'User',
-            accessorKey: 'user',
-            cell: ({ row }: any) => {
-                return <div>{row.original.user}</div>
-            },
+    const groupedRiderAttendance = riderAttendance.reduce(
+        (acc, curr) => {
+            const existingUser = acc.find((item) => item.user === curr.user)
+
+            if (existingUser) {
+                existingUser.attendanceData.push({
+                    id: curr.id,
+                    checkin_date: curr.checkin_date,
+                    checkin_time: curr.checkin_time,
+                    checkout_time: curr.checkout_time,
+                    create_date: curr.create_date,
+                    distance_covered: curr.distance_covered,
+                    latitude: curr.latitude,
+                    longitude: curr.longitude,
+                    other_data: curr.other_data,
+                    update_date: curr.update_date,
+                    user_type: curr.user_type,
+                })
+                existingUser.totalOrdersCount += curr.other_data?.orders_count || 0
+                existingUser.totalCashCollected += curr.other_data?.cash_collected || 0
+                existingUser.totalActualDistance += curr.other_data?.actual_distance || 0
+                existingUser.totalEstimatedDistance += curr.other_data?.estimated_distance || 0
+                existingUser.totalDistanceCovered += curr.distance_covered || 0
+            } else {
+                acc.push({
+                    user: curr.user || '',
+                    attendanceData: [
+                        {
+                            id: curr.id,
+                            checkin_date: curr.checkin_date,
+                            checkin_time: curr.checkin_time,
+                            checkout_time: curr.checkout_time,
+                            create_date: curr.create_date,
+                            distance_covered: curr.distance_covered,
+                            latitude: curr.latitude,
+                            longitude: curr.longitude,
+                            other_data: curr.other_data,
+                            update_date: curr.update_date,
+                            user_type: curr.user_type,
+                        },
+                    ],
+                    totalOrdersCount: curr.other_data?.orders_count || 0,
+                    totalCashCollected: curr.other_data?.cash_collected || 0,
+                    totalActualDistance: curr.other_data?.actual_distance || 0,
+                    totalEstimatedDistance: curr.other_data?.estimated_distance || 0,
+                    totalDistanceCovered: curr.distance_covered || 0,
+                })
+            }
+
+            return acc
         },
-        {
-            header: 'Checkin Date',
-            accessorKey: 'checkin_date',
-            cell: ({ row }: any) => {
-                return <div>{row.original.checkin_date}</div>
-            },
-        },
-        {
-            header: 'Checkin Time',
-            accessorKey: 'checkin_time',
-            cell: ({ row }: any) => {
-                return <div>{row.original.checkin_time}</div>
-            },
-        },
-        {
-            header: 'Checkout Time',
-            accessorKey: 'checkout_time',
-            cell: ({ row }: any) => {
-                return <div>{row.original.checkout_time}</div>
-            },
-        },
-        {
-            header: 'Order Count',
-            accessorKey: 'other_data.orders_count',
-            cell: ({ row }: any) => {
-                return <div>{row.original.other_data.orders_count ?? 0}</div>
-            },
-        },
-        {
-            header: 'Cash Collected',
-            accessorKey: 'other_data.cash_collected',
-            cell: ({ row }: any) => {
-                return <div>{row.original.other_data.cash_collected ?? 0}</div>
-            },
-        },
-        {
-            header: 'Actual Distance',
-            accessorKey: 'other_data.actual_distance',
-            cell: ({ row }: any) => {
-                return <div>{row.original.other_data.actual_distance ?? 0}</div>
-            },
-        },
-        {
-            header: 'Estimated Distance',
-            accessorKey: 'other_data.estimated_distance',
-            cell: ({ row }: any) => {
-                return <div>{row.original.other_data.estimated_distance ?? 0}</div>
-            },
-        },
-        {
-            header: 'Distance Covered',
-            accessorKey: 'distance_covered',
-            cell: ({ row }: any) => {
-                return <div>{row.original.distance_covered}</div>
-            },
-        },
-    ]
+        [] as {
+            user: string
+            attendanceData: any[]
+            totalOrdersCount: number
+            totalCashCollected: number
+            totalActualDistance: number
+            totalEstimatedDistance: number
+            totalDistanceCovered: number
+        }[],
+    )
 
     return (
         <div className="flex flex-col gap-4">
@@ -126,7 +123,7 @@ const ParticularRiderAttendance = () => {
                     handleDateChange={handleDateChange}
                 />
             </div>
-            <EasyTable overflow mainData={riderAttendance} columns={columns} page={page} pageSize={pageSize} />
+            <EasyTable overflow mainData={groupedRiderAttendance} columns={particularRiderColumns} page={page} pageSize={pageSize} />
 
             <div className="flex justify-between items-center">
                 <Pagination pageSize={pageSize} currentPage={page} total={count} className="mb-4 md:mb-0" onChange={onPaginationChange} />
