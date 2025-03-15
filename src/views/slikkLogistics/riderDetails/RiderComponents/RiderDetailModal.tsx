@@ -4,14 +4,13 @@ import Dialog from '@/components/ui/Dialog'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { RiderData } from '../RiderDetailsCommon'
 import { GiFullMotorcycleHelmet } from 'react-icons/gi'
-import { Button, Card } from '@/components/ui'
+import { Card } from '@/components/ui'
 import { TaskData } from '@/store/types/tasks.type'
 import { useAppDispatch, useAppSelector } from '@/store'
 import RiderLocationMap from './RiderLocationMap'
 import { ridersService } from '@/store/services/riderServices'
 import { setCount, setRidersAttendanceData } from '@/store/slices/riderSlice/rider.slice'
 import { RiderSlice } from '@/store/types/riderAddTypes'
-import { useNavigate } from 'react-router-dom'
 import EasyTable from '@/common/EasyTable'
 import { notification } from 'antd'
 
@@ -24,7 +23,6 @@ interface RiderModalProps {
 }
 
 const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }: RiderModalProps) => {
-    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [riderData, setRiderData] = useState<RiderData>()
     const [taskData, setTaskData] = useState<TaskData[]>([])
@@ -102,10 +100,6 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
         { name: 'Return Completed', value: riderData?.task_data?.DELIVERED, color: 'blue' },
         { name: 'Completed', value: riderData?.task_data?.COMPLETED, color: 'green' },
     ]
-
-    const hanldeAttendance = () => {
-        navigate(`/app/riders/attendance`)
-    }
 
     console.log('data', isError, error, isSuccess, isLoading)
 
@@ -189,11 +183,6 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
                                             {riderData?.profile?.mobile}
                                         </a>
                                     </div>
-                                </div>
-                                <div>
-                                    <Button variant="new" size="sm" onClick={hanldeAttendance}>
-                                        Attendance
-                                    </Button>
                                 </div>
                             </div>
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Pagination, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { ridersService } from '@/store/services/riderServices'
@@ -7,13 +8,19 @@ import React, { useEffect, useState } from 'react'
 import { Option, pageSizeOptions } from '../../taskTracking/TaskCommonType'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
-import UltimateDatePicker from '@/common/UltimateDateFilter'
-import { RiderAttendanceColumns } from './RiderAttendanceColumns'
+import UltimateYearMonthPicker from '@/common/UltimateYearMonthPicker'
+import { generateColumns } from './RiderAttendanceColumns'
+import { useNavigate } from 'react-router-dom'
 
 const RiderAttendance = () => {
+    const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const [globalFilter, setGlobalFilter] = useState('')
     const { riderAttendance, count, from, to, page, pageSize } = useAppSelector<RiderSlice>((state) => state.riderData)
+    const [selectedYear, setSelectedYear] = useState<string>(moment().year().toString())
+    const [selectedMonth, setSelectedMonth] = useState<string>(moment().format('MM'))
+    const [isWeek, setIsWeek] = useState<boolean>(false)
+
     const { data: riderDataForAttendance, isSuccess } = ridersService.useRiderAttendanceQuery(
         {
             from: from || '',
@@ -32,20 +39,67 @@ const RiderAttendance = () => {
         }
     }, [riderDataForAttendance, isSuccess, dispatch, from, to, page, pageSize, globalFilter])
 
-    const onPaginationChange = (value: number) => {
-        dispatch(setPage(value))
-    }
-    const onSelectChange = (value?: number) => {
-        dispatch(setPage(1))
-        dispatch(setPageSize(Number(value)))
+    const handleYearMonthChange = (year: string, month: string) => {
+        const startDate = moment(`${year}-${month}-01`).format('YYYY-MM-DD')
+        const endDate = moment(`${year}-${month}-01`).endOf('month').format('YYYY-MM-DD')
+        dispatch(setFrom(startDate))
+        dispatch(setTo(endDate))
     }
 
-    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
-        if (dates && dates[0]) {
-            dispatch(setFrom(moment(dates[0]).format('YYYY-MM-DD')))
-            dispatch(setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
-        }
+    const handleWeekChange = (start: string, end: string) => {
+        dispatch(setFrom(start))
+        dispatch(setTo(end))
     }
+
+    const groupedRiderAttendance = riderAttendance.reduce(
+        (acc, curr) => {
+            const existingUser = acc.find((item) => item.user === curr.user)
+
+            if (existingUser) {
+                existingUser.attendanceData.push({
+                    id: curr.id,
+                    checkin_date: curr.checkin_date,
+                    checkin_time: curr.checkin_time,
+                    checkout_time: curr.checkout_time,
+                    create_date: curr.create_date,
+                    distance_covered: curr.distance_covered,
+                    latitude: curr.latitude,
+                    longitude: curr.longitude,
+                    other_data: curr.other_data,
+                    update_date: curr.update_date,
+                    user_type: curr.user_type,
+                })
+            } else {
+                acc.push({
+                    user: curr.user || '',
+                    attendanceData: [
+                        {
+                            id: curr.id,
+                            checkin_date: curr.checkin_date,
+                            checkin_time: curr.checkin_time,
+                            checkout_time: curr.checkout_time,
+                            create_date: curr.create_date,
+                            distance_covered: curr.distance_covered,
+                            latitude: curr.latitude,
+                            longitude: curr.longitude,
+                            other_data: curr.other_data,
+                            update_date: curr.update_date,
+                            user_type: curr.user_type,
+                        },
+                    ],
+                })
+            }
+
+            return acc
+        },
+        [] as { user: string; attendanceData: any[] }[],
+    )
+
+    const handleUserData = (mobile: string) => {
+        navigate(`/app/riders/attendance/${mobile}`)
+    }
+
+    const columns = generateColumns(selectedYear, selectedMonth, handleUserData, isWeek, from, to)
 
     return (
         <div className="flex flex-col gap-4">
@@ -59,19 +113,25 @@ const RiderAttendance = () => {
                         onChange={(e) => setGlobalFilter(e.target?.value)}
                     />
                 </div>
-                <UltimateDatePicker
-                    from={from}
-                    dispatch={dispatch}
-                    setFrom={setFrom}
-                    to={to}
-                    setTo={setTo}
-                    handleDateChange={handleDateChange}
+                <UltimateYearMonthPicker
+                    setYear={setSelectedYear}
+                    setMonth={setSelectedMonth}
+                    handleYearMonthChange={handleYearMonthChange}
+                    handleWeekChange={handleWeekChange}
+                    setIsWeek={setIsWeek}
+                    isWeek={isWeek}
                 />
             </div>
-            <EasyTable overflow mainData={riderAttendance} columns={RiderAttendanceColumns} page={page} pageSize={pageSize} />
+            <EasyTable overflow mainData={groupedRiderAttendance} columns={columns} page={page} pageSize={pageSize} />
 
             <div className="flex justify-between items-center">
-                <Pagination pageSize={pageSize} currentPage={page} total={count} className="mb-4 md:mb-0" onChange={onPaginationChange} />
+                <Pagination
+                    pageSize={pageSize}
+                    currentPage={page}
+                    total={groupedRiderAttendance?.length || count}
+                    className="mb-4 md:mb-0"
+                    onChange={(value) => dispatch(setPage(value))}
+                />
 
                 <span>
                     <Select<Option>
@@ -79,7 +139,10 @@ const RiderAttendance = () => {
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) => {
+                            dispatch(setPage(1))
+                            dispatch(setPageSize(Number(option?.value)))
+                        }}
                     />
                 </span>
             </div>

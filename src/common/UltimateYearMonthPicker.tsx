@@ -2,44 +2,29 @@ import React, { useState } from 'react'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import moment from 'moment'
+import { CURRENT_YEAR, MONTHS_NUMBER, WEEK_NUMBERS, YEARS } from '@/constants/monthsNumber.constant'
+import { handleMonthSelect, handleWeekSelect, handleYearSelect } from './MonthYearCalc'
 
 interface YearMonthPickerProps {
     setYear: (year: string) => void
     setMonth: (month: string) => void
-    dispatch?: any
+    handleYearMonthChange: (year: string, month: string) => void
+    handleWeekChange: (startWeek: string, endWeek: string) => void
+    isWeek: boolean
+    setIsWeek: (isWeek: boolean) => void
 }
 
-const MONTHS = [
-    { label: 'January', value: '01' },
-    { label: 'February', value: '02' },
-    { label: 'March', value: '03' },
-    { label: 'April', value: '04' },
-    { label: 'May', value: '05' },
-    { label: 'June', value: '06' },
-    { label: 'July', value: '07' },
-    { label: 'August', value: '08' },
-    { label: 'September', value: '09' },
-    { label: 'October', value: '10' },
-    { label: 'November', value: '11' },
-    { label: 'December', value: '12' },
-]
-
-const CURRENT_YEAR = moment().year()
-const YEARS = Array.from({ length: 10 }, (_, i) => (CURRENT_YEAR - i).toString())
-
-const UltimateYearMonthPicker: React.FC<YearMonthPickerProps> = ({ setYear, setMonth, dispatch }) => {
+const UltimateYearMonthPicker: React.FC<YearMonthPickerProps> = ({
+    setYear,
+    setMonth,
+    handleYearMonthChange,
+    handleWeekChange,
+    setIsWeek,
+    isWeek,
+}) => {
     const [selectedYear, setSelectedYear] = useState<string>(CURRENT_YEAR.toString())
     const [selectedMonth, setSelectedMonth] = useState<string>(moment().format('MM'))
-
-    const handleYearSelect = (year: string) => {
-        setSelectedYear(year)
-        dispatch ? dispatch(setYear(year)) : setYear(year)
-    }
-
-    const handleMonthSelect = (month: string) => {
-        setSelectedMonth(month)
-        dispatch ? dispatch(setMonth(month)) : setMonth(month)
-    }
+    const [selectedWeek, setSelectedWeek] = useState<number>()
 
     return (
         <div className="flex gap-2 items-center xl:mr-10">
@@ -47,7 +32,7 @@ const UltimateYearMonthPicker: React.FC<YearMonthPickerProps> = ({ setYear, setM
                 <Dropdown
                     className="text-xl text-white bg-white font-bold border-2 border-blue-600"
                     title={selectedYear}
-                    onSelect={(value) => handleYearSelect(value.toString())}
+                    onSelect={(value) => handleYearSelect(value.toString(), setSelectedYear, setYear, handleYearMonthChange, selectedMonth)}
                 >
                     {YEARS.map((year) => (
                         <DropdownItem key={year} eventKey={year}>
@@ -60,11 +45,29 @@ const UltimateYearMonthPicker: React.FC<YearMonthPickerProps> = ({ setYear, setM
             <div className="border w-auto rounded-md font-bold bg-black text-white flex justify-center">
                 <Dropdown
                     className="text-xl text-white bg-white font-bold border-2 border-blue-600"
-                    title={MONTHS.find((m) => m.value === selectedMonth)?.label || 'Select Month'}
-                    onSelect={(value) => handleMonthSelect(value.toString())}
+                    title={MONTHS_NUMBER.find((m) => m.value === selectedMonth)?.label || 'Select Month'}
+                    onSelect={(value) =>
+                        handleMonthSelect(value.toString(), setSelectedMonth, setMonth, handleYearMonthChange, selectedYear)
+                    }
                 >
-                    {MONTHS.map((month) => (
+                    {MONTHS_NUMBER.map((month) => (
                         <DropdownItem key={month.value} eventKey={month.value}>
+                            <span>{month.label}</span>
+                        </DropdownItem>
+                    ))}
+                </Dropdown>
+            </div>
+            <div className="border w-auto rounded-md font-bold bg-black text-white flex justify-center">
+                <Dropdown
+                    className="text-xl text-white bg-white font-bold border-2 border-blue-600"
+                    title={WEEK_NUMBERS.find((m) => m.value === selectedWeek)?.label || 'Select Week'}
+                    onSelect={(value) => {
+                        setIsWeek(true)
+                        handleWeekSelect(Number(value), setSelectedWeek, handleWeekChange, isWeek, selectedYear, selectedMonth)
+                    }}
+                >
+                    {WEEK_NUMBERS.map((month) => (
+                        <DropdownItem key={month.value} eventKey={month.value?.toString()}>
                             <span>{month.label}</span>
                         </DropdownItem>
                     ))}

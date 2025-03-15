@@ -8,9 +8,9 @@ const initialState: { riderAttendance: RiderAttendanceResults[]; count: number; 
         riderAttendance: [],
         count: 0,
         page: 1,
-        pageSize: 10,
-        from: moment().format('YYYY-MM-DD'),
-        to: moment().add(1, 'days').format('YYYY-MM-DD'),
+        pageSize: 100,
+        from: moment().startOf('month').format('YYYY-MM-DD'),
+        to: moment().endOf('month').format('YYYY-MM-DD'),
     }
 
 const riderDataSlice = createSlice({
