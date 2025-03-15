@@ -10,13 +10,39 @@ import FullTimePicker from '@/common/FullTimePicker'
 import { ridersService } from '@/store/services/riderServices'
 import { RiderAddTypes } from '@/store/types/riderAddTypes'
 import { useNavigate } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { RiderDetailType, setRiderDetails } from '@/store/slices/riderDetails/riderDetails.slice'
 
 const AddRider = () => {
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
     const [currLat, setCurrLat] = useState<number>(12.920216)
     const [currLong, setCurrLong] = useState<number>(77.649326)
+    const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersData, riderDataResponse] = ridersService.useAddRidersMutation()
-    const initialValue = {}
+    const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
+    const [isAddRider, setIsAddRider] = useState(false)
+
+    const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
+        {
+            page: 1,
+            pageSize: 100,
+            mobile: selectedRider?.toString(),
+        },
+        { refetchOnMountOrArgChange: true },
+    )
+
+    useEffect(() => {
+        if (isSuccess) {
+            dispatch(setRiderDetails(riders.data?.results || []))
+        }
+    }, [riders, isSuccess, dispatch, selectedRider])
+    const initialValue = {
+        last_name: selectedRider && !isAddRider ? riderDetails?.map((item) => item?.profile?.last_name).join('') : '',
+        mobile: selectedRider && !isAddRider ? riderDetails?.map((item) => item?.profile?.mobile).join('') : '',
+        shift_start_time: selectedRider && !isAddRider ? riderDetails?.map((item) => item?.task_data?.check_in_time).join('') : '',
+        shift_end_time: selectedRider && !isAddRider ? riderDetails?.map((item) => item?.task_data?.checkout_time).join('') : '',
+    }
 
     useEffect(() => {
         if (riderDataResponse?.isSuccess) {
@@ -31,7 +57,8 @@ const AddRider = () => {
         if (values?.mobile) {
             ridersData({
                 mobile: values?.mobile,
-                first_name: values?.first_name,
+                first_name:
+                    selectedRider && !isAddRider ? riderDetails?.map((item) => item?.profile?.first_name).join('') : values?.first_name,
                 last_name: values?.last_name,
                 rider_type: values?.rider_type,
                 service_latitude: currLat,
@@ -57,29 +84,75 @@ const AddRider = () => {
                 onSubmit={handleSubmit}
             >
                 {() => (
-                    <Form className="w-3/4">
+                    <Form className="w-full mx-auto p-6 bg-white rounded-lg shadow-md">
                         <FormContainer>
-                            <FormContainer className="grid grid-cols-2 gap-10">
+                            <FormContainer className="grid grid-cols-2 gap-6">
+                                <div className="col-span-2 flex justify-start">
+                                    <button
+                                        className={`${isAddRider ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} p-2 flex items-center justify-center  text-white rounded-xl transition duration-200`}
+                                        type="button"
+                                        onClick={() => setIsAddRider((item) => !item)}
+                                    >
+                                        {isAddRider ? (
+                                            <div className="text-xl ">Select Rider</div>
+                                        ) : (
+                                            <div className="text-xl ">New Rider</div>
+                                        )}
+                                    </button>
+                                </div>
+                                <FormItem label="First Name" className="col-span-1">
+                                    <>
+                                        {isAddRider === false && (
+                                            <select
+                                                value={selectedRider || 'SELECT'}
+                                                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                onChange={(e) => setSelectedRider(e.target.value === 'CLEAR' ? '' : e.target.value)}
+                                            >
+                                                <option disabled value="SELECT">
+                                                    SELECT RIDER
+                                                </option>
+                                                {riderDetails?.map((item, key) => (
+                                                    <option key={key} value={item?.profile?.mobile}>
+                                                        {item.profile?.first_name}
+                                                    </option>
+                                                ))}
+                                                <option value="CLEAR" className="bg-red-500 hover:bg-red-400 text-white">
+                                                    <span className="flex justify-center items-center ">CLEAR</span>
+                                                </option>
+                                            </select>
+                                        )}
+                                        {isAddRider === true && (
+                                            <Field
+                                                type="text"
+                                                name="first_name"
+                                                placeholder="Enter First Name"
+                                                component={Input}
+                                                className="w-1/2 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            />
+                                        )}
+                                    </>
+                                </FormItem>
                                 {RiderFieldArray?.map((item, key) => (
-                                    <FormItem key={key} label={item?.label}>
+                                    <FormItem key={key} label={item?.label} className="col-span-1">
                                         <Field
                                             type={item.type}
                                             name={item.name}
                                             placeholder={`Enter ${item?.label}`}
                                             component={Input}
-                                            maxLength={item?.name === 'mobile' && 10}
+                                            maxLength={item?.name === 'mobile' ? 10 : undefined}
+                                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     </FormItem>
                                 ))}
-                                <FormItem label="rider_type">
+                                <FormItem label="Rider Type" className="col-span-1">
                                     <Field name="rider_type">
                                         {({ form, field }: FieldProps) => {
                                             const selectedCompany = RiderTypeArray.find((option) => option.label === field?.value)
                                             return (
-                                                <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
+                                                <div className="w-full">
                                                     <Select
                                                         isClearable
-                                                        className="w-full"
+                                                        className="w-1/2"
                                                         options={RiderTypeArray}
                                                         getOptionLabel={(option) => option.label}
                                                         getOptionValue={(option) => option.value}
@@ -93,16 +166,15 @@ const AddRider = () => {
                                         }}
                                     </Field>
                                 </FormItem>
-
                                 <FullTimePicker label="SHIFT START" name="shift_start_time" fieldname="shift_start_time" />
                                 <FullTimePicker label="SHIFT END" name="shift_end_time" fieldname="shift_end_time" />
                             </FormContainer>
-                            {/* MAP for lat and long */}
-                            <div className="text-xl font-bold mb-6">ADD RIDER LOCATION</div>
-                            <AddRiderMap setMarkLat={setCurrLat} setMarkLong={setCurrLong} markLat={currLat} markLong={currLong} />
+                            <div className="mt-8">
+                                <div className="text-xl font-bold mb-4 text-gray-700">ADD RIDER LOCATION</div>
+                                <AddRiderMap setMarkLat={setCurrLat} setMarkLong={setCurrLong} markLat={currLat} markLong={currLong} />
+                            </div>
                         </FormContainer>
-
-                        <FormContainer className="mt-10">
+                        <FormContainer className="mt-8 flex justify-end">
                             <Button variant="accept" type="submit">
                                 Submit
                             </Button>
