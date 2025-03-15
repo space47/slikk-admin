@@ -146,7 +146,7 @@ const RiderDetails = () => {
                         </div>
                         <div className="xl:mt-8">
                             <Button variant="new" onClick={() => navigate(`/app/riders/addNew`)}>
-                                ADD RIDERS
+                                ADD / UPDATE RIDERS
                             </Button>
                         </div>
                         <div>
