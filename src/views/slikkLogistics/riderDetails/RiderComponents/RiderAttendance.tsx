@@ -13,6 +13,7 @@ import { generateColumns } from './RiderAttendanceColumns'
 import { useNavigate } from 'react-router-dom'
 import { handleDownloadAttendanceCsv } from './riderAttendanceFunction'
 import { FaDownload } from 'react-icons/fa'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 const RiderAttendance = () => {
     const navigate = useNavigate()
@@ -21,9 +22,14 @@ const RiderAttendance = () => {
     const { riderAttendance, count, from, to, page, pageSize } = useAppSelector<RiderSlice>((state) => state.riderData)
     const [selectedYear, setSelectedYear] = useState<string>(moment().year().toString())
     const [selectedMonth, setSelectedMonth] = useState<string>(moment().format('MM'))
+    const [isAccessDenied, setIsAccessDenied] = useState<boolean>(false)
     const [isWeek, setIsWeek] = useState<boolean>(false)
 
-    const { data: riderDataForAttendance, isSuccess } = ridersService.useRiderAttendanceQuery(
+    const {
+        data: riderDataForAttendance,
+        isSuccess,
+        error: riderError,
+    } = ridersService.useRiderAttendanceQuery(
         {
             from: from || '',
             mobile: globalFilter,
@@ -38,6 +44,9 @@ const RiderAttendance = () => {
         if (isSuccess) {
             dispatch(setRidersAttendanceData(riderDataForAttendance?.data?.results || []))
             dispatch(setCount(riderDataForAttendance?.data?.count || 0))
+        }
+        if (riderError && 'status' in riderError && riderError?.status === 403) {
+            setIsAccessDenied(true)
         }
     }, [riderDataForAttendance, isSuccess, dispatch, from, to, page, pageSize, globalFilter])
 
@@ -102,6 +111,10 @@ const RiderAttendance = () => {
     }
 
     const columns = generateColumns(selectedYear, selectedMonth, handleUserData, isWeek, from, to)
+
+    if (isAccessDenied) {
+        return <AccessDenied />
+    }
 
     return (
         <div className="flex flex-col gap-4">
