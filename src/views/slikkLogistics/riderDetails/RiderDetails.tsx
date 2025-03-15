@@ -149,6 +149,11 @@ const RiderDetails = () => {
                                 ADD / UPDATE RIDERS
                             </Button>
                         </div>
+                        <div className="xl:mt-8">
+                            <Button variant="new" onClick={() => navigate(`/app/riders/attendance`)}>
+                                Attendance
+                            </Button>
+                        </div>
                         <div>
                             <UltimateDatePicker
                                 dispatch={dispatch}

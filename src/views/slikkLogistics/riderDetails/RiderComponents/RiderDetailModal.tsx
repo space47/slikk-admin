@@ -14,6 +14,7 @@ import { RiderSlice } from '@/store/types/riderAddTypes'
 import { useNavigate } from 'react-router-dom'
 import EasyTable from '@/common/EasyTable'
 import { notification } from 'antd'
+import { ImUserCheck } from 'react-icons/im'
 
 interface RiderModalProps {
     dialogIsOpen: boolean
@@ -35,7 +36,6 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
         isSuccess,
         isError,
         error,
-        isLoading,
     } = ridersService.useRiderAttendanceQuery({
         from: fromDate ?? from,
         mobile: mobile,
@@ -102,12 +102,6 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
         { name: 'Return Completed', value: riderData?.task_data?.DELIVERED, color: 'blue' },
         { name: 'Completed', value: riderData?.task_data?.COMPLETED, color: 'green' },
     ]
-
-    const hanldeAttendance = () => {
-        navigate(`/app/riders/attendance`)
-    }
-
-    console.log('data', isError, error, isSuccess, isLoading)
 
     const columns = [
         {
@@ -191,8 +185,12 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
                                     </div>
                                 </div>
                                 <div>
-                                    <Button variant="new" size="sm" onClick={hanldeAttendance}>
-                                        Attendance
+                                    <Button
+                                        variant="new"
+                                        size="sm"
+                                        onClick={() => navigate(`/app/riders/attendance/${riderData?.profile?.mobile}`)}
+                                    >
+                                        <ImUserCheck className="text-xl" />
                                     </Button>
                                 </div>
                             </div>
