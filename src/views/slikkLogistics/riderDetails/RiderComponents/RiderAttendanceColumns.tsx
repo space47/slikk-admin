@@ -8,7 +8,8 @@ const getDaysInMonth = (year: string, month: string) => {
 export const generateColumns = (year: string, month: string, handleUserData: any, isWeek?: boolean, from?: string, to?: string) => {
     const columns = [
         {
-            header: 'User',
+            header: 'User', // For display
+            csvHeader: 'User', // For CSV download
             accessorKey: 'user',
             cell: ({ row }: any) => {
                 return (
@@ -38,6 +39,7 @@ export const generateColumns = (year: string, month: string, handleUserData: any
                     {day.toString()} <span>{dayName}</span>
                 </div>
             ),
+            csvHeader: day.toString(),
             accessorKey: date,
             cell: ({ row }: any) => {
                 const userAttendance = row.original.attendanceData
@@ -51,7 +53,6 @@ export const generateColumns = (year: string, month: string, handleUserData: any
 
     return columns
 }
-
 export const particularRiderColumns = [
     {
         header: 'User',

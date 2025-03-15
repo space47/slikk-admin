@@ -11,6 +11,8 @@ import EasyTable from '@/common/EasyTable'
 import UltimateYearMonthPicker from '@/common/UltimateYearMonthPicker'
 import { generateColumns } from './RiderAttendanceColumns'
 import { useNavigate } from 'react-router-dom'
+import { handleDownloadAttendanceCsv } from './riderAttendanceFunction'
+import { FaDownload } from 'react-icons/fa'
 
 const RiderAttendance = () => {
     const navigate = useNavigate()
@@ -113,14 +115,22 @@ const RiderAttendance = () => {
                         onChange={(e) => setGlobalFilter(e.target?.value)}
                     />
                 </div>
-                <UltimateYearMonthPicker
-                    setYear={setSelectedYear}
-                    setMonth={setSelectedMonth}
-                    handleYearMonthChange={handleYearMonthChange}
-                    handleWeekChange={handleWeekChange}
-                    setIsWeek={setIsWeek}
-                    isWeek={isWeek}
-                />
+                <div className="flex gap-4">
+                    <UltimateYearMonthPicker
+                        setYear={setSelectedYear}
+                        setMonth={setSelectedMonth}
+                        handleYearMonthChange={handleYearMonthChange}
+                        handleWeekChange={handleWeekChange}
+                        setIsWeek={setIsWeek}
+                        isWeek={isWeek}
+                    />
+                    <button
+                        className="p-2 px-3 bg-gray-200 rounded-xl hover:bg-gray-300 "
+                        onClick={() => handleDownloadAttendanceCsv(groupedRiderAttendance, columns, selectedMonth)}
+                    >
+                        <FaDownload className="text-xl" />
+                    </button>
+                </div>
             </div>
             <EasyTable overflow mainData={groupedRiderAttendance} columns={columns} page={page} pageSize={pageSize} />
 
