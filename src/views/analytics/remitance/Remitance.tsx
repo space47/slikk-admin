@@ -1,19 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HiOutlineCalendar } from 'react-icons/hi'
 import DatePicker from '@/components/ui/DatePicker'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-import { Select, Button, Pagination } from '@/components/ui'
+import { Select, Button } from '@/components/ui'
 import Table from '@/components/ui/Table'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Item, REMITANCE } from '@/store/types/remitance.types'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { MdCancel } from 'react-icons/md'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { RemitanceColumns } from './remitanceUtils/RemitanceColumns'
+import RemitanceApis from './remitanceUtils/RemitanceApiCalls'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -25,151 +26,37 @@ const Remitance = () => {
     const [to, setTo] = useState(moment().format('YYYY-MM-DD'))
     const [showOneMonthBack, setShowOneMonthBack] = useState(true)
     const [brandValue, setBrandValue] = useState<any | null>(null)
-    // const [page, setPage] = useState(1)
-    // const [pageSize, setPageSize] = useState(10)
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-    const [fieldValue, setFieldValue] = useState([]) // Initialize fieldValue state
+    const [fieldValue, setFieldValue] = useState<any[]>([])
     const [companyData, setCompanyData] = useState<any>(null)
     const [accessDenied, setAccessDenied] = useState(false)
     const dispatch = useAppDispatch()
-
     const ToDate = moment(to).add(1, 'days').format('YYYY-MM-DD')
+
+    const { fetchRemitanceApi, handleDownload, handleOrderItem, handleReturnOrderItem } = RemitanceApis({
+        brandValue,
+        from,
+        ToDate,
+        setRemitance,
+        setFullRemitanceResponse,
+        setAccessDenied,
+        companyData,
+    })
 
     useEffect(() => {
         dispatch(getAllBrandsAPI())
     }, [dispatch])
 
-    const fetchRemitance = async () => {
-        try {
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
-            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}`)
-            const remitanceData = response.data?.data.items
-            setFullRemitanceResponse(response.data?.data)
-            setRemitance(remitanceData)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.error('Error fetching remitance:', error)
-        }
-    }
-
     useEffect(() => {
-        fetchRemitance()
+        fetchRemitanceApi()
     }, [brandValue])
 
     const handleDateSubmit = () => {
-        fetchRemitance()
+        fetchRemitanceApi()
     }
-
-    const handleFromChange = (date: Date | null) => {
-        if (date) {
-            setFrom(moment(date).format('YYYY-MM-DD'))
-            setShowOneMonthBack(false)
-        }
-    }
-
-    const handleToChange = (date: Date | null) => {
-        if (date) {
-            setTo(moment(date).format('YYYY-MM-DD'))
-        }
-    }
-
-    const handleBrandSelect = (newVal: any) => {
-        setBrandValue(newVal)
-    }
-
-    const handleDownload = async () => {
-        try {
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
-            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}&download=true`, {
-                responseType: 'blob',
-            })
-
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${ToDate}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-        } catch (error) {
-            console.error('Error downloading CSV:', error)
-        }
-    }
-
-    const handleOrderItem = async () => {
-        try {
-            let companyId = ''
-            if (companyData) {
-                companyId = `&company_id=${companyData}`
-            }
-            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
-            const response = await axiosInstance.get(
-                `/merchant/order_items?download=true&download_type=finance&from=${from}&to=${ToDate}${brandData}${companyId}`,
-                {
-                    responseType: 'blob',
-                },
-            )
-
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${ToDate}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-        } catch (error) {
-            console.error('Error downloading CSV:', error)
-        }
-    }
-
-    const handleReturnOrderItem = async () => {
-        try {
-            let companyId = ''
-            if (companyData) {
-                companyId = `&company_id=${companyData}`
-            }
-            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
-            const response = await axiosInstance.get(
-                `/merchant/return_order_items?download=true&download_type=finance&from=${from}&to=${ToDate}${brandData}${companyId}`,
-                {
-                    responseType: 'blob',
-                },
-            )
-
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${ToDate}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-        } catch (error) {
-            console.error('Error downloading CSV:', error)
-        }
-    }
-
-    const columns = useMemo(
-        () => [
-            { header: 'Invoice Id', accessorKey: 'invoice_id' },
-            { header: 'SKU', accessorKey: 'sku' },
-            { header: 'Creation Date', accessorKey: 'create_date' },
-            { header: 'Completed Date', accessorKey: 'complete_date' },
-            { header: 'Product Name', accessorKey: 'name' },
-            { header: 'Brand', accessorKey: 'brand_name' },
-            { header: 'Quantity', accessorKey: 'quantity' },
-            { header: 'MRP', accessorKey: 'mrp' },
-            { header: 'Selling Price', accessorKey: 'selling_price' },
-            { header: 'Size', accessorKey: 'size' },
-        ],
-        [],
-    )
-
     const table = useReactTable({
         data: remitance || [],
-        columns,
+        columns: RemitanceColumns(),
         getCoreRowModel: getCoreRowModel(),
     })
 
@@ -190,8 +77,13 @@ const Remitance = () => {
                             <DatePicker
                                 inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
                                 value={new Date(from)}
-                                onChange={handleFromChange}
                                 className="w-56 rounded-md border-gray-300 focus:border-blue-500"
+                                onChange={(date) => {
+                                    if (date) {
+                                        setFrom(moment(date).format('YYYY-MM-DD'))
+                                        setShowOneMonthBack(false)
+                                    }
+                                }}
                             />
                         </div>
                         <div className="flex flex-col">
@@ -199,9 +91,13 @@ const Remitance = () => {
                             <DatePicker
                                 inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
                                 value={new Date(to)}
-                                onChange={handleToChange}
                                 minDate={new Date(from)}
                                 className="w-56 rounded-md border-gray-300 focus:border-blue-500"
+                                onChange={(date) => {
+                                    if (date) {
+                                        setTo(moment(date).format('YYYY-MM-DD'))
+                                    }
+                                }}
                             />
                         </div>
                         <Button variant="new" className="h-1/2 xl:mt-7" onClick={handleDateSubmit}>
@@ -214,17 +110,16 @@ const Remitance = () => {
                         <div className="flex xl:flex-col flex-row gap-2 xl:items-start items-center">
                             <label className="mb-2 font-semibold text-sm text-gray-700">Brands:</label>
                             <Select
+                                isClearable
                                 options={brands.brands}
                                 getOptionLabel={(option) => option.name}
                                 getOptionValue={(option) => option.id.toString()}
-                                onChange={handleBrandSelect}
                                 className="w-[200px] items-center"
+                                onChange={(val) => setBrandValue(val)}
                             />
                         </div>
                     </div>
                 </div>
-
-                {/* Row Dumps....... */}
                 <hr />
                 <div>
                     <h5>Dowmload Raw Dumps:</h5> <br />
@@ -248,9 +143,9 @@ const Remitance = () => {
                                     options={companyList}
                                     getOptionLabel={(option) => option.name}
                                     getOptionValue={(option) => option.id}
-                                    value={companyList.filter((option) => fieldValue.includes(option?.name))}
-                                    onChange={(newVal) => {
-                                        setFieldValue([newVal?.name])
+                                    value={companyList.filter((option) => fieldValue.includes(option?.name)) || []}
+                                    onChange={(newVal: any) => {
+                                        setFieldValue([newVal.name])
                                         setCompanyData(newVal?.id)
                                     }}
                                 />
@@ -261,18 +156,15 @@ const Remitance = () => {
             </div>
             <br />
             <br />
-
-            {/* Conditionally Render Table Section */}
             <div className="flex flex-col">
                 {remitance.length > 0 ? (
                     <div className="overflow-x-auto mt-6">
                         <div className="flex justify-center items-center mt-5">
-                            <Button onClick={handleDownload} variant="new" className="justify-center gap-2 flex">
+                            <Button className="justify-center gap-2 flex" variant="new" onClick={handleDownload}>
                                 <FaDownload className="text-xl" /> Download
                             </Button>
                         </div>
                         <div className="mb-3 flex gap-2">
-                            {' '}
                             <span className="font-bold">TOTAL AMOUNT:</span> {fullRemitanceRespone?.total_amount.toFixed(2)}{' '}
                         </div>
                         <Table className="min-w-full">

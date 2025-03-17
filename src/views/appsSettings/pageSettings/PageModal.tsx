@@ -9,6 +9,7 @@ import { getAllFiltersAPI } from '@/store/action/filters.action'
 import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable } from './pageSettings.types'
 import * as Yup from 'yup'
+import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
 
 type modalProps = {
     isModalOpen: boolean
@@ -57,45 +58,10 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         dispatch(getAllFiltersAPI())
     }, [])
 
-    const [initialValue, setInitalValue] = useState<any>({
-        data_type: particularRow.data_type,
-        footer_config: particularRow.footer_config,
-        header_config: particularRow.header_config,
-        component_type: particularRow.component_type,
-        section_heading: particularRow.section_heading,
-        background_image: particularRow.background_config?.background_image,
-        background_video: particularRow.background_config?.background_video,
-        sub_header_config: particularRow.sub_header_config,
-        mobile_background_image: particularRow.background_config?.mobile_background_image,
-        mobile_background_video: particularRow.background_config?.mobile_background_video,
-        // lottie
-
-        background_lottie: particularRow.background_config?.background_lottie,
-        mobile_background_lottie: particularRow.background_config?.mobile_background_lottie,
-        is_section_clickable: particularRow.is_section_clickable,
-        section_filters: particularRow.section_filters,
-        grid: particularRow.grid,
-        background_config: particularRow?.background_config,
-        border: particularRow.border,
-        border_style: particularRow.border_style,
-        web_border: particularRow.web_border,
-        web_border_style: particularRow.web_border_style,
-        name: particularRow.name,
-        section_border: particularRow?.section_border,
-        section_type: particularRow?.section_type,
-        web_name: particularRow.web_name,
-        name_footer: particularRow.name_footer,
-        web_name_footer: particularRow.web_name_footer,
-        component_config: particularRow.component_config,
-        extra_info: particularRow.extra_info,
-        web_section_border: particularRow?.web_section_border,
-        order_count: particularRow?.order_count,
-    })
+    const [initialValue, setInitalValue] = useState<any>(EditInitialValues(particularRow))
     const validationSchema = Yup.object().shape({
         section_heading: Yup.string().required('Section Header is required'),
     })
-
-    console.log('Is video true', initialValue?.background_config)
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value)
@@ -121,7 +87,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         })
     }
 
-    const sendFilterData = async (filterData) => {
+    const sendFilterData = async (filterData: any) => {
         try {
             const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
             setFilterId(response.data?.data?.id)
@@ -424,7 +390,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             }
 
             setShowSpinner(false)
-
             setParticularRow(newRow)
             console.log('Barecode THAT HAS BEEN UPDATED', newRow.data_type.barcodes)
             console.log('FINAL ADD INSIDE SUBMIT', newRow)

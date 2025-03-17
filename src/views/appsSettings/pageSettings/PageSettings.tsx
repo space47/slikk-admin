@@ -1,23 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState, useRef, useLayoutEffect } from 'react'
+import { useEffect, useState, useRef, useLayoutEffect } from 'react'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import type { ColumnDef } from '@tanstack/react-table'
-import type { DropResult } from 'react-beautiful-dnd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Dropdown, Button } from '@/components/ui'
-import { BANNER_PAGE_NAME } from '@/common/banner'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { notification } from 'antd'
 import PageModal from './PageModal'
 import { FormikProps } from 'formik'
 import PageAddModal from './PageAddModal'
-import { FaCopy, FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { WebType } from './PageSettingsCommon'
 import PageDraggavleTable from './PageDraggavleTable'
 import PreviousConfiguration from './PreviousConfiguration'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import AddPageNameModal from './AddPageNameModal'
+import { fetchData, fetchPageSettings } from './pageSettingsUtils/PageSettingsApiCalls'
+import { PageSettingsColumns } from './pageSettingsUtils/PageSettingsColumns'
+import pageSettingFunctions from './pageSettingsUtils/PageSettingsFunction'
 
 const PageSettings = () => {
     const navigate = useNavigate()
@@ -35,31 +34,8 @@ const PageSettings = () => {
     const [pageNames, setPageNames] = useState<any[]>([])
     const [showAddPageModal, setShowAddPageModal] = useState(false)
 
-    const fetchPageSettings = async () => {
-        try {
-            const response = await axioisInstance.get(`/page?p=1&page_size=100`)
-            const data = response?.data?.data
-            const results = data?.results || []
-
-            setPageNames(results)
-
-            if (results.length > 0) {
-                setCurrentSelectedPage({
-                    name: results[0]?.display_name,
-                    value: results[0]?.name,
-                })
-            }
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
     useLayoutEffect(() => {
-        fetchPageSettings()
-    }, [])
-
-    useLayoutEffect(() => {
-        fetchPageSettings()
+        fetchPageSettings(setPageNames, setCurrentSelectedPage)
     }, [])
 
     const BANNER_PAGE = pageNames?.map((item) => ({
@@ -69,84 +45,29 @@ const PageSettings = () => {
 
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(BANNER_PAGE[0])
 
-    const fetchData = async () => {
-        try {
-            setShowSpinner(true)
-            if (!currentSelectedPage) return
-            const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage?.value}`)
-            const responsedata = response.data?.data?.value?.Web || {}
-            setData(Object.values(responsedata))
-            setPreviousConfigs(response.data?.data?.previous_configs || [])
-            setCurentConfigs(Object.values(responsedata))
-        } catch (error) {
-            console.error('Error fetching data:', error)
-            setData([])
-        } finally {
-            setShowSpinner(false)
-        }
-    }
-
     useEffect(() => {
         if (currentSelectedPage) {
-            fetchData()
+            fetchData(setShowSpinner, setData, setPreviousConfigs, setCurentConfigs, currentSelectedPage)
         }
     }, [currentSelectedPage])
 
-    console.log(previousConfigs, 'is data')
-
-    const handlePreviousConfigClick = (index: number) => {
-        setStorePrevIndex(index + 1)
-        const oppIndex = previousConfigs.length - 1 - index
-        const selectedConfig = previousConfigs[oppIndex]?.Web || {}
-        console.log('Selecting the number button', selectedConfig)
-        setData(Object.values(selectedConfig))
-        setIsPreviousConfig(true)
-        setShowPreviousConfigDrawer(false)
-    }
-
-    const handleCurrentConfig = () => {
-        setData(currentConfig)
-        setIsPreviousConfig(false)
-        notification.success({
-            message: 'Set to current configurations',
-        })
-    }
-
-    const reorderData = (startIndex: number, endIndex: number) => {
-        const newData = [...data]
-        const [movedRow] = newData.splice(startIndex, 1)
-        newData.splice(endIndex, 0, movedRow)
-        setData(newData)
-    }
-
-    const handleDragEnd = (result: DropResult) => {
-        const { source, destination } = result
-        if (destination) reorderData(source.index, destination.index)
-    }
-
-    const getDataType = (data: any): { key: string; value: string } => {
-        if (data?.barcodes) return { key: 'Barcode', value: data.barcodes }
-        if (data?.posts) return { key: 'Posts', value: data.posts }
-        if (data?.brands) return { key: 'Brands', value: data.brands }
-        if (data?.handles) return { key: 'Handles', value: data.handles }
-        return { key: '', value: '' }
-    }
-
-    const updateRowData = (updatedRow: WebType) => {
-        setData((prev) => prev.map((item) => (item === particularRow ? updatedRow : item)))
-    }
-
-    const handleRemoveRow = (row: WebType) => {
-        setData((prev) => prev.filter((item) => item !== row))
-    }
+    const { handleCurrentConfig, handleDragEnd, handlePreviousConfigClick, handleRemoveRow, updateRowData } = pageSettingFunctions({
+        setStorePrevIndex,
+        previousConfigs,
+        setData,
+        setIsPreviousConfig,
+        setShowPreviousConfigDrawer,
+        currentConfig,
+        data,
+    })
 
     const handlePageUpdate = async () => {
         const webData = data.reduce(
             (acc, item, index) => {
                 const { mobile_background_array, ...rest } = item
+                console.log(mobile_background_array)
                 acc[index + 1] = {
                     ...rest,
-                    // component_config: item?.component_config,
                     mobile_background_image: item.mobile_background_image || '',
                 }
                 return acc
@@ -158,9 +79,6 @@ const PageSettings = () => {
             page_name: currentSelectedPage.value,
             value: { Web: webData },
         }
-
-        console.log('Body to be send', body)
-
         try {
             const response = await axioisInstance.post(`/page/config`, body)
             notification.success({
@@ -175,100 +93,6 @@ const PageSettings = () => {
             })
         }
     }
-
-    const columns: ColumnDef<WebType>[] = useMemo(
-        () => [
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button
-                        onClick={() => {
-                            setYesModal(true)
-                            setParticularRow(row.original)
-                        }}
-                        className="border-none bg-none"
-                    >
-                        <FaEdit className="text-xl text-blue-600" />
-                    </button>
-                ),
-            },
-            {
-                header: 'Copy',
-                accessorKey: '',
-                cell: ({ row }) => {
-                    const copiedRow = { ...row.original }
-                    return (
-                        <button onClick={() => handleCopyPage(copiedRow)} className="border-none bg-none">
-                            <FaCopy className="text-xl text-green-500" />
-                        </button>
-                    )
-                },
-            },
-            {
-                header: 'Section Heading',
-                accessorKey: 'section_heading',
-                cell: ({ row }) => {
-                    const sectionHeading = row?.original?.section_heading
-
-                    return (
-                        <div
-                            className="w-[180px] text-overflow:ellipsis cursor-pointer hover:text-blue-600"
-                            onClick={() => handleGoToBanner(currentSelectedPage, sectionHeading)}
-                        >
-                            {sectionHeading}
-                        </div>
-                    )
-                },
-            },
-            { header: 'Component Type', accessorKey: 'component_type' },
-            {
-                header: 'Background Image',
-                accessorKey: 'background_config.background_image',
-                cell: (info) => <img src={info.getValue() as string} alt="" className="object-contain bg-black" />,
-            },
-            {
-                header: 'Mobile Background Image',
-                accessorKey: 'background_config.mobile_background_image',
-                cell: (info) => <img src={info.getValue() as string} alt="" className="object-contain bg-black" />,
-            },
-            { header: 'Data Type', accessorKey: 'data_type.type' },
-            {
-                header: 'Section',
-                accessorKey: 'is_section_clickable',
-                cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-            },
-            { header: 'Section Filter', accessorKey: 'section_filters' },
-            {
-                header: 'Data Type Values',
-                accessorFn: (row) => getDataType(row.data_type),
-                cell: (info) => {
-                    const { key, value } = info.getValue() as { key: string; value: string }
-                    return (
-                        <div className="w-[180px] text-overflow:ellipsis">
-                            {key}-{value}
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'Delete',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button onClick={() => handleRemoveRow(row.original)} className="border-none bg-none">
-                        <FaTrash className="text-xl text-red-500" />
-                    </button>
-                ),
-            },
-        ],
-        [data],
-    )
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-    })
 
     const handleGoToBanner = (currentPage: any, sectionHeading: any) => {
         navigate('/app/appSettings/banners', {
@@ -291,15 +115,24 @@ const PageSettings = () => {
         if (selectedPage) setCurrentSelectedPage(selectedPage)
     }
 
-    console.log('Check Closing off Add modal', addModal)
+    const columns = PageSettingsColumns(
+        data,
+        setYesModal,
+        setParticularRow,
+        handleCopyPage,
+        handleGoToBanner,
+        currentSelectedPage,
+        handleRemoveRow,
+    )
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+    })
 
     if (showSpinner) {
         return <LoadingSpinner />
     }
-
-    // const newData = [...prev];
-    // newData.splice(rowIndex + 1, 0, copiedRow);
-    // return newData;
 
     return (
         <div>
@@ -325,16 +158,16 @@ const PageSettings = () => {
                             </div>
                         </Dropdown>
                     </div>
-                    <Button variant="new" size="md" onClick={handlePageUpdate} type="button">
+                    <Button variant="new" type="button" size="md" onClick={handlePageUpdate}>
                         UPDATE PAGE SETTINGS
                     </Button>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="reject" onClick={() => setShowPreviousConfigDrawer(true)} type="button">
+                    <Button variant="reject" type="button" onClick={() => setShowPreviousConfigDrawer(true)}>
                         OLD CONFIGS
                     </Button>
                     {isPreviousConfig && (
-                        <Button variant="accept" onClick={handleCurrentConfig} type="button">
+                        <Button variant="accept" type="button" onClick={handleCurrentConfig}>
                             CURRENT CONFIGS
                         </Button>
                     )}
@@ -366,7 +199,7 @@ const PageSettings = () => {
                     particularRow={particularRow}
                     setParticularRow={(row) => {
                         setParticularRow(row)
-                        updateRowData(row)
+                        updateRowData(row, particularRow)
                     }}
                 />
             )}

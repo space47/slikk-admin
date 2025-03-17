@@ -401,14 +401,25 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, logist
             )}
 
             {rejectModal && (
-                <div className="z-1000">
-                    <DialogConfirm
-                        IsConfirm
-                        IsOpen={rejectModal}
-                        headingName="Reject Orders"
-                        setIsOpen={setRejectModal}
-                        onDialogOk={handleRejectModalConfirm}
-                    />
+                <div className="flex justify-center items-center h-screen">
+                    <Modal
+                        title=""
+                        open={rejectModal}
+                        okText="REJECT"
+                        cancelText="CANCEL"
+                        okButtonProps={{
+                            style: {
+                                backgroundColor: '#D32F2F',
+                                color: '#FFFFFF',
+                                borderRadius: '8px',
+                            },
+                        }}
+                        onOk={handleRejectModalConfirm}
+                        onCancel={() => setRejectModal(false)}
+                    >
+                        <h1 className="text-center text-lg font-bold text-red-600">REJECT ORDER</h1>
+                        <p className="text-center text-xl font-semibold mb-10">Are you sure you want to reject this order</p>
+                    </Modal>
                 </div>
             )}
 

@@ -21,6 +21,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 const FilterArray = [
     { label: 'SKU', value: 'sku' },
     { label: 'NAME', value: 'name' },
+    { label: 'BARCODE', value: 'barcode' },
 ]
 
 const StockOverview = () => {
@@ -60,6 +61,9 @@ const StockOverview = () => {
             }
             if (currentSelectedPage?.value === 'name' && globalFilter) {
                 filterValue = `&name=${encodeURIComponent(globalFilter)}`
+            }
+            if (currentSelectedPage?.value === 'barcode' && globalFilter) {
+                filterValue = `&barcode=${encodeURIComponent(globalFilter)}`
             }
 
             const response = await axiosInstance.get(`inventory?p=${page}&page_size=${pageSize}&${typeFetch}${filterValue}`)

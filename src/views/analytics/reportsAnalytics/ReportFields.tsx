@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 
 interface ReportFieldsProps {
     values: any[]
-    reportQueryArray: any
+    reportQueryArray: any[]
     optionDataMap: any
     storeName: any
 }
@@ -28,7 +28,7 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
         <FormContainer>
             <FormItem asterisk label="Required Fields" className="col-span-1 w-full sm:w-[80%] md:w-[70%] lg:w-[60%] h-auto">
                 <FieldArray name="required_fields">
-                    {({ push, remove }) => (
+                    {() => (
                         <div>
                             {values?.map((item: any, index: number) => (
                                 <div key={index} className="flex flex-col sm:flex-row sm:space-x-4 mt-2 items-center rounded-lg px-4 py-2">
@@ -48,10 +48,10 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                     <Field name={`required_fields[${index}].dataType`}>
                                         {({ field, form }: FieldProps) => (
                                             <Select
+                                                isDisabled
                                                 className="w-full"
                                                 placeholder="Select dataType"
                                                 options={reportQueryArray}
-                                                isDisabled
                                                 value={reportQueryArray.find((option) => option.value === field.value)}
                                                 onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                             />
@@ -60,7 +60,6 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                     <Field name={`required_fields[${index}].value`}>
                                         {({ field, form }: FieldProps) => {
                                             const { dataType, key } = values[index]
-                                            const fieldValue = Array.isArray(field.value) ? field.value : []
                                             const options = optionDataMap[key]
 
                                             if (dataType === 'Select' && options) {
@@ -71,13 +70,13 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                                 return (
                                                     <div className="w-full">
                                                         <Select
+                                                            isClearable
                                                             className="w-full"
                                                             {...field}
                                                             options={options}
                                                             getOptionLabel={(option) => option?.name}
                                                             getOptionValue={(option) => option?.id?.toString()}
                                                             value={selectedOption || null}
-                                                            isClearable
                                                             onChange={(newVal) => {
                                                                 form.setFieldValue(`required_fields[${index}].value`, newVal?.name)
                                                             }}
@@ -92,8 +91,8 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
                                             if (dataType === 'MultiSelect' && options) {
                                                 const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
 
-                                                const selectedOptions = fieldValueArray.map((item) => {
-                                                    const selectedOption = options?.find((options) => {
+                                                const selectedOptions = fieldValueArray.map((item: any) => {
+                                                    const selectedOption = options?.find((options: any) => {
                                                         return options?.name.toLowerCase() === item.toLowerCase()
                                                     })
                                                     return selectedOption
@@ -101,14 +100,14 @@ const ReportFields = ({ values, reportQueryArray, optionDataMap, storeName }: Re
 
                                                 return (
                                                     <Select
+                                                        isMulti
+                                                        isClearable
                                                         className="w-full"
                                                         {...field}
                                                         options={options}
                                                         getOptionLabel={(option) => option?.name}
                                                         getOptionValue={(option) => option?.id?.toString()}
                                                         value={selectedOptions}
-                                                        isMulti
-                                                        isClearable
                                                         onChange={(newVals) => {
                                                             console.log('multiselect values', newVals)
                                                             const selectedValues = newVals?.map((val: any) => val.name) || []
