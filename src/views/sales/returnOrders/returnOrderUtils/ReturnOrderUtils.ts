@@ -4,16 +4,15 @@ export const getStatusFilterReturn = (tabSelect: string) => {
             return '&status=PENDING'
 
         case 'accepted':
-            return '&status=ACCEPTED'
-
-        case 'approved':
-            return '&status=APPROVED'
+            return '&status=ACCEPTED,PARTIALLY_ACCEPTED'
 
         case 'pickup_created':
             return '&status=PICKUP_CREATED'
+        case 'picked_up':
+            return '&status=PICKED_UP'
 
-        case 'out_for_delivery':
-            return '&status=OUT_FOR_DELIVERY,SHIPPED'
+        case 'out_for_pickup':
+            return '&status=OUT_FOR_PICKUP'
 
         case 'refunded':
             return '&status=REFUNDED'

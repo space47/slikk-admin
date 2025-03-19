@@ -33,7 +33,7 @@ const ReportAnalytics = () => {
     const [storeName, setStoreName] = useState('')
     const [reportQueryNames, setReportQueryNames] = useState<{ label: string; value: string }[]>([])
     const [showDataBelow, setShowDataBelow] = useState(false)
-    const [dynamicReportTable, setDynamicReportTable] = useState([])
+    const [dynamicReportTable, setDynamicReportTable] = useState<any[]>([])
     const [showTable, setShowTable] = useState(false)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -88,8 +88,6 @@ const ReportAnalytics = () => {
         subcategory: subCategoryData?.subcategories,
         productType: productTypeData?.product_types,
     }
-
-    console.log('Option data map is', optionDataMap)
 
     const [reportData, setReportData] = useState({
         name: '',
@@ -194,8 +192,6 @@ const ReportAnalytics = () => {
                 .join('&')
         }
 
-        console.log('object required for', reportParameters)
-
         try {
             setBadRequest(false)
             setShowSpinner(true)
@@ -278,8 +274,6 @@ const ReportAnalytics = () => {
     if (serverError) {
         return <InnternalError />
     }
-
-    console.log('Bad', badRequest)
 
     return (
         <div>

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import { Button, Dropdown, Input } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
-import { FaExclamationCircle, FaFilter, FaMapMarkedAlt } from 'react-icons/fa'
+import { FaFilter } from 'react-icons/fa'
 import FilterDialogOrder from '@/views/category-management/orderlist/filterDialog/FilterDialog'
 import { CiFilter } from 'react-icons/ci'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -16,95 +16,50 @@ import RedMarkTable from '@/common/RedMarkTable'
 import { HiSearch } from 'react-icons/hi'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
-import NotFoundData from '@/views/pages/NotFound/Notfound'
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
-interface DropdownStatus {
-    value: string[]
-    name: string[]
-}
-
-const SEARCHOPTIONS = [
-    { label: 'INVOICE', value: 'invoice' },
-    { label: 'MOBILE', value: 'mobile' },
-]
-const scheduleSlots: any = {
-    '1': { start: '10:00 AM', end: '01:00 PM' },
-    '2': { start: '01:00 PM', end: '04:00 PM' },
-    '3': { start: '04:00 PM', end: '07:00 PM' },
-    '4': { start: '07:00 PM', end: '10:00 PM' },
-}
+import { DropdownStatus, SEARCHOPTIONS_EXCHNAGE } from './ExchangeCommon'
+import { Exchange_Columns } from './exchangeOrderUtils/ExchangeColumns'
+import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
+import { handleDownload, handleNumberClick } from './exchangeOrderUtils/ExchangeApiCalls'
+import { handleDateChange, handleDropDownSelect, handleSelect } from './exchangeOrderUtils/ExchangeFunctions'
 
 const Exchangeorders = () => {
     const location = useLocation()
     const { var1, var2 } = location.state || {}
-
     const [orders, setOrders] = useState<any[]>([])
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS[0])
-    const [deliveryType, setDeliveryType] = useState<DropdownStatus>({
-        value: [],
-        name: [],
-    })
-    const [paymentType, setPaymentType] = useState<DropdownStatus>({
-        value: [],
-        name: [],
-    })
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(SEARCHOPTIONS_EXCHNAGE[0])
+    const [deliveryType, setDeliveryType] = useState<DropdownStatus>({ value: [], name: [] })
+    const [paymentType, setPaymentType] = useState<DropdownStatus>({ value: [], name: [] })
     const [searchInput, setSearchInput] = useState<string>('')
-
-    const [pageSize, setPageSize] = useState(10)
-
-    const [page, setPage] = useState(1)
-    const navigate = useNavigate()
-    const [from, setFrom] = useState(var1 ? var1 : moment().format('YYYY-MM-DD'))
-    const [to, setTo] = useState(var2 ? var2 : moment().format('YYYY-MM-DD'))
+    const [pageSize, setPageSize] = useState<number>(10)
+    const [page, setPage] = useState<number>(1)
+    const [from, setFrom] = useState<string>(var1 ? var1 : moment().format('YYYY-MM-DD'))
+    const [to, setTo] = useState<string>(var2 ? var2 : moment().format('YYYY-MM-DD'))
     const [orderCount, setOrderCount] = useState()
-    const [dropdownStatus, setDropdownStatus] = useState<DropdownStatus>({
-        value: [],
-        name: [],
-    })
-
-    const [storeInvoiceId, setStoreInvoiceId] = useState()
-    const [showFilter, setShowFilter] = useState(false)
-    const [numberClick, setNumberClick] = useState(false)
-
+    const [dropdownStatus, setDropdownStatus] = useState<DropdownStatus>({ value: [], name: [] })
+    const [showFilter, setShowFilter] = useState<boolean>(false)
+    const [numberClick, setNumberClick] = useState<boolean>(false)
+    const [showSpinner, setShowSpinner] = useState<boolean>(false)
     const previousOrders = useRef<any[]>([])
     const [deliveryTypes, setDeliveryTypes] = useState<Record<string, string>>({})
+    const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
-    const [showSpinner, setShowSpinner] = useState(false)
-
-    const fetchOrders = async (page: number, pageSize: number, from: string, to: string) => {
+    const fetchOrders = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value?.length === 0 ? '' : `&status=${dropdownStatus?.value}`
-
-            const deliveryStatus = `&delivery_type=EXCHANGE`
-            let paymentStatus = ''
-            let searchingParam = ''
-
-            if (paymentType?.value && paymentType?.value.length > 0) {
-                paymentStatus = `&payment_mode=${paymentType?.value}`
-            }
-            if (currentSelectedPage.value === 'invoice' && searchInput) {
-                searchingParam = `&invoice_id=${searchInput}`
-            }
-            if (currentSelectedPage.value === 'mobile' && searchInput) {
-                searchingParam = `&mobile=${searchInput}`
-            }
+            const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
+            const paymentStatus = paymentType?.value.length === 0 ? '' : `&payment_mode=${paymentType?.value}`
+            const filterParameters = searchInput
+                ? currentSelectedPage.value === 'invoice'
+                    ? `&invoice_id=${searchInput}`
+                    : currentSelectedPage?.value === 'mobile'
+                      ? `&mobile=${searchInput}`
+                      : ''
+                : `&from=${from}&to=${To_Date}`
 
             const response = await axiosInstance.get(
-                `/merchant/orders?p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${searchingParam}${status}${deliveryStatus}${paymentStatus}`,
+                `/merchant/orders?p=${page}&page_size=${pageSize}&delivery_type=EXCHANGE&${filterParameters}${status}${paymentStatus}`,
             )
-
-            const ordersData = response.data?.data.results
-            const orderCount = response.data?.data.count
-
-            setOrders(ordersData)
-            setOrderCount(orderCount)
+            setOrders(response.data?.data.results)
+            setOrderCount(response.data?.data.count)
         } catch (error) {
             console.error(error)
         } finally {
@@ -114,7 +69,7 @@ const Exchangeorders = () => {
 
     useEffect(() => {
         if (!numberClick) {
-            fetchOrders(page, pageSize, from, to)
+            fetchOrders()
         }
 
         const noFilters =
@@ -127,180 +82,12 @@ const Exchangeorders = () => {
 
         if (noFilters) {
             const interval = setInterval(() => {
-                fetchOrders(page, pageSize, from, to)
+                fetchOrders()
             }, 30000)
 
             return () => clearInterval(interval)
         }
     }, [page, pageSize, from, to, dropdownStatus, searchInput, paymentType, numberClick, previousOrders])
-
-    const handleNumberClick = async (number: any) => {
-        try {
-            const response = await axiosInstance.get(`/merchant/orders?mobile=${number}&page_size=100`)
-
-            const data = response.data.data
-
-            setOrders(data.results)
-            setOrderCount(data.count)
-            setNumberClick(true)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    const columns = useMemo(
-        () => [
-            {
-                header: 'Invoice Id',
-                accessorKey: 'invoice_id',
-                cell: ({ getValue, row }: any) => {
-                    const createDate = moment(row.original.create_date)
-                    const currentDate = moment()
-                    const differenceInSeconds = currentDate.diff(createDate, 'seconds')
-                    setStoreInvoiceId(getValue())
-
-                    return (
-                        <div className="flex items-center gap-3">
-                            <a
-                                href={`/app/orders/${getValue()}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
-                            >
-                                {getValue()}
-                            </a>
-                        </div>
-                    )
-                },
-            },
-
-            {
-                header: 'Original Order',
-                accessorKey: 'original_order',
-                cell: ({ getValue, row }: any) => {
-                    return (
-                        <div className="flex items-center gap-3">
-                            <a
-                                href={`/app/orders/${getValue()}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
-                            >
-                                {getValue()}
-                            </a>
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'Return Order',
-                accessorKey: 'reference_return',
-                cell: ({ getValue, row }: any) => {
-                    return (
-                        <div className="flex items-center gap-3">
-                            <a
-                                href={`/app/returnOrders/${getValue()}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
-                            >
-                                {getValue()}
-                            </a>
-                        </div>
-                    )
-                },
-            },
-
-            {
-                header: 'Order Date',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => <span className="">{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-            {
-                header: 'Mobile Number',
-                accessorKey: 'user.mobile',
-                cell: ({ getValue, row }) => {
-                    const orderCount = row.original.user_order_count
-                    return (
-                        <>
-                            {orderCount > 1 ? (
-                                <div className="text-green-500 cursor-pointer" onClick={() => handleNumberClick(getValue())}>
-                                    {getValue()}
-                                </div>
-                            ) : (
-                                <>
-                                    <div>{getValue()}</div>
-                                </>
-                            )}
-                        </>
-                    )
-                },
-            },
-            { header: 'Order Count', accessorKey: 'user_order_count' },
-            { header: 'Device Type', accessorKey: 'device_type' },
-            { header: 'Customer Name', accessorKey: 'user.name' },
-            {
-                header: 'Delivery Type',
-                accessorKey: 'delivery_type',
-            },
-            {
-                header: 'Customer Address',
-                accessorKey: 'location_url',
-                cell: ({ getValue }) => (
-                    <a href={getValue()} target="_blank" rel="noreferrer">
-                        <div className="flex justify-center">
-                            <FaMapMarkedAlt className="text-xl" />
-                        </div>
-                    </a>
-                ),
-            },
-
-            {
-                header: 'Status',
-                accessorKey: 'status',
-                cell: ({ row }) => {
-                    const statuses = row?.original?.status
-                    return (
-                        <div>
-                            {statuses === 'PENDING' || statuses === 'CANCELLED' ? (
-                                <span className="text-red-700 font-semibold bg-red-100 p-2 rounded-md">{statuses}</span>
-                            ) : statuses === 'COMPLETED' ? (
-                                <span className="font-semibold text-green-700 bg-green-100 p-2 rounded-lg">{statuses}</span>
-                            ) : (
-                                <span className="text-yellow-700 bg-yellow-100 p-2 rounded-lg font-semibold">{statuses}</span>
-                            )}
-                        </div>
-                    )
-                },
-            },
-
-            { header: 'Distance', accessorKey: 'distance', cell: ({ getValue }) => <span>{getValue()} km</span> },
-            { header: 'Schedule Date', accessorKey: 'delivery_schedule_date' },
-            {
-                header: 'Slot',
-                accessorKey: 'delivery_schedule_slot',
-                cell: ({ row }) => {
-                    return (
-                        <span className="flex items-center justify-center md:justify-start text-gray-600 text-sm">
-                            <span className="ml-2 ">
-                                {scheduleSlots[row?.original.delivery_schedule_slot]
-                                    ? `${scheduleSlots[row?.original.delivery_schedule_slot].start} - ${scheduleSlots[row?.original.delivery_schedule_slot].end}`
-                                    : '-'}
-                            </span>
-                        </span>
-                    )
-                },
-            },
-            { header: 'Total Items', accessorKey: 'order_items.length' },
-
-            {
-                header: 'Last Update',
-                accessorKey: 'update_date',
-                cell: ({ getValue }) => <span>{moment(getValue()).format('YYYY-MM-DD hh:mm:ss a')}</span>,
-            },
-        ],
-        [],
-    )
 
     useEffect(() => {
         const initialDeliveryTypes: any = {}
@@ -310,125 +97,6 @@ const Exchangeorders = () => {
         setDeliveryTypes(initialDeliveryTypes)
     }, [orders])
 
-    const handleDownload = async () => {
-        try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
-
-            let deliveryStatus = ''
-            let paymentStatus = ''
-
-            if (deliveryType?.value && deliveryType?.value.length > 0) {
-                deliveryStatus = `&delivery_type=${deliveryType?.value}`
-            }
-
-            if (paymentType?.value && paymentType?.value.length > 0) {
-                paymentStatus = `&payment_mode=${paymentType?.value}`
-            }
-
-            let searwiseDownload = ''
-
-            if (currentSelectedPage.value === 'invoice' && searchInput) {
-                searwiseDownload = `&invoice_id=${searchInput}`
-            } else if (currentSelectedPage.value === 'mobile' && searchInput) {
-                searwiseDownload = `&mobile=${searchInput}`
-            }
-
-            const downloadUrl = `merchant/orders?download=true${searwiseDownload}${status}&from=${from}&to=${To_Date}${deliveryStatus}${paymentStatus}`
-
-            const response = await axiosInstance.get(downloadUrl, {
-                responseType: 'blob',
-            })
-
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = 'OrderDetails.csv'
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-        } catch (error) {
-            console.error('Error downloading the file:', error)
-        }
-    }
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-    }
-
-    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
-        if (dates && dates[0]) {
-            setFrom(moment(dates[0]).format('YYYY-MM-DD'))
-            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
-        }
-    }
-
-    const handleSelect = (value: any) => {
-        const selected = SEARCHOPTIONS.find((item) => item.value === value)
-        if (selected) {
-            setCurrentSelectedPage(selected)
-        }
-    }
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchInput(e.target.value)
-    }
-
-    const handleDeliverySelect = (selectedValue: string) => {
-        if (deliveryType.value.includes(selectedValue)) {
-            setDeliveryType((prevState) => ({
-                ...prevState,
-                value: prevState.value.filter((item) => item !== selectedValue),
-            }))
-        } else {
-            setDeliveryType((prevState) => ({
-                ...prevState,
-                value: [...prevState.value, selectedValue],
-            }))
-        }
-    }
-
-    const handlePaymentSelect = (selectedValue: string) => {
-        if (paymentType.value.includes(selectedValue)) {
-            setPaymentType((prevState) => ({
-                ...prevState,
-                value: prevState.value.filter((item) => item !== selectedValue),
-            }))
-        } else {
-            setPaymentType((prevState) => ({
-                ...prevState,
-                value: [...prevState.value, selectedValue],
-            }))
-        }
-    }
-
-    const handleDropdownSelect = (selectedValue: string) => {
-        if (dropdownStatus.value.includes(selectedValue)) {
-            setDropdownStatus((prevState) => ({
-                ...prevState,
-                value: prevState.value.filter((item) => item !== selectedValue),
-            }))
-        } else {
-            setDropdownStatus((prevState) => ({
-                ...prevState,
-                value: [...prevState.value, selectedValue],
-            }))
-        }
-    }
-
-    const handleShowFilter = useCallback(() => {
-        setShowFilter(true)
-    }, [setShowFilter])
-
-    const handleFilterClose = useCallback(() => {
-        setShowFilter(false)
-    }, [setShowFilter])
-
-    console.log(`Table for red ---`, deliveryType?.value)
-
     if (showSpinner) {
         return <LoadingSpinner />
     }
@@ -436,14 +104,6 @@ const Exchangeorders = () => {
     return (
         <div className="p-4">
             <div className="overflow-x-auto scrollbar-hide">
-                <div className="flex justify-end">
-                    <button
-                        className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 flex gap-1 xl:hidden"
-                        onClick={handleDownload}
-                    >
-                        <IoMdDownload className="text-xl md:text-xl" />
-                    </button>
-                </div>
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
                     <div className="flex gap-1 xl:gap-2  xl:flex-row  ">
                         <div className="flex justify-start ">
@@ -454,7 +114,7 @@ const Exchangeorders = () => {
                                 value={searchInput}
                                 className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
                                 prefix={<HiSearch className="text-xl items-center flex justify-center" />}
-                                onChange={handleSearch}
+                                onChange={(e) => setSearchInput(e.target.value)}
                             />
                         </div>
                         <div>
@@ -462,9 +122,9 @@ const Exchangeorders = () => {
                                 <Dropdown
                                     className=" text-xl text-black bg-gray-200 font-bold  "
                                     title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                    onSelect={handleSelect}
+                                    onSelect={(val) => handleSelect(val, setCurrentSelectedPage)}
                                 >
-                                    {SEARCHOPTIONS?.map((item, key) => {
+                                    {SEARCHOPTIONS_EXCHNAGE?.map((item, key) => {
                                         return (
                                             <DropdownItem key={key} eventKey={item.value}>
                                                 <span>{item.label}</span>
@@ -475,14 +135,23 @@ const Exchangeorders = () => {
                             </div>
                         </div>
                     </div>
-                    {/* From here */}
-
-                    {/* To here */}
                     <div className="flex gap-4">
                         <div className="flex flex-col md:flex-row items-end justify-end ">
                             <button
                                 className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2 hidden xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
-                                onClick={handleDownload}
+                                onClick={() =>
+                                    handleDownload(
+                                        dropdownStatus,
+                                        deliveryType,
+                                        paymentType,
+                                        searchInput,
+                                        from,
+                                        To_Date,
+                                        page,
+                                        pageSize,
+                                        currentSelectedPage,
+                                    )
+                                }
                             >
                                 <IoMdDownload className="text-xl md:text-xl font-extrabold" />
                                 EXPORT
@@ -496,15 +165,15 @@ const Exchangeorders = () => {
                                     setFrom={setFrom}
                                     to={to}
                                     setTo={setTo}
-                                    handleDateChange={handleDateChange}
+                                    handleDateChange={(dates: [Date | null, Date | null] | null) => handleDateChange(dates, setFrom, setTo)}
                                 />
                             </div>
                             <div className="xl:mt-7">
-                                <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
+                                <Button variant="new" size="sm" className="hidden xl:flex gap-2" onClick={() => setShowFilter(true)}>
                                     <CiFilter className="text-xl font-extrabold" /> FILTER
                                 </Button>
 
-                                <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden mt-5">
+                                <Button variant="default" size="sm" className="flex xl:hidden mt-5" onClick={() => setShowFilter(true)}>
                                     <FaFilter className="text-xl font-extrabold" />
                                 </Button>
                             </div>
@@ -518,7 +187,7 @@ const Exchangeorders = () => {
                         mainData={orders}
                         page={page}
                         pageSize={pageSize}
-                        columns={columns}
+                        columns={Exchange_Columns((number) => handleNumberClick(number, setOrders, setOrderCount, setNumberClick))}
                         selectedDeliveryType={deliveryTypes ?? ''}
                     />
                 </div>
@@ -529,8 +198,8 @@ const Exchangeorders = () => {
                         pageSize={pageSize}
                         currentPage={page}
                         total={orderCount}
-                        onChange={onPaginationChange}
                         className="mb-4 md:mb-0"
+                        onChange={(page) => setPageSize(page)}
                     />
                 )}
                 <div className="min-w-[130px] flex gap-5">
@@ -540,7 +209,12 @@ const Exchangeorders = () => {
                             isSearchable={false}
                             value={pageSizeOptions.find((option) => option.value === pageSize)}
                             options={pageSizeOptions}
-                            onChange={(option) => onSelectChange(option?.value)}
+                            onChange={(option) => {
+                                if (option) {
+                                    setPageSize(option.value)
+                                    setPage(1)
+                                }
+                            }}
                         />
                     )}
                 </div>
@@ -549,15 +223,15 @@ const Exchangeorders = () => {
                 <FilterDialogOrder
                     forExchange
                     showFilter={showFilter}
-                    handleFilterClose={handleFilterClose}
+                    handleFilterClose={() => setShowFilter(false)}
                     dropdownStatus={dropdownStatus}
-                    handleDropdownSelect={handleDropdownSelect}
+                    handleDropdownSelect={(val: string) => handleDropDownSelect(val, dropdownStatus, setDropdownStatus)}
                     from={from}
                     to={to}
                     deliveryType={deliveryType}
-                    handleDeliverySelect={handleDeliverySelect}
+                    handleDeliverySelect={(val: string) => handleDropDownSelect(val, deliveryType, setDeliveryType)}
                     paymentType={paymentType}
-                    handlePaymentSelect={handlePaymentSelect}
+                    handlePaymentSelect={(val: string) => handleDropDownSelect(val, paymentType, setPaymentType)}
                     handleDateChange={handleDateChange}
                     setFrom={setFrom}
                     setTo={setTo}

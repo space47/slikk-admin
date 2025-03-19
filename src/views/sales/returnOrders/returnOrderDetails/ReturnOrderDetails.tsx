@@ -87,7 +87,7 @@ const ReturnOrderDetails = () => {
             {/* Components */}
             <div className="flex flex-col xl:flex-row gap-8 mt-10 ">
                 <div className="w-full bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-900">
-                    <ReturnProductsDetails />
+                    <ReturnProductsDetails task_id={returnDetails?.return_order_delivery[0]?.task_id} />
                     <div className="flex xl:flex-row xl:gap-10 flex-col gap-5">
                         <RefundActivity />
 

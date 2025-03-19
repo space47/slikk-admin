@@ -66,7 +66,6 @@ const FullScreenMap = ({ mapCenter, storeLat, storeLong, lat, long, style = { he
                     position: 'absolute',
                     top: 10,
                     right: 10,
-                    zIndex: 1000,
                     padding: '8px 12px',
                     backgroundColor: 'white',
                     border: '1px solid #ccc',
@@ -177,7 +176,6 @@ const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
                     padding: '10px',
                     boxShadow: '0 0 5px rgba(0,0,0,0.3)',
                     cursor: 'pointer',
-                    zIndex: 1000,
                 }}
             >
                 <FaMapMarkerAlt size={24} color="black" />
@@ -187,8 +185,8 @@ const TwoPointMap = ({ lat, long, storeLat, storeLong }: props) => {
 
     return (
         <div className="relative flex flex-col gap-10">
-            <div className="relative w-full" style={{ height: '500px' }}>
-                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%' }}>
+            <div className="relative w-full z-1" style={{ height: '500px' }}>
+                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%', zIndex: 1 }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                     {/* Pickup Marker */}

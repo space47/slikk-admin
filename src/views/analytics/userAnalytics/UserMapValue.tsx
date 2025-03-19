@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import axios from 'axios'
-import _, { sum } from 'lodash'
+import _ from 'lodash'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 import { MdFullscreen } from 'react-icons/md'
@@ -167,7 +167,7 @@ const FullScreenMap = ({ currLat, currLong, markers, style = { height: '70vh', w
             {isFullScreen && (
                 <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '100%', width: '100%' }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <MarkerComponent currLat={currLat} currLong={currLong} markers={markers} />
+                    <MarkerComponent currLat={currLat} currLong={currLong} markers={markers ?? []} />
                 </MapContainer>
             )}
         </div>
@@ -233,15 +233,11 @@ const UserMapValue: React.FC<UserMapValueProps> = ({ latitudes, longitudes }) =>
             const lon = longitudes[index]
             const dLat = (lat - currLat) * (Math.PI / 180)
             const dLon = (lon - currLong) * (Math.PI / 180)
-
             const rLat1 = currLat * (Math.PI / 180)
             const rLat2 = lat * (Math.PI / 180)
-
             const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(rLat1) * Math.cos(rLat2)
             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-
             const distance = parseFloat((R * c).toFixed(2))
-
             return { lat, lon, distance }
         })
 
