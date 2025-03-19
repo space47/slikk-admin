@@ -11,6 +11,8 @@ import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import RescheduleModal from './RescheduleModal'
+import { Button } from '@/components/ui'
+import QcDetailsModal from './QcDetailsModal'
 
 const columnHelper = createColumnHelper<any>()
 
@@ -37,43 +39,59 @@ const PriceAmount = ({ amount }: { amount: number }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
-const columns = [
-    columnHelper.accessor('order_item', {
-        header: 'Order Item',
-        cell: (props) => {
-            const row = props.row.original
-            return <ProductColumn row={row} />
-        },
-    }),
-    columnHelper.accessor('quantity', {
-        header: 'Quantity',
-    }),
-    columnHelper.accessor('location', {
-        header: 'Location',
-    }),
-    columnHelper.accessor('return_amount', {
-        header: 'Return Amount',
-        cell: (props) => {
-            const row = props.row.original
-            return <PriceAmount amount={row.return_amount} />
-        },
-    }),
-    columnHelper.accessor('return_reason', {
-        header: 'Return Reason',
-        cell: (props) => {
-            const row = props.row.original
-            return <div>{row.return_reason}</div>
-        },
-    }),
-]
+interface props {
+    task_id: any
+}
 
-const ReturnProductsDetails = () => {
+const ReturnProductsDetails = ({ task_id }: props) => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const [showCancelModal, setShowCancelModal] = useState(false)
     const returnOrderId = returnOrder?.returnOrders?.return_order_id
     const returnProducts = returnOrder?.returnOrders?.return_order_items.map((item) => item) || []
     const [isReschedule, setIsReschedule] = useState(false)
+    const [isQcDetails, setIsQcDetails] = useState(false)
     const navigate = useNavigate()
+
+    const columns = [
+        columnHelper.accessor('order_item', {
+            header: 'Order Item',
+            cell: (props) => {
+                const row = props.row.original
+                return <ProductColumn row={row} />
+            },
+        }),
+        columnHelper.accessor('quantity', {
+            header: 'Quantity',
+        }),
+        columnHelper.accessor('location', {
+            header: 'Location',
+        }),
+
+        columnHelper.accessor('return_amount', {
+            header: 'Return Amount',
+            cell: (props) => {
+                const row = props.row.original
+                return <PriceAmount amount={row.return_amount} />
+            },
+        }),
+        columnHelper.accessor('return_reason', {
+            header: 'Return Reason',
+            cell: (props) => {
+                const row = props.row.original
+                return <div>{row.return_reason}</div>
+            },
+        }),
+        columnHelper.accessor('', {
+            header: 'Qc Details',
+            cell: () => {
+                return (
+                    <div onClick={() => setIsQcDetails(true)}>
+                        {task_id ? <Button variant="accept">Qc Details</Button> : 'No Task Id Created'}
+                    </div>
+                )
+            },
+        }),
+    ]
 
     const handleCancelOrder = () => {
         setShowCancelModal(true)
@@ -141,6 +159,7 @@ const ReturnProductsDetails = () => {
                 </>
             )}
             {isReschedule && <RescheduleModal isReschedule={isReschedule} setIsReschedule={setIsReschedule} />}
+            {isQcDetails && <QcDetailsModal dialogIsOpen={isQcDetails} setIsOpen={setIsQcDetails} task_id={task_id} />}
         </AdaptableCard>
     )
 }

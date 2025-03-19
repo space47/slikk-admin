@@ -64,7 +64,7 @@ const FullScreenMap = ({ mapCenter, taskData, style = { height: '70vh', width: '
                     position: 'absolute',
                     top: 10,
                     right: 10,
-                    zIndex: 1000,
+                    zIndex: 1,
                     padding: '8px 12px',
                     backgroundColor: 'white',
                     border: '1px solid #ccc',
@@ -202,7 +202,7 @@ const OrderMap = ({ task_id }: props) => {
                     padding: '10px',
                     boxShadow: '0 0 5px rgba(0,0,0,0.3)',
                     cursor: 'pointer',
-                    zIndex: 1000,
+                    zIndex: 1,
                 }}
             >
                 <FaMapMarkerAlt size={24} color="black" />
