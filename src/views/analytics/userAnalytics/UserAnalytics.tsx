@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { USERANALYTICS_TYPE } from '@/store/types/userAnalytics.types'
-import { fetchUserAnalytics, setFrom, setTo, setPage, setPage_size } from '@/store/slices/userAnalytics/userAnalytics.slice'
+import { fetchUserAnalytics, setFrom, setTo, setPage } from '@/store/slices/userAnalytics/userAnalytics.slice'
 import moment from 'moment'
 import { FaCheckCircle, FaUsers } from 'react-icons/fa'
 import { useAppDispatch, useAppSelector } from '@/store'

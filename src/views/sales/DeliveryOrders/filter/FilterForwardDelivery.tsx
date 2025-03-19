@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
 import Drawer from '@/components/ui/Drawer'
 import { ORDER_STATUS, DELEIVERYOPTIONS, PAYMENTOPTIONS } from '@/views/category-management/orderlist/commontypes'
-
-import UltimateDatePicker from '@/common/UltimateDateFilter'
 
 type OrderFilterProps = {
     showFilter?: any
@@ -38,26 +35,13 @@ const FilterForwardDelivery = ({
         <div>
             <Drawer
                 title=""
+                lockScroll={false}
                 isOpen={showFilter}
+                className="xl:mx-0 mx-8"
                 onClose={handleFilterClose}
                 onRequestClose={handleFilterClose}
-                lockScroll={false}
-                className="xl:mx-0 mx-8"
             >
                 <div className="flex flex-col gap-6 items-start justify-start mt-4 lg:mt-0 xl:mx-0 mx-10">
-                    {/* Date Pickers */}
-                    {/* <UltimateDatePicker
-                        from={from}
-                        setFrom={setFrom}
-                        to={to}
-                        setTo={setTo}
-                        handleFromChange={handleFromChange}
-                        handleToChange={handleToChange}
-                        handleDateChange={handleDateChange}
-                        dispatch={dispatch}
-                    /> */}
-
-                    {/* Status Selection */}
                     <div className="flex flex-col">
                         <label htmlFor="" className="font-semibold text-lg mb-2">
                             SELECT STATUS
@@ -75,8 +59,8 @@ const FilterForwardDelivery = ({
                                             <input
                                                 type="checkbox"
                                                 checked={dropdownStatus.value?.includes(item.value)}
-                                                onChange={() => handleDropdownSelect(item.value)}
                                                 className="mr-2"
+                                                onChange={() => handleDropdownSelect(item.value)}
                                             />
                                             <span>{item.name}</span>
                                         </div>
@@ -104,8 +88,8 @@ const FilterForwardDelivery = ({
                                             <input
                                                 type="checkbox"
                                                 checked={deliveryType.value?.includes(item.value)}
-                                                onChange={() => handleDeliverySelect(item.value)}
                                                 className="mr-2"
+                                                onChange={() => handleDeliverySelect(item.value)}
                                             />
                                             <span>{item.label}</span>
                                         </div>
@@ -133,8 +117,8 @@ const FilterForwardDelivery = ({
                                             <input
                                                 type="checkbox"
                                                 checked={paymentType.value?.includes(item.value)}
-                                                onChange={() => handlePaymentSelect(item.value)}
                                                 className="mr-2"
+                                                onChange={() => handlePaymentSelect(item.value)}
                                             />
                                             <span>{item.label}</span>
                                         </div>

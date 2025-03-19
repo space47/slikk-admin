@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import {
     useReactTable,
     getCoreRowModel,
@@ -31,48 +30,18 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { RiEBike2Fill } from 'react-icons/ri'
 import { CiFilter } from 'react-icons/ci'
 import FilterForwardDelivery from './filter/FilterForwardDelivery'
-import { MdAssignmentTurnedIn, MdCancel } from 'react-icons/md'
 import { FaFilter } from 'react-icons/fa'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
+import { DELIVERY_OPTIONS, LOGISTIC_PARTNER, SEARCHOPTIONS } from './DeliveryCommon'
+import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
+import { ForwardDeliveryColumns } from './forwardDeliveryUtils/ForwardDeliveryColumns'
 
 const { Tr, Th, Td, THead, TBody, Sorter } = Table
 
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
-
-const LOGISTIC_PARTNER = [
-    { value: 'porter', label: 'PORTER' },
-    { value: 'shiprocket', label: 'SHIPROCKET' },
-    { value: 'shadowfax', label: 'SHADOWFAX' },
-    { value: 'slikk', label: 'SLIKK' },
-    { value: 'pidge', label: 'PIDGE' },
-]
-
-const SEARCHOPTIONS = [
-    { label: 'INVOICE', value: 'invoice' },
-    { label: 'MOBILE', value: 'mobile' },
-    { label: 'AWB', value: 'awb' },
-    { label: 'Runner Name', value: 'runner_name' },
-    { label: 'Runner Mobile', value: 'runner_mobile' },
-]
-
-export const DELIVERY_OPTIONS = [
-    { label: 'EXPRESS', value: 'EXPRESS' },
-    { label: 'STANDARD', value: 'STANDARD' },
-    { label: 'TRY_AND_BUY', value: 'TRY_AND_BUY' },
-]
-
 const DeliveryOrders = () => {
-    const navigate = useNavigate()
     const dispatch = useAppDispatch()
-
     const { orders, orderCount, page, pageSize, searchInput, deliveryType, from, currentSelectedPage, to, dropdownStatus, paymentType } =
         useAppSelector<OrderState>((state) => state.order)
 
@@ -90,212 +59,15 @@ const DeliveryOrders = () => {
             return () => clearInterval(interval)
         }
     }, [page, pageSize, from, to, dropdownStatus, searchInput, deliveryType, paymentType])
-
     const [showFilter, setShowFilter] = useState(false)
-
     const [partner, setPartner] = useState<{
         [key: string]: { value: string; label: string }
     }>({})
-
     const [deliveryChangeType, setDeliveryChangeType] = useState<{
         [key: string]: { value: string; label: string }
     }>({})
 
-    const columns = [
-        {
-            header: 'Order Invoice Id',
-            accessorKey: 'invoice_id',
-            cell: ({ row }: any) => {
-                const referenceId = row.original?.invoice_id
-
-                return referenceId ? (
-                    <a
-                        href={`/app/orders/${referenceId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
-                    >
-                        {referenceId}
-                    </a>
-                ) : (
-                    ''
-                )
-            },
-        },
-        { header: 'Mobile Number', accessorKey: 'user.mobile' },
-        {
-            header: 'Tracking Url',
-            accessorKey: 'logistic.tracking_url',
-            cell: ({ getValue, row }: any) => {
-                const { partner } = row.original?.logistic || {}
-                const { awb_code } = row.original || {}
-                const { delivery_type } = row.original || {}
-
-                console.log('SSSDSDSDD', delivery_type)
-
-                let trackingUrl
-
-                if ((partner === 'Shadowfax' || partner === 'shadowfax') && delivery_type === 'STANDARD') {
-                    trackingUrl = `https://tracker.shadowfax.in/#/awb/${awb_code}`
-                } else if ((partner === 'Shiprocket' || partner === 'shiprocket') && delivery_type === 'EXPRESS') {
-                    trackingUrl = `https://shiprocket.co/tracking/${awb_code}`
-                } else {
-                    trackingUrl = getValue()
-                }
-
-                return (
-                    <a href={trackingUrl} target="_blank" rel="noreferrer">
-                        <div className="flex justify-center">
-                            <RiEBike2Fill className="text-xl" />
-                        </div>
-                    </a>
-                )
-            },
-        },
-        { header: 'Device Type', accessorKey: 'device_type' },
-
-        {
-            header: 'Delivery Type',
-            accessorKey: 'delivery_type',
-            cell: ({ row }: any) => {
-                const Rowid = row?.original.invoice_id
-                const selectedDeliveryType = deliveryChangeType[Rowid]?.label || row.original?.delivery_type || 'SELECT'
-
-                return (
-                    <Dropdown
-                        className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                        title={selectedDeliveryType}
-                        onSelect={(value) => handleDeliveryChange(value, Rowid)}
-                    >
-                        <div className="max-h-60 overflow-y-auto">
-                            {DELIVERY_OPTIONS.map((item, key) => (
-                                <DropdownItem
-                                    key={key}
-                                    eventKey={item.value}
-                                    className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                >
-                                    <span>{item.label}</span>
-                                </DropdownItem>
-                            ))}
-                        </div>
-                    </Dropdown>
-                )
-            },
-        },
-        {
-            header: 'Status',
-            accessorKey: 'status',
-            cell: ({ getValue, row }) => {
-                const statuses = row?.original?.status
-                return (
-                    <div>
-                        {statuses === 'PENDING' ? (
-                            <span className="text-red-700 font-semibold bg-red-200 p-2 rounded-md">{statuses}</span>
-                        ) : statuses === 'COMPLETED' ? (
-                            <span className="font-semibold text-green-700 bg-green-200 p-2 rounded-lg">{statuses}</span>
-                        ) : (
-                            <span className="text-yellow-700 bg-yellow-200 p-2 rounded-lg font-semibold">{statuses}</span>
-                        )}
-                    </div>
-                )
-            },
-        },
-        { header: 'Runner Name', accessorKey: 'logistic.runner_name' },
-        {
-            header: 'Runner Number',
-            accessorKey: 'logistic.runner_phone_number',
-        },
-        {
-            header: 'Payment Mode',
-            accessorKey: 'payment.mode',
-        },
-
-        {
-            header: 'Pickup Time',
-            accessorKey: 'log',
-            cell: ({ row }: any) => {
-                const deliveryCreatedLog = row.original.log.find(
-                    (logEntry: any) => logEntry.status === 'SHIPPED' || logEntry.status === 'OUT_FOR_DELIVERY',
-                )
-
-                return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
-            },
-        },
-
-        {
-            header: 'Drop Time',
-            accessorKey: 'log',
-            cell: ({ row }: any) => {
-                const deliveryCreatedLog = row.original.log.find(
-                    (logEntry: any) => logEntry.status === 'DELIVERED' || logEntry.status === 'COMPLETED',
-                )
-
-                return deliveryCreatedLog ? <div>{moment(deliveryCreatedLog.timestamp).format('YYYY-MM-DD hh:mm:ss a')}</div> : null
-            },
-        },
-        { header: 'AWB Code', accessorKey: 'logistic.awb_code' },
-        {
-            header: 'Partner',
-            accessorKey: 'logistic.partner',
-            cell: ({ row }: any) => {
-                const selectedPartner = partner[row.id]?.label || row.original?.logistic?.partner
-
-                return (
-                    <Dropdown
-                        className="w-full px-4 py-2 text-xl text-black bg-gray-100 border border-gray-300 rounded-md shadow-sm"
-                        title={selectedPartner || 'SELECT'}
-                        onSelect={(value) => handlePartnerSelect(value, row)}
-                    >
-                        <div className="max-h-60 overflow-y-auto">
-                            {LOGISTIC_PARTNER.map((item, key) => (
-                                <DropdownItem
-                                    key={key}
-                                    eventKey={item.value}
-                                    className="px-2 py-2 text-black hover:bg-gray-100 cursor-pointer"
-                                >
-                                    <span>{item.label}</span>
-                                </DropdownItem>
-                            ))}
-                        </div>
-                    </Dropdown>
-                )
-            },
-        },
-        {
-            header: 'CREATE TASk',
-            accessorKey: 'logistic.partner',
-            cell: ({ row, getValue }: any) => (
-                <button onClick={() => handleCreateTask(partner[row.id], getValue(), row.original.invoice_id)}>
-                    <MdAssignmentTurnedIn className="border-none bg-none text-2xl flex justify-center items-center text-green-600" />
-                </button>
-            ),
-        },
-        {
-            header: 'Cancel Task',
-            accessorKey: 'id',
-            cell: ({ row }: any) => (
-                <button onClick={() => handleCancelTask(row.original.invoice_id)}>
-                    <MdCancel className="border-none bg-none text-2xl flex justify-center items-center text-red-600" />
-                </button>
-            ),
-        },
-    ]
-
-    const table = useReactTable({
-        data: orders,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        manualPagination: true,
-        pageCount: Math.ceil(orderCount / pageSize),
-        globalFilterFn: fuzzyFilter,
-    })
-
     const handleCancelTask = async (invoce_id: any) => {
-        console.log('Id', invoce_id)
-
         try {
             await axioisInstance.patch(`logistic/cancel/order/${invoce_id}`)
             notification.success({
@@ -317,17 +89,6 @@ const DeliveryOrders = () => {
             dispatch(setCurrentSelectedPage(selected))
         }
     }
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(setSearchInput(e.target.value))
-    }
-
-    // const handleInvoiceClick = (invoiceId: string) => {
-    //     navigate(`/app/orders/${invoiceId}`)
-    // }
-
-    const onPaginationChange = (page: number) => {
-        dispatch(setPage(page))
-    }
 
     const handleFromChange = (date: Date | null) => {
         dispatch(setFrom(date ? moment(date).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')))
@@ -338,7 +99,6 @@ const DeliveryOrders = () => {
     }
 
     const handlePartnerSelect = (selectedValue: any, row: any) => {
-        console.log('VALUE', selectedValue, row)
         const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
 
         setPartner((prev) => ({
@@ -348,7 +108,6 @@ const DeliveryOrders = () => {
     }
 
     const handleDeliveryChange = (selectedValue: any, row: any) => {
-        console.log('DELIVERY VALUE', selectedValue, row)
         const selectedLabel = DELIVERY_OPTIONS.find((item) => item.value === selectedValue)?.label || ''
 
         setDeliveryChangeType((prev) => ({
@@ -429,15 +188,26 @@ const DeliveryOrders = () => {
         }
     }
 
-    const handleShowFilter = useCallback(() => {
-        setShowFilter(true)
-    }, [setShowFilter])
+    const columns = ForwardDeliveryColumns(
+        handleCreateTask,
+        handleCancelTask,
+        partner,
+        deliveryChangeType,
+        handleDeliveryChange,
+        handlePartnerSelect,
+    )
 
-    const handleFilterClose = useCallback(() => {
-        setShowFilter(false)
-    }, [setShowFilter])
-
-    console.log(`from`, from, 'and', 'to', to)
+    const table = useReactTable({
+        data: orders,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        manualPagination: true,
+        pageCount: Math.ceil(orderCount / pageSize),
+        globalFilterFn: fuzzyFilter,
+    })
 
     return (
         <div className="">
@@ -451,7 +221,7 @@ const DeliveryOrders = () => {
                             placeholder="search here"
                             value={searchInput}
                             className="xl:w-[250px] rounded-[10px] w-[130px] dark:bg-gray-900"
-                            onChange={handleSearch}
+                            onChange={(e) => dispatch(setSearchInput(e.target.value))}
                         />
                     </div>
                     <div>
@@ -488,11 +258,11 @@ const DeliveryOrders = () => {
                     </div>
 
                     <div className="mt-7">
-                        <Button variant="new" size="sm" onClick={handleShowFilter} className="hidden xl:flex gap-2">
+                        <Button variant="new" size="sm" onClick={() => setShowFilter(true)} className="hidden xl:flex gap-2">
                             <CiFilter className="text-xl font-extrabold" /> FILTER
                         </Button>
 
-                        <Button variant="default" size="sm" onClick={handleShowFilter} className="flex xl:hidden">
+                        <Button variant="default" size="sm" onClick={() => setShowFilter(true)} className="flex xl:hidden">
                             <FaFilter className="text-xl font-extrabold" />
                         </Button>
                     </div>
@@ -533,22 +303,27 @@ const DeliveryOrders = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={onPaginationChange} />
+                <Pagination pageSize={pageSize} currentPage={page} total={orderCount} onChange={(page) => dispatch(setPage(page))} />
                 <div className="w-full sm:w-auto min-w-[130px]">
                     <Select
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => dispatch(setPageSize(option?.value))}
                         className="w-full flex justify-end"
+                        onChange={(option) => {
+                            if (option) {
+                                dispatch(setPageSize(option.value))
+                                dispatch(setPage(1))
+                            }
+                        }}
                     />
                 </div>
             </div>
             {showFilter && (
                 <FilterForwardDelivery
                     showFilter={showFilter}
-                    handleFilterClose={handleFilterClose}
+                    handleFilterClose={() => setShowFilter(false)}
                     dropdownStatus={dropdownStatus}
                     handleDropdownSelect={handleDropdownSelect}
                     handleFromChange={handleFromChange}

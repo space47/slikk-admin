@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const PAGEARRAY = [
     {
         name: 'gap',
@@ -69,6 +70,7 @@ export type WebType = {
     background_image: string
     sub_header_config: Config
     mobile_background_image: string
+    mobile_background_array?: File[]
 }
 
 export const SubDataTypeArray = [

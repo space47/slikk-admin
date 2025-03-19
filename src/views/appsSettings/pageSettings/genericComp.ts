@@ -10,6 +10,13 @@ export const genericComponentArray = [
         placeholder: 'Enter grid',
     },
     {
+        label: 'Cover Flow',
+        name: 'component_config.coverFlow',
+        component: { Checkbox },
+        type: 'checkbox',
+        placeholder: 'Enter ',
+    },
+    {
         label: 'Carousel AutoPlay',
         name: 'component_config.carousel_autoplay',
         component: { Checkbox },
