@@ -345,7 +345,7 @@ const EditGroup = () => {
                 onSubmit={handleSubmit}
             >
                 {({ resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="p-4 w-full shadow-xl rounded-xl">
                         <FormContainer>
                             <FormContainer>
                                 <h3>Groups</h3>

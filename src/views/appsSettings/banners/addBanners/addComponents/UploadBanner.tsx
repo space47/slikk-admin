@@ -141,7 +141,7 @@ const UploadBanner = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3 flex flex-col ">
+                    <Form className="w-full shadow-xl rounded-xl p-3 flex flex-col ">
                         <FormContainer>
                             {/* Image upload.................................................................. */}
 

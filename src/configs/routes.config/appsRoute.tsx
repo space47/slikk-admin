@@ -912,6 +912,7 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/sales/Notification/createNotification/AddNotification')),
         authority: [ADMIN, USER],
     },
+
     {
         key: 'appsCommuncication.manageTemplates',
         path: `${APP_PREFIX_PATH}/appsCommuncication/templates`,
