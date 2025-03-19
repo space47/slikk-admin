@@ -816,15 +816,33 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsAppSettings.couponsSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/couponsSeries`,
+        component: lazy(() => import('@/views/offerEngine/couponSeries/couponSeriesTable/CouponSeriesTable')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAppSettings.coupons',
         path: `${APP_PREFIX_PATH}/appSettings/coupons/addNew`,
         component: lazy(() => import('@/views/appsSettings/coupons/Add/AddCoupons')),
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsAppSettings.couponsSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/couponsSeries/addNew`,
+        component: lazy(() => import('@/views/offerEngine/couponSeries/couponSeriesAdd/CouponSeriesAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAppSettings.coupons',
         path: `${APP_PREFIX_PATH}/appSettings/coupons/:coupon_code`,
         component: lazy(() => import('@/views/appsSettings/coupons/Edit/EditCoupon')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.couponsSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/couponsSeries/:coupon_code`,
+        component: lazy(() => import('@/views/offerEngine/couponSeries/couponSeriesEdit/CouponSeriesEdit')),
         authority: [ADMIN, USER],
     },
     {

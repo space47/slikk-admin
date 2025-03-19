@@ -35,6 +35,7 @@ import riderDataReducer from './slices/riderSlice/rider.slice'
 import newOrderReducer from './slices/neworderLists/newOrderList.slice'
 import riderDetailReducer from './slices/riderDetails/riderDetails.slice'
 import eventNamesReducer from './slices/eventNameSlice/eventName.slice'
+import couponSeriesReducer from './slices/couponSeriesSlice/couponSeries'
 
 export type RootState = CombinedState<{
     authorization: CombinedState<Authorization>
@@ -84,6 +85,7 @@ const staticReducers = {
     newOrderList: newOrderReducer,
     riderDetails: riderDetailReducer,
     eventNames: eventNamesReducer,
+    couponSeries: couponSeriesReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }

@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { SalesOrderDetailsResponse } from '../orderList.common'
+
 export const LOGISTIC_PARTNER = [
     { value: 'porter', label: 'PORTER' },
     { value: 'shiprocket', label: 'SHIPROCKET' },
@@ -52,4 +55,19 @@ export type LOGISTIC = {
     total_time?: string
     tracking_url?: string
     update_date?: string
+}
+
+export type Event = {
+    timestamp: string
+    status: string
+}
+
+export type ActivityProps = {
+    mainData: SalesOrderDetailsResponse
+    data?: Event[]
+    status: string
+    product?: Product[]
+    payment?: Payment
+    invoice_id?: string
+    delivery_type: string
 }

@@ -320,23 +320,22 @@ const OrderList = () => {
                                     onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
                                 />
                             </div>
-                        </div>
-
-                        <div className="flex justify-center xl:justify-normal">
-                            <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                                <Dropdown
-                                    className=" text-xl text-black bg-gray-200 font-bold  "
-                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                    onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
-                                >
-                                    {SEARCHOPTIONS?.map((item, key) => {
-                                        return (
-                                            <DropdownItem key={key} eventKey={item.value}>
-                                                <span>{item.label}</span>
-                                            </DropdownItem>
-                                        )
-                                    })}
-                                </Dropdown>
+                            <div className="flex justify-center xl:justify-normal">
+                                <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                                    <Dropdown
+                                        className=" text-xl text-black bg-gray-200 font-bold  "
+                                        title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                        onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                                    >
+                                        {SEARCHOPTIONS?.map((item, key) => {
+                                            return (
+                                                <DropdownItem key={key} eventKey={item.value}>
+                                                    <span>{item.label}</span>
+                                                </DropdownItem>
+                                            )
+                                        })}
+                                    </Dropdown>
+                                </div>
                             </div>
                         </div>
                     </div>
