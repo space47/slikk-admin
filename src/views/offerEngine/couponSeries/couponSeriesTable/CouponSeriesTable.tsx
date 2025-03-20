@@ -18,7 +18,7 @@ import { pageSizeOptions } from '@/views/category-management/orderlist/commontyp
 import { useNavigate } from 'react-router-dom'
 import { CouponDiscountTypeArray, CouponTypeArray } from '@/constants/commonArray.constant'
 import CommonDropdown from '@/common/commonDropdown'
-import { handleCouponSelect, handleDiscountTypeSelect } from '../couponSeriesUtils/couponSeriesFunctions'
+import { handleSelectCoupons } from '../couponSeriesUtils/couponSeriesFunctions'
 
 const CouponSeriesTable = () => {
     const dispatch = useAppDispatch()
@@ -78,14 +78,22 @@ const CouponSeriesTable = () => {
                         currentSelectedPage={currentDiscountTypeSelect || {}}
                         setCurrentSelectedPage={setCurrentDiscountTypeSelect}
                         SEARCHOPTIONS={CouponDiscountTypeArray}
-                        handleSelect={(val) => handleDiscountTypeSelect(val, CouponDiscountTypeArray, setCurrentDiscountTypeSelect)}
+                        handleSelect={(val) =>
+                            handleSelectCoupons({
+                                value: val,
+                                CouponArray: CouponDiscountTypeArray,
+                                setSelectedData: setCurrentDiscountTypeSelect,
+                            })
+                        }
                     />
                     <CommonDropdown
                         label="Coupon Type"
                         currentSelectedPage={currentCouponSelect || {}}
                         setCurrentSelectedPage={setCurrentCouponSelect}
                         SEARCHOPTIONS={CouponTypeArray}
-                        handleSelect={(val) => handleCouponSelect(val, CouponTypeArray, setCurrentCouponSelect)}
+                        handleSelect={(val) =>
+                            handleSelectCoupons({ value: val, CouponArray: CouponTypeArray, setSelectedData: setCurrentCouponSelect })
+                        }
                     />
                 </div>
                 <div>

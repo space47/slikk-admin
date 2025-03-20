@@ -1,10 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
 import { useMemo } from 'react'
+import { FaEdit } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 export const CouponSeriesCoulumns = () => {
+    const navigate = useNavigate()
     return useMemo(() => {
         return [
+            {
+                header: 'Edit',
+                accessorKey: 'id',
+                cell: ({ row }: any) => {
+                    return (
+                        <div className="flex items-center justify-center">
+                            <button
+                                className="bg-none border-none "
+                                onClick={() => navigate(`/app/appSettings/couponsSeries/${row?.original?.id}`)}
+                            >
+                                <FaEdit className="text-xl text-blue-600 cursor-pointer" />
+                            </button>
+                        </div>
+                    )
+                },
+            },
             {
                 header: 'Campaign',
                 accessorKey: 'campaign',

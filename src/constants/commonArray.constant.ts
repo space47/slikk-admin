@@ -55,10 +55,10 @@ export const OrderReturnReasons = [
 ]
 
 export const CouponDiscountTypeArray = [
-    { label: 'PERIODIC', value: 'PERIODIC' },
-    { label: 'COUPON', value: 'COUPON' },
-]
-export const CouponTypeArray = [
     { label: 'PERCENT_OFF', value: 'PERCENT_OFF' },
     { label: 'FLAT_OFF', value: 'FLAT_OFF' },
+]
+export const CouponTypeArray = [
+    { label: 'PERIODIC', value: 'PERIODIC' },
+    { label: 'COUPON', value: 'COUPON' },
 ]

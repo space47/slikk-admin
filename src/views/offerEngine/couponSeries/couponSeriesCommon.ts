@@ -42,10 +42,10 @@ export const COUPON_SERIES_FORM = [
         label: 'Maximum Discount',
         classname: 'col-span-1 w-full',
         type: 'number',
-        name: 'maximum_price',
+        name: 'maximum_discount',
         placeholder: 'Enter maximum price',
         component: { Input },
-        status: 'maximum_price',
+        status: 'maximum_discount',
     },
 
     {

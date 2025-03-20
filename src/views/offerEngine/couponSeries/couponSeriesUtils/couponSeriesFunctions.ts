@@ -1,26 +1,15 @@
-export const handleCouponSelect = (
-    value: string,
-    CouponTypeArray: {
+interface couponSeriesProps {
+    value: string
+    CouponArray: {
         label: string
         value: string
-    }[],
-    setCurrentCouponSelect: React.Dispatch<React.SetStateAction<Record<string, string> | undefined>>,
-) => {
-    const selected = CouponTypeArray.find((item) => item.value === value)
-    if (selected) {
-        setCurrentCouponSelect(selected)
-    }
+    }[]
+    setSelectedData: React.Dispatch<React.SetStateAction<Record<string, string> | undefined>>
 }
-export const handleDiscountTypeSelect = (
-    value: string,
-    CouponDiscountTypeArray: {
-        label: string
-        value: string
-    }[],
-    setCurrentDiscountTypeSelect: React.Dispatch<React.SetStateAction<Record<string, string> | undefined>>,
-) => {
-    const selected = CouponDiscountTypeArray.find((item) => item.value === value)
+
+export const handleSelectCoupons = ({ value, CouponArray, setSelectedData }: couponSeriesProps) => {
+    const selected = CouponArray.find((item) => item.value === value)
     if (selected) {
-        setCurrentDiscountTypeSelect(selected)
+        setSelectedData(selected)
     }
 }

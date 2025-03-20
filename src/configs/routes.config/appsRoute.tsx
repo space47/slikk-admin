@@ -841,7 +841,7 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsAppSettings.couponsSeries',
-        path: `${APP_PREFIX_PATH}/appSettings/couponsSeries/:coupon_code`,
+        path: `${APP_PREFIX_PATH}/appSettings/couponsSeries/:id`,
         component: lazy(() => import('@/views/offerEngine/couponSeries/couponSeriesEdit/CouponSeriesEdit')),
         authority: [ADMIN, USER],
     },

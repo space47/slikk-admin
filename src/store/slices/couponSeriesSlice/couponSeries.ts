@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface CouponSeriesInitialTypes {
     couponSeries: CouponResults[]
+    couponSeriesActive?: CouponResults
     count: number
     page: number
     pageSize: number
@@ -11,6 +12,7 @@ export interface CouponSeriesInitialTypes {
 
 const initialState: CouponSeriesInitialTypes = {
     couponSeries: [],
+    couponSeriesActive: undefined,
     count: 0,
     page: 1,
     pageSize: 10,
@@ -22,6 +24,9 @@ const couponSeriesSlice = createSlice({
     reducers: {
         setCouponSeriesData: (state, action: PayloadAction<CouponResults[]>) => {
             state.couponSeries = action.payload
+        },
+        setCouponSeriesActive: (state, action: PayloadAction<CouponResults>) => {
+            state.couponSeriesActive = action.payload
         },
         setCount: (state, action: PayloadAction<number>) => {
             state.count = action.payload
@@ -35,5 +40,5 @@ const couponSeriesSlice = createSlice({
     },
 })
 
-export const { setCouponSeriesData, setCount, setPage, setPageSize } = couponSeriesSlice.actions
+export const { setCouponSeriesData, setCount, setPage, setPageSize, setCouponSeriesActive } = couponSeriesSlice.actions
 export default couponSeriesSlice.reducer

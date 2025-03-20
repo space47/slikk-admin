@@ -6,7 +6,7 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
         couponSeries: builder.query<
             CouponSeriesTypes,
-            { campaign?: string; page?: number; pageSize?: number; discount_type?: string; coupon_type?: string }
+            { campaign?: string; page?: number; pageSize?: number; discount_type?: string; coupon_type?: string; id?: string | number }
         >({
             query: (params) => {
                 const parameters: Record<string, string | string[]> = {}
@@ -25,6 +25,9 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
                 }
                 if (params.coupon_type) {
                     parameters.coupon_type = params.coupon_type?.toString()
+                }
+                if (params.id) {
+                    parameters.id = params.id?.toString()
                 }
 
                 return {
@@ -54,6 +57,17 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
                         coupon_type: params.coupon_type,
                         is_public: params.is_public,
                         extra_attributes: params.extra_attributes,
+                    },
+                }
+            },
+        }),
+        editCouponSeries: builder.mutation<{ success: string }, CouponSeriesBodyType & { id: string | number }>({
+            query: (params) => {
+                return {
+                    url: `/couponseries/${params.id}`,
+                    method: 'PATCH',
+                    body: {
+                        ...params,
                     },
                 }
             },

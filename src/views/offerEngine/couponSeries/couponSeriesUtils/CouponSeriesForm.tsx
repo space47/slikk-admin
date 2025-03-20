@@ -23,7 +23,7 @@ const DiscountType = [
 ]
 const ApplicableCategoriesArray = [
     { name: 'Electronics', value: 'Electronics' },
-    { name: 'Clothings', value: 'Clothings' },
+    { name: 'Clothing', value: 'Clothing' },
     { name: 'Shoes', value: 'Shoes' },
 ]
 
