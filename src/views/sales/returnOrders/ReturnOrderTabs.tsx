@@ -14,17 +14,17 @@ const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                     { label: 'ALL', key: 'all' },
                     { label: 'PICKUP_CREATED', key: 'pickup_created' },
                     { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
-                    { label: 'PICKED UP', key: 'picked up' },
+                    { label: 'PICKED_UP', key: 'picked up' },
                     { label: 'ACCEPTED', key: 'accepted' },
-                    { label: 'OUT FOR PICKUP', key: 'out_for_pickup' },
-                    { label: 'RIDER ASSIGNED', key: 'rider_assigned' },
+                    { label: 'OUT_FOR_PICKUP', key: 'out_for_pickup' },
+                    { label: 'RIDER_ASSIGNED', key: 'rider_assigned' },
                     { label: 'REFUNDED', key: 'refunded' },
                     { label: 'COMPLETED', key: 'completed' },
                     { label: 'CANCELLED', key: 'cancelled' },
                 ].map((tab) => (
                     <div
                         key={tab.key}
-                        className={`flex items-center justify-center cursor-pointer px-4 py-2 rounded-lg transition-all duration-300 ${
+                        className={`flex items-center justify-center cursor-pointer px-2 rounded-lg transition-all duration-300 ${
                             tabSelect === tab.key
                                 ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
                                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md'
@@ -43,7 +43,7 @@ const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                 {[
                     { label: 'ALL', key: 'all' },
                     { label: 'PICKUP_CREATED', key: 'pickup_created' },
-                    { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
+                    { label: 'REVERSE PICKUP CREATED', key: 'reverse_pickup_created' },
                     { label: 'PICKED UP', key: 'picked up' },
                     { label: 'ACCEPTED', key: 'accepted' },
                     { label: 'OUT FOR PICKUP', key: 'out_for_pickup' },
