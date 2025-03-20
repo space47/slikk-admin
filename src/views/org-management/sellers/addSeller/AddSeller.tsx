@@ -68,7 +68,7 @@ const initialValue: FormModel = {
 }
 
 const SegmentOptions = () => {
-    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor'].map((segment) => ({
+    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories'].map((segment) => ({
         label: segment,
         value: segment,
     }))
