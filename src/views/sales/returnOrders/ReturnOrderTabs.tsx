@@ -13,9 +13,11 @@ const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                 {[
                     { label: 'ALL', key: 'all' },
                     { label: 'PICKUP_CREATED', key: 'pickup_created' },
+                    { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
                     { label: 'PICKED UP', key: 'picked up' },
                     { label: 'ACCEPTED', key: 'accepted' },
                     { label: 'OUT FOR PICKUP', key: 'out_for_pickup' },
+                    { label: 'RIDER ASSIGNED', key: 'rider_assigned' },
                     { label: 'REFUNDED', key: 'refunded' },
                     { label: 'COMPLETED', key: 'completed' },
                     { label: 'CANCELLED', key: 'cancelled' },
@@ -41,9 +43,11 @@ const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: props) => {
                 {[
                     { label: 'ALL', key: 'all' },
                     { label: 'PICKUP_CREATED', key: 'pickup_created' },
+                    { label: 'REVERSE_PICKUP_CREATED', key: 'reverse_pickup_created' },
                     { label: 'PICKED UP', key: 'picked up' },
                     { label: 'ACCEPTED', key: 'accepted' },
                     { label: 'OUT FOR PICKUP', key: 'out_for_pickup' },
+                    { label: 'RIDER ASSIGNED', key: 'rider_assigned' },
                     { label: 'REFUNDED', key: 'refunded' },
                     { label: 'COMPLETED', key: 'completed' },
                     { label: 'CANCELLED', key: 'cancelled' },
