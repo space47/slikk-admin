@@ -19,6 +19,9 @@ import { ReturnDropdownStatus, ReturnOrder, SEARCHOPTIONS } from './returnOrderC
 import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
 import { getStatusFilterReturn } from './returnOrderUtils/ReturnOrderUtils'
 import { handleSearch, handleSearchWithIcon, handleSelect, onSelectChange, handleDownload } from './returnOrderUtils/ReturnOrderFunctions'
+import { LocationReturnType } from '@/store/types/returnOrderData.types'
+import ReturnOrderMap from './returnOrderUtils/ReturnOrderMap'
+import { FaMapMarkedAlt } from 'react-icons/fa'
 
 const ReturnOrders = () => {
     const location = useLocation()
@@ -36,7 +39,9 @@ const ReturnOrders = () => {
     const [showFilter, setShowFilter] = useState(false)
     const [tabSelect, setTabSelect] = useState('all')
     const [searchOnEnter, setSearchOnEnter] = useState('')
+    const [showMap, setShowMap] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const [locationDetails, setLocationDetails] = useState<LocationReturnType[]>([])
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
@@ -64,6 +69,20 @@ const ReturnOrders = () => {
     useEffect(() => {
         fetchOrders()
     }, [page, pageSize, from, to, dropdownStatus, searchOnEnter, deliveryType, tabSelect])
+
+    const fetchLocationData = async () => {
+        try {
+            const response = await axioisInstance.get(`/merchant/return_orders?location_data=true&from=${from}&to=${To_Date}`)
+            const data = response.data?.data
+            setLocationDetails(data)
+        } catch (error) {
+            console.error
+        }
+    }
+
+    useEffect(() => {
+        fetchLocationData()
+    }, [from, To_Date])
 
     const columns = useReturnOrderColumns()
 
@@ -103,6 +122,10 @@ const ReturnOrders = () => {
                 value: [...prevState.value, selectedValue],
             }))
         }
+    }
+
+    const handleShowMap = async () => {
+        setShowMap((prev) => !prev)
     }
 
     return (
@@ -151,20 +174,31 @@ const ReturnOrders = () => {
                 </div>
 
                 <div className="flex gap-4">
-                    <div className="flex flex-col md:flex-row items-end justify-end ">
-                        <button
-                            className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
-                            onClick={() =>
-                                handleDownload(tabSelect, dropdownStatus, deliveryType, currentSelectedPage, searchInput, from, To_Date)
-                            }
-                        >
-                            <span className="flex gap-2">
-                                <span>
-                                    <IoMdDownload className="text-xl md:text-xl xl:font-extrabold" />
+                    <div className="flex flex-col md:flex-row items-center xl:mt-9 xl:gap-6 justify-center  ">
+                        <div>
+                            <button onClick={handleShowMap}>
+                                {showMap ? (
+                                    <FaMapMarkedAlt className="text-4xl text-red-700 " />
+                                ) : (
+                                    <FaMapMarkedAlt className="text-4xl text-green-600 " />
+                                )}
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
+                                onClick={() =>
+                                    handleDownload(tabSelect, dropdownStatus, deliveryType, currentSelectedPage, searchInput, from, To_Date)
+                                }
+                            >
+                                <span className="flex gap-2">
+                                    <span>
+                                        <IoMdDownload className="text-xl md:text-xl xl:font-extrabold" />
+                                    </span>
+                                    EXPORT
                                 </span>
-                                EXPORT
-                            </span>
-                        </button>
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex gap-2 items-center xl:mt-1">
@@ -179,6 +213,7 @@ const ReturnOrders = () => {
                     </div>
                 </div>
             </div>
+
             <br />
             <ReturnOrderTabs handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={orderCount} />
             <br />
@@ -202,6 +237,16 @@ const ReturnOrders = () => {
                     />
                 </div>
             </div>
+            <br />
+            {showMap && (
+                <>
+                    <div className="mt-10 flex flex-col gap-4">
+                        <span className="text-xl font-bold">Return Orders Map:</span>
+                        <ReturnOrderMap locationDetails={locationDetails} />
+                    </div>
+                </>
+            )}
+
             {showFilter && (
                 <FilterReturnOrder
                     showFilter={showFilter}
