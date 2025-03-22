@@ -6,6 +6,7 @@ import { DatePicker } from 'antd'
 import moment from 'moment'
 import { beforeUpload } from '@/common/beforeUpload'
 import { COUPON_SERIES_FORM } from '../couponSeriesCommon'
+import CommonMultiSelect from '@/common/CommonMultiSelect'
 
 interface CouponProps {
     values: any
@@ -36,7 +37,7 @@ const CouponsType = () => {
 
 const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
     return (
-        <Form className="w-3/4">
+        <Form className="">
             <FormContainer>
                 <FormContainer className="grid grid-cols-2 gap-10">
                     {COUPON_SERIES_FORM.slice(0, 5).map((item, key) => (
@@ -58,6 +59,7 @@ const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
                             {({ field, form }: any) => (
                                 <DatePicker
                                     showTime
+                                    className="w-full"
                                     placeholder=""
                                     value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                     onChange={(value) => {
@@ -72,6 +74,7 @@ const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
                             {({ field, form }: any) => (
                                 <DatePicker
                                     showTime
+                                    className="w-full"
                                     placeholder=""
                                     value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                     onChange={(value) => {
@@ -97,8 +100,8 @@ const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
                         </Field>
                     </FormItem>
 
-                    <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
-                        Image
+                    <FormContainer className="bg-blue-300 p-2 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
+                        <div className="font-bold text-blue-700">Image</div>
                         <FormContainer className=" mt-5 w-full ">
                             <FormItem label="" className="grid grid-rows-2">
                                 <Field name="imageArray">
@@ -116,12 +119,16 @@ const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
                                     )}
                                 </Field>
                             </FormItem>
-
-                            <br />
                             <br />
                         </FormContainer>
-                        <FormItem label="" className="col-span-1 w-[80%]">
-                            <Field type="text" name="image" placeholder="Enter ImageUrl or Upload Image file" component={Input} />
+                        <FormItem label="" className="col-span-1 w-[80%] rounded-xl ">
+                            <Field
+                                className="rounded-2xl "
+                                type="text"
+                                name="image"
+                                placeholder="Drop an Image URL or Upload a File 💾"
+                                component={Input}
+                            />
                         </FormItem>
                     </FormContainer>
 
@@ -139,36 +146,15 @@ const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
                             }}
                         />{' '}
                     </FormItem>
-                    <FormItem label="Applicable categories">
-                        <Field name={`extra_attributes.applicable_categories`}>
-                            {({ field }: FieldProps) => {
-                                const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',')
 
-                                const selectedOptions = fieldValueArray?.map((item: any) => {
-                                    const selectedOption = ApplicableCategoriesArray?.find((options: any) => {
-                                        return options?.name.toLowerCase() === item.toLowerCase()
-                                    })
-                                    return selectedOption
-                                })
-
-                                return (
-                                    <Select
-                                        isClearable
-                                        isMulti
-                                        className="xl:w-1/2 mt-7 w-full"
-                                        options={ApplicableCategoriesArray}
-                                        getOptionLabel={(option) => option.name}
-                                        getOptionValue={(option) => option.value}
-                                        value={selectedOptions}
-                                        onChange={(newVals) => {
-                                            const selectedValues = newVals?.map((val: any) => val.name) || []
-                                            setFieldValue(`extra_attributes.applicable_categories`, selectedValues)
-                                        }}
-                                    />
-                                )
-                            }}
-                        </Field>
-                    </FormItem>
+                    <CommonMultiSelect
+                        needCss
+                        label="Applicable categories"
+                        name="extra_attributes.applicable_categories"
+                        options={ApplicableCategoriesArray}
+                        className=" mt-7 w-full"
+                        setFieldValue={setFieldValue}
+                    />
 
                     {COUPON_SERIES_FORM.slice(5).map((item, key) => (
                         <FormItem key={key} label={item.label} className={item.classname}>

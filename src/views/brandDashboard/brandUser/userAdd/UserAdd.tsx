@@ -338,7 +338,7 @@ const UserAdd = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-full">
+                    <Form className="w-full shadow-xl p-4 rounded-xl">
                         <div className="text-xl mb-10 font-semibold">USER DETAILS</div>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">

@@ -72,5 +72,16 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        // addCouponFromSeries: builder.mutation<{ success: string }, any>({
+        //     query: (params) => {
+        //         return {
+        //             url: `/merchant/coupon/generate`,
+        //             method: 'POST',
+        //             body: {
+        //                 ...params,
+        //             },
+        //         }
+        //     },
+        // }),
     }),
 })

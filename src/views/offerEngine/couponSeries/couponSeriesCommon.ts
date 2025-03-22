@@ -10,6 +10,15 @@ export const COUPON_SERIES_FORM = [
         component: { Input },
         status: 'campaign',
     },
+    {
+        label: 'Prefix',
+        classname: 'col-span-1 w-full',
+        type: 'text',
+        name: 'prefix',
+        placeholder: 'Enter prefix for the coupon',
+        component: { Input },
+        status: 'prefix',
+    },
 
     {
         label: 'Value',

@@ -4,14 +4,22 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import React from 'react'
 
 interface commonDropdownProps {
-    label: string
+    isNoClear?: boolean
+    label?: string
     currentSelectedPage: Record<string, string>
-    setCurrentSelectedPage: React.Dispatch<React.SetStateAction<Record<string, string> | undefined>>
+    setCurrentSelectedPage?: React.Dispatch<React.SetStateAction<Record<string, string> | undefined>>
     SEARCHOPTIONS: Record<string, string>[]
     handleSelect: (value: any, setCurrentSelectedPage: any) => void
 }
 
-const CommonDropdown = ({ currentSelectedPage, setCurrentSelectedPage, SEARCHOPTIONS, handleSelect, label }: commonDropdownProps) => {
+const CommonDropdown = ({
+    currentSelectedPage,
+    setCurrentSelectedPage,
+    SEARCHOPTIONS,
+    handleSelect,
+    label,
+    isNoClear = false,
+}: commonDropdownProps) => {
     return (
         <div className="flex justify-center xl:justify-normal">
             <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
@@ -27,12 +35,14 @@ const CommonDropdown = ({ currentSelectedPage, setCurrentSelectedPage, SEARCHOPT
                             </DropdownItem>
                         )
                     })}
-                    <div
-                        className="flex items-center justify-center bg-red-500 p-1 cursor-pointer text-white rounded-xl"
-                        onClick={() => setCurrentSelectedPage({})}
-                    >
-                        Clear
-                    </div>
+                    {!isNoClear && setCurrentSelectedPage && (
+                        <div
+                            className="flex items-center justify-center bg-red-500 p-1 cursor-pointer text-white rounded-xl"
+                            onClick={() => setCurrentSelectedPage({})}
+                        >
+                            Clear
+                        </div>
+                    )}
                 </Dropdown>
             </div>
         </div>

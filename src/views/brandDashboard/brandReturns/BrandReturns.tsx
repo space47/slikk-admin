@@ -243,7 +243,7 @@ const BrandReturns = () => {
                     </div>
                 </>
             ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto shadow-xl p-4 rounded-xl">
                     <div className="flex xl:flex-row xl:justify-between mb-5 items-center xl:items-end flex-col gap-4 ">
                         <button
                             className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mt-6 xl:hidden  "

@@ -834,6 +834,12 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsAppSettings.couponsSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/couponsGenerate/generateCoupons`,
+        component: lazy(() => import('@/views/offerEngine/couponsGenerate/addCoupons/GenerateCoupons')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAppSettings.coupons',
         path: `${APP_PREFIX_PATH}/appSettings/coupons/:coupon_code`,
         component: lazy(() => import('@/views/appsSettings/coupons/Edit/EditCoupon')),

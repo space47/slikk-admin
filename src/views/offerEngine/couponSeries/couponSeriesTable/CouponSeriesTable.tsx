@@ -96,9 +96,12 @@ const CouponSeriesTable = () => {
                         }
                     />
                 </div>
-                <div>
+                <div className="flex gap-2">
                     <Button variant="new" size="sm" onClick={() => navigate(`/app/appSettings/couponsSeries/addNew`)}>
                         Add Coupon Series
+                    </Button>
+                    <Button variant="new" size="sm" onClick={() => navigate(`/app/appSettings/couponsGenerate/generateCoupons`)}>
+                        Add Coupons
                     </Button>
                 </div>
             </div>
