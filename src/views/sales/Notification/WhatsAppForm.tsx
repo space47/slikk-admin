@@ -109,52 +109,56 @@ const WhatsAppForm = ({ values, messageParticular }: props) => {
                 </FormItem>
 
                 {/* Button Config */}
-                <FormItem label="Button Config" className="w-full mt-5">
-                    <FieldArray
-                        name="config_data.button_config"
-                        render={(arrayHelpers) => (
-                            <div>
-                                {values?.config_data?.button_config?.map((config: any, index: any) => (
-                                    <div key={index} className="flex items-center space-x-4 mb-2">
-                                        <Field
-                                            name={`config_data.button_config[${index}].url`}
-                                            as="select"
-                                            className="flex-1 border rounded px-2 py-1"
-                                        >
-                                            <option disabled selected value="">
-                                                Examples
-                                            </option>
-                                            {ParametersArray.map((item, key) => (
-                                                <option key={key} value={`{${item}}`}>
-                                                    {item}
+                {messageParticular?.components
+                    ?.filter((comp: any) => comp.type === 'BUTTONS')
+                    ?.some((comp: any) => comp.buttons?.some((btn: any) => btn.example)) ? (
+                    <FormItem label="Button Config" className="w-full mt-5">
+                        <FieldArray
+                            name="config_data.button_config"
+                            render={(arrayHelpers) => (
+                                <div>
+                                    {values?.config_data?.button_config?.map((config: any, index: any) => (
+                                        <div key={index} className="flex items-center space-x-4 mb-2">
+                                            <Field
+                                                name={`config_data.button_config[${index}].url`}
+                                                as="select"
+                                                className="flex-1 border rounded px-2 py-1"
+                                            >
+                                                <option disabled selected value="">
+                                                    Examples
                                                 </option>
-                                            ))}
-                                        </Field>
+                                                {ParametersArray.map((item, key) => (
+                                                    <option key={key} value={`{${item}}`}>
+                                                        {item}
+                                                    </option>
+                                                ))}
+                                            </Field>
 
-                                        <Field
-                                            name={`config_data.button_config[${index}].sub_type`}
-                                            as="select"
-                                            className="flex-1 border rounded px-2 py-1"
-                                        >
-                                            <option value="url">URL</option>
-                                            <option value="call">Phone</option>
-                                        </Field>
-                                        <Field
-                                            name={`config_data.button_config[${index}].index`}
-                                            type="number"
-                                            placeholder="Enter Index"
-                                            className="flex-1"
-                                            component={Input}
-                                        />
-                                        <Button type="button" variant="reject" onClick={() => arrayHelpers.remove(index)}>
-                                            Remove
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    />
-                </FormItem>
+                                            <Field
+                                                name={`config_data.button_config[${index}].sub_type`}
+                                                as="select"
+                                                className="flex-1 border rounded px-2 py-1"
+                                            >
+                                                <option value="url">URL</option>
+                                                <option value="call">Phone</option>
+                                            </Field>
+                                            <Field
+                                                name={`config_data.button_config[${index}].index`}
+                                                type="number"
+                                                placeholder="Enter Index"
+                                                className="flex-1"
+                                                component={Input}
+                                            />
+                                            <Button type="button" variant="reject" onClick={() => arrayHelpers.remove(index)}>
+                                                Remove
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        />
+                    </FormItem>
+                ) : null}
             </>
         </div>
     )
