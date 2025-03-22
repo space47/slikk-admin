@@ -80,6 +80,20 @@ const ContentSetup = ({
             [variable]: '', // Add the new dynamic field for the clicked variable
         }))
     }
+    const handleHeaderTextVariable = (field: any, form: any, variable: string) => {
+        setBodyButtonVariable((prev) => [...(Array.isArray(prev) ? prev : []), variable])
+        const currentBody = field.value || ''
+        const updatedBody = `${currentBody}{{${variable}}}`
+        form.setFieldValue(field.name, updatedBody)
+        setTemplateTextPreview(updatedBody)
+        handleSampleValueChange(variable, '')
+        setActiveButton(variable)
+
+        setSampleValues((prev: any) => ({
+            ...prev,
+            [variable]: '', // Add the new dynamic field for the clicked variable
+        }))
+    }
 
     const handleInsertVariable = (field: any, form: any, variable: string) => {
         const editor = document.querySelector('[contenteditable="true"]') // Target the editable area of the RichTextEditor
@@ -146,7 +160,7 @@ const ContentSetup = ({
                                             type="button"
                                             className="bg-gray-600 text-white p-1 rounded-md hover:bg-gray-500"
                                             key={key}
-                                            onClick={() => handleTextVariable(field, form, item)}
+                                            onClick={() => handleHeaderTextVariable(field, form, item)}
                                         >
                                             {item}
                                         </button>
