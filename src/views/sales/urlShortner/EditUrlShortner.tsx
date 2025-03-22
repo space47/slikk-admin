@@ -281,7 +281,7 @@ const EditUrlShortner = () => {
                 onSubmit={handleSubmit}
             >
                 {({ resetForm, setFieldValue, values }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-full shadow-lg p-4 px-6 rounded-xl">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {URLARRAY.slice(0, 1).map((item, key) => (

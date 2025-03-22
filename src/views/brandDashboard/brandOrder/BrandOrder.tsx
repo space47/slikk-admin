@@ -387,7 +387,7 @@ const BrandOrder = () => {
     }
 
     return (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto shadow-xl p-4 rounded-xl">
             <div className="flex flex-col lg:flex-row justify-between mb-5 items-center gap-5">
                 <button
                     className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 xl:hidden"

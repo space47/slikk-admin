@@ -50,9 +50,9 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow, isNotS
         <div>
             <Table overflow={overflow ? true : false}>
                 <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
+                    {table?.getHeaderGroups()?.map((headerGroup) => (
                         <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
+                            {headerGroup?.headers?.map((header) => (
                                 <Th key={header.id} colSpan={header.colSpan}>
                                     {header.isPlaceholder ? null : (
                                         <div
@@ -69,7 +69,7 @@ const EasyTable = ({ columns, page, pageSize, mainData, noPage, overflow, isNotS
                     ))}
                 </THead>
                 <TBody>
-                    {table.getRowModel().rows.map((row) => (
+                    {table.getRowModel().rows?.map((row) => (
                         <Tr key={row.id}>
                             {row.getVisibleCells().map((cell) => (
                                 <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>

@@ -94,12 +94,21 @@ const AddNotification = () => {
                     ?.flatMap((comp: any) =>
                         extractPlaceholders(comp.text).map((placeholder) => ({ textParam: placeholder, type: 'text' })),
                     ) || [],
-            header_config:
-                messageParticular?.components
-                    ?.filter((comp: any) => comp.type === 'HEADER')
-                    ?.flatMap((comp: any) =>
-                        extractPlaceholders(comp.text).map((placeholder) => ({ textParam: placeholder, type: 'text' })),
-                    ) || [],
+            header_config: messageParticular?.components?.some((comp: any) => comp.type === 'HEADER' && comp.format === 'IMAGE')
+                ? {
+                      type: 'image',
+                      link: messageParticular?.components.find((comp: any) => comp.type === 'HEADER' && comp.format === 'IMAGE')?.example
+                          ?.header_handle?.[0],
+                  }
+                : messageParticular?.components
+                      ?.filter((comp: any) => comp.type === 'HEADER')
+                      ?.flatMap((comp: any) =>
+                          extractPlaceholders(comp.text).map((placeholder) => ({
+                              textParam: placeholder,
+                              type: 'text',
+                          })),
+                      ) || [],
+
             button_config: messageParticular?.components
                 ?.filter((comp: any) => comp.type === 'BUTTONS')
                 ?.flatMap((comp: any) =>
@@ -122,7 +131,14 @@ const AddNotification = () => {
             language: values?.language,
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             body_config: values?.config_data?.body_config.map(({ textParam, ...rest }: any) => rest),
-            header_config: values?.config_data?.header_config.map(({ textParam, ...rest }: any) => rest),
+            header_config: messageParticular?.components?.some((comp: any) => comp.type === 'HEADER' && comp.format === 'IMAGE')
+                ? [
+                      {
+                          type: 'image',
+                          link: values?.config_data.header_config.link,
+                      },
+                  ]
+                : values?.config_data?.header_config.map(({ textParam, ...rest }: any) => rest),
             button_config: values?.config_data?.button_config.map(({ text, ...rest }: any) => rest),
         }
 
@@ -135,19 +151,19 @@ const AddNotification = () => {
         }
         console.log('FORMDATA', formData)
 
-        try {
-            const response = await axioisInstance.post(`/notifications/config`, formData)
-            notification.success({
-                message: 'SUCCESS',
-                description: response.data.message || 'Notification has been added',
-            })
-        } catch (error) {
-            console.log(error)
-            notification.error({
-                message: 'FAILURE',
-                description: 'Failed to create notification',
-            })
-        }
+        // try {
+        //     const response = await axioisInstance.post(`/notifications/config`, formData)
+        //     notification.success({
+        //         message: 'SUCCESS',
+        //         description: response.data.message || 'Notification has been added',
+        //     })
+        // } catch (error) {
+        //     console.log(error)
+        //     notification.error({
+        //         message: 'FAILURE',
+        //         description: 'Failed to create notification',
+        //     })
+        // }
     }
 
     return (
@@ -211,7 +227,9 @@ const AddNotification = () => {
                                     </FormItem>
                                 )}
                             </FormContainer>
-                            {Object.keys(messageParticular).length > 0 && <WhatsAppForm values={values} />}
+                            {Object.keys(messageParticular).length > 0 && (
+                                <WhatsAppForm values={values} messageParticular={messageParticular} />
+                            )}
 
                             <FormItem label="Message" labelClass="!justify-start" className="col-span-1 w-full">
                                 <Field name="message">

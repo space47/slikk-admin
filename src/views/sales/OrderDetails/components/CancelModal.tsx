@@ -5,6 +5,7 @@ import { Dropdown } from '@/components/ui'
 import Dialog from '@/components/ui/Dialog'
 import { IoIosAddCircle, IoIosWarning } from 'react-icons/io'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { OrderCancelReasons } from '@/constants/commonArray.constant'
 
 type Props5 = {
     isModalOpen: boolean
@@ -12,29 +13,6 @@ type Props5 = {
     invoice_id: string | number
     setIsModalOpen: (open: boolean) => void
 }
-
-const CancelReasons = [
-    {
-        label: 'Ordered by Mistake: I accidentally ordered the wrong item or quantity.',
-        value: 'ordered_by_mistake',
-    },
-    {
-        label: 'Payment Issues: There was a problem with my payment method.',
-        value: 'payment_issues',
-    },
-    {
-        label: 'Changed Mind: I changed my mind about the purchase.',
-        value: 'changed_mind',
-    },
-    {
-        label: 'Customer Not Reachable: The customer is not responding.',
-        value: 'customer_not_reachable',
-    },
-    {
-        label: 'Other: I have another reason for canceling my order.',
-        value: 'other',
-    },
-]
 
 const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, setIsModalOpen }) => {
     const [cancelReason, setCancelReason] = useState<string | undefined>(undefined)
@@ -57,9 +35,6 @@ const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, s
         const body = {
             return_reason: inputValue ? inputValue : cancelReason,
         }
-
-        console.log('Body', body)
-
         try {
             const response = await axioisInstance.post(`merchant/cancelorder/${invoice_id}`, body)
 
@@ -94,12 +69,12 @@ const CancelModal: React.FC<Props5> = ({ isModalOpen, handleClose, invoice_id, s
                         className="bg-gray-300 w-full sm:w-auto"
                         title={
                             cancelReason
-                                ? CancelReasons.find((reason) => reason.value === cancelReason)?.label || 'SELECT RETURN REASON'
+                                ? OrderCancelReasons.find((reason) => reason.value === cancelReason)?.label || 'SELECT RETURN REASON'
                                 : 'SELECT RETURN REASON'
                         }
                         onSelect={handleSelect}
                     >
-                        {CancelReasons.map((reason) => (
+                        {OrderCancelReasons.map((reason) => (
                             <DropdownItem key={reason.value} eventKey={reason.value}>
                                 <span>{reason.label}</span>
                             </DropdownItem>

@@ -330,7 +330,7 @@ const EditBanner = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, setFieldValue }) => (
-                    <Form className="w-2/3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
+                    <Form className="p-4 w-full shadow-xl rounded-xl" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {BANNER_FIELDS_TYPE.map((item, key) => (

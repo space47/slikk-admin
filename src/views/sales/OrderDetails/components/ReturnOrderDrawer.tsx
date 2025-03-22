@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback } from 'react'
 import { Dropdown } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -6,6 +7,7 @@ import { Select, notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import Spinner from '@/components/ui/Spinner'
+import { OrderReturnReasons } from '@/constants/commonArray.constant'
 
 const { Option } = Select
 
@@ -29,45 +31,11 @@ type ReturnOrderProps = {
     delivery_type: string
 }
 
-const returnReasons = [
-    {
-        label: "Size and Fit Issues: The clothing doesn't fit as expected.",
-        value: 'size_fit_issues',
-        name: 'Size and Fit Issues',
-    },
-    {
-        label: 'Colour and Appearance: The actual color or appearance of the clothing item differs from how it appeared online.',
-        value: 'colour_appearance',
-        name: 'Color and Appearence',
-    },
-    {
-        label: "Quality and Fabric: The quality or feel of the fabric doesn't meet the expectation.",
-        value: 'quality_fabric',
-        name: 'Quality and Fabric',
-    },
-    {
-        label: 'Change of mind: I no longer want the item.',
-        value: 'change_of_mind',
-        name: 'Change of Mind',
-    },
-    {
-        label: 'Defects and Damage: The clothing arrived damaged or with manufacturing defects, such as holes, loose threads, or stains.',
-        value: 'defects_damage',
-        name: 'Defects and Damage',
-    },
-    {
-        label: 'Try And Buy',
-        value: 'try_and_buy',
-        name: 'Try & Buy',
-    },
-]
-
 const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_type }: ReturnOrderProps) => {
     const [returnQuantities, setReturnQuantities] = useState<{
         [key: string]: number
     }>({})
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, { value: string; label: string }>>({})
-    // const [currentReturnType, setCurrentReturnType] = useState<string>()
     const [loaderSpin, setLoaderSpin] = useState(false)
     const navigate = useNavigate()
 
@@ -88,7 +56,7 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
             ...prev,
             [productId]: {
                 value: reasonValue,
-                label: returnReasons.find((p) => p.value === reasonValue)?.label || '',
+                label: OrderReturnReasons.find((p) => p.value === reasonValue)?.label || '',
             },
         }))
     }, [])
@@ -153,24 +121,11 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
                                     {delivery_type === 'TRY_AND_BUY' ? 'TRY_AND_BUY' : 'DASHBOARD_INITIATIVE'}
                                 </span>
                             </span>
-                            {/* <div className="sm:col-span-1 text-md bg-green-600 rounded-lg text-white">
-                                <Dropdown
-                                    className="text-black w-full border border-gray-300 rounded-lg"
-                                    title={currentReturnType || 'Return Type'}
-                                    onSelect={(value) => handleReturnType(value)}
-                                >
-                                    {returnType?.map((item, key) => (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.value}</span>
-                                        </DropdownItem>
-                                    ))}
-                                </Dropdown>
-                            </div> */}
                         </div>
                     </div>
                     {product && product.length > 0 && (
                         <div>
-                            {product.map((pdts) => (
+                            {product.map((pdts: any) => (
                                 <div key={pdts.id} className="mb-8">
                                     <div className="bg-white shadow-md rounded-lg p-6">
                                         {/* Grid layout for product details */}
@@ -239,7 +194,7 @@ const ReturnOrderDrawer = ({ isOpen, setIsOpen, product, invoice_id, delivery_ty
                                                         title={currentSelectedPage[pdts.id]?.value || 'RETURN REASONS'}
                                                         onSelect={(value) => handleSelect(pdts.id, value)}
                                                     >
-                                                        {returnReasons?.map((item, key) => (
+                                                        {OrderReturnReasons?.map((item, key) => (
                                                             <DropdownItem key={key} eventKey={item.value}>
                                                                 <span>{item.name}</span>
                                                             </DropdownItem>

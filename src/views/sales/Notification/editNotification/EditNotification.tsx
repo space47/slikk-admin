@@ -178,7 +178,7 @@ const EditNotification = () => {
             {notificationData ? (
                 <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                     {({ values, setFieldValue, resetForm }) => (
-                        <Form className="w-2/3">
+                        <Form className="p-4 w-full shadow-xl rounded-xl">
                             <FormContainer>
                                 <FormContainer className="grid grid-cols-1 gap-10">
                                     <FormItem label="Notification Type" className="col-span-1 w-1/2">

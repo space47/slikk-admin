@@ -295,7 +295,7 @@ const OrderList = () => {
     })
 
     return (
-        <div className="p-4">
+        <div className="p-4 bg-gray-50 rounded-xl">
             <div className="overflow-x-auto scrollbar-hide">
                 <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 xl:items-center gap-3 md:flex-col sm:flex-col">
                     <div className="flex  xl:gap-2  flex-row   gap-3  ">
@@ -320,23 +320,22 @@ const OrderList = () => {
                                     onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
                                 />
                             </div>
-                        </div>
-
-                        <div className="flex justify-center xl:justify-normal">
-                            <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                                <Dropdown
-                                    className=" text-xl text-black bg-gray-200 font-bold  "
-                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                    onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
-                                >
-                                    {SEARCHOPTIONS?.map((item, key) => {
-                                        return (
-                                            <DropdownItem key={key} eventKey={item.value}>
-                                                <span>{item.label}</span>
-                                            </DropdownItem>
-                                        )
-                                    })}
-                                </Dropdown>
+                            <div className="flex justify-center xl:justify-normal">
+                                <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                                    <Dropdown
+                                        className=" text-xl text-black bg-gray-200 font-bold  "
+                                        title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                        onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                                    >
+                                        {SEARCHOPTIONS?.map((item, key) => {
+                                            return (
+                                                <DropdownItem key={key} eventKey={item.value}>
+                                                    <span>{item.label}</span>
+                                                </DropdownItem>
+                                            )
+                                        })}
+                                    </Dropdown>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -365,7 +364,7 @@ const OrderList = () => {
                             <div className="flex  md:flex-row items-end justify-end ">
                                 <div className="mt-10 xl:mt-7">
                                     <button
-                                        className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
+                                        className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
                                         onClick={() =>
                                             handleDownload(
                                                 from,
