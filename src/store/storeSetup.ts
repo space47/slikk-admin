@@ -8,6 +8,7 @@ import { remitanceApi } from './query/remitance.query'
 import { ridersService } from './services/riderServices'
 import { eventNameService } from './services/eventNameSerices'
 import { couponSeriesService } from './services/couponSeriesService'
+import { returnOrderDataService } from './services/returnOrderService'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const middlewares: any[] = [
@@ -16,6 +17,7 @@ const middlewares: any[] = [
     ridersService.middleware,
     eventNameService.middleware,
     couponSeriesService.middleware,
+    returnOrderDataService.middleware,
 ]
 
 const persistConfig = {
