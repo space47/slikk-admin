@@ -289,7 +289,7 @@ const EditCustomerProfile = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3" onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}>
+                    <Form className="p-4 w-full shadow-xl rounded-xl" onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem

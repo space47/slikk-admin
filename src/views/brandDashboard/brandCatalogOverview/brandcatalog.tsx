@@ -282,21 +282,21 @@ const BrandCatalog = () => {
     }
 
     return (
-        <div>
+        <div className="shadow-xl p-4 rounded-xl">
             {showSpinner ? (
                 <div className="flex justify-center items-center h-screen">
                     <Spinner size="40px" />
                 </div>
             ) : (
                 <>
-                    <div className="flex xl:justify-between xl:flex-row gap-4 flex-col mb-4 items-center ">
+                    <div className="flex xl:justify-between xl:flex-row gap-4 flex-col mb-4 items-center  ">
                         <div className="">
                             <input
                                 type="text"
                                 placeholder="Search here"
                                 value={globalFilter}
+                                className="p-2  rounded-xl"
                                 onChange={(e) => setGlobalFilter(e.target.value)}
-                                className="p-2 border rounded"
                             />
                         </div>
                         <div className="flex order-first xl:order-none">

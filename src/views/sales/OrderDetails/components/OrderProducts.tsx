@@ -11,7 +11,7 @@ import { Button, Select } from '@/components/ui'
 
 import.meta.env.VITE_WEB_URI
 
-type Product = {
+type Product = Partial<{
     id: number
     barcode: string
     brand: string
@@ -20,19 +20,19 @@ type Product = {
     size: string
     product_type: string
     image: string
-    sp: string
+    sp: string | number
     quantity: string
     sub_category: string
     location: string
-    mrp: string
+    mrp: string | number
     fulfilled_quantity: string
     final_price: number
     sku: string
     category: string
-}
+}>
 
 type OrderProductsProps = {
-    data?: Product[]
+    data: Product[]
     invoice_id: string | undefined
     status: string
 }
@@ -182,8 +182,6 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
             },
         }),
     ]
-
-    console.log('STATUS OF ITEM', status)
 
     const handleReplace = (itemId: number) => {
         setReplaceDrawer(true)

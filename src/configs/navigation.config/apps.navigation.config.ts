@@ -520,6 +520,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsAppSettings.couponsSeries',
+                        path: `${APP_PREFIX_PATH}/appSettings/couponsSeries`,
+                        title: 'Coupons Series',
+                        translateKey: 'nav.appsAppSettings.couponsSeries',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsOffers.markdownPrices',
                         path: `${APP_PREFIX_PATH}/markdownPrices`,
                         title: 'Markdown Prices',

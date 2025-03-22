@@ -252,7 +252,7 @@ const CategoryEdit = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="p-4 w-full shadow-xl rounded-xl">
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7">
                                 <FormItem

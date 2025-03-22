@@ -275,7 +275,7 @@ const SalesOverview = () => {
     console.log('Bad', badRequest)
 
     return (
-        <div>
+        <div className="shadow-xl p-4 rounded-xl">
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
                     <Form className="w-7/9 p-6  bg-white  rounded-lg">

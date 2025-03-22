@@ -80,7 +80,7 @@ const EditProduct = () => {
         setAllColor(updatedColor)
     }
 
-    console.log('pack size', productData?.filter_tags?.packsize?.map((item) => item).join(','))
+    console.log('pack size', productData?.filter_tags?.packsize?.map((item: any) => item).join(','))
 
     const handleSubmit = async (values: Product) => {
         let img_url = allImage.join(','),
@@ -197,7 +197,7 @@ const EditProduct = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm, setFieldValue }) => (
-                    <Form className="w-2/3" onKeyDown={handleKeyDown}>
+                    <Form className="p-4 w-full shadow-xl rounded-xl" onKeyDown={handleKeyDown}>
                         <FormContainer>
                             <div className="grid xl:grid-cols-2 grid-cols-1 gap-4">
                                 {PRODUCT_EDIT_COMMON?.map((item, key) => (

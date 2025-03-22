@@ -18,14 +18,7 @@ import EasyTable from '@/common/EasyTable'
 import { ReturnDropdownStatus, ReturnOrder, SEARCHOPTIONS } from './returnOrderCommon'
 import { pageSizeOptions } from '../groupNotification/getGroup/groupComnmon'
 import { getStatusFilterReturn } from './returnOrderUtils/ReturnOrderUtils'
-import {
-    handleSearch,
-    handleSearchWithIcon,
-    handleDateChange,
-    handleSelect,
-    onSelectChange,
-    handleDownload,
-} from './returnOrderUtils/ReturnOrderFunctions'
+import { handleSearch, handleSearchWithIcon, handleSelect, onSelectChange, handleDownload } from './returnOrderUtils/ReturnOrderFunctions'
 
 const ReturnOrders = () => {
     const location = useLocation()
@@ -91,6 +84,13 @@ const ReturnOrders = () => {
         })
     }
 
+    const handleDateChange = (dates: [Date | null, Date | null] | null) => {
+        if (dates && dates[0]) {
+            setFrom(moment(dates[0]).format('YYYY-MM-DD') ?? '')
+            setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
+        }
+    }
+
     const handleDeliverySelect = (selectedValue: string) => {
         if (deliveryType.value.includes(selectedValue)) {
             setDeliveryType((prevState) => ({
@@ -106,7 +106,7 @@ const ReturnOrders = () => {
     }
 
     return (
-        <div className="">
+        <div className="bg-gray-50 rounded-xl p-4">
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
                 <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3 ">
                     <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
@@ -130,22 +130,22 @@ const ReturnOrders = () => {
                                 onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
                             />
                         </div>
-                    </div>
-                    <div className="flex justify-center xl:justify-normal">
-                        <div className="bg-gray-100 xl:mt-1  items-center flex justify-center font-bold  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                            <Dropdown
-                                className=" text-xl text-black bg-gray-200 font-bold  "
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
-                            >
-                                {SEARCHOPTIONS?.map((item, key) => {
-                                    return (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.label}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </Dropdown>
+                        <div className="flex justify-center xl:justify-normal">
+                            <div className="bg-gray-100 xl:mt-1  items-center flex justify-center font-bold  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                                <Dropdown
+                                    className=" text-xl text-black bg-gray-200 font-bold  "
+                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                    onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                                >
+                                    {SEARCHOPTIONS?.map((item, key) => {
+                                        return (
+                                            <DropdownItem key={key} eventKey={item.value}>
+                                                <span>{item.label}</span>
+                                            </DropdownItem>
+                                        )
+                                    })}
+                                </Dropdown>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -153,7 +153,7 @@ const ReturnOrders = () => {
                 <div className="flex gap-4">
                     <div className="flex flex-col md:flex-row items-end justify-end ">
                         <button
-                            className="bg-gray-100 text-black px-4 py-2 hover:bg-gray-200 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1"
+                            className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
                             onClick={() =>
                                 handleDownload(tabSelect, dropdownStatus, deliveryType, currentSelectedPage, searchInput, from, To_Date)
                             }

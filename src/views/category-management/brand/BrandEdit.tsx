@@ -14,59 +14,25 @@ import ImageField from './component/ImageField'
 import { RichTextEditor } from '@/components/shared'
 import { beforeUpload } from '@/common/beforeUpload'
 import LoadingSpinner from '@/common/LoadingSpinner'
-
-export type FormModel = {
-    id: number
-    name: string
-    title: string
-    description: string
-    image: string
-    is_top: boolean
-    is_exclusive: boolean
-    is_private: boolean
-    footer: string | null
-    quick_filter_tags: string[]
-    is_active: boolean
-    create_date: string
-    update_date: string
-    is_try_and_buy: boolean
-    last_updated_by: string | null
-    images: File[]
-    logo_array: File[]
-    logo: string
-}
+import { FormModel, initialBrandValue } from './brandCommon'
+import { fetchBrandData } from './brandUtils/brandApicalls'
 
 const BrandEdit = () => {
+    const navigate = useNavigate()
     const [catedate, setCateData] = useState<FormModel | null>(null)
     const [imagview, setImageView] = useState<string[]>([])
     const [logoview, setLogoView] = useState<string[]>([])
     const { id } = useParams()
-    const navigate = useNavigate()
-
-    const fetchData = async () => {
-        try {
-            const response = await axioisInstance.get(`brands?id=${id}&dashboard=true`)
-            const categoryData = response.data?.data.results[0] || {}
-            setCateData(categoryData)
-            setImageView(categoryData.image ? [categoryData.image] : [])
-            setLogoView(categoryData.logo ? [categoryData.logo] : [])
-        } catch (error) {
-            console.log(error)
-        }
-    }
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        fetchBrandData(setCateData, setImageView, setLogoView, id)
+    }, [id])
 
     const handleSubmit = async (values: FormModel) => {
         const formData = {
             ...values,
             images: values.image,
         }
-
-        console.log('formDaata', formData)
-
         try {
             const response = await axioisInstance.patch(`brands/${id}`, formData)
 
@@ -87,38 +53,13 @@ const BrandEdit = () => {
     if (!catedate) {
         return <LoadingSpinner />
     }
-
-    const initialValue: FormModel = {
-        id: catedate?.id,
-        name: catedate?.name,
-        title: catedate?.title,
-        description: catedate?.description,
-        image: catedate?.image,
-        footer: catedate?.footer,
-        quick_filter_tags: catedate?.quick_filter_tags,
-        is_top: catedate?.is_top,
-        is_exclusive: catedate?.is_exclusive,
-        is_private: catedate?.is_private,
-        is_active: catedate?.is_active,
-        create_date: catedate?.create_date,
-        update_date: catedate?.update_date,
-        is_try_and_buy: catedate?.is_try_and_buy,
-        last_updated_by: catedate?.last_updated_by,
-        images: [],
-        logo_array: [],
-        logo: catedate?.logo,
-    }
+    const initialValue = initialBrandValue(catedate)
 
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-full p-4 shadow-xl rounded-xl">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-3 ">
                                 {textField.map((item, key) => (
@@ -148,9 +89,6 @@ const BrandEdit = () => {
                                     </Field>
                                 </FormItem>
                             </FormContainer>
-
-                            {/* Image */}
-
                             <FormItem label="Brand Logo">
                                 <ImageField
                                     label="ADD NEW LOGO"
@@ -171,32 +109,24 @@ const BrandEdit = () => {
                                     imagview={imagview}
                                 />
                             </FormItem>
-
-                            {/* Select boxes......................................................................... */}
-
-                            {checkBoxFields.map((item, key) => (
-                                <FormItem key={key} label={item.label}>
-                                    <Field
-                                        name={item.name}
-                                        component={Checkbox}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    >
-                                        {item.fieldName}
-                                    </Field>
-                                </FormItem>
-                            ))}
-
-                            {/* Handle Submit........................... */}
-
+                            <FormItem className="flex gap-2">
+                                {checkBoxFields.map((item, key) => (
+                                    <FormItem key={key} label={item.label}>
+                                        <Field
+                                            name={item.name}
+                                            component={Checkbox}
+                                            onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                        >
+                                            {item.fieldName}
+                                        </Field>
+                                    </FormItem>
+                                ))}
+                            </FormItem>
                             <FormItem>
                                 <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    // onClick={() => handleSubmit()}
-                                >
+                                <Button variant="solid" type="submit">
                                     Submit
                                 </Button>
                             </FormItem>

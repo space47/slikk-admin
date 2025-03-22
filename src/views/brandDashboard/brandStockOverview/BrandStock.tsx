@@ -296,7 +296,7 @@ const BrandStock = () => {
     }
 
     return (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto shadow-xl p-4 rounded-xl">
             <div className="upper flex flex-col md:flex-row justify-between mb-4 items-center md:items-center gap-4">
                 <div className="w-auto md:w-auto">
                     <input
@@ -304,7 +304,7 @@ const BrandStock = () => {
                         placeholder="Search here"
                         value={globalFilter}
                         onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded w-full md:w-auto"
+                        className="p-2 border rounded-xl w-full md:w-auto"
                     />
                 </div>
 

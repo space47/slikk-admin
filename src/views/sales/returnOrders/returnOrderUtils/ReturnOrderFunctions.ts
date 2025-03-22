@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { SetStateAction } from 'react'
 import { ReturnDropdownStatus, SEARCHOPTIONS } from '../returnOrderCommon'
-import moment from 'moment'
 import { getStatusFilterReturn } from './ReturnOrderUtils'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
@@ -27,17 +26,6 @@ export const onSelectChange = (
 ) => {
     setPage(1)
     setPageSize(Number(value))
-}
-
-export const handleDateChange = (
-    dates: [Date | null, Date | null] | null,
-    setFrom: React.Dispatch<React.SetStateAction<string>>,
-    setTo: React.Dispatch<React.SetStateAction<string>>,
-) => {
-    if (dates && dates[0]) {
-        setFrom(moment(dates[0]).format('YYYY-MM-DD'))
-        setTo(dates[1] ? moment(dates[1]).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'))
-    }
 }
 
 export const handleDownload = async (
