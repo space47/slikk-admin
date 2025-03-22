@@ -50,3 +50,25 @@ export type CouponSeriesBodyType = {
         new_users_only?: boolean
     }
 }
+
+export type CouponGenerateBodyType = {
+    id?: string
+    auto_generate?: boolean
+    mobiles?: string
+    prefix?: string
+    unique_user_code?: string
+    code_length?: number
+    code_text_type?: string
+    coupons_count?: number
+    code?: string
+    series_diff?: string
+    is_random?: boolean
+    coupon_series?: string
+    auto_generate_code?: boolean
+    users?: string
+    length?: number
+    auto_generate_type?: string
+    coupon_code_name?: string
+    numeric_type?: string
+    docsArray?: File[]
+}

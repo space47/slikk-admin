@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { CouponSeriesBodyType, CouponSeriesTypes } from '../types/couponSeries.types'
+import { CouponGenerateBodyType, CouponSeriesBodyType, CouponSeriesTypes } from '../types/couponSeries.types'
 
 export const couponSeriesService = RtkQueryService.injectEndpoints({
     endpoints: (builder) => ({
@@ -61,7 +60,7 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        editCouponSeries: builder.mutation<{ success: string }, CouponSeriesBodyType & { id: string | number }>({
+        editCouponSeries: builder.mutation<{ success: string }, CouponSeriesBodyType & { id?: string }>({
             query: (params) => {
                 return {
                     url: `/couponseries/${params.id}`,
@@ -72,16 +71,16 @@ export const couponSeriesService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
-        // addCouponFromSeries: builder.mutation<{ success: string }, any>({
-        //     query: (params) => {
-        //         return {
-        //             url: `/merchant/coupon/generate`,
-        //             method: 'POST',
-        //             body: {
-        //                 ...params,
-        //             },
-        //         }
-        //     },
-        // }),
+        generateCouponFromSeries: builder.mutation<{ success: string }, CouponGenerateBodyType>({
+            query: (params) => {
+                return {
+                    url: `/merchant/coupon/generate`,
+                    method: 'POST',
+                    body: {
+                        ...params,
+                    },
+                }
+            },
+        }),
     }),
 })

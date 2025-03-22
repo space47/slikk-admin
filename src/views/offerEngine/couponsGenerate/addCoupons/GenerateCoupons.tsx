@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { CouponSeriesInitialTypes, setCouponSeriesData } from '@/store/slices/couponSeriesSlice/couponSeries'
 import CouponsGenerateForm from '../couponsGenerateUtils/CouponsGenerateForm'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const GenerateCoupons = () => {
     const navigate = useNavigate()
@@ -18,6 +17,7 @@ const GenerateCoupons = () => {
         { page: 1, pageSize: 100 },
         { refetchOnMountOrArgChange: true },
     )
+    const [generateCoupon, generateCouponResponse] = couponSeriesService.useGenerateCouponFromSeriesMutation()
 
     useEffect(() => {
         if (isSuccess) {
@@ -25,26 +25,29 @@ const GenerateCoupons = () => {
         }
     }, [isSuccess, couponSeriesData?.data?.results, dispatch])
 
-    const formattedData = couponSeries?.map((item) => {
-        return {
-            label: item?.campaign,
-            value: item?.id,
+    useEffect(() => {
+        if (generateCouponResponse?.isSuccess) {
+            notification.success({ message: 'Coupon Series Updated Successfully' })
+            navigate(-1)
+        } else if (generateCouponResponse?.error) {
+            notification.error({
+                message: 'Failed to update',
+            })
         }
+    }, [generateCouponResponse?.isSuccess, generateCouponResponse?.error, navigate])
+
+    const formattedData = couponSeries?.map((item) => {
+        return { label: item?.campaign, value: item?.id }
     })
-
     const initialValue = {}
-
     const handleSubmit = async (values: any) => {
         console.log('form values are', values)
         const formData = new FormData()
-
         const appendIfDefined = (key: string, value: any) => {
             if (value !== undefined && value !== null && value !== '') {
                 formData.append(key, value)
             }
         }
-
-        console.log('here')
         appendIfDefined('id', values?.coupon_series)
         appendIfDefined('auto_generate', (values.auto_generate_code ? true : false).toString())
         appendIfDefined('mobiles', values?.users || '')
@@ -59,36 +62,22 @@ const GenerateCoupons = () => {
         if (values.docsArray && values.docsArray.length > 0) {
             formData.append('users', values.docsArray[0])
         }
-
-        console.log('form data to be sent is', new Date(), formData)
         const formDataEntries: any = {}
         formData.forEach((value: any, key: any) => {
             formDataEntries[key] = value
         })
-        console.log('Converted form data for logging:', formDataEntries)
-
         try {
-            const response = await axioisInstance.post(`/merchant/coupon/generate`, formData)
-            notification.success({
-                message: response?.data?.data?.message || 'Successfully added coupon',
-            })
+            generateCoupon({ ...formDataEntries })
             navigate(-1)
         } catch (error: any) {
             notification.error({
                 message: error?.response?.data?.message || 'Failed to add',
             })
-            console.error(error)
         }
     }
-
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="w-full shadow-xl p-3 rounded-xl ">
                         <FormContainer className="">

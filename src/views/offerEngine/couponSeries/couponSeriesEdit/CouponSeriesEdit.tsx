@@ -18,12 +18,26 @@ const CouponSeriesEdit = () => {
     const dispatch = useAppDispatch()
     const { couponSeriesActive } = useAppSelector<CouponSeriesInitialTypes>((state) => state.couponSeries)
     const { data: couponSeriesData, isSuccess } = couponSeriesService.useCouponSeriesQuery({ id: id }, { refetchOnMountOrArgChange: true })
+    const [editSeriesData, editSeriesDataResponse] = couponSeriesService.useEditCouponSeriesMutation()
 
     useEffect(() => {
         if (isSuccess) {
             dispatch(setCouponSeriesActive(couponSeriesData?.data?.results[0]))
         }
     }, [isSuccess, couponSeriesData?.data?.results, dispatch])
+
+    useEffect(() => {
+        if (editSeriesDataResponse?.isSuccess) {
+            notification.success({
+                message: 'Coupon Series Updated Successfully',
+            })
+            navigate(-1)
+        } else if (editSeriesDataResponse?.error) {
+            notification.error({
+                message: 'Failed to update',
+            })
+        }
+    }, [editSeriesDataResponse?.isSuccess, editSeriesDataResponse?.error, navigate])
 
     const initialValue: any = {
         discount_type: couponSeriesActive?.discount_type,
@@ -67,11 +81,10 @@ const CouponSeriesEdit = () => {
         )
 
         try {
-            const response = await axioisInstance.patch(`/couponseries/${id}`, body)
-            notification.success({
-                message: response?.data?.data?.message || 'Successfully updated',
-            })
-            navigate(-1)
+            editSeriesData({
+                id: id?.toString(),
+                ...body,
+            }).unwrap()
         } catch (error: any) {
             notification.error({
                 message: error?.response?.data?.message || 'Failed to update',

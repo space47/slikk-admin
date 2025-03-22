@@ -364,7 +364,7 @@ const OrderList = () => {
                             <div className="flex  md:flex-row items-end justify-end ">
                                 <div className="mt-10 xl:mt-7">
                                     <button
-                                        className="bg-gray-400 text-white px-4 py-2 hover:bg-gray-300 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
+                                        className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
                                         onClick={() =>
                                             handleDownload(
                                                 from,

@@ -40,7 +40,7 @@ const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
                 </FormItem>
             </FormItem>
             <FormItem label="Coupons Count">
-                <Field type="number" name="coupons_count" component={Input} />
+                <Field type="number" min="0" name="coupons_count" component={Input} />
             </FormItem>
             <FormItem label="Unique User Code">
                 <Field type="checkbox" name="unique_user_code" component={Input} />
@@ -57,11 +57,11 @@ const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
                     )}
                     {values?.numeric_type === 'series' && (
                         <FormItem label="Series Gap">
-                            <Field type="number" name="series_diff" component={Input} placeholder="Enter series diff" />
+                            <Field type="number" min="0" name="series_diff" component={Input} placeholder="Enter series diff" />
                         </FormItem>
                     )}
                     <FormItem label="Length">
-                        <Field type="number" name="length" component={Input} placeholder="Enter Length" />
+                        <Field type="number" min="0" name="length" component={Input} placeholder="Enter Length" />
                     </FormItem>
                     <FormItem label="Prefix">
                         <Field type="text" name="prefix" component={Input} placeholder="Enter Prefix" />
