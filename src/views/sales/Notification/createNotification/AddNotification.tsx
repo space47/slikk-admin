@@ -111,13 +111,17 @@ const AddNotification = () => {
 
             button_config: messageParticular?.components
                 ?.filter((comp: any) => comp.type === 'BUTTONS')
-                ?.flatMap((comp: any) =>
-                    comp.buttons?.map((btn: any, index: any) => ({
-                        text: btn.text || '',
-                        sub_type: btn.sub_type || 'url',
-                        index,
-                    })),
-                ) || [{ url: '', sub_type: 'url', index: 0 }],
+                ?.some((comp: any) => comp.buttons?.some((btn: any) => btn.example))
+                ? messageParticular?.components
+                      ?.filter((comp: any) => comp.type === 'BUTTONS')
+                      ?.flatMap((comp: any) =>
+                          comp.buttons?.map((btn: any, index: any) => ({
+                              text: btn.text || '',
+                              sub_type: btn.sub_type || 'url',
+                              index,
+                          })),
+                      ) || [{ url: '', sub_type: 'url', index: 0 }]
+                : null,
         },
     }
 
@@ -139,7 +143,11 @@ const AddNotification = () => {
                       },
                   ]
                 : values?.config_data?.header_config.map(({ textParam, ...rest }: any) => rest),
-            button_config: values?.config_data?.button_config.map(({ text, ...rest }: any) => rest),
+            ...(messageParticular?.components
+                ?.filter((comp: any) => comp.type === 'BUTTONS')
+                ?.some((comp: any) => comp.buttons?.some((btn: any) => btn.example))
+                ? { button_config: values?.config_data?.button_config.map(({ text, ...rest }: any) => rest) }
+                : {}),
         }
 
         const formData = {
@@ -151,19 +159,19 @@ const AddNotification = () => {
         }
         console.log('FORMDATA', formData)
 
-        // try {
-        //     const response = await axioisInstance.post(`/notifications/config`, formData)
-        //     notification.success({
-        //         message: 'SUCCESS',
-        //         description: response.data.message || 'Notification has been added',
-        //     })
-        // } catch (error) {
-        //     console.log(error)
-        //     notification.error({
-        //         message: 'FAILURE',
-        //         description: 'Failed to create notification',
-        //     })
-        // }
+        try {
+            const response = await axioisInstance.post(`/notifications/config`, formData)
+            notification.success({
+                message: 'SUCCESS',
+                description: response.data.message || 'Notification has been added',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'FAILURE',
+                description: 'Failed to create notification',
+            })
+        }
     }
 
     return (
