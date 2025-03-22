@@ -13,13 +13,14 @@ import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import DialogConfirm from '@/common/DialogConfirm'
 import { FILTER_STATE } from '@/store/types/filters.types'
-import { Dropdown } from '@/components/ui'
+import { Dropdown, Input } from '@/components/ui'
 import { ProductTypes, ProductFilterArray } from './ProductCommon'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Option, pageSizeOptions } from './CommonType'
 import { useProductColumns } from './productutils/ProductColumns'
 import { fetchProducts, handleDownload, handleFacebookSync, handleGenerateSiteMap, handleRandomize } from './productutils/productApiCalls'
 import { handleApply, handleProductSelect } from './productutils/productFunction'
+import { HiSearch } from 'react-icons/hi'
 
 const Products = () => {
     const navigate = useNavigate()
@@ -42,6 +43,7 @@ const Products = () => {
     const [showFacebookDialog, setShowFacebookDialog] = useState(false)
     const [showRandomizeDialog, setShowRandomizeDialog] = useState(false)
     const [selectFilterString, setFilterString] = useState('')
+    const [searchOnEnter, setSearchOnEnter] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(ProductFilterArray[0])
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
@@ -55,7 +57,7 @@ const Products = () => {
 
     useEffect(() => {
         fetchData()
-    }, [page, pageSize, typeFetch, globalFilter])
+    }, [page, pageSize, typeFetch, searchOnEnter])
 
     const handleOpenModal = (img: any) => {
         setParticularROwImage(img)
@@ -68,14 +70,24 @@ const Products = () => {
         <div className="p-4 w-full shadow-xl rounded-xl">
             <div className="flex flex-col md:flex-row md:items-center justify-center xl:justify-between mb-4 gap-4">
                 <div className="w-full md:w-1/3 flex justify-between gap-3">
-                    <div className="flex gap-2">
-                        <input
+                    <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
+                        <Input
                             type="search"
-                            placeholder="Search here"
+                            name="search"
+                            placeholder="Search here..."
                             value={globalFilter}
-                            className="p-2 w-full md:w-[70%] border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-[150px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
                             onChange={(e) => setGlobalFilter(e.target.value)}
+                            onKeyDown={(e: any) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    setSearchOnEnter(e.target.value)
+                                }
+                            }}
                         />
+                        <div className="bg-blue-500 hover:bg-blue-400 p-2 rounded-xl cursor-pointer">
+                            <HiSearch className="text-white  dark:text-gray-400 text-xl" onClick={() => setSearchOnEnter(globalFilter)} />
+                        </div>
                         <div className="bg-gray-100 xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white font-bold">
                             <Dropdown
                                 className="text-black bg-gray-200 font-bold px-4 py-2 rounded-md"
@@ -98,28 +110,28 @@ const Products = () => {
                     </button>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                <div className="flex flex-col  items-center gap-4 w-full xl:flex-row xl:justify-end ">
                     <div className="flex gap-3">
                         <button
-                            className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-purple-600 rounded-lg text-white bg-purple-700"
+                            className=" px-4 py-2 xl:flex items-center gap-2  hover:bg-purple-600 rounded-lg text-white bg-purple-700"
                             onClick={() => setShowRandomizeDialog(true)}
                         >
                             <span className="font-bold">Randomize</span>
                         </button>
                         <button
-                            className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-yellow-500 rounded-lg text-white bg-yellow-600"
+                            className=" px-4 py-2 xl:flex items-center gap-2  hover:bg-yellow-500 rounded-lg text-white bg-yellow-600"
                             onClick={() => handleGenerateSiteMap()}
                         >
                             <span className="font-bold">SiteMap</span>
                         </button>
                         <button
-                            className=" px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-blue-600 rounded-lg text-white bg-blue-700"
+                            className=" px-4 py-2 xl:flex items-center gap-2  hover:bg-blue-600 rounded-lg text-white bg-blue-700"
                             onClick={() => setShowFacebookDialog(true)}
                         >
                             <span className="font-bold">Sync</span> <FaFacebook className="text-xl" />
                         </button>
                         <button
-                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2 hidden hover:bg-green-400 rounded-lg font-bold"
+                            className="bg-green-500 text-white px-4 py-2 xl:flex items-center gap-2  hover:bg-green-400 rounded-lg font-bold"
                             onClick={() => handleDownload(currentSelectedPage, globalFilter, typeFetch)}
                         >
                             <IoMdDownload className="text-xl" /> Export
@@ -152,7 +164,9 @@ const Products = () => {
                 </div>
             </div>
 
-            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+            <div className="mt-10">
+                <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+            </div>
             {
                 <div className="flex items-center justify-between mt-4">
                     <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />

@@ -14,7 +14,7 @@ export const handleApply = (
         query += `brand=${brandIds}`
     }
     if (selectFilterString && brandList?.length === 0) {
-        query += `&${selectFilterString}`
+        query += `${selectFilterString}`
     }
     if (selectFilterString && brandList?.length > 0) {
         const brandIds = brandList.join(',')
@@ -23,9 +23,9 @@ export const handleApply = (
             ?.filter((item) => item !== 'brand')
             ?.join('')
         if (selectFilterString.includes('brand')) {
-            query += `&brand=${brandIds},${data},`
+            query += `brand=${brandIds},${data},`
         } else {
-            query += `&${selectFilterString}&brand=${brandIds}`
+            query += `${selectFilterString}&brand=${brandIds}`
         }
     }
 
