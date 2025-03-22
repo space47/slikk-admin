@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -13,83 +14,14 @@ import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { RichTextEditor } from '@/components/shared'
-
-type FormModel = {
-    id: number
-    name: string
-    sub_category_name: string
-    title: string
-    description: string
-    image: string
-    footer: string | null
-    quick_filter_tags: string
-    position: number
-    gender: string
-    is_active: boolean
-    create_date: string
-    update_date: string
-    is_try_and_buy: boolean
-    sub_category: number
-    last_updated_by: string | null
-    images: File[]
-}
-
-type category = {
-    id: number
-    name: string
-    category_name: string
-    title: string
-    description: string
-    image: string
-    footer: string | null
-    quick_filter_tags: string
-    position: number
-    gender: string
-    is_active: boolean
-    create_date: string
-    update_date: string
-    is_try_and_buy: boolean
-    last_updated_by: string | null
-}
-interface Option {
-    value: number
-    label: string
-}
-
-const MIN_UPLOAD = 1
-const MAX_UPLOAD = 8
-
-// const validationSchema = Yup.object().shape({
-//     document_number: Yup.string().required('Document Number is required'),
-//     document_date: Yup.date().required('Document Date is required').nullable(),
-//     origin_address: Yup.string()
-//         .required('Supplier Address is required')
-//         .transform((value) => value.trim()),
-//     received_address: Yup.string()
-//         .required('Receiver Address is required')
-//         .transform((value) => value.trim()),
-//     received_by: Yup.string()
-//         .required('Received By is required')
-//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-//     total_sku: Yup.number()
-//         .required('Total SKUs is required')
-//         .integer('Must be an integer'),
-//     total_quantity: Yup.number()
-//         .required('Total Quantity is required')
-//         .integer('Must be an integer'),
-//     singleCheckbox: Yup.boolean(),
-//     // images: Yup.string().nullable(),
-//     // document: Yup.string().nullable(),
-// })
+import { category, FormModel, Option } from './ProductTypeCommon'
+import { beforeUpload } from '@/common/beforeUpload'
 
 const ProductEdit = () => {
     const [catedate, setCateData] = useState<FormModel | null>(null)
     const [divdata, setDivData] = useState<category[]>()
     const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
-
-    const [footer, setFooter] = useState()
-
     const { id } = useParams()
     const navigate = useNavigate()
 
@@ -126,46 +58,6 @@ const ProductEdit = () => {
     useEffect(() => {
         fetchDivision()
     }, [])
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'application/zip',
-            'application/json',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
-
-    // const handleFooterChange = (e: any) => {
-    //     setFooter(e.target.value)
-    // }
 
     const handleFileupload = async (files: File[]) => {
         const formData = new FormData()
@@ -251,14 +143,9 @@ const ProductEdit = () => {
     return (
         <div>
             <div className="text-xl mb-10">EDIT PRODUCT TYPE</div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="p-4 w-full shadow-xl rounded-xl">
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem

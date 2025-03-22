@@ -115,7 +115,7 @@ const EditLoyalty = () => {
             <h3 className="mb-5 from-neutral-900">ADD Loyalty</h3>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="p-4 w-full shadow-xl rounded-xl">
                         <FormContainer className="p-6 bg-white rounded-lg">
                             <h2 className="text-xl font-semibold mb-6">Loyalty Configuration</h2>
                             <FormContainer className="grid grid-cols-1 md:grid-cols-2 gap-8">

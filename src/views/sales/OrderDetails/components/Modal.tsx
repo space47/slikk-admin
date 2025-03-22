@@ -139,10 +139,9 @@ type props2 = {
     handlePack: () => void
     handleClose: () => void
     modalContent?: string
-    status: string
-    logistic: LOGISTIC
     handlePartnerSelect: any
     partner: any
+    status: any
     isButtonClick?: any
 }
 
@@ -152,7 +151,6 @@ export const CustomModal2: React.FC<props2> = ({
     handleClose,
     modalContent,
     status,
-    logistic,
     handlePartnerSelect,
     partner,
     isButtonClick,
@@ -164,8 +162,6 @@ export const CustomModal2: React.FC<props2> = ({
         { value: 'slikk', label: 'SLIKK' },
         { value: 'pidge', label: 'PIDGE' },
     ]
-
-    const selectedPartner = logistic?.partner
 
     return (
         <Modal

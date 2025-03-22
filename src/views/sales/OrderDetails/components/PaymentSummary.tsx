@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Card from '@/components/ui/Card'
 import { NumericFormat } from 'react-number-format'
 import moment from 'moment'

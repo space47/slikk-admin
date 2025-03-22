@@ -26,7 +26,7 @@ import { notification } from 'antd'
 import { MdDelete } from 'react-icons/md'
 
 const AddGroup = () => {
-    const [csvFile, setCSVFile] = useState()
+    const [csvFile, setCSVFile] = useState<any>()
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
     const [mobileNumbers, setMobileNumbers] = useState<string[]>([])
     const initialValue = {}
@@ -83,7 +83,7 @@ const AddGroup = () => {
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, resetForm }) => (
+                {({ resetForm }) => (
                     <Form className="w-2/3">
                         <FormContainer>
                             <FormContainer>
@@ -180,7 +180,6 @@ const AddGroup = () => {
                                                         const newValues = newVal ? newVal.map((val) => val.value) : []
                                                         form.setFieldValue(field.name, newValues)
                                                     }}
-                                                    // onChange={(option) => form.setFieldValue(field.name, option?.value)}
                                                 />
                                             )
                                         }}

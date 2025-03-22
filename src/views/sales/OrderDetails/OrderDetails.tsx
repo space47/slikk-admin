@@ -63,26 +63,7 @@ const OrderDetails = () => {
         fetchOrders()
     }, [invoice_id])
 
-    const handleReturnOrder = () => {
-        setReturnOrderDrawer(true)
-    }
-    const handleCancelOrder = () => {
-        setShowCancelModal(true)
-    }
-    const handleCloseModal = () => {
-        setShowCancelModal(false)
-    }
-
-    const handleCancelExchangeOrder = () => {
-        setShowCancelExchangeModal(true)
-    }
-
-    const handleCloseExchangeModal = () => {
-        setShowCancelExchangeModal(false)
-    }
-
     const handlemarkAsPaid = async () => {
-        console.log('MARK CLICKED')
         try {
             const response = await axioisInstance.post(`/user/order/${invoice_id}/payment/status`)
 
@@ -153,7 +134,7 @@ const OrderDetails = () => {
         } else {
             setShowRiderData(false)
         }
-    }, [data?.logistic])
+    }, [data?.logistic, data?.status])
 
     const handleCloseTrackModal = () => {
         setShowRiderData(false)
@@ -233,7 +214,7 @@ const OrderDetails = () => {
                                         (data?.payment?.status === 'PAID' || data?.payment?.status === 'POD_PAID') && (
                                             <button
                                                 className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
-                                                onClick={handleReturnOrder}
+                                                onClick={() => setReturnOrderDrawer(true)}
                                             >
                                                 RETURN ORDER
                                             </button>
@@ -241,7 +222,7 @@ const OrderDetails = () => {
                                     {data.status !== 'DECLINED' && data.status !== 'CANCELLED' && (
                                         <button
                                             className="bg-red-600 hover:bg-red-700 text-white px-2 py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-full md:w-auto"
-                                            onClick={handleCancelOrder}
+                                            onClick={() => setShowCancelModal(true)}
                                         >
                                             CANCEL ORDER
                                         </button>
@@ -249,7 +230,7 @@ const OrderDetails = () => {
                                     {data?.delivery_type === 'EXCHANGE' && (
                                         <button
                                             className="bg-red-600 hover:bg-red-700 text-white px-6  py-3 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
-                                            onClick={handleCancelExchangeOrder}
+                                            onClick={() => setShowCancelExchangeModal(true)}
                                         >
                                             CONVERT
                                         </button>
@@ -261,8 +242,8 @@ const OrderDetails = () => {
                                         <div className="flex flex-wrap gap-2">
                                             {data.return_order.map((item, key) => (
                                                 <a
-                                                    href={`/app/returnOrders/${item.return_order_id}`}
                                                     key={key}
+                                                    href={`/app/returnOrders/${item.return_order_id}`}
                                                     className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
                                                 >
                                                     {item.return_order_id}
@@ -277,8 +258,8 @@ const OrderDetails = () => {
                                         <div className="flex flex-wrap gap-2">
                                             {data?.exchange_order_id?.map((item, key) => (
                                                 <a
-                                                    href={`/app/orders/${item}`}
                                                     key={key}
+                                                    href={`/app/orders/${item}`}
                                                     className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
                                                 >
                                                     {item}
@@ -303,7 +284,7 @@ const OrderDetails = () => {
                         <div className="xl:flex gap-6">
                             <div className="xl:flex-1">
                                 <div className="bg-white shadow-lg p-4 rounded-lg mb-6 dark:bg-gray-900">
-                                    <OrderProducts data={data.order_items} invoice_id={data.invoice_id} status={data.status} />
+                                    <OrderProducts data={data.order_items || []} invoice_id={data.invoice_id} status={data.status} />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="bg-white shadow-lg p-6 rounded-lg  dark:bg-gray-900">
@@ -353,7 +334,6 @@ const OrderDetails = () => {
                                             product={data.order_items}
                                             payment={data.payment}
                                             invoice_id={data.invoice_id}
-                                            logistic={data.logistic}
                                             delivery_type={data.delivery_type}
                                         />
                                     </div>
@@ -398,7 +378,7 @@ const OrderDetails = () => {
                             {showCancelModal && (
                                 <CancelModal
                                     isModalOpen={showCancelModal}
-                                    handleClose={handleCloseModal}
+                                    handleClose={() => setShowCancelModal(false)}
                                     invoice_id={invoice_id || ''}
                                     setIsModalOpen={setShowCancelModal}
                                 />
@@ -410,20 +390,20 @@ const OrderDetails = () => {
                                             width="100%"
                                             className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 xl:w-1/2 mx-auto p-4 sm:p-6 md:p-8  "
                                             isOpen={showCancelExchangeModal}
-                                            onClose={handleCancelExchangeOrder}
+                                            onClose={() => setShowCancelExchangeModal(true)}
                                         >
                                             <div>Are you sure You want to Exchange the Order</div>
                                             <div>
                                                 <div className="flex justify-end mt-6 gap-3">
                                                     <button
-                                                        onClick={handleCloseExchangeModal}
                                                         className="bg-green-600 text-white hover:bg-green-500 transition-colors duration-300 px-4 py-2 rounded-lg"
+                                                        onClick={() => setShowCancelExchangeModal(false)}
                                                     >
                                                         Reject
                                                     </button>
                                                     <button
-                                                        onClick={handleConvert}
                                                         className="bg-red-600 text-white hover:bg-red-500 transition-colors duration-300 px-4 py-2 rounded-lg"
+                                                        onClick={handleConvert}
                                                     >
                                                         Convert
                                                     </button>

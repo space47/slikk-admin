@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Card from '@/components/ui/Card'
-import { HiLocationMarker, HiPhone } from 'react-icons/hi'
+import { HiPhone } from 'react-icons/hi'
 import Avatar from '@/components/ui/Avatar'
 import { FaUserAlt } from 'react-icons/fa'
-
-import { Button, Dropdown, Select } from '@/components/ui'
-import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { Button, Select } from '@/components/ui'
 import { useEffect, useState } from 'react'
-import { LOGISTIC_PARTNER } from './activityCommon'
 import { notification } from 'antd'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useParams } from 'react-router-dom'
@@ -15,12 +12,6 @@ import { useParams } from 'react-router-dom'
 interface OrderPickerSummaryProps {
     data: any
 }
-
-// const options = [
-//     { label: 'new', value: 'new' },
-//     { label: 'pending', value: 'pending' },
-//     { label: 'packed', value: 'packed' },
-// ]
 
 const OrderPickerSummary = ({ data }: OrderPickerSummaryProps) => {
     const [pickerChange, setPickerChange] = useState<string | undefined>('')
@@ -102,9 +93,9 @@ const OrderPickerSummary = ({ data }: OrderPickerSummaryProps) => {
                                 <Button
                                     variant="accept"
                                     size="sm"
-                                    onClick={handlePickerChange}
                                     disabled={!pickerChange}
                                     className="w-full sm:w-auto"
+                                    onClick={handlePickerChange}
                                 >
                                     Change
                                 </Button>

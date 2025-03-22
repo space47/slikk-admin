@@ -106,7 +106,7 @@ const ReturnOrders = () => {
     }
 
     return (
-        <div className="">
+        <div className="bg-gray-50 rounded-xl p-4">
             <div className="flex flex-col xl:flex-row justify-between lg:flex-row lg:justify-between mb-10 items-center gap-3">
                 <div className="flex  xl:gap-2  xl:flex-row  flex-col gap-3 ">
                     <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
@@ -130,22 +130,22 @@ const ReturnOrders = () => {
                                 onClick={() => handleSearchWithIcon(setSearchOnEnter, searchInput)}
                             />
                         </div>
-                    </div>
-                    <div className="flex justify-center xl:justify-normal">
-                        <div className="bg-gray-100 xl:mt-1  items-center flex justify-center font-bold  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                            <Dropdown
-                                className=" text-xl text-black bg-gray-200 font-bold  "
-                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                                onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
-                            >
-                                {SEARCHOPTIONS?.map((item, key) => {
-                                    return (
-                                        <DropdownItem key={key} eventKey={item.value}>
-                                            <span>{item.label}</span>
-                                        </DropdownItem>
-                                    )
-                                })}
-                            </Dropdown>
+                        <div className="flex justify-center xl:justify-normal">
+                            <div className="bg-gray-100 xl:mt-1  items-center flex justify-center font-bold  xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                                <Dropdown
+                                    className=" text-xl text-black bg-gray-200 font-bold  "
+                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                    onSelect={(e) => handleSelect(e, setCurrentSelectedPage)}
+                                >
+                                    {SEARCHOPTIONS?.map((item, key) => {
+                                        return (
+                                            <DropdownItem key={key} eventKey={item.value}>
+                                                <span>{item.label}</span>
+                                            </DropdownItem>
+                                        )
+                                    })}
+                                </Dropdown>
+                            </div>
                         </div>
                     </div>
                 </div>
