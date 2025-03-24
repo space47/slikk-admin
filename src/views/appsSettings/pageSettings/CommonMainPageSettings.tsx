@@ -3,7 +3,7 @@ import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
 import { Button, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { ErrorMessage, Field, FieldProps, Form, Formik } from 'formik'
 import React, { useState } from 'react'
-import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
+import { DROPDOWNARRAY, DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 import PageSettingsPostTable from './PageSettingsPostTable'
@@ -279,7 +279,7 @@ const CommonMainPageSettings = ({
                                             title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
                                             onSelect={handleSelect}
                                         >
-                                            {DROPDOWNARRAY?.map((item, key) => {
+                                            {DROPDOWNTYPE?.map((item, key) => {
                                                 return (
                                                     <DropdownItem key={key} eventKey={item.value}>
                                                         <span>{item.label}</span>

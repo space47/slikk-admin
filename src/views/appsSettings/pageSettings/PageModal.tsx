@@ -10,6 +10,7 @@ import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable } from './pageSettings.types'
 import * as Yup from 'yup'
 import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
+import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 
 type modalProps = {
     isModalOpen: boolean
@@ -20,11 +21,6 @@ type modalProps = {
     particularRow: any
     setParticularRow: (data: any) => void
 }
-
-const DROPDOWNARRAY = [
-    { label: 'Name', value: 'name' },
-    { label: 'SKU', value: 'sku' },
-]
 
 const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, formikRef, particularRow, setParticularRow }) => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
@@ -137,7 +133,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }, [postInput])
 
     const handleSelect = (value: any) => {
-        const selected = DROPDOWNARRAY.find((item) => item.value === value)
+        const selected = DROPDOWNTYPE.find((item) => item.value === value)
         if (selected) {
             setCurrentSelectedPage(selected)
         }
