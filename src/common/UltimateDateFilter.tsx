@@ -72,7 +72,7 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange, dispatch }: DATE
                 break
             case 'CUSTOM':
                 setShowingDatePicker(true)
-                startDate = ''
+                
                 break
             default:
                 return
