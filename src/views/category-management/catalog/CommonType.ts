@@ -84,6 +84,10 @@ export const DROPDOWNARRAY = [
     { label: 'Category', value: 'category' },
     { label: 'Product Type', value: 'Product_type' },
 ]
+export const DROPDOWNTYPE = [
+    { label: 'SKU', value: 'sku' },
+    { label: 'Name', value: 'name' },
+]
 
 export type ProductVariant = {
     name: string
