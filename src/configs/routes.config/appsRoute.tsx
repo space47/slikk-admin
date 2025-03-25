@@ -220,6 +220,18 @@ const appsRoute: Routes = [
     //   Brand dashBoared.........................................................................................
 
     {
+        key: 'appsVendorManagement.shipments',
+        path: `${APP_PREFIX_PATH}/vendor/shipments`,
+        component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsTable/BrandShipmentsTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.shipments',
+        path: `${APP_PREFIX_PATH}/vendor/shipments/add`,
+        component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsAdd/BrandShipmentsAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsVendorManagement.users',
         path: `${APP_PREFIX_PATH}/vendor/users`,
         component: lazy(() => import('@/views/brandDashboard/brandUser/User')),
