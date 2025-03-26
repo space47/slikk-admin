@@ -10,6 +10,7 @@ import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable } from './pageSettings.types'
 import * as Yup from 'yup'
 import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
+import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 
 type modalProps = {
     isModalOpen: boolean
@@ -145,7 +146,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }, [postInput])
 
     const handleSelect = (value: any) => {
-        const selected = DROPDOWNARRAY.find((item) => item.value === value)
+        const selected = DROPDOWNTYPE.find((item) => item.value === value)
         if (selected) {
             setCurrentSelectedPage(selected)
         }
