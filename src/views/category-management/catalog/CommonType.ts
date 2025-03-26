@@ -78,11 +78,9 @@ export type Product = Partial<{
 }>
 
 export const DROPDOWNARRAY = [
-    { label: 'Brand', value: 'brand' },
-    { label: 'Division', value: 'division' },
-    { label: 'Sub Category', value: 'sub_category' },
-    { label: 'Category', value: 'category' },
-    { label: 'Product Type', value: 'Product_type' },
+    { label: 'Sku', value: 'sku' },
+    { label: 'Name', value: 'name' },
+    { label: 'Barcode', value: 'barcode' },
 ]
 
 export type ProductVariant = {
