@@ -24,6 +24,7 @@ type modalProps = {
 const DROPDOWNARRAY = [
     { label: 'Name', value: 'name' },
     { label: 'SKU', value: 'sku' },
+    { label: 'Barcode', value: 'barcode' },
 ]
 
 const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handleOk, handleCancel, formikRef, data, setData }) => {
@@ -70,11 +71,17 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const fetchInput = async () => {
         try {
             if (searchInput) {
-                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
-                const response = await axioisInstance.get(`/search/product?dashboard=true&${qname}=${searchInput}`)
-                const data = response.data.results
+                const qname =
+                    currentSelectedPage?.value === 'sku'
+                        ? 'sku'
+                        : currentSelectedPage?.value === 'name'
+                          ? 'name'
+                          : currentSelectedPage?.value === 'barcode'
+                            ? 'barcode'
+                            : ''
+                const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
+                const data = response.data.data.results
                 setTableData(data)
-                console.log(data)
             }
         } catch (error) {
             console.log(error)
