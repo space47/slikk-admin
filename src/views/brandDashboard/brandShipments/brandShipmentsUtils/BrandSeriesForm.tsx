@@ -13,6 +13,7 @@ import { BrandShipentForms } from './brandShipmentsCommon'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
 import { useEffect } from 'react'
+import { IoDocumentTextOutline } from 'react-icons/io5'
 
 interface CouponProps {
     values: any
@@ -24,7 +25,7 @@ interface CouponProps {
     isEdit?: any
 }
 
-const BrandShipmentsForm = ({ values, setFieldValue }: CouponProps) => {
+const BrandShipmentsForm = ({ values, setFieldValue, isEdit }: CouponProps) => {
     const dispatch = useAppDispatch()
     const { storeResults } = useAppSelector((state: { companyStore: companyStore }) => state.companyStore)
 
@@ -67,8 +68,16 @@ const BrandShipmentsForm = ({ values, setFieldValue }: CouponProps) => {
                     </FormItem>
 
                     <FormContainer className="bg-blue-300 p-2 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
-                        <div className="font-bold text-blue-700">Upload Documents</div>
+                        <div className="font-bold text-blue-700">Documents Upload</div>
                         <FormContainer className=" mt-5 w-full ">
+                            {isEdit && values?.document && (
+                                <div className="flex flex-col items-center gap-2 mb-4">
+                                    <span>
+                                        <IoDocumentTextOutline className="text-xl" />
+                                    </span>
+                                    <span className="w-[240px] line-clamp-3 flex-wrap overflow-hidden">{values?.document}</span>
+                                </div>
+                            )}
                             <FormItem label="" className="grid grid-rows-2">
                                 <Field name="itemsArray">
                                     {({ form }: FieldProps) => (

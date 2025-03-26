@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer } from '@/components/ui'
 import { Form, Formik } from 'formik'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import BrandShipmentsForm from '../brandShipmentsUtils/BrandSeriesForm'
 import { handleimage } from '@/common/handleImage'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
 
 const BrandShipmentsAdd = () => {
     const navigate = useNavigate()
@@ -42,11 +44,22 @@ const BrandShipmentsAdd = () => {
             box_count: values?.box_count,
             items_count: values?.items_count,
         }
-        console.log('body is', body)
+        try {
+            const response = await axioisInstance.post(`/product-shipment`, body)
+            notification.success({
+                message: response?.data?.message || 'Successfully updated shipment',
+            })
+            navigate(-1)
+        } catch (error: any) {
+            console.log('error', error)
+            notification.error({
+                message: error?.response?.data?.message || 'Failed to Update',
+            })
+        }
     }
 
     return (
-        <div className="bg-gray-100 rounded-2xl">
+        <div className="bg-gray-50 rounded-2xl">
             <Formik
                 enableReinitialize
                 initialValues={initialValue}

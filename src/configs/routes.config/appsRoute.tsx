@@ -227,6 +227,12 @@ const appsRoute: Routes = [
     },
     {
         key: 'appsVendorManagement.shipments',
+        path: `${APP_PREFIX_PATH}/vendor/shipments/update/:id`,
+        component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsEdit/BrandShipmentsEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.shipments',
         path: `${APP_PREFIX_PATH}/vendor/shipments/add`,
         component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsAdd/BrandShipmentsAdd')),
         authority: [ADMIN, USER],
