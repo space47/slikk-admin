@@ -2,7 +2,7 @@ import { Button, Pagination, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { setShipmentDetails, ShipmentDetailType, setCount, setPage, setPageSize } from '@/store/slices/shipemntsSlice/shipments.slice'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BrandShipmentsColumns } from '../brandShipmentsUtils/BrandShipmentColumns'
 import EasyTable from '@/common/EasyTable'
@@ -22,13 +22,18 @@ const pageSizeOptions = [
 const BrandShipmentsTable = () => {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const isDashboard = import.meta.env.VITE_DASHBOARD_TYPE !== 'brand'
+    const [globalFilter, setGlobalFilter] = useState<string>('')
     const { shipmentDetails, page, pageSize, count } = useAppSelector<ShipmentDetailType>((state) => state.shipmentDetails)
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
             try {
-                const response = await axioisInstance.get(`/product-shipment?p=${page}&page_size=${pageSize}`)
+                let filters = ''
+                if (globalFilter) {
+                    filters = `&shipment_id=${globalFilter}`
+                }
+
+                const response = await axioisInstance.get(`/product-shipment?p=${page}&page_size=${pageSize}${filters}`)
                 const data = response?.data?.data?.results || []
                 const totalCount = response?.data?.count || 0
                 dispatch(setShipmentDetails(data))
@@ -47,7 +52,7 @@ const BrandShipmentsTable = () => {
         <div className="flex flex-col gap-5">
             <div className="flex justify-between">
                 <div>
-                    <input type="text" placeholder="Search" />
+                    <input type="text" placeholder="Search" value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} />
                 </div>
                 <div onClick={() => navigate(`/app/vendor/shipments/add`)}>
                     <Button variant="new">Add New Shipments</Button>

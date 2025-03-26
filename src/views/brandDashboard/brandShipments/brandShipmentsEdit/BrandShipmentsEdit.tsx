@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer } from '@/components/ui'
+import { Button, FormContainer, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import BrandShipmentsForm from '../brandShipmentsUtils/BrandSeriesForm'
 import { handleimage } from '@/common/handleImage'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
+import BrandFormFirst from '../brandShipmentsUtils/BrandFormFirst'
+import BrandFormSecond from '../brandShipmentsUtils/BrandFormSecond'
+import BrandFormThirdStep from '../brandShipmentsUtils/BrandFormThirdStep'
 
 const BrandShipmentsEdit = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [shipmentData, setShipmentData] = useState<any>()
+    const [currentStep, setCurrentStep] = useState(0)
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
@@ -92,24 +95,86 @@ const BrandShipmentsEdit = () => {
         }
     }
 
+    const handleNext = () => {
+        setCurrentStep((prev) => prev + 1)
+    }
+
+    const handlePrevious = () => {
+        setCurrentStep((prev) => prev - 1)
+    }
+
     return (
         <div className="bg-gray-50 rounded-2xl">
+            <div className="flex text-xl font-bold mb-10">Update Shipment</div>
+
+            <div className="mb-5">
+                <Steps current={currentStep} className="flex flex-col items-start xl:flex-row">
+                    {['Sendeer Details', 'Receiver Details', 'Items Selection'].map((stepTitle, index) => (
+                        <Steps.Item
+                            key={index}
+                            title={
+                                <span
+                                    className={`p-2 rounded-md ${
+                                        currentStep === index
+                                            ? 'text-green-500 font-bold bg-gray-200 px-2 py-2 rounded-md text-xl'
+                                            : 'text-inherit font-normal'
+                                    }`}
+                                >
+                                    {stepTitle}
+                                </span>
+                            }
+                        />
+                    ))}
+                </Steps>
+            </div>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, setFieldValue, resetForm }) => (
+                {({ values }) => (
                     <Form className="w-full shadow-xl p-3 rounded-2xl ">
-                        <div className="flex text-xl font-bold mb-10">Add New Shipment</div>
                         <FormContainer className="">
-                            <BrandShipmentsForm isEdit setFieldValue={setFieldValue} values={values} resetForm={resetForm} />
+                            {/* <BrandShipmentsForm isEdit setFieldValue={setFieldValue} values={values} resetForm={resetForm} /> */}
+                            {currentStep === 0 && <BrandFormFirst isEdit values={values} />}
+                            {currentStep === 1 && <BrandFormSecond />}
+                            {currentStep === 2 && <BrandFormThirdStep values={values} />}
                         </FormContainer>
-                        <FormContainer>
-                            <Button variant="solid" type="submit" className="bg-blue-500 text-white">
-                                Submit
-                            </Button>
+                        <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
+                            {currentStep > 0 && currentStep < 2 && (
+                                <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                    Previous
+                                </Button>
+                            )}
+                            {currentStep < 2 && currentStep > 0 && (
+                                <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                    Next
+                                </Button>
+                            )}
+                        </FormContainer>
+
+                        {currentStep === 0 && (
+                            <FormContainer className="flex justify-end">
+                                <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                    Next
+                                </Button>
+                            </FormContainer>
+                        )}
+
+                        <FormContainer className="flex justify-end">
+                            {currentStep === 2 && (
+                                <div className="flex">
+                                    <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                        Previous
+                                    </Button>
+                                    <div className="flex gap-20">
+                                        <Button variant="accept" type="submit" className=" text-white">
+                                            Submit
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                         </FormContainer>
                     </Form>
                 )}
