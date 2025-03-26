@@ -22,6 +22,12 @@ type modalProps = {
     setParticularRow: (data: any) => void
 }
 
+const DROPDOWNARRAY = [
+    { label: 'Name', value: 'name' },
+    { label: 'SKU', value: 'sku' },
+    { label: 'Barcode', value: 'barcode' },
+]
+
 const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, formikRef, particularRow, setParticularRow }) => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
@@ -101,9 +107,16 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const fetchInput = async () => {
         try {
             if (searchInput) {
-                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
-                const response = await axioisInstance.get(`/search/product?dashboard=true&${qname}=${searchInput}`)
-                const data = response.data.results
+                const qname =
+                    currentSelectedPage?.value === 'sku'
+                        ? 'sku'
+                        : currentSelectedPage?.value === 'name'
+                          ? 'name'
+                          : currentSelectedPage?.value === 'barcode'
+                            ? 'barcode'
+                            : ''
+                const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
+                const data = response.data.data.results
                 setTableData(data)
             }
         } catch (error) {

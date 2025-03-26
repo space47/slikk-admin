@@ -25,6 +25,7 @@ type ProductTable = {
 const DROPDOWNARRAY = [
     { label: 'Name', value: 'name' },
     { label: 'SKU', value: 'sku' },
+    { label: 'Barcode', value: 'barcode' },
 ]
 
 const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_id, setIsDialogOpen }: ReplaceDrawerProps) => {
@@ -39,11 +40,17 @@ const ReplaceDrawer = ({ dialogIsOpen, onDialogClose, handleSubmit, id, invoice_
     const fetchInput = async () => {
         try {
             if (searchInput) {
-                const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
+                const qname =
+                    currentSelectedPage?.value === 'sku'
+                        ? 'sku'
+                        : currentSelectedPage?.value === 'name'
+                          ? 'name'
+                          : currentSelectedPage?.value === 'barcode'
+                            ? 'barcode'
+                            : ''
                 const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
-                const data = response.data?.data?.results
+                const data = response.data.data.results
                 setTableData(data)
-                console.log(data)
             }
         } catch (error) {
             console.log(error)
