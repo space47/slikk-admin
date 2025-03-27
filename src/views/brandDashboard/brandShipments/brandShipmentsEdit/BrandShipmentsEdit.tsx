@@ -148,7 +148,7 @@ const BrandShipmentsEdit = () => {
 
             <div className="mb-5">
                 <Steps current={currentStep} className="flex flex-col items-start xl:flex-row">
-                    {['Sendeer Details', 'Receiver Details', 'Items Selection'].map((stepTitle, index) => (
+                    {['Sender Details', 'Receiver Details', 'Items Selection'].map((stepTitle, index) => (
                         <Steps.Item
                             key={index}
                             title={
