@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, Steps } from '@/components/ui'
+import { Button, FormContainer, Spinner, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -9,10 +9,14 @@ import { notification } from 'antd'
 import BrandFormFirst from '../brandShipmentsUtils/BrandFormFirst'
 import BrandFormSecond from '../brandShipmentsUtils/BrandFormSecond'
 import BrandFormThirdStep from '../brandShipmentsUtils/BrandFormThirdStep'
+import { useAppSelector } from '@/store'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
 
 const BrandShipmentsAdd = () => {
     const navigate = useNavigate()
     const [currentStep, setCurrentStep] = useState(0)
+    const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
+    const [showSpinner, setShowSpinner] = useState(false)
 
     const initialValue = {}
 
@@ -26,38 +30,70 @@ const BrandShipmentsAdd = () => {
 
     const handleSubmit = async (values: any) => {
         console.log('values are', values)
-        const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
-        const deliveryAdderss = values?.delivery_address ? textChanger(values?.delivery_address) : ''
-        const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
 
-        const body = {
-            company: values?.company,
-
-            store: values?.store?.join(','),
-            shipment_id: values?.shipment_id,
-            name: values?.name,
-            origin_address: originAddress,
-            delivery_address: deliveryAdderss,
-            awb_number: values?.awb,
-            dispatch_date: values?.dispatch_date,
-            delivery_date: values?.delivery_date,
-            document: imageUpload,
-            dispatched_by: values?.dispatched_by,
-            received_by: values?.received_by?.mobile,
-            box_count: values?.box_count,
-            items_count: values?.items_count,
-        }
         try {
+            const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
+
+            const deliveryAddress = values?.delivery_address ? textChanger(values?.delivery_address) : ''
+            const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
+            setShowSpinner(true)
+            const body = {
+                company: selectedCompany?.currCompany?.id,
+                store: values?.store?.join(','),
+                shipment_id: values?.shipment_id,
+                name: values?.name,
+                origin_address: originAddress,
+                delivery_address: deliveryAddress,
+                awb_number: values?.awb,
+                dispatch_date: values?.dispatch_date,
+                delivery_date: values?.delivery_date,
+                document: imageUpload,
+                dispatched_by: values?.dispatched_by,
+                received_by: values?.received_by?.mobile,
+                box_count: values?.box_count,
+                items_count: values?.items_count,
+            }
+
             const response = await axioisInstance.post(`/product-shipment`, body)
+
             notification.success({
                 message: response?.data?.message || 'Successfully updated shipment',
             })
-            navigate(-1)
+
+            const shipmentId = response?.data?.data?.id
+            console.log('shipmentId is', shipmentId)
+
+            if (values?.csvArray?.length > 0) {
+                try {
+                    notification.info({
+                        message: 'CSV upload is in progress',
+                    })
+                    const formData = new FormData()
+                    formData.append('shipment_items_file', values.csvArray[0])
+                    formData.append('shipment_id', shipmentId)
+
+                    await axioisInstance.post(`/shipment/bulkupload/items`, formData)
+
+                    notification.success({
+                        message: 'CSV uploaded successfully',
+                    })
+                    navigate(-1)
+                } catch (csvError) {
+                    notification.error({
+                        message: 'Failed to upload CSV',
+                    })
+                    console.error(csvError)
+                }
+            }
+
+            return { id: shipmentId }
         } catch (error: any) {
-            console.log('error', error)
+            console.error('error', error)
             notification.error({
                 message: error?.response?.data?.message || 'Failed to Update',
             })
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -75,7 +111,7 @@ const BrandShipmentsAdd = () => {
 
             <div className="mb-5">
                 <Steps current={currentStep} className="flex flex-col items-start xl:flex-row">
-                    {['Sendeer Details', 'Receiver Details', 'Items Selection'].map((stepTitle, index) => (
+                    {['Sender Details', 'Receiver Details', 'Items Selection'].map((stepTitle, index) => (
                         <Steps.Item
                             key={index}
                             title={
@@ -136,7 +172,13 @@ const BrandShipmentsAdd = () => {
                                     </Button>
                                     <div className="flex gap-20">
                                         <Button variant="accept" type="submit" className=" text-white" disabled={!values.shipment_id}>
-                                            Submit
+                                            {showSpinner ? (
+                                                <div className="flex gap-2 items-center justify-center">
+                                                    <Spinner size={30} color="white" /> <span>Submitting</span>
+                                                </div>
+                                            ) : (
+                                                'Submit'
+                                            )}
                                         </Button>
                                     </div>
                                 </div>

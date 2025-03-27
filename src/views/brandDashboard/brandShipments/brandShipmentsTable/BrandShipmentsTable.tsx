@@ -35,7 +35,8 @@ const BrandShipmentsTable = () => {
 
                 const response = await axioisInstance.get(`/product-shipment?p=${page}&page_size=${pageSize}${filters}`)
                 const data = response?.data?.data?.results || []
-                const totalCount = response?.data?.count || 0
+                const totalCount = response?.data?.data?.count || 0
+                console.log('data is', totalCount)
                 dispatch(setShipmentDetails(data))
                 dispatch(setCount(totalCount))
             } catch (error) {
@@ -44,7 +45,9 @@ const BrandShipmentsTable = () => {
         }
 
         fetchShipmentDetails()
-    }, [dispatch, page, pageSize])
+    }, [dispatch, page, pageSize, globalFilter])
+
+    console.log('count is', count)
 
     const columns = BrandShipmentsColumns()
 

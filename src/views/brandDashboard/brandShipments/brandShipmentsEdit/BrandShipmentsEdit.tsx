@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, Steps } from '@/components/ui'
+import { Button, FormContainer, Spinner, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -9,12 +9,16 @@ import { notification } from 'antd'
 import BrandFormFirst from '../brandShipmentsUtils/BrandFormFirst'
 import BrandFormSecond from '../brandShipmentsUtils/BrandFormSecond'
 import BrandFormThirdStep from '../brandShipmentsUtils/BrandFormThirdStep'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
+import { useAppSelector } from '@/store'
 
 const BrandShipmentsEdit = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [shipmentData, setShipmentData] = useState<any>()
     const [currentStep, setCurrentStep] = useState(0)
+    const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
+    const [showSpinner, setShowSpinner] = useState(false)
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
@@ -31,7 +35,7 @@ const BrandShipmentsEdit = () => {
     }, [id])
 
     const initialValue = {
-        company: shipmentData?.company,
+        company: selectedCompany?.currCompany?.id,
         // store: shipmentData?.store,
         shipment_id: shipmentData?.shipment_id,
         name: shipmentData?.name,
@@ -56,42 +60,77 @@ const BrandShipmentsEdit = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('values are', values)
-        const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
-        const deliveryAdderss = values?.delivery_address ? textChanger(values?.delivery_address) : ''
-        const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
-
-        const body = {
-            company: values?.company,
-            store: values?.store?.join(','),
-            shipment_id: values?.shipment_id,
-            name: values?.name,
-            origin_address: originAddress,
-            delivery_address: deliveryAdderss,
-            awb_number: values?.awb,
-            dispatch_date: values?.dispatch_date,
-            delivery_date: values?.delivery_date,
-            document: imageUpload ?? values?.document,
-            dispatched_by: values?.dispatched_by,
-            received_by: values?.received_by?.mobile,
-            box_count: values?.box_count,
-            items_count: values?.items_count,
-        }
-        const filteredBody = Object.fromEntries(
-            Object.entries(body).filter(([_, value]) => value !== '' && value !== null && value !== undefined),
-        )
+        console.log('values are', values?.csvArray?.length)
 
         try {
-            const response = await axioisInstance.patch(`/product-shipment/${id}`, filteredBody)
+            const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
+
+            const deliveryAddress = values?.delivery_address ? textChanger(values?.delivery_address) : ''
+            const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
+            setShowSpinner(true)
+            const body = {
+                company: values?.company,
+                store: values?.store?.join(','),
+                shipment_id: values?.shipment_id,
+                name: values?.name,
+                origin_address: originAddress,
+                delivery_address: deliveryAddress,
+                awb_number: values?.awb,
+                dispatch_date: values?.dispatch_date,
+                delivery_date: values?.delivery_date,
+                document: imageUpload ?? values?.document,
+                dispatched_by: values?.dispatched_by,
+                received_by: values?.received_by?.mobile,
+                box_count: values?.box_count,
+                items_count: values?.items_count,
+            }
+            const filteredBody = Object.fromEntries(
+                Object.entries(body).filter(([_, value]) => value !== '' && value !== null && value !== undefined),
+            )
+
+            const response = await axioisInstance.post(`/product-shipment`, filteredBody)
+
             notification.success({
                 message: response?.data?.message || 'Successfully updated shipment',
             })
-            navigate(-1)
+            if (!values?.csvArray) {
+                console.log('navigate', values?.csvArray?.length)
+                navigate(-1)
+            }
+            const shipmentId = response?.data?.data?.id
+            console.log('shipmentId is', shipmentId)
+
+            if (values?.csvArray?.length > 0) {
+                try {
+                    notification.info({
+                        message: 'CSV upload is in progress',
+                    })
+                    const formData = new FormData()
+                    formData.append('shipment_items_file', values.csvArray[0])
+                    formData.append('shipment_id', shipmentData?.id)
+
+                    await axioisInstance.post(`/shipment/bulkupload/items`, formData)
+
+                    notification.success({
+                        message: 'CSV uploaded successfully',
+                    })
+                    navigate(-1)
+                } catch (csvError) {
+                    notification.error({
+                        message: 'Failed to upload CSV',
+                    })
+                    console.error(csvError)
+                }
+            }
+
+            return { id: shipmentId }
         } catch (error: any) {
-            console.log('error', error)
+            console.error('error', error)
             notification.error({
                 message: error?.response?.data?.message || 'Failed to Update',
             })
+        } finally {
+            setShowSpinner(false)
         }
     }
 
@@ -143,12 +182,12 @@ const BrandShipmentsEdit = () => {
                         </FormContainer>
                         <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
                             {currentStep > 0 && currentStep < 2 && (
-                                <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="pending" className="mr-2 bg-gray-600" onClick={handlePrevious}>
                                     Previous
                                 </Button>
                             )}
                             {currentStep < 2 && currentStep > 0 && (
-                                <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="accept" className="mr-2 bg-gray-600" onClick={handleNext}>
                                     Next
                                 </Button>
                             )}
@@ -156,7 +195,7 @@ const BrandShipmentsEdit = () => {
 
                         {currentStep === 0 && (
                             <FormContainer className="flex justify-end">
-                                <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="accept" className="mr-2 bg-gray-600" onClick={handleNext}>
                                     Next
                                 </Button>
                             </FormContainer>
@@ -165,12 +204,18 @@ const BrandShipmentsEdit = () => {
                         <FormContainer className="flex justify-end">
                             {currentStep === 2 && (
                                 <div className="flex">
-                                    <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                    <Button type="button" variant="pending" className="mr-2 bg-gray-600" onClick={handlePrevious}>
                                         Previous
                                     </Button>
                                     <div className="flex gap-20">
-                                        <Button variant="accept" type="submit" className=" text-white">
-                                            Submit
+                                        <Button variant="accept" type="submit" className=" text-white" disabled={!values.shipment_id}>
+                                            {showSpinner ? (
+                                                <div className="flex gap-2 items-center justify-center">
+                                                    <Spinner size={30} color="white" /> <span>Submitting</span>
+                                                </div>
+                                            ) : (
+                                                'Submit'
+                                            )}
                                         </Button>
                                     </div>
                                 </div>
