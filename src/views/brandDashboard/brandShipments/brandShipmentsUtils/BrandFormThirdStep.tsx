@@ -16,7 +16,16 @@ const BrandFormThirdStep = ({ values }: props) => {
             <FormItem label="Items Count" className="col-span-1 w-3/4">
                 <Field name="items_count" type="number" placeholder="Enter Items Count" />
             </FormItem>
-            <FormItem label="Upload Shipment Items File"></FormItem>
+
+            <div className="flex  justify-between">
+                <span className="text-xl font-bold">Upload Shipment Items File</span>
+                <a
+                    className="p-2 rounded-xl bg-green-500 hover:bg-green-600 text-white no-underline"
+                    href="https://slikk-dev-assets-public.s3.ap-south-1.amazonaws.com/shipment+items/sample_shipment_items.csv"
+                >
+                    Download Sample File
+                </a>
+            </div>
             <FormItem label="" className="grid grid-rows-2 mt-5 w-full bg-blue-100 p-4 rounded-xl ">
                 <Field name="csvArray">
                     {({ form }: FieldProps) => (

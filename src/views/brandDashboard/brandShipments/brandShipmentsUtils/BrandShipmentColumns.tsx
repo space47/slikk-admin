@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import moment from 'moment'
 import { useMemo } from 'react'
 import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
@@ -27,7 +28,14 @@ export const BrandShipmentsColumns = () => {
                 header: 'Shipment Id',
                 name: 'shipment_id',
                 cell: ({ row }: any) => {
-                    return <div>{row?.original.shipment_id}</div>
+                    return (
+                        <div
+                            className="p-2 rounded-xl bg-gray-600 text-white flex items-center justify-center hover:bg-gray-400 cursor-pointer"
+                            onClick={() => navigate(`/app/vendor/shipments/details/${row?.original?.id}`)}
+                        >
+                            {row?.original.shipment_id}
+                        </div>
+                    )
                 },
             },
             {
@@ -88,5 +96,41 @@ export const BrandShipmentsColumns = () => {
             },
         ],
         [],
+    )
+}
+
+export const ShipmentDetailsColumns = (isDashboard: boolean, qtyInputRef: any, updatedQuantities: any, handleQuantityChange: any) => {
+    return useMemo(
+        () => [
+            { header: 'Barcode', accessorKey: 'barcode' },
+            { header: 'SKU', accessorKey: 'sku' },
+            { header: 'Catalog Available', accessorKey: 'catalog_available' },
+            { header: 'Quantity Sent', accessorKey: 'quantity_sent' },
+            {
+                header: 'Quantity Received',
+                accessorKey: 'quantity_received',
+                cell: ({ row }) => {
+                    const stockId = row.original.id
+                    return isDashboard ? (
+                        <input
+                            ref={(el) => (qtyInputRef.current[stockId] = el)}
+                            className="w-[80px] rounded-md border border-gray-300 p-2 text-center text-sm focus:border-indigo-500 focus:outline-none"
+                            type="number"
+                            min={0}
+                            value={updatedQuantities[stockId] ?? row.original.quantity_received}
+                            onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
+                        />
+                    ) : (
+                        <span className="text-gray-700">{row.original.quantity_received ?? 'Not Received'}</span>
+                    )
+                },
+            },
+            {
+                header: 'Created Date',
+                accessorKey: 'create_date',
+                cell: ({ row }) => <span>{moment(row.original.create_date).format('DD-MM-YYYY')}</span>,
+            },
+        ],
+        [updatedQuantities],
     )
 }

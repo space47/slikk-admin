@@ -129,6 +129,7 @@ const BrandShipmentsAdd = () => {
                     ))}
                 </Steps>
             </div>
+
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
