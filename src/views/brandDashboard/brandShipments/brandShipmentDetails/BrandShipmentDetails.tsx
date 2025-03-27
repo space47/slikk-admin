@@ -6,7 +6,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
-import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast } from 'react-icons/fa'
+import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast, FaSync } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import { ShipmentDetailsColumns } from '../brandShipmentsUtils/BrandShipmentColumns'
 
@@ -18,8 +18,6 @@ const BrandShipmentDetails = () => {
     const [showAddCsv, setShowAddCsv] = useState(false)
     const [csvEmptyArray, setCsvEmptyArray] = useState<any[]>([])
     const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
-
-    console.log('csv', csvEmptyArray)
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
@@ -62,6 +60,20 @@ const BrandShipmentDetails = () => {
 
     const columns = ShipmentDetailsColumns(isDashboard, qtyInputRef, updatedQuantities, handleQuantityChange)
 
+    const Shipmentvalue = [
+        { label: 'Document', value: shipmentDetails?.name },
+        { label: 'Shipmemt Id', value: shipmentDetails?.shipment_id },
+        { label: 'AWB Number', value: shipmentDetails?.awb_number },
+        { label: 'Dispatch Date', value: moment(shipmentDetails?.dispatch_date).format('DD-MM-YYYY') },
+        { label: 'Origin Address', value: shipmentDetails?.origin_address },
+    ]
+    const DeliveryDetailsValue = [
+        { label: 'Dispatched By', value: shipmentDetails?.dispatched_by ?? 'N/A' },
+        { label: 'Received By', value: shipmentDetails?.received_by ?? 'N/A' },
+        { label: 'Delivery Address', value: shipmentDetails?.delivery_address ?? 'N/A' },
+        { label: 'Delivery Date', value: moment(shipmentDetails?.delivery_date).format('DD-MM-YYYY') },
+    ]
+
     return (
         <div className="p-6">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -70,22 +82,13 @@ const BrandShipmentDetails = () => {
                         <FaShippingFast className="text-2xl" />
                         <h2 className="text-xl font-bold">Shipment Details</h2>
                     </div>
+
                     <div className="mt-4 space-y-2 text-sm">
-                        <p>
-                            <strong>Document:</strong> {shipmentDetails?.name}
-                        </p>
-                        <p>
-                            <strong>Shipment ID:</strong> {shipmentDetails?.shipment_id}
-                        </p>
-                        <p>
-                            <strong>AWB Number:</strong> {shipmentDetails?.awb_number}
-                        </p>
-                        <p>
-                            <strong>Dispatch Date:</strong> {moment(shipmentDetails?.dispatch_date).format('DD-MM-YYYY')}
-                        </p>
-                        <p>
-                            <strong>Sender Address:</strong> {shipmentDetails?.origin_address}
-                        </p>
+                        {Shipmentvalue?.map((item, index) => (
+                            <p key={index}>
+                                <strong>{item.label}:</strong> {item.value}
+                            </p>
+                        ))}
                     </div>
                 </Card>
                 <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br ">
@@ -94,23 +97,13 @@ const BrandShipmentDetails = () => {
                         <h2 className="text-xl font-bold">Delivery Info</h2>
                     </div>
                     <div className="mt-4 space-y-2 text-sm">
-                        <p>
-                            <strong>Dispatched By:</strong> {shipmentDetails?.dispatched_by ?? 'N/A'}
-                        </p>
-                        <p>
-                            <strong>Received By:</strong> {shipmentDetails?.received_by ?? 'N/A'}
-                        </p>
-                        <p>
-                            <strong>Delivery Address:</strong> {shipmentDetails?.delivery_address ?? 'N/A'}
-                        </p>
-                        <p>
-                            <strong>Delivery Date:</strong>{' '}
-                            {shipmentDetails?.delivery_date ? moment(shipmentDetails?.delivery_date).format('DD-MM-YYYY') : 'N/A'}
-                        </p>
+                        {DeliveryDetailsValue?.map((item, index) => (
+                            <p key={index}>
+                                <strong>{item.label}:</strong> {item.value}
+                            </p>
+                        ))}
                     </div>
                 </Card>
-
-                {/* Items Info */}
                 <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br ">
                     <div className="flex items-center gap-2">
                         <FaBoxOpen className="text-2xl" />
@@ -151,9 +144,12 @@ const BrandShipmentDetails = () => {
             </div>
 
             {shipmentDetails?.shipment_items?.length > 0 && (
-                <div className="mt-6">
+                <div className="mt-10">
                     <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
                     <div className="mt-3 bg-white p-4 shadow-lg rounded-xl">
+                        <div className="flex justify-end gap-2 items-center text-xl mb-6 cursor-pointer text-green-600 hover:text-green-500">
+                            <FaSync /> <span className="font-bold">Sync</span>
+                        </div>
                         <EasyTable overflow mainData={shipmentDetails.shipment_items} columns={columns} />
                     </div>
                 </div>
