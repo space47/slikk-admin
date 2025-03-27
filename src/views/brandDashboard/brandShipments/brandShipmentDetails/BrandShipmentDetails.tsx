@@ -58,8 +58,6 @@ const BrandShipmentDetails = () => {
         }
     }
 
-    const columns = ShipmentDetailsColumns(isDashboard, qtyInputRef, updatedQuantities, handleQuantityChange)
-
     const Shipmentvalue = [
         { label: 'Document', value: shipmentDetails?.name },
         { label: 'Shipmemt Id', value: shipmentDetails?.shipment_id },
@@ -73,6 +71,46 @@ const BrandShipmentDetails = () => {
         { label: 'Delivery Address', value: shipmentDetails?.delivery_address ?? 'N/A' },
         { label: 'Delivery Date', value: moment(shipmentDetails?.delivery_date).format('DD-MM-YYYY') },
     ]
+
+    const handleSyncShipment = async () => {
+        const body = {
+            id: id,
+        }
+        try {
+            const response = await axioisInstance.post(`api`, body)
+            notification.success({
+                message: response?.data?.message || 'Shipment synced successfully',
+            })
+        } catch (error: any) {
+            notification.success({
+                message: error?.response?.data?.message || 'Failed to sync shipment',
+            })
+            console.log(error)
+        }
+    }
+
+    const handleChangeQty = async (sku: string, barcode: string, qty: string | number, id: any) => {
+        const body = {
+            sku: sku,
+            barcode: barcode,
+            shipment_id: id,
+            quantity: updatedQuantities[id] ?? qty,
+        }
+
+        try {
+            const response = await axioisInstance.post(`/shipment/item`, body)
+            notification.success({
+                message: response?.data?.message || 'Quantity updated successfully',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failed to update row',
+            })
+        }
+    }
+
+    const columns = ShipmentDetailsColumns(isDashboard, qtyInputRef, updatedQuantities, handleQuantityChange, handleChangeQty)
 
     return (
         <div className="p-6">
@@ -147,7 +185,10 @@ const BrandShipmentDetails = () => {
                 <div className="mt-10">
                     <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
                     <div className="mt-3 bg-white p-4 shadow-lg rounded-xl">
-                        <div className="flex justify-end gap-2 items-center text-xl mb-6 cursor-pointer text-green-600 hover:text-green-500">
+                        <div
+                            className="flex justify-end gap-2 items-center text-xl mb-6 cursor-pointer text-green-600 hover:text-green-500"
+                            onClick={handleSyncShipment}
+                        >
                             <FaSync /> <span className="font-bold">Sync</span>
                         </div>
                         <EasyTable overflow mainData={shipmentDetails.shipment_items} columns={columns} />
