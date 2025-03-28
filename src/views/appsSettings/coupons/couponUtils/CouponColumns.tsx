@@ -133,6 +133,6 @@ export const CouponCoulumns = () => {
             //         )
             //     },
             // }
-        ].filter((column) => column.header && column.accessorKey)
+        ]
     }, [])
 }

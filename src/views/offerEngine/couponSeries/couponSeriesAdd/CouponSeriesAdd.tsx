@@ -21,6 +21,7 @@ const CouponSeriesAdd = () => {
             navigate(`/app/appSettings/couponsGenerate/generateCoupons`)
         }
         if (addCouponseriesresponse?.isError) {
+            console.log('error is', addCouponseriesresponse?.error)
             notification.error({
                 message: 'Failed to add Series',
             })
@@ -29,13 +30,16 @@ const CouponSeriesAdd = () => {
 
     const handleSubmit = async (values: any) => {
         console.log('values is', values)
+        let imageUpload = ''
+        if (values?.imageArray && values?.imageArray?.length > 0) {
+            imageUpload = await handleimage('product', values.imageArray)
+        }
 
         try {
-            const imageUpload = await handleimage('product', values.imageArray)
             await addCouponseries({
                 discount_type: values?.discount_type,
                 value: values?.value,
-                image: imageUpload || '',
+                image: imageUpload,
                 min_cart_value: values?.min_cart_value,
                 max_count: values?.max_count,
                 maximum_discount: values?.maximum_discount,
