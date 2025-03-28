@@ -97,13 +97,6 @@ const GetUrlShortner = () => {
                 cell: ({ row }) => {
                     const urlName = row.original.web_url
                     return (
-                        // <input
-                        //     type="radio"
-                        //     name="bannerId"
-                        //     onChange={() => hanldeGenerateQR(urlName)}
-                        //     // checked={data.length === bannerIdStore.length}
-
-                        // />
                         <button onClick={() => hanldeGenerateQR(urlName)}>
                             <FaDotCircle className="text-xl text-blue-600 hover:text-red-700 cursor-pointer" />
                         </button>
