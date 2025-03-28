@@ -31,7 +31,7 @@ const CouponSeriesEdit = () => {
             notification.success({
                 message: 'Coupon Series Updated Successfully',
             })
-            navigate(-1)
+            navigate(`/app/appSettings/couponsGenerate/generateCoupons`)
         } else if (editSeriesDataResponse?.error) {
             notification.error({
                 message: 'Failed to update',
@@ -98,6 +98,15 @@ const CouponSeriesEdit = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, setFieldValue, resetForm }) => (
                     <Form className="w-full shadow-xl p-3 rounded-xl ">
+                        <div className="flex gap-6 text-xl font-bold mb-10 items-center ">
+                            <span>Update Coupon Series</span>
+                            <span
+                                className="cursor-pointer bg-red-800 text-white p-2 rounded-xl hover:bg-red-700"
+                                onClick={() => navigate(`/app/appSettings/couponsGenerate/generateCoupons`)}
+                            >
+                                Add Coupons
+                            </span>
+                        </div>
                         <FormContainer className="">
                             <CouponSeriesForm values={values} setFieldValue={setFieldValue} resetForm={resetForm} />
                         </FormContainer>

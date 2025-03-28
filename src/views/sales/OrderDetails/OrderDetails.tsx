@@ -169,9 +169,9 @@ const OrderDetails = () => {
                                             ) : (
                                                 <>
                                                     <div>
-                                                        <Button variant="accept" size="sm" onClick={() => setShowUTMModal(true)}>
+                                                        {/* <Button variant="accept" size="sm" onClick={() => setShowUTMModal(true)}>
                                                             ADD TICKET
-                                                        </Button>
+                                                        </Button> */}
                                                     </div>
                                                 </>
                                             )}

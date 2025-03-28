@@ -31,7 +31,30 @@ export const CouponCoulumns = () => {
                     )
                 },
             },
+            {
+                header: 'Orders',
+                accessorKey: 'orders',
+                cell: ({ row }: any) => {
+                    const orders = row.original.orders
+                    return (
+                        <div>
+                            {orders?.map((item: any, key: any) => (
+                                <div key={key} className="mb-1">
+                                    <div className="cursor-pointer hover:text-blue-500" onClick={() => navigate(`/app/orders/${orders}`)}>
+                                        {item}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                },
+            },
             // Coupon Series fields
+            {
+                header: 'Max Count Per User',
+                accessorKey: 'coupon_series.max_count_per_user',
+                cell: ({ row }: any) => row.original.coupon_series?.max_count_per_user || 'N/A',
+            },
             {
                 header: 'Discount Type',
                 accessorKey: 'coupon_series.discount_type',

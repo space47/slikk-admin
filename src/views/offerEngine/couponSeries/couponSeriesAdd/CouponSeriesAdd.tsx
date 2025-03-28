@@ -18,7 +18,7 @@ const CouponSeriesAdd = () => {
             notification.success({
                 message: 'Successfully added Series',
             })
-            navigate(-1)
+            navigate(`/app/appSettings/couponsGenerate/generateCoupons`)
         }
         if (addCouponseriesresponse?.isError) {
             notification.error({
@@ -48,7 +48,6 @@ const CouponSeriesAdd = () => {
                 is_public: values?.is_public,
                 extra_attributes: values?.extra_attributes,
             }).unwrap()
-            navigate(`/app/appSettings/couponsGenerate/generateCoupons`)
         } catch (error: any) {
             notification.error({
                 message: error?.data?.message || 'Failed to add Series',
