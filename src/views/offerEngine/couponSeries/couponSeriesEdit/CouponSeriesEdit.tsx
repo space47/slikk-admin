@@ -1,9 +1,13 @@
+<<<<<<< Updated upstream
 /* eslint-disable @typescript-eslint/no-unused-vars */
+=======
+>>>>>>> Stashed changes
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect } from 'react'
 import CouponSeriesForm from '../couponSeriesUtils/CouponSeriesForm'
+<<<<<<< Updated upstream
 import { useNavigate, useParams } from 'react-router-dom'
 import { couponSeriesService } from '@/store/services/couponSeriesService'
 import { CouponSeriesInitialTypes, setCouponSeriesActive } from '@/store/slices/couponSeriesSlice/couponSeries'
@@ -91,11 +95,60 @@ const CouponSeriesEdit = () => {
             })
             console.error(error)
         }
+=======
+import { couponSeriesService } from '@/store/services/couponSeriesService'
+import { handleimage } from '@/common/handleImage'
+import { notification } from 'antd'
+import { useNavigate } from 'react-router-dom'
+
+const CouponSeriesEdit = () => {
+    const navigate = useNavigate()
+    const [editCouponseries, editCouponseriesresponse] = couponSeriesService.useEditCouponSeriesMutation()
+
+    const initialValue = {}
+
+    useEffect(() => {
+        if (editCouponseriesresponse.isSuccess) {
+            notification.success({
+                message: 'Successfully added Series',
+            })
+            navigate(-1)
+        }
+        if (editCouponseriesresponse?.isError) {
+            notification.error({
+                message: editCouponseriesresponse?.error?.data?.message || 'Failed to add Series',
+            })
+        }
+    }, [editCouponseriesresponse?.isSuccess])
+
+    const handleSubmit = async (values: any) => {
+        console.log('values is', values)
+        const imageUpload = await handleimage('product', values.imageArray)
+        editCouponseries({
+            ...values,
+            image: imageUpload,
+        })
+            .then(() => {})
+            .catch(() => {
+                notification.error({
+                    message: 'Failed to add Series',
+                })
+            })
+>>>>>>> Stashed changes
     }
 
     return (
         <div>
+<<<<<<< Updated upstream
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
+=======
+            <Formik
+                enableReinitialize
+                initialValues={initialValue}
+                // validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+            >
+>>>>>>> Stashed changes
                 {({ values, setFieldValue, resetForm }) => (
                     <Form className="w-full shadow-xl p-3 rounded-xl ">
                         <FormContainer className="">

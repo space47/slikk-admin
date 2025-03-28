@@ -28,7 +28,20 @@ export const CouponSeriesCoulumns = () => {
                 header: 'Campaign',
                 accessorKey: 'campaign',
                 cell: ({ row }: any) => {
-                    return <div>{row?.original?.campaign}</div>
+                    return (
+                        <div
+                            className="cursor-pointer hover:text-green-400 hover:font-bold"
+                            onClick={() =>
+                                navigate('/app/appSettings/coupons', {
+                                    state: {
+                                        var1: row?.original?.id,
+                                    },
+                                })
+                            }
+                        >
+                            {row?.original?.campaign}
+                        </div>
+                    )
                 },
             },
             {
