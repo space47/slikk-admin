@@ -128,16 +128,7 @@ export const ShipmentDetailsColumns = (
                                 value={updatedQuantities[stockId] ?? row.original.quantity_received}
                                 onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
                             />
-                            <div
-                                onClick={() =>
-                                    handleChangeQty(
-                                        row?.original?.sku,
-                                        row?.original?.barcode,
-                                        row.original.quantity_received,
-                                        row.original.id,
-                                    )
-                                }
-                            >
+                            <div onClick={() => handleChangeQty(row.original.quantity_received, row.original.id)}>
                                 <GrUpdate className="text-xl font-bold text-green-500 cursor-pointer" />
                             </div>
                         </div>

@@ -7,11 +7,12 @@ import { notification } from 'antd'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
 import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast, FaSync } from 'react-icons/fa'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ShipmentDetailsColumns } from '../brandShipmentsUtils/BrandShipmentColumns'
 
 const BrandShipmentDetails = () => {
     const { id } = useParams()
+    const navigate = useNavigate()
     const [shipmentDetails, setShipmentDetails] = useState<any>()
     const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
     const [updatedQuantities, setUpdatedQuantities] = useState<{ [key: number]: number }>({})
@@ -89,19 +90,17 @@ const BrandShipmentDetails = () => {
         }
     }
 
-    const handleChangeQty = async (sku: string, barcode: string, qty: string | number, id: any) => {
+    const handleChangeQty = async (qty: string | number, id: any) => {
         const body = {
-            sku: sku,
-            barcode: barcode,
-            shipment_id: id,
             quantity: updatedQuantities[id] ?? qty,
         }
 
         try {
-            const response = await axioisInstance.post(`/shipment/item`, body)
+            const response = await axioisInstance.patch(`/shipment/item/${id}`, body)
             notification.success({
                 message: response?.data?.message || 'Quantity updated successfully',
             })
+            navigate(0)
         } catch (error) {
             console.log(error)
             notification.error({
