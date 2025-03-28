@@ -31,7 +31,7 @@ const PaginationTable = () => {
                     filter = `&brand=${globalFilter}`
                 }
                 if (companyCode) {
-                    code = `&company=${companyCode}`
+                    code = `&company_code=${companyCode}`
                 }
                 const response = await axiosInstance.get(
                     `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}${filter}${code}`, // &company_id
