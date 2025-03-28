@@ -53,6 +53,9 @@ const AppCoupons = () => {
             dispatch(setCouponData(couponsData?.data?.results))
             dispatch(setCount(couponsData?.data?.count))
         }
+        if (isSuccess && activateCodeButton) {
+            dispatch(setCouponData([couponsData?.data]))
+        }
     }, [isSuccess, couponsData?.data?.results, dispatch, couponsData?.data?.count, activateCodeButton, activateMobileButton])
 
     // const handleActionClick = (coupon_code: string) => {
