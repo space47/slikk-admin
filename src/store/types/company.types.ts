@@ -19,6 +19,7 @@ export type SINGLE_COMPANY_DATA = {
     is_active?: boolean
     create_date?: string
     update_date?: string
+    code?: string
 }
 
 export type USER_PROFILE_DATA = {
