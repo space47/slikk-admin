@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BrandShipmentsColumns } from '../brandShipmentsUtils/BrandShipmentColumns'
 import EasyTable from '@/common/EasyTable'
+import { USER_PROFILE_DATA } from '@/store/types/company.types'
 
 type Option = {
     value: number
@@ -24,6 +25,7 @@ const BrandShipmentsTable = () => {
     const dispatch = useAppDispatch()
     const [globalFilter, setGlobalFilter] = useState<string>('')
     const { shipmentDetails, page, pageSize, count } = useAppSelector<ShipmentDetailType>((state) => state.shipmentDetails)
+    const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
@@ -45,7 +47,7 @@ const BrandShipmentsTable = () => {
         }
 
         fetchShipmentDetails()
-    }, [dispatch, page, pageSize, globalFilter])
+    }, [dispatch, page, pageSize, globalFilter, selectedCompany])
 
     console.log('count is', count)
 

@@ -48,6 +48,7 @@ const CouponSeriesAdd = () => {
                 is_public: values?.is_public,
                 extra_attributes: values?.extra_attributes,
             }).unwrap()
+            navigate(`/app/appSettings/couponsGenerate/generateCoupons`)
         } catch (error: any) {
             notification.error({
                 message: error?.data?.message || 'Failed to add Series',
@@ -56,7 +57,7 @@ const CouponSeriesAdd = () => {
     }
 
     return (
-        <div className="bg-gray-100 rounded-2xl">
+        <div className="bg-gray-50 rounded-2xl">
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
@@ -65,7 +66,16 @@ const CouponSeriesAdd = () => {
             >
                 {({ values, setFieldValue, resetForm }) => (
                     <Form className="w-full shadow-xl p-3 rounded-2xl ">
-                        <div className="flex text-xl font-bold mb-10">Add New Coupon Series</div>
+                        <div className="flex gap-6 text-xl font-bold mb-10 items-center ">
+                            <span>Add New Coupon Series</span>
+                            <span
+                                className="cursor-pointer bg-red-800 text-white p-2 rounded-xl hover:bg-red-700"
+                                onClick={() => navigate(`/app/appSettings/couponsGenerate/generateCoupons`)}
+                            >
+                                Add Coupons
+                            </span>
+                        </div>
+
                         <FormContainer className="">
                             <CouponSeriesForm values={values} setFieldValue={setFieldValue} resetForm={resetForm} />
                         </FormContainer>
