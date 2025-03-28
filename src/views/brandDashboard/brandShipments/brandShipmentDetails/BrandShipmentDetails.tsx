@@ -75,18 +75,18 @@ const BrandShipmentDetails = () => {
 
     const handleSyncShipment = async () => {
         const body = {
-            id: id,
+            action: 'sync_item_status',
         }
         try {
-            const response = await axioisInstance.post(`api`, body)
+            const response = await axioisInstance.patch(`/product-shipment/${id}`, body)
             notification.success({
                 message: response?.data?.message || 'Shipment synced successfully',
             })
+            navigate(0)
         } catch (error: any) {
             notification.success({
                 message: error?.response?.data?.message || 'Failed to sync shipment',
             })
-            console.log(error)
         }
     }
 

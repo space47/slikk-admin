@@ -88,7 +88,7 @@ const BrandShipmentsEdit = () => {
                 Object.entries(body).filter(([_, value]) => value !== '' && value !== null && value !== undefined),
             )
 
-            const response = await axioisInstance.post(`/product-shipment`, filteredBody)
+            const response = await axioisInstance.patch(`/product-shipment/${id}`, filteredBody)
 
             notification.success({
                 message: response?.data?.message || 'Successfully updated shipment',
