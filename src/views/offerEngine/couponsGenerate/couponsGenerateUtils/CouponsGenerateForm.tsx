@@ -21,7 +21,10 @@ const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
             <FormItem label="Users">
                 <Field type="text" name="users" component={Input} placeholder="Enter Users" />
             </FormItem>
-            <FormItem label="CSV for User" className="flex gap-2">
+            <FormItem label="Max Count">
+                <Field type="number" name="max_count" component={Input} placeholder="Enter max count" />
+            </FormItem>
+            <FormItem label="CSV for User" className="flex gap-2 bg-blue-100 p-3 rounded-xl">
                 <FormItem label="" className="grid grid-rows-2">
                     <Field name="docsArray">
                         {({ form }: FieldProps) => (

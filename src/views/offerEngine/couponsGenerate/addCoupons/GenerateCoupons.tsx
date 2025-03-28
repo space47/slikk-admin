@@ -51,6 +51,7 @@ const GenerateCoupons = () => {
         appendIfDefined('id', values?.coupon_series)
         appendIfDefined('auto_generate', (values.auto_generate_code ? true : false).toString())
         appendIfDefined('mobiles', values?.users || '')
+        appendIfDefined('max_count', values?.max_count || 0)
         appendIfDefined('prefix', values.prefix)
         appendIfDefined('unique_user_code', values.unique_user_code)
         appendIfDefined('code_length', values?.length)
