@@ -2,6 +2,7 @@
 import moment from 'moment'
 import { useMemo } from 'react'
 import { FaEdit } from 'react-icons/fa'
+import { GrUpdate } from 'react-icons/gr'
 import { useNavigate } from 'react-router-dom'
 
 export const BrandShipmentsColumns = () => {
@@ -99,7 +100,13 @@ export const BrandShipmentsColumns = () => {
     )
 }
 
-export const ShipmentDetailsColumns = (isDashboard: boolean, qtyInputRef: any, updatedQuantities: any, handleQuantityChange: any) => {
+export const ShipmentDetailsColumns = (
+    isDashboard: boolean,
+    qtyInputRef: any,
+    updatedQuantities: any,
+    handleQuantityChange: any,
+    handleChangeQty: any,
+) => {
     return useMemo(
         () => [
             { header: 'Barcode', accessorKey: 'barcode' },
@@ -112,14 +119,19 @@ export const ShipmentDetailsColumns = (isDashboard: boolean, qtyInputRef: any, u
                 cell: ({ row }) => {
                     const stockId = row.original.id
                     return isDashboard ? (
-                        <input
-                            ref={(el) => (qtyInputRef.current[stockId] = el)}
-                            className="w-[80px] rounded-md border border-gray-300 p-2 text-center text-sm focus:border-indigo-500 focus:outline-none"
-                            type="number"
-                            min={0}
-                            value={updatedQuantities[stockId] ?? row.original.quantity_received}
-                            onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
-                        />
+                        <div className="flex gap-2 items-center">
+                            <input
+                                ref={(el) => (qtyInputRef.current[stockId] = el)}
+                                className="w-[80px] rounded-md border border-gray-300 p-2 text-center text-sm focus:border-indigo-500 focus:outline-none"
+                                type="number"
+                                min={0}
+                                value={updatedQuantities[stockId] ?? row.original.quantity_received}
+                                onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
+                            />
+                            <div onClick={() => handleChangeQty(row.original.quantity_received, row.original.id)}>
+                                <GrUpdate className="text-xl font-bold text-green-500 cursor-pointer" />
+                            </div>
+                        </div>
                     ) : (
                         <span className="text-gray-700">{row.original.quantity_received ?? 'Not Received'}</span>
                     )

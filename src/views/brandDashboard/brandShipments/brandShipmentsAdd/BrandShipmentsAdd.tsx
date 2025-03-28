@@ -24,16 +24,12 @@ const BrandShipmentsAdd = () => {
         const parser = new DOMParser()
         const htmlDoc = parser.parseFromString(value, 'text/html')
         const plainTextValue = htmlDoc.body.textContent || ''
-
         return plainTextValue
     }
 
     const handleSubmit = async (values: any) => {
-        console.log('values are', values)
-
         try {
             const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
-
             const deliveryAddress = values?.delivery_address ? textChanger(values?.delivery_address) : ''
             const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
             setShowSpinner(true)
@@ -53,13 +49,10 @@ const BrandShipmentsAdd = () => {
                 box_count: values?.box_count,
                 items_count: values?.items_count,
             }
-
             const response = await axioisInstance.post(`/product-shipment`, body)
-
             notification.success({
                 message: response?.data?.message || 'Successfully updated shipment',
             })
-
             const shipmentId = response?.data?.data?.id
             console.log('shipmentId is', shipmentId)
 
