@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from '@/components/ui'
 import moment from 'moment'
 import { useMemo } from 'react'
-import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 export const CouponCoulumns = () => {
@@ -50,6 +48,11 @@ export const CouponCoulumns = () => {
                 },
             },
             // Coupon Series fields
+            {
+                header: 'Min Cart Value',
+                accessorKey: 'coupon_series.min_cart_value',
+                cell: ({ row }: any) => row.original.coupon_series?.min_cart_value || 'N/A',
+            },
             {
                 header: 'Max Count Per User',
                 accessorKey: 'coupon_series.max_count_per_user',
@@ -124,6 +127,7 @@ export const CouponCoulumns = () => {
             // },
             // {
             //     header: 'Edit',
+
             //     accessorKey: 'code',
             //     cell: ({ getValue }) => {
             //         return (

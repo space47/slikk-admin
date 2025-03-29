@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Upload } from '@/components/ui'
+import { FormContainer, FormItem, Input, Tooltip, Upload } from '@/components/ui'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
@@ -8,6 +8,7 @@ import { DatePicker } from 'antd'
 import moment from 'moment'
 
 import { beforeUpload } from '@/common/beforeUpload'
+import { CiCircleQuestion } from 'react-icons/ci'
 
 interface Props {
     formattedOptions: any[]
@@ -21,8 +22,16 @@ const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
             <FormItem label="Users">
                 <Field type="text" name="users" component={Input} placeholder="Enter Users" />
             </FormItem>
-            <FormItem label="Max Count">
-                <Field type="number" name="max_count" component={Input} placeholder="Enter max count" />
+            <FormItem label="">
+                <div className="flex gap-2">
+                    <span className="font-bold">Max Count</span>
+                    <Tooltip title="Enter Max Count manually otherwise it will take the value of the max count of series">
+                        <CiCircleQuestion className="text-yellow-800 text-xl" />
+                    </Tooltip>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Field type="number" name="max_count" component={Input} placeholder="Enter max count" />
+                </div>
             </FormItem>
             <FormItem label="CSV for User" className="flex gap-2 bg-blue-100 p-3 rounded-xl">
                 <FormItem label="" className="grid grid-rows-2">

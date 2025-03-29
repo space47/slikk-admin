@@ -69,7 +69,7 @@ const GenerateCoupons = () => {
         })
         try {
             generateCoupon({ ...formDataEntries })
-            navigate(-1)
+            navigate(-2)
         } catch (error: any) {
             notification.error({
                 message: error?.response?.data?.message || 'Failed to add',
@@ -81,6 +81,7 @@ const GenerateCoupons = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="w-full shadow-xl p-3 rounded-xl ">
+                        <div className="text-xl text-red-900 font-bold mb-10">Add New Coupon</div>
                         <FormContainer className="">
                             <CouponsGenerateForm formattedOptions={formattedData} values={values} />
                         </FormContainer>

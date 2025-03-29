@@ -56,13 +56,15 @@ const AppCoupons = () => {
         if (isSuccess && activateCodeButton) {
             dispatch(setCouponData([couponsData?.data]))
         }
-    }, [isSuccess, couponsData?.data?.results, dispatch, couponsData?.data?.count, activateCodeButton, activateMobileButton])
-
-    // const handleActionClick = (coupon_code: string) => {
-    //     console.log('clicked', coupon_code)
-    //     navigate(`/app/appSettings/coupons/${coupon_code}`)
-    // }
-
+    }, [
+        isSuccess,
+        couponsData?.data?.results,
+        dispatch,
+        couponsData?.data?.count,
+        activateCodeButton,
+        activateMobileButton,
+        couponsData?.data,
+    ])
     const hanldeSearchFuntion = () => {
         setActivateMobileButton(mobileFilter)
     }
