@@ -14,6 +14,7 @@ export const handleApply = (
         query += `brand=${brandIds}`
     }
     if (selectFilterString && brandList?.length === 0) {
+        console.log('selected filter string', selectFilterString)
         query += `${selectFilterString}`
     }
     if (selectFilterString && brandList?.length > 0) {
