@@ -6,7 +6,7 @@ import { Button, Pagination, Select } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import { URLSHORTNERTYPE } from '@/store/types/shortUrl.types'
 import { fetchUrlShortner, setPage, setPageSize } from '@/store/slices/urlShortner/urlShortner.slice'
-import { FaEdit } from 'react-icons/fa'
+import { FaDotCircle, FaEdit } from 'react-icons/fa'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import QRcodeModal from './QRcodeModal'
 import EasyTable from '@/common/EasyTable'
@@ -97,12 +97,9 @@ const GetUrlShortner = () => {
                 cell: ({ row }) => {
                     const urlName = row.original.web_url
                     return (
-                        <input
-                            type="radio"
-                            name="bannerId"
-                            onChange={() => hanldeGenerateQR(urlName)}
-                            // checked={data.length === bannerIdStore.length}
-                        />
+                        <button onClick={() => hanldeGenerateQR(urlName)}>
+                            <FaDotCircle className="text-xl text-blue-600 hover:text-red-700 cursor-pointer" />
+                        </button>
                     )
                 },
             },

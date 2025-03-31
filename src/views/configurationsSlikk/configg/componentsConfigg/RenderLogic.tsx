@@ -38,6 +38,45 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
         setFieldValue(parentKey, { ...obj, [newKey]: newValue })
     }
 
+    // Handle primitive types (string, number, boolean)
+    if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+        return (
+            <Field name={parentKey}>
+                {({ field }: FieldProps) => {
+                    // Determine input type based on the value
+                    let inputType = 'text'
+                    if (typeof obj === 'number') inputType = 'number'
+                    if (typeof obj === 'boolean') inputType = 'text'
+
+                    return (
+                        <div className="flex gap-4 items-center mb-2">
+                            <Input
+                                {...field}
+                                type={inputType}
+                                placeholder={`Enter value`}
+                                className="w-full"
+                                checked={typeof obj === 'boolean' ? field.value : undefined}
+                                onChange={(e) => {
+                                    let value: string | number | boolean = e.target.value
+                                    if (typeof obj === 'number') value = Number(value)
+                                    if (typeof obj === 'boolean') value = e.target.checked
+                                    setFieldValue(parentKey, value)
+                                }}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setFieldValue(parentKey, typeof obj === 'string' ? '' : typeof obj === 'number' ? 0 : false)}
+                                className="text-red-500"
+                            >
+                                <MdCancel className="text-xl" />
+                            </button>
+                        </div>
+                    )
+                }}
+            </Field>
+        )
+    }
+
     return (
         <div>
             {_.isPlainObject(obj) && (
@@ -226,7 +265,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
 
                                 return (
                                     <div key={arrayKey} className="flex gap-4 items-center mb-2">
-                                        {_.isPlainObject(item) ? (
+                                        {_.isPlainObject(item) || _.isArray(item) ? (
                                             <div className="w-full">
                                                 <RenderFields
                                                     obj={item}
@@ -241,13 +280,25 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                             <Field
                                                 name={arrayKey}
                                                 render={({ field }: any) => {
-                                                    const isPureNumber = /^[0-9]+$/.test(field.value)
+                                                    const inputType =
+                                                        typeof item === 'number'
+                                                            ? 'number'
+                                                            : typeof item === 'boolean'
+                                                              ? 'checkbox'
+                                                              : 'text'
                                                     return (
                                                         <Input
                                                             {...field}
-                                                            type={isPureNumber ? 'number' : 'text'}
-                                                            placeholder={`Enter value `}
+                                                            type={inputType}
+                                                            placeholder={`Enter value`}
                                                             className="w-full"
+                                                            checked={typeof item === 'boolean' ? field.value : undefined}
+                                                            onChange={(e) => {
+                                                                let value: any = e.target.value
+                                                                if (typeof item === 'number') value = Number(value)
+                                                                if (typeof item === 'boolean') value = e.target.checked
+                                                                setFieldValue(arrayKey, value)
+                                                            }}
                                                         />
                                                     )
                                                 }}
@@ -261,16 +312,14 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                 )
                             })}
 
-                            {/* Updated button to open modal */}
                             <button
                                 type="button"
                                 className="bg-black text-white px-2 py-2 rounded-xl flex gap-2"
-                                onClick={() => setIsAddModalOpen(true)} // Open modal instead of adding directly
+                                onClick={() => setIsAddModalOpen(true)}
                             >
                                 <IoIosAddCircle className="text-xl" /> Add Item
                             </button>
 
-                            {/* Modal for selecting field type */}
                             <Modal title="Select Field Type" open={isAddModalOpen} onCancel={() => setIsAddModalOpen(false)} footer={null}>
                                 <div className="flex flex-col gap-2">
                                     {['string', 'array', 'object'].map((type) => (
