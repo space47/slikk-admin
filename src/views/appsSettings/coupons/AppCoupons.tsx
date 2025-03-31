@@ -1,196 +1,148 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
-import Table from '@/components/ui/Table'
+// import { useNavigate } from 'react-router-dom'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
-import { fetchCoupons } from '@/store/slices/couponSlice/couponSlice'
+import { CoupunInitialStateType, setCouponData, setCount, setPage, setPageSize } from '@/store/slices/couponSlice/couponSlice'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { COUPON_STATE, COUPONDATA } from '@/store/types/coupons.types'
 import Spinner from '@/components/ui/Spinner'
 import { ImSpinner9 } from 'react-icons/im'
-import { FaEdit, FaSearch } from 'react-icons/fa'
-import AccessDenied from '@/views/pages/AccessDenied'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { FaSearch } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
-
-type Option = {
-    value: number
-    label: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
+import { couponService } from '@/store/services/couponService'
+import { CouponCoulumns } from './couponUtils/CouponColumns'
+import { Option } from '@/views/org-management/sellers/sellerCommon'
+import { pageSizeOptions } from '@/views/category-management/orderlist/commontypes'
+import AccessDenied from '@/views/pages/AccessDenied'
+import { useLocation } from 'react-router-dom'
 
 const AppCoupons = () => {
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [globalFilter, setGlobalFilter] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [accessDenied, setAccessDenied] = useState(false)
-    const [couponsData, setCouponsData] = useState<COUPONDATA>([])
-    const [totalPages, setTotalPages] = useState(0)
-    const [activateSearchButton, setActivateSearchButton] = useState('')
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
+    const location = useLocation()
+    const { var1 } = location.state || {}
+    const dispatch = useAppDispatch()
+    const [mobileFilter, setMobileFilter] = useState('')
+    const [couponCodeFilter, setCouponCodeFilter] = useState('')
+    const [activateMobileButton, setActivateMobileButton] = useState('')
+    const [activateCodeButton, setActivateCodeButton] = useState('')
 
-    const fetchCouponsData = async () => {
-        try {
-            let couponCode = ''
-            let couponType = ''
-            if (globalFilter) {
-                couponCode = `&coupon_code=${globalFilter}`
-            }
-            if (!globalFilter) {
-                couponType = `&coupon_type=COUPON`
-            }
+    const { coupon, count, page, pageSize } = useAppSelector<CoupunInitialStateType>((state) => state.coupon)
+    const {
+        data: couponsData,
+        isSuccess,
+        isLoading,
+        isError,
+        error,
+    } = couponService.useCouponQuery(
+        {
+            coupon_code: activateCodeButton ? activateCodeButton : undefined,
+            coupon_series: var1 ?? undefined,
+            page,
+            pageSize,
+            mobile: activateMobileButton ? activateMobileButton : undefined,
+        },
+        {
+            refetchOnMountOrArgChange: true,
+        },
+    )
 
-            setLoading(true)
-            const response = await axioisInstance.get(`/merchant/coupon?p=${page}&page_size=${pageSize}${couponCode}${couponType}`)
-            const data = response?.data?.data
-            setTotalPages(data?.count)
-            if (globalFilter) {
-                setCouponsData([data])
-            } else {
-                setCouponsData(data?.results)
-            }
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.error(error)
-        } finally {
-            setLoading(false)
-        }
-    }
+    console.log('ssss', var1)
 
     useEffect(() => {
-        fetchCouponsData()
-    }, [page, pageSize, activateSearchButton])
-
-    const columns = [
-        { header: 'Code', accessorKey: 'code' },
-        {
-            header: 'Image',
-            accessorKey: 'image',
-            cell: ({ getValue }) => (getValue() ? <img src={getValue()} alt="coupon" width="50" /> : 'N/A'),
-        },
-        { header: 'Type', accessorKey: 'type' },
-        { header: 'Value', accessorKey: 'value' },
-        { header: 'Min Cart Value', accessorKey: 'min_cart_value' },
-        { header: 'Max Count', accessorKey: 'max_count' },
-        { header: 'Maximum Price', accessorKey: 'maximum_price' },
-        {
-            header: 'Valid From',
-            accessorKey: 'valid_from',
-            cell: ({ getValue }) => moment(getValue()).format('YYYY-MM-DD'),
-        },
-        {
-            header: 'Valid To',
-            accessorKey: 'valid_to',
-            cell: ({ getValue }) => moment(getValue()).format('YYYY-MM-DD'),
-        },
-        {
-            header: 'Description',
-            accessorKey: 'description',
-            cell: ({ getValue }) => {
-                return (
-                    <div className="w-[200px] h-[70px] overflow-hidden">
-                        <div className="text-ellipsis whitespace-normal line-clamp-3" dangerouslySetInnerHTML={{ __html: getValue() }} />
-                    </div>
-                )
-            },
-        },
-        { header: 'Max Count Per User', accessorKey: 'max_count_per_user' },
-        { header: 'Coupon Used Count', accessorKey: 'coupon_used_count' },
-        { header: 'Frequency', accessorKey: 'frequency' },
-
-        { header: 'Coupon Discount Type', accessorKey: 'coupon_discount_type' },
-
-        {
-            header: 'Edit',
-            accessorKey: 'code',
-            cell: ({ getValue }) => {
-                console.log('Row data:', getValue()) // Check if row.original contains 'code'
-                return (
-                    <Button onClick={() => handleActionClick(getValue())} className="bg-none border-none">
-                        <FaEdit className="text-xl text-blue-600 items-center flex justify-center" />
-                    </Button>
-                )
-            },
-        },
-    ].filter((column) => column.header && column.accessorKey)
-
-    const handleActionClick = (coupon_code: string) => {
-        console.log('clicked', coupon_code)
-        navigate(`/app/appSettings/coupons/${coupon_code}`)
-    }
-
-    const handleCoupons = () => {
-        navigate(`/app/appSettings/coupons/addNew`)
-    }
-
-    if (accessDenied === true) {
-        return <AccessDenied />
-    }
-
+        if (isSuccess) {
+            dispatch(setCouponData(couponsData?.data?.results))
+            dispatch(setCount(couponsData?.data?.count))
+        }
+        if (isSuccess && activateCodeButton) {
+            dispatch(setCouponData([couponsData?.data]))
+        }
+    }, [
+        isSuccess,
+        couponsData?.data?.results,
+        dispatch,
+        couponsData?.data?.count,
+        activateCodeButton,
+        activateMobileButton,
+        couponsData?.data,
+    ])
     const hanldeSearchFuntion = () => {
-        setActivateSearchButton(globalFilter)
+        setActivateMobileButton(mobileFilter)
+    }
+    const hanldeSearchFuntionCode = () => {
+        setActivateCodeButton(couponCodeFilter)
+    }
+    const columns = CouponCoulumns()
+
+    if (isError && error && 'status' in error && error.status === 403) {
+        return <AccessDenied />
     }
 
     return (
         <div>
-            {loading ? (
+            {isLoading ? (
                 <div className="flex justify-center items-center h-screen">
                     <Spinner size={40} indicator={ImSpinner9} />
                 </div>
             ) : (
                 <>
-                    <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center mb-10">
-                        <div className="flex gap-1">
-                            <input
-                                type="search"
-                                placeholder="Search here"
-                                value={globalFilter}
-                                onChange={(e) => setGlobalFilter(e.target.value)}
-                                className="p-2 border rounded"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        hanldeSearchFuntion()
-                                    }
-                                }}
-                            />
-                            <button onClick={hanldeSearchFuntion} className="bg-blue-500 text-white px-2 rounded-lg">
-                                <FaSearch className="text-2xl" />
-                            </button>
+                    <div className="flex flex-col xl:flex-row items-center gap-4 mb-10">
+                        <div className="flex flex-col">
+                            <label className="text-gray-700 font-semibold mb-1">Search by Mobile Number</label>
+                            <div className="flex items-center gap-2 shadow-lg border-gray-300 rounded-lg p-2  ">
+                                <input
+                                    type="search"
+                                    placeholder="Enter mobile number"
+                                    value={mobileFilter}
+                                    className="w-full outline-none rounded-xl"
+                                    onKeyDown={(e) => e.key === 'Enter' && hanldeSearchFuntion()}
+                                    onChange={(e) => setMobileFilter(e.target.value)}
+                                />
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-3 rounded-lg transition-all"
+                                    onClick={hanldeSearchFuntion}
+                                >
+                                    <FaSearch className=" text-xl" />
+                                </button>
+                            </div>
                         </div>
-                        <button
-                            className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700 order-first xl:order-none font-bold"
-                            onClick={handleCoupons}
-                        >
-                            Add Coupons
-                        </button>
+
+                        <div className="flex flex-col">
+                            <label className="text-gray-700 font-semibold mb-1">Search by Coupon Code</label>
+                            <div className="flex items-center gap-2 shadow-lg border-gray-300 rounded-lg p-2  ">
+                                <input
+                                    type="search"
+                                    placeholder="Enter coupon code"
+                                    value={couponCodeFilter}
+                                    className="w-full outline-none rounded-xl"
+                                    onKeyDown={(e) => e.key === 'Enter' && hanldeSearchFuntionCode()}
+                                    onChange={(e) => setCouponCodeFilter(e.target.value)}
+                                />
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-3 rounded-lg transition-all"
+                                    onClick={hanldeSearchFuntionCode}
+                                >
+                                    <FaSearch className=" text-xl " />
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <EasyTable mainData={couponsData} columns={columns} page={page} pageSize={pageSize} />
+                    <EasyTable mainData={coupon} columns={columns} page={page} pageSize={pageSize} />
 
                     <div className="flex items-center justify-between mt-4">
-                        {/* <Pagination currentPage={pageS} total={totalPages} onChange={(page) => setPage(page)} /> */}
-                        <Pagination pageSize={pageSize} currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
+                        <Pagination pageSize={pageSize} currentPage={page} total={count} onChange={(page) => dispatch(setPage(page))} />
                         <div className="min-w-[130px]">
                             <Select<Option>
                                 size="sm"
                                 isSearchable={false}
                                 value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
-                                onChange={(option) => setPageSize(Number(option?.value))}
+                                onChange={(option) => {
+                                    if (option) {
+                                        dispatch(setPage(1))
+                                        dispatch(setPageSize(Number(option?.value)))
+                                    }
+                                }}
                             />
                         </div>
                     </div>

@@ -169,9 +169,9 @@ const OrderDetails = () => {
                                             ) : (
                                                 <>
                                                     <div>
-                                                        <Button variant="accept" size="sm" onClick={() => setShowUTMModal(true)}>
+                                                        {/* <Button variant="accept" size="sm" onClick={() => setShowUTMModal(true)}>
                                                             ADD TICKET
-                                                        </Button>
+                                                        </Button> */}
                                                     </div>
                                                 </>
                                             )}
@@ -250,6 +250,16 @@ const OrderDetails = () => {
                                                 </a>
                                             ))}
                                         </div>
+                                    </div>
+                                )}
+                                {data?.reference_return && (
+                                    <div>
+                                        <a
+                                            href={`/app/returnOrders/${data?.reference_return}`}
+                                            className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                                        >
+                                            <span className="text-gray-700">Return Order:</span> {data?.reference_return}
+                                        </a>
                                     </div>
                                 )}
                                 {data?.exchange_order_id?.length > 0 && (
