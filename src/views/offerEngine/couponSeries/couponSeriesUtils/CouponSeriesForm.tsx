@@ -6,7 +6,7 @@ import { DatePicker } from 'antd'
 import moment from 'moment'
 import { beforeUpload } from '@/common/beforeUpload'
 import { COUPON_SERIES_FORM } from '../couponSeriesCommon'
-import ComonFilterSelect from '@/common/ComonFilterSelect'
+import CommonMultiSelect from '@/common/CommonMultiSelect'
 
 interface CouponProps {
     values: any
@@ -16,27 +16,26 @@ interface CouponProps {
     setFieldValue: any
     resetForm: any
     isEdit?: any
-    setFilterId: any
 }
 
 const DiscountType = [
-    { name: 'PERCENT_OFF', value: 'PERCENT_OFF' },
-    { name: 'FLAT_OFF', value: 'FLAT_OFF' },
+    { name: 'COUPON', value: 'COUPON' },
+    { name: 'PERIODIC', value: 'PERIODIC' },
 ]
-// const ApplicableCategoriesArray = [
-//     { name: 'Electronics', value: 'Electronics' },
-//     { name: 'Clothing', value: 'Clothing' },
-//     { name: 'Shoes', value: 'Shoes' },
-// ]
+const ApplicableCategoriesArray = [
+    { name: 'Electronics', value: 'Electronics' },
+    { name: 'Clothing', value: 'Clothing' },
+    { name: 'Shoes', value: 'Shoes' },
+]
 
 const CouponsType = () => {
-    return ['PERIODIC', 'COUPON', 'REFERRER', 'REFEREE'].map((coupon) => ({
+    return ['PERCENT_OFF', 'FLAT_OFF'].map((coupon) => ({
         label: coupon,
         value: coupon,
     }))
 }
 
-const CouponSeriesForm = ({ values, setFieldValue, setFilterId }: CouponProps) => {
+const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
     return (
         <Form className="">
             <FormContainer>
@@ -86,8 +85,8 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId }: CouponProps) =
                         </Field>
                     </FormItem>
 
-                    <FormItem label="Coupon Type" className="col-span-1 w-full">
-                        <Field name="coupon_type">
+                    <FormItem label="Discount Type" className="col-span-1 w-full">
+                        <Field name="discount_type">
                             {({ field, form }: FieldProps) => {
                                 return (
                                     <Select
@@ -133,33 +132,29 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId }: CouponProps) =
                         </FormItem>
                     </FormContainer>
 
-                    <FormItem label="Discount Type">
+                    <FormItem label="Coupon Type">
                         <Select
                             isClearable
                             className="xl:w-1/2 mt-7 w-full"
                             options={DiscountType}
                             getOptionLabel={(option) => option.name}
                             getOptionValue={(option) => option.value}
-                            value={DiscountType.find((option: any) => option.value === values.discount_type) || null}
+                            value={DiscountType.find((option: any) => option.value === values.coupon_type) || null}
                             onChange={(selectedOption) => {
                                 const newValue: string = selectedOption?.value || ''
-                                setFieldValue('discount_type', newValue)
+                                setFieldValue('coupon_type', newValue)
                             }}
                         />{' '}
                     </FormItem>
 
-                    {/* <CommonMultiSelect
+                    <CommonMultiSelect
                         needCss
                         label="Applicable categories"
                         name="extra_attributes.applicable_categories"
                         options={ApplicableCategoriesArray}
                         className=" mt-7 w-full"
                         setFieldValue={setFieldValue}
-                    /> */}
-
-                    <div>
-                        <ComonFilterSelect setFilterId={setFilterId} />
-                    </div>
+                    />
 
                     {COUPON_SERIES_FORM.slice(5).map((item, key) => (
                         <FormItem key={key} label={item.label} className={item.classname}>
