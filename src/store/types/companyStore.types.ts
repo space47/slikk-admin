@@ -31,7 +31,6 @@ export type StoreDetails = {
     state: string
     type: string
     update_date: string | null
-    users: { email: string; mobile: string; name: string }[]
 }
 
 export type companyStore = {

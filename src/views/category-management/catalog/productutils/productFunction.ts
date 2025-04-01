@@ -11,7 +11,7 @@ export const handleApply = (
     if (brandList?.length > 0 && !selectFilterString) {
         const brandIds = brandList.join(',')
         if (query) query += '&'
-        query += `brand=${encodeURIComponent(brandIds)}`
+        query += `brand=${brandIds}`
     }
     if (selectFilterString && brandList?.length === 0) {
         query += `${selectFilterString}`
@@ -23,9 +23,9 @@ export const handleApply = (
             ?.filter((item) => item !== 'brand')
             ?.join('')
         if (selectFilterString.includes('brand')) {
-            query += `brand=${encodeURIComponent(brandIds)},${data},`
+            query += `brand=${brandIds},${data},`
         } else {
-            query += `${selectFilterString}&brand=${encodeURIComponent(brandIds)}`
+            query += `${selectFilterString}&brand=${brandIds}`
         }
     }
 

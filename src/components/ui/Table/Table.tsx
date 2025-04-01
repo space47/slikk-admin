@@ -31,7 +31,11 @@ const Table = forwardRef<HTMLElement, TableProps>((props, ref) => {
     )
 
     return (
-        <div className={classNames(overflow ? 'overflow-x-auto min-h-[100px] ' : 'overflow-x-auto min-h-[500px] ')}>
+        <div
+            className={classNames(
+                overflow ? 'overflow-x-auto min-h-[100px] scrollbar-hide' : 'overflow-x-auto min-h-[500px] scrollbar-hide',
+            )}
+        >
             <Component className={tableClass} {...rest} ref={ref}>
                 {children}
             </Component>

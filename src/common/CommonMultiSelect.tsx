@@ -21,9 +21,7 @@ interface props {
             label: string
         }>,
     ) => void
-    setFieldValue?: any
-    anyThing?: any
-    isId?: boolean
+    setFieldValue: any
 }
 
 const CommonMultiSelect = ({
@@ -35,7 +33,6 @@ const CommonMultiSelect = ({
     isOnchange = false,
     onChangeValue,
     setFieldValue,
-    isId = false,
 }: props) => {
     return (
         <div>
@@ -44,27 +41,20 @@ const CommonMultiSelect = ({
                     {({ field }: FieldProps) => {
                         const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value?.split(',')
 
-                        const selectedOptions = isId
-                            ? fieldValueArray?.map((item: any) => {
-                                  const selectedOption = options?.find((options: any) => {
-                                      return options.id === item
-                                  })
-                                  return selectedOption
-                              })
-                            : fieldValueArray?.map((item: any) => {
-                                  const selectedOption = options?.find((options) => {
-                                      return options?.name.toLowerCase() === item.toLowerCase()
-                                  })
-                                  return selectedOption
-                              })
-
+                        const selectedOptions = fieldValueArray?.map((item: any) => {
+                            const selectedOption = options?.find((options) => {
+                                return options?.name.toLowerCase() === item.toLowerCase()
+                            })
+                            return selectedOption
+                        })
                         return (
                             <Select
                                 isClearable
                                 isMulti
+                                className="xl:w-1/2 mt-7 w-full"
                                 options={options}
                                 getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) => (isId ? option.id : option.value)}
+                                getOptionValue={(option) => option.value}
                                 value={selectedOptions}
                                 onChange={
                                     isOnchange
