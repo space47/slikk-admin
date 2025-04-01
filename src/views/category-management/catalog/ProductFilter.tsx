@@ -171,10 +171,7 @@ const ProductFilterNest = ({
                                                                             )
 
                                                                         const queryString = Object.entries(groupedValues)
-                                                                            .map(
-                                                                                ([key, values]) =>
-                                                                                    `${key}=${encodeURIComponent(values.join(','))}`,
-                                                                            )
+                                                                            .map(([key, values]) => `${key}=${values.join(',')}`)
                                                                             .join('&')
 
                                                                         form.setFieldValue(field.name, queryString)
