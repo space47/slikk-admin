@@ -61,6 +61,4 @@ export const CouponDiscountTypeArray = [
 export const CouponTypeArray = [
     { label: 'PERIODIC', value: 'PERIODIC' },
     { label: 'COUPON', value: 'COUPON' },
-    { label: 'REFERRAL', value: 'REFERRAL' },
-    { label: 'REFEREE', value: 'REFEREE' },
 ]

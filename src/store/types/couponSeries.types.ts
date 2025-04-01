@@ -16,10 +16,8 @@ export type CouponResults = {
     coupon_type: string
     is_public: boolean
     extra_attributes: {
-        new_users_only?: boolean
-        applicable_categories?: string[]
-        filters?: Record<string, string | number>
-        min_filters_products_amount?: number
+        new_users_only: boolean
+        applicable_categories: string[]
     }
 }
 
@@ -50,8 +48,6 @@ export type CouponSeriesBodyType = {
     extra_attributes?: {
         applicable_categories?: string[]
         new_users_only?: boolean
-        filters?: Record<string, string | number>
-        min_filters_products_amount?: number
     }
 }
 

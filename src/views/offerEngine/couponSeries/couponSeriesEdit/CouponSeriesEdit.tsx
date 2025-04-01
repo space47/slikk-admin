@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, FormContainer } from '@/components/ui'
 import { Form, Formik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import CouponSeriesForm from '../couponSeriesUtils/CouponSeriesForm'
 import { useNavigate, useParams } from 'react-router-dom'
 import { couponSeriesService } from '@/store/services/couponSeriesService'
@@ -19,9 +19,6 @@ const CouponSeriesEdit = () => {
     const { couponSeriesActive } = useAppSelector<CouponSeriesInitialTypes>((state) => state.couponSeries)
     const { data: couponSeriesData, isSuccess } = couponSeriesService.useCouponSeriesQuery({ id: id }, { refetchOnMountOrArgChange: true })
     const [editSeriesData, editSeriesDataResponse] = couponSeriesService.useEditCouponSeriesMutation()
-    const [filterId, setFilterId] = useState<any>()
-
-    console.log('filterId is', filterId)
 
     useEffect(() => {
         if (isSuccess) {
@@ -34,7 +31,7 @@ const CouponSeriesEdit = () => {
             notification.success({
                 message: 'Coupon Series Updated Successfully',
             })
-            navigate(`/app/appSettings/couponsGenerate/generateCoupons`)
+            navigate(-1)
         } else if (editSeriesDataResponse?.error) {
             notification.error({
                 message: 'Failed to update',
@@ -79,15 +76,10 @@ const CouponSeriesEdit = () => {
                 campaign: values?.campaign,
                 coupon_type: values?.coupon_type,
                 is_public: values?.is_public,
-                extra_attributes: {
-                    new_users_only: values?.extra_attributes?.new_users_only,
-                    filters: {
-                        filter_id: filterId ?? values?.extra_attributes?.filters?.filter_id,
-                    },
-                    min_filters_products_amount: values?.extra_attributes?.min_filters_products_amount,
-                },
+                extra_attributes: values?.extra_attributes,
             }).filter(([key, value]) => value !== undefined && value !== null && value !== ''),
         )
+
         try {
             editSeriesData({
                 id: id?.toString(),
@@ -106,22 +98,8 @@ const CouponSeriesEdit = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, setFieldValue, resetForm }) => (
                     <Form className="w-full shadow-xl p-3 rounded-xl ">
-                        <div className="flex gap-6 text-xl font-bold mb-10 items-center ">
-                            <span>Update Coupon Series</span>
-                            <span
-                                className="cursor-pointer bg-red-800 text-white p-2 rounded-xl hover:bg-red-700"
-                                onClick={() => navigate(`/app/appSettings/couponsGenerate/generateCoupons`)}
-                            >
-                                Add Coupons
-                            </span>
-                        </div>
                         <FormContainer className="">
-                            <CouponSeriesForm
-                                setFilterId={setFilterId}
-                                values={values}
-                                setFieldValue={setFieldValue}
-                                resetForm={resetForm}
-                            />
+                            <CouponSeriesForm values={values} setFieldValue={setFieldValue} resetForm={resetForm} />
                         </FormContainer>
                         <FormContainer>
                             <Button variant="solid" type="submit" className="bg-blue-500 text-white">
