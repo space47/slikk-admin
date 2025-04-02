@@ -197,14 +197,14 @@ const AddBanners = () => {
                 )}
 
                 {/* STEP 4 -- Preview Banners */}
-                {currentStep == 4 && (
-                    <PreviewBanner
-                        setCurrentStep={setCurrentStep}
-                        completeBannerFormData={completeBannerFormData}
-                        selectedPage={currentSelectedPage}
-                        selectedSection={selectedSectionHeading}
-                    />
-                )}
+                {/* {currentStep == 4 && (
+                )} */}
+                <PreviewBanner
+                    setCurrentStep={setCurrentStep}
+                    completeBannerFormData={completeBannerFormData}
+                    selectedPage={currentSelectedPage}
+                    selectedSection={selectedSectionHeading}
+                />
             </div>
         </div>
     )
