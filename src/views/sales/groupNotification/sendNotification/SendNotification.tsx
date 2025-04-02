@@ -242,7 +242,7 @@ const SendNotification = () => {
             title: titleView ?? '',
             message: plainTextMessage ?? '',
             name: valueForSchedule?.event_name ?? '',
-            image: imageUpload,
+            ...(valueForSchedule?.image_url_array.length > 0 ? { image: imageUpload } : {}),
             scheduler_config: schedulerConfigs,
             other_config: {
                 filters: [
@@ -273,6 +273,7 @@ const SendNotification = () => {
             notification.success({
                 message: 'Scheduled successfully',
             })
+            navigate(`/app/appsCommuncication/sendNotification`)
         } catch (error: any) {
             console.log(error)
             notification.error({
@@ -280,7 +281,6 @@ const SendNotification = () => {
             })
         } finally {
             setScheduleModal(false)
-            navigate(`/app/appsCommuncication/sendNotification`)
         }
     }
 
