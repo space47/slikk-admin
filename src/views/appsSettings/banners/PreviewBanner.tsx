@@ -5,6 +5,7 @@ import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import AllComponents from '@/preview/BannerComps/AllComponent'
 
 function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, selectedSection }: any) {
     console.log(completeBannerFormData)
@@ -66,7 +67,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
     }
 
     useEffect(() => {
-        fetchBanners()
+        // fetchBanners()
     }, [completeBannerFormData])
 
     useEffect(() => {
@@ -266,6 +267,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                 className={`bg-black flex flex-col gap-y-5 md:gap-y-7 lg:gap-y-10 lg:px-[5%] absolute w-full z-40 overflow-y-scroll py-10`}
             >
                 {/* <AllComponentsLib data={API_BANNERS} size={viewSize} /> */}
+                <AllComponents data={API_BANNERS} size={viewSize}/>
             </div>
         </div>
     )
