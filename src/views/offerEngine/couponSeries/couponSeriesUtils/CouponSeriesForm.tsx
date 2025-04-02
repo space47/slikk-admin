@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import { FormContainer, FormItem, Input, Select, Tooltip, Upload } from '@/components/ui'
 import { Field, FieldProps, Form } from 'formik'
 import { RichTextEditor } from '@/components/shared'
 import { DatePicker } from 'antd'
@@ -7,6 +7,7 @@ import moment from 'moment'
 import { beforeUpload } from '@/common/beforeUpload'
 import { COUPON_SERIES_FORM } from '../couponSeriesCommon'
 import ComonFilterSelect from '@/common/ComonFilterSelect'
+import { CiCircleQuestion } from 'react-icons/ci'
 
 interface CouponProps {
     values: any
@@ -16,18 +17,14 @@ interface CouponProps {
     setFieldValue: any
     resetForm: any
     isEdit?: any
-    setFilterId: any
+    setFilterId?: any
+    filterValue?: any
 }
 
 const DiscountType = [
     { name: 'PERCENT_OFF', value: 'PERCENT_OFF' },
     { name: 'FLAT_OFF', value: 'FLAT_OFF' },
 ]
-// const ApplicableCategoriesArray = [
-//     { name: 'Electronics', value: 'Electronics' },
-//     { name: 'Clothing', value: 'Clothing' },
-//     { name: 'Shoes', value: 'Shoes' },
-// ]
 
 const CouponsType = () => {
     return ['PERIODIC', 'COUPON', 'REFERRER', 'REFEREE'].map((coupon) => ({
@@ -36,14 +33,28 @@ const CouponsType = () => {
     }))
 }
 
-const CouponSeriesForm = ({ values, setFieldValue, setFilterId }: CouponProps) => {
+const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: CouponProps) => {
     return (
         <Form className="">
             <FormContainer>
                 <FormContainer className="grid grid-cols-2 gap-10">
                     {COUPON_SERIES_FORM.slice(0, 5).map((item, key) => (
-                        <FormItem key={key} label={item.label} className={item.classname}>
-                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                        <FormItem key={key} className={item.classname}>
+                            <div className="flex gap-2">
+                                <FormItem label={item.label}></FormItem>{' '}
+                                {item?.tooltip && (
+                                    <Tooltip title={item.tooltip}>
+                                        <CiCircleQuestion className="text-yellow-800 text-xl" />
+                                    </Tooltip>
+                                )}
+                            </div>
+                            <Field
+                                type={item.type}
+                                name={item.name}
+                                placeholder={item.placeholder}
+                                component={Input}
+                                min={item?.min || 0}
+                            />
                         </FormItem>
                     ))}
 
@@ -148,22 +159,27 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId }: CouponProps) =
                         />{' '}
                     </FormItem>
 
-                    {/* <CommonMultiSelect
-                        needCss
-                        label="Applicable categories"
-                        name="extra_attributes.applicable_categories"
-                        options={ApplicableCategoriesArray}
-                        className=" mt-7 w-full"
-                        setFieldValue={setFieldValue}
-                    /> */}
-
                     <div>
-                        <ComonFilterSelect setFilterId={setFilterId} />
+                        <ComonFilterSelect filterId={filterValue} setFilterId={setFilterId} />
                     </div>
 
                     {COUPON_SERIES_FORM.slice(5).map((item, key) => (
-                        <FormItem key={key} label={item.label} className={item.classname}>
-                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                        <FormItem key={key} className={item.classname}>
+                            <div className="flex gap-2">
+                                <FormItem label={item.label}></FormItem>{' '}
+                                {item?.tooltip && (
+                                    <Tooltip title={item.tooltip}>
+                                        <CiCircleQuestion className="text-yellow-800 text-xl" />
+                                    </Tooltip>
+                                )}
+                            </div>
+                            <Field
+                                type={item.type}
+                                name={item.name}
+                                placeholder={item.placeholder}
+                                component={Input}
+                                min={item?.min || 0}
+                            />
                         </FormItem>
                     ))}
                 </FormContainer>

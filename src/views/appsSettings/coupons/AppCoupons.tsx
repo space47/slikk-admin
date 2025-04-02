@@ -15,6 +15,7 @@ import { Option } from '@/views/org-management/sellers/sellerCommon'
 import { pageSizeOptions } from '@/views/category-management/orderlist/commontypes'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { useLocation } from 'react-router-dom'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const AppCoupons = () => {
     // const navigate = useNavigate()
@@ -64,6 +65,8 @@ const AppCoupons = () => {
         activateCodeButton,
         activateMobileButton,
         couponsData?.data,
+        error,
+        isError,
     ])
     const hanldeSearchFuntion = () => {
         setActivateMobileButton(mobileFilter)
@@ -127,25 +130,43 @@ const AppCoupons = () => {
                         </div>
                     </div>
 
-                    <EasyTable mainData={coupon} columns={columns} page={page} pageSize={pageSize} />
+                    {((isError && error && 'status' in error && error.status === 400) || coupon?.length === 0) && (
+                        <>
+                            <div>
+                                <div className="flex justify-center items-center xl:h-[200px]">
+                                    <NotFoundData />
+                                </div>
+                            </div>
+                        </>
+                    )}
 
-                    <div className="flex items-center justify-between mt-4">
-                        <Pagination pageSize={pageSize} currentPage={page} total={count} onChange={(page) => dispatch(setPage(page))} />
-                        <div className="min-w-[130px]">
-                            <Select<Option>
-                                size="sm"
-                                isSearchable={false}
-                                value={pageSizeOptions.find((option) => option.value === pageSize)}
-                                options={pageSizeOptions}
-                                onChange={(option) => {
-                                    if (option) {
-                                        dispatch(setPage(1))
-                                        dispatch(setPageSize(Number(option?.value)))
-                                    }
-                                }}
-                            />
+                    {!error && coupon?.length > 0 && (
+                        <div>
+                            <EasyTable mainData={coupon} columns={columns} page={page} pageSize={pageSize} />
+                            <div className="flex items-center justify-between mt-4">
+                                <Pagination
+                                    pageSize={pageSize}
+                                    currentPage={page}
+                                    total={count}
+                                    onChange={(page) => dispatch(setPage(page))}
+                                />
+                                <div className="min-w-[130px]">
+                                    <Select<Option>
+                                        size="sm"
+                                        isSearchable={false}
+                                        value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                        options={pageSizeOptions}
+                                        onChange={(option) => {
+                                            if (option) {
+                                                dispatch(setPage(1))
+                                                dispatch(setPageSize(Number(option?.value)))
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </>
             )}
         </div>

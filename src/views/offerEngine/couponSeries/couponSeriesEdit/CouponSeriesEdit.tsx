@@ -121,6 +121,7 @@ const CouponSeriesEdit = () => {
                                 values={values}
                                 setFieldValue={setFieldValue}
                                 resetForm={resetForm}
+                                filterValue={initialValue?.extra_attributes?.filters?.filter_id}
                             />
                         </FormContainer>
                         <FormContainer>
