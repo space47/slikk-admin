@@ -312,13 +312,14 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...(mobileimageUpload || row?.mobile_background_image
                         ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                         : {}),
-                    ...(row?.background_config.background_image_aspect_ratio
-                        ? { background_image_aspect_ratio: row?.background_config.background_image_aspect_ratio }
+                    ...(row?.background_config?.background_image_aspect_ratio
+                        ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
                         : backgroundImageAspectRatios[0]
                           ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
                           : {}),
-                    ...(row?.background_config.mobile_image_aspect_ratio
-                        ? { mobile_image_aspect_ratio: row?.background_config.mobile_image_aspect_ratio }
+
+                    ...(row?.background_config?.mobile_image_aspect_ratio
+                        ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
                         : mobileImageAspectRatios[0]
                           ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
                           : {}),
