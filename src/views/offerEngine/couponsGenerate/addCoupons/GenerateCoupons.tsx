@@ -28,7 +28,7 @@ const GenerateCoupons = () => {
     useEffect(() => {
         if (generateCouponResponse?.isSuccess) {
             notification.success({ message: 'Coupon Series Updated Successfully' })
-            navigate(-1)
+            navigate(-2)
         } else if (generateCouponResponse?.error) {
             notification.error({
                 message: 'Failed to update',
@@ -69,7 +69,6 @@ const GenerateCoupons = () => {
         })
         try {
             generateCoupon({ ...formDataEntries })
-            navigate(-2)
         } catch (error: any) {
             notification.error({
                 message: error?.response?.data?.message || 'Failed to add',

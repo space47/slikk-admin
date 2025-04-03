@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import { IoMdAddCircle } from 'react-icons/io'
 import { Field, FieldProps } from 'formik'
-import { Button, Input, Select } from '@/components/ui'
+import { Button, Checkbox, Input, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FILTER_STATE } from '@/store/types/filters.types'
@@ -134,14 +134,24 @@ const FilterSelect = ({
             <FormContainer className="flex gap-3 flex-col xl:flex-row">
                 {MAXMINARRAY.map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-full xl:w-2/3">
-                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={item.placeholder}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                        />
                     </FormItem>
                 ))}
             </FormContainer>
             <FormContainer className="flex gap-3 flex-col xl:flex-row">
                 {OFFARRAY.map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-full xl:w-2/3">
-                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={item.placeholder}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                        />
                     </FormItem>
                 ))}
             </FormContainer>
