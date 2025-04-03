@@ -1,74 +1,78 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 // import { API_RESPONSE } from './data';
-import { AllComponentsLib } from 'slikk-react-comps'
 import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import AllComponents from '@/preview/BannerComps/AllComponent'
 
-function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, selectedSection }: any) {
-    console.log(completeBannerFormData)
-
+function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, selectedSection, headingData }: any) {
+    const navigate = useNavigate()
     const [API_BANNERS, setApiBanners] = useState<any[]>([])
     const [viewSize, setViewSize] = useState('lg')
 
-    const navigate = useNavigate()
-
-    const getFullBannerDataFromBannerFormArray = () => {
-        console.log(selectedPage, selectedSection, completeBannerFormData)
-
-        let FULL_BANNER_API: any = {
-            position: 0,
-            component_type: selectedSection?.component_type,
-            header_config: selectedSection?.header_config,
-            sub_header_config: selectedSection?.sub_header_config,
-            footer_config: selectedSection?.footer_config,
-            background_image: selectedSection?.background_image,
-            section_heading: selectedSection?.section_heading,
-            data_type: selectedSection?.data_type,
-            data: [],
-        }
-
-        console.log('FULL BANNER', FULL_BANNER_API)
-
-        let data: any[] = []
-
-        completeBannerFormData?.forEach((banner: any, index: number) => {
-            console.log(banner)
-            data.push({
-                pk: index,
-                ...banner,
-                quick_filter_tags: banner.quick_filter_tags || [],
-                tags: banner.tags || [],
-            })
-        })
-
-        FULL_BANNER_API.data = data
-
-        console.log([FULL_BANNER_API])
-        setApiBanners((prev) => [FULL_BANNER_API, ...prev])
-    }
-
-    const fetchBanners = async () => {
-        const response = await axioisInstance
-            .get('page/sections?device_type=Web')
-            .then((res) => {
-                return res.data.data
-            })
-            .catch((err) => {
-                return []
-            })
-
-        console.log(response)
-        setApiBanners((prev) => [...prev, ...response])
-
-        getFullBannerDataFromBannerFormArray()
-    }
-
     useEffect(() => {
-        // fetchBanners()
-    }, [completeBannerFormData])
+        const fetchBanners = async () => {
+            const response = await axioisInstance
+                .get('page/sections?device_type=Web')
+                .then((res) => {
+                    return res.data.data
+                })
+                .catch((err) => {
+                    return []
+                })
+
+            console.log(response)
+            setApiBanners(response)
+            const getFullBannerDataFromBannerFormArray = () => {
+                const FULL_BANNER_API: any = {
+                    position: 0,
+                    component_type: selectedSection?.component_type,
+                    component_config: selectedSection?.component_config,
+                    header_config: selectedSection?.header_config,
+                    sub_header_config: selectedSection?.sub_header_config,
+                    footer_config: selectedSection?.footer_config,
+                    background_image: selectedSection?.background_image,
+                    section_heading: selectedSection?.section_heading,
+                    data_type: selectedSection?.data_type,
+                    data: [],
+                }
+
+                console.log('FULL BANNER is', FULL_BANNER_API?.section_heading)
+
+                const data: any[] = []
+
+                completeBannerFormData?.forEach((banner: any, index: number) => {
+                    console.log(banner)
+                    data.push({
+                        pk: index,
+                        ...banner,
+                        quick_filter_tags: banner.quick_filter_tags || [],
+                        tags: banner.tags || [],
+                    })
+                })
+                console.log('data is', data)
+                FULL_BANNER_API.data = data
+
+                console.log('banner api is:', FULL_BANNER_API.data)
+
+                setApiBanners((prev) => {
+                    return prev.map((data) => {
+                        if (data.section_heading === FULL_BANNER_API?.section_heading) {
+                            return {
+                                ...data,
+                                data: [...data.data, ...FULL_BANNER_API.data],
+                            }
+                        }
+                        return data
+                    })
+                })
+            }
+            getFullBannerDataFromBannerFormArray()
+        }
+        fetchBanners()
+    }, [completeBannerFormData, selectedSection])
 
     useEffect(() => {
         console.log('ALL BANNERS', API_BANNERS)
@@ -180,18 +184,6 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             const webLottieUpload = await HandleImage(banner?.lottie_web)
             const mobileLottieUpload = await HandleImage(banner?.lottie_mobile)
 
-            console.log(webImageUpload, mobileImageUpload, mobileVideoUpload, webVideoUpload)
-
-            // if (!webImageUpload && !mobileImageUpload) {
-            //     notification.error({
-            //         message: 'Upload Failed',
-            //         description: 'Error Uploading Banner ' + (index + 1),
-            //     })
-            //     return
-            // }
-
-            console.log('redir url', banner?.web_redirection_url)
-
             const data = {
                 ...banner,
                 page: selectedPage.value,
@@ -217,11 +209,11 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
             console.log('Data to send', data)
 
-            const createBannerAPI = await axioisInstance
+            await axioisInstance
                 .post('banners', data)
                 .then((res) => {
                     notification.success({
-                        message: 'Successfully uploaded banner ' + (index + 1),
+                        message: 'Successfully uploaded banner ' + (index + 1) || res?.data?.message,
                     })
                 })
                 .then(() => navigate('/app/appSettings/banners'))
@@ -263,11 +255,9 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     Laptop View
                 </Button>
             </div>
-            <div
-                className={`bg-black flex flex-col gap-y-5 md:gap-y-7 lg:gap-y-10 lg:px-[5%] absolute w-full z-40 overflow-y-scroll py-10`}
-            >
+            <div className={`bg-black w-full`}>
                 {/* <AllComponentsLib data={API_BANNERS} size={viewSize} /> */}
-                <AllComponents data={API_BANNERS} size={viewSize}/>
+                <AllComponents data={API_BANNERS} size={viewSize} />
             </div>
         </div>
     )
