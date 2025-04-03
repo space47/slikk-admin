@@ -368,16 +368,13 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         : row?.data_type?.barcodes
                           ? { barcodes: row?.data_type?.barcodes }
                           : {}),
-                    filters:
-                        [
-                            ...(row?.division_select ? [`division_${row.division_select}`] : []),
-                            ...(filterId ? [`filterID_${filterId}`] : []),
-                        ].length > 0
-                            ? [
-                                  ...(row?.division_select ? [`division_${row.division_select}`] : []),
-                                  ...(filterId ? [`filterID_${filterId}`] : []),
-                              ]
-                            : row?.data_type?.filters || [],
+                    filters: [
+                        ...(row?.division_select ? [`division_${row.division_select}`] : []),
+                        ...(row?.data_type?.filters ?? []),
+                        ...(filterId ? [`filterID_${filterId}`] : []),
+                    ]
+                        .filter(Boolean)
+                        .flat(),
                 },
                 component_config: {
                     ...row?.component_config,
