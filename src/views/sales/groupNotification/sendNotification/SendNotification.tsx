@@ -267,6 +267,8 @@ const SendNotification = () => {
             mobiles: valueForSchedule?.users ?? [],
             group_name: groupName.join(',') ?? '',
         }
+        console.log('body', body)
+        return body
 
         try {
             const response = await axioisInstance.post(`/user_notification`, body)
