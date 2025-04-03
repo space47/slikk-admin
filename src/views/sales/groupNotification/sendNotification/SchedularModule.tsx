@@ -47,7 +47,7 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                     tz: `Asia/Kolkata`,
                 }
                 const interval = CronExpressionParser.parse(cronExpression, options)
-                const nextDates = interval.take(5).map((date) => date.toString())
+                const nextDates = interval.take(10).map((date) => date.toString())
                 setNextOccurrences(nextDates)
             } catch (error) {
                 setNextOccurrences(['Invalid cron expression'])
@@ -61,10 +61,12 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
             return
         }
 
-        const minute = values.minute_enabled && values.minute_value ? `*/${values.minute_value}` : '*'
-        const hour = values.hour_enabled && values.hour_value ? `*/${values.hour_value}` : '*'
-        const day = values.day_enabled && values.day_value ? `*/${values.day_value}` : '*'
-        const month = values.month_enabled && values.month_value ? `*/${values.month_value}` : '*'
+        const minute =
+            values.minute_enabled && values.minute_value ? `*/${values.minute_value}` : values.minute_value ? `${values.minute_value}` : '0'
+        const hour = values.hour_enabled && values.hour_value ? `*/${values.hour_value}` : values.hour_value ? `${values.hour_value}` : '0'
+        const day = values.day_enabled && values.day_value ? `*/${values.day_value}` : values.day_value ? `${values.day_value}` : '0'
+        const month =
+            values.month_enabled && values.month_value ? `*/${values.month_value}` : values.month_value ? `${values.month_value}` : '0'
 
         const cron = `0 ${minute} ${hour} ${day} ${month} *`
         setCronExpression(cron)
@@ -86,10 +88,30 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                     }
 
                     if (values.repeat_type === 'repeat') {
-                        modifiedValues.minute = values.minute_enabled ? `*/${values.minute_value}` : values.minute_value
-                        modifiedValues.hour = values.hour_enabled ? `*/${values.hour_value}` : values.hour_value
-                        modifiedValues.day = values.day_enabled ? `*/${values.day_value}` : values.day_value
-                        modifiedValues.month = values.month_enabled ? `*/${values.month_value}` : values.month_value
+                        modifiedValues.minute =
+                            values.minute_enabled && values.minute_value
+                                ? `*/${values.minute_value}`
+                                : values.minute_value
+                                  ? `${values.minute_value}`
+                                  : '0'
+                        modifiedValues.hour =
+                            values.hour_enabled && values.hour_value
+                                ? `*/${values.hour_value}`
+                                : values.hour_value
+                                  ? `${values.hour_value}`
+                                  : '0'
+                        modifiedValues.day =
+                            values.day_enabled && values.day_value
+                                ? `*/${values.day_value}`
+                                : values.day_value
+                                  ? `${values.day_value}`
+                                  : '0'
+                        modifiedValues.month =
+                            values.month_enabled && values.month_value
+                                ? `*/${values.month_value}`
+                                : values.month_value
+                                  ? `${values.month_value}`
+                                  : '0'
                         modifiedValues.year = moment().format('YYYY')
                     }
 
@@ -124,6 +146,7 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                                             />
                                             <span className="mr-2">Repeat</span>
                                             <Select
+                                                allowClear
                                                 options={MINUTE_OPTIONS}
                                                 value={values.minute_value}
                                                 style={{ width: 100 }}
@@ -140,6 +163,7 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                                             />
                                             <span className="mr-2">Repeat</span>
                                             <Select
+                                                allowClear
                                                 options={HOUR_OPTIONS}
                                                 value={values.hour_value}
                                                 style={{ width: 100 }}
@@ -156,6 +180,7 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                                             />
                                             <span className="mr-2">Repeat</span>
                                             <Select
+                                                allowClear
                                                 options={DAY_OPTIONS}
                                                 value={values.day_value}
                                                 style={{ width: 100 }}
@@ -172,6 +197,7 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                                             />
                                             <span className="mr-2">Repeat</span>
                                             <Select
+                                                allowClear
                                                 options={MONTH_OPTIONS}
                                                 value={values.month_value}
                                                 style={{ width: 100 }}
@@ -190,6 +216,7 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                                     {cronExpression && (
                                         <div className="mt-6">
                                             <div>
+                                                <div className="mb-5 font-bold">Schedule for next 10 events</div>
                                                 <ul className="list-disc pl-5">
                                                     {nextOccurrences.map((date, index) => (
                                                         <li key={index}>{date}</li>
