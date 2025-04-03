@@ -62,11 +62,11 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
         }
 
         const minute =
-            values.minute_enabled && values.minute_value ? `*/${values.minute_value}` : values.minute_value ? `${values.minute_value}` : '0'
-        const hour = values.hour_enabled && values.hour_value ? `*/${values.hour_value}` : values.hour_value ? `${values.hour_value}` : '0'
-        const day = values.day_enabled && values.day_value ? `*/${values.day_value}` : values.day_value ? `${values.day_value}` : '0'
+            values.minute_enabled && values.minute_value ? `*/${values.minute_value}` : values.minute_value ? `${values.minute_value}` : 0
+        const hour = values.hour_enabled && values.hour_value ? `*/${values.hour_value}` : values.hour_value ? `${values.hour_value}` : 0
+        const day = values.day_enabled && values.day_value ? `*/${values.day_value}` : values.day_value ? `${values.day_value}` : 0
         const month =
-            values.month_enabled && values.month_value ? `*/${values.month_value}` : values.month_value ? `${values.month_value}` : '0'
+            values.month_enabled && values.month_value ? `*/${values.month_value}` : values.month_value ? `${values.month_value}` : 0
 
         const cron = `0 ${minute} ${hour} ${day} ${month} *`
         setCronExpression(cron)
@@ -79,7 +79,7 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                 initialValues={initialValues}
                 onSubmit={(values: any) => {
                     const dateTime = moment(values?.get_date, 'YYYY-MM-DD HH:mm:ss')
-                    const modifiedValues: Record<string, string> = {
+                    const modifiedValues: any = {
                         month: dateTime.format('MM'),
                         minute: dateTime.format('mm'),
                         day: dateTime.format('DD'),
@@ -93,25 +93,21 @@ const SchedularPage = ({ handleOk }: SchedularPageProps) => {
                                 ? `*/${values.minute_value}`
                                 : values.minute_value
                                   ? `${values.minute_value}`
-                                  : '0'
+                                  : 0
                         modifiedValues.hour =
                             values.hour_enabled && values.hour_value
                                 ? `*/${values.hour_value}`
                                 : values.hour_value
                                   ? `${values.hour_value}`
-                                  : '0'
+                                  : 0
                         modifiedValues.day =
-                            values.day_enabled && values.day_value
-                                ? `*/${values.day_value}`
-                                : values.day_value
-                                  ? `${values.day_value}`
-                                  : '0'
+                            values.day_enabled && values.day_value ? `*/${values.day_value}` : values.day_value ? `${values.day_value}` : 0
                         modifiedValues.month =
                             values.month_enabled && values.month_value
                                 ? `*/${values.month_value}`
                                 : values.month_value
                                   ? `${values.month_value}`
-                                  : '0'
+                                  : 0
                         modifiedValues.year = moment().format('YYYY')
                     }
 
