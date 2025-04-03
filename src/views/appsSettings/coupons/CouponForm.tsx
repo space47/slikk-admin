@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import { Button, Checkbox, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
 import { Field, FieldProps, Form } from 'formik'
 import React from 'react'
 import { COUPON_FORM } from './Edit/EditCommon'
@@ -38,7 +38,12 @@ const CouponForm = ({ CouponsType, values, ACTIONARRAY, userAction, setUserActio
                 <FormContainer className="grid grid-cols-2 gap-10">
                     {COUPON_FORM.slice(0, 5).map((item, key) => (
                         <FormItem key={key} label={item.label} className={item.classname}>
-                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                            <Field
+                                type={item.type}
+                                name={item.name}
+                                placeholder={item.placeholder}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                            />
                         </FormItem>
                     ))}
 
@@ -150,7 +155,12 @@ const CouponForm = ({ CouponsType, values, ACTIONARRAY, userAction, setUserActio
 
                     {COUPON_FORM.slice(5, 20).map((item, key) => (
                         <FormItem key={key} label={item.label} className={item.classname}>
-                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                            <Field
+                                type={item.type}
+                                name={item.name}
+                                placeholder={item.placeholder}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                            />
                         </FormItem>
                     ))}
 

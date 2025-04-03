@@ -1,4 +1,4 @@
-import { FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import React from 'react'
 import { CareerFormArray } from './careersCommon'
 import { Field, FieldProps } from 'formik'
@@ -33,7 +33,7 @@ const CareerForm = ({ departmentsData }: props) => {
                             <FormItem key={key} label={item?.label}>
                                 <Field
                                     name={item?.name}
-                                    component={Input}
+                                    component={item?.type === 'checkbox' ? Checkbox : Input}
                                     type={item?.type}
                                     placeholder={`Enter ${item?.label}`}
                                     className="w-3/4"

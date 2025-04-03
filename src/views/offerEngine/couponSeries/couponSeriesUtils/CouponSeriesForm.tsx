@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Select, Tooltip, Upload } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Select, Tooltip, Upload } from '@/components/ui'
 import { Field, FieldProps, Form } from 'formik'
 import { RichTextEditor } from '@/components/shared'
 import { DatePicker } from 'antd'
@@ -52,7 +52,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: C
                                 type={item.type}
                                 name={item.name}
                                 placeholder={item.placeholder}
-                                component={Input}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                 min={item?.min || 0}
                             />
                         </FormItem>
@@ -177,7 +177,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: C
                                 type={item.type}
                                 name={item.name}
                                 placeholder={item.placeholder}
-                                component={Input}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                 min={item?.min || 0}
                             />
                         </FormItem>

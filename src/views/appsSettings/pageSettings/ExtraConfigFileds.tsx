@@ -1,4 +1,4 @@
-import { FormContainer, FormItem, Input } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
 import React from 'react'
 import { TimeFieldsArray } from './configurationCommon'
 import { Field } from 'formik'
@@ -45,7 +45,13 @@ const ExtraConfigFileds = () => {
             </FormItem>
             {TimeFieldsArray.slice(0, 3).map((item, key) => (
                 <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                    <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                    <Field
+                        type={item.type}
+                        name={item.name}
+                        placeholder={`Enter ${item.label}`}
+                        component={item?.type === 'checkbox' ? Checkbox : Input}
+                        min="0"
+                    />
                 </FormItem>
             ))}
             <CommonSelect
@@ -57,7 +63,13 @@ const ExtraConfigFileds = () => {
             />
             {TimeFieldsArray.slice(3).map((item, key) => (
                 <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
-                    <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
+                    <Field
+                        type={item.type}
+                        name={item.name}
+                        placeholder={`Enter ${item.label}`}
+                        component={item?.type === 'checkbox' ? Checkbox : Input}
+                        min="0"
+                    />
                 </FormItem>
             ))}
         </FormContainer>

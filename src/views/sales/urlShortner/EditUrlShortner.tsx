@@ -14,7 +14,7 @@ import { AiOutlineCopy } from 'react-icons/ai'
 import FilterSelect, { targetPageArray } from './FilterSelect'
 import { useEffect, useState } from 'react'
 import { MAXMINARRAY, OFFARRAY, UtmArray } from '../groupNotification/sendNotification/sendNotify.common'
-import { Select } from '@/components/ui'
+import { Checkbox, Select } from '@/components/ui'
 
 const EditUrlShortner = () => {
     const [urlFieldDatas, setUrlFieldDatas] = useState<any>()
@@ -286,7 +286,12 @@ const EditUrlShortner = () => {
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {URLARRAY.slice(0, 1).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                                        />
                                     </FormItem>
                                 ))}
                                 <FormItem label="Target Page">
@@ -312,7 +317,7 @@ const EditUrlShortner = () => {
                                     </FormItem>
                                 )}
                                 <FormItem label="App Only">
-                                    <Field type="checkbox" name="app" component={Input} />
+                                    <Field type="checkbox" name="app" component={Checkbox} />
                                 </FormItem>
                             </FormContainer>
 
@@ -322,7 +327,12 @@ const EditUrlShortner = () => {
                                 <FormContainer className="grid grid-cols-2 gap-6">
                                     {UtmArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className={item.classname}>
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                placeholder={item.placeholder}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                            />
                                         </FormItem>
                                     ))}
                                 </FormContainer>
@@ -332,7 +342,7 @@ const EditUrlShortner = () => {
                                 <Field
                                     type="checkbox"
                                     name="select_filter"
-                                    component={Input}
+                                    component={Checkbox}
                                     onChange={(e) => handleFilterChange(e, setFieldValue)}
                                 />
                             </FormItem>
