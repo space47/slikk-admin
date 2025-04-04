@@ -2,7 +2,7 @@
 import { Card } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 import { ConfigInterface } from './componentsConfigg/commonConfigTypes'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
@@ -14,7 +14,7 @@ const ConfigurationPage = () => {
     const [configurationData, setConfigurationData] = useState<ConfigInterface[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const [accessDenied, setAccessDenied] = useState(false)
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
 
     const fetchConfigurationApi = async () => {
         try {
@@ -69,9 +69,9 @@ const ConfigurationPage = () => {
         return <span className="text-indigo-600">{value}</span>
     }
 
-    const handleEditConfiguration = (id: number | string) => {
-        navigate(`/app/configurations/edit/${id}`)
-    }
+    // const handleEditConfiguration = (id: number | string) => {
+    //     navigate(`/app/configurations/edit/${id}`)
+    // }
     if (showSpinner) {
         return <LoadingSpinner />
     }
@@ -97,12 +97,12 @@ const ConfigurationPage = () => {
                                     <span className="text-gray-700 flex gap-2">
                                         Id:<span className="text-red-600">{item?.id}</span>
                                     </span>
-                                    <span>
+                                    <a href={`/app/configurations/edit/${item?.id}`} target="_blank" rel="noreferrer">
                                         <FaEdit
                                             className="cursor-pointer text-blue-500"
-                                            onClick={() => handleEditConfiguration(item?.id)}
+                                            // onClick={() => handleEditConfiguration(item?.id)}
                                         />
-                                    </span>
+                                    </a>
                                 </div>
                                 <div className="text-lg font-medium text-gray-700">
                                     Name: <span className="text-green-600 break-words">{item?.name}</span>

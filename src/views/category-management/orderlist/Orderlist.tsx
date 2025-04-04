@@ -6,7 +6,7 @@ import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
 import { CHANGE_DELIVERY_OPTIONS, pageSizeOptions, SEARCHOPTIONS, type DropdownStatus, type Order } from './commontypes'
-import { Button, Dropdown, Input } from '@/components/ui'
+import { Button, Dropdown, Input, Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import { FaFilter } from 'react-icons/fa'
 import FilterDialogOrder from './filterDialog/FilterDialog'
@@ -60,6 +60,8 @@ const OrderList = () => {
     const [showNoData, setShowNoData] = useState(false)
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [tabSelect, setTabSelect] = useState('all')
+    const [isDownloading, setIsDownloading] = useState(false)
+
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const handleSelectTab = (value: string) => {
@@ -374,11 +376,15 @@ const OrderList = () => {
                                                 paymentType,
                                                 currentSelectedPage,
                                                 searchInput,
+                                                setIsDownloading,
                                             )
                                         }
+                                        disabled={isDownloading}
                                     >
                                         <IoMdDownload className="text-xl md:text-xl font-extrabold hidden xl:flex" />
-                                        EXPORT
+                                        <span className="flex gap-1 items-center">
+                                            EXPORT {isDownloading && <Spinner size={20} color="white" />}
+                                        </span>
                                     </button>
                                 </div>
                             </div>

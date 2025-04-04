@@ -36,7 +36,12 @@ export const handleDownload = async (
     searchInput: string,
     from: string,
     To_Date: string,
+    setIsDownloading: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
+    setIsDownloading(true)
+    notification.info({
+        message: 'Download in process',
+    })
     try {
         let status = getStatusFilterReturn(tabSelect)
 
@@ -64,5 +69,7 @@ export const handleDownload = async (
         })
     } catch (error) {
         console.error('Error downloading the file:', error)
+    } finally {
+        setIsDownloading(false)
     }
 }
