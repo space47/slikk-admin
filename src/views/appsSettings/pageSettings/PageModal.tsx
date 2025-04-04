@@ -58,7 +58,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
-    }, [])
+    }, [dispatch])
 
     const [initialValue, setInitalValue] = useState<any>(EditInitialValues(particularRow))
     const validationSchema = Yup.object().shape({
