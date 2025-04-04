@@ -228,8 +228,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
     }
 
     return (
-        <div className="gap-3 w-full">
-            <div className="mb-5 self-center w-full px-[10%] flex flex-row gap-3">
+        <div className="gap-3 w-full overflow-hidden">
+            <div className="mb-5 w-full px-[10%]  flex flex-col lg:flex-row gap-3">
                 <Button size="lg" onClick={() => setCurrentStep(3)} variant="new">
                     Add/Edit More Banners
                 </Button>
@@ -244,7 +244,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     Save Banner
                 </Button>
             </div>
-            <div className="mb-5 self-center w-full px-[10%] gap-3 flex">
+            <div className="mb-5 w-full px-[10%] flex flex-col lg:flex-row gap-4">
                 <Button size="lg" onClick={() => setViewSize('sm')} variant="new">
                     Mobile View
                 </Button>

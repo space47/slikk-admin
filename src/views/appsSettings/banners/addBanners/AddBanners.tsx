@@ -99,8 +99,8 @@ const AddBanners = () => {
 
     return (
         <div>
-            <div className="w-full my-10 px-[10%]">
-                <Steps current={currentStep}>
+            <div className="w-full my-10 px-[10%] ">
+                <Steps current={currentStep} className="flex flex-col lg:flex-row gap-4 items-start">
                     <Steps.Item title={currentSelectedPage?.value || 'Select Page'} />
                     <Steps.Item title={selectedSectionHeading?.section_heading || 'Select Section Heading'} />
                     <Steps.Item title="Add Banners and Corresponding Details" />
