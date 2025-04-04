@@ -6,7 +6,7 @@ import DatePicker from '@/components/ui/DatePicker'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-import { Select, Button } from '@/components/ui'
+import { Select, Button, Spinner } from '@/components/ui'
 import Table from '@/components/ui/Table'
 import { Item, REMITANCE } from '@/store/types/remitance.types'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
@@ -32,6 +32,7 @@ const Remitance = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const dispatch = useAppDispatch()
     const ToDate = moment(to).add(1, 'days').format('YYYY-MM-DD')
+    const [isDownloading, setIsDownloading] = useState(false)
 
     const { fetchRemitanceApi, handleDownload, handleOrderItem, handleReturnOrderItem } = RemitanceApis({
         brandValue,
@@ -41,6 +42,7 @@ const Remitance = () => {
         setFullRemitanceResponse,
         setAccessDenied,
         companyData,
+        setIsDownloading,
     })
 
     useEffect(() => {
@@ -160,8 +162,11 @@ const Remitance = () => {
                 {remitance.length > 0 ? (
                     <div className="overflow-x-auto mt-6">
                         <div className="flex justify-center items-center mt-5">
-                            <Button className="justify-center gap-2 flex" variant="new" onClick={handleDownload}>
-                                <FaDownload className="text-xl" /> Download
+                            <Button className="justify-center gap-2 flex" variant="new" onClick={handleDownload} disabled={isDownloading}>
+                                <FaDownload className="text-xl" />{' '}
+                                <span className="flex gap-1 items-center">
+                                    Download {isDownloading && <Spinner size={20} color="white" />}
+                                </span>
                             </Button>
                         </div>
                         <div className="mb-3 flex gap-2">

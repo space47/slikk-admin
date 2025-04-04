@@ -68,6 +68,7 @@ const Returns = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [showSpinner, setShowSpinner] = useState(false)
     const [accessDenied, setAccessDenied] = useState(false)
+    const [isDownloading, setIsDownloading] = useState(false)
 
     const fetchData = async (page: number, pageSize: number, from: string, to: string) => {
         try {
@@ -161,6 +162,7 @@ const Returns = () => {
     )
 
     const handleDownload = async () => {
+        setIsDownloading(true)
         try {
             const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(`merchant/return_order_items?from=${from}&to=${To_Date}&download=true`, {
@@ -176,6 +178,8 @@ const Returns = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading the file:', error)
+        } finally {
+            setIsDownloading(false)
         }
     }
 
@@ -275,9 +279,12 @@ const Returns = () => {
                                     <button
                                         className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mt-6 "
                                         onClick={handleDownload}
+                                        disabled={isDownloading}
                                     >
                                         <IoMdDownload className="text-xl" />
-                                        Export
+                                        <span className="flex gap-1 items-center">
+                                            EXPORT {isDownloading && <Spinner size={20} color="white" />}
+                                        </span>
                                     </button>{' '}
                                     <br />
                                     <br />

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Item, REMITANCE } from '@/store/types/remitance.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { s } from '@fullcalendar/core/internal-common'
 
 interface RemitanceApiProps {
     brandValue: any
@@ -10,6 +11,7 @@ interface RemitanceApiProps {
     setFullRemitanceResponse: React.Dispatch<React.SetStateAction<REMITANCE | undefined>>
     setAccessDenied: React.Dispatch<React.SetStateAction<boolean>>
     companyData?: string
+    setIsDownloading?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const RemitanceApis = ({
@@ -20,6 +22,7 @@ const RemitanceApis = ({
     setFullRemitanceResponse,
     setAccessDenied,
     companyData,
+    setIsDownloading,
 }: RemitanceApiProps) => {
     const fetchRemitanceApi = async () => {
         try {
@@ -36,6 +39,7 @@ const RemitanceApis = ({
         }
     }
     const handleDownload = async () => {
+        setIsDownloading && setIsDownloading(true)
         try {
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
             const response = await axioisInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}&download=true`, {
@@ -51,6 +55,8 @@ const RemitanceApis = ({
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading CSV:', error)
+        } finally {
+            setIsDownloading && setIsDownloading(false)
         }
     }
 

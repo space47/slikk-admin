@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import moment from 'moment'
-import { Button, Dropdown, Input } from '@/components/ui'
+import { Button, Dropdown, Input, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { IoMdDownload } from 'react-icons/io'
 import FilterReturnOrder from './filter/FilterReturnOrder'
@@ -42,6 +42,7 @@ const ReturnOrders = () => {
     const [showMap, setShowMap] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [locationDetails, setLocationDetails] = useState<LocationReturnType[]>([])
+    const [isDownloading, setIsDownloading] = useState(false)
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
@@ -188,14 +189,26 @@ const ReturnOrders = () => {
                             <button
                                 className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
                                 onClick={() =>
-                                    handleDownload(tabSelect, dropdownStatus, deliveryType, currentSelectedPage, searchInput, from, To_Date)
+                                    handleDownload(
+                                        tabSelect,
+                                        dropdownStatus,
+                                        deliveryType,
+                                        currentSelectedPage,
+                                        searchInput,
+                                        from,
+                                        To_Date,
+                                        setIsDownloading,
+                                    )
                                 }
+                                disabled={isDownloading}
                             >
                                 <span className="flex gap-2">
                                     <span>
                                         <IoMdDownload className="text-xl md:text-xl xl:font-extrabold" />
                                     </span>
-                                    EXPORT
+                                    <span className="flex gap-1 items-center">
+                                        EXPORT {isDownloading && <Spinner size={20} color="white" />}
+                                    </span>
                                 </span>
                             </button>
                         </div>
