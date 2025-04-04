@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Item, REMITANCE } from '@/store/types/remitance.types'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { s } from '@fullcalendar/core/internal-common'
+import { notification } from 'antd'
 
 interface RemitanceApiProps {
     brandValue: any
@@ -11,7 +11,9 @@ interface RemitanceApiProps {
     setFullRemitanceResponse: React.Dispatch<React.SetStateAction<REMITANCE | undefined>>
     setAccessDenied: React.Dispatch<React.SetStateAction<boolean>>
     companyData?: string
-    setIsDownloading?: React.Dispatch<React.SetStateAction<boolean>>
+    setIsDownloading: React.Dispatch<React.SetStateAction<boolean>>
+    setIsRowDumpOrder: React.Dispatch<React.SetStateAction<boolean>>
+    setIsRowDumpReturnOrder: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const RemitanceApis = ({
@@ -23,6 +25,8 @@ const RemitanceApis = ({
     setAccessDenied,
     companyData,
     setIsDownloading,
+    setIsRowDumpOrder,
+    setIsRowDumpReturnOrder,
 }: RemitanceApiProps) => {
     const fetchRemitanceApi = async () => {
         try {
@@ -61,6 +65,10 @@ const RemitanceApis = ({
     }
 
     const handleOrderItem = async () => {
+        setIsRowDumpOrder(true)
+        notification.info({
+            message: 'Download in process',
+        })
         try {
             let companyId = ''
             if (companyData) {
@@ -83,10 +91,16 @@ const RemitanceApis = ({
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading CSV:', error)
+        } finally {
+            setIsRowDumpOrder(false)
         }
     }
 
     const handleReturnOrderItem = async () => {
+        setIsRowDumpReturnOrder(true)
+        notification.info({
+            message: 'Download in process',
+        })
         try {
             let companyId = ''
             if (companyData) {
@@ -109,6 +123,8 @@ const RemitanceApis = ({
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading CSV:', error)
+        } finally {
+            setIsRowDumpReturnOrder(false)
         }
     }
 
