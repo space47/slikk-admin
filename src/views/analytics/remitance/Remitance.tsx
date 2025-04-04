@@ -33,6 +33,8 @@ const Remitance = () => {
     const dispatch = useAppDispatch()
     const ToDate = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const [isDownloading, setIsDownloading] = useState(false)
+    const [isRowDumpOrder, setIsRowDumpOrder] = useState(false)
+    const [isRowDumpReturnOrder, setIsRowDumpReturnOrder] = useState(false)
 
     const { fetchRemitanceApi, handleDownload, handleOrderItem, handleReturnOrderItem } = RemitanceApis({
         brandValue,
@@ -43,6 +45,8 @@ const Remitance = () => {
         setAccessDenied,
         companyData,
         setIsDownloading,
+        setIsRowDumpOrder,
+        setIsRowDumpReturnOrder,
     })
 
     useEffect(() => {
@@ -127,13 +131,18 @@ const Remitance = () => {
                     <h5>Dowmload Raw Dumps:</h5> <br />
                     <div className="flex flex-col xl:flex-row gap-4 xl:gap-10">
                         <div className="xl:mt-7">
-                            <Button variant="new" onClick={handleOrderItem}>
-                                Order Item
+                            <Button variant="new" onClick={handleOrderItem} disabled={isRowDumpOrder}>
+                                <div className="flex gap-2 items-center">
+                                    <span> Order Item </span> <span> {isRowDumpOrder && <Spinner size={20} color="white" />}</span>
+                                </div>
                             </Button>
                         </div>
                         <div className="xl:mt-7">
-                            <Button variant="new" onClick={handleReturnOrderItem}>
-                                Return Order Item
+                            <Button variant="new" onClick={handleReturnOrderItem} disabled={isRowDumpReturnOrder}>
+                                <div className="flex gap-2 items-center">
+                                    <span>Return Order Item </span>{' '}
+                                    <span> {isRowDumpReturnOrder && <Spinner size={20} color="white" />}</span>
+                                </div>
                             </Button>
                         </div>
                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
