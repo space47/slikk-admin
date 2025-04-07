@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from '@/components/ui/Dropdown'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { setDefaultCompanyId } from '@/store/action/company.action'
@@ -12,13 +13,19 @@ const Infor = () => {
 
     const dispatch = useAppDispatch()
 
-    const onDropdownItemClick = (index: string) => {
-        dispatch(setDefaultCompanyId(companyList[parseInt(index)]))
+    const onDropdownItemClick = (index: any) => {
+        console.log('Item Index', index)
+        console.log(
+            'Dropdown Item Clicked',
+            companyList?.find((item) => item.id === parseInt(index)),
+        )
+        dispatch(setDefaultCompanyId(companyList?.find((item) => item.id === parseInt(index))))
     }
 
     const onDropdownClick = (e: SyntheticEvent) => {
         console.log('Dropdown Clicked', e)
     }
+
     useEffect(() => {
         fiteredData
     }, [brandSearch])
@@ -32,7 +39,7 @@ const Infor = () => {
     }
 
     const fiteredData = () => {
-        return companyList.filter((item) => item.name.toLowerCase().includes(brandSearch.toLowerCase()))
+        return companyList.filter((item) => item?.name?.toLowerCase().includes(brandSearch.toLowerCase()))
     }
 
     return (
@@ -48,11 +55,11 @@ const Infor = () => {
                     />
                 </div>
                 <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll font-bold ">
-                    {fiteredData().map((item, i) => (
-                        <Dropdown.Item key={i} eventKey={i.toString()} onSelect={onDropdownItemClick}>
+                    {fiteredData().map((item) => (
+                        <Dropdown.Item key={item?.id} eventKey={item?.id?.toString()} onSelect={() => onDropdownItemClick(item?.id)}>
                             <div
-                                onClick={handleOption}
                                 className="text-[12px] capitalize whitespace-break-spaces  min-w-[250px] xl:w-[500px] xl:text-[14px]"
+                                onClick={handleOption}
                             >
                                 {item.name}, {item.registered_name}
                             </div>

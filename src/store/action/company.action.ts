@@ -1,37 +1,36 @@
-import axioisInstance from "@/utils/intercepter/globalInterceptorSetup";
-import { SINGLE_COMPANY_DATA, companyRequest, companyRequestSuccess } from "../types/company.types"
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { SINGLE_COMPANY_DATA, companyRequest, companyRequestSuccess } from '../types/company.types'
 
-export const getUserProfileAPI = () => async (dispatch : any) => {
-    try{
+export const getUserProfileAPI = () => async (dispatch: any) => {
+    try {
         dispatch({
-            type : companyRequest
-        });
+            type: companyRequest,
+        })
 
-        const response = await axioisInstance.get("dashboard/user/profile");
+        const response = await axioisInstance.get('dashboard/user/profile')
 
         dispatch({
-            type : "companyRequestSuccess",
-            payload : {
-                ...response?.data?.data
-            }
-        });
+            type: 'companyRequestSuccess',
+            payload: {
+                ...response?.data?.data,
+            },
+        })
 
-        if(response?.data?.data?.company?.length > 0){
-            dispatch(setDefaultCompanyId(response?.data?.data?.company[0]));
+        if (response?.data?.data?.company?.length > 0) {
+            dispatch(setDefaultCompanyId(response?.data?.data?.company[0]))
         }
-
-    } catch(err){
+    } catch (err) {
         dispatch({
-            type : "companyRequestFailure"
+            type: 'companyRequestFailure',
         })
     }
 }
 
-export const setDefaultCompanyId = (company : SINGLE_COMPANY_DATA) => async (dispatch : any) => {
+export const setDefaultCompanyId = (company: SINGLE_COMPANY_DATA | undefined) => async (dispatch: any) => {
     dispatch({
-        type : "defaultCompanyRequest",
-        payload : {
-            currCompany : company,
-        }
+        type: 'defaultCompanyRequest',
+        payload: {
+            currCompany: company,
+        },
     })
 }
