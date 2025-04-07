@@ -1,9 +1,9 @@
 import { createAction } from '@reduxjs/toolkit'
 
 export type SINGLE_COMPANY_DATA = {
-    id?: number
+    id: number
     registered_name?: string
-    name?: string
+    name: string
     gstin?: string
     segment?: string
     cin?: string

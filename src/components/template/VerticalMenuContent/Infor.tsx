@@ -55,16 +55,18 @@ const Infor = () => {
                     />
                 </div>
                 <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll font-bold ">
-                    {fiteredData().map((item) => (
-                        <Dropdown.Item key={item?.id} eventKey={item?.id?.toString()} onSelect={() => onDropdownItemClick(item?.id)}>
-                            <div
-                                className="text-[12px] capitalize whitespace-break-spaces  min-w-[250px] xl:w-[500px] xl:text-[14px]"
-                                onClick={handleOption}
-                            >
-                                {item.name}, {item.registered_name}
-                            </div>
-                        </Dropdown.Item>
-                    ))}
+                    {fiteredData()
+                        .sort((a, b) => a?.name.localeCompare(b?.name))
+                        .map((item) => (
+                            <Dropdown.Item key={item?.id} eventKey={item?.id?.toString()} onSelect={() => onDropdownItemClick(item?.id)}>
+                                <div
+                                    className="text-[12px] capitalize whitespace-break-spaces  min-w-[250px] xl:w-[500px] xl:text-[14px]"
+                                    onClick={handleOption}
+                                >
+                                    {item.name}, {item.registered_name}
+                                </div>
+                            </Dropdown.Item>
+                        ))}
                 </div>
             </Dropdown>
         </div>
