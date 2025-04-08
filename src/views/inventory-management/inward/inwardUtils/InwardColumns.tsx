@@ -86,3 +86,146 @@ export const InwardColumns = () => {
         [],
     )
 }
+
+export const InwardDetailsColumns = (
+    qcReceived: number | undefined,
+    setQcReceived: React.Dispatch<React.SetStateAction<number | undefined>>,
+    qcPass: number | undefined,
+    setQcPass: React.Dispatch<React.SetStateAction<number | undefined>>,
+    locationInput: string,
+    setLocationInput: React.Dispatch<React.SetStateAction<string>>,
+    formData: {
+        location: string
+        sku: string
+        barcode: string
+    },
+    skuWiseData: any[],
+) => {
+    return useMemo(
+        () => [
+            { header: 'barcode', accessorKey: 'barcode' },
+            { header: 'SKU', accessorKey: 'sku' },
+            {
+                header: 'QUANTITY SENT',
+                accessorKey: 'quantity_sent',
+            },
+            {
+                header: 'QUANTITY RECEIVED',
+                accessorKey: 'quantity_received',
+                cell: ({ row }: any) => {
+                    const value = qcReceived ?? row?.original?.quantity_received
+                    return (
+                        <div className="flex gap-1 items-center">
+                            <input
+                                className="w-[60px] "
+                                type="number"
+                                min={0}
+                                value={value}
+                                onChange={(e) => setQcReceived(Number(e.target.value))}
+                            />
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'QC PASSED',
+                accessorKey: 'qc_passed',
+                cell: ({ row }: any) => {
+                    const value = qcPass ?? row?.original?.qc_passed ?? 0
+                    return (
+                        <div className="flex gap-1 items-center">
+                            <input
+                                className="w-[60px] "
+                                type="number"
+                                min={0}
+                                value={value}
+                                onChange={(e) => setQcPass(Number(e.target.value))}
+                            />
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'QC FAILED',
+                accessorKey: 'qc_failed',
+                cell: ({ row }: any) => {
+                    const received = qcReceived ?? row?.original?.quantity_received ?? 0
+                    const passed = qcPass ?? row?.original?.qc_passed ?? 0
+                    const qcFail = received - passed
+                    return <div>{qcFail}</div>
+                },
+            },
+            {
+                header: 'LOCATION',
+                accessorKey: 'location',
+                cell: () => {
+                    const getSame = skuWiseData?.find((item: any) => item.sku === formData?.sku)
+                    let value = locationInput !== '' ? locationInput : formData?.location
+                    if (getSame) {
+                        value = `${getSame?.location}/${formData?.location}`
+                    }
+                    return (
+                        <div className="flex gap-1 items-center">
+                            <input
+                                className="w-[100px] "
+                                type="text"
+                                min={0}
+                                value={value}
+                                onChange={(e) => setLocationInput(e.target.value)}
+                            />
+                        </div>
+                    )
+                },
+            },
+        ],
+        [formData, qcReceived, qcPass, locationInput, skuWiseData],
+    )
+}
+export const ShipmentDetailsInwardColumns = (
+    qtyInputRef: React.MutableRefObject<any>,
+    handleQuantityChange: (stockId: string, value: number) => void,
+    updatedQuantities: Record<string, number>,
+) => {
+    return useMemo(
+        () => [
+            { header: 'Barcode', accessorKey: 'barcode' },
+            { header: 'SKU', accessorKey: 'sku' },
+            { header: 'Catalog Available', accessorKey: 'catalog_available' },
+            { header: 'Quantity Sent', accessorKey: 'quantity_sent' },
+            {
+                header: 'Quantity Received',
+                accessorKey: 'quantity_received',
+                cell: ({ row }: any) => {
+                    const stockId = row.original.id
+                    return (
+                        <div className="flex gap-2 items-center">
+                            <input
+                                ref={(el) => (qtyInputRef.current[stockId] = el)}
+                                className="w-[80px] rounded-md border border-gray-300 p-2 text-center text-sm focus:border-indigo-500 focus:outline-none"
+                                type="number"
+                                min={0}
+                                value={updatedQuantities[stockId] ?? row.original.quantity_received}
+                                onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
+                            />
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'QC failed',
+                accessorKey: 'qc_failed',
+                cell: ({ row }: any) => {
+                    const quantityReceived = row?.original?.quantity_received ?? 0
+                    const quantitySent = row?.original?.quantity_sent ?? 0
+                    return <div>{quantitySent - quantityReceived}</div>
+                },
+            },
+            {
+                header: 'Created Date',
+                accessorKey: 'create_date',
+                cell: ({ row }: any) => <span>{moment(row.original.create_date).format('DD-MM-YYYY')}</span>,
+            },
+        ],
+        [updatedQuantities],
+    )
+}

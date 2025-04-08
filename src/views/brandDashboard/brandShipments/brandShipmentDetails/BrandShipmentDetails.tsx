@@ -9,6 +9,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast, FaSync } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ShipmentDetailsColumns } from '../brandShipmentsUtils/BrandShipmentColumns'
+import InwardMaterialModule from '@/views/inventory-management/inward/inwardModules/InwardMaterialModule'
 
 const BrandShipmentDetails = () => {
     const { id } = useParams()
@@ -183,7 +184,8 @@ const BrandShipmentDetails = () => {
             {shipmentDetails?.shipment_items?.length > 0 && (
                 <div className="mt-10">
                     <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
-                    <div className="mt-3 bg-white p-4 shadow-lg rounded-xl">
+                    <InwardMaterialModule ShipmentData={shipmentDetails.shipment_items} shipemntCulumns={columns} />
+                    {/* <div className="mt-3 bg-white p-4 shadow-lg rounded-xl">
                         <div
                             className="flex justify-end gap-2 items-center text-xl mb-6 cursor-pointer text-green-600 hover:text-green-500"
                             onClick={handleSyncShipment}
@@ -191,7 +193,7 @@ const BrandShipmentDetails = () => {
                             <FaSync /> <span className="font-bold">Sync</span>
                         </div>
                         <EasyTable overflow mainData={shipmentDetails.shipment_items} columns={columns} />
-                    </div>
+                    </div> */}
                 </div>
             )}
         </div>
