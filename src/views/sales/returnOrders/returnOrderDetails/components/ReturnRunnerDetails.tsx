@@ -16,8 +16,8 @@ const ReturnRunnerDetails = () => {
     const navigate = useNavigate()
     const [partnerChange, setPartnerChange] = useState<string>('')
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
-    const returnProducts = returnOrder?.returnOrders?.return_order_delivery
-    const return_Partner = returnProducts?.find((item) => item?.state !== 'CANCELLED')?.partner
+    const returnProducts = returnOrder?.returnOrders?.return_order_delivery?.find((item) => item?.state !== 'CANCELLED')
+    const return_Partner = returnProducts?.partner
 
     const handleDeliveryChange = async (value: string) => {
         console.log('value for it', value)
