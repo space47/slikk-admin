@@ -7,7 +7,7 @@ export const getAllBrandsAPI = () => async (dispatch: any) => {
             type: 'getAllBrandsRequest',
         })
 
-        const response = await axioisInstance.get('brands?dashboard=true&page_size=100')
+        const response = await axioisInstance.get('brands?dashboard=true&page_size=200')
 
         dispatch({
             type: 'getAllBrandsSuccess',
