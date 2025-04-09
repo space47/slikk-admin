@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import AccessDenied from '@/views/pages/AccessDenied'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, Stock } from './stockOverviewCommon'
-import { Dropdown } from '@/components/ui'
+import { Dropdown, Spinner } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 const FilterArray = [
@@ -52,6 +52,7 @@ const StockOverview = () => {
     const [showDrawer, setShowDrawer] = useState(false)
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
+    const [isDownloading, setIsDownloading] = useState(false)
 
     const fetchAndFilterData = async () => {
         try {
@@ -348,6 +349,10 @@ const StockOverview = () => {
     }
 
     const handleDownload = async () => {
+        setIsDownloading(true)
+        notification.info({
+            message: 'Download in process',
+        })
         try {
             let filterValue = ''
             if (currentSelectedPage?.value === 'sku' && globalFilter) {
@@ -369,6 +374,8 @@ const StockOverview = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading the file:', error)
+        } finally {
+            setIsDownloading(false)
         }
     }
 
@@ -441,9 +448,10 @@ const StockOverview = () => {
                         <button
                             className="hidden xl:flex bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg items-center "
                             onClick={handleDownload}
+                            disabled={isDownloading}
                         >
                             <IoMdDownload className="text-xl" />
-                            Export
+                            <span className="flex gap-1 items-center">EXPORT {isDownloading && <Spinner size={20} color="blue" />}</span>
                         </button>
                     </div>
                 </div>

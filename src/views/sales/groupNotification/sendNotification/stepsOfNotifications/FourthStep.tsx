@@ -27,7 +27,7 @@ const FourthStep = ({ scheduleModal, handleSchedule, values }: FourthStepProps) 
             ))}
 
             <div className="flex gap-3 ">
-                <Field type="checkbox" name="users_all" component={Input} />
+                <Field type="checkbox" name="users_all" component={Checkbox} />
                 <div className="font-bold">Send to all Users</div>
             </div>
             <br />

@@ -4,6 +4,7 @@ import moment from 'moment'
 
 import { CHANGE_DELIVERY_OPTIONS, SEARCHOPTIONS } from '../commontypes'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
 
 export const handleDownload = async (
     from: string,
@@ -13,7 +14,12 @@ export const handleDownload = async (
     paymentType: any,
     currentSelectedPage: any,
     searchInput: any,
+    setIsDownloading: any,
 ) => {
+    setIsDownloading(true)
+    notification.info({
+        message: 'Download in process',
+    })
     try {
         const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
         const status = dropdownStatus?.value.length === 0 ? '' : `&status=${dropdownStatus?.value}`
@@ -51,6 +57,8 @@ export const handleDownload = async (
         document.body.removeChild(link)
     } catch (error) {
         console.error('Error downloading the file:', error)
+    } finally {
+        setIsDownloading(false)
     }
 }
 

@@ -302,18 +302,18 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                 : {}),
             background_config: {
                 ...row?.background_config,
-
                 ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
                 ...(mobileimageUpload || row?.mobile_background_image
                     ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                     : {}),
-                ...(row?.background_config.background_image_aspect_ratio
-                    ? { background_image_aspect_ratio: row?.background_config.background_image_aspect_ratio }
+                ...(row?.background_config?.background_image_aspect_ratio
+                    ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
                     : backgroundImageAspectRatios[0]
                       ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
                       : {}),
-                ...(row?.background_config.mobile_image_aspect_ratio
-                    ? { mobile_image_aspect_ratio: row?.background_config.mobile_image_aspect_ratio }
+
+                ...(row?.background_config?.mobile_image_aspect_ratio
+                    ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
                     : mobileImageAspectRatios[0]
                       ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
                       : {}),

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import { Button } from '@/components/ui'
+import { Button, Spinner } from '@/components/ui'
 
 import {
     useReactTable,
@@ -66,6 +66,7 @@ const AnalyticsOverview = () => {
     const [typeFetch, setTypeFetch] = useState('')
     const [accessDenied, setAccessDenied] = useState(false)
     const [showDrawer, setShowDrawer] = useState(false)
+    const [isDownloading, setIsDownloading] = useState(false)
 
     const fetchData = async (from: string, to: string) => {
         try {
@@ -153,6 +154,7 @@ const AnalyticsOverview = () => {
     }
 
     const handleDownload = async () => {
+        setIsDownloading(true)
         try {
             let stateBrand = ''
             if (stateName && !typeFetch) {
@@ -171,6 +173,8 @@ const AnalyticsOverview = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading the file:', error)
+        } finally {
+            setIsDownloading(false)
         }
     }
 
@@ -310,9 +314,12 @@ const AnalyticsOverview = () => {
                             <button
                                 className="bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex xl:mt-5 "
                                 onClick={handleDownload}
+                                disabled={isDownloading}
                             >
                                 <IoMdDownload className="text-xl" />
-                                Export
+                                <span className="flex gap-1 items-center">
+                                    EXPORT {isDownloading && <Spinner size={20} color="blue" />}
+                                </span>
                             </button>
                         </div>
                     </div>

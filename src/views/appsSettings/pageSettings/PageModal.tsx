@@ -58,7 +58,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
-    }, [])
+    }, [dispatch])
 
     const [initialValue, setInitalValue] = useState<any>(EditInitialValues(particularRow))
     const validationSchema = Yup.object().shape({
@@ -312,13 +312,14 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...(mobileimageUpload || row?.mobile_background_image
                         ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                         : {}),
-                    ...(row?.background_config.background_image_aspect_ratio
-                        ? { background_image_aspect_ratio: row?.background_config.background_image_aspect_ratio }
+                    ...(row?.background_config?.background_image_aspect_ratio
+                        ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
                         : backgroundImageAspectRatios[0]
                           ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
                           : {}),
-                    ...(row?.background_config.mobile_image_aspect_ratio
-                        ? { mobile_image_aspect_ratio: row?.background_config.mobile_image_aspect_ratio }
+
+                    ...(row?.background_config?.mobile_image_aspect_ratio
+                        ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
                         : mobileImageAspectRatios[0]
                           ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
                           : {}),
@@ -367,16 +368,13 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         : row?.data_type?.barcodes
                           ? { barcodes: row?.data_type?.barcodes }
                           : {}),
-                    filters:
-                        [
-                            ...(row?.division_select ? [`division_${row.division_select}`] : []),
-                            ...(filterId ? [`filterID_${filterId}`] : []),
-                        ].length > 0
-                            ? [
-                                  ...(row?.division_select ? [`division_${row.division_select}`] : []),
-                                  ...(filterId ? [`filterID_${filterId}`] : []),
-                              ]
-                            : row?.data_type?.filters || [],
+                    filters: [
+                        ...(row?.division_select ? [`division_${row.division_select}`] : []),
+                        ...(row?.data_type?.filters ?? []),
+                        ...(filterId ? [`filterID_${filterId}`] : []),
+                    ]
+                        .filter(Boolean)
+                        .flat(),
                 },
                 component_config: {
                     ...row?.component_config,
