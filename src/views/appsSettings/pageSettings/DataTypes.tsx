@@ -2,14 +2,21 @@
 import { FormContainer, FormItem, Input } from '@/components/ui'
 import React from 'react'
 import CommonSelect from './CommonSelect'
-import { Field } from 'formik'
+import { Field, FieldProps } from 'formik'
 import FilterSelect from '@/views/sales/urlShortner/FilterSelect'
 import { SubDataTypeArray } from './PageSettingsCommon'
 import { values } from 'lodash'
+import { DatePicker } from 'antd'
+import moment from 'moment'
 
 const GenderArray = [
     { label: 'Men', value: 'men' },
     { label: 'Women', value: 'women' },
+]
+
+const dataTypeValidationArray = [
+    { name: 'data_type.start_date', label: 'Start Date' },
+    { name: 'data_type.end_date', label: 'End Date' },
 ]
 
 const dataTypeArray = [
@@ -35,7 +42,8 @@ interface DataTypesProps {
 }
 
 const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, showAddFilter, values }: DataTypesProps) => {
-    console.log('Is DataType', values?.data_type)
+    console.log('Is DataType', values?.data_type?.type)
+
     return (
         <FormContainer className="grid grid-cols-2 gap-3">
             <CommonSelect needClassName label="Data Types" name="data_type.type" options={dataTypeArray} className="w-2/3" />
@@ -49,6 +57,39 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
             {['wishlist', 'purchases', 'searches', 'spotlight', 'products'].includes(values?.data_type?.type) && (
                 <FormItem label="Hide Info">
                     <Field type="checkbox" name="data_type.hide_info" component={Input} />
+                </FormItem>
+            )}
+            {['categories', 'brands', 'purchases', 'searches', 'spotlight', 'products'].includes(values?.data_type?.type) &&
+                !values?.data_type.validation && (
+                    <>
+                        {dataTypeValidationArray.map((item, key) => (
+                            <FormItem key={key} label={item.label}>
+                                <Field name={item.name}>
+                                    {({ field, form }: FieldProps) => (
+                                        <DatePicker
+                                            disabled={values?.data_type.validation}
+                                            className="w-1/2"
+                                            value={field.value ? moment(field.value, 'YYYY-MM-DD') : null}
+                                            onChange={(value) => {
+                                                form.setFieldValue(item.name, value ? value.format('YYYY-MM-DD') : '')
+                                            }}
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
+                        ))}
+                    </>
+                )}
+            {['categories', 'brands', 'purchases', 'searches', 'spotlight', 'products'].includes(values?.data_type?.type) && (
+                <FormItem label="In Trend Duration(in Days)">
+                    <Field
+                        type="number"
+                        placeholder="Enter Validation in Days"
+                        className="w-1/2"
+                        name="data_type.validation"
+                        component={Input}
+                        min="0"
+                    />
                 </FormItem>
             )}
             <CommonSelect
