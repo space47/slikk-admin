@@ -20,6 +20,14 @@ const ReturnActionActivity = ({
     isModalOpen,
     currentButton,
 }: ReturnActionProps) => {
+    const latestStatus = returnDetails?.log?.[returnDetails.log.length - 1]?.status
+    const deliveryPartner = returnDetails?.return_order_delivery?.[0]?.partner
+
+    const isPartnerNotSlikk = deliveryPartner && deliveryPartner !== 'Slikk'
+
+    const showPickupModal =
+        latestStatus === 'RIDER_ASSIGNED' ||
+        ((latestStatus === 'REVERSE_PICKUP_CREATED' || latestStatus === 'PICKUP_CREATED') && isPartnerNotSlikk)
     return (
         <div>
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
@@ -36,28 +44,16 @@ const ReturnActionActivity = ({
                         storeTaskId={returnDetails?.return_order_delivery[0]?.task_id}
                     />
                 )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'RIDER_ASSIGNED' && (
+
+            {showPickupModal && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
-                    handleoutForDelivery={() => handleAction('out_for_delivery')}
+                    handleoutForDelivery={() => handleAction('out_for_pickup')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
-                    status={returnDetails.status}
                     currentButton={currentButton}
                 />
             )}
-
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') &&
-                (returnDetails?.return_order_delivery[0]?.partner !== 'Slikk' || '' || undefined || null) && (
-                    <OutforDeliveryModal
-                        isModalOpen={isModalOpen}
-                        handleoutForDelivery={() => handleAction('out_for_pickup')}
-                        handleClose={() => setIsModalOpen(false)}
-                        modalContent={modalContent}
-                        currentButton={currentButton}
-                    />
-                )}
 
             {}
 
