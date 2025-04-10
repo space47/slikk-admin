@@ -103,7 +103,7 @@ const CommonMainPageSettings = ({
             onSubmit={handleSubmit}
         >
             {({ values, setFieldValue }) => (
-                <Form className="w-full ">
+                <Form className="w-full h-[600px] overflow-scroll">
                     <FormContainer className="">
                         <FormContainer className="grid grid-cols-2 gap-3">
                             <FormItem asterisk label="Section Header" className="col-span-1 w-[60%] h-[80%]">
@@ -294,7 +294,6 @@ const CommonMainPageSettings = ({
 
                                 <FormItem label="Barcodes" className="w-full flex gap-3">
                                     <input
-                                        disabled
                                         type="text"
                                         name="data_type.barcodes"
                                         value={productData}
@@ -338,7 +337,6 @@ const CommonMainPageSettings = ({
 
                                 <FormItem label="Posts" className="w-full flex gap-7">
                                     <input
-                                        disabled
                                         type="text"
                                         name="data_type.posts"
                                         placeholder="Enter product barcode"

@@ -356,8 +356,15 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
                 },
                 data_type: {
-                    ...row?.data_type,
+                    ...(() => {
+                        const { start_date, end_date, validation, ...rest } = row?.data_type || {}
+                        return rest
+                    })(),
+
                     ...(row?.data_type?.type ? { type: row?.data_type?.type } : {}),
+                    ...(!(row?.data_type?.validation > 0) && row?.data_type?.start_date ? { start_date: row?.data_type?.start_date } : {}),
+                    ...(!(row?.data_type?.validation > 0) && row?.data_type?.end_date ? { end_date: row?.data_type?.end_date } : {}),
+                    ...(row?.data_type?.validation > 0 ? { duration: row?.data_type?.validation } : {}),
                     ...(Array.isArray(postData)
                         ? { posts: postData.join(',') }
                         : row?.data_type?.posts
