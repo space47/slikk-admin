@@ -10,6 +10,7 @@ interface ReturnActionProps {
     modalContent: string | undefined
     isModalOpen: boolean
     currentButton: any
+    buttonText?: any
 }
 
 const ReturnActionActivity = ({
@@ -19,12 +20,13 @@ const ReturnActionActivity = ({
     modalContent,
     isModalOpen,
     currentButton,
+    buttonText,
 }: ReturnActionProps) => {
     const latestStatus = returnDetails?.log?.[returnDetails.log.length - 1]?.status
     const deliveryPartner = returnDetails?.return_order_delivery?.[0]?.partner
 
     const isPartnerNotSlikk = deliveryPartner && deliveryPartner !== 'Slikk'
-
+    console.log('button text', buttonText)
     const showPickupModal =
         latestStatus === 'RIDER_ASSIGNED' ||
         ((latestStatus === 'REVERSE_PICKUP_CREATED' || latestStatus === 'PICKUP_CREATED') && isPartnerNotSlikk)
@@ -45,7 +47,7 @@ const ReturnActionActivity = ({
                     />
                 )}
 
-            {showPickupModal && (
+            {buttonText === 'OUT FOR PICKUP' && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
                     handleoutForDelivery={() => handleAction('out_for_pickup')}
@@ -68,17 +70,6 @@ const ReturnActionActivity = ({
                 />
             )}
 
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP' && (
-                <PickedUpModal
-                    isModalOpen={isModalOpen}
-                    handlePickup={() => handleAction('in_transit')}
-                    handleClose={() => setIsModalOpen(false)}
-                    modalContent={modalContent}
-                    status={returnDetails.status}
-                    currentButton={currentButton}
-                />
-            )}
-
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'IN_TRANSIT' ||
                 returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'SHIPPED') && (
                 <OutForDeliveryModal
@@ -90,7 +81,7 @@ const ReturnActionActivity = ({
                     currentButton={currentButton}
                 />
             )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'OUT_FOR_DELIVERY' && (
+            {buttonText === 'DELIVERED' && (
                 <DeliveredModal
                     isModalOpen={isModalOpen}
                     handleDelivered={() => handleAction('delivered')}
