@@ -151,8 +151,6 @@ const RefundActivity = () => {
         }
     }, [triggerAction])
 
-    console.log('Return', returnDetails?.status)
-
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>

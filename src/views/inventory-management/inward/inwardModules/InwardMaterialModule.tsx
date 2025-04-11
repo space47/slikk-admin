@@ -59,9 +59,7 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
         const searchValue = searchField === 'sku' ? sku : barcode
 
         if (!searchValue.trim()) {
-            notification.warning({
-                message: `Please enter a ${currentSelectedSearch.label}`,
-            })
+            notification.warning({ message: `Please enter a ${currentSelectedSearch.label}` })
             return
         }
 
@@ -85,7 +83,6 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
                 quantity_received: 1,
                 create_date: new Date().toISOString(),
             }
-
             setShipmentData((prev) => [...prev, newItem])
             setSkuWiseData([newItem])
 
@@ -94,10 +91,7 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
             })
         }
 
-        setFormData((prev) => ({
-            ...prev,
-            [searchField]: '',
-        }))
+        setFormData((prev) => ({ ...prev, [searchField]: '' }))
     }
 
     const handleSelect = (value: any) => {
@@ -109,10 +103,7 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
-        setFormData((prevData: any) => ({
-            ...prevData,
-            [name]: value,
-        }))
+        setFormData((prevData: any) => ({ ...prevData, [name]: value }))
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

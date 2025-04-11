@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeUpload } from '@/common/beforeUpload'
-import EasyTable from '@/common/EasyTable'
 import { Card, Upload } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import moment from 'moment'
 import React, { useEffect, useRef, useState } from 'react'
-import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast, FaSync } from 'react-icons/fa'
+import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ShipmentDetailsColumns } from '../brandShipmentsUtils/BrandShipmentColumns'
 import InwardMaterialModule from '@/views/inventory-management/inward/inwardModules/InwardMaterialModule'
@@ -73,23 +72,6 @@ const BrandShipmentDetails = () => {
         { label: 'Delivery Address', value: shipmentDetails?.delivery_address ?? 'N/A' },
         { label: 'Delivery Date', value: moment(shipmentDetails?.delivery_date).format('DD-MM-YYYY') },
     ]
-
-    const handleSyncShipment = async () => {
-        const body = {
-            action: 'sync_item_status',
-        }
-        try {
-            const response = await axioisInstance.patch(`/product-shipment/${id}`, body)
-            notification.success({
-                message: response?.data?.message || 'Shipment synced successfully',
-            })
-            navigate(0)
-        } catch (error: any) {
-            notification.success({
-                message: error?.response?.data?.message || 'Failed to sync shipment',
-            })
-        }
-    }
 
     const handleChangeQty = async (qty: string | number, id: any) => {
         const body = {
@@ -185,15 +167,6 @@ const BrandShipmentDetails = () => {
                 <div className="mt-10">
                     <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
                     <InwardMaterialModule ShipmentData={shipmentDetails.shipment_items} shipemntCulumns={columns} />
-                    {/* <div className="mt-3 bg-white p-4 shadow-lg rounded-xl">
-                        <div
-                            className="flex justify-end gap-2 items-center text-xl mb-6 cursor-pointer text-green-600 hover:text-green-500"
-                            onClick={handleSyncShipment}
-                        >
-                            <FaSync /> <span className="font-bold">Sync</span>
-                        </div>
-                        <EasyTable overflow mainData={shipmentDetails.shipment_items} columns={columns} />
-                    </div> */}
                 </div>
             )}
         </div>
