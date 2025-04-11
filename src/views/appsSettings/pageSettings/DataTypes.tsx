@@ -5,14 +5,10 @@ import CommonSelect from './CommonSelect'
 import { Field, FieldProps } from 'formik'
 import FilterSelect from '@/views/sales/urlShortner/FilterSelect'
 import { SubDataTypeArray } from './PageSettingsCommon'
-import { values } from 'lodash'
 import { DatePicker } from 'antd'
 import moment from 'moment'
-
-const GenderArray = [
-    { label: 'Men', value: 'men' },
-    { label: 'Women', value: 'women' },
-]
+import { useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
 
 const dataTypeValidationArray = [
     { name: 'data_type.start_date', label: 'Start Date' },
@@ -43,6 +39,12 @@ interface DataTypesProps {
 
 const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, showAddFilter, values }: DataTypesProps) => {
     console.log('Is DataType', values?.data_type?.type)
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+
+    const formattedDivisions = divisions?.divisions?.map((item) => ({
+        label: item.name,
+        value: item.name?.toLowerCase(),
+    }))
 
     return (
         <FormContainer className="grid grid-cols-2 gap-3">
@@ -104,7 +106,7 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
                 <Field type="text" name="data_type.filters" placeholder="Place your header Text" component={Input} min="0" />
             </FormItem>
 
-            <CommonSelect needClassName label="Division Select" options={GenderArray} name="division_select" className="w-1/2" />
+            <CommonSelect needClassName label="Division Select" options={formattedDivisions} name="division_select" className="w-1/2" />
 
             <FilterSelect
                 handleAddFilter={handleAddFilter}
