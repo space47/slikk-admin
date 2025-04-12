@@ -265,6 +265,17 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     }
 
     const handleSubmit = async (row: any) => {
+        const componentConfig = {
+            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
+            border: row?.border ?? false,
+            name: row?.name ?? false,
+            name_footer: row?.name_footer ?? false,
+            section_border: row?.section_border ?? false,
+            web_border: row?.web_border ?? false,
+            web_name: row?.web_name ?? false,
+            web_name_footer: row?.web_name_footer ?? false,
+            web_section_border: row?.web_section_border ?? false,
+        }
         console.log('Mobile file in Add', row?.mobile_background_video_array)
         console.log('satrt')
         const imageUpload = await handleimage(row.background_image_array)
@@ -375,17 +386,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
                     Boolean,
                 ),
             },
-            component_config: {
-                ...row?.component_config,
-                border: row?.border ?? false,
-                name: row?.name ?? false,
-                name_footer: row?.name_footer ?? false,
-                section_border: row?.section_border ?? false,
-                web_border: row?.web_border ?? false,
-                web_name: row?.web_name ?? false,
-                web_name_footer: row?.web_name_footer ?? false,
-                web_section_border: row?.web_section_border ?? false,
-            },
+            component_config: componentConfig,
             extra_info: {
                 ...row?.extra_info,
                 ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
@@ -395,14 +396,14 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         }
 
         console.log('End of row')
+        const filteredRow = Object.fromEntries(Object.entries(newRowAdd || {}).filter(([_, value]) => value !== undefined))
 
-        setData((prevData: WebType[]) => [...prevData, newRowAdd])
+        setData((prevData: WebType[]) => [...prevData, filteredRow])
         setSelectedType('')
 
-        console.log('Main Data That is to be send in the API', newRowAdd)
+        console.log('Main Data That is to be send in the API', filteredRow)
         console.log('The row which is set', row)
     }
-    console.log('compo', componentOption)
 
     const [borderForm, setBorderForm] = useState('')
 
