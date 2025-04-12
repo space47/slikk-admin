@@ -11,6 +11,7 @@ import PreviewBanner from '../PreviewBanner'
 import { useAppDispatch } from '@/store'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
+import { FaCircleArrowLeft } from 'react-icons/fa6'
 
 interface DataType {
     type: string
@@ -111,11 +112,16 @@ const AddBanners = () => {
                     <Steps.Item title="Preview and Save" />
                 </Steps>
             </div>
+            {currentStep > 1 && (
+                <div onClick={() => setCurrentStep((prev) => prev - 1)} className="mx-10 cursor-pointer">
+                    <FaCircleArrowLeft className="text-2xl text-red-600 font-bold " />
+                </div>
+            )}
 
             <div className="flex flex-col w-full mt-5 min-h-[70vh] text-[16px]">
                 {/* STEP 1 -- Select Page */}
                 {currentStep == 1 && (
-                    <div className="flex flex-col items-center justify-center w-fit">
+                    <div className="flex  items-center justify-center ">
                         <div className="text-[20px] border">
                             <Dropdown
                                 className="text-xl text-black"
