@@ -52,7 +52,6 @@ const AddBanners = () => {
     const fetchData = async () => {
         if (!currentSelectedPage) return
 
-        console.log('Starting API call')
         try {
             const response = await axioisInstance.get(`/page/config?page_name=${currentSelectedPage.value}`)
             const responsedata = response.data.data.value.Web
@@ -74,7 +73,6 @@ const AddBanners = () => {
     }, [])
 
     const handlePageSelect = (values: string, e: any) => {
-        console.log('Page selected:', values)
         setCurrentSelectedPage({
             value: values,
             name: BANNER_PAGE_NAME.find((item) => item.value === values)?.name || '',
@@ -85,7 +83,6 @@ const AddBanners = () => {
     }
 
     const handleSectionSelect = (value: string) => {
-        console.log('Section selected:', value)
         const selectHeading = sectionHeadingData.find((item) => item.section_heading === value && item.data_type.type === 'banner')
 
         const selectHeadingIndex = sectionHeadingData.findIndex(
@@ -100,12 +97,11 @@ const AddBanners = () => {
     }
 
     const [completeBannerFormData, setCompleteBannerFormData] = useState([{ id: Date.now(), is_clickable: true }])
-    console.log('Section heading data', sectionHeadingData)
 
     return (
         <div>
-            <div className="w-full my-10 px-[10%]">
-                <Steps current={currentStep}>
+            <div className="w-full my-10 px-[10%] ">
+                <Steps current={currentStep} className="flex flex-col lg:flex-row gap-4 items-start">
                     <Steps.Item title={currentSelectedPage?.value || 'Select Page'} />
                     <Steps.Item title={selectedSectionHeading?.section_heading || 'Select Section Heading'} />
                     <Steps.Item title="Add Banners and Corresponding Details" />
@@ -209,6 +205,7 @@ const AddBanners = () => {
                         completeBannerFormData={completeBannerFormData}
                         selectedPage={currentSelectedPage}
                         selectedSection={selectedSectionHeading}
+                        headingData={sectionHeadingData}
                     />
                 )}
             </div>

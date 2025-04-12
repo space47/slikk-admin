@@ -140,7 +140,7 @@ const AppBanners = () => {
             {
                 header: (
                     <div className="flex flex-col gap-2 items-center justify-center">
-                        <Input
+                        <input
                             type="checkbox"
                             name="selectAll"
                             checked={data.length > 0 && bannerIdStore.length === data.length}
@@ -153,7 +153,7 @@ const AppBanners = () => {
                     const bannerId = row.original.id
                     return (
                         <div className="flex items-center justify-center">
-                            <Input
+                            <input
                                 type="checkbox"
                                 name="bannerId"
                                 checked={bannerIdStore.includes(bannerId)}
