@@ -1,32 +1,34 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from '@/components/ui/Dropdown'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { setDefaultCompanyId } from '@/store/action/company.action'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import type { SyntheticEvent } from 'react'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-
-interface Users {
-    id: number
-    name: string
-    registered_name: string
-}
 
 const Infor = () => {
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((state) => state.company.currCompany)
+    const [brandSearch, setBrandSearch] = useState<string>('')
+
     const dispatch = useAppDispatch()
 
-    const onDropdownItemClick = (index: string) => {
-        dispatch(setDefaultCompanyId(companyList[parseInt(index)]))
+    const onDropdownItemClick = (index: any) => {
+        console.log('Item Index', index)
+        console.log(
+            'Dropdown Item Clicked',
+            companyList?.find((item) => item.id === parseInt(index)),
+        )
+        dispatch(setDefaultCompanyId(companyList?.find((item) => item.id === parseInt(index))))
     }
 
     const onDropdownClick = (e: SyntheticEvent) => {
         console.log('Dropdown Clicked', e)
     }
 
-    const navigate = useNavigate()
+    useEffect(() => {
+        fiteredData
+    }, [brandSearch])
 
     const handleOption = () => {
         console.log('object')
@@ -36,20 +38,35 @@ const Infor = () => {
         return
     }
 
+    const fiteredData = () => {
+        return companyList.filter((item) => item?.name?.toLowerCase().includes(brandSearch.toLowerCase()))
+    }
+
     return (
         <div className="text-[14px] max-h-[140px] xl:text-[18px]  font-bold">
             <Dropdown key={selectedCompany.id} title={` ${selectedCompany.name}`} onClick={onDropdownClick}>
+                <div className="mb-5 mt-2 flex items-center">
+                    <input
+                        className="flex items-center rounded-xl"
+                        placeholder="Search by Brand Name"
+                        type="search"
+                        value={brandSearch}
+                        onChange={(e) => setBrandSearch(e.target.value)}
+                    />
+                </div>
                 <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll font-bold ">
-                    {companyList.map((item, i) => (
-                        <Dropdown.Item key={i} eventKey={i.toString()} onSelect={onDropdownItemClick}>
-                            <div
-                                onClick={handleOption}
-                                className="text-[12px] capitalize whitespace-break-spaces  min-w-[250px] xl:w-[500px] xl:text-[14px]"
-                            >
-                                {item.name}, {item.registered_name}
-                            </div>
-                        </Dropdown.Item>
-                    ))}
+                    {fiteredData()
+                        .sort((a, b) => a?.name.localeCompare(b?.name))
+                        .map((item) => (
+                            <Dropdown.Item key={item?.id} eventKey={item?.id?.toString()} onSelect={() => onDropdownItemClick(item?.id)}>
+                                <div
+                                    className="text-[12px] capitalize whitespace-break-spaces  min-w-[250px] xl:w-[500px] xl:text-[14px]"
+                                    onClick={handleOption}
+                                >
+                                    {item.name}, {item.registered_name}
+                                </div>
+                            </Dropdown.Item>
+                        ))}
                 </div>
             </Dropdown>
         </div>

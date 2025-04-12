@@ -10,6 +10,7 @@ interface ReturnActionProps {
     modalContent: string | undefined
     isModalOpen: boolean
     currentButton: any
+    buttonText?: any
 }
 
 const ReturnActionActivity = ({
@@ -19,7 +20,16 @@ const ReturnActionActivity = ({
     modalContent,
     isModalOpen,
     currentButton,
+    buttonText,
 }: ReturnActionProps) => {
+    const latestStatus = returnDetails?.log?.[returnDetails.log.length - 1]?.status
+    const deliveryPartner = returnDetails?.return_order_delivery?.[0]?.partner
+
+    const isPartnerNotSlikk = deliveryPartner && deliveryPartner !== 'Slikk'
+    console.log('button text', buttonText)
+    const showPickupModal =
+        latestStatus === 'RIDER_ASSIGNED' ||
+        ((latestStatus === 'REVERSE_PICKUP_CREATED' || latestStatus === 'PICKUP_CREATED') && isPartnerNotSlikk)
     return (
         <div>
             {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
@@ -36,28 +46,16 @@ const ReturnActionActivity = ({
                         storeTaskId={returnDetails?.return_order_delivery[0]?.task_id}
                     />
                 )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'RIDER_ASSIGNED' && (
+
+            {buttonText === 'OUT FOR PICKUP' && (
                 <OutforDeliveryModal
                     isModalOpen={isModalOpen}
-                    handleoutForDelivery={() => handleAction('out_for_delivery')}
+                    handleoutForDelivery={() => handleAction('out_for_pickup')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
-                    status={returnDetails.status}
                     currentButton={currentButton}
                 />
             )}
-
-            {(returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'REVERSE_PICKUP_CREATED' ||
-                returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKUP_CREATED') &&
-                (returnDetails?.return_order_delivery[0]?.partner !== 'Slikk' || '' || undefined || null) && (
-                    <OutforDeliveryModal
-                        isModalOpen={isModalOpen}
-                        handleoutForDelivery={() => handleAction('out_for_pickup')}
-                        handleClose={() => setIsModalOpen(false)}
-                        modalContent={modalContent}
-                        currentButton={currentButton}
-                    />
-                )}
 
             {}
 
@@ -65,17 +63,6 @@ const ReturnActionActivity = ({
                 <PickedUpModal
                     isModalOpen={isModalOpen}
                     handlePickup={() => handleAction('picked_up')}
-                    handleClose={() => setIsModalOpen(false)}
-                    modalContent={modalContent}
-                    status={returnDetails.status}
-                    currentButton={currentButton}
-                />
-            )}
-
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PICKED_UP' && (
-                <PickedUpModal
-                    isModalOpen={isModalOpen}
-                    handlePickup={() => handleAction('in_transit')}
                     handleClose={() => setIsModalOpen(false)}
                     modalContent={modalContent}
                     status={returnDetails.status}
@@ -94,7 +81,7 @@ const ReturnActionActivity = ({
                     currentButton={currentButton}
                 />
             )}
-            {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'OUT_FOR_DELIVERY' && (
+            {buttonText === 'DELIVERED' && (
                 <DeliveredModal
                     isModalOpen={isModalOpen}
                     handleDelivered={() => handleAction('delivered')}

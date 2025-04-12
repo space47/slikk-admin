@@ -1,24 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Checkbox from '@/components/ui/Checkbox'
 import Upload from '@/components/ui/Upload'
-import Textarea from '@/views/ui-components/forms/Input/Textarea'
 import { Field, Form, Formik } from 'formik'
 import Select from '@/components/ui/Select'
-import * as Yup from 'yup'
 import type { FieldProps } from 'formik'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import { RichTextEditor } from '@/components/shared'
+import { beforeUpload } from '@/common/beforeUpload'
 
 type FormModel = {
     id: number | undefined
     name: string | undefined
     division: number | undefined
-
     title: string | undefined
     description: string | undefined
     image: string | undefined
@@ -34,57 +33,9 @@ type FormModel = {
     images: File[]
 }
 
-type Division = {
-    id: number
-    name: string
-    description: string
-    image: string
-    footer: string
-    quick_filter_tags: string
-    seo_tags: string
-    position: number
-    is_active: true
-    create_date: string
-    update_date: string
-    last_updated_by: string
-}
-interface Option {
-    value: number
-    label: string
-}
-
-const MIN_UPLOAD = 1
-const MAX_UPLOAD = 8
-
-// const validationSchema = Yup.object().shape({
-//     document_number: Yup.string().required('Document Number is required'),
-//     document_date: Yup.date().required('Document Date is required').nullable(),
-//     origin_address: Yup.string()
-//         .required('Supplier Address is required')
-//         .transform((value) => value.trim()),
-//     received_address: Yup.string()
-//         .required('Receiver Address is required')
-//         .transform((value) => value.trim()),
-//     received_by: Yup.string()
-//         .required('Received By is required')
-//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-//     total_sku: Yup.number()
-//         .required('Total SKUs is required')
-//         .integer('Must be an integer'),
-//     total_quantity: Yup.number()
-//         .required('Total Quantity is required')
-//         .integer('Must be an integer'),
-//     singleCheckbox: Yup.boolean(),
-//     // images: Yup.string().nullable(),
-//     // document: Yup.string().nullable(),
-// })
-
 const DivisionEdit = () => {
     const [catedate, setCateData] = useState<FormModel | null>(null)
-    const [divdata, setDivData] = useState<Division[]>()
-    const [options, setOptions] = useState<Option[]>([])
     const [imagview, setImageView] = useState<string[]>([])
-    const [footer, setFooter] = useState()
 
     const { id } = useParams()
     const navigate = useNavigate()
@@ -100,68 +51,10 @@ const DivisionEdit = () => {
         }
     }
 
-    const fetchDivision = async () => {
-        try {
-            const response = await axioisInstance.get(`division`)
-            const divisionData = response.data?.data || []
-            setDivData(divisionData)
-            const transformedOptions = divisionData.map((item: Division) => ({
-                value: item.id,
-                label: item.name,
-            }))
-            setOptions(transformedOptions)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
         fetchData()
-    }, [])
+    }, [id])
 
-    useEffect(() => {
-        fetchDivision()
-    }, [])
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'application/zip',
-            'application/json',
-        ]
-        const MAX_FILE_SIZE = 5000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
-
-    const handleFooterChange = (e: any) => {
-        setFooter(e.target.value)
-    }
     const handleFileupload = async (files: File[]) => {
         const formData = new FormData()
 
@@ -200,14 +93,15 @@ const DivisionEdit = () => {
             images: values.image,
         }
 
-        console.log('formDaata', formData)
-
+        const filteredBody = Object.fromEntries(
+            Object.entries(formData).filter(([_, value]) => value !== '' && value !== null && value !== undefined),
+        )
         try {
-            const response = await axioisInstance.patch('division', formData)
+            const response = await axioisInstance.patch('division', filteredBody)
 
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || 'Category Changed Successfully',
+                description: response?.data?.message || 'Division Changed Successfully',
             })
             navigate('/app/category/division')
         } catch (error: any) {
@@ -245,38 +139,18 @@ const DivisionEdit = () => {
     return (
         <div>
             <div className="text-xl mb-10">Division Edit</div>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-2/3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
-                                <FormItem
-                                    asterisk
-                                    label="Division Name"
-                                    invalid={errors.name && touched.name}
-                                    errorMessage={errors.name}
-                                    className="col-span-1 w-1/2"
-                                >
+                                <FormItem label="Division Name" className="col-span-1 w-1/2">
                                     <Field type="text" name="name" component={Input} />
                                 </FormItem>
-                                <FormItem
-                                    asterisk
-                                    label="Description"
-                                    invalid={errors.description && touched.description}
-                                    errorMessage={errors.description}
-                                    className="col-span-1 w-1/2"
-                                >
+                                <FormItem label="Description" className="col-span-1 w-1/2">
                                     <Field type="text" name="description" component={Input} />
                                 </FormItem>
                             </FormContainer>
-
-                            {/* Image upload.................................................................. */}
-
                             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4">
                                 <div className=" image w-[10%] h-[20%] mt-5  ">
                                     {imagview && imagview.length > 0 ? (
@@ -315,8 +189,6 @@ const DivisionEdit = () => {
                                     <br />
                                 </FormContainer>
                             </FormContainer>
-
-                            {/* Text area.................................................................. */}
                             <FormContainer>
                                 <FormItem
                                     label="Footer"
@@ -332,54 +204,20 @@ const DivisionEdit = () => {
                                     </Field>
                                 </FormItem>
                             </FormContainer>
-
-                            {/* QUick Filter Tag and Position and Gender............................................................ */}
-
                             <FormContainer className="flex flex-row gap-7 ">
-                                <FormItem
-                                    asterisk
-                                    label="Quick Filter Tag"
-                                    invalid={errors.quick_filter_tags && touched.quick_filter_tags}
-                                    errorMessage={errors.quick_filter_tags}
-                                    className="col-span-1 w-1/2"
-                                >
-                                    <Field
-                                        as="textarea"
-                                        name="quick_filter_tags"
-                                        component={Input}
-                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                    />
+                                <FormItem label="Quick Filter Tag" className="col-span-1 w-1/2">
+                                    <Field as="textarea" name="quick_filter_tags" component={Input} />
                                 </FormItem>
 
-                                <FormItem
-                                    asterisk
-                                    label="position"
-                                    invalid={errors.position && touched.position}
-                                    errorMessage={errors.position}
-                                    className="col-span-1 w-1/2"
-                                >
+                                <FormItem label="position" className="col-span-1 w-1/2">
                                     <Field type="text" name="position" component={Input} />
                                 </FormItem>
-                                {/* gender */}
-
-                                <FormItem
-                                    asterisk
-                                    label="Gender"
-                                    invalid={errors.gender && touched.gender}
-                                    errorMessage={errors.gender}
-                                    className="col-span-1 w-1/2"
-                                >
+                                <FormItem label="Gender" className="col-span-1 w-1/2">
                                     <Field name="gender">
                                         {({ field, form }: FieldProps<any>) => {
                                             const genderOptions = [
-                                                {
-                                                    value: 'Men',
-                                                    label: 'Men',
-                                                },
-                                                {
-                                                    value: 'Women',
-                                                    label: 'Women',
-                                                },
+                                                { value: 'Men', label: 'Men' },
+                                                { value: 'Women', label: 'Women' },
                                             ]
 
                                             return (
@@ -397,37 +235,23 @@ const DivisionEdit = () => {
                             </FormContainer>
 
                             {/* Select boxes......................................................................... */}
-                            <FormItem
-                                label="ACTIVE"
-                                invalid={errors.is_active && touched.is_active}
-                                // errorMessage={errors.singleCheckbox}
-                            >
+                            <FormItem label="ACTIVE">
                                 <Field name="is_active" component={Checkbox}>
                                     Active
                                 </Field>
                             </FormItem>
 
-                            <FormItem
-                                label="TRY_&_BUY"
-                                invalid={errors.is_try_and_buy && touched.is_try_and_buy}
-                                // errorMessage={errors.singleCheckbox}
-                            >
+                            <FormItem label="TRY_&_BUY">
                                 <Field name="is_try_and_buy" component={Checkbox}>
                                     Try and Buy
                                 </Field>
                             </FormItem>
 
-                            {/* Handle Submit........................... */}
-
                             <FormItem>
                                 <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
                                     Reset
                                 </Button>
-                                <Button
-                                    variant="solid"
-                                    type="submit"
-                                    // onClick={() => handleSubmit()}
-                                >
+                                <Button variant="solid" type="submit">
                                     Submit
                                 </Button>
                             </FormItem>

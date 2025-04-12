@@ -184,8 +184,25 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             const webLottieUpload = await HandleImage(banner?.lottie_web)
             const mobileLottieUpload = await HandleImage(banner?.lottie_mobile)
 
+            console.log(webImageUpload, mobileImageUpload, mobileVideoUpload, webVideoUpload)
+
+            // if (!webImageUpload && !mobileImageUpload) {
+            //     notification.error({
+            //         message: 'Upload Failed',
+            //         description: 'Error Uploading Banner ' + (index + 1),
+            //     })
+            //     return
+            // }
+
+            console.log('redir url', banner?.web_redirection_url)
+            console.log('banner index', banner)
             const data = {
                 ...banner,
+                division: banner?.division?.map((item: any) => item.name).join(',') || '',
+                category: banner?.category?.map((item: any) => item.name).join(',') || '',
+                sub_category: banner?.sub_category?.map((item: any) => item.name).join(',') || '',
+                product_type: banner?.product_type?.map((item: any) => item.name).join(',') || '',
+                brand: banner?.brand?.map((item: any) => item.name).join(',') || '',
                 page: selectedPage.value,
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',

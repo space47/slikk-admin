@@ -66,15 +66,6 @@ export const COUPON_SERIES_FORM = [
         component: { Input },
         status: 'max_count_per_user',
     },
-    {
-        label: 'Minimum Filter Products Amount',
-        classname: 'col-span-1 w-full',
-        type: 'number',
-        name: 'extra_attributes.min_filters_products_amount',
-        placeholder: 'Enter Minimum Filter Products Amount',
-        component: { Input },
-        status: 'extra_attributes.min_filters_products_amount',
-    },
 
     {
         label: 'Is Public',

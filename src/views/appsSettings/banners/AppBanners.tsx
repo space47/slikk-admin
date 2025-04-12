@@ -414,7 +414,7 @@ const AppBanners = () => {
                     </div>
                 </div>
             </div>
-            <EasyTable isNotSort mainData={data} columns={columns} page={page} pageSize={pageSize} />
+            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
                 <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
                 <div style={{ minWidth: 130 }}>

@@ -30,7 +30,7 @@ export const getButtonAndModalContent = (
         '': 'CREATE REVERSE PICKUP',
         RIDER_ASSIGNED: 'OUT FOR PICKUP',
         OUT_FOR_PICKUP: 'PICKED UP',
-        PICKED_UP: 'IN TRANSIT',
+        PICKED_UP: 'DELIVERED',
         SHIPPED: 'OUT FOR DELIVERY',
         IN_TRANSIT: 'OUT FOR DELIVERY',
         OUT_FOR_DELIVERY: 'DELIVERED',

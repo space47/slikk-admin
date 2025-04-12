@@ -9,12 +9,11 @@ import React, { useState, useEffect } from 'react'
 import { Modal, notification } from 'antd'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import { DeliveredModal, OutForDeliveryModal, OutforDeliveryModal, PickedUpModal } from './RefundModal'
+import { PickedUpModal } from './RefundModal'
 import { useAppSelector } from '@/store'
 import { ReturnOrderState } from '@/store/types/returnDetails.types'
 import { getButtonAndModalContent } from './returnOrderCommon'
 import ReturnActionActivity from './ReturnActionActivity'
-import ReturnOrderDetails from '../ReturnOrderDetails'
 
 const RefundActivity = () => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
@@ -156,6 +155,11 @@ const RefundActivity = () => {
     return (
         <Card className="mb-10 flex flex-col">
             <h5 className="mb-4">Activity</h5>
+            {returnDetails?.status === 'ACCEPTED' && (
+                <div>
+                    The Status is <span className="text-red-500 font-bold">{returnDetails?.status}</span> and cannot be processed further
+                </div>
+            )}
             <Timeline className="mb-5">
                 {returnDetails?.log?.[returnDetails.log.length - 1]?.status === '' &&
                 returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'PARTIALLY_ACCEPTED' ? (
@@ -179,7 +183,7 @@ const RefundActivity = () => {
                 )}
             </Timeline>
             {/* buttons........................................................................................................ */}
-            {buttonText && returnDetails?.status && returnDetails.status !== 'CANCELLED' && (
+            {buttonText && returnDetails?.status && returnDetails.status !== 'CANCELLED' && returnDetails.status !== 'ACCEPTED' && (
                 <Button variant="solid" onClick={() => showModal(content)}>
                     {buttonText}
                 </Button>
@@ -203,6 +207,7 @@ const RefundActivity = () => {
                 setIsModalOpen={setIsModalOpen}
                 modalContent={modalContent}
                 currentButton={currentButton}
+                buttonText={buttonText}
             />
 
             {returnDetails?.log?.[returnDetails.log.length - 1]?.status === 'DELIVERED' &&

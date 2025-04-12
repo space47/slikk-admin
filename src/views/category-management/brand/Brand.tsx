@@ -22,7 +22,7 @@ const Brand = () => {
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
-            const filtervalue = globalFilter ? `&q=${encodeURIComponent(globalFilter)}` : ''
+            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
             const response = await axiosInstance.get(`brands?dashboard=true&p=${page}&page_size=${pageSize}${filtervalue}`)
             const data = response.data.data.results
             const total = response.data.data.count

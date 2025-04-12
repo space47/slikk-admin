@@ -5,7 +5,7 @@ import DatePicker from '@/components/ui/DatePicker'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-import { Select, Button, Pagination } from '@/components/ui'
+import { Select, Button, Pagination, Spinner } from '@/components/ui'
 import Table from '@/components/ui/Table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Item, REMITANCE } from '@/store/types/remitance.types'
@@ -13,6 +13,8 @@ import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-tabl
 import { FaDownload } from 'react-icons/fa'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { use } from 'i18next'
+import { notification } from 'antd'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -29,6 +31,9 @@ const AnalyticsReports = () => {
     const [pageSize, setPageSize] = useState(10)
     const ToDate = moment(to).add(1, 'days').format('YYYY-MM-DD')
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const [isDownloading, setIsDownloading] = useState(false)
+    const [isRowDumpOrder, setIsRowDumpOrder] = useState(false)
+    const [isRowDumpReturnOrder, setIsRowDumpReturnOrder] = useState(false)
 
     const dispatch = useAppDispatch()
 
@@ -77,6 +82,10 @@ const AnalyticsReports = () => {
     }
 
     const handleDownload = async () => {
+        setIsDownloading(true)
+        notification.info({
+            message: 'Download in process',
+        })
         try {
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
             const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}&download=true`, {
@@ -92,10 +101,16 @@ const AnalyticsReports = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading CSV:', error)
+        } finally {
+            setIsDownloading(false)
         }
     }
 
     const handleOrderItem = async () => {
+        setIsRowDumpOrder(true)
+        notification.info({
+            message: 'Download in process',
+        })
         try {
             const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
@@ -114,10 +129,16 @@ const AnalyticsReports = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading CSV:', error)
+        } finally {
+            setIsRowDumpOrder(false)
         }
     }
 
     const handleReturnOrderItem = async () => {
+        setIsRowDumpReturnOrder(true)
+        notification.info({
+            message: 'Download in process',
+        })
         try {
             const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
@@ -136,6 +157,8 @@ const AnalyticsReports = () => {
             document.body.removeChild(link)
         } catch (error) {
             console.error('Error downloading CSV:', error)
+        } finally {
+            setIsRowDumpReturnOrder(false)
         }
     }
 
@@ -216,13 +239,22 @@ const AnalyticsReports = () => {
                 <hr />
                 <div>
                     <h5>Dowmload Raw Dumps:</h5> <br />
-                    <div className="flex flex-col xl:flex-row gap-4 xl:gap-10">
-                        <Button variant="new" onClick={handleOrderItem}>
-                            Order Item
-                        </Button>
-                        <Button variant="new" onClick={handleReturnOrderItem}>
-                            Return Order Item
-                        </Button>
+                    <div className="flex flex-col gap-4 xl:flex-row">
+                        <div className="xl:mt-7">
+                            <Button variant="new" onClick={handleOrderItem} disabled={isRowDumpOrder}>
+                                <div className="flex gap-2 items-center">
+                                    <span> Order Item </span> <span> {isRowDumpOrder && <Spinner size={20} color="white" />}</span>
+                                </div>
+                            </Button>
+                        </div>
+                        <div className="xl:mt-7">
+                            <Button variant="new" onClick={handleReturnOrderItem} disabled={isRowDumpReturnOrder}>
+                                <div className="flex gap-2 items-center">
+                                    <span>Return Order Item </span>{' '}
+                                    <span> {isRowDumpReturnOrder && <Spinner size={20} color="white" />}</span>
+                                </div>
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -234,8 +266,11 @@ const AnalyticsReports = () => {
                 {remitance.length > 0 ? (
                     <div className="overflow-x-auto mt-6">
                         <div className="flex justify-center items-center mt-5">
-                            <Button onClick={handleDownload} variant="new" className="justify-center gap-2 flex">
-                                <FaDownload className="text-xl" /> Download
+                            <Button onClick={handleDownload} variant="new" className="justify-center gap-2 flex" disabled={isDownloading}>
+                                <FaDownload className="text-xl" />{' '}
+                                <span className="flex gap-1 items-center">
+                                    Download {isDownloading && <Spinner size={20} color="white" />}
+                                </span>
                             </Button>
                         </div>
                         <div className="mb-3 flex gap-2">

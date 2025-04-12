@@ -58,7 +58,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllFiltersAPI())
-    }, [])
+    }, [dispatch])
 
     const [initialValue, setInitalValue] = useState<any>(EditInitialValues(particularRow))
     const validationSchema = Yup.object().shape({
@@ -274,6 +274,18 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleSubmit = async (row: any) => {
+        const componentConfig = {
+            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
+            border: row?.border ?? false,
+            name: row?.name ?? false,
+            name_footer: row?.name_footer ?? false,
+            section_border: row?.section_border ?? false,
+            web_border: row?.web_border ?? false,
+            web_name: row?.web_name ?? false,
+            web_name_footer: row?.web_name_footer ?? false,
+            web_section_border: row?.web_section_border ?? false,
+        }
+
         try {
             console.log('handleSubmit called')
             const imageUpload = await handleimage(row.background_image_array)
@@ -356,8 +368,15 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                     ...(subHeaderVideoUpload ? { video: subHeaderVideoUpload } : {}),
                 },
                 data_type: {
-                    ...row?.data_type,
+                    ...(() => {
+                        const { start_date, end_date, validation, ...rest } = row?.data_type || {}
+                        return rest
+                    })(),
+
                     ...(row?.data_type?.type ? { type: row?.data_type?.type } : {}),
+                    ...(!(row?.data_type?.validation > 0) && row?.data_type?.start_date ? { start_date: row?.data_type?.start_date } : {}),
+                    ...(!(row?.data_type?.validation > 0) && row?.data_type?.end_date ? { end_date: row?.data_type?.end_date } : {}),
+                    ...(row?.data_type?.validation > 0 ? { duration: row?.data_type?.validation } : {}),
                     ...(Array.isArray(postData)
                         ? { posts: postData.join(',') }
                         : row?.data_type?.posts
@@ -368,28 +387,15 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                         : row?.data_type?.barcodes
                           ? { barcodes: row?.data_type?.barcodes }
                           : {}),
-                    filters:
-                        [
-                            ...(row?.division_select ? [`division_${row.division_select}`] : []),
-                            ...(filterId ? [`filterID_${filterId}`] : []),
-                        ].length > 0
-                            ? [
-                                  ...(row?.division_select ? [`division_${row.division_select}`] : []),
-                                  ...(filterId ? [`filterID_${filterId}`] : []),
-                              ]
-                            : row?.data_type?.filters || [],
+                    filters: [
+                        ...(row?.division_select ? [`division_${row.division_select}`] : []),
+                        ...(row?.data_type?.filters ?? []),
+                        ...(filterId ? [`filterID_${filterId}`] : []),
+                    ]
+                        .filter(Boolean)
+                        .flat(),
                 },
-                component_config: {
-                    ...row?.component_config,
-                    border: row?.border ?? false,
-                    name: row?.name ?? false,
-                    name_footer: row?.name_footer ?? false,
-                    section_border: row?.section_border ?? false,
-                    web_border: row?.web_border ?? false,
-                    web_name: row?.web_name ?? false,
-                    web_name_footer: row?.web_name_footer ?? false,
-                    web_section_border: row?.web_section_border ?? false,
-                },
+                component_config: componentConfig,
                 extra_info: {
                     ...row?.extra_info,
                     ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
@@ -399,10 +405,12 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 ...(row?.order_count ? { order_count: row?.order_count } : {}),
             }
 
+            const filteredRow = Object.fromEntries(Object.entries(newRow || {}).filter(([_, value]) => value !== undefined))
+
             setShowSpinner(false)
-            setParticularRow(newRow)
+            setParticularRow(filteredRow)
             console.log('Barecode THAT HAS BEEN UPDATED', newRow.data_type.barcodes)
-            console.log('FINAL ADD INSIDE SUBMIT', newRow)
+            console.log('FINAL ADD INSIDE SUBMIT', filteredRow)
         } catch (error) {
             console.error('Error in handleSubmit:', error)
         }

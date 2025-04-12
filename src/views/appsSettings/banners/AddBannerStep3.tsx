@@ -12,6 +12,7 @@ import { DatePicker, notification } from 'antd'
 import DateAndTimePicker from '@/common/DateAndTime'
 import moment from 'moment'
 import { Field } from 'formik'
+import BannerDateSelector from './BannerDateSelector'
 
 function AddBannerStep3({ setCurrentStep, completeBannerFormData, setCompleteBannerFormData }: any) {
     const [bannerForm, setBannerFormData] = useState<BANNER_UPLOAD_DATA[]>(completeBannerFormData)
@@ -123,7 +124,6 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
         const formattedValue = moment(value).format('YYYY-MM-DD HH:mm:ss')
         setFromDateAndTime(formattedValue)
 
-        // Update the bannerForm with from_date
         const updatedBannerForm = [...bannerForm]
         updatedBannerForm[index] = {
             ...updatedBannerForm[index],
@@ -255,49 +255,37 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 ))}
             </form>
 
-            <div className="flex flex-col gap-2">
-                <div>Start Date:</div>
-                <DatePicker
-                    showTime
-                    placeholder=""
-                    onChange={(value) => {
-                        handleFromTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
-                    }}
-                />
-            </div>
-
-            <div className="flex flex-col gap-2">
-                <div>End Date:</div>
-
-                <DatePicker
-                    showTime
-                    placeholder=""
-                    onChange={(value) => {
-                        handleToTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
-                    }}
-                />
-            </div>
+            <BannerDateSelector
+                handleTimeChange={(value) => {
+                    handleFromTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                }}
+                valueDate={bannerForm[index]?.from_date}
+                label="Start Date"
+            />
+            <BannerDateSelector
+                handleTimeChange={(value: any) => {
+                    handleToTimeChange(value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
+                }}
+                valueDate={bannerForm[index]?.to_date}
+                label="End Date"
+            />
 
             <div className="flex flex-col">
                 <div>Division</div>
                 <Select
                     isMulti
-                    defaultValue={bannerForm[index]['division'] || []}
+                    value={bannerForm[index]['division'] || []}
                     options={divisions.divisions}
                     getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
-                        console.log(newVal, actionMeta)
-
+                        console.log('DAGA ', bannerForm[index]['division'])
                         const selectedCategories = newVal ? newVal.map((division) => division.categories).flat() : []
-
                         handleMultiSelect('category', '')
                         handleMultiSelect('sub_category', '')
                         handleMultiSelect('product_type', '')
-
                         setFilteredCategories(selectedCategories)
-
-                        handleMultiSelect('division', newVal?.map((val) => val?.name)?.join(','))
+                        handleMultiSelect('division', newVal)
                     }}
                 />
             </div>
@@ -306,21 +294,17 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 <div>Category</div>
                 <Select
                     isMulti
-                    defaultValue={bannerForm[index]['category'] || []}
+                    value={bannerForm[index]['category'] || []}
                     options={filteredCategories}
                     getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
-
                         const selectedSubCategories = newVal ? newVal.map((category) => category.sub_categories).flat() : []
-
                         handleMultiSelect('sub_category', '')
                         handleMultiSelect('product_type', '')
-
                         setFilteredSubCategories(selectedSubCategories)
-
-                        handleMultiSelect('category', newVal?.map((val) => val?.name)?.join(','))
+                        handleMultiSelect('category', newVal)
                     }}
                 />
             </div>
@@ -329,20 +313,16 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 <div>Sub Category</div>
                 <Select
                     isMulti
-                    defaultValue={bannerForm[index]['sub_category'] || []}
+                    value={bannerForm[index]['sub_category'] || []}
                     options={filteredSubCategories}
                     getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
-
                         const selectedProductTypes = newVal ? newVal.map((subCategory) => subCategory.product_types).flat() : []
-
                         handleMultiSelect('product_type', '')
-
                         setFilteredProductTypes(selectedProductTypes)
-
-                        handleMultiSelect('sub_category', newVal?.map((val) => val?.name)?.join(','))
+                        handleMultiSelect('sub_category', newVal)
                     }}
                 />
             </div>
@@ -351,14 +331,13 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 <div>Product Type</div>
                 <Select
                     isMulti
-                    defaultValue={bannerForm[index]['product_type'] || []}
+                    value={bannerForm[index]['product_type'] || []}
                     options={filteredProductTypes}
                     getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
-
-                        handleMultiSelect('product_type', newVal?.map((val) => val?.name)?.join(','))
+                        handleMultiSelect('product_type', newVal)
                     }}
                 />
             </div>
@@ -367,13 +346,13 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 <div>Brand</div>
                 <Select
                     isMulti
-                    defaultValue={bannerForm[index]['brand'] || []}
+                    value={bannerForm[index]['brand'] || []}
                     options={brands.brands}
                     getOptionLabel={(option) => option?.name}
                     getOptionValue={(option) => option.id.toString()}
                     onChange={(newVal, actionMeta) => {
                         console.log(newVal, actionMeta)
-                        handleMultiSelect('brand', newVal?.map((val) => val?.name)?.join(','))
+                        handleMultiSelect('brand', newVal)
                     }}
                 />
             </div>
@@ -383,6 +362,7 @@ const SingleBannerFormComp = ({ bannerForm, setBannerForm, index, handleInputCha
                 <Select
                     isMulti
                     options={filters.filters}
+                    value={bannerForm[index]['quick_filter_tags'] || []}
                     getOptionLabel={(option) => option.label}
                     getOptionValue={(option) => option.value}
                     onChange={(newVal, actionMeta) => {
