@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 // import { API_RESPONSE } from './data';
 import { AllComponentsLib } from 'slikk-react-comps'
@@ -190,9 +191,14 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             // }
 
             console.log('redir url', banner?.web_redirection_url)
-
+            console.log('banner index', banner)
             const data = {
                 ...banner,
+                division: banner?.division?.map((item: any) => item.name).join(',') || '',
+                category: banner?.category?.map((item: any) => item.name).join(',') || '',
+                sub_category: banner?.sub_category?.map((item: any) => item.name).join(',') || '',
+                product_type: banner?.product_type?.map((item: any) => item.name).join(',') || '',
+                brand: banner?.brand?.map((item: any) => item.name).join(',') || '',
                 page: selectedPage.value,
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
@@ -216,7 +222,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
             console.log('Data to send', data)
 
-            const createBannerAPI = await axioisInstance
+            await axioisInstance
                 .post('banners', data)
                 .then((res) => {
                     notification.success({
