@@ -274,6 +274,18 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleSubmit = async (row: any) => {
+        const componentConfig = {
+            ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
+            border: row?.border ?? false,
+            name: row?.name ?? false,
+            name_footer: row?.name_footer ?? false,
+            section_border: row?.section_border ?? false,
+            web_border: row?.web_border ?? false,
+            web_name: row?.web_name ?? false,
+            web_name_footer: row?.web_name_footer ?? false,
+            web_section_border: row?.web_section_border ?? false,
+        }
+
         try {
             console.log('handleSubmit called')
             const imageUpload = await handleimage(row.background_image_array)
@@ -379,17 +391,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                               ]
                             : row?.data_type?.filters || [],
                 },
-                component_config: {
-                    ...row?.component_config,
-                    border: row?.border ?? false,
-                    name: row?.name ?? false,
-                    name_footer: row?.name_footer ?? false,
-                    section_border: row?.section_border ?? false,
-                    web_border: row?.web_border ?? false,
-                    web_name: row?.web_name ?? false,
-                    web_name_footer: row?.web_name_footer ?? false,
-                    web_section_border: row?.web_section_border ?? false,
-                },
+                component_config: componentConfig,
                 extra_info: {
                     ...row?.extra_info,
                     ...(row?.extra_info?.timeout ? { timeout: row?.extra_info?.timeout } : {}),
@@ -399,10 +401,12 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 ...(row?.order_count ? { order_count: row?.order_count } : {}),
             }
 
+            const filteredRow = Object.fromEntries(Object.entries(newRow || {}).filter(([_, value]) => value !== undefined))
+
             setShowSpinner(false)
-            setParticularRow(newRow)
+            setParticularRow(filteredRow)
             console.log('Barecode THAT HAS BEEN UPDATED', newRow.data_type.barcodes)
-            console.log('FINAL ADD INSIDE SUBMIT', newRow)
+            console.log('FINAL ADD INSIDE SUBMIT', filteredRow)
         } catch (error) {
             console.error('Error in handleSubmit:', error)
         }
