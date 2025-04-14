@@ -70,6 +70,16 @@ export const useReturnOrderColumns = () => {
                 accessorKey: 'return_type',
                 cell: ({ getValue }: { getValue: () => string }) => <span>{getValue()}</span>,
             },
+            {
+                header: 'Runner Name',
+                accessorKey: 'return_order_delivery',
+                cell: ({ row }) => <div>{row?.original?.return_order_delivery?.map((item) => item?.runner_name)}</div>,
+            },
+            {
+                header: 'Runner Mobile',
+                accessorKey: 'return_order_delivery',
+                cell: ({ row }) => <div>{row?.original?.return_order_delivery?.map((item) => item?.runner_phone_number)}</div>,
+            },
 
             {
                 header: 'Status',
