@@ -43,33 +43,32 @@ export const CustomModal: React.FC<Props> = ({
 }) => {
     return (
         <Modal
-            title=""
-            okText={isButtonClick ? 'PACKING...' : 'PACK'}
-            cancelText={status === 'ACCEPTED' ? 'REJECT ORDERS' : 'CANCEL'}
+            title={
+                <div className="flex justify-around items-center">
+                    <div className="flex gap-2">
+                        <button
+                            className="font-bold px-4 py-1 rounded-md bg-gray-500 text-white"
+                            onClick={status === 'ACCEPTED' ? handleReject : handleCancel}
+                        >
+                            {status === 'ACCEPTED' ? 'REJECT ORDERS' : 'CANCEL'}
+                        </button>
+                        <button
+                            className="font-bold px-4 py-1 rounded-md bg-blue-500 text-white"
+                            disabled={isButtonClick}
+                            onClick={handleOk}
+                        >
+                            {isButtonClick ? 'PACKING...' : 'PACK'}
+                        </button>
+                    </div>
+                </div>
+            }
+            footer={null}
             width={800}
             className="custom-modal overflow-scroll scrollbar-hide"
-            okButtonProps={{
-                className: 'font-bold',
-                style: {
-                    backgroundColor: '#1D4ED8',
-                    color: '#FFFFFF',
-                    borderRadius: '8px',
-                },
-            }}
-            cancelButtonProps={{
-                className: 'font-bold',
-                style: {
-                    backgroundColor: '#6B7280',
-                    color: '#FFFFFF',
-                    borderRadius: '8px',
-                },
-                onClick: status === 'ACCEPTED' ? handleReject : handleCancel,
-            }}
             open={isModalOpen}
-            onOk={handleOk}
             onCancel={handleCancel}
         >
-            <p className="text-lg font-semibold mb-4">{modalContent}</p>
+            <p className="text-lg font-bold mb-4">{modalContent}</p>
             <div className="flex flex-col gap-4 mb-6 p-4 bg-white shadow-md rounded-lg">
                 <div className="flex items-center text-[20px] font-semibold gap-2">
                     <span>Invoice Id:</span>

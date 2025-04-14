@@ -59,25 +59,37 @@ const ReturnOrderlistMobile = ({ orders }: props) => {
                             </div>
                             <div className="p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
                                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Order Details</h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-sm">
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-sm">
+                                    <div className="flex gap-3 xl:justify-normal xl:gap-6 sm:items-center">
                                         <span className="font-medium text-gray-700 dark:text-gray-400">Status:</span>
                                         <span className="text-blue-600 dark:text-blue-400 font-bold">{item?.status}</span>
                                     </div>
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
+                                    <div className="flex gap-3 xl:justify-normal xl:gap-6 sm:items-center">
                                         <span className="font-medium text-gray-700 dark:text-gray-400">Return Type:</span>
                                         <span className="text-purple-600 dark:text-purple-400 font-bold">{item?.return_type}</span>
                                     </div>
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
+                                    <div className="flex gap-3 xl:justify-normal xl:gap-6 sm:items-center">
                                         <span className="font-medium text-gray-700 dark:text-gray-400">Slot:</span>
                                         <span className="text-green-600 dark:text-green-400 font-bold">
                                             {schedule ? `${schedule.start} - ${schedule.end}` : 'Not Scheduled'}
                                         </span>
                                     </div>
-                                    <div className="flex justify-between xl:justify-normal xl:gap-6 sm:items-center">
+                                    <div className="flex gap-3 xl:justify-normal xl:gap-6 sm:items-center">
                                         <span className="font-medium text-gray-700 dark:text-gray-400">Date:</span>
                                         <span className="text-teal-600 dark:text-teal-400 font-bold">
                                             {moment(item?.create_date).format('YYYY-MM-DD hh:mm:ss a')}
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-3 xl:justify-normal xl:gap-6 sm:items-center">
+                                        <span className="font-medium text-gray-700 dark:text-gray-400">Runner Name:</span>
+                                        <span className="text-purple-600 dark:text-purple-400 font-bold">
+                                            {item?.return_order_delivery?.map((item) => item?.runner_name)}
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-3 xl:justify-normal xl:gap-6 sm:items-center">
+                                        <span className="font-medium text-gray-700 dark:text-gray-400">Return Mobile:</span>
+                                        <span className="text-purple-600 dark:text-purple-400 font-bold">
+                                            {item?.return_order_delivery?.map((item) => item?.runner_phone_number)}
                                         </span>
                                     </div>
                                 </div>
