@@ -66,6 +66,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         {} as { [key: number]: number },
                     )
                     if (Object.keys(data).length === 0) {
+                        setButtonAfterClick(false)
                         notification.warning({
                             message: 'No Quantities Selected',
                             description: 'Please select at least one item with a valid quantity to proceed.',
@@ -75,6 +76,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     }
                     const hasZeroQuantity = Object.values(fulfilledQuantities).some((q) => q === 0)
                     if (hasZeroQuantity) {
+                        setButtonAfterClick(false)
                         Modal.confirm({
                             title: 'Confirm Zero Quantity',
                             content: 'One or more items have a quantity of 0. Do you still want to proceed?',
@@ -94,6 +96,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         product.reduce((sum, item) => sum + Number(item?.quantity || 0), 0) >
                         Object.values(fulfilledQuantities).reduce((sum, q) => sum + (q || 0), 0)
                     if (hasLessQuantity && !hasZeroQuantity) {
+                        setButtonAfterClick(false)
                         Modal.confirm({
                             title: 'Confirm Quantity for Packing',
                             content: 'The number of fullfilled quantity is less then actual quantity !',

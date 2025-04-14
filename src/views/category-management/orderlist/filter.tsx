@@ -10,8 +10,6 @@ const tabs = [
     { label: 'ACCEPTED', key: 'accepted' },
     { label: 'PACKED', key: 'packed' },
     { label: 'DEL. CREATED', key: 'delivery_created' },
-    { label: 'DEL. ASSIGNED', key: 'delivery_assigned' },
-    { label: 'DEL. CANCELLED', key: 'delivery_cancelled' },
     { label: 'OUT FOR DELIVERY', key: 'out_for_delivery' },
     { label: 'DELIVERED', key: 'delivered' },
     { label: 'EXCHANGE', key: 'exchange' },

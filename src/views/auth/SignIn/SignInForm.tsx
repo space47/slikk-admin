@@ -22,46 +22,35 @@ interface SignInFormProps extends CommonProps {
 }
 
 type SignInFormSchema = {
-    otp: string,
-    type?: string,
+    otp: string
+    type?: string
     data: string | undefined
 }
 
 const validationSchema = Yup.object().shape({
-  otp: Yup.string()
-  .required("required")
-  .matches(phoneRegExp, 'Please enter valid OTP')
-  .min(6, "Please enter valid OTP")
-  .max(6, "Please enter valid OTP")
+    otp: Yup.string()
+        .required('required')
+        .matches(phoneRegExp, 'Please enter valid OTP')
+        .min(6, 'Please enter valid OTP')
+        .max(6, 'Please enter valid OTP'),
 })
 
 const SignInForm = (props: SignInFormProps) => {
-    const {
-        disableSubmit = true,
-        className,
-        forgotPasswordUrl = '/forgot-password',
-        signUpUrl = '/sign-up',
-    } = props
+    const { disableSubmit = true, className, forgotPasswordUrl = '/forgot-password', signUpUrl = '/sign-up' } = props
 
     const [message, setMessage] = useTimeOutMessage()
-    const selector = useAppSelector(
-        (state) => state.authorization
-    )
+    const selector = useAppSelector((state) => state.authorization)
     const { signIn } = useAuth()
 
-    const onSignIn = async (
-        values: SignInFormSchema
-    ) => {
+    const onSignIn = async (values: SignInFormSchema) => {
         const { otp } = values
-        signIn( { otp,type:"MOBILE" ,data:selector.mobile} )
-        if(selector?.signup_done){
-            setTimeout(():void=> {
+        signIn({ otp, type: 'MOBILE', data: selector.mobile })
+        if (selector?.signup_done) {
+            setTimeout((): void => {
                 const environment = process.env.NODE_ENV
                 mockServer({ environment })
-            },5000);
-        
+            }, 5000)
         }
-            
     }
 
     return (
@@ -73,35 +62,37 @@ const SignInForm = (props: SignInFormProps) => {
             )}
             <Formik
                 initialValues={{
-                    otp:'',
-                    data:'',
-                    type:''
+                    otp: '',
+                    data: '',
+                    type: '',
                 }}
                 validationSchema={validationSchema}
                 onSubmit={(values) => {
-                        onSignIn(values)
+                    onSignIn(values)
                 }}
             >
                 {({ touched, errors, isSubmitting }) => (
                     <Form>
                         <FormContainer>
-                            <FormItem
-                                label="OTP"
-                                invalid={
-                                    (errors.otp &&
-                                        touched.otp) as boolean
-                                }
-                                errorMessage={errors.otp}
-                            >
+                            <FormItem label="OTP" invalid={(errors.otp && touched.otp) as boolean} errorMessage={errors.otp}>
                                 <Field
                                     type="text"
                                     autoComplete="off"
                                     name="otp"
                                     placeholder="OTP"
                                     component={Input}
+                                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault()
+                                            const form = e.currentTarget.form
+                                            if (form) {
+                                                form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
+                                            }
+                                        }
+                                    }}
                                 />
                             </FormItem>
-                            
+
                             {/* <div className="flex justify-between mb-6">
                                 <Field
                                     className="mb-0"
@@ -114,13 +105,13 @@ const SignInForm = (props: SignInFormProps) => {
                                     Forgot Password?
                                 </ActionLink>
                             </div> */}
-                            <Timer initialSeconds={20}/>
+                            <Timer initialSeconds={20} />
                             <Button
                                 block
                                 loading={isSubmitting}
                                 variant="solid"
                                 type="submit"
-                                disabled={Array.isArray(errors) || Object.values(errors).toString() != ""}
+                                disabled={Array.isArray(errors) || Object.values(errors).toString() != ''}
                             >
                                 {isSubmitting ? 'Signing in...' : 'Submit'}
                             </Button>
