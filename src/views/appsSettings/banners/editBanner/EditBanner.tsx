@@ -26,6 +26,7 @@ import { handleimage } from '@/common/handleImage'
 import moment from 'moment'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import VideoComponent from './component/VideoComponent'
+import { Checkbox } from '@/components/ui'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -335,7 +336,12 @@ const EditBanner = () => {
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {BANNER_FIELDS_TYPE.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                                        />
                                         <ErrorMessage name={item.name} component="div" className="text-red-500 text-sm mt-1" />
                                     </FormItem>
                                 ))}
