@@ -382,17 +382,18 @@ const AppBanners = () => {
                                 title={selectedHeading}
                                 onSelect={handleSectionHeading}
                             >
+                                <div
+                                    className="flex justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedHeading('Select Section')}
+                                >
+                                    Clear
+                                </div>
                                 {sectionHeadingArray?.map((item, key) => (
                                     <DropdownItem key={key} eventKey={item}>
                                         {item}
                                     </DropdownItem>
                                 ))}
                             </Dropdown>
-                        </div>
-                        <div className="items-center flex justify-center">
-                            <button className="" onClick={() => setSelectedHeading('Select Section')}>
-                                <MdCancel className="text-xl text-red-500 " />
-                            </button>
                         </div>
                     </div>
                 </div>
