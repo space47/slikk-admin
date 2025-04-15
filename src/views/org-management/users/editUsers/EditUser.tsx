@@ -54,7 +54,11 @@ const BrandUserEdit = () => {
     const [addedCompany, setAddedCompany] = useState<{ id: number; name: string }[]>([])
     const [companySearchInput, setCompanySearchInput] = useState('')
     const [loadingEdit, setLoadingEdit] = useState(false)
-    const [accessDenied, setAccessDenied] = useState(false)
+    const [accessDenied, setAccessDenied] = useState({
+        groups: false,
+        permission: false,
+        company: false,
+    })
     const [storeAssign, setStoreAssign] = useState(false)
     const [storePicker, setStorePicker] = useState<string | number | undefined>('')
     const { mobile } = useParams()
@@ -97,7 +101,10 @@ const BrandUserEdit = () => {
             setLoadingEdit(false)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
+                setAccessDenied((prev) => ({
+                    ...prev,
+                    company: true,
+                }))
             }
             console.log(error)
             setLoadingEdit(false)
@@ -115,7 +122,10 @@ const BrandUserEdit = () => {
             setGetPermission(perm)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
+                setAccessDenied((prev) => ({
+                    ...prev,
+                    permission: true,
+                }))
             }
             console.log(error)
         }
@@ -128,7 +138,10 @@ const BrandUserEdit = () => {
             setGetGroups(grp)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
+                setAccessDenied((prev) => ({
+                    ...prev,
+                    groups: true,
+                }))
             }
             console.log(error)
         }
@@ -143,7 +156,10 @@ const BrandUserEdit = () => {
             setAddedPermissions(userPermissions) // For right side card
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
+                setAccessDenied((prev) => ({
+                    ...prev,
+                    permission: true,
+                }))
             }
             console.log(error)
         }
@@ -158,7 +174,10 @@ const BrandUserEdit = () => {
             setAddedGroups(userPermissions) // For right side card
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
+                setAccessDenied((prev) => ({
+                    ...prev,
+                    groups: true,
+                }))
             }
             console.log(error)
         }
@@ -386,22 +405,11 @@ const BrandUserEdit = () => {
         notification.success({
             message: 'User has been successfully updated',
         })
-
-        // try {
-        //     const response = await axioisInstance.patch(
-        //         `company/user/${mobile}`, //-companyid
-        //         bodyData,
-        //     )
-        //     console.log('response of add users', response)
-        //     navigate('/app/users')
-        // } catch (error) {
-        //     console.log(error)
-        // }
     }
 
-    if (accessDenied) {
-        return <AccessDenied />
-    }
+    // if (accessDenied) {
+    //     return <AccessDenied />
+    // }
 
     return (
         <div>
@@ -417,7 +425,7 @@ const BrandUserEdit = () => {
                     onSubmit={handleSubmit}
                 >
                     {({ values, touched, errors, resetForm }) => (
-                        <Form className="w-full" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
+                        <Form className="w-full shadow-lg rounded-lg p-3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                             <div className="text-xl mb-10 font-bold">EDIT USER DETAILS</div>
                             <FormContainer>
                                 {/* Form Fields */}
@@ -432,56 +440,74 @@ const BrandUserEdit = () => {
                                 <div className="text-xl font-bold">USER PERMISSIONS</div>
                                 <br />
 
-                                <FormContainer className="">
-                                    <CardComponent
-                                        label="Company"
-                                        selectedValue={selectedCompany}
-                                        getValue={filteredCompany}
-                                        handleSelect={handleCompanySelect}
-                                        addedValue={addedCompany}
-                                        handleAdd={handleAddCompany}
-                                        handleRemove={handleRemoveCompany}
-                                        handleSelectAll={handleSelectAll}
-                                        searchInput={companySearchInput}
-                                        handleSearch={handleCompanySearch}
-                                    />
-                                </FormContainer>
+                                {accessDenied?.company ? (
+                                    <>
+                                        <AccessDenied particularName="Comapany Details" />
+                                    </>
+                                ) : (
+                                    <FormContainer className="">
+                                        <CardComponent
+                                            label="Company"
+                                            selectedValue={selectedCompany}
+                                            getValue={filteredCompany}
+                                            handleSelect={handleCompanySelect}
+                                            addedValue={addedCompany}
+                                            handleAdd={handleAddCompany}
+                                            handleRemove={handleRemoveCompany}
+                                            handleSelectAll={handleSelectAll}
+                                            searchInput={companySearchInput}
+                                            handleSearch={handleCompanySearch}
+                                        />
+                                    </FormContainer>
+                                )}
                                 <br />
 
-                                <FormContainer className="">
-                                    <CardComponent
-                                        label="Groups"
-                                        selectedValue={selectedGroups}
-                                        getValue={filteredGroup}
-                                        handleSelect={handleGroupSelect}
-                                        addedValue={addedGroups}
-                                        handleAdd={handleAddGroup}
-                                        handleRemove={handleRemoveGroups}
-                                        searchInput={groupSearchInput}
-                                        handleSearch={handleGroupSearch}
-                                    />
-                                </FormContainer>
+                                {accessDenied?.groups ? (
+                                    <>
+                                        <AccessDenied particularName="User Groups" />
+                                    </>
+                                ) : (
+                                    <FormContainer className="">
+                                        <CardComponent
+                                            label="Groups"
+                                            selectedValue={selectedGroups}
+                                            getValue={filteredGroup}
+                                            handleSelect={handleGroupSelect}
+                                            addedValue={addedGroups}
+                                            handleAdd={handleAddGroup}
+                                            handleRemove={handleRemoveGroups}
+                                            searchInput={groupSearchInput}
+                                            handleSearch={handleGroupSearch}
+                                        />
+                                    </FormContainer>
+                                )}
 
                                 {storeAssign && (
                                     <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobile} />
                                 )}
                                 <br />
 
-                                <FormContainer className="">
-                                    <CardComponent
-                                        label="Permissions"
-                                        selectedValue={selectedPermissions}
-                                        getValue={filteredPermission}
-                                        handleSelect={handlePermissionSelect}
-                                        addedValue={addedPermissions}
-                                        handleAdd={handleAddPermissions}
-                                        handleRemove={handleRemovePermissions}
-                                        searchInput={searchInput}
-                                        handleSearch={handleSearch}
-                                        forPermission
-                                        handlePermissionEdit={handlePermissionEdit}
-                                    />
-                                </FormContainer>
+                                {accessDenied?.permission ? (
+                                    <>
+                                        <AccessDenied particularName="User Permissions" />
+                                    </>
+                                ) : (
+                                    <FormContainer className="">
+                                        <CardComponent
+                                            forPermission
+                                            label="Permissions"
+                                            selectedValue={selectedPermissions}
+                                            getValue={filteredPermission}
+                                            handleSelect={handlePermissionSelect}
+                                            addedValue={addedPermissions}
+                                            handleAdd={handleAddPermissions}
+                                            handleRemove={handleRemovePermissions}
+                                            searchInput={searchInput}
+                                            handleSearch={handleSearch}
+                                            handlePermissionEdit={handlePermissionEdit}
+                                        />
+                                    </FormContainer>
+                                )}
 
                                 {/* Submit & Reset Buttons */}
                                 <FormItem className="mt-10 flex justify-center gap-4">

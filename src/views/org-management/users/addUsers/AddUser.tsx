@@ -58,7 +58,7 @@ const AddUser = () => {
     const [addcompanyInput, setAddCompanyInput] = useState('')
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [showSpinner, setShowSpinner] = useState(false)
-    const [accessDenied, setAccessDenied] = useState(false)
+    const [accessDenied, setAccessDenied] = useState({ groups: false, permission: false, company: false })
     const [storeAssign, setStoreAssign] = useState(false)
     const [storePicker, setStorePicker] = useState('')
     const [mobileNumber, setMobileNumber] = useState('')
@@ -74,7 +74,10 @@ const AddUser = () => {
             console.log('scscscscs', group_id)
         } catch (error: any) {
             if (error.response || error.response.status === 403) {
-                setAccessDenied(true)
+                setAccessDenied((prev) => ({
+                    ...prev,
+                    groups: true,
+                }))
             }
             console.log(error)
         }
@@ -91,7 +94,10 @@ const AddUser = () => {
             setGetPermission(perm)
         } catch (error: any) {
             if (error.response || error.response.status === 403) {
-                setAccessDenied(true)
+                setAccessDenied((prev) => ({
+                    ...prev,
+                    permission: true,
+                }))
             }
             console.log(error)
         }
@@ -282,8 +288,8 @@ const AddUser = () => {
                 onSubmit={handleSubmit}
             >
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-full">
-                        <div className="text-xl mb-10 font-semibold">USER DETAILS</div>
+                    <Form className="w-full shadow-lg rounded-lg p-3">
+                        <div className="text-xl mb-10 font-semibold">ADD USER </div>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
                                 {USERDETAILS.map((item, index) => (
@@ -403,71 +409,79 @@ const AddUser = () => {
 
                             <div className="text-xl font-semibold mt-4">USER GROUPS</div>
                             <br />
-
-                            <FormContainer className="mb-7">
-                                <FormContainer className="flex justify-between">
-                                    {/* All Permissions */}
-                                    <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
-                                        <div className="sticky top-0 z-10 bg-white">
-                                            <div className="mb-3 bg-white">
-                                                <input
-                                                    type="text"
-                                                    className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                                                    placeholder="Search Groups"
-                                                    value={groupInput}
-                                                    onChange={handleGroupSearch}
-                                                    onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                                />
+                            {accessDenied?.groups ? (
+                                <>
+                                    <AccessDenied particularName="User Groups" />
+                                </>
+                            ) : (
+                                <FormContainer className="mb-7">
+                                    <FormContainer className="flex justify-between">
+                                        {/* All Permissions */}
+                                        <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
+                                            <div className="sticky top-0 z-10 bg-white">
+                                                <div className="mb-3 bg-white">
+                                                    <input
+                                                        type="text"
+                                                        className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
+                                                        placeholder="Search Groups"
+                                                        value={groupInput}
+                                                        onChange={handleGroupSearch}
+                                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                                    />
+                                                </div>
+                                                <label htmlFor="All Groups" className="font-bold bg-white">
+                                                    User Groups
+                                                </label>
                                             </div>
-                                            <label htmlFor="All Groups" className="font-bold bg-white">
-                                                User Groups
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            {filteredGroups?.map((item) => (
-                                                <div key={item.id} className="flex flex-col">
-                                                    <label className="bg-gray-100 px-2 py-2 flex items-center">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedGroups.includes(item.id)}
-                                                            onChange={() => handleGroupSelect(item.id)}
-                                                        />
-                                                        <span className="ml-2">{item.name}</span>
-                                                    </label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </Card>
-
-                                    {/* Buttons */}
-                                    <div className="flex justify-center items-center flex-col gap-4">
-                                        <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddGroups}>
-                                            ADD {'>>'}
-                                        </Button>
-                                    </div>
-
-                                    {/* Added Permissions */}
-                                    <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
-                                        <div className="sticky top-0 z-10 bg-white">
-                                            <label htmlFor="Added Permissions" className="font-bold bg-white">
-                                                Added Groups
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            {filteredAddGroup?.map((item) => (
-                                                <div key={item.id} className="flex flex-col">
-                                                    <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                                        <span>{item.name}</span>
-                                                        <button className="text-red-500 ml-2" onClick={() => handleRemoveGroups(item.id)}>
-                                                            <IoMdCloseCircle className="text-red-400" />
-                                                        </button>
+                                            <div className="">
+                                                {filteredGroups?.map((item) => (
+                                                    <div key={item.id} className="flex flex-col">
+                                                        <label className="bg-gray-100 px-2 py-2 flex items-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedGroups.includes(item.id)}
+                                                                onChange={() => handleGroupSelect(item.id)}
+                                                            />
+                                                            <span className="ml-2">{item.name}</span>
+                                                        </label>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
+                                        </Card>
+
+                                        {/* Buttons */}
+                                        <div className="flex justify-center items-center flex-col gap-4">
+                                            <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddGroups}>
+                                                ADD {'>>'}
+                                            </Button>
                                         </div>
-                                    </Card>
+
+                                        {/* Added Permissions */}
+                                        <Card className="overflow-y-scroll h-[360px] w-[400px] flex flex-col">
+                                            <div className="sticky top-0 z-10 bg-white">
+                                                <label htmlFor="Added Permissions" className="font-bold bg-white">
+                                                    Added Groups
+                                                </label>
+                                            </div>
+                                            <div className="">
+                                                {filteredAddGroup?.map((item) => (
+                                                    <div key={item.id} className="flex flex-col">
+                                                        <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
+                                                            <span>{item.name}</span>
+                                                            <button
+                                                                className="text-red-500 ml-2"
+                                                                onClick={() => handleRemoveGroups(item.id)}
+                                                            >
+                                                                <IoMdCloseCircle className="text-red-400" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </Card>
+                                    </FormContainer>
                                 </FormContainer>
-                            </FormContainer>
+                            )}
 
                             {storeAssign && (
                                 <StoreAssignComponent storePicker={storePicker} setStorePicker={setStorePicker} mobile={mobileNumber} />
@@ -477,83 +491,88 @@ const AddUser = () => {
 
                             <div className="text-xl font-semibold">USER PERMISSIONS</div>
                             <br />
-
-                            <div className="">
-                                <div className="flex justify-between">
-                                    {/* All Permissions */}
-                                    <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
-                                        <div className="sticky top-0 z-10 bg-white">
-                                            <div className="mb-3 bg-white">
-                                                <input
-                                                    type="text"
-                                                    className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                                                    placeholder="Search Permissions"
-                                                    value={searchInput}
-                                                    onChange={handleSearch}
-                                                    onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
-                                                />
-                                            </div>
-                                            <label htmlFor="All Permissions" className="font-bold bg-white">
-                                                All Permissions
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            {filteredPermission?.map((item) => (
-                                                <div key={item.id} className="flex flex-col">
-                                                    <label className="bg-gray-100 px-2 py-2 flex items-center">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedPermissions.includes(item.id)}
-                                                            onChange={() => handlePermissionSelect(item.id)}
-                                                        />
-                                                        <span className="ml-2">{item.name}</span>
-                                                    </label>
+                            {accessDenied?.permission ? (
+                                <>
+                                    <AccessDenied particularName="User Permissions" />
+                                </>
+                            ) : (
+                                <div className="">
+                                    <div className="flex justify-between">
+                                        {/* All Permissions */}
+                                        <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
+                                            <div className="sticky top-0 z-10 bg-white">
+                                                <div className="mb-3 bg-white">
+                                                    <input
+                                                        type="text"
+                                                        className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
+                                                        placeholder="Search Permissions"
+                                                        value={searchInput}
+                                                        onChange={handleSearch}
+                                                        onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}
+                                                    />
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </Card>
-
-                                    {/* Buttons */}
-                                    <div className="flex justify-center items-center flex-col gap-4">
-                                        <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddPermissions}>
-                                            ADD {'>>'}
-                                        </Button>
-                                    </div>
-
-                                    {/* Added Permissions */}
-                                    <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
-                                        <div className="sticky top-0 z-10 bg-white">
-                                            <div className="mb-3 bg-white">
-                                                <input
-                                                    type="text"
-                                                    value={addInput}
-                                                    onChange={handleAddPerm}
-                                                    className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
-                                                    placeholder="Search Permissions"
-                                                />
+                                                <label htmlFor="All Permissions" className="font-bold bg-white">
+                                                    All Permissions
+                                                </label>
                                             </div>
-                                            <label htmlFor="Added Permissions" className="font-bold bg-white">
-                                                Added Permissions
-                                            </label>
-                                        </div>
-                                        <div className="">
-                                            {filteredAddPermission.map((item) => (
-                                                <div key={item.id} className="flex flex-col">
-                                                    <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
-                                                        <span>{item.name}</span>
-                                                        <button
-                                                            className="text-red-500 ml-2"
-                                                            onClick={() => handleRemovePermissions(item.id)}
-                                                        >
-                                                            <IoMdCloseCircle className="text-red-400" />
-                                                        </button>
+                                            <div className="">
+                                                {filteredPermission?.map((item) => (
+                                                    <div key={item.id} className="flex flex-col">
+                                                        <label className="bg-gray-100 px-2 py-2 flex items-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedPermissions.includes(item.id)}
+                                                                onChange={() => handlePermissionSelect(item.id)}
+                                                            />
+                                                            <span className="ml-2">{item.name}</span>
+                                                        </label>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                ))}
+                                            </div>
+                                        </Card>
+
+                                        {/* Buttons */}
+                                        <div className="flex justify-center items-center flex-col gap-4">
+                                            <Button type="button" variant="accept" className="w-32 px-8" onClick={handleAddPermissions}>
+                                                ADD {'>>'}
+                                            </Button>
                                         </div>
-                                    </Card>
+
+                                        {/* Added Permissions */}
+                                        <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">
+                                            <div className="sticky top-0 z-10 bg-white">
+                                                <div className="mb-3 bg-white">
+                                                    <input
+                                                        type="text"
+                                                        value={addInput}
+                                                        onChange={handleAddPerm}
+                                                        className="border border-gray-200 w-[90%] h-8 items-center p-2 rounded-md active:border-0 hover:border-blue-500 active:border-blue-500"
+                                                        placeholder="Search Permissions"
+                                                    />
+                                                </div>
+                                                <label htmlFor="Added Permissions" className="font-bold bg-white">
+                                                    Added Permissions
+                                                </label>
+                                            </div>
+                                            <div className="">
+                                                {filteredAddPermission.map((item) => (
+                                                    <div key={item.id} className="flex flex-col">
+                                                        <div className="bg-gray-100 px-2 py-2 flex items-center justify-between">
+                                                            <span>{item.name}</span>
+                                                            <button
+                                                                className="text-red-500 ml-2"
+                                                                onClick={() => handleRemovePermissions(item.id)}
+                                                            >
+                                                                <IoMdCloseCircle className="text-red-400" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </Card>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <FormItem className="mt-10 ">
                                 <Button type="reset" className="ltr:mr-2 rtl:ml-2" onClick={() => resetForm()}>
