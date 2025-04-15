@@ -17,6 +17,18 @@ export const genericComponentArray = [
         placeholder: 'Enter ',
     },
     {
+        label: 'Shadow Intensity',
+        name: 'component_config.shadow_intensity',
+        type: 'number',
+        placeholder: 'Enter Shadow Intensity ',
+    },
+    {
+        label: 'Shadow Color',
+        name: 'component_config.shadow_color',
+        type: 'text',
+        placeholder: 'Enter Shadow Color ',
+    },
+    {
         label: 'Carousel AutoPlay',
         name: 'component_config.carousel_autoplay',
         component: { Checkbox },
