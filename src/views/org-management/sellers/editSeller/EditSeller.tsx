@@ -4,79 +4,23 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 import { Field, Form, Formik, FieldProps } from 'formik' // Add FieldProps here
-import * as Yup from 'yup'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { SELLING_FORM, POC_FORM, ACCOUNT_FORM } from './editCommon'
 import AccessDenied from '@/views/pages/AccessDenied'
-
-type FormModel = {
-    account_holder_name: string
-    account_number: string
-    address: string
-    alternate_contact_number: string
-    bank_name: string
-    cin: string
-    contact_number: string
-    create_date: string
-    damages_per_sku: number
-    gstin: string
-    handling_charges_per_order: number
-    id: number
-    ifsc: string
-    is_active: boolean
-    confirm: string
-    name: string
-    poc: string
-    poc_email: string
-    registered_name: string
-    removal_fee_per_sku: number
-    revenue_share: number
-    segment: string
-    settlement_days: number
-    update_date: string
-    warehouse_charge_per_sku: number
-    code: string
-}
-
-// const validationSchema = Yup.object().shape({
-//     registered_name: Yup.string().required('Registered Name is required'),
-//     name: Yup.string().required('Brand Name is required'),
-//     gstin: Yup.string().required('GSTIN is required'),
-//     segment: Yup.string().required('Segment is required'),
-//     cin: Yup.string().required('CIN is required'),
-//     address: Yup.string().required('Address is required'),
-//     contact_number: Yup.string()
-//         .required('Mobile Number is required')
-//         .matches(/^[6-9]\d{9}$/, 'Mobile Number is not valid'),
-//     alternate_contact_number: Yup.string()
-//         .required('Alternate Mobile Number is required')
-//         .matches(/^[6-9]\d{9}$/, 'Alternate Mobile Number is not valid'),
-//     poc: Yup.string().required('POC Name is required'),
-//     poc_email: Yup.string()
-//         .required('POC Email is required')
-//         .email('Email is not valid'),
-//     account_number: Yup.string().required('Account Number is required'),
-//     confirm: Yup.string()
-//         .required('Confirm Account Number is required')
-//         .oneOf([Yup.ref('account_number')], 'Account number does not match'),
-//     account_holder_name: Yup.string().required(
-//         'Account Holder Name is required',
-//     ),
-//     bank_name: Yup.string().required('Bank Name is required'),
-// })
+import { SellerFormTypes } from '../sellerCommon'
 
 const SegmentOptions = () => {
-    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories'].map((segment) => ({
+    return ['Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories', 'Travel and Luggages'].map((segment) => ({
         label: segment,
         value: segment,
     }))
 }
 
 const EditSeller = () => {
-    const [sellerData, setSellerData] = useState<FormModel>()
+    const [sellerData, setSellerData] = useState<SellerFormTypes>()
     const [accessDenied, setAccessDenied] = useState(false)
     const navigate = useNavigate()
 
@@ -100,7 +44,7 @@ const EditSeller = () => {
         fetchsellerData()
     }, [id])
 
-    const initialValue: FormModel = {
+    const initialValue: SellerFormTypes = {
         account_holder_name: sellerData?.account_holder_name || '',
         account_number: sellerData?.account_number || '',
         address: sellerData?.address || '',
@@ -129,7 +73,7 @@ const EditSeller = () => {
         code: sellerData?.code || '',
     }
 
-    const handleSubmit = async (values: FormModel) => {
+    const handleSubmit = async (values: SellerFormTypes) => {
         console.log('handleSubmit')
 
         if (values.account_number !== values.confirm) {
@@ -181,15 +125,15 @@ const EditSeller = () => {
 
     return (
         <div>
-            <h3 className="mb-5 from-neutral-900">Seller Details</h3>
+            <h3 className="text-xl font-bold">Edit Seller</h3>
             <Formik
                 enableReinitialize
                 initialValues={initialValue}
                 // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
-                {({ values, touched, errors, resetForm, setFieldValue }) => (
-                    <Form className="w-2/3">
+                {({ resetForm }) => (
+                    <Form className="xl:w-[90%] w-full p-5 shadow-xl rounded-xl">
                         <FormContainer>
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {SELLING_FORM.map((item, key) => (
@@ -198,27 +142,37 @@ const EditSeller = () => {
                                     </FormItem>
                                 ))}
 
-                                <FormItem
-                                    asterisk
-                                    label="Segment"
-                                    invalid={errors.segment && touched.segment}
-                                    errorMessage={errors.segment}
-                                    className="col-span-1 w-full"
-                                >
+                                <FormItem asterisk label="Segment" className="col-span-1 w-full">
                                     <Field name="segment">
-                                        {({ field }: FieldProps) => (
-                                            <Select
-                                                {...field}
-                                                value={SegmentOptions().find((option) => option.value === field.value)}
-                                                options={SegmentOptions()}
-                                                onChange={(option) => setFieldValue('segment', option?.value)}
-                                            />
-                                        )}
+                                        {({ field, form }: FieldProps) => {
+                                            const fieldValueArray = Array.isArray(field?.value) ? field?.value : field?.value.split(',')
+                                            const selectedOptions = fieldValueArray.map((item: any) => {
+                                                const selectedOption = SegmentOptions()?.find((options: any) => {
+                                                    return options?.label === item
+                                                })
+                                                return selectedOption
+                                            })
+                                            return (
+                                                <Select
+                                                    isMulti
+                                                    isClearable
+                                                    className="w-full"
+                                                    options={SegmentOptions()}
+                                                    getOptionLabel={(option) => option?.label}
+                                                    getOptionValue={(option) => option?.value?.toString()}
+                                                    value={selectedOptions}
+                                                    onChange={(newVals) => {
+                                                        const selectedValues = newVals?.map((val: any) => val.value) || []
+                                                        form.setFieldValue(`segment`, selectedValues?.join(','))
+                                                    }}
+                                                />
+                                            )
+                                        }}
                                     </Field>
                                 </FormItem>
                             </FormContainer>
-
-                            <h5 className="mb-5 from-neutral-900">POC Details</h5>
+                            <br />
+                            <h5 className="mb-3 text-gray-600 text-xl">POC Details</h5>
                             <FormContainer className="grid grid-cols-2 gap-10 ">
                                 {POC_FORM.map((item, key) => (
                                     <FormItem asterisk key={key} label={item.label} className={item.classname}>
@@ -228,8 +182,8 @@ const EditSeller = () => {
                             </FormContainer>
 
                             {/* ------------------------------------------------------------------------------------------------ */}
-
-                            <h5 className="mb-5 from-neutral-900">Account Details</h5>
+                            <br />
+                            <h5 className="mb-3 text-gray-600 text-xl">Account Details</h5>
                             <FormContainer className="grid grid-cols-2 gap-10 ">
                                 {ACCOUNT_FORM.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
