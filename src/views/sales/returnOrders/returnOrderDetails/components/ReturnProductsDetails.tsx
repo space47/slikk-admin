@@ -129,7 +129,7 @@ const ReturnProductsDetails = ({ task_id }: props) => {
                     <div className="flex gap-3 xl:flex-row flex-col ">
                         <div>
                             <button
-                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 xl:w-1/2 w-full"
+                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105  w-full"
                                 onClick={handleCancelOrder}
                             >
                                 CANCEL
@@ -137,7 +137,7 @@ const ReturnProductsDetails = ({ task_id }: props) => {
                         </div>
                         <div>
                             <button
-                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 xl:w-1/2 w-full"
+                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105  w-full"
                                 onClick={() => setIsReschedule(true)}
                             >
                                 Reschedule
