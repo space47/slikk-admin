@@ -220,15 +220,15 @@ const AddUser = () => {
         console.log('body', bodyData)
         try {
             setShowSpinner(true)
-            const response = await axioisInstance.post(
-                `company/users/add`, //-companyid
-                bodyData,
-            )
+            const response = await axioisInstance.post(`company/users/add`, bodyData)
             console.log('response of add users', response)
-            setShowSpinner(false)
+
             navigate('/app/users')
-        } catch (error) {
+        } catch (error: any) {
+            notification.error({ message: error?.response?.data?.message || 'Failed to add' })
             console.log(error)
+        } finally {
+            setShowSpinner(false)
         }
     }
 
