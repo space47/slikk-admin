@@ -16,19 +16,17 @@ import { Field } from 'formik'
 import CommonSelect from './CommonSelect'
 import { DatePicker } from 'antd'
 import moment from 'moment'
+import { ParallaxConfigArray } from './configurationCommon'
 
 interface FontSize {
     label: string
     value: string
 }
 
-const SECTIONARRAY = [
-    { label: 'Flex Start', value: 'flex-start' },
-    { label: 'Flex End', value: 'flex-end' },
-    { label: 'Center', value: 'center' },
-    { label: 'Space Between', value: 'space-between' },
-    { label: 'Space Around', value: 'space-around' },
-    { label: 'Space Evenly', value: 'space-evenly' },
+const CarouselTypeArray = [
+    { label: 'NORMAL', value: 'NORMAL' },
+    { label: 'PARALLAX', value: 'PARALLAX' },
+    { label: 'STACK', value: 'STACK' },
 ]
 
 const borderStyleArray = [
@@ -57,6 +55,7 @@ interface PageCompProps {
     webNameForm: any
     setWebFooterAlignForm: any
     webFooterAlignForm: any
+    values: any
 }
 
 const PageComponentConfig = ({
@@ -79,6 +78,7 @@ const PageComponentConfig = ({
     webNameForm,
     setWebFooterAlignForm,
     webFooterAlignForm,
+    values,
 }: PageCompProps) => {
     return (
         <div>
@@ -98,6 +98,43 @@ const PageComponentConfig = ({
                         />
                     </FormItem>
                 ))}
+
+                {/* Carousel */}
+                <CommonSelect
+                    needClassName
+                    name="component_config.carousel_type"
+                    label="Carousel Type"
+                    options={CarouselTypeArray}
+                    className="col-span-1 w-1/2"
+                />
+                {values?.component_config?.carousel_type === 'STACK' && (
+                    <CommonSelect
+                        needClassName
+                        name="component_config.carousel_swipe_direction"
+                        label="Swipe Direction"
+                        options={[
+                            { label: 'left', value: 'left' },
+                            { label: 'right', value: 'right' },
+                        ]}
+                        className="col-span-1 w-1/2"
+                    />
+                )}
+                {values?.component_config?.carousel_type === 'PARALLAX' && (
+                    <>
+                        {ParallaxConfigArray.slice(0, 28).map((item, key) => (
+                            <FormItem key={key} label={item.label} className="w-2/3">
+                                <Field
+                                    type={item.type}
+                                    name={item.name}
+                                    placeholder={`Enter ${item.label}`}
+                                    component={item?.type === 'checkbox' ? Checkbox : Input}
+                                    min="0"
+                                />
+                            </FormItem>
+                        ))}
+                    </>
+                )}
+
                 <CommonSelect
                     name="component_config.font_style"
                     label="Font Style"
