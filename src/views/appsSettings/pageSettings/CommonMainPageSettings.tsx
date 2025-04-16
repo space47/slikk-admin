@@ -151,6 +151,7 @@ const CommonMainPageSettings = ({
 
                         {configFields && (
                             <PageComponentConfig
+                                values={values}
                                 FontSizeArray={FontSizeArray}
                                 SECTIONARRAY={SECTIONARRAY}
                                 borderForm={borderForm}
