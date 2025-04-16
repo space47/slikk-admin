@@ -89,7 +89,7 @@ const QCUploader = () => {
                 </div>
             </Upload>
             <div className="flex flex-row w-full space-x-[2%] items-center justify-center">
-                <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
+                <div className="bg-gray-200  px-1 rounded-lg font-bold text-[15px]">
                     <Dropdown
                         className="border   text-black text-lg font-semibold "
                         title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
