@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Tooltip } from '@/components/ui'
 import moment from 'moment'
 import { useMemo } from 'react'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaSave, FaTimes } from 'react-icons/fa'
+
+const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
 
 export const InwardColumns = () => {
     return useMemo(
@@ -88,14 +91,20 @@ export const InwardColumns = () => {
 }
 
 export const InwardDetailsColumns = (
-    qcReceived: number | undefined,
-    setQcReceived: React.Dispatch<React.SetStateAction<number | undefined>>,
-    qcPass: number | undefined,
-    setQcPass: React.Dispatch<React.SetStateAction<number | undefined>>,
-    locationInput: string,
-    setLocationInput: React.Dispatch<React.SetStateAction<string>>,
+    editingRow,
+    editFormDataRef,
+    barcodeInputRef,
+    skuInputRef,
+    qtySentInputRef,
+    handleEdit,
+    renderEditableCell,
+    handleEditChange,
+    handleEditKeyDown,
+    handleSave,
+    handleCancel,
+    handleAddRow,
     formData: {
-        location: string
+        boxCount: string
         sku: string
         barcode: string
     },
@@ -103,112 +112,189 @@ export const InwardDetailsColumns = (
 ) => {
     return useMemo(
         () => [
-            { header: 'barcode', accessorKey: 'barcode' },
-            { header: 'SKU', accessorKey: 'sku' },
+            {
+                header: 'Edit',
+                accessorKey: 'Edit',
+                cell: ({ row }: any) => {
+                    const isEditing = editingRow === row.original.id
+                    return (
+                        <div className="flex gap-2">
+                            {isEditing ? (
+                                <>
+                                    <button className="text-green-500 hover:text-green-700" onClick={() => handleSave(row.original.id)}>
+                                        <Tooltip title="Save">
+                                            <FaSave className="text-xl" />
+                                        </Tooltip>
+                                    </button>
+                                    <button className="text-red-500 hover:text-red-700" onClick={handleCancel}>
+                                        <Tooltip title="Cancel">
+                                            <FaTimes className="text-xl" />
+                                        </Tooltip>
+                                    </button>
+                                </>
+                            ) : (
+                                <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(row.original)}>
+                                    <FaEdit className="text-xl" />
+                                </button>
+                            )}
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'barcode',
+                accessorKey: 'barcode',
+                cell: ({ row }: any) => {
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(
+                            editFormDataRef.current.barcode,
+                            'barcode',
+                            handleEditChange,
+                            handleEditKeyDown,
+                            barcodeInputRef,
+                        )
+                    }
+                    return row.original.barcode
+                },
+            },
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
+                cell: ({ row }: any) => {
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(editFormDataRef.current.sku, 'sku', handleEditChange, handleEditKeyDown, skuInputRef)
+                    }
+                    return row.original.sku
+                },
+            },
             {
                 header: 'QUANTITY SENT',
                 accessorKey: 'quantity_sent',
-            },
-            {
-                header: 'QUANTITY RECEIVED',
-                accessorKey: 'quantity_received',
                 cell: ({ row }: any) => {
-                    const value = qcReceived ?? row?.original?.quantity_received
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[60px] "
-                                type="number"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setQcReceived(Number(e.target.value))}
-                            />
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'QC PASSED',
-                accessorKey: 'qc_passed',
-                cell: ({ row }: any) => {
-                    const value = qcPass ?? row?.original?.qc_passed ?? 0
-                    return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[60px] "
-                                type="number"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setQcPass(Number(e.target.value))}
-                            />
-                        </div>
-                    )
-                },
-            },
-            {
-                header: 'QC FAILED',
-                accessorKey: 'qc_failed',
-                cell: ({ row }: any) => {
-                    const received = qcReceived ?? row?.original?.quantity_received ?? 0
-                    const passed = qcPass ?? row?.original?.qc_passed ?? 0
-                    const qcFail = received - passed
-                    return <div>{qcFail}</div>
-                },
-            },
-            {
-                header: 'LOCATION',
-                accessorKey: 'location',
-                cell: () => {
-                    const getSame = skuWiseData?.find((item: any) => item.sku === formData?.sku)
-                    let value = locationInput !== '' ? locationInput : formData?.location
-                    if (getSame) {
-                        value = `${getSame?.location}/${formData?.location}`
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(
+                            editFormDataRef.current.quantity_sent,
+                            'quantity_sent',
+                            handleEditChange,
+                            handleEditKeyDown,
+                            qtySentInputRef,
+                        )
                     }
+                    return row.original.quantity_sent
+                },
+            },
+            {
+                header: 'Box Number',
+                accessorKey: 'boxCount',
+                cell: ({ row }: any) => {
+                    console.log('box number', row?.boxCount)
+
+                    const value = formData?.boxCount ?? row?.original?.boxCount ?? ''
+
+                    return <div className="flex gap-1 items-center">{value}</div>
+                },
+            },
+            {
+                header: 'Add',
+                accessorKey: 'add',
+                cell: ({ row }: any) => {
+                    const isEditing = editingRow === row.original.id
                     return (
-                        <div className="flex gap-1 items-center">
-                            <input
-                                className="w-[100px] "
-                                type="text"
-                                min={0}
-                                value={value}
-                                onChange={(e) => setLocationInput(e.target.value)}
-                            />
+                        <div className="">
+                            <button
+                                disabled={isEditing}
+                                className="p-2 bg-green-600 text-white rounded-xl items-center justify-center disabled:bg-green-300 disabled:cursor-not-allowed"
+                                onClick={() => handleAddRow(row?.original)}
+                            >
+                                ADD
+                            </button>
                         </div>
                     )
                 },
             },
         ],
-        [formData, qcReceived, qcPass, locationInput, skuWiseData],
+        [editingRow, handleEdit, handleSave, handleCancel, handleEditChange, handleEditKeyDown, skuWiseData, formData],
     )
 }
 export const ShipmentDetailsInwardColumns = (
-    qtyInputRef: React.MutableRefObject<any>,
-    handleQuantityChange: (stockId: string, value: number) => void,
-    updatedQuantities: Record<string, number>,
+    editingRow,
+    editFormDataRef,
+    barcodeInputRef,
+    skuInputRef,
+    qtySentInputRef,
+    handleEdit,
+    renderEditableCell,
+    handleEditChange,
+    handleEditKeyDown,
+    handleSave,
+    handleCancel,
+    qtyReceivedInputRef,
 ) => {
-    return useMemo(
+    useMemo(
         () => [
-            { header: 'Barcode', accessorKey: 'barcode' },
-            { header: 'SKU', accessorKey: 'sku' },
-            { header: 'Catalog Available', accessorKey: 'catalog_available' },
-            { header: 'Quantity Sent', accessorKey: 'quantity_sent' },
+            {
+                header: 'Barcode',
+                accessorKey: 'barcode',
+                cell: ({ row }: any) => {
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(
+                            editFormDataRef.current.barcode,
+                            'barcode',
+                            handleEditChange,
+                            handleEditKeyDown,
+                            barcodeInputRef,
+                        )
+                    }
+                    return row.original.barcode
+                },
+            },
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
+                cell: ({ row }: any) => {
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(editFormDataRef.current.sku, 'sku', handleEditChange, handleEditKeyDown, skuInputRef)
+                    }
+                    return row.original.sku
+                },
+            },
+            {
+                header: 'Catalog Available',
+                accessorKey: 'catalog_available',
+                cell: ({ row }: any) => {
+                    return <div>{row.original.catalog_available ? 'true' : 'false'}</div>
+                },
+            },
+            {
+                header: 'Quantity Sent',
+                accessorKey: 'quantity_sent',
+                cell: ({ row }: any) => {
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(
+                            editFormDataRef.current.quantity_sent,
+                            'quantity_sent',
+                            handleEditChange,
+                            handleEditKeyDown,
+                            qtySentInputRef,
+                        )
+                    }
+                    return row.original.quantity_sent
+                },
+            },
             {
                 header: 'Quantity Received',
                 accessorKey: 'quantity_received',
                 cell: ({ row }: any) => {
-                    const stockId = row.original.id
-                    return (
-                        <div className="flex gap-2 items-center">
-                            <input
-                                ref={(el) => (qtyInputRef.current[stockId] = el)}
-                                className="w-[80px] rounded-md border border-gray-300 p-2 text-center text-sm focus:border-indigo-500 focus:outline-none"
-                                type="number"
-                                min={0}
-                                value={updatedQuantities[stockId] ?? row.original.quantity_received}
-                                onChange={(e) => handleQuantityChange(stockId, Number(e.target.value))}
-                            />
-                        </div>
-                    )
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(
+                            editFormDataRef.current.quantity_received,
+                            'quantity_received',
+                            handleEditChange,
+                            handleEditKeyDown,
+                            qtyReceivedInputRef,
+                        )
+                    }
+                    return row.original.quantity_received
                 },
             },
             {
@@ -223,9 +309,40 @@ export const ShipmentDetailsInwardColumns = (
             {
                 header: 'Created Date',
                 accessorKey: 'create_date',
-                cell: ({ row }: any) => <span>{moment(row.original.create_date).format('DD-MM-YYYY')}</span>,
+                cell: ({ row }: any) => {
+                    return <span>{moment(row.original.create_date).format('DD-MM-YYYY')}</span>
+                },
+            },
+            {
+                header: isDashboard ? 'Action' : '',
+                accessorKey: 'action',
+                cell: ({ row }: any) => {
+                    const isEditing = editingRow === row.original.id
+                    return (
+                        <div className="flex gap-2">
+                            {isEditing ? (
+                                <>
+                                    <button className="text-green-500 hover:text-green-700" onClick={() => handleSave(row.original.id)}>
+                                        <Tooltip title="Save">
+                                            <FaSave className="text-xl" />
+                                        </Tooltip>
+                                    </button>
+                                    <button className="text-red-500 hover:text-red-700" onClick={handleCancel}>
+                                        <Tooltip title="Cancel">
+                                            <FaTimes className="text-xl" />
+                                        </Tooltip>
+                                    </button>
+                                </>
+                            ) : (
+                                <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(row.original)}>
+                                    <FaEdit className="text-xl" />
+                                </button>
+                            )}
+                        </div>
+                    )
+                },
             },
         ],
-        [updatedQuantities],
+        [editingRow, handleEdit, handleSave, handleCancel, handleEditChange, handleEditKeyDown],
     )
 }

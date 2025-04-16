@@ -4,21 +4,16 @@ import { Card, Upload } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import moment from 'moment'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast } from 'react-icons/fa'
-import { useNavigate, useParams } from 'react-router-dom'
-import { ShipmentDetailsColumns } from '../brandShipmentsUtils/BrandShipmentColumns'
+import { useParams } from 'react-router-dom'
 import InwardMaterialModule from '@/views/inventory-management/inward/inwardModules/InwardMaterialModule'
 
 const BrandShipmentDetails = () => {
     const { id } = useParams()
-    const navigate = useNavigate()
     const [shipmentDetails, setShipmentDetails] = useState<any>()
-    const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
-    const [updatedQuantities, setUpdatedQuantities] = useState<{ [key: number]: number }>({})
     const [showAddCsv, setShowAddCsv] = useState(false)
     const [csvEmptyArray, setCsvEmptyArray] = useState<any[]>([])
-    const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
@@ -31,11 +26,6 @@ const BrandShipmentDetails = () => {
         }
         fetchShipmentDetails()
     }, [id])
-
-    const handleQuantityChange = (id: number, newQuantity: number) => {
-        setUpdatedQuantities((prev) => (prev[id] === newQuantity ? prev : { ...prev, [id]: newQuantity }))
-        setTimeout(() => qtyInputRef.current[id]?.focus(), 0)
-    }
 
     const handleCsvUpload = async () => {
         try {
@@ -72,27 +62,6 @@ const BrandShipmentDetails = () => {
         { label: 'Delivery Address', value: shipmentDetails?.delivery_address ?? 'N/A' },
         { label: 'Delivery Date', value: moment(shipmentDetails?.delivery_date).format('DD-MM-YYYY') },
     ]
-
-    const handleChangeQty = async (qty: string | number, id: any) => {
-        const body = {
-            quantity: updatedQuantities[id] ?? qty,
-        }
-
-        try {
-            const response = await axioisInstance.patch(`/shipment/item/${id}`, body)
-            notification.success({
-                message: response?.data?.message || 'Quantity updated successfully',
-            })
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-            notification.error({
-                message: 'Failed to update row',
-            })
-        }
-    }
-
-    const columns = ShipmentDetailsColumns(isDashboard, qtyInputRef, updatedQuantities, handleQuantityChange, handleChangeQty)
 
     return (
         <div className="p-6">
@@ -166,7 +135,7 @@ const BrandShipmentDetails = () => {
             {shipmentDetails?.shipment_items?.length > 0 && (
                 <div className="mt-10">
                     <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
-                    <InwardMaterialModule ShipmentData={shipmentDetails.shipment_items} shipemntCulumns={columns} />
+                    <InwardMaterialModule />
                 </div>
             )}
         </div>

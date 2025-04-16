@@ -1,60 +1,288 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useRef } from 'react'
-import EasyTable from '@/common/EasyTable'
+import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { notification } from 'antd'
-import { Dropdown } from '@/components/ui'
+import { Button, Dialog, Dropdown, Tooltip } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
-import { InwardDetailsColumns, ShipmentDetailsInwardColumns } from '../inwardUtils/InwardColumns'
+import moment from 'moment'
+import { InwardDetailSearchOptions, ShipmentItem } from '../inwardCommon'
+import { FaEdit, FaSave, FaTimes } from 'react-icons/fa'
+import EasyTable from '@/common/EasyTable'
+import { useParams } from 'react-router-dom'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { InwardDetailsColumns } from '../inwardUtils/InwardColumns'
 
-interface ShipmentItem {
-    id: string
-    barcode: string
-    sku: string
-    catalog_available?: string
-    quantity_sent: number
-    quantity_received: number
-    create_date: string
+const renderEditableCell = (
+    value: any,
+    field: keyof ShipmentItem,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, field: keyof ShipmentItem) => void,
+    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void,
+    ref: React.RefObject<HTMLInputElement>,
+) => {
+    return (
+        <input
+            ref={ref}
+            type="text"
+            defaultValue={value || ''}
+            className="w-full border rounded p-1"
+            onChange={(e) => onChange(e, field)}
+            onKeyDown={onKeyDown}
+        />
+    )
 }
 
-const SEARCHOPTIONS = [
-    { label: 'Sku', value: 'sku' },
-    { label: 'Barcode', value: 'barcode' },
-]
-
-interface props {
-    ShipmentData: ShipmentItem[]
-    shipemntCulumns: any
-}
-
-const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
+const InwardMaterialModule = () => {
+    const { id } = useParams()
+    const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
+    const [shipmentDetails, setShipmentDetails] = useState<any>()
     const [skuWiseData, setSkuWiseData] = useState<any[]>([])
-    const [qcReceived, setQcReceived] = useState<number>()
-    const [qcPass, setQcPass] = useState<number>()
-    const [currentSelectedSearch, setCurrentSelectedSearch] = useState<Record<string, string>>(SEARCHOPTIONS[0])
-    const [locationInput, setLocationInput] = useState<string>('')
-    const [updatedQuantities, setUpdatedQuantities] = useState<Record<string, number>>({})
-    const qtyInputRef = useRef<any>({})
-    const [shipmentData, setShipmentData] = useState<ShipmentItem[]>(initialShipmentData)
-    const [formData, setFormData] = useState({ location: '', sku: '', barcode: '' })
+    const [currentSelectedSearch, setCurrentSelectedSearch] = useState<Record<string, string>>(InwardDetailSearchOptions[0])
+    const [shipmentData, setShipmentData] = useState<ShipmentItem[]>(shipmentDetails?.shipment_items ?? [])
+    const [formData, setFormData] = useState({ boxCount: '', sku: '', barcode: '' })
+    const [editingRow, setEditingRow] = useState<string | null>(null)
+    const editFormDataRef = useRef<Partial<ShipmentItem>>({})
+    const barcodeInputRef = useRef<HTMLInputElement>(null)
+    const skuInputRef = useRef<HTMLInputElement>(null)
+    const qtySentInputRef = useRef<HTMLInputElement>(null)
+    const qtyReceivedInputRef = useRef<HTMLInputElement>(null)
+    const [refreshTrigger, setRefreshTrigger] = useState(0)
+    const [showAddModal, setShowAddModal] = useState(false)
+    const [showEditModal, setShowEditModal] = useState(false)
+    const [dataTobeAdded, setDataTobeAdded] = useState<any>()
+    const [dataTobeEdited, setDataTobeEdited] = useState<any>()
 
-    const columns = InwardDetailsColumns(
-        qcReceived,
-        setQcReceived,
-        qcPass,
-        setQcPass,
-        locationInput,
-        setLocationInput,
+    useEffect(() => {
+        const fetchShipmentDetails = async () => {
+            try {
+                const response = await axioisInstance.get(`/product-shipment?view=detail&id=${id}`)
+                setShipmentDetails(response?.data?.data?.results[0])
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        fetchShipmentDetails()
+    }, [id, refreshTrigger])
+
+    const handleEdit = useCallback(async (row: ShipmentItem) => {
+        setEditingRow(row.id)
+        editFormDataRef.current = { ...row }
+        setDataTobeEdited(row)
+    }, [])
+
+    const handleSave = useCallback(async (id: string) => {
+        try {
+            const updatedData = { ...editFormDataRef.current }
+            setShipmentData((prev) => prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item)))
+            setSkuWiseData((prev) => prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item)))
+            setEditingRow(null)
+            setShowEditModal(true)
+        } catch (error) {
+            notification.error({ message: 'Failed to update item' })
+        }
+    }, [])
+
+    const handleCancel = useCallback(() => {
+        setEditingRow(null)
+    }, [])
+
+    const handleEditChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, field: keyof ShipmentItem) => {
+        editFormDataRef.current = {
+            ...editFormDataRef.current,
+            [field]: e.target.value,
+        }
+    }, [])
+
+    const handleEditKeyDown = useCallback(
+        (e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter' && editingRow) {
+                handleSave(editingRow)
+            }
+        },
+        [editingRow, handleSave],
+    )
+
+    const handleAddRow = async (row: ShipmentItem) => {
+        setShowAddModal(true)
+        setDataTobeAdded(row)
+    }
+
+    const handleAddRowItems = async () => {
+        const body = {
+            sku: dataTobeAdded?.sku,
+            barcode: dataTobeAdded?.barcode,
+            shipment_id: id,
+            quantity: dataTobeAdded?.quantity_sent,
+            box_number: formData?.boxCount,
+        }
+        console.log('body', body)
+        try {
+            const response = await axioisInstance.post(`/shipment/item`, body)
+            notification.success({ message: response?.data?.message || 'Item added successfully' })
+            setRefreshTrigger((prev) => prev + 1)
+        } catch (error) {
+            console.error(error)
+            notification.error({ message: 'Failed to add item' })
+        } finally {
+            setShowAddModal(false)
+        }
+    }
+    const handleEditRowItems = async () => {
+        const body = {
+            sku: dataTobeEdited?.sku,
+            barcode: dataTobeEdited?.barcode,
+            quantity: dataTobeEdited?.quantity_sent,
+            quantity_received: dataTobeEdited?.quantity_received,
+        }
+        const formattedData = Object.fromEntries(Object.entries(body).filter(([_, value]) => value !== undefined))
+        console.log('body', body)
+        try {
+            const response = await axioisInstance.post(`/shipment/item/${dataTobeEdited?.id}`, formattedData)
+            notification.success({ message: response?.data?.message || 'Item Edited successfully' })
+            setRefreshTrigger((prev) => prev + 1)
+        } catch (error) {
+            console.error(error)
+            notification.error({ message: 'Failed to Edit item' })
+        } finally {
+            setShowEditModal(false)
+        }
+    }
+
+    const columns1 = InwardDetailsColumns(
+        editingRow,
+        editFormDataRef,
+        barcodeInputRef,
+        skuInputRef,
+        qtySentInputRef,
+        handleEdit,
+        renderEditableCell,
+        handleEditChange,
+        handleEditKeyDown,
+        handleSave,
+        handleCancel,
+        handleAddRow,
         formData,
         skuWiseData,
     )
 
-    const handleQuantityChange = (stockId: string, value: number) => {
-        setUpdatedQuantities((prev) => ({ ...prev, [stockId]: value }))
-    }
-    const ShipmentDetailsColumnData = ShipmentDetailsInwardColumns(qtyInputRef, handleQuantityChange, updatedQuantities)
+    const columns2 = useMemo(
+        () => [
+            {
+                header: 'Barcode',
+                accessorKey: 'barcode',
+                cell: ({ row }: any) => {
+                    console.log('row id is', row?.original?.id)
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(
+                            editFormDataRef.current.barcode,
+                            'barcode',
+                            handleEditChange,
+                            handleEditKeyDown,
+                            barcodeInputRef,
+                        )
+                    }
+                    return row.original.barcode
+                },
+            },
+            {
+                header: 'SKU',
+                accessorKey: 'sku',
+                cell: ({ row }: any) => {
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(editFormDataRef.current.sku, 'sku', handleEditChange, handleEditKeyDown, skuInputRef)
+                    }
+                    return row.original.sku
+                },
+            },
+            {
+                header: 'Catalog Available',
+                accessorKey: 'catalog_available',
+                cell: ({ row }: any) => {
+                    return <div>{row.original.catalog_available ? 'true' : 'false'}</div>
+                },
+            },
+            {
+                header: 'Quantity Sent',
+                accessorKey: 'quantity_sent',
+                cell: ({ row }: any) => {
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(
+                            editFormDataRef.current.quantity_sent,
+                            'quantity_sent',
+                            handleEditChange,
+                            handleEditKeyDown,
+                            qtySentInputRef,
+                        )
+                    }
+                    return row.original.quantity_sent
+                },
+            },
+            {
+                header: 'Quantity Received',
+                accessorKey: 'quantity_received',
+                cell: ({ row }: any) => {
+                    if (editingRow === row.original.id) {
+                        return renderEditableCell(
+                            editFormDataRef.current.quantity_received,
+                            'quantity_received',
+                            handleEditChange,
+                            handleEditKeyDown,
+                            qtyReceivedInputRef,
+                        )
+                    }
+                    return row.original.quantity_received
+                },
+            },
+            {
+                header: 'QC failed',
+                accessorKey: 'qc_failed',
+                cell: ({ row }: any) => {
+                    const quantityReceived = row?.original?.quantity_received ?? 0
+                    const quantitySent = row?.original?.quantity_sent ?? 0
+                    return <div>{quantitySent - quantityReceived}</div>
+                },
+            },
+            {
+                header: 'Created Date',
+                accessorKey: 'create_date',
+                cell: ({ row }: any) => {
+                    return <span>{moment(row.original.create_date).format('DD-MM-YYYY')}</span>
+                },
+            },
+            {
+                header: isDashboard ? 'Edit' : '',
+                accessorKey: 'action',
+                cell: ({ row }: any) => {
+                    const isEditing = editingRow === row.original.id
+                    if (!isDashboard) return null
+                    return (
+                        <div className="flex gap-2">
+                            {isEditing ? (
+                                <>
+                                    <button className="text-green-500 hover:text-green-700" onClick={() => handleSave(row.original.id)}>
+                                        <Tooltip title="Save">
+                                            <FaSave className="text-xl" />
+                                        </Tooltip>
+                                    </button>
+                                    <button className="text-red-500 hover:text-red-700" onClick={handleCancel}>
+                                        <Tooltip title="Cancel">
+                                            <FaTimes className="text-xl" />
+                                        </Tooltip>
+                                    </button>
+                                </>
+                            ) : (
+                                <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(row.original)}>
+                                    <FaEdit className="text-xl" />
+                                </button>
+                            )}
+                        </div>
+                    )
+                },
+            },
+        ],
+        [editingRow, handleEdit, handleSave, handleCancel, handleEditChange, handleEditKeyDown],
+    )
 
     const handleAddItem = () => {
-        const { sku, barcode, location } = formData
+        const { sku, barcode, boxCount } = formData
         const searchField = currentSelectedSearch.value
         const searchValue = searchField === 'sku' ? sku : barcode
 
@@ -64,13 +292,12 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
         }
 
         const existingItemIndex = shipmentData.findIndex((item) => item[searchField as keyof ShipmentItem] === searchValue)
-
         if (existingItemIndex >= 0) {
-            const updatedData = [...shipmentData]
+            const updatedData: any = [...shipmentData]
             updatedData[existingItemIndex] = {
                 ...updatedData[existingItemIndex],
                 quantity_received: (updatedData[existingItemIndex].quantity_received || 0) + 1,
-                ...(location && { location }),
+                ...(boxCount && { boxCount }),
             }
             setShipmentData(updatedData)
             notification.success({ message: `Updated quantity for ${searchValue}` })
@@ -83,19 +310,16 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
                 quantity_received: 1,
                 create_date: new Date().toISOString(),
             }
-            setShipmentData((prev) => [...prev, newItem])
             setSkuWiseData([newItem])
-
             notification.success({
                 message: `Added new item: ${searchValue}`,
             })
         }
-
         setFormData((prev) => ({ ...prev, [searchField]: '' }))
     }
 
     const handleSelect = (value: any) => {
-        const selected = SEARCHOPTIONS.find((item) => item.value === value)
+        const selected = InwardDetailSearchOptions.find((item) => item.value === value)
         if (selected) {
             setCurrentSelectedSearch(selected)
         }
@@ -109,6 +333,7 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             handleAddItem()
+            e.preventDefault()
         }
     }
 
@@ -116,13 +341,13 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
         <div className="p-4 flex flex-col gap-6">
             <div>
                 <div className="mb-4">
-                    <label className="block text-gray-700">Location</label>
+                    <label className="block text-gray-700">Box Number</label>
                     <input
-                        name="location"
+                        name="boxCount"
                         type="text"
-                        placeholder="Enter Location"
+                        placeholder="Enter Box Number"
                         className="w-auto xl:w-1/6 border border-gray-300 rounded p-2"
-                        value={formData.location}
+                        value={formData.boxCount}
                         onChange={handleInputChange}
                     />
                 </div>
@@ -147,7 +372,7 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
                                             title={currentSelectedSearch?.value ? currentSelectedSearch.label : 'SELECT'}
                                             onSelect={handleSelect}
                                         >
-                                            {SEARCHOPTIONS?.map((item, key) => {
+                                            {InwardDetailSearchOptions?.map((item, key) => {
                                                 return (
                                                     <DropdownItem key={key} eventKey={item.value}>
                                                         <span>{item.label}</span>
@@ -163,22 +388,52 @@ const InwardMaterialModule = ({ ShipmentData: initialShipmentData }: props) => {
                 </div>
             </div>
 
-            {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
+            <EasyTable overflow columns={columns1} mainData={skuWiseData} />
 
-            <div className="flex flex-col gap-6">
-                <div className="flex justify-between">
-                    <label htmlFor="" className="font-bold text-xl">
-                        Shipment Details
-                    </label>
-                </div>
-
-                <div>
-                    <div className="flex justify-end ">
-                        <button className="text-green-600 mb-4 text-xl font-bold cursor-pointer hover:text-green-400">Generate GRN</button>
-                    </div>
-                    <EasyTable noPage overflow mainData={shipmentData} columns={ShipmentDetailsColumnData} />
-                </div>
+            <div className="mt-8">
+                <div className="text-xl font-bold mb-8">Items Received</div>
+                <EasyTable overflow columns={columns2} mainData={shipmentDetails?.shipment_items ?? []} />
             </div>
+            {showAddModal && (
+                <Dialog isOpen={showAddModal} onClose={() => setShowAddModal(false)}>
+                    <div className="text-xl font-bold">Add Items</div>
+                    <div className="flex flex-col gap-3 mt-6">
+                        <span>Are You Sure You want to Add This Item with SKU: {dataTobeAdded?.sku} </span>
+                        <div className="flex justify-end gap-4">
+                            <div>
+                                <Button variant="reject" size="sm" onClick={() => setShowAddModal(false)}>
+                                    Cancel
+                                </Button>
+                            </div>
+                            <div>
+                                <Button variant="accept" size="sm" onClick={handleAddRowItems}>
+                                    Add
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </Dialog>
+            )}
+            {showEditModal && (
+                <Dialog isOpen={showEditModal} onClose={() => setShowEditModal(false)}>
+                    <div className="text-xl font-bold">Edit Items</div>
+                    <div className="flex flex-col gap-3 mt-6">
+                        <span>Are You Sure You want to Edit This Item with SKU: {dataTobeEdited?.sku} </span>
+                        <div className="flex justify-end gap-4">
+                            <div>
+                                <Button variant="reject" size="sm" onClick={() => setShowEditModal(false)}>
+                                    Cancel
+                                </Button>
+                            </div>
+                            <div>
+                                <Button variant="accept" size="sm" onClick={handleEditRowItems}>
+                                    Add
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </Dialog>
+            )}
         </div>
     )
 }

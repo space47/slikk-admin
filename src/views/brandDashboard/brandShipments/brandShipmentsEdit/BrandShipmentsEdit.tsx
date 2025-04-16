@@ -39,7 +39,7 @@ const BrandShipmentsEdit = () => {
         try {
             const response = await axioisInstance.get(`/product-shipment?view=detail&id=${shipmentId}`)
             const data = response?.data?.data?.results[0]
-            setShipmentItemsCount(data?.items_count)
+            setShipmentItemsCount(data?.upload_count)
         } catch (error) {
             console.error('Error fetching shipment details:', error)
         }
