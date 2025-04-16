@@ -125,11 +125,11 @@ const ReturnProductsDetails = ({ task_id }: props) => {
             <EasyTable noPage overflow mainData={returnProducts} columns={columns} />
 
             {returnProducts?.length > 0 ? (
-                <div className="flex justify-end mr-7 ">
-                    <div className="flex gap-3">
+                <div className="flex xl:justify-end justify-center mr-7 ">
+                    <div className="flex gap-3 xl:flex-row flex-col ">
                         <div>
                             <button
-                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 xl:w-1/2 w-full"
                                 onClick={handleCancelOrder}
                             >
                                 CANCEL
@@ -137,7 +137,7 @@ const ReturnProductsDetails = ({ task_id }: props) => {
                         </div>
                         <div>
                             <button
-                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 w-1/2 md:w-auto"
+                                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow-lg transition duration-300 transform hover:scale-105 xl:w-1/2 w-full"
                                 onClick={() => setIsReschedule(true)}
                             >
                                 Reschedule
