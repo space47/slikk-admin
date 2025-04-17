@@ -115,6 +115,7 @@ const BrandShipmentsEdit = () => {
             if (values?.csvArray?.length > 0) {
                 console.log('is res here')
                 try {
+                    setShowSpinner(true)
                     notification.info({
                         message: 'CSV upload is in progress',
                     })
