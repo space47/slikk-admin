@@ -51,6 +51,7 @@ const AppBanners = () => {
         [key: number]: number
     }>({})
     const [isSelectAllBanner, setIsSelectAllBanner] = useState(false)
+    const [sectionFilter, setSectionFilter] = useState<string>('')
 
     console.log('var1', var1, 'var2', var2)
 
@@ -83,23 +84,10 @@ const AppBanners = () => {
 
     const fetchForSectionHeading = async () => {
         try {
-            let page = 1
-            let hasMore = true
-            let allSectionHeadings: any = []
+            const response = await axiosInstance.get(`/banners?data_type=section_heading`)
+            const data = response.data.data
 
-            while (hasMore) {
-                const response = await axiosInstance.get(`/banners?p=${page}&page=${currentSelectedPage.value}`)
-                const data = response.data.data
-                const newSectionHeadings = data.results.map((item: any) => item.section_heading)
-                allSectionHeadings = _.uniq(allSectionHeadings.concat(newSectionHeadings))
-                if (data.next) {
-                    page++
-                } else {
-                    hasMore = false
-                }
-            }
-
-            setSectionHeadingArray(allSectionHeadings)
+            setSectionHeadingArray(data)
         } catch (error) {
             console.log(error)
         }
@@ -112,6 +100,10 @@ const AppBanners = () => {
     useEffect(() => {
         fetchData(page, pageSize, globalFilter)
     }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading])
+
+    const filteredSectionHeadings = _.uniq(sectionHeadingArray)?.filter((item) => item.toLowerCase().includes(sectionFilter.toLowerCase()))
+
+    console.log('section filters', filteredSectionHeadings)
 
     const handleSectionHeading = (selectedKey: string) => {
         setSelectedHeading(selectedKey)
@@ -140,7 +132,7 @@ const AppBanners = () => {
             {
                 header: (
                     <div className="flex flex-col gap-2 items-center justify-center">
-                        <Input
+                        <input
                             type="checkbox"
                             name="selectAll"
                             checked={data.length > 0 && bannerIdStore.length === data.length}
@@ -153,7 +145,7 @@ const AppBanners = () => {
                     const bannerId = row.original.id
                     return (
                         <div className="flex items-center justify-center">
-                            <Input
+                            <input
                                 type="checkbox"
                                 name="bannerId"
                                 checked={bannerIdStore.includes(bannerId)}
@@ -376,23 +368,35 @@ const AppBanners = () => {
                             </Dropdown>
                         </div>
 
-                        <div className="bg-gray-200 px-1 rounded-lg font-bold text-[15px]">
+                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
                             <Dropdown
-                                className="border  bg-gray-200 text-black text-lg font-semibold"
+                                className="border   text-black text-lg font-semibold "
                                 title={selectedHeading}
                                 onSelect={handleSectionHeading}
                             >
-                                {sectionHeadingArray?.map((item, key) => (
-                                    <DropdownItem key={key} eventKey={item}>
-                                        {item}
-                                    </DropdownItem>
-                                ))}
+                                <div className="mt-2 mb-2">
+                                    <input
+                                        className="flex h-[30px] items-center rounded-xl"
+                                        placeholder="Search Section Heading"
+                                        type="search"
+                                        value={sectionFilter}
+                                        onChange={(e) => setSectionFilter(e.target.value)}
+                                    />
+                                </div>
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:h-[600px] xl:overflow-y-scroll font-bold ">
+                                    {filteredSectionHeadings?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item} className="h-1">
+                                            {item}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedHeading('Select Section')}
+                                >
+                                    Clear
+                                </div>
                             </Dropdown>
-                        </div>
-                        <div className="items-center flex justify-center">
-                            <button className="" onClick={() => setSelectedHeading('Select Section')}>
-                                <MdCancel className="text-xl text-red-500 " />
-                            </button>
                         </div>
                     </div>
                 </div>

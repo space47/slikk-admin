@@ -11,24 +11,22 @@ import {
     WebNameFieldArray,
     WebSectionBorrderStyleArray,
 } from './genericComp'
-import { FormContainer, FormItem, Input } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
 import CommonSelect from './CommonSelect'
 import { DatePicker } from 'antd'
 import moment from 'moment'
+import { ParallaxConfigArray } from './configurationCommon'
 
 interface FontSize {
     label: string
     value: string
 }
 
-const SECTIONARRAY = [
-    { label: 'Flex Start', value: 'flex-start' },
-    { label: 'Flex End', value: 'flex-end' },
-    { label: 'Center', value: 'center' },
-    { label: 'Space Between', value: 'space-between' },
-    { label: 'Space Around', value: 'space-around' },
-    { label: 'Space Evenly', value: 'space-evenly' },
+const CarouselTypeArray = [
+    { label: 'NORMAL', value: 'NORMAL' },
+    { label: 'PARALLAX', value: 'PARALLAX' },
+    { label: 'STACK', value: 'STACK' },
 ]
 
 const borderStyleArray = [
@@ -57,6 +55,7 @@ interface PageCompProps {
     webNameForm: any
     setWebFooterAlignForm: any
     webFooterAlignForm: any
+    values: any
 }
 
 const PageComponentConfig = ({
@@ -79,6 +78,7 @@ const PageComponentConfig = ({
     webNameForm,
     setWebFooterAlignForm,
     webFooterAlignForm,
+    values,
 }: PageCompProps) => {
     return (
         <div>
@@ -89,9 +89,52 @@ const PageComponentConfig = ({
 
                 {genericComponentArray.slice(0, 28).map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-2/3">
-                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={item.placeholder}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                            min="0"
+                        />
                     </FormItem>
                 ))}
+
+                {/* Carousel */}
+                <CommonSelect
+                    needClassName
+                    name="component_config.carousel_type"
+                    label="Carousel Type"
+                    options={CarouselTypeArray}
+                    className="col-span-1 w-1/2"
+                />
+                {values?.component_config?.carousel_type === 'STACK' && (
+                    <CommonSelect
+                        needClassName
+                        name="component_config.carousel_swipe_direction"
+                        label="Swipe Direction"
+                        options={[
+                            { label: 'left', value: 'left' },
+                            { label: 'right', value: 'right' },
+                        ]}
+                        className="col-span-1 w-1/2"
+                    />
+                )}
+                {values?.component_config?.carousel_type === 'PARALLAX' && (
+                    <>
+                        {ParallaxConfigArray.slice(0, 28).map((item, key) => (
+                            <FormItem key={key} label={item.label} className="w-2/3">
+                                <Field
+                                    type={item.type}
+                                    name={item.name}
+                                    placeholder={`Enter ${item.label}`}
+                                    component={item?.type === 'checkbox' ? Checkbox : Input}
+                                    min="0"
+                                />
+                            </FormItem>
+                        ))}
+                    </>
+                )}
+
                 <CommonSelect
                     name="component_config.font_style"
                     label="Font Style"
@@ -128,7 +171,7 @@ const PageComponentConfig = ({
                                 type="checkbox"
                                 name="border"
                                 placeholder="Enter border"
-                                component={Input}
+                                component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
                                     setFieldValue('border', isChecked)
@@ -144,7 +187,7 @@ const PageComponentConfig = ({
                                                 type={item.type}
                                                 name={item.name}
                                                 placeholder={item.placeholder}
-                                                component={Input}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
                                             />
                                         </FormItem>
@@ -158,7 +201,7 @@ const PageComponentConfig = ({
                                 type="checkbox"
                                 name="section_border"
                                 placeholder="Enter section border"
-                                component={Input}
+                                component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
                                     setFieldValue('section_border', isChecked)
@@ -178,7 +221,7 @@ const PageComponentConfig = ({
                                                 type={item.type}
                                                 name={item.name}
                                                 placeholder={item.placeholder}
-                                                component={Input}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
                                             />
                                         </FormItem>
@@ -194,7 +237,7 @@ const PageComponentConfig = ({
                                 type="checkbox"
                                 name="name"
                                 placeholder="Enter name"
-                                component={Input}
+                                component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
                                     setFieldValue('name', isChecked)
@@ -211,7 +254,7 @@ const PageComponentConfig = ({
                                                 type={item.type}
                                                 name={item.name}
                                                 placeholder={item.placeholder}
-                                                component={Input}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
                                             />
                                         </FormItem>
@@ -224,7 +267,7 @@ const PageComponentConfig = ({
                                 <Field
                                     type="checkbox"
                                     name="name_footer"
-                                    component={Input}
+                                    component={Checkbox}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         const isChecked = e.target.checked
                                         setFieldValue('name_footer', isChecked)
@@ -266,7 +309,13 @@ const PageComponentConfig = ({
 
                 {genericComponentArray.slice(28).map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-2/3">
-                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
+                        <Field
+                            type={item.type}
+                            name={item.name}
+                            placeholder={item.placeholder}
+                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                            min="0"
+                        />
                     </FormItem>
                 ))}
                 <CommonSelect
@@ -305,7 +354,7 @@ const PageComponentConfig = ({
                                 type="checkbox"
                                 name="web_border"
                                 placeholder="Enter border"
-                                component={Input}
+                                component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
                                     setFieldValue('web_border', isChecked)
@@ -327,7 +376,7 @@ const PageComponentConfig = ({
                                                 type={item.type}
                                                 name={item.name}
                                                 placeholder={item.placeholder}
-                                                component={Input}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
                                             />
                                         </FormItem>
@@ -341,7 +390,7 @@ const PageComponentConfig = ({
                                 type="checkbox"
                                 name="web_section_border"
                                 placeholder="Enter web section border"
-                                component={Input}
+                                component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
                                     setFieldValue('web_section_border', isChecked)
@@ -361,7 +410,7 @@ const PageComponentConfig = ({
                                                 type={item.type}
                                                 name={item.name}
                                                 placeholder={item.placeholder}
-                                                component={Input}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
                                             />
                                         </FormItem>
@@ -376,7 +425,7 @@ const PageComponentConfig = ({
                             <Field
                                 type="checkbox"
                                 name="web_name"
-                                component={Input}
+                                component={Checkbox}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                     const isChecked = e.target.checked
                                     setFieldValue('web_name', isChecked)
@@ -393,7 +442,7 @@ const PageComponentConfig = ({
                                                 type={item.type}
                                                 name={item.name}
                                                 placeholder={item.placeholder}
-                                                component={Input}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                                 min="0"
                                             />
                                         </FormItem>
@@ -406,7 +455,7 @@ const PageComponentConfig = ({
                                 <Field
                                     type="checkbox"
                                     name="web_name_footer"
-                                    component={Input}
+                                    component={Checkbox}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         const isChecked = e.target.checked
                                         setFieldValue('web_name_footer', isChecked)

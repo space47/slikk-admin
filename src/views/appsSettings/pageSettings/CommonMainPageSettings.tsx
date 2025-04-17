@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
-import { Button, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Button, Checkbox, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
 import { ErrorMessage, Field, FieldProps, Form, Formik } from 'formik'
 import React, { useState } from 'react'
-import { DROPDOWNARRAY, DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
+import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 import PageSettingsPostTable from './PageSettingsPostTable'
@@ -151,6 +151,7 @@ const CommonMainPageSettings = ({
 
                         {configFields && (
                             <PageComponentConfig
+                                values={values}
                                 FontSizeArray={FontSizeArray}
                                 SECTIONARRAY={SECTIONARRAY}
                                 borderForm={borderForm}
@@ -382,7 +383,7 @@ const CommonMainPageSettings = ({
                             <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" />
                         </FormItem>
                         <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
-                            <Field type="checkbox" name="is_section_clickable" placeholder="" component={Input} />
+                            <Field type="checkbox" name="is_section_clickable" placeholder="" component={Checkbox} />
                         </FormItem>
 
                         {values?.is_section_clickable && <TagsEdit filterOptions={filters.filters} isValue />}

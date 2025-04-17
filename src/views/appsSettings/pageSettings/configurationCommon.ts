@@ -300,3 +300,13 @@ export interface CommonProps {
     handleAddFilters: any
     handleRemoveFilter: any
 }
+
+export const ParallaxConfigArray = [
+    { label: 'OffsetX', name: 'component_config.carousel_offsetX', type: 'number' },
+    { label: 'OffsetY', name: 'component_config.carousel_offsetY', type: 'number' },
+    { label: 'Angle Offset', name: 'component_config.carousel_angleOffset', type: 'number' },
+    { label: 'Min Opacity', name: 'component_config.carousel_minOpacity', type: 'number' },
+    { label: 'Max Opacity', name: 'component_config.carousel_maxOpacity', type: 'number' },
+    { label: 'Min Scale', name: 'component_config.carousel_minScale', type: 'number' },
+    { label: 'Max Scale', name: 'component_config.carousel_maxScale', type: 'number' },
+]

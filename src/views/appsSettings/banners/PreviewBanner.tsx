@@ -1,73 +1,78 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 // import { API_RESPONSE } from './data';
-import { AllComponentsLib } from 'slikk-react-comps'
 import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
+import AllComponents from '@/preview/BannerComps/AllComponent'
 
-function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, selectedSection }: any) {
-    console.log(completeBannerFormData)
-
+function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, selectedSection, headingData }: any) {
+    const navigate = useNavigate()
     const [API_BANNERS, setApiBanners] = useState<any[]>([])
     const [viewSize, setViewSize] = useState('lg')
 
-    const navigate = useNavigate()
-
-    const getFullBannerDataFromBannerFormArray = () => {
-        console.log(selectedPage, selectedSection, completeBannerFormData)
-
-        let FULL_BANNER_API: any = {
-            position: 0,
-            component_type: selectedSection?.component_type,
-            header_config: selectedSection?.header_config,
-            sub_header_config: selectedSection?.sub_header_config,
-            footer_config: selectedSection?.footer_config,
-            background_image: selectedSection?.background_image,
-            section_heading: selectedSection?.section_heading,
-            data_type: selectedSection?.data_type,
-            data: [],
-        }
-
-        console.log('FULL BANNER', FULL_BANNER_API)
-
-        let data: any[] = []
-
-        completeBannerFormData?.forEach((banner: any, index: number) => {
-            console.log(banner)
-            data.push({
-                pk: index,
-                ...banner,
-                quick_filter_tags: banner.quick_filter_tags || [],
-                tags: banner.tags || [],
-            })
-        })
-
-        FULL_BANNER_API.data = data
-
-        console.log([FULL_BANNER_API])
-        setApiBanners((prev) => [FULL_BANNER_API, ...prev])
-    }
-
-    const fetchBanners = async () => {
-        const response = await axioisInstance
-            .get('page/sections?device_type=Web')
-            .then((res) => {
-                return res.data.data
-            })
-            .catch((err) => {
-                return []
-            })
-
-        console.log(response)
-        setApiBanners((prev) => [...prev, ...response])
-
-        getFullBannerDataFromBannerFormArray()
-    }
-
     useEffect(() => {
+        const fetchBanners = async () => {
+            const response = await axioisInstance
+                .get('page/sections?device_type=Web')
+                .then((res) => {
+                    return res.data.data
+                })
+                .catch((err) => {
+                    return []
+                })
+
+            console.log(response)
+            setApiBanners(response)
+            const getFullBannerDataFromBannerFormArray = () => {
+                const FULL_BANNER_API: any = {
+                    position: 0,
+                    component_type: selectedSection?.component_type,
+                    component_config: selectedSection?.component_config,
+                    header_config: selectedSection?.header_config,
+                    sub_header_config: selectedSection?.sub_header_config,
+                    footer_config: selectedSection?.footer_config,
+                    background_image: selectedSection?.background_image,
+                    section_heading: selectedSection?.section_heading,
+                    data_type: selectedSection?.data_type,
+                    data: [],
+                }
+
+                console.log('FULL BANNER is', FULL_BANNER_API?.section_heading)
+
+                const data: any[] = []
+
+                completeBannerFormData?.forEach((banner: any, index: number) => {
+                    console.log(banner)
+                    data.push({
+                        pk: index,
+                        ...banner,
+                        quick_filter_tags: banner.quick_filter_tags || [],
+                        tags: banner.tags || [],
+                    })
+                })
+                console.log('data is', data)
+                FULL_BANNER_API.data = data
+
+                console.log('banner api is:', FULL_BANNER_API.data)
+
+                setApiBanners((prev) => {
+                    return prev.map((data) => {
+                        if (data.section_heading === FULL_BANNER_API?.section_heading) {
+                            return {
+                                ...data,
+                                data: [...data.data, ...FULL_BANNER_API.data],
+                            }
+                        }
+                        return data
+                    })
+                })
+            }
+            getFullBannerDataFromBannerFormArray()
+        }
         fetchBanners()
-    }, [completeBannerFormData])
+    }, [completeBannerFormData, selectedSection])
 
     useEffect(() => {
         console.log('ALL BANNERS', API_BANNERS)
@@ -190,9 +195,14 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
             // }
 
             console.log('redir url', banner?.web_redirection_url)
-
+            console.log('banner index', banner)
             const data = {
                 ...banner,
+                division: banner?.division?.map((item: any) => item.name).join(',') || '',
+                category: banner?.category?.map((item: any) => item.name).join(',') || '',
+                sub_category: banner?.sub_category?.map((item: any) => item.name).join(',') || '',
+                product_type: banner?.product_type?.map((item: any) => item.name).join(',') || '',
+                brand: banner?.brand?.map((item: any) => item.name).join(',') || '',
                 page: selectedPage.value,
                 section_heading: selectedSection?.section_heading,
                 image_web: webImageUpload || '',
@@ -216,11 +226,11 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
 
             console.log('Data to send', data)
 
-            const createBannerAPI = await axioisInstance
+            await axioisInstance
                 .post('banners', data)
                 .then((res) => {
                     notification.success({
-                        message: 'Successfully uploaded banner ' + (index + 1),
+                        message: 'Successfully uploaded banner ' + (index + 1) || res?.data?.message,
                     })
                 })
                 .then(() => navigate('/app/appSettings/banners'))
@@ -235,8 +245,8 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
     }
 
     return (
-        <div className="gap-3 w-full">
-            <div className="mb-5 self-center w-full px-[10%] flex flex-row gap-3">
+        <div className="gap-3 w-full overflow-hidden">
+            <div className="mb-5 w-full px-[10%]  flex flex-col lg:flex-row gap-3">
                 <Button size="lg" onClick={() => setCurrentStep(3)} variant="new">
                     Add/Edit More Banners
                 </Button>
@@ -251,7 +261,7 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     Save Banner
                 </Button>
             </div>
-            <div className="mb-5 self-center w-full px-[10%] gap-3 flex">
+            <div className="mb-5 w-full px-[10%] flex flex-col lg:flex-row gap-4">
                 <Button size="lg" onClick={() => setViewSize('sm')} variant="new">
                     Mobile View
                 </Button>
@@ -262,10 +272,9 @@ function PreviewBanner({ setCurrentStep, completeBannerFormData, selectedPage, s
                     Laptop View
                 </Button>
             </div>
-            <div
-                className={`bg-black flex flex-col gap-y-5 md:gap-y-7 lg:gap-y-10 lg:px-[5%] absolute w-full z-40 overflow-y-scroll py-10`}
-            >
+            <div className={`bg-black w-full`}>
                 {/* <AllComponentsLib data={API_BANNERS} size={viewSize} /> */}
+                <AllComponents data={API_BANNERS} size={viewSize} />
             </div>
         </div>
     )

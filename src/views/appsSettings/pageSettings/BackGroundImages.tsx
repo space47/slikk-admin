@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Upload } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Upload } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
 import { MdCancel } from 'react-icons/md'
@@ -249,7 +249,13 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
 
             {BackGroundArray.map((item, key) => (
                 <FormItem key={key} asterisk label={item.label} className="w-1/2">
-                    <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} min="0" />
+                    <Field
+                        type={item.type}
+                        name={item.name}
+                        placeholder={item.placeholder}
+                        component={item?.type === 'checkbox' ? Checkbox : Input}
+                        min="0"
+                    />
                 </FormItem>
             ))}
             <CommonSelect
