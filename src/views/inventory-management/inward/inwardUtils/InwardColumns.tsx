@@ -2,7 +2,7 @@
 import { Tooltip } from '@/components/ui'
 import moment from 'moment'
 import { useMemo } from 'react'
-import { FaEdit, FaSave, FaTimes } from 'react-icons/fa'
+import { FaEdit, FaSave, FaTimes, FaTrash } from 'react-icons/fa'
 
 const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
 
@@ -109,6 +109,7 @@ export const InwardDetailsColumns = (
         barcode: string
     },
     skuWiseData: any[],
+    handleDeleteRow,
 ) => {
     return useMemo(
         () => [
@@ -207,6 +208,22 @@ export const InwardDetailsColumns = (
                                 onClick={() => handleAddRow(row?.original)}
                             >
                                 ADD
+                            </button>
+                        </div>
+                    )
+                },
+            },
+            {
+                header: 'Delete',
+                accessorKey: 'delete',
+                cell: ({ row }: any) => {
+                    return (
+                        <div className="">
+                            <button
+                                className="p-2 text-red-600  items-center justify-center "
+                                onClick={() => handleDeleteRow(row?.original)}
+                            >
+                                <FaTrash className="text-xl" />
                             </button>
                         </div>
                     )

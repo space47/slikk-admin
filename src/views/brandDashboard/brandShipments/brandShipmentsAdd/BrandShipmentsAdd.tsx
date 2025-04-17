@@ -40,10 +40,10 @@ const BrandShipmentsAdd = () => {
 
     const handleSubmit = async (values: any) => {
         try {
+            notification.info({ message: 'In Process' })
             const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
             const deliveryAddress = values?.delivery_address ? textChanger(values?.delivery_address) : ''
             const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
-            setShowSpinner(true)
             const body = {
                 company: selectedCompany?.currCompany?.id,
                 store: values?.store?.join(','),
@@ -65,10 +65,10 @@ const BrandShipmentsAdd = () => {
                 message: response?.data?.message || 'Successfully updated shipment',
             })
             const shipmentId = response?.data?.data?.id
-            console.log('shipmentId is', shipmentId)
 
             if (values?.csvArray?.length > 0) {
                 try {
+                    setShowSpinner(true)
                     notification.info({
                         message: 'CSV upload is in progress',
                     })
@@ -76,19 +76,12 @@ const BrandShipmentsAdd = () => {
                     formData.append('shipment_items_file', values.csvArray[0])
                     formData.append('shipment_id', shipmentId)
 
-                    let completed = false
-                    axioisInstance.post(`/shipment/bulkupload/items`, formData).finally(() => {
-                        completed = true
-                    })
+                    const csvUploadPromise = axioisInstance.post(`/shipment/bulkupload/items`, formData)
 
                     const checkForItemCount = async () => {
                         const intervalId = setInterval(async () => {
                             try {
                                 await fetchShipmentItemsCount(shipmentId)
-
-                                if (completed) {
-                                    clearInterval(intervalId)
-                                }
                             } catch (err) {
                                 console.error(err)
                                 clearInterval(intervalId)
@@ -97,21 +90,27 @@ const BrandShipmentsAdd = () => {
                                 })
                             }
                         }, 10000)
+
+                        csvUploadPromise.finally(() => {
+                            clearInterval(intervalId)
+                        })
                     }
 
                     checkForItemCount()
 
-                    if (completed) {
-                        notification.success({
-                            message: 'CSV uploaded successfully',
-                        })
-                        navigate(-1)
-                    }
+                    await csvUploadPromise
+
+                    notification.success({
+                        message: 'CSV uploaded successfully',
+                    })
+                    navigate(-1)
                 } catch (csvError) {
                     notification.error({
                         message: 'Failed to upload CSV',
                     })
                     console.error(csvError)
+                } finally {
+                    setShowSpinner(false)
                 }
             }
 

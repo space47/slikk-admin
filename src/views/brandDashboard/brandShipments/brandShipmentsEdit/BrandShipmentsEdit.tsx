@@ -122,19 +122,12 @@ const BrandShipmentsEdit = () => {
                     formData.append('shipment_items_file', values.csvArray[0])
                     formData.append('shipment_id', shipmentData?.id)
 
-                    let completed = false
-                    axioisInstance.post(`/shipment/bulkupload/items`, formData).finally(() => {
-                        completed = true
-                    })
+                    const csvUploadPromise = axioisInstance.post(`/shipment/bulkupload/items`, formData)
 
                     const checkForItemCount = async () => {
                         const intervalId = setInterval(async () => {
                             try {
                                 await fetchShipmentItemsCount(id)
-
-                                if (completed) {
-                                    clearInterval(intervalId)
-                                }
                             } catch (err) {
                                 console.error(err)
                                 clearInterval(intervalId)
@@ -143,15 +136,20 @@ const BrandShipmentsEdit = () => {
                                 })
                             }
                         }, 10000)
+
+                        csvUploadPromise.finally(() => {
+                            clearInterval(intervalId)
+                        })
                     }
 
                     checkForItemCount()
 
-                    if (completed) {
-                        notification.success({
-                            message: 'CSV uploaded successfully',
-                        })
-                    }
+                    await csvUploadPromise
+
+                    notification.success({
+                        message: 'CSV uploaded successfully',
+                    })
+
                     // navigate(-1)
                 } catch (csvError: any) {
                     if (csvError?.response?.status === 400) {
@@ -160,6 +158,8 @@ const BrandShipmentsEdit = () => {
                         })
                     }
                     console.error(csvError)
+                } finally {
+                    setShowSpinner(false)
                 }
             }
 

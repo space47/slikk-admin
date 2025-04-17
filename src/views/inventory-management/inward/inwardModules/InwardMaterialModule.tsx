@@ -79,6 +79,16 @@ const InwardMaterialModule = () => {
             notification.error({ message: 'Failed to update item' })
         }
     }, [])
+    const handleSaveAdd = useCallback(async (id: string) => {
+        try {
+            const updatedData = { ...editFormDataRef.current }
+            setShipmentData((prev) => prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item)))
+            setSkuWiseData((prev) => prev.map((item) => (item.id === id ? { ...item, ...updatedData } : item)))
+            setEditingRow(null)
+        } catch (error) {
+            notification.error({ message: 'Failed to update item' })
+        }
+    }, [])
 
     const handleCancel = useCallback(() => {
         setEditingRow(null)
@@ -141,9 +151,66 @@ const InwardMaterialModule = () => {
         } catch (error) {
             console.error(error)
             notification.error({ message: 'Failed to Edit item' })
-        } finally {
-            setShowEditModal(false)
         }
+    }
+
+    const handleAddItem = () => {
+        const { sku, barcode, boxCount } = formData
+        const searchField = currentSelectedSearch.value
+        const searchValue = searchField === 'sku' ? sku : barcode
+
+        if (!searchValue.trim()) {
+            notification.warning({ message: `Please enter a ${currentSelectedSearch.label}` })
+            return
+        }
+
+        const existingItemIndex = shipmentData.findIndex((item) => item[searchField as keyof ShipmentItem] === searchValue)
+        if (existingItemIndex >= 0) {
+            const updatedData: any = [...shipmentData]
+            updatedData[existingItemIndex] = {
+                ...updatedData[existingItemIndex],
+                quantity_received: (updatedData[existingItemIndex].quantity_received || 0) + 1,
+                ...(boxCount && { boxCount }),
+            }
+            setShipmentData(updatedData)
+            notification.success({ message: `Updated quantity for ${searchValue}` })
+        } else {
+            const newItem: ShipmentItem = {
+                id: `new-${Date.now()}`,
+                barcode: searchField === 'barcode' ? searchValue : '',
+                sku: searchField === 'sku' ? searchValue : '',
+                quantity_sent: 1,
+                quantity_received: 1,
+                create_date: new Date().toISOString(),
+            }
+            setSkuWiseData([newItem])
+            notification.success({
+                message: `Added new item: ${searchValue}`,
+            })
+        }
+        setFormData((prev) => ({ ...prev, [searchField]: '' }))
+    }
+
+    const handleSelect = (value: any) => {
+        const selected = InwardDetailSearchOptions.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedSearch(selected)
+        }
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setFormData((prevData: any) => ({ ...prevData, [name]: value }))
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleAddItem()
+            e.preventDefault()
+        }
+    }
+    const handleDeleteRow = (row: ShipmentItem) => {
+        setSkuWiseData(skuWiseData?.filter((item) => item.id !== row.id))
     }
 
     const columns1 = InwardDetailsColumns(
@@ -156,11 +223,12 @@ const InwardMaterialModule = () => {
         renderEditableCell,
         handleEditChange,
         handleEditKeyDown,
-        handleSave,
+        handleSaveAdd,
         handleCancel,
         handleAddRow,
         formData,
         skuWiseData,
+        handleDeleteRow,
     )
 
     const columns2 = useMemo(
@@ -280,62 +348,6 @@ const InwardMaterialModule = () => {
         ],
         [editingRow, handleEdit, handleSave, handleCancel, handleEditChange, handleEditKeyDown],
     )
-
-    const handleAddItem = () => {
-        const { sku, barcode, boxCount } = formData
-        const searchField = currentSelectedSearch.value
-        const searchValue = searchField === 'sku' ? sku : barcode
-
-        if (!searchValue.trim()) {
-            notification.warning({ message: `Please enter a ${currentSelectedSearch.label}` })
-            return
-        }
-
-        const existingItemIndex = shipmentData.findIndex((item) => item[searchField as keyof ShipmentItem] === searchValue)
-        if (existingItemIndex >= 0) {
-            const updatedData: any = [...shipmentData]
-            updatedData[existingItemIndex] = {
-                ...updatedData[existingItemIndex],
-                quantity_received: (updatedData[existingItemIndex].quantity_received || 0) + 1,
-                ...(boxCount && { boxCount }),
-            }
-            setShipmentData(updatedData)
-            notification.success({ message: `Updated quantity for ${searchValue}` })
-        } else {
-            const newItem: ShipmentItem = {
-                id: `new-${Date.now()}`,
-                barcode: searchField === 'barcode' ? searchValue : '',
-                sku: searchField === 'sku' ? searchValue : '',
-                quantity_sent: 1,
-                quantity_received: 1,
-                create_date: new Date().toISOString(),
-            }
-            setSkuWiseData([newItem])
-            notification.success({
-                message: `Added new item: ${searchValue}`,
-            })
-        }
-        setFormData((prev) => ({ ...prev, [searchField]: '' }))
-    }
-
-    const handleSelect = (value: any) => {
-        const selected = InwardDetailSearchOptions.find((item) => item.value === value)
-        if (selected) {
-            setCurrentSelectedSearch(selected)
-        }
-    }
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setFormData((prevData: any) => ({ ...prevData, [name]: value }))
-    }
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleAddItem()
-            e.preventDefault()
-        }
-    }
 
     return (
         <div className="p-4 flex flex-col gap-6">
