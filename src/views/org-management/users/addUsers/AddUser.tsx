@@ -267,13 +267,13 @@ const AddUser = () => {
         setAddInput(e.target.value)
     }
 
-    if (showSpinner) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <Spinner size={40} />
-            </div>
-        )
-    }
+    // if (showSpinner) {
+    //     return (
+    //         <div className="flex items-center justify-center h-screen">
+    //             <Spinner size={40} />
+    //         </div>
+    //     )
+    // }
 
     // if (accessDenied) {
     //     return <AccessDenied />
@@ -579,7 +579,14 @@ const AddUser = () => {
                                     Reset
                                 </Button>
                                 <Button variant="new" type="submit">
-                                    Submit
+                                    <span className="flex gap-4 items-center justify-center">
+                                        {showSpinner && (
+                                            <div className="flex items-center justify-center ">
+                                                <Spinner size={20} />
+                                            </div>
+                                        )}{' '}
+                                        Submit
+                                    </span>
                                 </Button>
                             </FormItem>
                         </FormContainer>
