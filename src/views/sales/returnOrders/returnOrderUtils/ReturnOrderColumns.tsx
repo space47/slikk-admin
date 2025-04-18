@@ -99,14 +99,9 @@ export const useReturnOrderColumns = () => {
                 header: 'Scheduled Slot',
                 accessorKey: 'pickup_schedule_slot',
                 cell: ({ row }: { row: { original: ReturnOrder } }) => {
-                    const log = row?.original?.pickup_schedule_slot
+                    const slot = row?.original?.pickup_schedule_slot
 
-                    const schedule = scheduleSlots[log] ?? {
-                        start: '',
-                        end: '',
-                    }
-
-                    return <div>{schedule ? `${schedule.start} - ${schedule.end}` : 'Not Scheduled'}</div>
+                    return <div>{slot}:00:00</div>
                 },
             },
 
