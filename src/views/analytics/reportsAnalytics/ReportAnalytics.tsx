@@ -18,6 +18,7 @@ import moment from 'moment'
 import BadRequest from '@/views/pages/BadRequest/BadRequest'
 import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
 import { PRODUCTTYPE_STATE } from '@/store/types/productType.types'
+import ReportCustomQuery from './ReportCustomQuery'
 
 const reportQueryArray = [
     { label: 'Date', value: 'Date' },
@@ -52,6 +53,7 @@ const ReportAnalytics = () => {
     const [badRequest, setBadRequest] = useState(false)
     const [serverError, setServerError] = useState(false)
     const [reportValue, setReportValue] = useState()
+    const [isCustomQuery, setIsCustomQuery] = useState(false)
 
     console.log('Sub Category Data', productTypeData)
     const fetchReportApi = async () => {
@@ -279,29 +281,47 @@ const ReportAnalytics = () => {
         <div>
             <Formik enableReinitialize initialValues={reportData} onSubmit={handleSubmit}>
                 {({ values, resetForm, setFieldValue }) => (
-                    <Form className="xl:w-3/4 w-full p-6  bg-white shadow-lg rounded-lg">
-                        <FormContainer>
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                                <FormItem className="font-semibold text-gray-700">
-                                    <div className="flex font-bold text-gray-700 text-xl xl:mb-5">Select Target Page</div>
-                                    <Field name="target_page">
-                                        {({ field, form }: FieldProps) => (
-                                            <Select
-                                                placeholder="Select Target Page"
-                                                options={reportQueryNames}
-                                                value={reportQueryNames?.find((option) => option.value === field.value)}
-                                                onChange={(option: any) => {
-                                                    form.setFieldValue(field.name, option?.value)
-                                                    setStoreName(option?.value)
-                                                    setShowTable(false)
-                                                }}
-                                                className="w-2/3 border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                            />
-                                        )}
-                                    </Field>
-                                </FormItem>
+                    <Form className=" w-full p-6  bg-white shadow-lg rounded-lg">
+                        <FormContainer className="">
+                            <div className="flex justify-between">
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                    <FormItem className="font-semibold text-gray-700">
+                                        <div className="flex font-bold text-gray-700 text-xl xl:mb-5">Select Target Page</div>
+                                        <Field name="target_page">
+                                            {({ field, form }: FieldProps) => (
+                                                <Select
+                                                    isClearable
+                                                    placeholder="Select Target Page"
+                                                    options={reportQueryNames}
+                                                    value={reportQueryNames?.find((option) => option.value === field.value)}
+                                                    onChange={(option: any) => {
+                                                        form.setFieldValue(field.name, option?.value)
+                                                        setStoreName(option?.value)
+                                                        setShowTable(false)
+                                                    }}
+                                                    className="w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                />
+                                            )}
+                                        </Field>
+                                    </FormItem>
+                                </div>
+
+                                <div>
+                                    <button
+                                        type="button"
+                                        className={`text-white p-2 rounded-xl font-bold disabled:cursor-not-allowed disabled:opacity-50 ${
+                                            isCustomQuery ? 'bg-red-600 hover:bg-red-500' : 'bg-green-600 hover:bg-green-500'
+                                        }`}
+                                        onClick={() => setIsCustomQuery((Prev) => !Prev)}
+                                        disabled={showDataBelow}
+                                    >
+                                        {isCustomQuery ? 'Close Custom Query' : 'Add Custom Query'}
+                                    </button>
+                                </div>
                             </div>
                         </FormContainer>
+
+                        {isCustomQuery && <ReportCustomQuery />}
 
                         {showDataBelow && (
                             <div className="mt-6">
