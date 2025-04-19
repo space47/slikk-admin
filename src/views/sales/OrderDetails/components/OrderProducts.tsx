@@ -248,7 +248,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                     <img
                                         src={pdts.image.split(',')[0]}
                                         alt={pdts.name}
-                                        className="w-28 xl:w-44 h-52 object-cover rounded-lg"
+                                        className="w-28 xl:w-44 h-52 object-cover rounded-lg cursor-pointer"
                                         onClick={() => handleImageView(pdts.image)}
                                     />
                                 </div>

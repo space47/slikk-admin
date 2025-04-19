@@ -4,25 +4,42 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import moment from 'moment'
 import { SKUhistory } from './skuhistoru.common'
 import EasyTable from '@/common/EasyTable'
+import { Spinner } from '@/components/ui'
 
 const SkuOrderHistory = () => {
     const [data, setData] = useState<SKUhistory[]>([])
     const [globalFilter, setGlobalFilter] = useState('')
     const [showSkuTable, setShowSkuTable] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [hasSearched, setHasSearched] = useState(false)
 
     const fetchData = async () => {
+        setIsLoading(true)
+        setHasSearched(true)
         try {
-            const response = await axiosInstance.get(`/merchant/product/sku/sales?sku=${encodeURIComponent(globalFilter)}`)
+            const response = await axiosInstance.get(`/merchant/product/sku/sales?sku=${encodeURIComponent(globalFilter.trim())}`)
             const data = response.data.data
             setData(data)
         } catch (error) {
             console.error(error)
+            setData([])
+        } finally {
+            setIsLoading(false)
         }
     }
 
     useEffect(() => {
-        if (globalFilter) {
-            fetchData()
+        const trimmedSku = globalFilter.trim()
+        if (trimmedSku) {
+            const timer = setTimeout(() => {
+                fetchData()
+            }, 500)
+
+            return () => clearTimeout(timer)
+        } else {
+            setData([])
+            setShowSkuTable(false)
+            setHasSearched(false)
         }
     }, [globalFilter])
 
@@ -36,7 +53,20 @@ const SkuOrderHistory = () => {
             {
                 header: 'Order ID',
                 accessorKey: 'order_id',
-                cell: (info) => info.getValue(),
+                cell: ({ getValue, row }) => {
+                    return (
+                        <div className="flex items-center gap-3">
+                            <a
+                                href={`/app/orders/${getValue()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                            >
+                                {row?.original?.order_id}
+                            </a>
+                        </div>
+                    )
+                },
             },
             {
                 header: 'Quantity',
@@ -67,8 +97,9 @@ const SkuOrderHistory = () => {
                 header: 'Image',
                 accessorKey: 'image',
                 cell: (info) => {
-                    const firstImageUrl = (info.getValue() as string).split(',')[0].trim()
-                    return <img src={firstImageUrl} alt="Product Image" className="w-16 h-16" />
+                    const images = info.getValue() as string
+                    const firstImageUrl = images ? images.split(',')[0].trim() : ''
+                    return firstImageUrl ? <img src={firstImageUrl} alt="Product Image" className="w-16 h-16" /> : null
                 },
             },
             {
@@ -84,32 +115,87 @@ const SkuOrderHistory = () => {
             {
                 header: 'Return Order ID',
                 accessorKey: 'return_order_id',
-                cell: (info) => (info.getValue() ? info.getValue() : 'N/A'),
+                cell: ({ row, getValue }) => {
+                    return (
+                        <div>
+                            {row?.original?.return_order_id ? (
+                                <>
+                                    <a
+                                        href={`/app/returnOrders/${getValue()}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-white w-[70%] bg-red-600 flex items-center justify-center py-1 rounded-[7px] font-semibold cursor-pointer"
+                                    >
+                                        {row?.original?.return_order_id}
+                                    </a>
+                                </>
+                            ) : (
+                                'N/A'
+                            )}
+                        </div>
+                    )
+                },
             },
         ],
         [],
     )
 
     return (
-        <div>
-            <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="flex flex-col gap-2">
-                    <div>Enter Sku</div>
-                    <div className="mb-4">
-                        <input
-                            type="text"
-                            placeholder="Search SKU here"
-                            value={globalFilter}
-                            onChange={(e) => {
-                                setGlobalFilter(e.target.value)
-                                setShowSkuTable(true)
-                            }}
-                            className="p-2 border rounded"
-                        />
+        <div className="">
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-blue-800 mb-2 ">SKU Order History</h1>
+                <p className="text-gray-600 mb-4">Track all orders for a specific product SKU</p>
+
+                <div className="relative max-w-md">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                        </svg>
                     </div>
+                    <input
+                        type="text"
+                        placeholder="Enter SKU code..."
+                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={globalFilter}
+                        onChange={(e) => {
+                            setGlobalFilter(e.target.value.trimStart())
+                            setShowSkuTable(!!e.target.value.trim())
+                        }}
+                    />
                 </div>
             </div>
-            {showSkuTable && <EasyTable mainData={data} columns={columns} noPage />}
+
+            {isLoading && (
+                <div className="flex justify-center items-center ">
+                    <Spinner size={20} />
+                </div>
+            )}
+
+            {showSkuTable && !isLoading && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    {data && data.length > 0 ? (
+                        <EasyTable noPage mainData={data} columns={columns} />
+                    ) : hasSearched ? (
+                        <div className="p-8 text-center">
+                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                            </svg>
+                            <h3 className="mt-2 text-lg font-medium text-gray-900">No orders found</h3>
+                            <p className="mt-1 text-gray-500">Could not find any orders for this SKU code.</p>
+                        </div>
+                    ) : null}
+                </div>
+            )}
         </div>
     )
 }
