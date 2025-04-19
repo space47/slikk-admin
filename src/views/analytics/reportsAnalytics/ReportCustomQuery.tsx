@@ -28,9 +28,9 @@ const ReportCustomQuery = () => {
             const data = res?.data?.data
             setCustomReportData(data)
             notification.success({ message: 'Custom Query Generated Successfully' })
-        } catch (error) {
+        } catch (error: any) {
             console.log(error)
-            notification.error({ message: 'Failed to generate custom query' })
+            notification.error({ message: error?.response?.data?.message || 'Failed to generate custom query' })
         }
     }
 
