@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
@@ -12,6 +12,10 @@ import { Modal } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
 import { categoryItem, Option, pageSizeOptions } from './categoryCommon'
 import EasyTable from '@/common/EasyTable'
+import { Dropdown } from '@/components/ui'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+
+const DivisionArray = ['Men', 'Women', 'Fashion', 'Footwear', 'Beauty & Personal Care', 'Home Decor', 'Accessories', 'Travel and Handbags']
 
 const CategoryTable = () => {
     const [data, setData] = useState<categoryItem[]>([])
@@ -20,22 +24,24 @@ const CategoryTable = () => {
     const [globalFilter, setGlobalFilter] = useState('')
     const [deleteModal, setDeleteModal] = useState(false)
     const [idStoreForDelete, setIdStoreForDelete] = useState()
+    const [selectedDivision, setSelectedDivision] = useState('Select Division')
     const navigate = useNavigate()
 
-    const fetchData = async (filter: string = '') => {
-        try {
-            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
-            const response = await axiosInstance.get(`category?${filtervalue}`)
-            const data = response.data.data
-            setData(data)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
     useEffect(() => {
-        fetchData(globalFilter)
-    }, [globalFilter])
+        const fetchData = async () => {
+            try {
+                const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
+                const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${selectedDivision}` : ''
+                const response = await axiosInstance.get(`category?${filtervalue}${divisionFilter}`)
+                const data = response.data.data
+                setData(data)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        fetchData()
+    }, [globalFilter, selectedDivision])
+
     const paginatedData = useMemo(() => {
         const start = (page - 1) * pageSize
         const end = start + pageSize
@@ -146,8 +152,8 @@ const CategoryTable = () => {
             {
                 header: 'Delete',
                 accessorKey: 'id',
-                cell: ({ getValue, row }) => (
-                    <button onClick={() => handleDeleteClick(row.original.id)} className="border-none bg-none">
+                cell: ({ row }) => (
+                    <button className="border-none bg-none" onClick={() => handleDeleteClick(row.original.id)}>
                         <FaTrash className="text-xl text-red-600" />
                     </button>
                 ),
@@ -165,6 +171,10 @@ const CategoryTable = () => {
         setPage(1)
     }
 
+    const handleSectionHeading = (selectedKey: string) => {
+        setSelectedDivision(selectedKey)
+    }
+
     const handleSeller = () => {
         navigate('/app/category/category/add')
     }
@@ -179,7 +189,7 @@ const CategoryTable = () => {
             const body = {
                 id: idStoreForDelete,
             }
-            const response = await axiosInstance.delete(`category`, {
+            await axiosInstance.delete(`category`, {
                 data: body,
             })
             setDeleteModal(false)
@@ -196,19 +206,46 @@ const CategoryTable = () => {
     return (
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
-                    />
+                <div className="flex flex-col gap-2 xl:flex-row items-center">
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Search here"
+                            value={globalFilter}
+                            className="p-2 border rounded"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border   text-black text-lg font-semibold "
+                                title={selectedDivision}
+                                onSelect={handleSectionHeading}
+                            >
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
+                                    {DivisionArray?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item} className="h-1">
+                                            {item}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedDivision('Select Division')}
+                                >
+                                    Clear
+                                </div>
+                            </Dropdown>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex items-end justify-end mb-4 order-first xl:order-1">
-                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
-                        ADD NEW CATEGORY
-                    </button>{' '}
+                <div>
+                    <div className="flex items-end justify-end mb-4 order-first xl:order-1">
+                        <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
+                            ADD NEW CATEGORY
+                        </button>{' '}
+                    </div>
                 </div>
             </div>
             <EasyTable mainData={paginatedData} columns={columns} page={page} pageSize={pageSize} />
@@ -228,12 +265,12 @@ const CategoryTable = () => {
                 <Modal
                     title=""
                     open={deleteModal}
-                    onOk={deleteUser}
-                    onCancel={handleCloseModal}
                     okText="DELETE"
                     okButtonProps={{
                         style: { backgroundColor: 'red', borderColor: 'red' },
                     }}
+                    onOk={deleteUser}
+                    onCancel={handleCloseModal}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
                         <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
