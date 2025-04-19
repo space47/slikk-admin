@@ -51,6 +51,9 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
                             },
                         },
                     },
+                    fill: {
+                        colors: COLOR_6,
+                    },
                     colors: COLOR_6,
                     dataLabels: {
                         enabled: true,
@@ -66,8 +69,9 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
                     yaxis: {
                         labels: {
                             style: {
-                                fontSize: '7px',
+                                fontSize: '9px',
                                 display: 'flex',
+                                fontWeight: 'bold',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                             },
