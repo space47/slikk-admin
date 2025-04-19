@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dialog from '@/components/ui/Dialog'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
 import '@splidejs/splide/dist/css/themes/splide-default.min.css'
@@ -6,7 +7,7 @@ import type { MouseEvent } from 'react'
 type ImageProps = {
     dialogIsOpen: boolean
     setIsOpen: (isOpen: boolean) => void
-    image: string[] | []
+    image: string[] | [] | any
 }
 
 const ImageMODAL = ({ dialogIsOpen, setIsOpen, image }: ImageProps) => {
@@ -16,8 +17,14 @@ const ImageMODAL = ({ dialogIsOpen, setIsOpen, image }: ImageProps) => {
     }
 
     return (
-        <div>
-            <Dialog isOpen={dialogIsOpen} onClose={onDialogClose} onRequestClose={onDialogClose} className="">
+        <div className="">
+            <Dialog
+                isOpen={dialogIsOpen}
+                onClose={onDialogClose}
+                onRequestClose={onDialogClose}
+                className="z-[9999]"
+                // style={{p}}
+            >
                 {Array.isArray(image) && image.length > 0 ? (
                     <Splide options={{ rewind: true }} aria-label="Image carousel">
                         {image.map((item, key) =>

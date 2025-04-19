@@ -13,24 +13,54 @@ import { useNavigate } from 'react-router-dom'
 import RescheduleModal from './RescheduleModal'
 import { Button } from '@/components/ui'
 import QcDetailsModal from './QcDetailsModal'
+import ImageMODAL from '@/common/ImageModal'
 
 const columnHelper = createColumnHelper<any>()
 
 const ProductColumn = ({ row }: { row: any }) => {
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState('')
+
+    const handleImageView = (img: string) => {
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
+
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
-            <img src={row.product.image.split(',')[0]} className=" xl:mt-3 w-[100px] h-[120px]" />
+            <img
+                src={row.product.image.split(',')[0]}
+                className=" xl:mt-3 w-[100px] h-[120px] cursor-pointer"
+                onClick={() => handleImageView(row.product.image)}
+            />
             <div className="ltr:ml-2 rtl:mr-2">
                 <div className="mb-2 text-[18px] font-bold ">
                     Brand Name:
-                    <h4 className="font-light text-[16px] flex-wrap">{row.product.brand}</h4>
+                    <h4 className="font-light text-[16px] flex-wrap">{row?.product?.brand}</h4>
                 </div>
                 <div className="mb-2 text-[18px] font-bold ">
                     Product Name:
-                    <h4 className="font-light text-[16px] flex-wrap">{row.product.name}</h4>
+                    <h4 className="font-light text-[14px] flex-wrap">
+                        <a
+                            href={`https://slikk.club/products/${encodeURIComponent(row?.product?.sku)}`}
+                            className="hover:text-blue-500 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {row?.product?.name}
+                        </a>
+                    </h4>
                 </div>
-                <h4 className="font-light text-[14px]">SKU: {row.product.sku}</h4>
+                <h4 className="font-light text-[14px]">SKU: {row?.product?.sku}</h4>
             </div>
+
+            {showImageModal && (
+                <ImageMODAL
+                    dialogIsOpen={showImageModal}
+                    setIsOpen={setShowImageModal}
+                    image={particularRowImage && particularRowImage?.split(',')}
+                />
+            )}
         </div>
     )
 }
