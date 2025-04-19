@@ -235,7 +235,7 @@ const Home = () => {
 
             <div className="flex flex-col xl:flex-row  xl:justify-between  mb-4 gap-5 ">
                 <div className="w-full xl:w-[50%]">
-                    <div className="font-bold text-2xl text-blue-900">Search By</div>
+                    {/* <div className="">Search By</div> */}
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
                         <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[400px] bg-white shadow-md dark:bg-gray-900">
                             <input
@@ -243,7 +243,7 @@ const Home = () => {
                                 name="customer"
                                 value={inputValues.customer}
                                 onChange={handleInputChange}
-                                placeholder="Customer Number"
+                                placeholder="Search by Customer Number"
                                 className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
@@ -264,7 +264,7 @@ const Home = () => {
                                 name="invoice_id"
                                 value={inputValues.invoice_id}
                                 onChange={handleInputChange}
-                                placeholder="Invoice ID"
+                                placeholder="Search by Invoice ID"
                                 className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
@@ -361,15 +361,15 @@ const Home = () => {
                 {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}
             </div>
             <br />
-            <div className="text-2xl text-blue-900  font-bold">Location Wise Orders</div>
-            <div className="flex justify-center items-start my-10 z-10">
-                <div className="w-full xl:w-3/4">
+            <div className="mt-8">
+                <h2 className="font-bold text-2xl text-blue-900">Order Locations</h2>
+                <div className="bg-white p-6 rounded-xl shadow-md">
                     <MultipleMap
                         latitudes={orders.map((item) => item.latitude || [])}
-                        longitudes={orders?.map((item) => item?.longitude || [])}
-                        amount={orders?.map((item) => item?.amount || [])}
-                        currentStatus={orders?.map((item) => item?.status || [])}
-                        currentInvoice={orders?.map((item) => item?.invoice_id || [])}
+                        longitudes={orders.map((item) => item.longitude || [])}
+                        amount={orders.map((item) => item.amount || [])}
+                        currentStatus={orders.map((item) => item.status || [])}
+                        currentInvoice={orders.map((item) => item.invoice_id || [])}
                     />
                 </div>
             </div>
