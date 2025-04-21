@@ -79,7 +79,7 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
                     },
                 }}
                 series={data}
-                height={600}
+                height={1200}
                 type="bar"
             />
         </div>
