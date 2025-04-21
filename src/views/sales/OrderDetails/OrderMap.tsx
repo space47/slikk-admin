@@ -233,9 +233,9 @@ const OrderMap = ({ task_id }: props) => {
     })
 
     return (
-        <div className="relative flex flex-col gap-10">
+        <div className="relative flex flex-col gap-10 ">
             <div className="relative w-full" style={{ height: '500px' }}>
-                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%' }}>
+                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%', position: 'relative', zIndex: 0 }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                     {/* Pickup Marker */}

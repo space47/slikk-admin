@@ -285,25 +285,29 @@ const ReportAnalytics = () => {
                         <FormContainer className="">
                             <div className="flex justify-between">
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                                    <FormItem className="font-semibold text-gray-700">
-                                        <div className="flex font-bold text-gray-700 text-xl xl:mb-5">Select Target Page</div>
-                                        <Field name="target_page">
-                                            {({ field, form }: FieldProps) => (
-                                                <Select
-                                                    isClearable
-                                                    placeholder="Select Target Page"
-                                                    options={reportQueryNames}
-                                                    value={reportQueryNames?.find((option) => option.value === field.value)}
-                                                    onChange={(option: any) => {
-                                                        form.setFieldValue(field.name, option?.value)
-                                                        setStoreName(option?.value)
-                                                        setShowTable(false)
-                                                    }}
-                                                    className="w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                                />
-                                            )}
-                                        </Field>
-                                    </FormItem>
+                                    {!isCustomQuery && (
+                                        <>
+                                            <FormItem className="font-semibold text-gray-700">
+                                                <div className="flex font-bold text-gray-700 text-xl xl:mb-5">Select Target Page</div>
+                                                <Field name="target_page">
+                                                    {({ field, form }: FieldProps) => (
+                                                        <Select
+                                                            isClearable
+                                                            placeholder="Select Target Page"
+                                                            options={reportQueryNames}
+                                                            value={reportQueryNames?.find((option) => option.value === field.value)}
+                                                            onChange={(option: any) => {
+                                                                form.setFieldValue(field.name, option?.value)
+                                                                setStoreName(option?.value)
+                                                                setShowTable(false)
+                                                            }}
+                                                            className="w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                        />
+                                                    )}
+                                                </Field>
+                                            </FormItem>
+                                        </>
+                                    )}
                                 </div>
 
                                 <div>
