@@ -22,6 +22,13 @@ const customIcon = (iconUrl: string) =>
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/images/marker-shadow.png',
     })
 
+const officeIcon = L.icon({
+    iconUrl: '/img/logo/slikkWare.png',
+    iconSize: [30, 45],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+})
+
 const icons = {
     pickup: customIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png'),
     drop: customIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png'),
@@ -56,6 +63,13 @@ const FullScreenMap = ({ mapCenter, taskData, style = { height: '70vh', width: '
         }
     }
 
+    const ridersIcon = L.icon({
+        iconUrl: '/img/logo/riderOnline-logo.png',
+        iconSize: [20, 40],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+    })
+
     return (
         <div ref={mapContainerRef} style={{ position: 'relative', ...style }}>
             <button
@@ -80,7 +94,7 @@ const FullScreenMap = ({ mapCenter, taskData, style = { height: '70vh', width: '
 
                     {/* Pickup Marker */}
                     {taskData?.pickup_details && (
-                        <Marker position={[taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]} icon={icons.pickup}>
+                        <Marker position={[taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]} icon={officeIcon}>
                             <Popup>{taskData?.pickup_details?.name}</Popup>
                         </Marker>
                     )}
@@ -94,7 +108,7 @@ const FullScreenMap = ({ mapCenter, taskData, style = { height: '70vh', width: '
 
                     {/* Runner Marker */}
                     {taskData?.runner_latitude && taskData?.runner_longitude && (
-                        <Marker position={[taskData?.runner_latitude, taskData?.runner_longitude]} icon={icons.runner}>
+                        <Marker position={[taskData?.runner_latitude, taskData?.runner_longitude]} icon={ridersIcon}>
                             <Popup>{taskData?.runner_detail?.name}</Popup>
                         </Marker>
                     )}
@@ -211,16 +225,22 @@ const OrderMap = ({ task_id }: props) => {
     }
 
     console.log('Map set in trip Map', decodedPolyline)
+    const ridersIcon = L.icon({
+        iconUrl: '/img/logo/riderOnline-logo.png',
+        iconSize: [20, 40],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+    })
 
     return (
-        <div className="relative flex flex-col gap-10">
+        <div className="relative flex flex-col gap-10 ">
             <div className="relative w-full" style={{ height: '500px' }}>
-                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%' }}>
+                <MapContainer center={mapCenter} zoom={16} style={{ width: '100%', height: '100%', position: 'relative', zIndex: 0 }}>
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
                     {/* Pickup Marker */}
                     {taskData?.pickup_details && (
-                        <Marker position={[taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]} icon={icons.pickup}>
+                        <Marker position={[taskData?.pickup_details?.latitude, taskData?.pickup_details?.longitude]} icon={officeIcon}>
                             <Popup>{taskData?.pickup_details?.name}</Popup>
                         </Marker>
                     )}
@@ -234,7 +254,7 @@ const OrderMap = ({ task_id }: props) => {
 
                     {/* Runner Marker */}
                     {taskData?.runner_latitude && taskData?.runner_longitude && (
-                        <Marker position={[taskData?.runner_latitude, taskData?.runner_longitude]} icon={icons.runner}>
+                        <Marker position={[taskData?.runner_latitude, taskData?.runner_longitude]} icon={ridersIcon}>
                             <Popup>{taskData?.runner_detail?.name}</Popup>
                         </Marker>
                     )}
