@@ -192,7 +192,30 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
         setPartner({ value: selectedValue, label: selectedLabel })
     }
 
+    const handleCancelOnRTO = async () => {
+        const body = {
+            return_reason: 'RTO Cancell',
+        }
+        try {
+            const response = await axiosInstance.post(`merchant/cancelorder/${invoice_id}`, body)
+
+            notification.success({
+                message: 'SUCCESS',
+                description: response.data.message || 'Order successfully Cancelled',
+            })
+            navigate(0)
+            setIsModalOpen(false)
+        } catch (error) {
+            console.error('Error:', error)
+            notification.error({
+                message: 'Failure',
+                description: 'Order failed to cancel',
+            })
+        }
+    }
+
     const { buttonText, modalContent: content } = getButtonAndModalContent(data, mainData, delivery_type)
+    console.log('current button text', buttonText)
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -365,6 +388,26 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     invoice={invoice_id}
                     isButtonClick={buttonAfterClick}
                 />
+            )}
+            {buttonText === 'CANCEL' && (
+                <Modal
+                    title=""
+                    open={isModalOpen}
+                    okText="CANCEL"
+                    cancelText="CANCEL"
+                    okButtonProps={{
+                        style: {
+                            backgroundColor: '#D32F2F',
+                            color: '#FFFFFF',
+                            borderRadius: '8px',
+                        },
+                    }}
+                    onOk={handleCancelOnRTO}
+                    onCancel={() => setIsModalOpen(false)}
+                >
+                    <h1 className="text-center text-lg font-bold text-red-600">CANCEL ORDER</h1>
+                    <p className="text-center text-xl font-semibold mb-10">Are you sure you want to Cancel this order</p>
+                </Modal>
             )}
         </Card>
     )
