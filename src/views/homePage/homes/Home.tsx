@@ -5,19 +5,23 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
 import { IoMdReturnLeft } from 'react-icons/io'
-import { FaSearch, FaShoppingCart } from 'react-icons/fa'
-import { HiCurrencyRupee } from 'react-icons/hi'
+import { FaCheck, FaSearch, FaShoppingCart } from 'react-icons/fa'
+import { HiCurrencyRupee, HiUserGroup } from 'react-icons/hi'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import BrandDataChart from '../homeChart/BubbleChart'
 import MultipleMap from '@/common/multipleMap'
-import { MdDeliveryDining } from 'react-icons/md'
+import { MdDeliveryDining, MdOutlinePendingActions } from 'react-icons/md'
 import { PiDevicesFill } from 'react-icons/pi'
 import { FaMoneyBillTrendUp } from 'react-icons/fa6'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import AccessDenied from '@/views/pages/AccessDenied'
 import ActiveUserTable from './componentsHomes/ActiveUserTable'
 import { IoBagCheck } from 'react-icons/io5'
+import { Tabs } from '@/components/ui'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import UserMap from '@/views/analytics/userAnalytics/UserMap'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -30,6 +34,7 @@ const Home = () => {
     })
     const [accessDenied, setAccessDenied] = useState(false)
     const [isPageActive, setIsPageActive] = useState(true)
+    const [activeTab, setActiveTab] = useState('orders')
     const navigate = useNavigate()
 
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
@@ -362,16 +367,32 @@ const Home = () => {
             </div>
             <br />
             <div className="mt-8">
-                <h2 className="font-bold text-2xl text-blue-900">Order Locations</h2>
-                <div className="bg-white p-6 rounded-xl shadow-md">
-                    <MultipleMap
-                        latitudes={orders.map((item) => item.latitude || [])}
-                        longitudes={orders.map((item) => item.longitude || [])}
-                        amount={orders.map((item) => item.amount || [])}
-                        currentStatus={orders.map((item) => item.status || [])}
-                        currentInvoice={orders.map((item) => item.invoice_id || [])}
-                    />
-                </div>
+                <Tabs defaultValue="orders" onChange={(tab) => setActiveTab(tab)}>
+                    <TabList>
+                        <TabNav value="orders" className="text-xl" icon={<MdOutlinePendingActions className="text-blue-600 text-2xl" />}>
+                            Order Location
+                        </TabNav>
+                        <TabNav value="users" className="text-xl" icon={<HiUserGroup className="text-green-500 text-2xl" />}>
+                            User Location
+                        </TabNav>
+                    </TabList>
+                </Tabs>
+                {activeTab === 'orders' && (
+                    <div className="bg-white p-6 rounded-xl shadow-md">
+                        <MultipleMap
+                            latitudes={orders.map((item) => item.latitude || [])}
+                            longitudes={orders.map((item) => item.longitude || [])}
+                            amount={orders.map((item) => item.amount || [])}
+                            currentStatus={orders.map((item) => item.status || [])}
+                            currentInvoice={orders.map((item) => item.invoice_id || [])}
+                        />
+                    </div>
+                )}
+                {activeTab === 'users' && (
+                    <div className="bg-white p-6 rounded-xl shadow-md mt-10">
+                        <UserMap from={from} to={To_Date} />
+                    </div>
+                )}
             </div>
         </div>
     )
