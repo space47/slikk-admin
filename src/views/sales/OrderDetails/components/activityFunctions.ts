@@ -24,6 +24,9 @@ export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_ty
     if (isDriverAssigned && isPacked && mainData?.delivery_type === 'STANDARD' && !isOrderDone && !isOrderCancelled) {
         return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
     }
+    if (lastLogStatus === 'RTO_DELIVERED' && !isOrderDone && !isOrderCancelled) {
+        return { buttonText: 'CANCEL', modalContent: 'CANCEL' }
+    }
     if (isDriverAssigned && isPacked && mainData?.delivery_type !== 'STANDARD' && !isOrderDone && !isOrderCancelled) {
         return { buttonText: 'OUT FOR DELIVERY', modalContent: 'Out for Delivery' }
     }
