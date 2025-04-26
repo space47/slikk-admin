@@ -1,3 +1,5 @@
+import { message } from 'antd'
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const HEADERCONFIGARRAY = [
     // {
@@ -302,11 +304,11 @@ export interface CommonProps {
 }
 
 export const ParallaxConfigArray = [
-    { label: 'OffsetX', name: 'component_config.carousel_offsetX', type: 'number' },
-    { label: 'OffsetY', name: 'component_config.carousel_offsetY', type: 'number' },
-    { label: 'Angle Offset', name: 'component_config.carousel_angleOffset', type: 'number' },
-    { label: 'Min Opacity', name: 'component_config.carousel_minOpacity', type: 'number' },
-    { label: 'Max Opacity', name: 'component_config.carousel_maxOpacity', type: 'number' },
-    { label: 'Min Scale', name: 'component_config.carousel_minScale', type: 'number' },
-    { label: 'Max Scale', name: 'component_config.carousel_maxScale', type: 'number' },
+    { label: 'OffsetX', name: 'component_config.carousel_offsetX', type: 'number', message: 'Range between 0 -1' },
+    { label: 'OffsetY', name: 'component_config.carousel_offsetY', type: 'number', message: 'Range between 0 -1' },
+    { label: 'Angle Offset', name: 'component_config.carousel_angleOffset', type: 'number', message: 'Values in %' },
+    { label: 'Min Opacity', name: 'component_config.carousel_minOpacity', type: 'number', message: 'Range between 0 -1' },
+    { label: 'Max Opacity', name: 'component_config.carousel_maxOpacity', type: 'number', message: 'Range between 0 -1' },
+    { label: 'Min Scale', name: 'component_config.carousel_minScale', type: 'number', message: 'Range between 0 -1' },
+    { label: 'Max Scale', name: 'component_config.carousel_maxScale', type: 'number', message: 'Range between 0 -1' },
 ]
