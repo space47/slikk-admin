@@ -17,6 +17,7 @@ import CommonSelect from './CommonSelect'
 import { DatePicker } from 'antd'
 import moment from 'moment'
 import { ParallaxConfigArray } from './configurationCommon'
+import HelpTooltip from '@/common/HelpTooltip'
 
 interface FontSize {
     label: string
@@ -121,12 +122,18 @@ const PageComponentConfig = ({
                 )}
                 {values?.component_config?.carousel_type === 'PARALLAX' && (
                     <>
-                        {ParallaxConfigArray.slice(0, 28).map((item, key) => (
-                            <FormItem key={key} label={item.label} className="w-2/3">
+                        {ParallaxConfigArray.map((item, key) => (
+                            <FormItem key={key} className="w-2/3">
+                                <div className="flex gap-2 text-md ">
+                                    <span>{item.label}</span>{' '}
+                                    <span>
+                                        <HelpTooltip message={item.message} />
+                                    </span>
+                                </div>
                                 <Field
                                     type={item.type}
                                     name={item.name}
-                                    placeholder={`Enter ${item.label}`}
+                                    placeholder={`Enter ${item.label} with ${item.message}`}
                                     component={item?.type === 'checkbox' ? Checkbox : Input}
                                     min="0"
                                 />
