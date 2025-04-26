@@ -18,6 +18,16 @@ export const HEADERCONFIGARRAY = [
         type: 'text',
     },
     {
+        label: 'Letter Spacing',
+        name: 'header_config.letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'Web Letter Spacing',
+        name: 'header_config.web_letter_spacing',
+        type: 'number',
+    },
+    {
         label: 'Header mobile Font Size',
         name: 'header_config.font_size',
         type: 'number',
