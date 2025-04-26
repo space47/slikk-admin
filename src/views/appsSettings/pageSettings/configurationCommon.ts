@@ -18,12 +18,12 @@ export const HEADERCONFIGARRAY = [
         type: 'text',
     },
     {
-        label: 'Letter Spacing',
+        label: 'Header Letter Spacing',
         name: 'header_config.letter_spacing',
         type: 'number',
     },
     {
-        label: 'Web Letter Spacing',
+        label: 'Header Web Letter Spacing',
         name: 'header_config.web_letter_spacing',
         type: 'number',
     },
@@ -86,6 +86,16 @@ export const SUBHEADERCONFIGARRAY = [
         type: 'text',
     },
     {
+        label: 'Sub-Header Letter Spacing',
+        name: 'sub_header_config.letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'Sub-Header Web Letter Spacing',
+        name: 'sub_header_config.web_letter_spacing',
+        type: 'number',
+    },
+    {
         label: 'Sub-Header Mobile Font Size',
         name: 'sub_header_config.font_size',
         type: 'number',
@@ -143,6 +153,16 @@ export const FOOTERCONFIGARRAY = [
         label: 'Web Footer Text',
         name: 'footer_config.web_text',
         type: 'text',
+    },
+    {
+        label: 'Footer Letter Spacing',
+        name: 'footer_config.letter_spacing',
+        type: 'number',
+    },
+    {
+        label: 'Footer Web Letter Spacing',
+        name: 'footer_config.web_letter_spacing',
+        type: 'number',
     },
     {
         label: 'Footer Mobile Font Size',
