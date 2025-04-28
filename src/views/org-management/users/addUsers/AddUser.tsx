@@ -47,6 +47,7 @@ const AddUser = () => {
     const [getGroups, setGetGroups] = useState<GROUPS[]>([])
     const [selectedGroups, setSelectedGroups] = useState<number[]>([])
     const [selectedCompanyList, setSelectedCompanyList] = useState<number[]>([])
+    const [selectedPermissionList, setSelectedPermissionList] = useState<any[]>([])
     const [addedPermissions, setAddedPermissions] = useState<{ id: number; name: string }[]>([])
     const [addedGroups, setAddedGroups] = useState<{ id: number; name: string }[]>([])
     const [addedCompanyList, setAddedCompanyList] = useState<{ id: number; name: string }[]>([])
@@ -130,6 +131,14 @@ const AddUser = () => {
             setSelectedCompanyList(allCompanyIds)
         } else {
             setSelectedCompanyList([])
+        }
+    }
+    const handleSelectAllPermissions = (e) => {
+        if (e.target.checked) {
+            const allPermissons = filteredPermission?.map((item) => item.id) || []
+            setSelectedPermissions(allPermissons)
+        } else {
+            setSelectedPermissions([])
         }
     }
 
@@ -266,18 +275,6 @@ const AddUser = () => {
     const handleAddPerm = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAddInput(e.target.value)
     }
-
-    // if (showSpinner) {
-    //     return (
-    //         <div className="flex items-center justify-center h-screen">
-    //             <Spinner size={40} />
-    //         </div>
-    //     )
-    // }
-
-    // if (accessDenied) {
-    //     return <AccessDenied />
-    // }
 
     return (
         <div>
@@ -497,6 +494,14 @@ const AddUser = () => {
                                 </>
                             ) : (
                                 <div className="">
+                                    <div className="flex gap-2 items-center mb-5">
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedPermissions.length === filteredPermission?.length}
+                                            onChange={handleSelectAllPermissions}
+                                        />{' '}
+                                        <span className="font-bold">Select All</span>
+                                    </div>
                                     <div className="flex justify-between">
                                         {/* All Permissions */}
                                         <Card className="overflow-y-scroll h-[560px] w-[400px] flex flex-col">

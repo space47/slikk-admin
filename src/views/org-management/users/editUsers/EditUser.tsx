@@ -407,6 +407,23 @@ const BrandUserEdit = () => {
         })
     }
 
+    const handleSelectAllCompany = (e) => {
+        if (e.target.checked) {
+            const allCompany = filteredCompany?.map((item) => item.id) || []
+            setSelectedCompany(allCompany)
+        } else {
+            setSelectedCompany([])
+        }
+    }
+    const handleSelectAllPermission = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            const allPermissons = filteredPermission?.map((item) => item.id) || []
+            setSelectedPermissions(allPermissons)
+        } else {
+            setSelectedPermissions([])
+        }
+    }
+
     // if (accessDenied) {
     //     return <AccessDenied />
     // }
@@ -447,6 +464,7 @@ const BrandUserEdit = () => {
                                 ) : (
                                     <FormContainer className="">
                                         <CardComponent
+                                            isSelectAll
                                             label="Company"
                                             selectedValue={selectedCompany}
                                             getValue={filteredCompany}
@@ -457,6 +475,7 @@ const BrandUserEdit = () => {
                                             handleSelectAll={handleSelectAll}
                                             searchInput={companySearchInput}
                                             handleSearch={handleCompanySearch}
+                                            handleSelectAllData={handleSelectAllCompany}
                                         />
                                     </FormContainer>
                                 )}
@@ -494,6 +513,7 @@ const BrandUserEdit = () => {
                                 ) : (
                                     <FormContainer className="">
                                         <CardComponent
+                                            isSelectAll
                                             forPermission
                                             label="Permissions"
                                             selectedValue={selectedPermissions}
@@ -505,6 +525,7 @@ const BrandUserEdit = () => {
                                             searchInput={searchInput}
                                             handleSearch={handleSearch}
                                             handlePermissionEdit={handlePermissionEdit}
+                                            handleSelectAllData={handleSelectAllPermission}
                                         />
                                     </FormContainer>
                                 )}
