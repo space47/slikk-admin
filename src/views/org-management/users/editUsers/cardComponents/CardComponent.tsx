@@ -17,6 +17,8 @@ interface CARDPROPS {
     searchInput: any
     forPermission?: any
     handlePermissionEdit?: any
+    handleSelectAllData?: any
+    isSelectAll?: boolean
 }
 
 const CardComponent = ({
@@ -33,12 +35,21 @@ const CardComponent = ({
     searchInput,
     forPermission,
     handlePermissionEdit,
+    handleSelectAllData,
+    isSelectAll,
 }: CARDPROPS) => {
     return (
         <div className="flex justify-around">
             {/* All Permissions */}
             <Card className="overflow-scroll h-[560px] w-[400px] flex flex-col">
                 <div className="sticky top-0 z-10 bg-white">
+                    {isSelectAll && (
+                        <div className="flex gap-2 items-center mb-5">
+                            <input type="checkbox" checked={selectedValue.length === getValue?.length} onChange={handleSelectAllData} />{' '}
+                            <span className="font-bold">Select All</span>
+                        </div>
+                    )}
+                    <br />
                     <div className="mb-3 bg-white">
                         <input
                             type="text"
