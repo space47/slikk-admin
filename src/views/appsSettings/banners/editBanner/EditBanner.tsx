@@ -270,10 +270,17 @@ const EditBanner = () => {
                 video_web: webVideoUpload ?? values?.extra_attributes?.video_web ?? null,
                 video_mobile: mobileVideoUpload ?? values?.extra_attributes?.video_mobile ?? null,
                 web_aspect_ratio:
-                    values?.extra_attributes?.web_aspect_ratio ?? (webAspectratio?.[0] ? Number(webAspectratio[0].toFixed(2)) : null),
+                    values.image_web_array.length > 0
+                        ? webAspectratio?.[0]
+                            ? Number(webAspectratio[0].toFixed(2))
+                            : null
+                        : values?.extra_attributes?.web_aspect_ratio,
                 mobile_aspect_ratio:
-                    values?.extra_attributes?.mobile_aspect_ratio ??
-                    (mobileAspectratio?.[0] ? Number(mobileAspectratio[0].toFixed(2)) : null),
+                    values.image_mobile_array.length > 0
+                        ? mobileAspectratio?.[0]
+                            ? Number(mobileAspectratio[0].toFixed(2))
+                            : null
+                        : values?.extra_attributes?.mobile_aspect_ratio,
                 mobile_redirection_url: values?.extra_attributes?.mobile_redirection_url ?? null,
                 web_redirection_url: values?.extra_attributes?.web_redirection_url ?? null,
                 maxoff: values?.max_off ?? null,
