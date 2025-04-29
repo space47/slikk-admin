@@ -141,7 +141,7 @@ const EditBanner = () => {
             }
         }
     }
-
+    console.log('1st')
     const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
         if (!files || files.length === 0) {
             return []
@@ -168,26 +168,7 @@ const EditBanner = () => {
         }
         return aspectRatios
     }
-
-    const calculateAspectRatioFromString = async (imageUrl: string): Promise<number | null> => {
-        if (!imageUrl) {
-            return null
-        }
-
-        const image = new Image()
-        image.src = imageUrl
-
-        return new Promise<number | null>((resolve) => {
-            image.onload = () => {
-                const aspectRatio = image.width / image.height
-                resolve(aspectRatio)
-            }
-            image.onerror = () => {
-                resolve(null)
-            }
-        })
-    }
-
+    console.log('2st')
     const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
         if (!imageSources || imageSources.length === 0) {
             return []
@@ -213,6 +194,12 @@ const EditBanner = () => {
         return aspectRatios
     }
 
+    console.log('mobile view', mobileImagview)
+    calculateAspectRatioFromStrings(mobileImagview).then((aspectRatios) => {
+        console.log('Mobile aspect ratio:', aspectRatios)
+    })
+    console.log('3st')
+
     const handleSubmit = async (values: BANNERMODEL) => {
         console.log(`Initial Value for Extra attributes`, values?.extra_attributes?.video_web)
         const processImageUpload = async (imageArray: any[], currentImage: string) => {
@@ -222,10 +209,19 @@ const EditBanner = () => {
             return videoArray.length > 0 ? await handleVideo(videoArray) : currentvideo
         }
         const webImageUpload = await processImageUpload(values.image_web_array, values.image_web)
-        const webAspectratio = (await calculateAspectRatio(values.image_web_array)) || (await calculateAspectRatioFromStrings(webVideoview))
+        const webAspectratio =
+            values.image_web_array?.length > 0
+                ? await calculateAspectRatio(values.image_web_array)
+                : values.image_web
+                  ? await calculateAspectRatioFromStrings(webImagview)
+                  : values?.extra_attributes?.web_aspect_ratio || null
         const mobileImageUpload = await processImageUpload(values.image_mobile_array, values.image_mobile)
         const mobileAspectratio =
-            (await calculateAspectRatio(values.image_mobile_array)) || (await calculateAspectRatioFromStrings(mobileVideoview))
+            values.image_mobile_array?.length > 0
+                ? await calculateAspectRatio(values.image_mobile_array)
+                : values.image_mobile
+                  ? await calculateAspectRatioFromStrings(mobileImagview)
+                  : values?.extra_attributes?.mobile_aspect_ratio || null
         const sectionBgWebUpload = await processImageUpload(values.section_background_web_array, values.section_background_web)
         const sectionBgMobileUpload = await processImageUpload(values.section_background_mobile_array, values.section_background_mobile)
 
@@ -260,7 +256,7 @@ const EditBanner = () => {
             lottie_mobile_array,
         )
 
-        console.log('start')
+        console.log('start', values.image_mobile_array.length)
         const formData = {
             ...rest,
             banner_id: values?.id || '',
@@ -269,18 +265,8 @@ const EditBanner = () => {
             extra_attributes: {
                 video_web: webVideoUpload ?? values?.extra_attributes?.video_web ?? null,
                 video_mobile: mobileVideoUpload ?? values?.extra_attributes?.video_mobile ?? null,
-                web_aspect_ratio:
-                    values.image_web_array.length > 0
-                        ? webAspectratio?.[0]
-                            ? Number(webAspectratio[0].toFixed(2))
-                            : null
-                        : values?.extra_attributes?.web_aspect_ratio,
-                mobile_aspect_ratio:
-                    values.image_mobile_array.length > 0
-                        ? mobileAspectratio?.[0]
-                            ? Number(mobileAspectratio[0].toFixed(2))
-                            : null
-                        : values?.extra_attributes?.mobile_aspect_ratio,
+                web_aspect_ratio: webAspectratio?.[0] ? Number(webAspectratio[0].toFixed(2)) : null,
+                mobile_aspect_ratio: mobileAspectratio?.[0] ? Number(mobileAspectratio[0].toFixed(2)) : null,
                 mobile_redirection_url: values?.extra_attributes?.mobile_redirection_url ?? null,
                 web_redirection_url: values?.extra_attributes?.web_redirection_url ?? null,
                 maxoff: values?.max_off ?? null,
