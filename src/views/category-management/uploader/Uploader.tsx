@@ -298,7 +298,7 @@ const Uploader = () => {
                     </div>
                 )}
             </div>
-            {finalImage || finalColorLink || finalVideo ? (
+            {finalImage || finalColorLink || finalVideo || finalSizeChart ? (
                 <div className="">
                     <Button variant="default" size="sm" onClick={handleDataReset}>
                         Reset Data
