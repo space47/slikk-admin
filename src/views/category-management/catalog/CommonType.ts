@@ -75,6 +75,7 @@ export type Product = Partial<{
     fabric: string
     size_chart_image: string
     size_chart_image_array: File[]
+    sizeChartArray?: File[]
 }>
 
 export const DROPDOWNARRAY = [

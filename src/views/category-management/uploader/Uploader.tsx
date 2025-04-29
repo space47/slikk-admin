@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormContainer } from '@/components/ui/Form'
 import Button from '@/components/ui/Button'
-// import Select from '@/components/ui/Select'
 import { Form, Formik } from 'formik'
 import { useState } from 'react'
 import { notification } from 'antd'
@@ -10,85 +9,25 @@ import { INITIALVALUES } from '../catalog/ProductCommon'
 import { AiOutlineCopy } from 'react-icons/ai'
 import Spinner from '@/components/ui/Spinner'
 import UploaderComponent from './UploaderComponent/UploaderComponent'
+import { beforeUpload } from '@/common/beforeUpload'
+import { beforeVideoUpload } from '@/common/beforUploadVideo'
 
 const Uploader = () => {
     const [finalImage, setFinalImage] = useState('')
     const [finalVideo, setFinalVideo] = useState('')
     const [finalColorLink, setFinalColorLink] = useState('')
     const [finalSizeChart, setFinalSizeChart] = useState('')
-
     const [showLoading, setShowLoading] = useState(false)
 
-    const MAX_UPLOAD = 100
-
-    const beforeUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = [
-            'application/pdf',
-            'image/jpeg',
-            'image/jpg',
-            'image/webp',
-            'image/png',
-            'image/JPEG',
-            'image/JPG',
-            'image/WEBP',
-            'image/PNG',
-            'text/csv',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'application/json',
-            'image/gif',
-            'application/zip',
-        ]
-        const MAX_FILE_SIZE = 5000000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
-    const beforeVideoUpload = (file: FileList | null, fileList: File[]) => {
-        let valid: string | boolean = true
-
-        const allowedFileType = ['video/mp4', 'video/mov', 'video/flv', 'video/avi', 'video/wmv', 'video/webm', 'video/avchd', 'video/MP4']
-        const MAX_FILE_SIZE = 9000000000000000
-
-        if (fileList.length >= MAX_UPLOAD) {
-            return `You can only upload ${MAX_UPLOAD} file(s)`
-        }
-
-        if (file) {
-            for (const f of file) {
-                if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a valid file format'
-                }
-
-                if (f.size >= MAX_FILE_SIZE) {
-                    valid = 'Upload image cannot more then 500kb!'
-                }
-            }
-        }
-
-        return valid
-    }
+    const DataArrays = [
+        { label: 'Image', value: finalImage },
+        { label: 'Video', value: finalVideo },
+        { label: 'Size Chart', value: finalSizeChart },
+        { label: 'Color Link', value: finalColorLink },
+    ]
 
     const handleimage = async (files: File[]) => {
         const formData = new FormData()
-
         files.forEach((file) => {
             formData.append('file', file)
         })
@@ -101,7 +40,6 @@ const Uploader = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             })
-            console.log(response)
             const newData = response.data.url
             return newData
         } catch (error: any) {
@@ -116,7 +54,6 @@ const Uploader = () => {
 
     const handleVideo = async (files: File[]) => {
         const formData = new FormData()
-
         files.forEach((file) => {
             formData.append('file', file)
         })
@@ -162,12 +99,11 @@ const Uploader = () => {
         const colorlink = await handleImageCheck(values.color_code)
         const videoUpload = await handleVideoCheck(values.video)
         const sizeChartUpload = await handleImageCheck(values.sizeChartArray)
-
         const imageShow = fileShow(imageUpload, values.image)
         const colorCodeShow = fileShow(colorlink, values.color_code_link)
         const videoShow = fileShow(videoUpload, values.video_link)
         const sizeChartShow = fileShow(sizeChartUpload, values.sizeChart)
-
+        notification.success({ message: 'Link has been Generated' })
         setFinalImage(imageShow)
         setFinalColorLink(colorCodeShow)
         setFinalVideo(videoShow)
@@ -177,9 +113,7 @@ const Uploader = () => {
 
     const handleCopy = (file: any) => {
         navigator.clipboard.writeText(file)
-        notification.success({
-            message: 'Copied',
-        })
+        notification.success({ message: 'Copied' })
     }
 
     const handleDataReset = () => {
@@ -191,14 +125,10 @@ const Uploader = () => {
 
     return (
         <div>
-            <Formik
-                enableReinitialize
-                initialValues={INITIALVALUES}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <div className="text-xl mb-2 font-bold">Upload to Generate Links</div>
+            <Formik enableReinitialize initialValues={INITIALVALUES} onSubmit={handleSubmit}>
                 {({ values, resetForm }) => (
-                    <Form className="w-2/3">
+                    <Form className="w-full shadow-xl p-4 rounded-xl">
                         <FormContainer>
                             <UploaderComponent
                                 name="image"
@@ -207,9 +137,6 @@ const Uploader = () => {
                                 fileList={values.images}
                                 beforeFileUpload={beforeUpload}
                             />
-
-                            {/* .............................................................. */}
-
                             <UploaderComponent
                                 name="color_code"
                                 label="COLOR CODE THUMBNAIL"
@@ -217,7 +144,6 @@ const Uploader = () => {
                                 fileList={values.color_code}
                                 beforeFileUpload={beforeUpload}
                             />
-
                             <UploaderComponent
                                 name="sizeChart"
                                 label="SIZE CHART"
@@ -225,9 +151,6 @@ const Uploader = () => {
                                 fileList={values.sizeChartArray}
                                 beforeFileUpload={beforeUpload}
                             />
-
-                            {/* .......................video........................................ */}
-
                             <UploaderComponent
                                 name="video_link"
                                 label="VIDEO"
@@ -235,7 +158,6 @@ const Uploader = () => {
                                 fileList={values.video}
                                 beforeFileUpload={beforeVideoUpload}
                             />
-
                             <FormContainer className="flex justify-end mt-5">
                                 <Button type="reset" className="mr-2" onClick={() => resetForm()}>
                                     Reset
@@ -248,56 +170,19 @@ const Uploader = () => {
                     </Form>
                 )}
             </Formik>
-
-            <br />
-            <br />
-
-            <div className="flex flex-col mt-5 w-full  ">
-                {finalImage && !showLoading && (
-                    <div className="flex gap-2 items-center">
-                        <p className="text-lg font-bold ">Image Link:</p>
-                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
-                            <p className="truncate">{finalImage}</p>
+            {DataArrays?.map((item, index) => (
+                <div key={index} className="flex flex-col mt-10">
+                    {item?.value && !showLoading && (
+                        <div className="flex gap-2 items-center">
+                            <p className="text-lg font-bold">{item?.label}:</p>
+                            <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
+                                <p className="truncate">{item?.value}</p>
+                            </div>
+                            <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(item?.value)} />
                         </div>
-                        <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(finalImage)} />
-                    </div>
-                )}
-            </div>
-
-            <div className="flex flex-col mt-5">
-                {finalColorLink && !showLoading && (
-                    <div className="flex gap-2 items-center">
-                        <p className="text-lg font-bold">Color Code Link:</p>
-                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
-                            <p className="truncate">{finalColorLink}</p>
-                        </div>
-                        <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(finalColorLink)} />
-                    </div>
-                )}
-            </div>
-            <div className="flex flex-col mt-5">
-                {finalSizeChart && !showLoading && (
-                    <div className="flex gap-2 items-center">
-                        <p className="text-lg font-bold">SIZE CHART:</p>
-                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl">
-                            <p className="truncate">{finalSizeChart}</p>
-                        </div>
-                        <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(finalSizeChart)} />
-                    </div>
-                )}
-            </div>
-
-            <div className="flex flex-col mt-5">
-                {finalVideo && !showLoading && (
-                    <div className="flex gap-2 items-center">
-                        <p className="text-lg font-bold">Video Link:</p>
-                        <div className="flex gap-2 shadow-lg w-[660px] h-[30px] items-center text-md overflow-hidden text-ellipsis text-xl ">
-                            <p className="truncate">{finalVideo}</p>
-                        </div>
-                        <AiOutlineCopy className="text-gray-500 cursor-pointer text-xl" onClick={() => handleCopy(finalVideo)} />
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            ))}
             {finalImage || finalColorLink || finalVideo || finalSizeChart ? (
                 <div className="">
                     <Button variant="default" size="sm" onClick={handleDataReset}>
