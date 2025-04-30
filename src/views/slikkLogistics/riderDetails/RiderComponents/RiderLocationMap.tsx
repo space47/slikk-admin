@@ -117,8 +117,6 @@ const RiderLocationMap = ({ taskData, runnerLat, runnerLong }: props) => {
         )
     }
 
-    console.log('Map set in trip Map', decodedPolyline)
-
     return (
         <div className="relative flex flex-col gap-10">
             <div className="relative xl:w-[500px] rounded-xl" style={{ height: '520px' }}>
