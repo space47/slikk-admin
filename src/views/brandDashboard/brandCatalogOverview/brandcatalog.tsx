@@ -12,6 +12,7 @@ import { Spinner } from '@/components/ui'
 import { IoMdDownload } from 'react-icons/io'
 import moment from 'moment'
 import ImageMODAL from '@/common/ImageModal'
+import { notification } from 'antd'
 
 type ProductVariant = {
     name: string
@@ -266,16 +267,10 @@ const BrandCatalog = () => {
     const handleDownload = async () => {
         try {
             const downloadUrl = `merchant/products?download=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`
-            const response = await axiosInstance.get(downloadUrl, {
-                responseType: 'blob',
+            const response = await axiosInstance.get(downloadUrl)
+            notification.success({
+                message: response?.data?.message || 'Downloaded Successfully',
             })
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${selectedCompany.name}_Catalog-${moment(date).format('YYYY-MM-DD')}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
         } catch (error) {
             console.log(error)
         }
