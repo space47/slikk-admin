@@ -28,16 +28,6 @@ const BrandShipmentsAdd = () => {
         return plainTextValue
     }
 
-    const fetchShipmentItemsCount = async (shipmentId: string | any) => {
-        try {
-            const response = await axioisInstance.get(`/product-shipment?view=detail&id=${shipmentId}`)
-            const data = response?.data?.data?.results[0]
-            setShipmentItemsCount(data?.upload_count)
-        } catch (error) {
-            console.error('Error fetching shipment details:', error)
-        }
-    }
-
     const handleSubmit = async (values: any) => {
         try {
             notification.info({ message: 'In Process' })
@@ -75,31 +65,7 @@ const BrandShipmentsAdd = () => {
                     const formData = new FormData()
                     formData.append('shipment_items_file', values.csvArray[0])
                     formData.append('shipment_id', shipmentId)
-
-                    const csvUploadPromise = axioisInstance.post(`/shipment/bulkupload/items`, formData)
-
-                    const checkForItemCount = async () => {
-                        const intervalId = setInterval(async () => {
-                            try {
-                                await fetchShipmentItemsCount(shipmentId)
-                            } catch (err) {
-                                console.error(err)
-                                clearInterval(intervalId)
-                                notification.error({
-                                    message: 'Error while checking CSV processing status',
-                                })
-                            }
-                        }, 10000)
-
-                        csvUploadPromise.finally(() => {
-                            clearInterval(intervalId)
-                        })
-                    }
-
-                    checkForItemCount()
-
-                    await csvUploadPromise
-
+                    await axioisInstance.post(`/shipment/bulkupload/items`, formData)
                     notification.success({
                         message: 'CSV uploaded successfully',
                     })
@@ -112,6 +78,33 @@ const BrandShipmentsAdd = () => {
                 } finally {
                     setShowSpinner(false)
                 }
+
+                const checkForItemCount = async () => {
+                    const intervalId = setInterval(async () => {
+                        try {
+                            const response = await axioisInstance.get(`/product-shipment?view=detail&id=${shipmentId}`)
+                            const data = response?.data?.data?.results[0]
+                            setShipmentItemsCount(data?.upload_count)
+
+                            if (!data?.in_progress) {
+                                clearInterval(intervalId)
+                                notification.success({
+                                    message: 'CSV processing completed',
+                                })
+                                navigate(-1)
+                            }
+                        } catch (err) {
+                            console.error(err)
+                            clearInterval(intervalId)
+                            notification.error({
+                                message: 'Error while checking CSV processing status',
+                            })
+                        }
+                    }, 10000)
+                    return () => clearInterval(intervalId)
+                }
+
+                checkForItemCount()
             }
 
             return { id: shipmentId }
@@ -174,12 +167,12 @@ const BrandShipmentsAdd = () => {
                         </FormContainer>
                         <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
                             {currentStep > 0 && currentStep < 2 && (
-                                <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="pending" className="mr-2 bg-gray-600" onClick={handlePrevious}>
                                     Previous
                                 </Button>
                             )}
                             {currentStep < 2 && currentStep > 0 && (
-                                <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="accept" className="mr-2 bg-gray-600" onClick={handleNext}>
                                     Next
                                 </Button>
                             )}
@@ -187,7 +180,7 @@ const BrandShipmentsAdd = () => {
 
                         {currentStep === 0 && (
                             <FormContainer className="flex justify-end">
-                                <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="accept" className="mr-2 bg-gray-600" onClick={handleNext}>
                                     Next
                                 </Button>
                             </FormContainer>
@@ -199,7 +192,7 @@ const BrandShipmentsAdd = () => {
                         <FormContainer className="flex justify-end">
                             {currentStep === 2 && (
                                 <div className="flex">
-                                    <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                    <Button type="button" variant="pending" className="mr-2 bg-gray-600" onClick={handlePrevious}>
                                         Previous
                                     </Button>
                                     <div className="flex gap-20">

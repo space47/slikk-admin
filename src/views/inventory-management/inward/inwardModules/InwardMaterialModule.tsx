@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { notification } from 'antd'
-import { Button, Dialog, Dropdown, Tooltip } from '@/components/ui'
+import { Button, Dialog, Dropdown, Input, Tooltip } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import moment from 'moment'
 import { InwardDetailSearchOptions, ShipmentItem } from '../inwardCommon'
-import { FaEdit, FaSave, FaTimes } from 'react-icons/fa'
+import { FaEdit, FaSave, FaSync, FaTimes } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
 import { useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -32,7 +32,7 @@ const renderEditableCell = (
 
 const InwardMaterialModule = () => {
     const { id } = useParams()
-    const isDashboard = import.meta.env.VITE_IS_DASHBOARD !== 'brand'
+    const isDashboard = import.meta.env.VITE_DASHBOARD_TYPE !== 'brand'
     const [shipmentDetails, setShipmentDetails] = useState<any>()
     const [skuWiseData, setSkuWiseData] = useState<any[]>([])
     const [currentSelectedSearch, setCurrentSelectedSearch] = useState<Record<string, string>>(InwardDetailSearchOptions[0])
@@ -49,6 +49,8 @@ const InwardMaterialModule = () => {
     const [showEditModal, setShowEditModal] = useState(false)
     const [dataTobeAdded, setDataTobeAdded] = useState<any>()
     const [dataTobeEdited, setDataTobeEdited] = useState<any>()
+    const [isGenerateGrn, setIsGenerateGrn] = useState(false)
+    const [receivedBy, setReceivedBy] = useState('')
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
@@ -349,6 +351,21 @@ const InwardMaterialModule = () => {
         [editingRow, handleEdit, handleSave, handleCancel, handleEditChange, handleEditKeyDown],
     )
 
+    const handleSync = async () => {
+        const body = {
+            shipment_id: id,
+            received_by: receivedBy,
+        }
+        try {
+            const response = await axioisInstance.post(`/shipment/grn/sync`, body)
+            notification.success({ message: response?.data?.message || 'Synced successfully' })
+            setIsGenerateGrn(false)
+        } catch (error) {
+            console.error(error)
+            notification.error({ message: 'Failed to Sync' })
+        }
+    }
+
     return (
         <div className="p-4 flex flex-col gap-6">
             <div>
@@ -404,6 +421,16 @@ const InwardMaterialModule = () => {
 
             <div className="mt-8">
                 <div className="text-xl font-bold mb-8">Items Received</div>
+                <div>
+                    {isDashboard && (
+                        <div className="flex gap-2 mb-7 justify-end cursor-pointer" onClick={() => setIsGenerateGrn(true)}>
+                            <span>
+                                <FaSync className="text-green-500 text-xl" />
+                            </span>
+                            <span className="font-bold  text-green-500">SYNC</span>
+                        </div>
+                    )}
+                </div>
                 <EasyTable overflow columns={columns2} mainData={shipmentDetails?.shipment_items ?? []} />
             </div>
             {showAddModal && (
@@ -443,6 +470,27 @@ const InwardMaterialModule = () => {
                                 </Button>
                             </div>
                         </div>
+                    </div>
+                </Dialog>
+            )}
+            {isGenerateGrn && (
+                <Dialog isOpen={isGenerateGrn} onClose={() => setIsGenerateGrn(false)} onRequestClose={() => setIsGenerateGrn(false)}>
+                    <div className="text-xl mb-4">Received By</div>
+                    <div className="h-1/2 mb-10">
+                        <Input
+                            value={receivedBy}
+                            className="rounded-xl"
+                            placeholder="Enter Received By"
+                            onChange={(e) => setReceivedBy(e.target.value)}
+                        />
+                    </div>
+                    <div className="text-right mt-6">
+                        <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={() => setIsGenerateGrn(false)}>
+                            Cancel
+                        </Button>
+                        <Button variant="solid" onClick={handleSync}>
+                            SYNC
+                        </Button>
                     </div>
                 </Dialog>
             )}
