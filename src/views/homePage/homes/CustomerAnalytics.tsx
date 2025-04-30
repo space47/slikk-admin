@@ -13,6 +13,7 @@ import CustomerData from './componentsHomes/CustomerData'
 import CartPaymentSummary from './componentsHomes/CartPaymentSummary'
 import CartShipping from './componentsHomes/CartShipping'
 import CartTabs from './componentsHomes/CartTabs'
+import NotFoundData from '@/views/pages/NotFound/Notfound'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
@@ -46,6 +47,12 @@ const CustomerAnalytics = () => {
         } finally {
             setBlockUser(false)
         }
+    }
+
+    console.log('mobile us', mobile)
+
+    if (mobile == 'null') {
+        return <NotFoundData />
     }
 
     return (

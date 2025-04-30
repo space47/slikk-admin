@@ -5,7 +5,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
 import { IoMdReturnLeft } from 'react-icons/io'
-import { FaCheck, FaSearch, FaShoppingCart } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaSearch, FaShoppingCart } from 'react-icons/fa'
 import { HiCurrencyRupee, HiUserGroup } from 'react-icons/hi'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
@@ -22,6 +22,7 @@ import { Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import UserMap from '@/views/analytics/userAnalytics/UserMap'
+import { FiEye, FiEyeOff } from 'react-icons/fi'
 
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
@@ -31,17 +32,19 @@ const Home = () => {
     const [inputValues, setInputValues] = useState({
         customer: '',
         invoice_id: '',
+        email: '',
     })
     const [accessDenied, setAccessDenied] = useState(false)
     const [isPageActive, setIsPageActive] = useState(true)
     const [activeTab, setActiveTab] = useState('orders')
+    const [mobileFromMail, setMobileFromMail] = useState('')
+    const [viewMap, setViewMap] = useState(false)
     const navigate = useNavigate()
 
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const fetchHome = async () => {
         try {
-            // const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(`/merchant/analytics/order?from=${from}&to=${To_Date}`)
             const data: SalesData = response.data.data
             setHomeData(data)
@@ -55,9 +58,7 @@ const Home = () => {
 
     const fetchOrderForLocation = async () => {
         try {
-            // const to = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${To_Date}`)
-
             const ordersData = response.data?.data
             setOrders(ordersData)
         } catch (error: any) {
@@ -106,6 +107,21 @@ const Home = () => {
         }
     }, [isPageActive, from, to])
 
+    useEffect(() => {
+        const fetchFromMobileThroughEmail = async () => {
+            try {
+                const response = await axiosInstance.get(`/merchant/analytics/order?email=${inputValues.email}&type=user_summary`)
+                const data = response?.data?.data?.profile?.mobile
+                setMobileFromMail(data)
+            } catch (error: any) {
+                return
+            }
+        }
+        if (inputValues.email) {
+            fetchFromMobileThroughEmail()
+        }
+    }, [inputValues.email])
+
     const netSales =
         (homeData?.received?.total_amount || 0) -
         (homeData?.returned?.total_amount || 0) -
@@ -144,34 +160,22 @@ const Home = () => {
     const handleCustomerFunction = (inputName: string) => {
         navigate(`/app/customerAnalytics/${inputName}`)
     }
+    const handleCustomerEnailFunction = () => {
+        navigate(`/app/customerAnalytics/${mobileFromMail}`)
+    }
 
     const handleInvoiceFunction = (inputName: string) => {
         navigate(`/app/orders/${inputName}`)
     }
     const handleReceived = (from: string, to: string) => {
-        navigate(`/app/orders`, {
-            state: {
-                var1: from,
-                var2: to,
-            },
-        })
+        navigate(`/app/orders`, { state: { var1: from, var2: to } })
     }
     const handleReturned = (from: string, to: string) => {
-        navigate(`/app/returnOrders`, {
-            state: {
-                var1: from,
-                var2: to,
-            },
-        })
+        navigate(`/app/returnOrders`, { state: { var1: from, var2: to } })
     }
 
     const handleCompleted = (from: string, to: string) => {
-        navigate('/app/orders/completed', {
-            state: {
-                var1: from,
-                var2: to,
-            },
-        })
+        navigate('/app/orders/completed', { state: { var1: from, var2: to } })
     }
     const handleDateChange = (dates: [Date | null, Date | null] | null) => {
         if (dates && dates[0]) {
@@ -225,29 +229,20 @@ const Home = () => {
         },
     ]
 
-    console.log(
-        'item sddsdsaadqdqw',
-        orders.map((item) => item.latitude || []),
-    )
-
     if (accessDenied) {
         return <AccessDenied />
     }
 
     return (
         <div className="flex flex-col gap-6 p-4">
-            {/* Upar ka dabba */}
-
-            <div className="flex flex-col xl:flex-row  xl:justify-between  mb-4 gap-5 ">
-                <div className="w-full xl:w-[50%]">
-                    {/* <div className="">Search By</div> */}
+            <div className="flex flex-col xl:flex-row  mb-4 gap-5 ">
+                <div className="w-full xl:mt-6 items-start flex justify-start">
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
-                        <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[400px] bg-white shadow-md dark:bg-gray-900">
+                        <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[300px] bg-white shadow-md dark:bg-gray-900">
                             <input
                                 type="text"
                                 name="customer"
                                 value={inputValues.customer}
-                                onChange={handleInputChange}
                                 placeholder="Search by Customer Number"
                                 className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
@@ -255,20 +250,41 @@ const Home = () => {
                                         handleCustomerFunction(inputValues.customer)
                                     }
                                 }}
+                                onChange={handleInputChange}
                             />
                             <button
-                                onClick={() => handleCustomerFunction(inputValues.customer)}
                                 className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                onClick={() => handleCustomerFunction(inputValues.customer)}
                             >
                                 <FaSearch />
                             </button>
                         </div>
-                        <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[400px] bg-white shadow-md dark:bg-gray-900">
+                        {/* <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[300px] bg-white shadow-md dark:bg-gray-900">
+                            <input
+                                type="text"
+                                name="email"
+                                value={inputValues.email}
+                                placeholder="Search by User Email"
+                                className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleCustomerEnailFunction()
+                                    }
+                                }}
+                                onChange={handleInputChange}
+                            />
+                            <button
+                                className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                onClick={handleCustomerEnailFunction}
+                            >
+                                <FaSearch />
+                            </button>
+                        </div> */}
+                        <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[300px] bg-white shadow-md dark:bg-gray-900">
                             <input
                                 type="text"
                                 name="invoice_id"
                                 value={inputValues.invoice_id}
-                                onChange={handleInputChange}
                                 placeholder="Search by Invoice ID"
                                 className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
@@ -276,10 +292,11 @@ const Home = () => {
                                         handleInvoiceFunction(inputValues.invoice_id)
                                     }
                                 }}
+                                onChange={handleInputChange}
                             />
                             <button
-                                onClick={() => handleInvoiceFunction(inputValues.invoice_id)}
                                 className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                onClick={() => handleInvoiceFunction(inputValues.invoice_id)}
                             >
                                 <FaSearch />
                             </button>
@@ -366,34 +383,51 @@ const Home = () => {
                 {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}
             </div>
             <br />
-            <div className="mt-8">
-                <Tabs defaultValue="orders" onChange={(tab) => setActiveTab(tab)}>
-                    <TabList>
-                        <TabNav value="orders" className="text-xl" icon={<MdOutlinePendingActions className="text-blue-600 text-2xl" />}>
-                            Order Location
-                        </TabNav>
-                        <TabNav value="users" className="text-xl" icon={<HiUserGroup className="text-green-500 text-2xl" />}>
-                            User Location
-                        </TabNav>
-                    </TabList>
-                </Tabs>
-                {activeTab === 'orders' && (
-                    <div className="bg-white p-6 rounded-xl shadow-md">
-                        <MultipleMap
-                            latitudes={orders.map((item) => item.latitude || [])}
-                            longitudes={orders.map((item) => item.longitude || [])}
-                            amount={orders.map((item) => item.amount || [])}
-                            currentStatus={orders.map((item) => item.status || [])}
-                            currentInvoice={orders.map((item) => item.invoice_id || [])}
-                        />
-                    </div>
-                )}
-                {activeTab === 'users' && (
-                    <div className="bg-white p-6 rounded-xl shadow-md mt-10">
-                        <UserMap from={from} to={To_Date} />
-                    </div>
-                )}
+            <div
+                className={`flex items-center gap-3 px-5 py-3 text-white rounded-full cursor-pointer transition-all hover:scale-105 hover:shadow-xl active:scale-95 w-fit ${
+                    viewMap ? 'bg-gradient-to-r from-red-500 to-red-700' : 'bg-gradient-to-r from-green-500 to-green-700'
+                }`}
+                onClick={() => setViewMap((prev) => !prev)}
+            >
+                {viewMap ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
+                <span className="font-semibold text-sm tracking-wider">{viewMap ? 'Hide Map' : 'View Map'}</span>
+                <FaMapMarkerAlt className="w-5 h-5" />
             </div>
+            {viewMap && (
+                <div className="mt-8">
+                    <Tabs defaultValue="orders" onChange={(tab) => setActiveTab(tab)}>
+                        <TabList>
+                            <TabNav
+                                value="orders"
+                                className="text-xl"
+                                icon={<MdOutlinePendingActions className="text-blue-600 text-2xl" />}
+                            >
+                                Order Location
+                            </TabNav>
+                            <TabNav value="users" className="text-xl" icon={<HiUserGroup className="text-green-500 text-2xl" />}>
+                                User Location
+                            </TabNav>
+                        </TabList>
+                    </Tabs>
+
+                    {activeTab === 'orders' && (
+                        <div className="bg-white p-6 rounded-xl shadow-md">
+                            <MultipleMap
+                                latitudes={orders.map((item) => item.latitude || [])}
+                                longitudes={orders.map((item) => item.longitude || [])}
+                                amount={orders.map((item) => item.amount || [])}
+                                currentStatus={orders.map((item) => item.status || [])}
+                                currentInvoice={orders.map((item) => item.invoice_id || [])}
+                            />
+                        </div>
+                    )}
+                    {activeTab === 'users' && (
+                        <div className="bg-white p-6 rounded-xl shadow-md mt-10">
+                            <UserMap from={from} to={To_Date} />
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }
