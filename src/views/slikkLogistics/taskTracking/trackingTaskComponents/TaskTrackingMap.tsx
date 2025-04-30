@@ -119,8 +119,6 @@ const TaskTrackingMap = () => {
         )
     }
 
-    console.log('Map set in trip Map', decodedPolyline)
-
     return (
         <div className="relative flex flex-col gap-10">
             <div className="relative w-full" style={{ height: '500px' }}>
