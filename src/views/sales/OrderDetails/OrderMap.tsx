@@ -210,7 +210,12 @@ const OrderMap = ({ task_id }: props) => {
         )
     }
 
-    console.log('Map set in trip Map', decodedPolyline)
+    const ridersIcon = L.icon({
+        iconUrl: '/img/logo/riderOnline-logo.png',
+        iconSize: [20, 40],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+    })
 
     return (
         <div className="relative flex flex-col gap-10 ">
