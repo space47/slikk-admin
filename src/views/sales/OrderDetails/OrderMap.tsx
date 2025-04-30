@@ -224,7 +224,6 @@ const OrderMap = ({ task_id }: props) => {
         )
     }
 
-    console.log('Map set in trip Map', decodedPolyline)
     const ridersIcon = L.icon({
         iconUrl: '/img/logo/riderOnline-logo.png',
         iconSize: [20, 40],

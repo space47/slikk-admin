@@ -80,6 +80,7 @@ const ReturnProductsDetails = ({ task_id }: props) => {
     const returnProducts = returnOrder?.returnOrders?.return_order_items.map((item) => item) || []
     const [isReschedule, setIsReschedule] = useState(false)
     const [isQcDetails, setIsQcDetails] = useState(false)
+    const [particularSkuForQc, setParticularSkuForQc] = useState('')
     const navigate = useNavigate()
 
     const columns = [
@@ -113,9 +114,9 @@ const ReturnProductsDetails = ({ task_id }: props) => {
         }),
         columnHelper.accessor('', {
             header: 'Qc Details',
-            cell: () => {
+            cell: (props) => {
                 return (
-                    <div onClick={() => setIsQcDetails(true)}>
+                    <div onClick={() => handleQCDetails(props.row.original)}>
                         {task_id ? <Button variant="accept">Qc Details</Button> : 'No Task Id Created'}
                     </div>
                 )
@@ -148,6 +149,10 @@ const ReturnProductsDetails = ({ task_id }: props) => {
         } finally {
             setShowCancelModal(false)
         }
+    }
+    const handleQCDetails = (row) => {
+        setParticularSkuForQc(row?.product?.sku)
+        setIsQcDetails(true)
     }
 
     return (
@@ -189,7 +194,9 @@ const ReturnProductsDetails = ({ task_id }: props) => {
                 </>
             )}
             {isReschedule && <RescheduleModal isReschedule={isReschedule} setIsReschedule={setIsReschedule} />}
-            {isQcDetails && <QcDetailsModal dialogIsOpen={isQcDetails} setIsOpen={setIsQcDetails} task_id={task_id} />}
+            {isQcDetails && (
+                <QcDetailsModal dialogIsOpen={isQcDetails} setIsOpen={setIsQcDetails} task_id={task_id} sku={particularSkuForQc} />
+            )}
         </AdaptableCard>
     )
 }

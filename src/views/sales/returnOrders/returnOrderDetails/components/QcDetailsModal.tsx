@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react'
-import Button from '@/components/ui/Button'
-import Dialog from '@/components/ui/Dialog'
-import type { MouseEvent } from 'react'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
 import { Modal } from 'antd'
+import { CiImageOff } from 'react-icons/ci'
 
 interface Props {
     dialogIsOpen: boolean
     setIsOpen: (isOpen: boolean) => void
     task_id: any
+    sku: string
 }
 
-const QcDetailsModal = ({ dialogIsOpen, setIsOpen, task_id }: Props) => {
+const QcDetailsModal = ({ dialogIsOpen, setIsOpen, task_id, sku }: Props) => {
     const [taskData, setTaskData] = useState<any>()
     const [images, setImages] = useState<string[]>([])
+    console.log('sku inside modal', sku)
 
     const fetchTableData = async () => {
         try {
@@ -22,15 +22,11 @@ const QcDetailsModal = ({ dialogIsOpen, setIsOpen, task_id }: Props) => {
             const data = response.data.data
             setTaskData(data)
 
-            // Extract and set images from all slikklogistic_item entries
             if (data.slikklogistic_item && data.slikklogistic_item.length > 0) {
                 const allImages: string[] = []
-                data.slikklogistic_item.forEach((item: any) => {
-                    if (item.product_images) {
-                        const imageArray = item.product_images.split(',')
-                        allImages.push(...imageArray)
-                    }
-                })
+                const filteredData = data.slikklogistic_item.find((item) => item.sku === sku)
+                const imageArray = filteredData?.product_images ? filteredData?.product_images?.split(',') : ''
+                allImages.push(...imageArray)
                 setImages(allImages)
             }
         } catch (error) {
@@ -44,9 +40,10 @@ const QcDetailsModal = ({ dialogIsOpen, setIsOpen, task_id }: Props) => {
         }
     }, [task_id])
 
-    const onDialogClose = (e: MouseEvent) => {
+    const onDialogClose = () => {
         setIsOpen(false)
     }
+    console.log('images', images)
 
     return (
         <div className="">
@@ -67,7 +64,12 @@ const QcDetailsModal = ({ dialogIsOpen, setIsOpen, task_id }: Props) => {
                         ))}
                     </Splide>
                 ) : (
-                    <p>No images available 😊</p>
+                    <p className="text-xl flex flex-col items-center justify-center">
+                        <span>
+                            <CiImageOff className="text-4xl" />
+                        </span>
+                        No Image Available
+                    </p>
                 )}
             </Modal>
         </div>
