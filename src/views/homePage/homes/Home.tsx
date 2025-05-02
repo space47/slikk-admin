@@ -390,7 +390,7 @@ const Home = () => {
                 onClick={() => setViewMap((prev) => !prev)}
             >
                 {viewMap ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
-                <span className="font-semibold text-sm tracking-wider">{viewMap ? 'Hide Map' : 'View Map'}</span>
+                <span className="font-semibold text-sm tracking-wider">{viewMap ? 'Hide Map' : 'View On Map'}</span>
                 <FaMapMarkerAlt className="w-5 h-5" />
             </div>
             {viewMap && (

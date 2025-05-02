@@ -11,6 +11,7 @@ import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaEdit } from 'react-icons/fa'
+import AccessDenied from '@/views/pages/AccessDenied'
 
 interface User {
     first_name: string
@@ -45,6 +46,7 @@ const Seller = () => {
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
+    const [accessDenied, setAccessDenied] = useState(false)
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -62,7 +64,10 @@ const Seller = () => {
                 setData(data)
             }
             setTotalData(total)
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response.status === 403 || error.response.status === 401) {
+                setAccessDenied(true)
+            }
             console.error(error)
         }
     }
@@ -146,6 +151,9 @@ const Seller = () => {
 
     const handleSeller = () => {
         navigate('/app/users/addNew')
+    }
+    if (accessDenied) {
+        return <AccessDenied />
     }
 
     return (
