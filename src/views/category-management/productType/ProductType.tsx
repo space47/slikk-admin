@@ -55,7 +55,7 @@ const ProductType = () => {
     const fetchData = async () => {
         try {
             const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
-            const response = await axiosInstance.get(`product-type?${filtervalue}`)
+            const response = await axiosInstance.get(`product-type?dashboard=true${filtervalue}`)
             const data = response.data.data
             const total = data.length
             setData(data)
