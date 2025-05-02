@@ -51,7 +51,7 @@ const DivisionTable = () => {
     const fetchData = async () => {
         try {
             const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
-            const response = await axiosInstance.get(`division?${filtervalue}`)
+            const response = await axiosInstance.get(`division?dashboard=true${filtervalue}`)
             const data = response.data.data
             const total = data.length
             setData(data)

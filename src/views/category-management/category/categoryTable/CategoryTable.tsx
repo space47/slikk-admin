@@ -32,7 +32,7 @@ const CategoryTable = () => {
             try {
                 const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
                 const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${selectedDivision}` : ''
-                const response = await axiosInstance.get(`category?${filtervalue}${divisionFilter}`)
+                const response = await axiosInstance.get(`category?dashboard=true${filtervalue}${divisionFilter}`)
                 const data = response.data.data
                 setData(data)
             } catch (error) {
