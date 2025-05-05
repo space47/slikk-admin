@@ -14,6 +14,7 @@ const BrandShipmentDetails = () => {
     const [shipmentDetails, setShipmentDetails] = useState<any>()
     const [showAddCsv, setShowAddCsv] = useState(false)
     const [csvEmptyArray, setCsvEmptyArray] = useState<any[]>([])
+    const [refreshTrigger, setRefreshTrigger] = useState(0)
 
     useEffect(() => {
         const fetchShipmentDetails = async () => {
@@ -25,7 +26,7 @@ const BrandShipmentDetails = () => {
             }
         }
         fetchShipmentDetails()
-    }, [id])
+    }, [id, refreshTrigger])
 
     const handleCsvUpload = async () => {
         try {
@@ -135,7 +136,7 @@ const BrandShipmentDetails = () => {
             {shipmentDetails?.shipment_items?.length > 0 && (
                 <div className="mt-10">
                     <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
-                    <InwardMaterialModule />
+                    <InwardMaterialModule setRefreshTrigger={setRefreshTrigger} shipmentDetails={shipmentDetails} />
                 </div>
             )}
         </div>

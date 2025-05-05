@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import React, { useState, useRef, useCallback, useMemo } from 'react'
 import { notification } from 'antd'
 import { Button, Dialog, Dropdown, Input, Tooltip } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
@@ -10,6 +10,11 @@ import EasyTable from '@/common/EasyTable'
 import { useParams } from 'react-router-dom'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { InwardDetailsColumns } from '../inwardUtils/InwardColumns'
+
+interface props {
+    shipmentDetails: any
+    setRefreshTrigger: (x: any) => void
+}
 
 const renderEditableCell = (
     value: any,
@@ -30,10 +35,9 @@ const renderEditableCell = (
     )
 }
 
-const InwardMaterialModule = () => {
+const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => {
     const { id } = useParams()
     const isDashboard = import.meta.env.VITE_DASHBOARD_TYPE !== 'brand'
-    const [shipmentDetails, setShipmentDetails] = useState<any>()
     const [skuWiseData, setSkuWiseData] = useState<any[]>([])
     const [currentSelectedSearch, setCurrentSelectedSearch] = useState<Record<string, string>>(InwardDetailSearchOptions[0])
     const [shipmentData, setShipmentData] = useState<ShipmentItem[]>(shipmentDetails?.shipment_items ?? [])
@@ -44,25 +48,12 @@ const InwardMaterialModule = () => {
     const skuInputRef = useRef<HTMLInputElement>(null)
     const qtySentInputRef = useRef<HTMLInputElement>(null)
     const qtyReceivedInputRef = useRef<HTMLInputElement>(null)
-    const [refreshTrigger, setRefreshTrigger] = useState(0)
     const [showAddModal, setShowAddModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
     const [dataTobeAdded, setDataTobeAdded] = useState<any>()
     const [dataTobeEdited, setDataTobeEdited] = useState<any>()
     const [isGenerateGrn, setIsGenerateGrn] = useState(false)
     const [receivedBy, setReceivedBy] = useState('')
-
-    useEffect(() => {
-        const fetchShipmentDetails = async () => {
-            try {
-                const response = await axioisInstance.get(`/product-shipment?view=detail&id=${id}`)
-                setShipmentDetails(response?.data?.data?.results[0])
-            } catch (error) {
-                console.error(error)
-            }
-        }
-        fetchShipmentDetails()
-    }, [id, refreshTrigger])
 
     const handleEdit = useCallback(async (row: ShipmentItem) => {
         setEditingRow(row.id)
@@ -129,7 +120,7 @@ const InwardMaterialModule = () => {
         try {
             const response = await axioisInstance.post(`/shipment/item`, body)
             notification.success({ message: response?.data?.message || 'Item added successfully' })
-            setRefreshTrigger((prev) => prev + 1)
+            setRefreshTrigger((prev: any) => prev + 1)
         } catch (error) {
             console.error(error)
             notification.error({ message: 'Failed to add item' })
@@ -144,12 +135,12 @@ const InwardMaterialModule = () => {
             quantity: dataTobeEdited?.quantity_sent,
             quantity_received: dataTobeEdited?.quantity_received,
         }
-        const formattedData = Object.fromEntries(Object.entries(body).filter(([_, value]) => value !== undefined))
-        console.log('body', body)
+        const formattedData = Object.fromEntries(Object.entries(body).filter(([, value]) => value !== undefined))
+
         try {
             const response = await axioisInstance.post(`/shipment/item/${dataTobeEdited?.id}`, formattedData)
             notification.success({ message: response?.data?.message || 'Item Edited successfully' })
-            setRefreshTrigger((prev) => prev + 1)
+            setRefreshTrigger((prev: any) => prev + 1)
         } catch (error) {
             console.error(error)
             notification.error({ message: 'Failed to Edit item' })
