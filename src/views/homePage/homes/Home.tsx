@@ -24,6 +24,37 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import UserMap from '@/views/analytics/userAnalytics/UserMap'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 
+const HomeCalculations = (homeData: any) => {
+    const netSales =
+        (homeData?.received?.total_amount || 0) -
+        (homeData?.returned?.total_amount || 0) -
+        (homeData?.cancelled?.total_amount || 0) -
+        (homeData?.declined?.total_amount || 0)
+
+    const netReturn = (homeData?.returned?.count || 0) + (homeData?.cancelled?.count || 0) + (homeData?.declined?.count || 0)
+    const netReturnSales =
+        (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
+
+    const averageOrderValue = homeData
+        ? homeData?.received?.total_amount /
+          (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
+        : 0
+
+    const dataValues = Object.values(homeData?.brand_wise_sale ?? {})
+
+    const sum = dataValues.reduce((acc, value) => acc + value, 0)
+
+    const basketSize = homeData
+        ? sum / (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
+        : 0
+
+    const receiverOrderValue = homeData
+        ? homeData?.received.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0)
+        : 0
+
+    return { netSales, netReturn, netReturnSales, averageOrderValue, basketSize, receiverOrderValue }
+}
+
 const Home = () => {
     const [orders, setOrders] = useState<any[]>([])
     const [homeData, setHomeData] = useState<SalesData | null>(null)
@@ -122,32 +153,7 @@ const Home = () => {
         }
     }, [inputValues.email])
 
-    const netSales =
-        (homeData?.received?.total_amount || 0) -
-        (homeData?.returned?.total_amount || 0) -
-        (homeData?.cancelled?.total_amount || 0) -
-        (homeData?.declined?.total_amount || 0)
-
-    const netReturn = (homeData?.returned?.count || 0) + (homeData?.cancelled?.count || 0) + (homeData?.declined?.count || 0)
-    const netReturnSales =
-        (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
-
-    const averageOrderValue = homeData
-        ? homeData?.received?.total_amount /
-          (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
-        : 0
-
-    const dataValues = Object.values(homeData?.brand_wise_sale ?? {})
-
-    const sum = dataValues.reduce((acc, value) => acc + value, 0)
-
-    const basketSize = homeData
-        ? sum / (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
-        : 0
-
-    const receiverOrderValue = homeData
-        ? homeData?.received.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0)
-        : 0
+    const { netSales, averageOrderValue, basketSize, netReturn, netReturnSales, receiverOrderValue } = HomeCalculations(homeData)
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target

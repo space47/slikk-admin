@@ -1,9 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, flexRender } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
@@ -12,6 +10,9 @@ import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaEdit } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
+import EasyTable from '@/common/EasyTable'
+import { pageSizeOptions } from '../sellers/sellerCommon'
+import { AxiosError } from 'axios'
 
 interface User {
     first_name: string
@@ -30,15 +31,6 @@ type Option = {
     label: string
 }
 
-const { Tr, Th, Td, THead, TBody } = Table
-
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
-
 const Seller = () => {
     const [data, setData] = useState<User[]>([])
     const [totalData, setTotalData] = useState()
@@ -48,34 +40,35 @@ const Seller = () => {
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [accessDenied, setAccessDenied] = useState(false)
 
-    const fetchData = async (page: number, pageSize: number) => {
-        try {
-            let filterParam = ''
-            if (globalFilter) {
-                filterParam = `?mobile=${globalFilter}`
-            }
-
-            const response = await axiosInstance.get(`company/${selectedCompany.id}/users${filterParam}`)
-            const data = response.data.data
-            const total = response.data.data.length
-            if (globalFilter) {
-                setData([data])
-            } else {
-                setData(data)
-            }
-            setTotalData(total)
-        } catch (error: any) {
-            if (error.response.status === 403 || error.response.status === 401) {
-                setAccessDenied(true)
-            }
-            console.error(error)
-        }
-    }
-
-    console.log('ssdsds', totalData)
-
     useEffect(() => {
-        fetchData(page, pageSize)
+        const fetchData = async () => {
+            try {
+                let filterParam = ''
+                if (globalFilter) {
+                    filterParam = `?mobile=${globalFilter}`
+                }
+
+                const response = await axiosInstance.get(`company/${selectedCompany.id}/users${filterParam}`)
+                const data = response.data.data
+                const total = response.data.data.length
+                if (globalFilter) {
+                    setData([data])
+                } else {
+                    setData(data)
+                }
+                setTotalData(total)
+                setAccessDenied(false)
+            } catch (error: unknown) {
+                if (error instanceof AxiosError) {
+                    if (globalFilter.length > 9 && (error?.response?.status === 403 || error?.response?.status === 401)) {
+                        setAccessDenied(true)
+                    }
+                } else {
+                    console.error(error)
+                }
+            }
+        }
+        fetchData()
     }, [page, pageSize, selectedCompany.id, globalFilter])
     const paginatedData = data?.slice((page - 1) * pageSize, page * pageSize)
 
@@ -120,42 +113,18 @@ const Seller = () => {
         [],
     )
 
-    const table = useReactTable({
-        data: paginatedData,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        pageCount: Math.ceil(totalData ?? 0 / pageSize),
-        manualPagination: true,
-        state: {
-            pagination: {
-                pageIndex: page - 1,
-                pageSize: pageSize,
-            },
-            globalFilter,
-        },
-        onPaginationChange: ({ pageIndex, pageSize }) => {
-            setPage(pageIndex + 1)
-            setPageSize(pageSize)
-        },
-    })
-
     const onPaginationChange = (page: number) => {
         setPage(page)
     }
 
     const onSelectChange = (value = 0) => {
+        setPage(1)
         setPageSize(Number(value))
     }
 
     const handleSeller = () => {
         navigate('/app/users/addNew')
     }
-    if (accessDenied) {
-        return <AccessDenied />
-    }
-
     return (
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
@@ -164,8 +133,8 @@ const Seller = () => {
                         type="search"
                         placeholder="Search here"
                         value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
                         className="p-2 border rounded"
+                        onChange={(e) => setGlobalFilter(e.target.value)}
                     />
                 </div>
                 <div className="flex items-end justify-end mb-4 order-first xl:order-none">
@@ -174,40 +143,25 @@ const Seller = () => {
                     </button>{' '}
                 </div>
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-            <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
-                    />
-                </div>
-            </div>
+            {accessDenied ? (
+                <AccessDenied />
+            ) : (
+                <>
+                    <EasyTable mainData={paginatedData} columns={columns} page={page} pageSize={pageSize} />
+                    <div className="flex items-center justify-between mt-4">
+                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
+                        <div style={{ minWidth: 130 }}>
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                options={pageSizeOptions}
+                                onChange={(option) => onSelectChange(option?.value)}
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     )
 }
