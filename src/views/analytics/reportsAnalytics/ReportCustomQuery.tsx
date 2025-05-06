@@ -68,9 +68,9 @@ const ReportCustomQuery = () => {
     const totalPages = Math.ceil(customReportData.length / pageSize)
 
     return (
-        <div>
-            <FormItem label="Custom Query" labelClass="!justify-start" className="col-span-1 w-full">
-                <RichTextEditor value={value} onChange={(e) => setValue(e)} />
+        <div className="mt-5">
+            <FormItem label="" labelClass="!justify-start" className="col-span-1 w-full">
+                <RichTextEditor value={value} onChange={(e) => setValue(e)} placeholder="Enter Custom Query" />
             </FormItem>
             <div>
                 <button
