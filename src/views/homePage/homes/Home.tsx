@@ -10,7 +10,6 @@ import { HiCurrencyRupee, HiUserGroup } from 'react-icons/hi'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import BrandDataChart from '../homeChart/BubbleChart'
-import MultipleMap from '@/common/multipleMap'
 import { MdDeliveryDining, MdOutlinePendingActions } from 'react-icons/md'
 import { PiDevicesFill } from 'react-icons/pi'
 import { FaMoneyBillTrendUp } from 'react-icons/fa6'
@@ -21,8 +20,8 @@ import { IoBagCheck } from 'react-icons/io5'
 import { Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import UserMap from '@/views/analytics/userAnalytics/UserMap'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
+import HomepageMaps from './componentsHomes/HomepageMaps'
 
 const HomeCalculations = (homeData: any) => {
     const netSales =
@@ -56,7 +55,6 @@ const HomeCalculations = (homeData: any) => {
 }
 
 const Home = () => {
-    const [orders, setOrders] = useState<any[]>([])
     const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
@@ -86,23 +84,6 @@ const Home = () => {
             console.log('Error fetching data:', error)
         }
     }
-
-    const fetchOrderForLocation = async () => {
-        try {
-            const response = await axiosInstance.get(`/merchant/orders?location_data=true&from=${from}&to=${To_Date}`)
-            const ordersData = response.data?.data
-            setOrders(ordersData)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchOrderForLocation()
-    }, [from, to])
 
     useEffect(() => {
         const handleVisibilityChange = () => {
@@ -416,22 +397,7 @@ const Home = () => {
                         </TabList>
                     </Tabs>
 
-                    {activeTab === 'orders' && (
-                        <div className="bg-white p-6 rounded-xl shadow-md">
-                            <MultipleMap
-                                latitudes={orders.map((item) => item.latitude || [])}
-                                longitudes={orders.map((item) => item.longitude || [])}
-                                amount={orders.map((item) => item.amount || [])}
-                                currentStatus={orders.map((item) => item.status || [])}
-                                currentInvoice={orders.map((item) => item.invoice_id || [])}
-                            />
-                        </div>
-                    )}
-                    {activeTab === 'users' && (
-                        <div className="bg-white p-6 rounded-xl shadow-md mt-10">
-                            <UserMap from={from} to={To_Date} />
-                        </div>
-                    )}
+                    <HomepageMaps activeTab={activeTab} from={from} to={to} setAccessDenied={setAccessDenied} />
                 </div>
             )}
         </div>
