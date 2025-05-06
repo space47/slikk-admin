@@ -3,16 +3,11 @@ import EasyTable from '@/common/EasyTable'
 import { Button, Pagination, Select } from '@/components/ui'
 import { pageSizeOptions } from '@/views/slikkLogistics/taskTracking/TaskCommonType'
 import moment from 'moment'
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 
 interface ReportTableProps {
     tableData: any[]
-    page: number
-    pageSize: number
-    orderCount?: number
     onPaginationChange?: any
-    setPageSize: any
-    setPage: any
     keyName?: any
     showSpinner?: any
     tableName?: any
@@ -24,7 +19,9 @@ type Option = {
     label: string
 }
 
-const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName, tableName, handleDownloadCsv }: ReportTableProps) => {
+const ReportTable = ({ tableData, keyName, tableName, handleDownloadCsv }: ReportTableProps) => {
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
     const paginatedData = tableData ? tableData?.slice((page - 1) * pageSize, page * pageSize) : []
     const totalPages = Math.ceil(tableData.length / pageSize)
 
@@ -47,12 +44,6 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName,
             },
         }))
     }, [tableData])
-
-    // useEffect(() => {
-    //     if (pageSize > 10) {
-    //         setPage(1)
-    //     }
-    // }, [])
 
     return (
         <div>
