@@ -23,12 +23,6 @@ interface ReportGraphComponentProps {
     selectedOption: any
     handleSelect: any
     handleDownloadCsv: any
-    page: any
-    pageSize: any
-    onPaginationChange: any
-    setPage: any
-    setPageSize: any
-    totalount: any
     showSpinner?: any
 }
 
@@ -43,12 +37,6 @@ const ReportGraphInput = ({
     setYAxisvalue,
     handleSelect,
     handleDownloadCsv,
-    page,
-    pageSize,
-    onPaginationChange,
-    setPage,
-    setPageSize,
-    totalount,
     showSpinner,
 }: ReportGraphComponentProps) => {
     const handleAxisValue = (axis: string, option: any, table: any) => {
@@ -77,19 +65,14 @@ const ReportGraphInput = ({
     }
 
     return dynamicReportTable.map((table, index) => {
+        console.log('table is', table?.data)
         return (
             <div key={index} className="mt-8 flex flex-col gap-24 ">
                 <ReportTable
                     showSpinner={showSpinner}
                     tableData={table?.data?.data}
                     keyName={table?.data.display_name}
-                    page={page}
                     tableName={table?.data?.name}
-                    pageSize={pageSize}
-                    onPaginationChange={onPaginationChange}
-                    orderCount={totalount}
-                    setPage={setPage}
-                    setPageSize={setPageSize}
                     handleDownloadCsv={handleDownloadCsv}
                 />
 
