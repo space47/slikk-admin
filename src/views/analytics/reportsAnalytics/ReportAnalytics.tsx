@@ -36,9 +36,6 @@ const ReportAnalytics = () => {
     const [showDataBelow, setShowDataBelow] = useState(false)
     const [dynamicReportTable, setDynamicReportTable] = useState<any[]>([])
     const [showTable, setShowTable] = useState(false)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [totalount, setTotalCount] = useState(0)
     const [xAxisValue, setXAxisvalue] = useState('')
     const [yAxisValue, setYAxisvalue] = useState('')
     const [yAxisValue2, setYAxisvalue2] = useState('')
@@ -101,7 +98,7 @@ const ReportAnalytics = () => {
         try {
             const response = await axioisInstance.get(`/query/config?name=${storeName}`)
             const dataxx = response?.data?.data?.results
-            const data = dataxx?.find((item) => item?.name.toLowerCase() === storeName?.toLowerCase())
+            const data = dataxx?.find((item: any) => item?.name.toLowerCase() === storeName?.toLowerCase())
             const formattedData = {
                 name: data?.name || '',
                 value: data?.value || '',
@@ -208,7 +205,6 @@ const ReportAnalytics = () => {
             })
 
             setDynamicReportTable(tab)
-            setTotalCount(tab.length)
             setShowTable(true)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
@@ -232,11 +228,7 @@ const ReportAnalytics = () => {
         if (currentValues) {
             fetchTable(currentValues)
         }
-    }, [page, pageSize])
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
+    }, [])
 
     const handleSelect = (value: string) => {
         setSelectedOption(value)
@@ -283,29 +275,33 @@ const ReportAnalytics = () => {
                 {({ values, resetForm, setFieldValue }) => (
                     <Form className=" w-full p-6  bg-white shadow-lg rounded-lg">
                         <FormContainer className="">
-                            <div className="flex justify-between">
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                                    {!isCustomQuery && (
+                            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 p-4 bg-white shadow-md rounded-2xl">
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full">
+                                    {!isCustomQuery ? (
+                                        <FormItem className="font-medium text-gray-800">
+                                            <label className="text-lg xl:text-xl font-semibold text-gray-800 mb-2">
+                                                Select Target Page
+                                            </label>
+                                            <Field name="target_page">
+                                                {({ field, form }: FieldProps) => (
+                                                    <Select
+                                                        isClearable
+                                                        placeholder="Select Target Page"
+                                                        options={reportQueryNames}
+                                                        value={reportQueryNames?.find((option) => option.value === field.value)}
+                                                        onChange={(option: any) => {
+                                                            form.setFieldValue(field.name, option?.value)
+                                                            setStoreName(option?.value)
+                                                            setShowTable(false)
+                                                        }}
+                                                        className="w-full mt-3 rounded-xl border-gray-300 shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition"
+                                                    />
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    ) : (
                                         <>
-                                            <FormItem className="font-semibold text-gray-700">
-                                                <div className="flex font-bold text-gray-700 text-xl xl:mb-5">Select Target Page</div>
-                                                <Field name="target_page">
-                                                    {({ field, form }: FieldProps) => (
-                                                        <Select
-                                                            isClearable
-                                                            placeholder="Select Target Page"
-                                                            options={reportQueryNames}
-                                                            value={reportQueryNames?.find((option) => option.value === field.value)}
-                                                            onChange={(option: any) => {
-                                                                form.setFieldValue(field.name, option?.value)
-                                                                setStoreName(option?.value)
-                                                                setShowTable(false)
-                                                            }}
-                                                            className="w-full border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </FormItem>
+                                            <div className="text-xl font-bold">Add the Custom Query</div>
                                         </>
                                     )}
                                 </div>
@@ -313,8 +309,10 @@ const ReportAnalytics = () => {
                                 <div>
                                     <button
                                         type="button"
-                                        className={`text-white p-2 rounded-xl font-bold disabled:cursor-not-allowed disabled:opacity-50 ${
-                                            isCustomQuery ? 'bg-red-600 hover:bg-red-500' : 'bg-green-600 hover:bg-green-500'
+                                        className={`px-5 py-2 text-base font-semibold rounded-xl transition-all duration-200 shadow-sm text-white disabled:cursor-not-allowed disabled:opacity-50 ${
+                                            isCustomQuery
+                                                ? 'bg-red-500 hover:bg-red-400 focus:ring-2 focus:ring-red-300'
+                                                : 'bg-green-500 hover:bg-green-400 focus:ring-2 focus:ring-green-300'
                                         }`}
                                         onClick={() => setIsCustomQuery((Prev) => !Prev)}
                                         disabled={showDataBelow}
@@ -336,6 +334,13 @@ const ReportAnalytics = () => {
                                     reportQueryArray={reportQueryArray}
                                 />
                             </div>
+                        )}
+                        {!showDataBelow && !isCustomQuery ? (
+                            <div className="mt-10 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md shadow-sm">
+                                <p className="text-sm">Please select the required page to generate the report.</p>
+                            </div>
+                        ) : (
+                            ''
                         )}
                     </Form>
                 )}
@@ -368,12 +373,6 @@ const ReportAnalytics = () => {
                     setYAxisvalue2={setYAxisvalue2}
                     handleSelect={handleSelect}
                     handleDownloadCsv={handleDownloadCsv}
-                    page={page}
-                    pageSize={pageSize}
-                    onPaginationChange={onPaginationChange}
-                    setPage={setPage}
-                    setPageSize={setPageSize}
-                    totalount={totalount}
                     showSpinner={showSpinner}
                 />
             ) : (
