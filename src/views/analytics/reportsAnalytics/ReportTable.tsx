@@ -48,11 +48,11 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName,
         }))
     }, [tableData])
 
-    useEffect(() => {
-        if (pageSize > 10) {
-            setPage(1)
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (pageSize > 10) {
+    //         setPage(1)
+    //     }
+    // }, [])
 
     return (
         <div>
@@ -64,7 +64,7 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName,
                     </Button>
                 </div>
             </div>
-            <EasyTable mainData={paginatedData} columns={columns} overflow />
+            <EasyTable mainData={paginatedData} columns={columns} overflow page={page} pageSize={pageSize} />
 
             <div className="flex items-center justify-between mt-4">
                 <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
@@ -74,7 +74,10 @@ const ReportTable = ({ tableData, page, pageSize, setPage, setPageSize, keyName,
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => setPageSize(Number(option?.value))}
+                        onChange={(option) => {
+                            setPage(1)
+                            setPageSize(Number(option?.value))
+                        }}
                     />
                 </div>
             </div>
