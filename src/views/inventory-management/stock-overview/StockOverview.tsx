@@ -53,6 +53,7 @@ const StockOverview = () => {
     const locationInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const qtyInputRef = useRef<{ [key: number]: HTMLInputElement | null }>({})
     const [isDownloading, setIsDownloading] = useState(false)
+    const [stockCount, setStockCount] = useState(0)
 
     const fetchAndFilterData = async () => {
         try {
@@ -74,6 +75,7 @@ const StockOverview = () => {
 
             setData(data)
             setTotalData(total)
+            setStockCount(response?.data.stock_count)
         } catch (error: any) {
             if (error.response && error.response.status === 403) {
                 setAccessDenied(true)
@@ -396,6 +398,11 @@ const StockOverview = () => {
 
     return (
         <div className="p-4">
+            <div className="flex mb-7 items-center gap-2 p-3 bg-gray-100 border border-gray-300 rounded-lg shadow-sm">
+                <span className="text-gray-700 text-lg font-bold">Stock Count:</span>
+                <span className="text-gray-900 font-semibold text-lg">{stockCount || 0}</span>
+            </div>
+
             <div className="upper flex flex-col md:flex-row justify-between mb-5 items-center">
                 <button
                     className="xl:hidden bg-gray-100 text-black px-5 py-2 hover:bg-gray-200 rounded-lg flex mb-4 justify-end items-end"
