@@ -21,15 +21,21 @@ const PaginationTable = () => {
     const [accessDenied, setAccessDenied] = useState(false)
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [globalFilter, setGlobalFilter] = useState<any>('')
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+    const [companyCode, setCompanyCode] = useState<any>()
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
             let filter = ''
+            let code = ''
             if (globalFilter) {
                 filter = `&document_number=${globalFilter}`
             }
+            if (companyCode) {
+                code = `&company_code=${companyCode}`
+            }
             const response = await axiosInstance.get(
-                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}${filter}`, // &company_id
+                `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}${filter}${code}`, // &company_id
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -45,7 +51,7 @@ const PaginationTable = () => {
 
     useEffect(() => {
         fetchData(page, pageSize)
-    }, [page, pageSize, selectedCompany, globalFilter])
+    }, [page, pageSize, selectedCompany, globalFilter, companyCode])
 
     const getowner = (own: any) => {
         if (own === true) {
@@ -162,15 +168,37 @@ const PaginationTable = () => {
     return (
         <div>
             <div className=" flex gap-6 justify-between mb-5">
-                <div>
-                    <input
-                        type="search"
-                        value={globalFilter}
-                        placeholder="Search by document No."
-                        className="rounded-lg"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
-                    />
+                <div className="flex gap-3 shadow-md p-4 rounded-md bg-white w-full max-w-xl">
+                    <div>
+                        <div className="font-bold">Search</div>
+                        <input
+                            type="search"
+                            value={globalFilter}
+                            placeholder="Search by document No."
+                            className="rounded-lg"
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    <div className={' w-full'}>
+                        <div className="font-bold">Select Company</div>
+                        <div>
+                            <div className="flex flex-col gap-2 w-full max-w-md">
+                                <Select
+                                    isClearable
+                                    className="w-full  rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+                                    options={companyList}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) => option.id}
+                                    onChange={(newVal) => {
+                                        console.log(newVal)
+                                        setCompanyCode(newVal?.code)
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
                 <div className="">
                     <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleGRN}>
                         ADD NEW GRN
