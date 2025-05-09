@@ -25,7 +25,12 @@ export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_ty
         return { buttonText: 'MARK AS SHIPPED', modalContent: 'Mark as Shipped' }
     }
     if (lastLogStatus === 'RTO_DELIVERED' && !isOrderDone && !isOrderCancelled) {
-        return { buttonText: 'CANCEL', modalContent: 'CANCEL' }
+        return {
+            buttonText: 'OUT FOR DELIVERY',
+            // secondaryButtonText: 'CANCEL',
+            modalContent: 'Out for Delivery',
+            // secondaryButtonContent: 'Cancel',
+        }
     }
     if (isDriverAssigned && isPacked && mainData?.delivery_type !== 'STANDARD' && !isOrderDone && !isOrderCancelled) {
         return { buttonText: 'OUT FOR DELIVERY', modalContent: 'Out for Delivery' }
@@ -42,7 +47,6 @@ export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_ty
         return { buttonText, modalContent: buttonText.replace('MARK AS ', '') }
     }
     if (isOrderDone && delivery_type === 'EXCHANGE' && !isExchangeComplete) {
-        console.log('yhis statw')
         return { buttonText: 'EXCHANGE DELIVERED', modalContent: 'Exchange Delivered' }
     }
     if (lastLogStatus === 'PACKED') {
@@ -58,7 +62,7 @@ export const getButtonAndModalContent = (data: Event[], mainData?: { delivery_ty
         return { buttonText: '' }
     }
 
-    return { buttonText: '', modalContent: '' }
+    return { buttonText: '', modalContent: '', secondaryButtonText: '', secondaryButtonContent: '' }
 }
 
 export const particularApiCall = async (

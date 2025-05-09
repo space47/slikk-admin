@@ -6,7 +6,7 @@ import { ParametersArray } from './createNotification/createNotification.common'
 
 interface props {
     values: any
-    messageParticular: any
+    messageParticular?: any
 }
 
 const WhatsAppForm = ({ values, messageParticular }: props) => {
