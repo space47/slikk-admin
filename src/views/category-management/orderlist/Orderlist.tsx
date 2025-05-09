@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useRef, useState } from 'react'
+import { SetStateAction, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Pagination from '@/components/ui/Pagination'
@@ -61,40 +61,49 @@ const OrderList = () => {
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [tabSelect, setTabSelect] = useState('all')
     const [isDownloading, setIsDownloading] = useState(false)
-
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
     }
 
-    const fetchOrders = async () => {
+    const extraFilters = () => {
+        const status = dropdownStatus?.value?.length > 0 ? `&status=${dropdownStatus.value}` : getStatusFilter(tabSelect)
+        const deliveryStatus =
+            tabSelect === 'exchange' ? `&delivery_type=EXCHANGE` : deliveryType?.value?.length ? `&delivery_type=${deliveryType.value}` : ''
+
+        const paymentStatus = paymentType?.value?.length ? `&payment_mode=${paymentType.value}` : ''
+
+        const filterParams = searchInput
+            ? currentSelectedPage.value === 'invoice'
+                ? `&invoice_id=${searchInput}`
+                : currentSelectedPage.value === 'mobile'
+                  ? `&mobile=${searchInput}`
+                  : ''
+            : `p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
+
+        return { status, deliveryStatus, paymentStatus, filterParams }
+    }
+
+    const fetchApiCall = async (): Promise<{ ordersData: any[]; orderCount: number }> => {
         try {
-            const status = dropdownStatus?.value?.length > 0 ? `&status=${dropdownStatus.value}` : getStatusFilter(tabSelect)
-            const deliveryStatus =
-                tabSelect === 'exchange'
-                    ? `&delivery_type=EXCHANGE`
-                    : deliveryType?.value?.length
-                      ? `&delivery_type=${deliveryType.value}`
-                      : ''
-
-            const paymentStatus = paymentType?.value?.length ? `&payment_mode=${paymentType.value}` : ''
-
-            const filterParams = searchInput
-                ? currentSelectedPage.value === 'invoice'
-                    ? `&invoice_id=${searchInput}`
-                    : currentSelectedPage.value === 'mobile'
-                      ? `&mobile=${searchInput}`
-                      : ''
-                : `p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
-
+            const { status, deliveryStatus, paymentStatus, filterParams } = extraFilters()
             const response = await axiosInstance.get(`/merchant/orders?${filterParams}${status}${deliveryStatus}${paymentStatus}`)
             const ordersData = response.data?.data.results
             const orderCount = response.data?.data.count
+            return { ordersData, orderCount }
+        } catch (error) {
+            console.error(error)
+            return { ordersData: [], orderCount: 0 }
+        }
+    }
 
+    const fetchOrders = async () => {
+        try {
+            const { ordersData, orderCount } = await fetchApiCall()
             setOrders(ordersData)
             setOrderCount(orderCount)
-            if (ordersData?.length === 0 || ordersData?.length === 0) {
+            if (ordersData?.length === 0) {
                 setShowNoData(true)
             } else {
                 setShowNoData(false)
@@ -106,28 +115,7 @@ const OrderList = () => {
 
     const checkingNewOrders = async () => {
         try {
-            const status = dropdownStatus?.value?.length > 0 ? `&status=${dropdownStatus.value}` : getStatusFilter(tabSelect)
-            const deliveryStatus =
-                tabSelect === 'exchange'
-                    ? `&delivery_type=EXCHANGE`
-                    : deliveryType?.value?.length
-                      ? `&delivery_type=${deliveryType.value}`
-                      : ''
-
-            const paymentStatus = paymentType?.value?.length ? `&payment_mode=${paymentType.value}` : ''
-
-            const filterParams = searchInput
-                ? currentSelectedPage.value === 'invoice'
-                    ? `&invoice_id=${searchInput}`
-                    : currentSelectedPage.value === 'mobile'
-                      ? `&mobile=${searchInput}`
-                      : ''
-                : `p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}`
-
-            const response = await axiosInstance.get(`/merchant/orders?${filterParams}${status}${deliveryStatus}${paymentStatus}`)
-            const ordersData = response.data?.data.results
-            const orderCount = response.data?.data.count
-
+            const { ordersData, orderCount } = await fetchApiCall()
             if (previousOrders.current.length > 0) {
                 const latestPreviousOrderDate = new Date(
                     Math.max(...previousOrders.current.map((order) => new Date(order.create_date)?.getTime())),
@@ -139,9 +127,7 @@ const OrderList = () => {
                     setSoundEnabled(true)
                 }
             }
-
             previousOrders.current = ordersData
-
             setOrders(ordersData)
             setOrderCount(orderCount)
         } catch (error) {
@@ -149,17 +135,23 @@ const OrderList = () => {
         }
     }
 
+    const noFilterFunc = (isCheck: boolean) => {
+        const noFilters = isCheck
+            ? page !== 1
+            : page === 1 &&
+              !dropdownStatus.value.length &&
+              !searchInput &&
+              !deliveryType.value.length &&
+              !paymentType.value.length &&
+              numberClick === false
+        return noFilters
+    }
+
     useEffect(() => {
         if (!numberClick) {
             fetchOrders()
         }
-        const noFilters =
-            page === 1 &&
-            !dropdownStatus.value.length &&
-            !searchInput &&
-            !deliveryType.value.length &&
-            !paymentType.value.length &&
-            numberClick === false
+        const noFilters = noFilterFunc(false)
 
         if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
@@ -173,14 +165,7 @@ const OrderList = () => {
 
     useEffect(() => {
         checkingNewOrders()
-
-        const noFilters =
-            page !== 1 &&
-            !dropdownStatus.value.length &&
-            !searchInput &&
-            !deliveryType.value.length &&
-            !paymentType.value.length &&
-            numberClick === false
+        const noFilters = noFilterFunc(true)
 
         if (noFilters && (tabSelect === 'all' || tabSelect === 'pending')) {
             const interval = setInterval(() => {
@@ -245,42 +230,18 @@ const OrderList = () => {
         }
     }
 
-    const handleDeliverySelect = (selectedValue: string) => {
-        if (deliveryType.value.includes(selectedValue)) {
-            setDeliveryType((prevState) => ({
+    const handleSelectFilters = (
+        values: DropdownStatus,
+        setValues: (value: SetStateAction<DropdownStatus>) => void,
+        selectedValue: string,
+    ) => {
+        if (values.value.includes(selectedValue)) {
+            setValues((prevState) => ({
                 ...prevState,
                 value: prevState.value.filter((item) => item !== selectedValue),
             }))
         } else {
-            setDeliveryType((prevState) => ({
-                ...prevState,
-                value: [...prevState.value, selectedValue],
-            }))
-        }
-    }
-
-    const handlePaymentSelect = (selectedValue: string) => {
-        if (paymentType.value.includes(selectedValue)) {
-            setPaymentType((prevState) => ({
-                ...prevState,
-                value: prevState.value.filter((item) => item !== selectedValue),
-            }))
-        } else {
-            setPaymentType((prevState) => ({
-                ...prevState,
-                value: [...prevState.value, selectedValue],
-            }))
-        }
-    }
-
-    const handleDropdownSelect = (selectedValue: string) => {
-        if (dropdownStatus.value.includes(selectedValue)) {
-            setDropdownStatus((prevState) => ({
-                ...prevState,
-                value: prevState.value.filter((item) => item !== selectedValue),
-            }))
-        } else {
-            setDropdownStatus((prevState) => ({
+            setValues((prevState) => ({
                 ...prevState,
                 value: [...prevState.value, selectedValue],
             }))
@@ -366,6 +327,7 @@ const OrderList = () => {
                             <div className="flex  md:flex-row items-end justify-end ">
                                 <div className="mt-10 xl:mt-7">
                                     <button
+                                        disabled={isDownloading}
                                         className="bg-gray-700 text-white px-4 py-2 hover:bg-gray-600 rounded-lg mb-2 md:mb-0 md:mr-2  xl:flex xl:gap-1 dark:bg-gray-500 dark:text-white"
                                         onClick={() =>
                                             handleDownload(
@@ -379,7 +341,6 @@ const OrderList = () => {
                                                 setIsDownloading,
                                             )
                                         }
-                                        disabled={isDownloading}
                                     >
                                         <IoMdDownload className="text-xl md:text-xl font-extrabold hidden xl:flex" />
                                         <span className="flex gap-1 items-center">
@@ -391,15 +352,11 @@ const OrderList = () => {
                         </div>
                     </div>
                 </div>
-
                 <TabSelectOrder handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={orderCount || 0} />
-
-                <br />
-
                 {showNoData ? (
                     <NotFoundData />
                 ) : (
-                    <div className="border border-gray-300 p-2 rounded-xl hidden xl:block">
+                    <div className="border border-gray-300 p-2 rounded-xl hidden xl:block mt-6">
                         <RedMarkTable
                             mainData={orders}
                             page={page}
@@ -441,11 +398,11 @@ const OrderList = () => {
                     showFilter={showFilter}
                     handleFilterClose={() => setShowFilter(false)}
                     dropdownStatus={dropdownStatus}
-                    handleDropdownSelect={handleDropdownSelect}
+                    handleDropdownSelect={(val: any) => handleSelectFilters(dropdownStatus, setDropdownStatus, val)}
                     deliveryType={deliveryType}
-                    handleDeliverySelect={handleDeliverySelect}
+                    handleDeliverySelect={(val: any) => handleSelectFilters(deliveryType, setDeliveryType, val)}
                     paymentType={paymentType}
-                    handlePaymentSelect={handlePaymentSelect}
+                    handlePaymentSelect={(val: any) => handleSelectFilters(paymentType, setPaymentType, val)}
                     handleDateChange={handleDateChange}
                 />
             )}

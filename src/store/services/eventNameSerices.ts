@@ -18,5 +18,27 @@ export const eventNameService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+        editEventnames: builder.mutation<{ success: string }, { id?: number; name: string }>({
+            query: (params) => {
+                return {
+                    url: `/notification/event/${params.id}`,
+                    method: 'PATCH',
+                    body: {
+                        name: params.name,
+                    },
+                }
+            },
+        }),
+        addEventnames: builder.mutation<{ success: string }, { name: string }>({
+            query: (params) => {
+                return {
+                    url: `/notification/event`,
+                    method: 'POST',
+                    body: {
+                        name: params.name,
+                    },
+                }
+            },
+        }),
     }),
 })
