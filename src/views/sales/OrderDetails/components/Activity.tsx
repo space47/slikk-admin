@@ -21,7 +21,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     const [action, setAction] = useState('')
     const [triggerApiCall, setTriggerApiCall] = useState(false)
     const [triggerAcceptedCall, setTriggerAcceptedCall] = useState(false)
-    const [triggerpackCall, setTriggerpackCall] = useState(false)
+    const [triggerPackCall, setTriggerPackCall] = useState(false)
     const [triggerShipCall, setTriggerShipCall] = useState(false)
     const [triggerOutDeliveryCall, setTriggerOutDeliveryCall] = useState(false)
     const [triggerDeliveryCall, setTriggerDeliveryCall] = useState(false)
@@ -37,6 +37,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     const isDeliveryCreated = data.some((log) => log?.status === 'DELIVERY_CREATED')
     const isOrderDone = data.some((log) => log.status === 'DELIVERED' || log.status === 'COMPLETED')
     const isExchangeComplete = hasStatus('EXCHANGE_DELIVERED')
+    const [rtoCancel, setRtoCancel] = useState(false)
 
     const rejectData = mainData.order_items?.filter((item) => !fulfilledIDs.includes(item.id.toString()))?.map((item) => item.id)
 
@@ -99,7 +100,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         setButtonAfterClick(false)
                         Modal.confirm({
                             title: 'Confirm Quantity for Packing',
-                            content: 'The number of fullfilled quantity is less then actual quantity !',
+                            content: 'The number of fulfilled quantity is less then actual quantity !',
                             okText: 'Yes',
                             cancelText: 'No',
                             onOk: async () => {
@@ -181,11 +182,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     useEffect(() => {
         handleApiCall(triggerAcceptedCall, setTriggerAcceptedCall, false)
         handleApiCall(triggerOutDeliveryCall, setTriggerOutDeliveryCall, false)
-        handleApiCall(triggerpackCall, setTriggerpackCall, true)
+        handleApiCall(triggerPackCall, setTriggerPackCall, true)
         handleApiCall(triggerShipCall, setTriggerShipCall, false)
         handleApiCall(triggerDeliveryCall, setTriggerDeliveryCall, false)
         handleApiCall(triggerExchangeCall, setTriggerExchangeCall, false)
-    }, [triggerpackCall, triggerShipCall, triggerDeliveryCall, action, invoice_id, partner, navigate])
+    }, [triggerPackCall, triggerShipCall, triggerDeliveryCall, action, invoice_id, partner, navigate])
 
     const handlePartnerSelect = (selectedValue: any) => {
         const selectedLabel = LOGISTIC_PARTNER.find((item) => item.value === selectedValue)?.label || ''
@@ -194,7 +195,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
 
     const handleCancelOnRTO = async () => {
         const body = {
-            return_reason: 'RTO Cancell',
+            return_reason: 'RTO Cancel',
         }
         try {
             const response = await axiosInstance.post(`merchant/cancelorder/${invoice_id}`, body)
@@ -215,7 +216,6 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
     }
 
     const { buttonText, modalContent: content } = getButtonAndModalContent(data, mainData, delivery_type)
-    console.log('current button text', buttonText)
 
     return (
         <Card className="mb-10 flex flex-col">
@@ -246,9 +246,18 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                 </Button>
             ) : (
                 buttonText && (
-                    <Button variant="solid" onClick={() => showModal(content)}>
-                        {buttonText}
-                    </Button>
+                    <div className="flex flex-col gap-3 items-center">
+                        <Button variant="solid" onClick={() => showModal(content)}>
+                            {buttonText}
+                        </Button>
+                        <div>
+                            {data[data.length - 1]?.status === 'RTO_DELIVERED' && (
+                                <Button onClick={() => setRtoCancel(true)} className="ml-2" variant="reject">
+                                    Cancel
+                                </Button>
+                            )}
+                        </div>
+                    </div>
                 )
             )}
 
@@ -299,7 +308,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     isModalOpen={isModalOpen}
                     handlePack={() => {
                         setAction('CREATE_DELIVERY')
-                        setTriggerpackCall(true)
+                        setTriggerPackCall(true)
                         setButtonAfterClick(true)
                     }}
                     handleClose={() => setIsModalOpen(false)}
@@ -389,10 +398,11 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                     isButtonClick={buttonAfterClick}
                 />
             )}
-            {buttonText === 'CANCEL' && (
+
+            {rtoCancel && (
                 <Modal
                     title=""
-                    open={isModalOpen}
+                    open={rtoCancel}
                     okText="CANCEL"
                     cancelText="CANCEL"
                     okButtonProps={{
@@ -403,7 +413,7 @@ const Activity = ({ data = [], status, product = [], payment, invoice_id, mainDa
                         },
                     }}
                     onOk={handleCancelOnRTO}
-                    onCancel={() => setIsModalOpen(false)}
+                    onCancel={() => setRtoCancel(false)}
                 >
                     <h1 className="text-center text-lg font-bold text-red-600">CANCEL ORDER</h1>
                     <p className="text-center text-xl font-semibold mb-10">Are you sure you want to Cancel this order</p>

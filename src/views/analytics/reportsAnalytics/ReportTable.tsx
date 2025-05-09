@@ -34,11 +34,38 @@ const ReportTable = ({ tableData, keyName, tableName, handleDownloadCsv }: Repor
             cell: ({ getValue }: any) => {
                 const value = getValue()
                 if (key.toLowerCase().includes('date')) {
-                    console.log('Date identified')
                     return <span>{moment(value).utcOffset(330).format('YYYY-MM-DD hh:mm:ss a')}</span>
                 }
                 if (key.toLowerCase().includes('image')) {
                     return <img src={value?.split(',')[0] || value} alt="Image" className="w-24 h-20 object-cover cursor-pointer" />
+                }
+                if (key.toLowerCase().includes('return_order_id')) {
+                    return (
+                        <span>
+                            <a
+                                href={`/app/returnOrders/${value}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white bg-red-600 rounded-xl p-3"
+                            >
+                                {value}
+                            </a>
+                        </span>
+                    )
+                }
+                if (key.toLowerCase().includes('invoice_id')) {
+                    return (
+                        <span>
+                            <a
+                                href={`/app/orders/${value}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white bg-red-600 rounded-xl p-3"
+                            >
+                                {value}
+                            </a>
+                        </span>
+                    )
                 }
                 return <span>{value}</span>
             },
@@ -55,7 +82,9 @@ const ReportTable = ({ tableData, keyName, tableName, handleDownloadCsv }: Repor
                     </Button>
                 </div>
             </div>
-            <EasyTable mainData={paginatedData} columns={columns} overflow page={page} pageSize={pageSize} />
+            <div className="border border-gray-300 p-4 rounded-xl">
+                <EasyTable mainData={paginatedData} columns={columns} overflow page={page} pageSize={pageSize} />
+            </div>
 
             <div className="flex items-center justify-between mt-4">
                 <Pagination currentPage={page} total={totalPages} onChange={(page) => setPage(page)} />
