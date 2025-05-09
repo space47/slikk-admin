@@ -18,6 +18,9 @@ import WhatsAppForm from '../WhatsAppForm'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { EventNamesSliceType, setEventNamesData } from '@/store/slices/eventNameSlice/eventName.slice'
 import { eventNameService } from '@/store/services/eventNameSerices'
+import EventNamesModal from '../EventNamesModal'
+import EditEventNamesModal from '../EditEventNameModal'
+import { FaEdit, FaPlusCircle } from 'react-icons/fa'
 
 const EditNotification = () => {
     const dispatch = useAppDispatch()
@@ -26,7 +29,7 @@ const EditNotification = () => {
     const [messageTemplateData, setMessageTemplateData] = useState<any>([])
     const [messageParticular, setMessageParticular] = useState<any>({})
     const [selectedTemplateName, setSelectedTemplateName] = useState<string>()
-
+    const [isModalOpen, setIsModalOpen] = useState({ add: false, edit: false })
     const { eventNamesData } = useAppSelector<EventNamesSliceType>((state) => state.eventNames)
 
     const { data: eventNameList, isSuccess } = eventNameService.useEventNamesDataQuery({})
@@ -248,6 +251,14 @@ const EditNotification = () => {
 
                                 <FormItem>
                                     <FormItem asterisk label="EVENT NAMES" className="col-span-1 w-1/2">
+                                        <div className="flex items-center gap-2 mb-5">
+                                            <span onClick={() => setIsModalOpen({ ...isModalOpen, add: true })}>
+                                                <FaPlusCircle className="text-xl text-green-500 cursor-pointer" />
+                                            </span>
+                                            <span onClick={() => setIsModalOpen({ ...isModalOpen, edit: true })}>
+                                                <FaEdit className="text-xl text-blue-600 cursor-pointer" />
+                                            </span>
+                                        </div>
                                         <Field name="event_name">
                                             {({ field, form }: FieldProps<any>) => {
                                                 return (
@@ -287,6 +298,10 @@ const EditNotification = () => {
                 </Formik>
             ) : (
                 <p>Loading...</p>
+            )}
+            {isModalOpen.add && <EventNamesModal dialogIsOpen={isModalOpen.add} setIsOpen={setIsModalOpen} />}
+            {isModalOpen.edit && (
+                <EditEventNamesModal dialogIsOpen={isModalOpen.edit} setIsOpen={setIsModalOpen} eventNamesData={eventNamesData} />
             )}
         </div>
     )

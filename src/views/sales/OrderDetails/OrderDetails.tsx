@@ -141,7 +141,7 @@ const OrderDetails = () => {
     }
 
     return (
-        <Container className="p-4 xl:px-10">
+        <Container className="p-4 xl:px-10 overflow-scroll scrollbar-hide ">
             <Loading loading={loading}>
                 {!isEmpty(data) && (
                     <>
