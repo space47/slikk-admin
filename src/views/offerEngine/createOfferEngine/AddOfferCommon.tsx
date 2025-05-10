@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
 import { offerFormArray } from '../offerEngineCommon'
 import { Field, FieldProps } from 'formik'
 import { MdCancel } from 'react-icons/md'
@@ -100,7 +100,7 @@ const AddOfferCommon = ({
                                 name={item?.name}
                                 type={item?.type}
                                 placeholder={`Enter ${item?.label}`}
-                                component={Input}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
                                 className="w-3/4"
                             />
                         </FormItem>

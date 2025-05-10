@@ -138,11 +138,20 @@ export const ShipmentDetailsColumns = (
                 },
             },
             {
+                header: 'QC failed',
+                accessorKey: 'qc_failed',
+                cell: ({ row }) => {
+                    const quantityReceived = row?.original?.quantity_received ?? 0
+                    const quantitySent = row?.original?.quantity_sent ?? 0
+                    return <div>{quantitySent - quantityReceived}</div>
+                },
+            },
+            {
                 header: 'Created Date',
                 accessorKey: 'create_date',
                 cell: ({ row }) => <span>{moment(row.original.create_date).format('DD-MM-YYYY')}</span>,
             },
         ],
-        [updatedQuantities],
+        [updatedQuantities, qtyInputRef],
     )
 }

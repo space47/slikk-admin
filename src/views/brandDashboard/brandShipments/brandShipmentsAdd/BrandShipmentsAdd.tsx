@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, Spinner, Steps } from '@/components/ui'
+import { Button, FormContainer, Progress, Spinner, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -17,6 +17,7 @@ const BrandShipmentsAdd = () => {
     const [currentStep, setCurrentStep] = useState(0)
     const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
     const [showSpinner, setShowSpinner] = useState(false)
+    const [shipmentItemsCount, setShipmentItemsCount] = useState(0)
 
     const initialValue = {}
 
@@ -29,10 +30,10 @@ const BrandShipmentsAdd = () => {
 
     const handleSubmit = async (values: any) => {
         try {
+            notification.info({ message: 'In Process' })
             const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
             const deliveryAddress = values?.delivery_address ? textChanger(values?.delivery_address) : ''
             const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
-            setShowSpinner(true)
             const body = {
                 company: selectedCompany?.currCompany?.id,
                 store: values?.store?.join(','),
@@ -54,19 +55,17 @@ const BrandShipmentsAdd = () => {
                 message: response?.data?.message || 'Successfully updated shipment',
             })
             const shipmentId = response?.data?.data?.id
-            console.log('shipmentId is', shipmentId)
 
             if (values?.csvArray?.length > 0) {
                 try {
+                    setShowSpinner(true)
                     notification.info({
                         message: 'CSV upload is in progress',
                     })
                     const formData = new FormData()
                     formData.append('shipment_items_file', values.csvArray[0])
                     formData.append('shipment_id', shipmentId)
-
                     await axioisInstance.post(`/shipment/bulkupload/items`, formData)
-
                     notification.success({
                         message: 'CSV uploaded successfully',
                     })
@@ -76,7 +75,36 @@ const BrandShipmentsAdd = () => {
                         message: 'Failed to upload CSV',
                     })
                     console.error(csvError)
+                } finally {
+                    setShowSpinner(false)
                 }
+
+                const checkForItemCount = async () => {
+                    const intervalId = setInterval(async () => {
+                        try {
+                            const response = await axioisInstance.get(`/product-shipment?view=detail&id=${shipmentId}`)
+                            const data = response?.data?.data?.results[0]
+                            setShipmentItemsCount(data?.upload_count)
+
+                            if (!data?.in_progress) {
+                                clearInterval(intervalId)
+                                notification.success({
+                                    message: 'CSV processing completed',
+                                })
+                                navigate(-1)
+                            }
+                        } catch (err) {
+                            console.error(err)
+                            clearInterval(intervalId)
+                            notification.error({
+                                message: 'Error while checking CSV processing status',
+                            })
+                        }
+                    }, 10000)
+                    return () => clearInterval(intervalId)
+                }
+
+                checkForItemCount()
             }
 
             return { id: shipmentId }
@@ -139,12 +167,12 @@ const BrandShipmentsAdd = () => {
                         </FormContainer>
                         <FormContainer className="flex justify-end mt-5 mb-9 xl:mb-0">
                             {currentStep > 0 && currentStep < 2 && (
-                                <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="pending" className="mr-2 bg-gray-600" onClick={handlePrevious}>
                                     Previous
                                 </Button>
                             )}
                             {currentStep < 2 && currentStep > 0 && (
-                                <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="accept" className="mr-2 bg-gray-600" onClick={handleNext}>
                                     Next
                                 </Button>
                             )}
@@ -152,16 +180,19 @@ const BrandShipmentsAdd = () => {
 
                         {currentStep === 0 && (
                             <FormContainer className="flex justify-end">
-                                <Button type="button" variant="accept" onClick={handleNext} className="mr-2 bg-gray-600">
+                                <Button type="button" variant="accept" className="mr-2 bg-gray-600" onClick={handleNext}>
                                     Next
                                 </Button>
                             </FormContainer>
                         )}
-
+                        <div className="mb-10 mt-10">
+                            <div className="text-xl font-bold mb-2">Items Uploaded</div>
+                            {shipmentItemsCount > 0 && <Progress percent={(shipmentItemsCount / values?.items_count) * 100} />}
+                        </div>
                         <FormContainer className="flex justify-end">
                             {currentStep === 2 && (
                                 <div className="flex">
-                                    <Button type="button" variant="pending" onClick={handlePrevious} className="mr-2 bg-gray-600">
+                                    <Button type="button" variant="pending" className="mr-2 bg-gray-600" onClick={handlePrevious}>
                                         Previous
                                     </Button>
                                     <div className="flex gap-20">

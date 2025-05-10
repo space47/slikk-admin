@@ -30,15 +30,10 @@ const BrandShipmentsTable = () => {
     useEffect(() => {
         const fetchShipmentDetails = async () => {
             try {
-                let filters = ''
-                if (globalFilter) {
-                    filters = `&shipment_id=${globalFilter}`
-                }
-
+                const filters = globalFilter ? `&shipment_id=${globalFilter}` : ''
                 const response = await axioisInstance.get(`/product-shipment?p=${page}&page_size=${pageSize}${filters}`)
                 const data = response?.data?.data?.results || []
                 const totalCount = response?.data?.data?.count || 0
-                console.log('data is', totalCount)
                 dispatch(setShipmentDetails(data))
                 dispatch(setCount(totalCount))
             } catch (error) {
@@ -48,8 +43,6 @@ const BrandShipmentsTable = () => {
 
         fetchShipmentDetails()
     }, [dispatch, page, pageSize, globalFilter, selectedCompany])
-
-    console.log('count is', count)
 
     const columns = BrandShipmentsColumns()
 

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, Spinner, Steps } from '@/components/ui'
+import { Button, FormContainer, Progress, Spinner, Steps } from '@/components/ui'
 import { Form, Formik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { handleimage } from '@/common/handleImage'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
@@ -14,10 +14,11 @@ import { useAppSelector } from '@/store'
 
 const BrandShipmentsEdit = () => {
     const { id } = useParams()
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
     const [shipmentData, setShipmentData] = useState<any>()
     const [currentStep, setCurrentStep] = useState(0)
     const selectedCompany = useAppSelector<USER_PROFILE_DATA>((store) => store.company)
+    const [shipmentItemsCount, setShipmentItemsCount] = useState(0)
     const [showSpinner, setShowSpinner] = useState(false)
 
     useEffect(() => {
@@ -33,6 +34,18 @@ const BrandShipmentsEdit = () => {
 
         fetchShipmentDetails()
     }, [id])
+
+    const fetchShipmentItemsCount = async (shipmentId: string | any) => {
+        try {
+            const response = await axioisInstance.get(`/product-shipment?view=detail&id=${shipmentId}`)
+            const data = response?.data?.data?.results[0]
+            setShipmentItemsCount(data?.upload_count)
+        } catch (error) {
+            console.error('Error fetching shipment details:', error)
+        }
+    }
+
+    console.log('shipmentItemsCount', shipmentItemsCount)
 
     const initialValue = {
         company: selectedCompany?.currCompany?.id,
@@ -64,7 +77,6 @@ const BrandShipmentsEdit = () => {
 
         try {
             const imageUpload = values?.itemsArray && values?.itemsArray.length > 0 ? await handleimage('product', values?.itemsArray) : ''
-
             const deliveryAddress = values?.delivery_address ? textChanger(values?.delivery_address) : ''
             const originAddress = values?.origin_address ? textChanger(values?.origin_address) : ''
             setShowSpinner(true)
@@ -95,13 +107,15 @@ const BrandShipmentsEdit = () => {
             })
             if (!values?.csvArray) {
                 console.log('navigate', values?.csvArray?.length)
-                navigate(-1)
+                // navigate(-1)
             }
             const shipmentId = response?.data?.data?.id
             console.log('shipmentId is', shipmentId)
 
             if (values?.csvArray?.length > 0) {
+                console.log('is res here')
                 try {
+                    setShowSpinner(true)
                     notification.info({
                         message: 'CSV upload is in progress',
                     })
@@ -109,17 +123,44 @@ const BrandShipmentsEdit = () => {
                     formData.append('shipment_items_file', values.csvArray[0])
                     formData.append('shipment_id', shipmentData?.id)
 
-                    await axioisInstance.post(`/shipment/bulkupload/items`, formData)
+                    const csvUploadPromise = axioisInstance.post(`/shipment/bulkupload/items`, formData)
+
+                    const checkForItemCount = async () => {
+                        const intervalId = setInterval(async () => {
+                            try {
+                                await fetchShipmentItemsCount(id)
+                            } catch (err) {
+                                console.error(err)
+                                clearInterval(intervalId)
+                                notification.error({
+                                    message: 'Error while checking CSV processing status',
+                                })
+                            }
+                        }, 10000)
+
+                        csvUploadPromise.finally(() => {
+                            clearInterval(intervalId)
+                        })
+                    }
+
+                    checkForItemCount()
+
+                    await csvUploadPromise
 
                     notification.success({
                         message: 'CSV uploaded successfully',
                     })
-                    navigate(-1)
-                } catch (csvError) {
-                    notification.error({
-                        message: 'Failed to upload CSV',
-                    })
+
+                    // navigate(-1)
+                } catch (csvError: any) {
+                    if (csvError?.response?.status === 400) {
+                        notification.error({
+                            message: 'Failed to upload CSV',
+                        })
+                    }
                     console.error(csvError)
+                } finally {
+                    setShowSpinner(false)
                 }
             }
 
@@ -200,6 +241,11 @@ const BrandShipmentsEdit = () => {
                                 </Button>
                             </FormContainer>
                         )}
+
+                        <div className="mb-10 mt-10">
+                            <div className="text-xl font-bold mb-2">Items Uploaded</div>
+                            {shipmentItemsCount > 0 && <Progress percent={(shipmentItemsCount / values?.items_count) * 100} />}
+                        </div>
 
                         <FormContainer className="flex justify-end">
                             {currentStep === 2 && (
