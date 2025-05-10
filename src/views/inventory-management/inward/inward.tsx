@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -10,6 +10,9 @@ import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, TableData } from './inwardCommon'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { InwardColumns } from './inwardUtils/InwardColumns'
+import { ColumnDef } from '@tanstack/react-table'
+import { FaEdit } from 'react-icons/fa'
+import moment from 'moment'
 
 const PaginationTable = () => {
     const [data, setData] = useState<TableData[]>([])
