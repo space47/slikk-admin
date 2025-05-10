@@ -8,6 +8,8 @@ export type EventSeriesSliceType = {
     count?: number
     from?: string
     to?: string
+    page?: number
+    pageSize?: number
 }
 
 const initialState: EventSeriesSliceType = {
@@ -15,6 +17,8 @@ const initialState: EventSeriesSliceType = {
     count: 0,
     from: moment().format('YYYY-MM-DD'),
     to: moment().format('YYYY-MM-DD'),
+    page: 1,
+    pageSize: 10,
 }
 
 const eventSeriesSlice = createSlice({
@@ -33,8 +37,14 @@ const eventSeriesSlice = createSlice({
         setTo: (state, action: PayloadAction<string>) => {
             state.to = action.payload
         },
+        setPage: (state, action: PayloadAction<number>) => {
+            state.page = action.payload
+        },
+        setPageSize: (state, action: PayloadAction<number>) => {
+            state.pageSize = action.payload
+        },
     },
 })
 
-export const { setEventSeriesData, setCount, setFrom, setTo } = eventSeriesSlice.actions
+export const { setEventSeriesData, setCount, setFrom, setTo, setPage, setPageSize } = eventSeriesSlice.actions
 export default eventSeriesSlice.reducer
