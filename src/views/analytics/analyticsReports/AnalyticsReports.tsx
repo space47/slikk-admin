@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
 import React, { useEffect, useState, useMemo } from 'react'
 import { HiOutlineCalendar } from 'react-icons/hi'
@@ -5,15 +6,13 @@ import DatePicker from '@/components/ui/DatePicker'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { BRAND_STATE } from '@/store/types/brand.types'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
-import { Select, Button, Pagination, Spinner } from '@/components/ui'
+import { Select, Button, Spinner } from '@/components/ui'
 import Table from '@/components/ui/Table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Item, REMITANCE } from '@/store/types/remitance.types'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
-import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { use } from 'i18next'
 import { notification } from 'antd'
 
 const { Tr, Th, Td, THead, TBody } = Table
@@ -27,10 +26,6 @@ const AnalyticsReports = () => {
     const [showOneMonthBack, setShowOneMonthBack] = useState(true)
     const [brandValue, setBrandValue] = useState<any | null>(null)
     const [accessDenied, setAccessDenied] = useState(false)
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const ToDate = moment(to).add(1, 'days').format('YYYY-MM-DD')
-    const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
     const [isDownloading, setIsDownloading] = useState(false)
     const [isRowDumpOrder, setIsRowDumpOrder] = useState(false)
     const [isRowDumpReturnOrder, setIsRowDumpReturnOrder] = useState(false)
@@ -44,7 +39,7 @@ const AnalyticsReports = () => {
     const fetchRemitance = async () => {
         try {
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
-            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}`)
+            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${to}${brandData}`)
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
             setRemitance(remitanceData)
@@ -88,14 +83,14 @@ const AnalyticsReports = () => {
         })
         try {
             const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
-            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}&download=true`, {
+            const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${to}${brandData}&download=true`, {
                 responseType: 'blob',
             })
 
             const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${ToDate}.csv`
+            link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${to}.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -114,19 +109,26 @@ const AnalyticsReports = () => {
         try {
             const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
-                `/merchant/order_items?download=true&download_type=master&from=${from}&to=${ToDate}${brandData}`,
+                `/merchant/order_items?download=true&download_type=master&from=${from}&to=${to}${brandData}`,
                 {
                     responseType: 'blob',
                 },
             )
+            const contentType = response.headers['content-type']
 
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${ToDate}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            if (contentType === 'text/csv') {
+                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = urlToBeDownloaded
+                link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${to}.csv`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            } else {
+                notification.success({
+                    message: response?.data?.message || 'CSV file downloaded successfully',
+                })
+            }
         } catch (error) {
             console.error('Error downloading CSV:', error)
         } finally {
@@ -142,19 +144,25 @@ const AnalyticsReports = () => {
         try {
             const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
             const response = await axiosInstance.get(
-                `/merchant/return_order_items?download=true&download_type=master&from=${from}&to=${ToDate}${brandData}`,
+                `/merchant/return_order_items?download=true&download_type=master&from=${from}&to=${to}${brandData}`,
                 {
                     responseType: 'blob',
                 },
             )
-
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${ToDate}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            const contentType = response.headers['content-type']
+            if (contentType === 'text/csv') {
+                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = urlToBeDownloaded
+                link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${to}.csv`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            } else {
+                notification.success({
+                    message: response?.data?.message || 'CSV file downloaded successfully',
+                })
+            }
         } catch (error) {
             console.error('Error downloading CSV:', error)
         } finally {
@@ -189,10 +197,10 @@ const AnalyticsReports = () => {
     }
 
     return (
-        <div className="p-6 ">
+        <div className="p-6 bg-white rounded-xl shadow-md">
             <div className="flex flex-col   gap-6">
                 {/* Date Pickers Section */}
-                <div className="flex flex-col xl:flex-row gap-4  xl:justify-between items-center ">
+                <div className="flex flex-col xl:flex-row gap-4  xl:justify-between items-center shadow-md p-4 rounded-md border border-gray-200 ">
                     <div className="flex flex-col xl:flex-row gap-3  xl:gap-8">
                         <div className="flex flex-col">
                             <label className="mb-2 font-semibold text-sm text-gray-700">
@@ -238,7 +246,7 @@ const AnalyticsReports = () => {
                 {/* Row Dumps....... */}
                 <hr />
                 <div>
-                    <h5>Dowmload Raw Dumps:</h5> <br />
+                    <h5>Download Raw Dumps:</h5> <br />
                     <div className="flex flex-col gap-4 xl:flex-row">
                         <div className="xl:mt-7">
                             <Button variant="new" onClick={handleOrderItem} disabled={isRowDumpOrder}>
@@ -273,9 +281,8 @@ const AnalyticsReports = () => {
                                 </span>
                             </Button>
                         </div>
-                        <div className="mb-3 flex gap-2">
-                            {' '}
-                            <span className="font-bold">TOTAL AMOUNT:</span> {fullRemitanceRespone?.total_amount}{' '}
+                        <div className="text-right font-semibold text-gray-700 mb-2">
+                            TOTAL AMOUNT: <span className="text-green-600">₹{fullRemitanceRespone?.total_amount.toFixed(2)}</span>
                         </div>
                         <Table className="min-w-full">
                             <THead>
