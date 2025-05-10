@@ -94,7 +94,8 @@ const AnalyticsReports = () => {
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
-        } catch (error) {
+        } catch (error: any) {
+            notification.error({ message: error?.response?.data?.message || 'Error downloading CSV' })
             console.error('Error downloading CSV:', error)
         } finally {
             setIsDownloading(false)
@@ -129,7 +130,8 @@ const AnalyticsReports = () => {
                     message: response?.data?.message || 'CSV file downloaded successfully',
                 })
             }
-        } catch (error) {
+        } catch (error: any) {
+            notification.error({ message: error?.response?.data.message || 'Error downloading CSV' })
             console.error('Error downloading CSV:', error)
         } finally {
             setIsRowDumpOrder(false)
@@ -163,7 +165,8 @@ const AnalyticsReports = () => {
                     message: response?.data?.message || 'CSV file downloaded successfully',
                 })
             }
-        } catch (error) {
+        } catch (error: any) {
+            notification.error({ message: error?.response.data.message || 'Error downloading CSV' })
             console.error('Error downloading CSV:', error)
         } finally {
             setIsRowDumpReturnOrder(false)
