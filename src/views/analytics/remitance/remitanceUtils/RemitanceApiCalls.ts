@@ -89,7 +89,8 @@ const RemitanceApis = ({
                 link.click()
                 document.body.removeChild(link)
             }
-        } catch (error) {
+        } catch (error: any) {
+            notification.error({ message: error?.response?.data?.message || 'Error downloading CSV' })
             console.error('Error downloading CSV:', error)
         }
     }
@@ -121,7 +122,8 @@ const RemitanceApis = ({
                 link.click()
                 document.body.removeChild(link)
             }
-        } catch (error) {
+        } catch (error: any) {
+            notification.error({ message: error?.response?.message || 'Error downloading CSV' })
             console.error('Error downloading CSV:', error)
         }
     }
