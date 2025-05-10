@@ -24,6 +24,7 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { notification } from 'antd'
 import { MdDelete } from 'react-icons/md'
+import { Checkbox } from '@/components/ui'
 
 const AddGroup = () => {
     const [csvFile, setCSVFile] = useState<any>()
@@ -91,7 +92,12 @@ const AddGroup = () => {
                                 <FormContainer className="grid grid-cols-2 gap-6">
                                     {headingGroup.map((item, key) => (
                                         <FormItem key={key} label={item.label} className={item.className}>
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                placeholder={item.placeholder}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                            />
                                         </FormItem>
                                     ))}
                                 </FormContainer>
@@ -112,7 +118,7 @@ const AddGroup = () => {
                                         <Field
                                             type="checkbox"
                                             name="allOpenCart"
-                                            component={Input}
+                                            component={Checkbox}
                                             className="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
                                     </FormItem>

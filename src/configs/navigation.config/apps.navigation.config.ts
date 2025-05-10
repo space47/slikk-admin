@@ -244,6 +244,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    // {
+                    //     key: 'appsVendorManagement.shipments',
+                    //     path: `${APP_PREFIX_PATH}/vendor/shipments`,
+                    //     title: 'Shipments',
+                    //     translateKey: 'nav.appsInventoryManagement.shipments',
+                    //     icon: '',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     subMenu: [],
+                    // },
                     {
                         key: 'appsVendorManagement.users',
                         path: `${APP_PREFIX_PATH}/vendor/users`,
@@ -529,6 +539,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         authority: [ADMIN, USER],
                         subMenu: [],
                     },
+                    // {
+                    //     key: 'appsAppSettings.eventSeries',
+                    //     path: `${APP_PREFIX_PATH}/appSettings/eventSeries`,
+                    //     title: 'Event',
+                    //     translateKey: 'nav.appsAppSettings.eventSeries',
+                    //     icon: '',
+                    //     type: NAV_ITEM_TYPE_ITEM,
+                    //     authority: [ADMIN, USER],
+                    //     subMenu: [],
+                    // },
                     {
                         key: 'appsOffers.markdownPrices',
                         path: `${APP_PREFIX_PATH}/markdownPrices`,

@@ -14,7 +14,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { URLARRAY, initialValueForUrl } from './urlShortner.common'
 import { MAXMINARRAY, OFFARRAY, UtmArray } from '../groupNotification/sendNotification/sendNotify.common'
 import FilterSelect, { targetPageArray } from './FilterSelect'
-import { Select } from '@/components/ui'
+import { Checkbox, Select } from '@/components/ui'
 
 const AddUrlShortner = () => {
     const navigate = useNavigate()
@@ -163,7 +163,12 @@ const AddUrlShortner = () => {
                             <FormContainer className="grid grid-cols-2 gap-10">
                                 {URLARRAY.slice(0, 1).map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                                        />
                                     </FormItem>
                                 ))}
 
@@ -190,7 +195,7 @@ const AddUrlShortner = () => {
                                 )}
 
                                 <FormItem label="App Only">
-                                    <Field type="checkbox" name="app" component={Input} />
+                                    <Field type="checkbox" name="app" component={Checkbox} />
                                 </FormItem>
                             </FormContainer>
 
@@ -200,7 +205,12 @@ const AddUrlShortner = () => {
                                 <FormContainer className="grid grid-cols-2 gap-6">
                                     {UtmArray.map((item, key) => (
                                         <FormItem key={key} label={item.label} className={item.classname}>
-                                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                            <Field
+                                                type={item.type}
+                                                name={item.name}
+                                                placeholder={item.placeholder}
+                                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                            />
                                         </FormItem>
                                     ))}
                                 </FormContainer>

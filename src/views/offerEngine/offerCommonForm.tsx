@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import { Button, Checkbox, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
 import React, { useEffect, useState } from 'react'
 import { offerFormArray } from './offerEngineCommon'
 import { Field, FieldProps } from 'formik'
@@ -70,7 +70,12 @@ const offerCommonForm = ({
                 {offerFormArray?.map((item, key) => {
                     return (
                         <FormItem key={key} label={item?.label}>
-                            <Field name={item?.name} type={item?.type} placeholder={`Enter ${item?.label}`} component={Input} />
+                            <Field
+                                name={item?.name}
+                                type={item?.type}
+                                placeholder={`Enter ${item?.label}`}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                            />
                         </FormItem>
                     )
                 })}

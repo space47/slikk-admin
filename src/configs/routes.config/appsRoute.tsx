@@ -220,6 +220,30 @@ const appsRoute: Routes = [
     //   Brand dashBoared.........................................................................................
 
     {
+        key: 'appsVendorManagement.shipments',
+        path: `${APP_PREFIX_PATH}/vendor/shipments`,
+        component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsTable/BrandShipmentsTable')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.shipments',
+        path: `${APP_PREFIX_PATH}/vendor/shipments/update/:id`,
+        component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsEdit/BrandShipmentsEdit')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: '',
+        path: `${APP_PREFIX_PATH}/vendor/shipments/details/:id`,
+        component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentDetails/BrandShipmentDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsVendorManagement.shipments',
+        path: `${APP_PREFIX_PATH}/vendor/shipments/add`,
+        component: lazy(() => import('@/views/brandDashboard/brandShipments/brandShipmentsAdd/BrandShipmentsAdd')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsVendorManagement.users',
         path: `${APP_PREFIX_PATH}/vendor/users`,
         component: lazy(() => import('@/views/brandDashboard/brandUser/User')),
@@ -849,6 +873,13 @@ const appsRoute: Routes = [
         key: 'appsAppSettings.couponsSeries',
         path: `${APP_PREFIX_PATH}/appSettings/couponsSeries/:id`,
         component: lazy(() => import('@/views/offerEngine/couponSeries/couponSeriesEdit/CouponSeriesEdit')),
+        authority: [ADMIN, USER],
+    },
+    // Event Series
+    {
+        key: 'appsAppSettings.eventSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/eventSeries`,
+        component: lazy(() => import('@/views/offerEngine/eventSeries/eventList/EventList')),
         authority: [ADMIN, USER],
     },
     {

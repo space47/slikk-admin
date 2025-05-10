@@ -28,7 +28,20 @@ export const CouponSeriesCoulumns = () => {
                 header: 'Campaign',
                 accessorKey: 'campaign',
                 cell: ({ row }: any) => {
-                    return <div>{row?.original?.campaign}</div>
+                    return (
+                        <div
+                            className="cursor-pointer hover:text-green-400 hover:font-bold"
+                            onClick={() =>
+                                navigate('/app/appSettings/coupons', {
+                                    state: {
+                                        var1: row?.original?.id,
+                                    },
+                                })
+                            }
+                        >
+                            {row?.original?.campaign}
+                        </div>
+                    )
                 },
             },
             {
@@ -52,29 +65,36 @@ export const CouponSeriesCoulumns = () => {
                     return <div>{row?.original?.image ? <img src={row?.original?.image} alt="image" width="50" /> : ''}</div>
                 },
             },
-            {
-                header: 'Categories',
-                accessorKey: 'extra_attributes.applicable_categories',
-                cell: ({ row }: any) => {
-                    const categories: string[] = row?.original?.extra_attributes?.applicable_categories
-                    return (
-                        <div className="flex gap-2 w-[50px] flex-wrap">
-                            {categories?.map((item, key) => {
-                                return (
-                                    <div key={key} className="flex gap-2">
-                                        {item}
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )
-                },
-            },
+            // {
+            //     header: 'Categories',
+            //     accessorKey: 'extra_attributes.applicable_categories',
+            //     cell: ({ row }: any) => {
+            //         const categories: string[] = row?.original?.extra_attributes?.applicable_categories
+            //         return (
+            //             <div className="flex gap-2 w-[50px] flex-wrap">
+            //                 {categories?.map((item, key) => {
+            //                     return (
+            //                         <div key={key} className="flex gap-2">
+            //                             {item}
+            //                         </div>
+            //                     )
+            //                 })}
+            //             </div>
+            //         )
+            //     },
+            // },
             {
                 header: 'maximum_discount',
                 accessorKey: 'maximum_discount',
                 cell: ({ row }: any) => {
                     return <div>{row?.original?.maximum_discount}</div>
+                },
+            },
+            {
+                header: 'Min Cart Value',
+                accessorKey: 'min_cart_value',
+                cell: ({ row }: any) => {
+                    return <div>{row?.original?.min_cart_value}</div>
                 },
             },
             {

@@ -117,3 +117,19 @@ export type InventoryItemType = {
     store: number
     update_date: string
 }
+
+export interface ShipmentItem {
+    id: string
+    barcode: string
+    sku: string
+    catalog_available?: string
+    boxCount?: number
+    quantity_sent: number
+    quantity_received: number
+    create_date: string
+}
+
+export const InwardDetailSearchOptions = [
+    { label: 'Sku', value: 'sku' },
+    { label: 'Barcode', value: 'barcode' },
+]
