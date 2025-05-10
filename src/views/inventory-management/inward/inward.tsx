@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
-import { FaEdit } from 'react-icons/fa'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, TableData } from './inwardCommon'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { InwardColumns } from './inwardUtils/InwardColumns'
 
 const PaginationTable = () => {
     const [data, setData] = useState<TableData[]>([])
@@ -152,6 +150,7 @@ const PaginationTable = () => {
     }
 
     const onSelectChange = (value = 0) => {
+        setPage(1)
         setPageSize(Number(value))
     }
 

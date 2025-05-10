@@ -245,6 +245,16 @@ const appsNavigationConfig: NavigationTree[] = [
                         subMenu: [],
                     },
                     {
+                        key: 'appsVendorManagement.shipments',
+                        path: `${APP_PREFIX_PATH}/vendor/shipments`,
+                        title: 'Shipments',
+                        translateKey: 'nav.appsInventoryManagement.shipments',
+                        icon: '',
+                        type: NAV_ITEM_TYPE_ITEM,
+                        authority: [ADMIN, USER],
+                        subMenu: [],
+                    },
+                    {
                         key: 'appsVendorManagement.users',
                         path: `${APP_PREFIX_PATH}/vendor/users`,
                         title: 'Users',
