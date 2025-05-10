@@ -41,14 +41,20 @@ const RemitanceApis = ({
             const response = await axioisInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}&download=true`, {
                 responseType: 'blob',
             })
-
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${ToDate}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            const contentType = response.headers['content-type']
+            if (contentType !== 'text/csv') {
+                notification.success({
+                    message: response.data?.message || 'File is being generated in background and will be sent on registered email',
+                })
+            } else {
+                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = urlToBeDownloaded
+                link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${ToDate}.csv`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            }
         } catch (error) {
             console.error('Error downloading CSV:', error)
         }
@@ -67,14 +73,21 @@ const RemitanceApis = ({
                     responseType: 'blob',
                 },
             )
-
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${ToDate}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            console.log('response', response?.data)
+            const contentType = response.headers['content-type']
+            if (contentType !== 'text/csv') {
+                notification.success({
+                    message: response.data?.message || 'File is being generated in background and will be sent on registered email',
+                })
+            } else {
+                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = urlToBeDownloaded
+                link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${ToDate}.csv`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            }
         } catch (error) {
             console.error('Error downloading CSV:', error)
         }
@@ -93,14 +106,20 @@ const RemitanceApis = ({
                     responseType: 'blob',
                 },
             )
-
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${ToDate}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            const contentType = response.headers['content-type']
+            if (contentType !== 'text/csv') {
+                notification.success({
+                    message: response.data?.message || 'File is being generated in background and will be sent on registered email',
+                })
+            } else {
+                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = urlToBeDownloaded
+                link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${ToDate}.csv`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            }
         } catch (error) {
             console.error('Error downloading CSV:', error)
         }

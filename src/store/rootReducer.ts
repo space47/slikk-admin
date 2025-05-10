@@ -35,6 +35,7 @@ import riderDataReducer from './slices/riderSlice/rider.slice'
 import newOrderReducer from './slices/neworderLists/newOrderList.slice'
 import riderDetailReducer from './slices/riderDetails/riderDetails.slice'
 import eventNamesReducer from './slices/eventNameSlice/eventName.slice'
+import eventSeriesReducer from './slices/eventSeriesSlice/eventSeriesSlice'
 import couponSeriesReducer from './slices/couponSeriesSlice/couponSeries'
 import returnOrderDataReducer from './slices/returnOrder/returnOrder.slice'
 import shipmentDetailsReducer from './slices/shipemntsSlice/shipments.slice'
@@ -90,6 +91,7 @@ const staticReducers = {
     couponSeries: couponSeriesReducer,
     returnOrderData: returnOrderDataReducer,
     shipmentDetails: shipmentDetailsReducer,
+    eventSeries: eventSeriesReducer,
     [remitanceApi.reducerPath]: remitanceApi.reducer,
     [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 }

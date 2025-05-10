@@ -875,6 +875,13 @@ const appsRoute: Routes = [
         component: lazy(() => import('@/views/offerEngine/couponSeries/couponSeriesEdit/CouponSeriesEdit')),
         authority: [ADMIN, USER],
     },
+    // Event Series
+    {
+        key: 'appsAppSettings.eventSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/eventSeries`,
+        component: lazy(() => import('@/views/offerEngine/eventSeries/eventList/EventList')),
+        authority: [ADMIN, USER],
+    },
     {
         key: 'appsAppSettings.banners',
         path: `${APP_PREFIX_PATH}/appSettings/banners/`,
