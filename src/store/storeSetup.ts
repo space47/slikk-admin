@@ -9,6 +9,7 @@ import { ridersService } from './services/riderServices'
 import { eventNameService } from './services/eventNameSerices'
 import { couponSeriesService } from './services/couponSeriesService'
 import { returnOrderDataService } from './services/returnOrderService'
+import { couponService } from './services/couponService'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const middlewares: any[] = [
@@ -18,6 +19,7 @@ const middlewares: any[] = [
     eventNameService.middleware,
     couponSeriesService.middleware,
     returnOrderDataService.middleware,
+    couponService.middleware,
 ]
 
 const persistConfig = {

@@ -18,6 +18,7 @@ import { EventNamesSliceType, setEventNamesData } from '@/store/slices/eventName
 import { FaEdit, FaPlusCircle } from 'react-icons/fa'
 import EventNamesModal from '../EventNamesModal'
 import EditEventNamesModal from '../EditEventNameModal'
+import { Checkbox } from '@/components/ui'
 
 const AddNotification = () => {
     const dispatch = useAppDispatch()
@@ -286,7 +287,12 @@ const AddNotification = () => {
                                 </FormItem>
                                 {NotificationARRAY.map((item, key) => (
                                     <FormItem key={key} label={item.label} className={item.classname}>
-                                        <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                                        <Field
+                                            type={item.type}
+                                            name={item.name}
+                                            placeholder={item.placeholder}
+                                            component={item?.type === 'checkbox' ? Checkbox : Input}
+                                        />
                                     </FormItem>
                                 ))}
                             </FormItem>

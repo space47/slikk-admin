@@ -1,17 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import type { ColumnDef } from '@tanstack/react-table'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
-import { FaEdit } from 'react-icons/fa'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, TableData } from './inwardCommon'
 import AccessDenied from '@/views/pages/AccessDenied'
+import { InwardColumns } from './inwardUtils/InwardColumns'
+import { Tabs } from '@/components/ui'
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import TabContent from '@/components/ui/Tabs/TabContent'
+import { MdInventory, MdOutlinePendingActions } from 'react-icons/md'
+import { FaCheck, FaEdit } from 'react-icons/fa'
+import BrandShipmentsTable from '@/views/brandDashboard/brandShipments/brandShipmentsTable/BrandShipmentsTable'
+import { LiaShippingFastSolid } from 'react-icons/lia'
+import { ColumnDef } from '@tanstack/react-table'
+import moment from 'moment'
 
 const PaginationTable = () => {
     const [data, setData] = useState<TableData[]>([])
@@ -23,6 +31,7 @@ const PaginationTable = () => {
     const [globalFilter, setGlobalFilter] = useState<any>('')
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyCode, setCompanyCode] = useState<any>()
+    const [activeTab, setActiveTab] = useState('tab1')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -152,6 +161,7 @@ const PaginationTable = () => {
     }
 
     const onSelectChange = (value = 0) => {
+        setPage(1)
         setPageSize(Number(value))
     }
 
@@ -160,6 +170,10 @@ const PaginationTable = () => {
     const handleGRN = () => {
         navigate('/app/goods/received/form')
     }
+    const handleChange = (tab: string) => {
+        setActiveTab(tab)
+        setPage(1)
+    }
 
     if (accessDenied) {
         return <AccessDenied />
@@ -167,57 +181,79 @@ const PaginationTable = () => {
 
     return (
         <div>
-            <div className=" flex gap-6 justify-between mb-5">
-                <div className="flex gap-3 shadow-md p-4 rounded-md bg-white w-full max-w-xl">
-                    <div>
-                        <div className="font-bold">Search</div>
-                        <input
-                            type="search"
-                            value={globalFilter}
-                            placeholder="Search by document No."
-                            className="rounded-lg"
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
-                        />
-                    </div>
-                    <div className={' w-full'}>
-                        <div className="font-bold">Select Company</div>
-                        <div>
-                            <div className="flex flex-col gap-2 w-full max-w-md">
-                                <Select
-                                    isClearable
-                                    className="w-full  rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-                                    options={companyList}
-                                    getOptionLabel={(option) => option.name}
-                                    getOptionValue={(option) => option.id}
-                                    onChange={(newVal) => {
-                                        console.log(newVal)
-                                        setCompanyCode(newVal?.code)
-                                    }}
+            <div>
+                <Tabs defaultValue="tab1" onChange={handleChange}>
+                    <TabList>
+                        <TabNav value="tab1" icon={<LiaShippingFastSolid className="text-blue-600 text-3xl" />}>
+                            <span className="text-xl font-bold">New Shipments</span>
+                        </TabNav>
+                        <TabNav value="tab2" icon={<MdInventory className="text-green-500 text-3xl" />}>
+                            <span className="text-xl font-bold">GRN</span>
+                        </TabNav>
+                    </TabList>
+                </Tabs>
+            </div>
+
+            {activeTab === 'tab1' && (
+                <div className="mt-10">
+                    <BrandShipmentsTable />
+                </div>
+            )}
+
+            {activeTab === 'tab2' && (
+                <>
+                    <div className=" flex gap-6 justify-between mb-10 mt-10">
+                        <div className="flex gap-3">
+                            <div>
+                                <div className="font-bold">Search</div>
+                                <input
+                                    type="search"
+                                    value={globalFilter}
+                                    placeholder="Search by document No."
+                                    className="rounded-lg"
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalFilter(e.target.value)}
                                 />
                             </div>
+                            <div className={' w-full'}>
+                                <div className="font-bold">Select Company</div>
+                                <div>
+                                    <div className="flex flex-col gap-2 w-full max-w-md">
+                                        <Select
+                                            isClearable
+                                            className="w-full  rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+                                            options={companyList}
+                                            getOptionLabel={(option) => option.name}
+                                            getOptionValue={(option) => option.id}
+                                            onChange={(newVal) => {
+                                                console.log(newVal)
+                                                setCompanyCode(newVal?.code)
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="">
+                            <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleGRN}>
+                                ADD NEW GRN
+                            </button>{' '}
                         </div>
                     </div>
-                </div>
-
-                <div className="">
-                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleGRN}>
-                        ADD NEW GRN
-                    </button>{' '}
-                </div>
-            </div>
-            <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
-            <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOptions.find((option) => option.value === pageSize)}
-                        options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
-                    />
-                </div>
-            </div>
+                    <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
+                    <div className="flex items-center justify-between mt-4">
+                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
+                        <div style={{ minWidth: 130 }}>
+                            <Select<Option>
+                                size="sm"
+                                isSearchable={false}
+                                value={pageSizeOptions.find((option) => option.value === pageSize)}
+                                options={pageSizeOptions}
+                                onChange={(option) => onSelectChange(option?.value)}
+                            />
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     )
 }

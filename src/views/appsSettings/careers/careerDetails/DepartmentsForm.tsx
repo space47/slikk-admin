@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { beforeUpload } from '@/common/beforeUpload'
 import { RichTextEditor } from '@/components/shared'
-import { FormContainer, FormItem, Input, Upload } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Upload } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
 
@@ -17,7 +17,7 @@ const DepartmentsForm = ({ values, isEdit }: props) => {
                 <FormContainer className="grid grid-cols-2 gap-2">
                     {isEdit && (
                         <FormItem label="Acitve" className="mt-5">
-                            <Field name="is_active" type="checkbox" component={Input} />
+                            <Field name="is_active" type="checkbox" component={Checkbox} />
                         </FormItem>
                     )}
                     <FormItem label="Name">

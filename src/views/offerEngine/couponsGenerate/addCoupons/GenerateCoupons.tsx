@@ -28,7 +28,7 @@ const GenerateCoupons = () => {
     useEffect(() => {
         if (generateCouponResponse?.isSuccess) {
             notification.success({ message: 'Coupon Series Updated Successfully' })
-            navigate(-1)
+            navigate(-2)
         } else if (generateCouponResponse?.error) {
             notification.error({
                 message: 'Failed to update',
@@ -51,6 +51,7 @@ const GenerateCoupons = () => {
         appendIfDefined('id', values?.coupon_series)
         appendIfDefined('auto_generate', (values.auto_generate_code ? true : false).toString())
         appendIfDefined('mobiles', values?.users || '')
+        appendIfDefined('max_count', values?.max_count || 0)
         appendIfDefined('prefix', values.prefix)
         appendIfDefined('unique_user_code', values.unique_user_code)
         appendIfDefined('code_length', values?.length)
@@ -68,7 +69,6 @@ const GenerateCoupons = () => {
         })
         try {
             generateCoupon({ ...formDataEntries })
-            navigate(-1)
         } catch (error: any) {
             notification.error({
                 message: error?.response?.data?.message || 'Failed to add',
@@ -80,6 +80,7 @@ const GenerateCoupons = () => {
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="w-full shadow-xl p-3 rounded-xl ">
+                        <div className="text-xl text-red-900 font-bold mb-10">Add New Coupon</div>
                         <FormContainer className="">
                             <CouponsGenerateForm formattedOptions={formattedData} values={values} />
                         </FormContainer>

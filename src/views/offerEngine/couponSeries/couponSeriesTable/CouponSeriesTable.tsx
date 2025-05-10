@@ -36,9 +36,7 @@ const CouponSeriesTable = () => {
             discount_type: currentDiscountTypeSelect?.value ?? undefined,
             coupon_type: currentCouponSelect?.value ?? undefined,
         },
-        {
-            refetchOnMountOrArgChange: true,
-        },
+        { refetchOnMountOrArgChange: true },
     )
 
     useEffect(() => {

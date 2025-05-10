@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Select, Tooltip, Upload } from '@/components/ui'
 import { Field, FieldProps, Form } from 'formik'
 import { RichTextEditor } from '@/components/shared'
 import { DatePicker } from 'antd'
 import moment from 'moment'
 import { beforeUpload } from '@/common/beforeUpload'
 import { COUPON_SERIES_FORM } from '../couponSeriesCommon'
-import CommonMultiSelect from '@/common/CommonMultiSelect'
+import ComonFilterSelect from '@/common/ComonFilterSelect'
+import { CiCircleQuestion } from 'react-icons/ci'
 
 interface CouponProps {
     values: any
@@ -16,33 +17,44 @@ interface CouponProps {
     setFieldValue: any
     resetForm: any
     isEdit?: any
+    setFilterId?: any
+    filterValue?: any
 }
 
 const DiscountType = [
-    { name: 'COUPON', value: 'COUPON' },
-    { name: 'PERIODIC', value: 'PERIODIC' },
-]
-const ApplicableCategoriesArray = [
-    { name: 'Electronics', value: 'Electronics' },
-    { name: 'Clothing', value: 'Clothing' },
-    { name: 'Shoes', value: 'Shoes' },
+    { name: 'PERCENT_OFF', value: 'PERCENT_OFF' },
+    { name: 'FLAT_OFF', value: 'FLAT_OFF' },
 ]
 
 const CouponsType = () => {
-    return ['PERCENT_OFF', 'FLAT_OFF'].map((coupon) => ({
+    return ['PERIODIC', 'COUPON', 'REFERRER', 'REFEREE'].map((coupon) => ({
         label: coupon,
         value: coupon,
     }))
 }
 
-const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
+const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: CouponProps) => {
     return (
         <Form className="">
             <FormContainer>
                 <FormContainer className="grid grid-cols-2 gap-10">
                     {COUPON_SERIES_FORM.slice(0, 5).map((item, key) => (
-                        <FormItem key={key} label={item.label} className={item.classname}>
-                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                        <FormItem key={key} className={item.classname}>
+                            <div className="flex gap-2">
+                                <FormItem label={item.label}></FormItem>{' '}
+                                {item?.tooltip && (
+                                    <Tooltip title={item.tooltip}>
+                                        <CiCircleQuestion className="text-yellow-800 text-xl" />
+                                    </Tooltip>
+                                )}
+                            </div>
+                            <Field
+                                type={item.type}
+                                name={item.name}
+                                placeholder={item.placeholder}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                min={item?.min || 0}
+                            />
                         </FormItem>
                     ))}
 
@@ -85,8 +97,8 @@ const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
                         </Field>
                     </FormItem>
 
-                    <FormItem label="Discount Type" className="col-span-1 w-full">
-                        <Field name="discount_type">
+                    <FormItem label="Coupon Type" className="col-span-1 w-full">
+                        <Field name="coupon_type">
                             {({ field, form }: FieldProps) => {
                                 return (
                                     <Select
@@ -132,33 +144,42 @@ const CouponSeriesForm = ({ values, setFieldValue }: CouponProps) => {
                         </FormItem>
                     </FormContainer>
 
-                    <FormItem label="Coupon Type">
+                    <FormItem label="Discount Type">
                         <Select
                             isClearable
                             className="xl:w-1/2 mt-7 w-full"
                             options={DiscountType}
                             getOptionLabel={(option) => option.name}
                             getOptionValue={(option) => option.value}
-                            value={DiscountType.find((option: any) => option.value === values.coupon_type) || null}
+                            value={DiscountType.find((option: any) => option.value === values.discount_type) || null}
                             onChange={(selectedOption) => {
                                 const newValue: string = selectedOption?.value || ''
-                                setFieldValue('coupon_type', newValue)
+                                setFieldValue('discount_type', newValue)
                             }}
                         />{' '}
                     </FormItem>
 
-                    <CommonMultiSelect
-                        needCss
-                        label="Applicable categories"
-                        name="extra_attributes.applicable_categories"
-                        options={ApplicableCategoriesArray}
-                        className=" mt-7 w-full"
-                        setFieldValue={setFieldValue}
-                    />
+                    <div>
+                        <ComonFilterSelect filterId={filterValue} setFilterId={setFilterId} />
+                    </div>
 
                     {COUPON_SERIES_FORM.slice(5).map((item, key) => (
-                        <FormItem key={key} label={item.label} className={item.classname}>
-                            <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
+                        <FormItem key={key} className={item.classname}>
+                            <div className="flex gap-2">
+                                <FormItem label={item.label}></FormItem>{' '}
+                                {item?.tooltip && (
+                                    <Tooltip title={item.tooltip}>
+                                        <CiCircleQuestion className="text-yellow-800 text-xl" />
+                                    </Tooltip>
+                                )}
+                            </div>
+                            <Field
+                                type={item.type}
+                                name={item.name}
+                                placeholder={item.placeholder}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                min={item?.min || 0}
+                            />
                         </FormItem>
                     ))}
                 </FormContainer>

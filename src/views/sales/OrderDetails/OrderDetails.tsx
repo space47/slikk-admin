@@ -157,6 +157,24 @@ const OrderDetails = () => {
                                                     <FaDownload className="bg-none text-gray-700" />
                                                 </button>
                                             </div>
+                                            {data?.log?.some((item) => item?.status?.includes('PACKED')) &&
+                                            data?.utm_params?.ticket === true ? (
+                                                <>
+                                                    <div>
+                                                        <Button variant="reject" size="sm" onClick={() => setShowUTMModal(true)}>
+                                                            REMOVE TICKET
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div>
+                                                        {/* <Button variant="accept" size="sm" onClick={() => setShowUTMModal(true)}>
+                                                            ADD TICKET
+                                                        </Button> */}
+                                                    </div>
+                                                </>
+                                            )}
                                         </span>
                                     </div>
                                 </div>
@@ -232,6 +250,16 @@ const OrderDetails = () => {
                                                 </a>
                                             ))}
                                         </div>
+                                    </div>
+                                )}
+                                {data?.reference_return && (
+                                    <div>
+                                        <a
+                                            href={`/app/returnOrders/${data?.reference_return}`}
+                                            className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                                        >
+                                            <span className="text-gray-700">Return Order:</span> {data?.reference_return}
+                                        </a>
                                     </div>
                                 )}
                                 {data?.exchange_order_id?.length > 0 && (
