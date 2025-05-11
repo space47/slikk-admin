@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, FormContainer } from '@/components/ui'
+import { Button, FormContainer, Spinner } from '@/components/ui'
 import { eventSeriesService } from '@/store/services/eventSeriesService'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { Form, Formik } from 'formik'
@@ -7,17 +7,8 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import EventFormCommon from '../eventCommons/EventFormCommon'
 import { notification } from 'antd'
-import { handleimage } from '@/common/handleImage'
 import axios from 'axios'
-import { textParser } from '@/common/textParser'
-
-function removeEmptyValues(obj: any): any {
-    return Object.fromEntries(
-        Object.entries(obj)
-            .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-            .map(([key, value]) => [key, typeof value === 'object' && !Array.isArray(value) ? removeEmptyValues(value) : value]),
-    )
-}
+import { handleimage } from '@/views/category-management/catalog/handlingProductImage'
 
 const EditEvents = () => {
     const { id } = useParams()
@@ -25,19 +16,50 @@ const EditEvents = () => {
     const [editEventSeries] = eventSeriesService.useEditEventSeriesMutation()
     const [webImageView, setWebImageView] = useState<string[]>([])
     const [mobileImageView, setMobileImageView] = useState<string[]>([])
+    const [eventPhotos, setEventPhotos] = useState<string[]>([])
+    const [eventVideos, setEventVideos] = useState<string[]>([])
+    const [venueImages, setVenueImages] = useState<string[]>([])
+    const [spinner, setSpinner] = useState(false)
 
     const [eventData, setEventData] = useState<any>(null)
+
+    const handleRemoveImage = (type: 'wb' | 'mb' | 'ev' | 'vi' | 'ei') => (e: React.MouseEvent, index: number) => {
+        e.preventDefault()
+
+        if (type === 'wb') {
+            const updatedImages = webImageView.filter((_, i) => i !== index)
+            setWebImageView(updatedImages)
+        } else if (type === 'mb') {
+            const updatedImages = mobileImageView.filter((_, i) => i !== index)
+            setMobileImageView(updatedImages)
+        } else if (type === 'ev') {
+            const updatedImages = eventVideos.filter((_, i) => i !== index)
+            setEventVideos(updatedImages)
+        } else if (type === 'vi') {
+            const updatedImages = venueImages.filter((_, i) => i !== index)
+            setVenueImages(updatedImages)
+        } else if (type === 'ei') {
+            const updatedImages = eventPhotos.filter((_, i) => i !== index)
+            setEventPhotos(updatedImages)
+        }
+    }
 
     useEffect(() => {
         const fetchEventData = async () => {
             const response = await axioisInstance.get(`/dashboard/promotion/events?event_id=${id}`)
             const data = response.data?.data
             setEventData(data)
-            setWebImageView(data?.image_web ? [data?.image_web] : [])
-            setMobileImageView(data?.image_mobile ? [data?.image_mobile] : [])
+            setWebImageView(data?.image_web ? data?.image_web?.split(',') : [])
+            setMobileImageView(data?.image_mobile ? data?.image_mobile?.split(',') : [])
+            setEventPhotos(data?.extra_attributes?.event_photos ? data?.extra_attributes?.event_photos?.split(',') : [])
+            setEventVideos(data?.extra_attributes?.event_videos ? data?.extra_attributes?.event_videos?.split(',') : [])
+            setVenueImages(data?.extra_attributes?.venue_images ? data?.extra_attributes?.venue_images?.split(',') : [])
         }
         fetchEventData()
     }, [id])
+
+    console.log('event photos', eventPhotos)
+    console.log('web image', webImageView)
 
     const initialValue = {
         name: eventData?.name || '',
@@ -65,27 +87,17 @@ const EditEvents = () => {
             bg_color: eventData?.extra_attributes.bg_color || '',
             button_color: eventData?.extra_attributes.button_color || '',
             button_font_color: eventData?.extra_attributes.button_font_color || '',
-            legal_instructions: eventData?.extra_attributes.legal_instructions || '',
+            legal_instruction: eventData?.extra_attributes.legal_instruction || '',
             carousel_auto_scroll: eventData?.extra_attributes.carousel_auto_scroll || false,
             time_interval: eventData?.extra_attributes.time_interval || 0,
+            event_photos: eventData?.extra_attributes.event_photos || [],
+            event_videos: eventData?.extra_attributes.event_videos || [],
+            venue_images: eventData?.extra_attributes.venue_images || [],
         },
     }
 
     const [currLat, setCurrLat] = useState<number>(initialValue?.latitude || 12.920216)
     const [currLong, setCurrLong] = useState<number>(initialValue?.longitude || 77.649326)
-
-    const handleRemoveImage = (type: 'image_web' | 'image_mobile') => {
-        setEventData((prev: any) => ({
-            ...prev,
-            [type]: '',
-        }))
-
-        if (type === 'image_web') {
-            setWebImageView([])
-        } else {
-            setMobileImageView([])
-        }
-    }
 
     const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
         if (!imageSources || imageSources.length === 0) {
@@ -140,21 +152,57 @@ const EditEvents = () => {
 
     const handleSubmit = async (values: any) => {
         console.log(`1`, values)
+        notification.info({ message: 'In process' })
+        setSpinner(true)
+        let img_web_url = webImageView.join(',')
+        let img_mobile_url = mobileImageView.join(',')
+        let event_img_url = eventPhotos?.join(',')
+        let event_video_url = eventVideos?.join(',')
+        let venue_img_url = venueImages?.join(',')
 
-        // const processImageUpload = async (imageArray: any[] | undefined, currentImage: string | null) => {
-        //     return imageArray?.length > 0 ? await handleimage('product', imageArray) : (currentImage ?? null)
-        // }
-        const processImageUpload = async (imageArray: any[], currentImage: string) => {
-            return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
+        const imageWebUpload = await handleimage(values.web_image_array)
+        console.log(`2`)
+        if (values.web_image_array && values.web_image_array.length && !imageWebUpload) {
+            console.log('image Upload return', values.web_image_array)
+            return
+        } else if (values.web_image_array && imageWebUpload) {
+            const temp = [img_web_url, imageWebUpload]
+            img_web_url = temp.filter((t) => t).join(',')
         }
 
-        console.log(`2`)
-        // const imageUploadWeb = await processImageUpload(values?.web_image_array, values?.image_web)
-        const imageUploadMobile =
-            values?.mobile_image_array?.length > 0 ? await handleimage('product', values.mobile_image_array) : mobileImageView[0] || null
+        const imageMobileUpload = await handleimage(values.mobile_image_array)
 
-        const imageUploadWeb =
-            values?.web_image_array?.length > 0 ? await handleimage('product', values.web_image_array) : webImageView[0] || null
+        if (values.mobile_image_array && values.mobile_image_array.length && !imageMobileUpload) {
+            return
+        } else if (values.mobile_image_array && imageMobileUpload) {
+            const temp = [img_mobile_url, imageMobileUpload]
+            img_mobile_url = temp.filter((t) => t).join(',')
+        }
+        const imageEventUpload = await handleimage(values.event_images_array)
+
+        if (values.event_images_array && values.event_images_array.length && !imageEventUpload) {
+            return
+        } else if (values.event_images_array && imageEventUpload) {
+            const temp = [event_img_url, imageEventUpload]
+            event_img_url = temp.filter((t) => t).join(',')
+        }
+
+        const videoEventUpload = await handleimage(values.event_video_array)
+        if (values.event_video_array && values.event_video_array.length && !videoEventUpload) {
+            return
+        } else if (values.event_video_array && videoEventUpload) {
+            const temp = [event_video_url, videoEventUpload]
+            event_video_url = temp.filter((t) => t).join(',')
+        }
+
+        const imageVenueUpload = await handleimage(values.venue_img_url)
+
+        if (values.venue_img_url && values.venue_img_url.length && !imageVenueUpload) {
+            return
+        } else if (values.venue_img_url && imageVenueUpload) {
+            const temp = [venue_img_url, imageVenueUpload]
+            venue_img_url = temp.filter((t) => t).join(',')
+        }
 
         console.log(`3`)
         const mobileAspectRatio =
@@ -181,8 +229,8 @@ const EditEvents = () => {
             ...(values?.name && { name: values.name }),
             ...(values?.event_type && { event_type: values.event_type }),
             ...(description && { description }),
-            ...(imageUploadWeb && { image_web: imageUploadWeb }),
-            ...(imageUploadMobile && { image_mobile: imageUploadMobile }),
+            ...(imageWebUpload && { image_web: img_web_url }),
+            ...(imageMobileUpload && { image_mobile: img_mobile_url }),
             ...(values?.total_slots && { total_slots: values.total_slots }),
             ...(values?.registration_start_date && { registration_start_date: values.registration_start_date }),
             ...(values?.registration_end_date && { registration_end_date: values.registration_end_date }),
@@ -209,11 +257,14 @@ const EditEvents = () => {
                 ...(specialInstructions && { special_instructions: specialInstructions }),
                 ...(webAspectRatio[0] && { web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)) }),
                 ...(mobileAspectRatio[0] && { mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)) }),
-                ...(values.extra_attributes?.legal_instructions && { legal_instructions: values.extra_attributes.legal_instructions }),
+                ...(values.extra_attributes?.legal_instruction && { legal_instruction: values.extra_attributes.legal_instruction }),
                 ...(values.extra_attributes?.carousel_auto_scroll && {
                     carousel_auto_scroll: values.extra_attributes.carousel_auto_scroll,
                 }),
                 ...(values.extra_attributes?.time_interval && { time_interval: values.extra_attributes.time_interval }),
+                ...(event_img_url && { event_photos: event_img_url }),
+                ...(event_video_url && { event_videos: event_video_url }),
+                ...(venue_img_url && { venue_images: venue_img_url }),
             },
         }
 
@@ -230,6 +281,8 @@ const EditEvents = () => {
             notification.error({
                 message: 'Failed to edit Event',
             })
+        } finally {
+            setSpinner(false)
         }
     }
 
@@ -254,12 +307,24 @@ const EditEvents = () => {
                             values={values}
                             initialValue={initialValue}
                             handleRemoveImage={handleRemoveImage}
+                            webImageView={webImageView}
+                            mobileImageView={mobileImageView}
+                            eventPhotos={eventPhotos}
+                            eventVideos={eventVideos}
+                            venueImages={venueImages}
                         />
 
                         <br />
                         <FormContainer>
                             <Button variant="accept" type="submit">
-                                Submit
+                                <div className="flex gap-2 items-center">
+                                    {spinner && (
+                                        <span>
+                                            <Spinner size={20} color="white" />
+                                        </span>
+                                    )}
+                                    Submit
+                                </div>
                             </Button>
                         </FormContainer>
                     </Form>
