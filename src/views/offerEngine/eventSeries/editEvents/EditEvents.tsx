@@ -19,63 +19,12 @@ function removeEmptyValues(obj: any): any {
     )
 }
 
-const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
-    if (!imageSources || imageSources.length === 0) {
-        return []
-    }
-
-    const aspectRatios: number[] = []
-
-    for (const src of imageSources) {
-        const image = new Image()
-        image.src = src
-
-        await new Promise<void>((resolve) => {
-            image.onload = () => {
-                aspectRatios.push(image.width / image.height)
-                resolve()
-            }
-            image.onerror = () => {
-                resolve()
-            }
-        })
-    }
-
-    return aspectRatios
-}
-const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
-    if (!files || files.length === 0) {
-        return []
-    }
-
-    const aspectRatios: number[] = []
-    for (const file of files) {
-        const image = new Image()
-        const fileURL = URL.createObjectURL(file)
-
-        image.src = fileURL
-
-        await new Promise<void>((resolve) => {
-            image.onload = () => {
-                aspectRatios.push(image.width / image.height)
-                URL.revokeObjectURL(fileURL)
-                resolve()
-            }
-            image.onerror = () => {
-                URL.revokeObjectURL(fileURL)
-                resolve()
-            }
-        })
-    }
-    return aspectRatios
-}
-
 const EditEvents = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [editEventSeries] = eventSeriesService.useEditEventSeriesMutation()
-    const [webImagview, setWebImageView] = useState<string[]>([])
-    const [mobileImagview, setMobileImageView] = useState<string[]>([])
+    const [webImageView, setWebImageView] = useState<string[]>([])
+    const [mobileImageView, setMobileImageView] = useState<string[]>([])
 
     const [eventData, setEventData] = useState<any>(null)
 
@@ -112,6 +61,9 @@ const EditEvents = () => {
             category: eventData?.extra_attributes.category || '',
             sponsors: eventData?.extra_attributes.sponsors || [],
             special_instructions: eventData?.extra_attributes.special_instructions || '',
+            bg_color: eventData?.extra_attributes.bg_color || '',
+            button_color: eventData?.extra_attributes.button_color || '',
+            button_font_color: eventData?.extra_attributes.button_font_color || '',
         },
     }
 
@@ -131,28 +83,89 @@ const EditEvents = () => {
         }
     }
 
+    const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
+        if (!imageSources || imageSources.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+
+        for (const src of imageSources) {
+            const image = new Image()
+            image.src = src
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    resolve()
+                }
+                image.onerror = () => {
+                    resolve()
+                }
+            })
+        }
+
+        return aspectRatios
+    }
+    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
+        if (!files || files.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+                image.onerror = () => {
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+        }
+        return aspectRatios
+    }
+
     const handleSubmit = async (values: any) => {
         console.log(`1`, values)
 
-        const processImageUpload = async (imageArray: any[] | undefined, currentImage: string | null) => {
-            return imageArray?.length > 0 ? await handleimage('product', imageArray) : (currentImage ?? null)
+        // const processImageUpload = async (imageArray: any[] | undefined, currentImage: string | null) => {
+        //     return imageArray?.length > 0 ? await handleimage('product', imageArray) : (currentImage ?? null)
+        // }
+        const processImageUpload = async (imageArray: any[], currentImage: string) => {
+            return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
         }
-        const imageUploadWeb = await processImageUpload(values?.web_image_array, values?.image_web)
-        const imageUploadMobile = await processImageUpload(values?.mobile_image_array, values?.image_mobile)
 
-        // const mobileAspectratio =
-        //     values?.mobile_image_array?.length > 0
-        //         ? await calculateAspectRatio(values.mobile_image_array)
-        //         : values?.image_mobile && typeof mobileImagview !== 'undefined'
-        //           ? await calculateAspectRatioFromStrings(mobileImagview)
-        //           : (values?.extra_attributes?.mobile_aspect_ratio ?? null)
+        console.log(`2`)
+        // const imageUploadWeb = await processImageUpload(values?.web_image_array, values?.image_web)
+        const imageUploadMobile =
+            values?.mobile_image_array?.length > 0 ? await handleimage('product', values.mobile_image_array) : mobileImageView[0] || null
 
-        // const webAspectratio =
-        //     values?.web_image_array?.length > 0
-        //         ? await calculateAspectRatio(values.web_image_array)
-        //         : values?.image_web && typeof webImagview !== 'undefined'
-        //           ? await calculateAspectRatioFromStrings(webImagview)
-        //           : (values?.extra_attributes?.web_aspect_ratio ?? null)
+        const imageUploadWeb =
+            values?.web_image_array?.length > 0 ? await handleimage('product', values.web_image_array) : webImageView[0] || null
+
+        console.log(`3`)
+        const mobileAspectRatio =
+            values?.mobile_image_array?.length > 0
+                ? await calculateAspectRatio(values.mobile_image_array)
+                : values?.image_mobile && typeof mobileImageView !== 'undefined'
+                  ? await calculateAspectRatioFromStrings(mobileImageView)
+                  : (values?.extra_attributes?.mobile_aspect_ratio ?? null)
+
+        const webAspectRatio =
+            values?.web_image_array?.length > 0
+                ? await calculateAspectRatio(values.web_image_array)
+                : values?.image_web && typeof webImageView !== 'undefined'
+                  ? await calculateAspectRatioFromStrings(webImageView)
+                  : (values?.extra_attributes?.web_aspect_ratio ?? null)
 
         console.log('webAspectratio')
 
@@ -178,12 +191,15 @@ const EditEvents = () => {
             extra_attributes: {
                 venue: values?.extra_attributes?.venue ?? null,
                 category: values?.extra_attributes?.category ?? null,
+                bg_color: values?.extra_attributes?.bg_color ?? null,
+                button_color: values?.extra_attributes?.button_color ?? null,
+                button_font_color: values?.extra_attributes?.button_font_color ?? null,
                 sponsors: Array.isArray(values?.extra_attributes?.sponsors)
                     ? values?.extra_attributes?.sponsors
                     : (values?.extra_attributes?.sponsors?.split(',') ?? []),
                 special_instructions: specialInstructions ?? null,
-                // web_aspect_ratio: webAspectratio,
-                // mobile_aspect_ratio: mobileAspectratio,
+                web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)),
+                mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)),
             },
         }
 

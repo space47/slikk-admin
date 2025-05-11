@@ -36,8 +36,8 @@ const EventList = () => {
         isLoading,
         isSuccess,
     } = eventSeriesService.useEventSeriesDataQuery({
-        // from: from,
-        // to: To_Date,
+        from: from,
+        to: To_Date,
         page: page,
         pageSize: pageSize,
         event_id: currentSelectedPage?.value === 'event_id' ? globalFilter : undefined,

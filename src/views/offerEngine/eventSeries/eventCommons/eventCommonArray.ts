@@ -16,4 +16,7 @@ export const EventTypeForm = [
     { label: 'Category', name: 'extra_attributes.category', type: 'text' },
     { label: 'Sponsors', name: 'extra_attributes.sponsors', type: 'text' },
     { label: 'Special Instructions', name: 'extra_attributes.special_instructions', type: 'text' },
+    { label: 'Background color', name: 'extra_attributes.bg_color', type: 'text' },
+    { label: 'Button Color', name: 'extra_attributes.button_color', type: 'text' },
+    { label: 'Button Font Color', name: 'extra_attributes.button_font_color', type: 'text' },
 ]

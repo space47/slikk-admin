@@ -49,10 +49,12 @@ const EventFormCommon = ({ editMode, values, initialValue, handleRemoveImage, se
                         )}
                     </Field>
                 </FormItem>
-                <FullDateForm label="Registration Start Date" name="registration_start_date" fieldname="registration_start_date" />
-                <FullDateForm label="Registration End Date" name="registration_end_date" fieldname="registration_end_date" />
-                <FullDateForm label="Start Date" name="event_start_time" fieldname="event_start_time" />
-                <FullDateForm label="End Date" name="event_end_time" fieldname="event_end_time" />
+                <FormContainer className="grid grid-cols-2 gap-4">
+                    <FullDateForm label="Registration Start Date" name="registration_start_date" fieldname="registration_start_date" />
+                    <FullDateForm label="Registration End Date" name="registration_end_date" fieldname="registration_end_date" />
+                    <FullDateForm label="Start Date" name="event_start_time" fieldname="event_start_time" />
+                    <FullDateForm label="End Date" name="event_end_time" fieldname="event_end_time" />
+                </FormContainer>
                 {/* Image */}
                 <FormItem label="Image Website">
                     {editMode ? (

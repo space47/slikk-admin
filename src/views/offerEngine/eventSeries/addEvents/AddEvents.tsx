@@ -16,30 +16,6 @@ const AddEvents = () => {
     const [addEventSeries, addEventResponse] = eventSeriesService.useAddEventSeriesMutation()
     const initialValue = {}
 
-    const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
-        if (!imageSources || imageSources.length === 0) {
-            return []
-        }
-
-        const aspectRatios: number[] = []
-
-        for (const src of imageSources) {
-            const image = new Image()
-            image.src = src
-
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    aspectRatios.push(image.width / image.height)
-                    resolve()
-                }
-                image.onerror = () => {
-                    resolve()
-                }
-            })
-        }
-
-        return aspectRatios
-    }
     const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
         if (!files || files.length === 0) {
             return []
@@ -83,19 +59,15 @@ const AddEvents = () => {
         const imageUploadWeb = await processImageUpload(values.web_image_array, values.image_web)
         const imageUploadMobile = await processImageUpload(values.mobile_image_array, values.image_mobile)
 
-        // const mobileAspectratio =
-        //     values.web_image_array?.length > 0
-        //         ? await calculateAspectRatio(values.web_image_array)
-        //         : values.image_mobile
-        //           ? await calculateAspectRatioFromStrings(values.image_mobile)
-        //           : values?.extra_attributes?.mobile_aspect_ratio || null
+        const mobileAspectRatio =
+            values.web_image_array?.length > 0
+                ? await calculateAspectRatio(values.web_image_array)
+                : values?.extra_attributes?.mobile_aspect_ratio || null
 
-        // const webAspectratio =
-        //     values.web_image_array?.length > 0
-        //         ? await calculateAspectRatio(values.web_image_array)
-        //         : values.image_web
-        //           ? await calculateAspectRatioFromStrings(values.image_web)
-        //           : values?.extra_attributes?.web_aspect_ratio || null
+        const webAspectRatio =
+            values.mobile_image_array?.length > 0
+                ? await calculateAspectRatio(values.mobile_image_array)
+                : values?.extra_attributes?.web_aspect_ratio || null
 
         const description = textParser(values.description)
         const specialInstructions = textParser(values.extra_attributes.special_instructions)
@@ -120,9 +92,12 @@ const AddEvents = () => {
                 venue: values.extra_attributes.venue,
                 category: values.extra_attributes.category,
                 sponsors: values.extra_attributes.sponsors?.split(','),
+                bg_color: values?.extra_attributes?.bg_color ?? null,
+                button_color: values?.extra_attributes?.button_color ?? null,
+                button_font_color: values?.extra_attributes?.button_font_color ?? null,
                 special_instructions: specialInstructions,
-                // web_aspect_ratio: webAspectratio,
-                // mobile_aspect_ratio: mobileAspectratio,
+                web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)),
+                mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)),
             },
         }
 

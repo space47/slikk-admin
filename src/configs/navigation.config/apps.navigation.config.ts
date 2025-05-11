@@ -542,7 +542,7 @@ const appsNavigationConfig: NavigationTree[] = [
                     {
                         key: 'appsAppSettings.eventSeries',
                         path: `${APP_PREFIX_PATH}/appSettings/eventSeries`,
-                        title: 'Event',
+                        title: 'Promotional Event',
                         translateKey: 'nav.appsAppSettings.eventSeries',
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,

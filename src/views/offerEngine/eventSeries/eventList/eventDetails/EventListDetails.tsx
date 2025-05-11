@@ -15,6 +15,8 @@ import {
     FaTicketAlt,
 } from 'react-icons/fa'
 import { CiImageOff } from 'react-icons/ci'
+import { Button } from '@/components/ui'
+import LoadingSpinner from '@/common/LoadingSpinner'
 
 const EventListDetails = () => {
     const { id } = useParams()
@@ -46,7 +48,11 @@ const EventListDetails = () => {
     }, [id])
 
     if (!eventData) {
-        return <div className="flex justify-center p-8">Loading...</div>
+        return (
+            <div className="flex justify-center p-8">
+                <LoadingSpinner />
+            </div>
+        )
     }
 
     const formatDate = (dateString: string) => {
@@ -113,6 +119,9 @@ const EventListDetails = () => {
                             alt="Event Mobile Image"
                             className="w-full h-40 object-cover"
                         />
+                    </div>
+                    <div className="mt-10">
+                        <Button variant="accept">Scan QR Code</Button>
                     </div>
                 </div>
 
