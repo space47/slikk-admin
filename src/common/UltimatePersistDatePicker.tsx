@@ -26,7 +26,7 @@ const PREVIOUSARRAY = [
     { label: 'CUSTOM ', value: 'CUSTOM' },
 ]
 
-const UltimateDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPROPS) => {
+const UltimatePersistDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPROPS) => {
     const dispatch = useDispatch()
     const { selectedOption } = useSelector((state: RootState) => state.datePicker)
     const [showingDatePicker, setShowingDatePicker] = useState(false)
@@ -110,4 +110,4 @@ const UltimateDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPROPS) => 
     )
 }
 
-export default UltimateDatePicker
+export default UltimatePersistDatePicker
