@@ -43,7 +43,7 @@ export const EventListColumns = () => {
             {
                 header: 'Description',
                 accessorKey: 'description',
-                cell: ({ row }: any) => <div className="flex-wrap w-[150px]">{row?.original?.description}</div>,
+                cell: ({ row }: any) => <div className="flex-wrap w-[150px] line-clamp-3">{row?.original?.description}</div>,
             },
             {
                 header: 'Image Web',

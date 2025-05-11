@@ -6,8 +6,7 @@ import React, { useEffect, useState } from 'react'
 import EventFormCommon from '../eventCommons/EventFormCommon'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { handleimage } from '@/common/handleImage'
-import { textParser } from '@/common/textParser'
+import { handleimage, handleVideo } from '@/views/category-management/catalog/handlingProductImage'
 
 const AddEvents = () => {
     const navigate = useNavigate()
@@ -55,12 +54,16 @@ const AddEvents = () => {
         }
     }, [addEventResponse?.isSuccess])
 
+    const handleImageCheck = async (field: any) => {
+        return field && field.length > 0 ? await handleimage(field) : null
+    }
+
     const handleSubmit = async (values: any) => {
-        const processImageUpload = async (imageArray: any[], currentImage: string) => {
-            return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
-        }
-        const imageUploadWeb = await processImageUpload(values.web_image_array, values.image_web)
-        const imageUploadMobile = await processImageUpload(values.mobile_image_array, values.image_mobile)
+        const imageUploadWeb = await handleImageCheck(values.web_image_array)
+        const imageUploadMobile = await handleImageCheck(values.mobile_image_array)
+        const imageUploadEventVideos = await handleImageCheck(values.event_video_array)
+        const imageUploadVenue = await handleImageCheck(values.venue_img_url)
+        const imageUploadEventPhotos = await handleImageCheck(values.event_images_array)
 
         const mobileAspectRatio =
             values.web_image_array?.length > 0
@@ -110,6 +113,9 @@ const AddEvents = () => {
                     carousel_auto_scroll: values.extra_attributes.carousel_auto_scroll,
                 }),
                 ...(values?.extra_attributes.time_interval && { time_interval: values.extra_attributes.time_interval }),
+                ...(imageUploadEventVideos && { event_video: imageUploadEventVideos }),
+                ...(imageUploadVenue && { venue_img_url: imageUploadVenue }),
+                ...(imageUploadEventPhotos && { event_images: imageUploadEventPhotos }),
             },
         }
 

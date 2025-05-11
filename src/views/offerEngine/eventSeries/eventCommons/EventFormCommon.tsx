@@ -8,6 +8,8 @@ import { RichTextEditor } from '@/components/shared'
 import { beforeUpload } from '@/common/beforeUpload'
 import { MdCancel } from 'react-icons/md'
 import EventMap from './EventMaps'
+import ImageCommonProduct from '@/views/category-management/catalog/ImageCommonProduct'
+import AddProductImages from '@/views/category-management/catalog/AddProductImages'
 
 interface Props {
     editMode?: boolean
@@ -18,9 +20,29 @@ interface Props {
     setCurrLong?: React.Dispatch<React.SetStateAction<number>>
     currLat?: number
     currLong?: number
+    webImageView?: any
+    mobileImageView?: any
+    eventPhotos?: any
+    eventVideos?: any
+    venueImages?: any
 }
 
-const EventFormCommon = ({ editMode, values, initialValue, handleRemoveImage, setCurrLat, setCurrLong, currLat, currLong }: Props) => {
+const EventFormCommon = ({
+    editMode,
+    values,
+    initialValue,
+    handleRemoveImage,
+    setCurrLat,
+    setCurrLong,
+    currLat,
+    currLong,
+    webImageView,
+    mobileImageView,
+    eventPhotos,
+    eventVideos,
+    venueImages,
+}: Props) => {
+    console.log('yesssssssss', eventPhotos)
     return (
         <div>
             <FormContainer>
@@ -38,7 +60,11 @@ const EventFormCommon = ({ editMode, values, initialValue, handleRemoveImage, se
                 <FormItem label="Description">
                     <Field name="description">
                         {({ field, form }: FieldProps) => (
-                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                            <RichTextEditor
+                                preserveWhitespace
+                                value={field.value}
+                                onChange={(val) => form.setFieldValue(field.name, val)}
+                            />
                         )}
                     </Field>
                 </FormItem>
@@ -52,7 +78,11 @@ const EventFormCommon = ({ editMode, values, initialValue, handleRemoveImage, se
                 <FormItem label="Terms and Conditions">
                     <Field name="terms_and_conditions">
                         {({ field, form }: FieldProps) => (
-                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                            <RichTextEditor
+                                preserveWhitespace
+                                value={field.value}
+                                onChange={(val) => form.setFieldValue(field.name, val)}
+                            />
                         )}
                     </Field>
                 </FormItem>
@@ -65,130 +95,120 @@ const EventFormCommon = ({ editMode, values, initialValue, handleRemoveImage, se
                 {/* Image */}
                 <FormItem label="Image Website">
                     {editMode ? (
-                        <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col  rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                            {initialValue.image_web ? (
-                                <div className="flex flex-col items-center justify-center ">
-                                    <img src={initialValue.image_web} alt={`Image `} className="w-[100px] h-[40px] flex object-contain " />
-                                    <button type="button" className="text-red-500 text-md " onClick={() => handleRemoveImage('image_web')}>
-                                        <MdCancel className="text-red-500 bg-none text-lg" />
-                                    </button>
-                                </div>
-                            ) : (
-                                'No Image'
-                            )}
-                            <FormContainer className=" mt-5 ">
-                                <FormItem label="" className="grid grid-rows-2">
-                                    <Field name="web_image_array">
-                                        {({ form }: FieldProps) => (
-                                            <>
-                                                <div className="font-semibold flex justify-center">Web Image</div>
-                                                <Upload
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={values.web_image_array}
-                                                    className="flex justify-center"
-                                                    onFileRemove={(files) => form.setFieldValue('web_image_array', files)}
-                                                    onChange={(files) => form.setFieldValue('web_image_array', files)}
-                                                />
-                                            </>
-                                        )}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                        </FormContainer>
+                        <ImageCommonProduct
+                            label="Web Image"
+                            allName={webImageView}
+                            handleRemove={handleRemoveImage(`wb`)}
+                            name="web_image_array"
+                            fieldname="web_image_array"
+                            fileLists={values.web_image_array}
+                            textName="image web"
+                            placeholder="Enter Image Url"
+                        />
                     ) : (
-                        <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                            <div className="font-semibold mb-1 text-md">Web Image</div>
-
-                            <FormContainer className=" mt-5 ">
-                                <FormItem label="" className="grid grid-rows-2">
-                                    <Field name="web_image_array">
-                                        {({ field, form }: FieldProps) => (
-                                            <>
-                                                <Upload
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={values.web_image_array}
-                                                    className="flex justify-center"
-                                                    onFileRemove={(files) => form.setFieldValue('web_image_array', files)}
-                                                    onChange={(files) => {
-                                                        console.log('OnchangeFiles', files, field.name, values.web_image_array)
-                                                        form.setFieldValue('web_image_array', files)
-                                                    }}
-                                                />
-                                            </>
-                                        )}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                        </FormContainer>
+                        <AddProductImages
+                            label="Web Image"
+                            name="web_image_array"
+                            fileList={values.web_image_array}
+                            beforeUpload={beforeUpload}
+                            fieldNames="web_image_array"
+                        />
                     )}
                 </FormItem>
                 <FormItem label="Image Mobile">
                     {editMode ? (
-                        <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col  rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                            {initialValue.image_mobile ? (
-                                <div className="flex flex-col items-center justify-center min-w-[100px]">
-                                    <img
-                                        src={initialValue.image_mobile}
-                                        alt={`Image `}
-                                        className="w-[100px] h-[40px] flex object-contain "
-                                    />
-                                    <button
-                                        type="button"
-                                        className="text-red-500 text-md "
-                                        onClick={() => handleRemoveImage('image_mobile')}
-                                    >
-                                        <MdCancel className="text-red-500 bg-none text-lg" />
-                                    </button>
-                                </div>
-                            ) : (
-                                'No Image'
-                            )}
-                            <FormContainer className=" mt-5 ">
-                                <FormItem label="" className="grid grid-rows-2">
-                                    <Field name="mobile_image_array">
-                                        {({ form }: FieldProps) => (
-                                            <>
-                                                <div className="font-semibold flex justify-center">Mobile Image</div>
-                                                <Upload
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={values.mobile_image_array}
-                                                    className="flex justify-center"
-                                                    onFileRemove={(files) => form.setFieldValue('mobile_image_array', files)}
-                                                    onChange={(files) => form.setFieldValue('mobile_image_array', files)}
-                                                />
-                                            </>
-                                        )}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                        </FormContainer>
+                        <ImageCommonProduct
+                            label="Mobile Image"
+                            allName={mobileImageView}
+                            handleRemove={handleRemoveImage('mb')}
+                            name="mobile_image_array"
+                            fieldname="mobile_image_array"
+                            fileLists={values.mobile_image_array}
+                            textName="image mobile"
+                            placeholder="Enter Image Url"
+                        />
                     ) : (
-                        <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col  rounded-xl mb-2 overflow-scroll scrollbar-hide">
-                            <div className="font-semibold mb-1 text-md">Mobile Background Image</div>
-
-                            <FormContainer className=" mt-5 ">
-                                <FormItem label="" className="grid grid-rows-2">
-                                    <Field name="mobile_image_array">
-                                        {({ field, form }: FieldProps) => (
-                                            <>
-                                                <Upload
-                                                    beforeUpload={beforeUpload}
-                                                    fileList={values.mobile_image_array}
-                                                    className="flex justify-center"
-                                                    onFileRemove={(files) => form.setFieldValue('mobile_image_array', files)}
-                                                    onChange={(files) => {
-                                                        console.log('OnchangeFiles', files, field.name, values.mobile_image_array)
-                                                        form.setFieldValue('mobile_image_array', files)
-                                                    }}
-                                                />
-                                            </>
-                                        )}
-                                    </Field>
-                                </FormItem>
-                            </FormContainer>
-                        </FormContainer>
+                        <AddProductImages
+                            label="Mobile Image"
+                            name="mobile_image_array"
+                            fileList={values.mobile_image_array}
+                            beforeUpload={beforeUpload}
+                            fieldNames="mobile_image_array"
+                        />
                     )}
                 </FormItem>
+                {/* Event List */}
+
+                <FormItem label="Event Images">
+                    {editMode ? (
+                        <ImageCommonProduct
+                            label="Event Image"
+                            allName={eventPhotos}
+                            handleRemove={handleRemoveImage('ei')}
+                            name="event_images_array"
+                            fieldname="event_images_array"
+                            fileLists={values.event_images_array}
+                            textName="Event image "
+                            placeholder="Enter Image Url"
+                        />
+                    ) : (
+                        <AddProductImages
+                            label="Event Image"
+                            name="event_images_array"
+                            fileList={values.event_images_array}
+                            beforeUpload={beforeUpload}
+                            fieldNames="event_images_array"
+                        />
+                    )}
+                </FormItem>
+
+                <FormItem label="Event video">
+                    {editMode ? (
+                        <ImageCommonProduct
+                            isVideo
+                            label="Event Videos"
+                            allName={eventVideos}
+                            handleRemove={handleRemoveImage('ev')}
+                            name="event_video_array"
+                            fieldname="event_video_array"
+                            fileLists={values.event_video_array}
+                            textName="Event Video "
+                            placeholder="Enter Video Url"
+                        />
+                    ) : (
+                        <AddProductImages
+                            label="Event Image"
+                            name="event_images_array"
+                            fileList={values.event_images_array}
+                            beforeUpload={beforeUpload}
+                            fieldNames="event_images_array"
+                        />
+                    )}
+                </FormItem>
+
+                <FormItem label="Venue Images">
+                    {editMode ? (
+                        <ImageCommonProduct
+                            label="Venue Image"
+                            allName={venueImages}
+                            handleRemove={handleRemoveImage('vi')}
+                            name="venue_img_url"
+                            fieldname="venue_img_url"
+                            fileLists={values.venue_img_url}
+                            textName="Event image "
+                            placeholder="Enter Image Url"
+                        />
+                    ) : (
+                        <AddProductImages
+                            label="Venue Image"
+                            name="venue_img_url"
+                            fileList={values.venue_img_url}
+                            beforeUpload={beforeUpload}
+                            fieldNames="venue_img_url"
+                        />
+                    )}
+                </FormItem>
+
                 <div className="mt-8">
                     <div className="text-xl font-bold mb-4 text-gray-700">Event Location</div>
                     <EventMap setMarkLat={setCurrLat ?? 0} setMarkLong={setCurrLong ?? 0} markLat={currLat ?? 0} markLong={currLong ?? 0} />
