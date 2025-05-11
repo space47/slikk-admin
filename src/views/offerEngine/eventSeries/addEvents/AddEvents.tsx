@@ -14,7 +14,10 @@ const AddEvents = () => {
     const [currLat, setCurrLat] = useState<number>(12.920216)
     const [currLong, setCurrLong] = useState<number>(77.649326)
     const [addEventSeries, addEventResponse] = eventSeriesService.useAddEventSeriesMutation()
-    const initialValue = {}
+    const initialValue = {
+        is_active: true,
+        is_public: true,
+    }
 
     const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
         if (!files || files.length === 0) {
@@ -69,36 +72,44 @@ const AddEvents = () => {
                 ? await calculateAspectRatio(values.mobile_image_array)
                 : values?.extra_attributes?.web_aspect_ratio || null
 
-        const description = textParser(values.description)
-        const specialInstructions = textParser(values.extra_attributes.special_instructions)
+        const description = values.description ?? ''
+        const specialInstructions = values.extra_attributes.special_instructions ?? ''
+        const termsAndConditions = values.terms_and_conditions ?? ''
 
         const body = {
             name: values.name,
             event_type: values.event_type,
             description: description,
-            image_web: imageUploadWeb,
-            image_mobile: imageUploadMobile,
+            ...(imageUploadWeb && { image_web: imageUploadWeb }),
+            ...(imageUploadMobile && { image_mobile: imageUploadMobile }),
             total_slots: values.total_slots,
             registration_start_date: values.registration_start_date,
             registration_end_date: values.registration_end_date,
             event_start_time: values.event_start_time,
             event_end_time: values.event_end_time,
-            code_prefix: values.code_prefix,
+            ...(values.code_prefix && { code_prefix: values.code_prefix }),
             is_active: values.is_active,
             is_public: values.is_public,
-            latitude: currLat,
-            longitude: currLong,
-            venue: values?.venue,
-            terms_and_conditions: values?.terms_and_conditions,
+            code_prefix: values.code_prefix,
+            ...(currLat && { latitude: currLat }),
+            ...(currLong && { longitude: currLong }),
+            ...(values?.venue && { venue: values.venue }),
+            ...(termsAndConditions && { terms_and_conditions: termsAndConditions }),
             extra_attributes: {
-                category: values.extra_attributes.category,
-                sponsors: values.extra_attributes.sponsors?.split(','),
-                bg_color: values?.extra_attributes?.bg_color ?? null,
-                button_color: values?.extra_attributes?.button_color ?? null,
-                button_font_color: values?.extra_attributes?.button_font_color ?? null,
-                special_instructions: specialInstructions,
-                web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)),
-                mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)),
+                ...(values.extra_attributes.venue_address && { venue_address: values.extra_attributes.venue_address }),
+                ...(values.extra_attributes.category && { category: values.extra_attributes.category }),
+                ...(values.extra_attributes.sponsors && { sponsors: values.extra_attributes.sponsors?.split(',') }),
+                ...(values?.extra_attributes?.bg_color && { bg_color: values.extra_attributes.bg_color }),
+                ...(values?.extra_attributes?.button_color && { button_color: values.extra_attributes.button_color }),
+                ...(values?.extra_attributes?.button_font_color && { button_font_color: values.extra_attributes.button_font_color }),
+                ...(specialInstructions && { special_instructions: specialInstructions }),
+                ...(webAspectRatio[0] && { web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)) }),
+                ...(mobileAspectRatio[0] && { mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)) }),
+                ...(values?.extra_attributes.legal_instruction && { legal_instruction: values.extra_attributes.legal_instruction }),
+                ...(values?.extra_attributes.carousel_auto_scroll && {
+                    carousel_auto_scroll: values.extra_attributes.carousel_auto_scroll,
+                }),
+                ...(values?.extra_attributes.time_interval && { time_interval: values.extra_attributes.time_interval }),
             },
         }
 

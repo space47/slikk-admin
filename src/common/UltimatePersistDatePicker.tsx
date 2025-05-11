@@ -17,8 +17,8 @@ interface DATEPROPS {
 }
 
 const PREVIOUSARRAY = [
-    { label: 'TODAY', value: 'TODAY' },
-    { label: 'YESTERDAY', value: 'YESTERDAY' },
+    // { label: 'TODAY', value: 'TODAY' },
+    // { label: 'YESTERDAY', value: 'YESTERDAY' },
     { label: 'CURRENT WEEK', value: 'CURRENT WEEK' },
     { label: 'LAST WEEK', value: 'LAST WEEK' },
     { label: 'CURRENT MONTH', value: 'CURRENT MONTH' },
@@ -37,16 +37,16 @@ const UltimatePersistDatePicker = ({ setFrom, setTo, handleDateChange }: DATEPRO
         let endDate: string | undefined
 
         switch (value) {
-            case 'TODAY':
-                startDate = moment().format('YYYY-MM-DD')
-                endDate = startDate
-                setShowingDatePicker(false)
-                break
-            case 'YESTERDAY':
-                startDate = moment().subtract(1, 'days').format('YYYY-MM-DD')
-                endDate = startDate
-                setShowingDatePicker(false)
-                break
+            // case 'TODAY':
+            //     startDate = moment().format('YYYY-MM-DD')
+            //     endDate = startDate
+            //     setShowingDatePicker(false)
+            //     break
+            // case 'YESTERDAY':
+            //     startDate = moment().subtract(1, 'days').format('YYYY-MM-DD')
+            //     endDate = startDate
+            //     setShowingDatePicker(false)
+            //     break
             case 'CURRENT WEEK':
                 startDate = moment().startOf('isoWeek').format('YYYY-MM-DD')
                 endDate = moment().endOf('isoWeek').format('YYYY-MM-DD')

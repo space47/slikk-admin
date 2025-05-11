@@ -58,12 +58,16 @@ const EditEvents = () => {
         venue: eventData?.venue,
         terms_and_conditions: eventData?.terms_and_conditions,
         extra_attributes: {
+            venue_address: eventData?.extra_attributes.venue_address || '',
             category: eventData?.extra_attributes.category || '',
             sponsors: eventData?.extra_attributes.sponsors || [],
             special_instructions: eventData?.extra_attributes.special_instructions || '',
             bg_color: eventData?.extra_attributes.bg_color || '',
             button_color: eventData?.extra_attributes.button_color || '',
             button_font_color: eventData?.extra_attributes.button_font_color || '',
+            legal_instructions: eventData?.extra_attributes.legal_instructions || '',
+            carousel_auto_scroll: eventData?.extra_attributes.carousel_auto_scroll || false,
+            time_interval: eventData?.extra_attributes.time_interval || 0,
         },
     }
 
@@ -169,38 +173,47 @@ const EditEvents = () => {
 
         console.log('webAspectratio')
 
-        const description = textParser(values.description)
-        const specialInstructions = textParser(values.extra_attributes.special_instructions)
+        const description = values.description ?? ''
+        const specialInstructions = values.extra_attributes.special_instructions ?? ''
+        const termsAndConditions = values.terms_and_conditions ?? ''
 
         const body = {
-            name: values?.name ?? null,
-            event_type: values?.event_type ?? null,
-            description: description ?? null,
-            image_web: imageUploadWeb,
-            image_mobile: imageUploadMobile,
-            total_slots: values?.total_slots ?? null,
-            registration_start_date: values?.registration_start_date ?? null,
-            registration_end_date: values?.registration_end_date ?? null,
-            event_start_time: values?.event_start_time ?? null,
-            event_end_time: values?.event_end_time ?? null,
-            code_prefix: values?.code_prefix ?? null,
+            ...(values?.name && { name: values.name }),
+            ...(values?.event_type && { event_type: values.event_type }),
+            ...(description && { description }),
+            ...(imageUploadWeb && { image_web: imageUploadWeb }),
+            ...(imageUploadMobile && { image_mobile: imageUploadMobile }),
+            ...(values?.total_slots && { total_slots: values.total_slots }),
+            ...(values?.registration_start_date && { registration_start_date: values.registration_start_date }),
+            ...(values?.registration_end_date && { registration_end_date: values.registration_end_date }),
+            ...(values?.event_start_time && { event_start_time: values.event_start_time }),
+            ...(values?.event_end_time && { event_end_time: values.event_end_time }),
+            ...(values?.code_prefix && { code_prefix: values.code_prefix }),
             is_active: values?.is_active ?? false,
             is_public: values?.is_public ?? false,
-            latitude: currLat ?? null,
-            longitude: currLong ?? null,
-            terms_and_conditions: values?.terms_and_conditions ?? null,
-            venue: values?.venue ?? null,
+            ...(currLat && { latitude: currLat }),
+            ...(currLong && { longitude: currLong }),
+            ...(termsAndConditions && { terms_and_conditions: termsAndConditions }),
+            ...(values?.venue && { venue: values.venue }),
             extra_attributes: {
-                category: values?.extra_attributes?.category ?? null,
-                bg_color: values?.extra_attributes?.bg_color ?? null,
-                button_color: values?.extra_attributes?.button_color ?? null,
-                button_font_color: values?.extra_attributes?.button_font_color ?? null,
-                sponsors: Array.isArray(values?.extra_attributes?.sponsors)
-                    ? values?.extra_attributes?.sponsors
-                    : (values?.extra_attributes?.sponsors?.split(',') ?? []),
-                special_instructions: specialInstructions ?? null,
-                web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)),
-                mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)),
+                ...(values.extra_attributes?.venue_address && { venue_address: values.extra_attributes.venue_address }),
+                ...(values.extra_attributes?.category && { category: values.extra_attributes.category }),
+                ...(values.extra_attributes?.bg_color && { bg_color: values.extra_attributes.bg_color }),
+                ...(values.extra_attributes?.button_color && { button_color: values.extra_attributes.button_color }),
+                ...(values.extra_attributes?.button_font_color && { button_font_color: values.extra_attributes.button_font_color }),
+                ...(values.extra_attributes?.sponsors && {
+                    sponsors: Array.isArray(values.extra_attributes.sponsors)
+                        ? values.extra_attributes.sponsors
+                        : values.extra_attributes.sponsors.split(','),
+                }),
+                ...(specialInstructions && { special_instructions: specialInstructions }),
+                ...(webAspectRatio[0] && { web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)) }),
+                ...(mobileAspectRatio[0] && { mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)) }),
+                ...(values.extra_attributes?.legal_instructions && { legal_instructions: values.extra_attributes.legal_instructions }),
+                ...(values.extra_attributes?.carousel_auto_scroll && {
+                    carousel_auto_scroll: values.extra_attributes.carousel_auto_scroll,
+                }),
+                ...(values.extra_attributes?.time_interval && { time_interval: values.extra_attributes.time_interval }),
             },
         }
 

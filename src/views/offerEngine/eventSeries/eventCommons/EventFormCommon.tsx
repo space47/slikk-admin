@@ -42,8 +42,8 @@ const EventFormCommon = ({ editMode, values, initialValue, handleRemoveImage, se
                         )}
                     </Field>
                 </FormItem>
-                <FormItem label="Special Promotions">
-                    <Field name="extra_attributes.special_promotions">
+                <FormItem label="Special Instructions">
+                    <Field name="extra_attributes.special_instructions">
                         {({ field, form }: FieldProps) => (
                             <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
                         )}

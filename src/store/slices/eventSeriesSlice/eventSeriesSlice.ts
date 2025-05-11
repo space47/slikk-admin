@@ -16,8 +16,8 @@ export type EventSeriesSliceType = {
 const initialState: EventSeriesSliceType = {
     eventSeriesData: [],
     count: 0,
-    from: moment().format('YYYY-MM-DD'),
-    to: moment().format('YYYY-MM-DD'),
+    from: moment().startOf('isoWeek').format('YYYY-MM-DD'),
+    to: moment().endOf('isoWeek').format('YYYY-MM-DD'),
     page: 1,
     pageSize: 10,
 }
