@@ -883,6 +883,24 @@ const appsRoute: Routes = [
         authority: [ADMIN, USER],
     },
     {
+        key: 'appsAppSettings.eventSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/eventSeries/addEvent`,
+        component: lazy(() => import('@/views/offerEngine/eventSeries/addEvents/AddEvents')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.eventSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/eventSeries/:id`,
+        component: lazy(() => import('@/views/offerEngine/eventSeries/editEvents/EditEvents')),
+        authority: [ADMIN, USER],
+    },
+    {
+        key: 'appsAppSettings.eventSeries',
+        path: `${APP_PREFIX_PATH}/appSettings/eventSeries/details/:id`,
+        component: lazy(() => import('@/views/offerEngine/eventSeries/eventList/eventDetails/EventListDetails')),
+        authority: [ADMIN, USER],
+    },
+    {
         key: 'appsAppSettings.banners',
         path: `${APP_PREFIX_PATH}/appSettings/banners/`,
         component: lazy(() => import('@/views/appsSettings/banners/AppBanners')),

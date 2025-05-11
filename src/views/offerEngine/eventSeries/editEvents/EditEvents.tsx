@@ -1,7 +1,272 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button, FormContainer } from '@/components/ui'
+import { eventSeriesService } from '@/store/services/eventSeriesService'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Form, Formik } from 'formik'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import EventFormCommon from '../eventCommons/EventFormCommon'
+import { notification } from 'antd'
+import { handleimage } from '@/common/handleImage'
+import axios from 'axios'
+import { textParser } from '@/common/textParser'
+
+function removeEmptyValues(obj: any): any {
+    return Object.fromEntries(
+        Object.entries(obj)
+            .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+            .map(([key, value]) => [key, typeof value === 'object' && !Array.isArray(value) ? removeEmptyValues(value) : value]),
+    )
+}
 
 const EditEvents = () => {
-    return <div>EditEvents</div>
+    const { id } = useParams()
+    const navigate = useNavigate()
+    const [editEventSeries] = eventSeriesService.useEditEventSeriesMutation()
+    const [webImageView, setWebImageView] = useState<string[]>([])
+    const [mobileImageView, setMobileImageView] = useState<string[]>([])
+
+    const [eventData, setEventData] = useState<any>(null)
+
+    useEffect(() => {
+        const fetchEventData = async () => {
+            const response = await axioisInstance.get(`/dashboard/promotion/events?event_id=${id}`)
+            const data = response.data?.data
+            setEventData(data)
+            setWebImageView(data?.image_web ? [data?.image_web] : [])
+            setMobileImageView(data?.image_mobile ? [data?.image_mobile] : [])
+        }
+        fetchEventData()
+    }, [id])
+
+    const initialValue = {
+        name: eventData?.name || '',
+        event_type: eventData?.event_type || '',
+        description: eventData?.description || '',
+        image_web: eventData?.image_web || '',
+        image_mobile: eventData?.image_mobile || '',
+        total_slots: eventData?.total_slots || 0,
+        registration_start_date: eventData?.registration_start_date || '',
+        registration_end_date: eventData?.registration_end_date || '',
+        event_start_time: eventData?.event_start_time || '',
+        event_end_time: eventData?.event_end_time || '',
+        code_prefix: eventData?.code_prefix || '',
+        is_active: eventData?.is_active || false,
+        is_public: eventData?.is_public || false,
+        latitude: eventData?.latitude || 12.920216,
+        longitude: eventData?.longitude || 77.649326,
+        venue: eventData?.venue,
+        terms_and_conditions: eventData?.terms_and_conditions,
+        extra_attributes: {
+            venue_address: eventData?.extra_attributes.venue_address || '',
+            category: eventData?.extra_attributes.category || '',
+            sponsors: eventData?.extra_attributes.sponsors || [],
+            special_instructions: eventData?.extra_attributes.special_instructions || '',
+            bg_color: eventData?.extra_attributes.bg_color || '',
+            button_color: eventData?.extra_attributes.button_color || '',
+            button_font_color: eventData?.extra_attributes.button_font_color || '',
+            legal_instructions: eventData?.extra_attributes.legal_instructions || '',
+            carousel_auto_scroll: eventData?.extra_attributes.carousel_auto_scroll || false,
+            time_interval: eventData?.extra_attributes.time_interval || 0,
+        },
+    }
+
+    const [currLat, setCurrLat] = useState<number>(initialValue?.latitude || 12.920216)
+    const [currLong, setCurrLong] = useState<number>(initialValue?.longitude || 77.649326)
+
+    const handleRemoveImage = (type: 'image_web' | 'image_mobile') => {
+        setEventData((prev: any) => ({
+            ...prev,
+            [type]: '',
+        }))
+
+        if (type === 'image_web') {
+            setWebImageView([])
+        } else {
+            setMobileImageView([])
+        }
+    }
+
+    const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
+        if (!imageSources || imageSources.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+
+        for (const src of imageSources) {
+            const image = new Image()
+            image.src = src
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    resolve()
+                }
+                image.onerror = () => {
+                    resolve()
+                }
+            })
+        }
+
+        return aspectRatios
+    }
+    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
+        if (!files || files.length === 0) {
+            return []
+        }
+
+        const aspectRatios: number[] = []
+        for (const file of files) {
+            const image = new Image()
+            const fileURL = URL.createObjectURL(file)
+
+            image.src = fileURL
+
+            await new Promise<void>((resolve) => {
+                image.onload = () => {
+                    aspectRatios.push(image.width / image.height)
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+                image.onerror = () => {
+                    URL.revokeObjectURL(fileURL)
+                    resolve()
+                }
+            })
+        }
+        return aspectRatios
+    }
+
+    const handleSubmit = async (values: any) => {
+        console.log(`1`, values)
+
+        // const processImageUpload = async (imageArray: any[] | undefined, currentImage: string | null) => {
+        //     return imageArray?.length > 0 ? await handleimage('product', imageArray) : (currentImage ?? null)
+        // }
+        const processImageUpload = async (imageArray: any[], currentImage: string) => {
+            return imageArray.length > 0 ? await handleimage('product', imageArray) : currentImage
+        }
+
+        console.log(`2`)
+        // const imageUploadWeb = await processImageUpload(values?.web_image_array, values?.image_web)
+        const imageUploadMobile =
+            values?.mobile_image_array?.length > 0 ? await handleimage('product', values.mobile_image_array) : mobileImageView[0] || null
+
+        const imageUploadWeb =
+            values?.web_image_array?.length > 0 ? await handleimage('product', values.web_image_array) : webImageView[0] || null
+
+        console.log(`3`)
+        const mobileAspectRatio =
+            values?.mobile_image_array?.length > 0
+                ? await calculateAspectRatio(values.mobile_image_array)
+                : values?.image_mobile && typeof mobileImageView !== 'undefined'
+                  ? await calculateAspectRatioFromStrings(mobileImageView)
+                  : (values?.extra_attributes?.mobile_aspect_ratio ?? null)
+
+        const webAspectRatio =
+            values?.web_image_array?.length > 0
+                ? await calculateAspectRatio(values.web_image_array)
+                : values?.image_web && typeof webImageView !== 'undefined'
+                  ? await calculateAspectRatioFromStrings(webImageView)
+                  : (values?.extra_attributes?.web_aspect_ratio ?? null)
+
+        console.log('webAspectratio')
+
+        const description = values.description ?? ''
+        const specialInstructions = values.extra_attributes.special_instructions ?? ''
+        const termsAndConditions = values.terms_and_conditions ?? ''
+
+        const body = {
+            ...(values?.name && { name: values.name }),
+            ...(values?.event_type && { event_type: values.event_type }),
+            ...(description && { description }),
+            ...(imageUploadWeb && { image_web: imageUploadWeb }),
+            ...(imageUploadMobile && { image_mobile: imageUploadMobile }),
+            ...(values?.total_slots && { total_slots: values.total_slots }),
+            ...(values?.registration_start_date && { registration_start_date: values.registration_start_date }),
+            ...(values?.registration_end_date && { registration_end_date: values.registration_end_date }),
+            ...(values?.event_start_time && { event_start_time: values.event_start_time }),
+            ...(values?.event_end_time && { event_end_time: values.event_end_time }),
+            ...(values?.code_prefix && { code_prefix: values.code_prefix }),
+            is_active: values?.is_active ?? false,
+            is_public: values?.is_public ?? false,
+            ...(currLat && { latitude: currLat }),
+            ...(currLong && { longitude: currLong }),
+            ...(termsAndConditions && { terms_and_conditions: termsAndConditions }),
+            ...(values?.venue && { venue: values.venue }),
+            extra_attributes: {
+                ...(values.extra_attributes?.venue_address && { venue_address: values.extra_attributes.venue_address }),
+                ...(values.extra_attributes?.category && { category: values.extra_attributes.category }),
+                ...(values.extra_attributes?.bg_color && { bg_color: values.extra_attributes.bg_color }),
+                ...(values.extra_attributes?.button_color && { button_color: values.extra_attributes.button_color }),
+                ...(values.extra_attributes?.button_font_color && { button_font_color: values.extra_attributes.button_font_color }),
+                ...(values.extra_attributes?.sponsors && {
+                    sponsors: Array.isArray(values.extra_attributes.sponsors)
+                        ? values.extra_attributes.sponsors
+                        : values.extra_attributes.sponsors.split(','),
+                }),
+                ...(specialInstructions && { special_instructions: specialInstructions }),
+                ...(webAspectRatio[0] && { web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)) }),
+                ...(mobileAspectRatio[0] && { mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)) }),
+                ...(values.extra_attributes?.legal_instructions && { legal_instructions: values.extra_attributes.legal_instructions }),
+                ...(values.extra_attributes?.carousel_auto_scroll && {
+                    carousel_auto_scroll: values.extra_attributes.carousel_auto_scroll,
+                }),
+                ...(values.extra_attributes?.time_interval && { time_interval: values.extra_attributes.time_interval }),
+            },
+        }
+
+        console.log('here')
+
+        try {
+            const response = await axios.patch(`/dashboard/promotion/events/${id}`, body)
+            notification.success({
+                message: response?.data?.success || 'Successfully Edited Event',
+            })
+            navigate(-1)
+        } catch (error) {
+            console.log('error', error)
+            notification.error({
+                message: 'Failed to edit Event',
+            })
+        }
+    }
+
+    return (
+        <div className="p-4 shadow-lg rounded-xl bg-white dark:bg-gray-900">
+            <h3 className="mb-5 from-neutral-900 font-semibold">Edit Event</h3>
+            <Formik
+                enableReinitialize
+                initialValues={initialValue}
+                // validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+            >
+                {({ values }) => (
+                    <Form className="w-full">
+                        {/* Form */}
+                        <EventFormCommon
+                            editMode
+                            setCurrLat={setCurrLat}
+                            setCurrLong={setCurrLong}
+                            currLat={currLat}
+                            currLong={currLong}
+                            values={values}
+                            initialValue={initialValue}
+                            handleRemoveImage={handleRemoveImage}
+                        />
+
+                        <br />
+                        <FormContainer>
+                            <Button variant="accept" type="submit">
+                                Submit
+                            </Button>
+                        </FormContainer>
+                    </Form>
+                )}
+            </Formik>
+        </div>
+    )
 }
 
 export default EditEvents
