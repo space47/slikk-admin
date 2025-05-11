@@ -55,9 +55,9 @@ const EditEvents = () => {
         is_public: eventData?.is_public || false,
         latitude: eventData?.latitude || 12.920216,
         longitude: eventData?.longitude || 77.649326,
-
+        venue: eventData?.venue,
+        terms_and_conditions: eventData?.terms_and_conditions,
         extra_attributes: {
-            venue: eventData?.extra_attributes.venue || '',
             category: eventData?.extra_attributes.category || '',
             sponsors: eventData?.extra_attributes.sponsors || [],
             special_instructions: eventData?.extra_attributes.special_instructions || '',
@@ -188,8 +188,9 @@ const EditEvents = () => {
             is_public: values?.is_public ?? false,
             latitude: currLat ?? null,
             longitude: currLong ?? null,
+            terms_and_conditions: values?.terms_and_conditions ?? null,
+            venue: values?.venue ?? null,
             extra_attributes: {
-                venue: values?.extra_attributes?.venue ?? null,
                 category: values?.extra_attributes?.category ?? null,
                 bg_color: values?.extra_attributes?.bg_color ?? null,
                 button_color: values?.extra_attributes?.button_color ?? null,

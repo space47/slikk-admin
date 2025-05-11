@@ -49,6 +49,13 @@ const EventFormCommon = ({ editMode, values, initialValue, handleRemoveImage, se
                         )}
                     </Field>
                 </FormItem>
+                <FormItem label="Terms and Conditions">
+                    <Field name="terms_and_conditions">
+                        {({ field, form }: FieldProps) => (
+                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                        )}
+                    </Field>
+                </FormItem>
                 <FormContainer className="grid grid-cols-2 gap-4">
                     <FullDateForm label="Registration Start Date" name="registration_start_date" fieldname="registration_start_date" />
                     <FullDateForm label="Registration End Date" name="registration_end_date" fieldname="registration_end_date" />

@@ -12,7 +12,7 @@ export const EventTypeForm = [
     { label: 'Code Prefix', name: 'code_prefix', type: 'text' },
     { label: 'Is Active', name: 'is_active', type: 'checkbox' },
     { label: 'Is Public', name: 'is_public', type: 'checkbox' },
-    { label: 'Venue', name: 'extra_attributes.venue', type: 'text' },
+    { label: 'Venue', name: 'venue', type: 'text' },
     { label: 'Category', name: 'extra_attributes.category', type: 'text' },
     { label: 'Sponsors', name: 'extra_attributes.sponsors', type: 'text' },
     { label: 'Special Instructions', name: 'extra_attributes.special_instructions', type: 'text' },

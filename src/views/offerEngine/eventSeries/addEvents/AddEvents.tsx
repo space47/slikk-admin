@@ -88,8 +88,9 @@ const AddEvents = () => {
             is_public: values.is_public,
             latitude: currLat,
             longitude: currLong,
+            venue: values?.venue,
+            terms_and_conditions: values?.terms_and_conditions,
             extra_attributes: {
-                venue: values.extra_attributes.venue,
                 category: values.extra_attributes.category,
                 sponsors: values.extra_attributes.sponsors?.split(','),
                 bg_color: values?.extra_attributes?.bg_color ?? null,
