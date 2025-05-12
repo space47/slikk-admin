@@ -10,6 +10,7 @@ import { MdCancel } from 'react-icons/md'
 import EventMap from './EventMaps'
 import ImageCommonProduct from '@/views/category-management/catalog/ImageCommonProduct'
 import AddProductImages from '@/views/category-management/catalog/AddProductImages'
+import { beforeVideoUpload } from '@/common/beforUploadVideo'
 
 interface Props {
     editMode?: boolean
@@ -42,21 +43,23 @@ const EventFormCommon = ({
     eventVideos,
     venueImages,
 }: Props) => {
-    console.log('yesssssssss', eventPhotos)
     return (
         <div>
             <FormContainer>
-                {EventTypeForm?.map((item, key) => (
-                    <FormItem key={key} label={item.label} className="w-full">
-                        <Field
-                            name={item?.name}
-                            type={item?.type}
-                            placeholder={`Enter ${item?.label}`}
-                            component={item?.type === 'checkbox' ? Checkbox : Input}
-                            className="w-3/4"
-                        />
-                    </FormItem>
-                ))}
+                <FormContainer className="grid grid-cols-2 gap-3">
+                    {EventTypeForm?.map((item, key) => (
+                        <FormItem key={key} label={item.label} className="w-full">
+                            <Field
+                                name={item?.name}
+                                type={item?.type}
+                                placeholder={`Enter ${item?.label}`}
+                                component={item?.type === 'checkbox' ? Checkbox : Input}
+                                className={`${item?.type === 'checkbox' ? 'w-1' : 'w-3/4'}`}
+                            />
+                        </FormItem>
+                    ))}
+                </FormContainer>
+
                 <FormItem label="Description">
                     <Field name="description">
                         {({ field, form }: FieldProps) => (
@@ -177,11 +180,11 @@ const EventFormCommon = ({
                         />
                     ) : (
                         <AddProductImages
-                            label="Event Image"
-                            name="event_images_array"
-                            fileList={values.event_images_array}
-                            beforeUpload={beforeUpload}
-                            fieldNames="event_images_array"
+                            label="Event Video"
+                            name="event_video_array"
+                            fileList={values.event_video_array}
+                            beforeUpload={beforeVideoUpload}
+                            fieldNames="event_video_array"
                         />
                     )}
                 </FormItem>

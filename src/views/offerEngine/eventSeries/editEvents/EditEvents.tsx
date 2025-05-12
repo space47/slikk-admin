@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import EventFormCommon from '../eventCommons/EventFormCommon'
 import { notification } from 'antd'
 import axios from 'axios'
-import { handleimage } from '@/views/category-management/catalog/handlingProductImage'
+import { handleimage, handleVideo } from '@/views/category-management/catalog/handlingProductImage'
 
 const EditEvents = () => {
     const { id } = useParams()
@@ -58,9 +58,6 @@ const EditEvents = () => {
         fetchEventData()
     }, [id])
 
-    console.log('event photos', eventPhotos)
-    console.log('web image', webImageView)
-
     const initialValue = {
         name: eventData?.name || '',
         event_type: eventData?.event_type || '',
@@ -96,8 +93,17 @@ const EditEvents = () => {
         },
     }
 
-    const [currLat, setCurrLat] = useState<number>(initialValue?.latitude || 12.920216)
-    const [currLong, setCurrLong] = useState<number>(initialValue?.longitude || 77.649326)
+    console.log('latitude is', eventData?.latitude)
+
+    const [currLat, setCurrLat] = useState<number>(eventData?.latitude)
+    const [currLong, setCurrLong] = useState<number>(eventData?.longitude)
+
+    useEffect(() => {
+        if (eventData?.latitude && eventData?.longitude) {
+            setCurrLat(eventData.latitude)
+            setCurrLong(eventData.longitude)
+        }
+    }, [eventData])
 
     const calculateAspectRatioFromStrings = async (imageSources: string[]): Promise<number[]> => {
         if (!imageSources || imageSources.length === 0) {
@@ -187,7 +193,7 @@ const EditEvents = () => {
             event_img_url = temp.filter((t) => t).join(',')
         }
 
-        const videoEventUpload = await handleimage(values.event_video_array)
+        const videoEventUpload = await handleVideo(values.event_video_array)
         if (values.event_video_array && values.event_video_array.length && !videoEventUpload) {
             return
         } else if (values.event_video_array && videoEventUpload) {
