@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Checkbox, FormContainer, FormItem, Input, Upload } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
 import React from 'react'
 import { EventTypeForm } from './eventCommonArray'
 import { Field, FieldProps } from 'formik'
 import FullDateForm from '@/common/FullDateForm'
 import { RichTextEditor } from '@/components/shared'
 import { beforeUpload } from '@/common/beforeUpload'
-import { MdCancel } from 'react-icons/md'
 import EventMap from './EventMaps'
 import ImageCommonProduct from '@/views/category-management/catalog/ImageCommonProduct'
 import AddProductImages from '@/views/category-management/catalog/AddProductImages'
@@ -31,7 +30,6 @@ interface Props {
 const EventFormCommon = ({
     editMode,
     values,
-    initialValue,
     handleRemoveImage,
     setCurrLat,
     setCurrLong,
