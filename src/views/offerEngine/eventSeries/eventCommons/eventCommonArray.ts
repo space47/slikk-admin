@@ -4,6 +4,11 @@ export const EventSearchOptions = [
     // { label: 'Event ID', value: 'event_id' },
     { label: 'Mobile Number', value: 'mobile_number' },
 ]
+export const EventUserOptionsList = [
+    { label: 'Event Code', value: 'event_code' },
+    { label: 'Mobile', value: 'mobile' },
+    { label: 'Status', value: 'status' },
+]
 
 export const EventTypeForm = [
     { label: 'Name', name: 'name', type: 'text' },

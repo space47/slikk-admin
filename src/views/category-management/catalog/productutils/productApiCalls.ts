@@ -7,7 +7,7 @@ export const fetchProducts = async (page: number, pageSize: number, typeFetch: s
     try {
         const pageAndSize = `&p=${page}&page_size=${pageSize}`
         const searchKey =
-            ['sku', 'name', 'barcode'].includes(currentSelectedPage.value) && globalFilter
+            ['sku_exact', 'name', 'barcode'].includes(currentSelectedPage.value) && globalFilter
                 ? `&${currentSelectedPage.value}=${encodeURIComponent(globalFilter)}`
                 : ''
 

@@ -49,7 +49,7 @@ const PrinterModule = () => {
         if (!skuInput) return
 
         let skuFilter = ''
-        if (selectedFilter.value === 'sku') skuFilter = `&sku=${skuInput}`
+        if (selectedFilter.value === 'sku') skuFilter = `&sku_exact=${skuInput}`
         if (selectedFilter.value === 'name') skuFilter = `&sku=${fetchedSku}`
         if (selectedFilter.value === 'barcode') skuFilter = `&sku=${fetchedSku}`
 

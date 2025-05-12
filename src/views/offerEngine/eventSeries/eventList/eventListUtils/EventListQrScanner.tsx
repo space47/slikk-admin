@@ -22,10 +22,15 @@ const EventListQrScanner = ({ delay, setQrResult, qrResult, setDelay }: props) =
             setQrResult(JSON.stringify(data?.text))
         }
     }
+    const constraints = {
+        video: {
+            facingMode: 'environment',
+        },
+    }
 
     return (
         <div>
-            <QrReader delay={delay} style={previewStyle} onError={handleError} onScan={handleScan} />
+            <QrReader delay={delay} style={previewStyle} onError={handleError} onScan={handleScan} constraints={constraints} />
         </div>
     )
 }
