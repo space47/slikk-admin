@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { BANNER_PAGE_NAME } from '@/common/banner'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
+// import { BANNER_PAGE_NAME } from '@/common/banner'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { Dropdown, Button } from '@/components/ui'
@@ -12,6 +12,7 @@ import { useAppDispatch } from '@/store'
 import { getAllBrandsAPI } from '@/store/action/brand.action'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import { FaCircleArrowLeft } from 'react-icons/fa6'
+import { fetchPageSettings } from '../../pageSettings/pageSettingsUtils/PageSettingsApiCalls'
 
 interface DataType {
     type: string
@@ -44,9 +45,19 @@ const AddBanners = () => {
     const [sectionHeadingData, setSectionHeadingData] = useState<WebType[]>([])
     const [currentStep, setCurrentStep] = useState(1)
 
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string> | null>(null)
-
     const [selectedSectionHeading, setSelectedSectionHeading] = useState<WebType | null>(null)
+    const [pageNames, setPageNames] = useState<any[]>([])
+
+    useLayoutEffect(() => {
+        fetchPageSettings(setPageNames, setCurrentSelectedPage)
+    }, [])
+
+    const BANNER_PAGE_NAME = pageNames?.map((item) => ({
+        name: item?.display_name,
+        value: item?.name,
+    }))
+
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string> | null>(null)
 
     // Fetch Data for section Headings
     const fetchData = async () => {
@@ -114,7 +125,7 @@ const AddBanners = () => {
                 </div>
             )}
 
-            <div className="flex flex-col w-full mt-5 min-h-[70vh] text-[16px]">
+            <div className="flex flex-col w-full sticky mt-5 min-h-[70vh] text-[16px] overflow-scroll scrollbar-hide">
                 {/* STEP 1 -- Select Page */}
                 {currentStep == 1 && (
                     <div className="flex  items-center justify-center ">
