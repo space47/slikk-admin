@@ -54,14 +54,17 @@ const AddEvents = () => {
         }
     }, [addEventResponse?.isSuccess])
 
-    const handleImageCheck = async (field: any) => {
+    const handleImageCheck = async (field: any, isVideo?: boolean) => {
+        if (isVideo) {
+            return field && field.length > 0 ? await handleVideo(field) : null
+        }
         return field && field.length > 0 ? await handleimage(field) : null
     }
 
     const handleSubmit = async (values: any) => {
         const imageUploadWeb = await handleImageCheck(values.web_image_array)
         const imageUploadMobile = await handleImageCheck(values.mobile_image_array)
-        const imageUploadEventVideos = await handleImageCheck(values.event_video_array)
+        const imageUploadEventVideos = await handleImageCheck(values.event_video_array, true)
         const imageUploadVenue = await handleImageCheck(values.venue_img_url)
         const imageUploadEventPhotos = await handleImageCheck(values.event_images_array)
 

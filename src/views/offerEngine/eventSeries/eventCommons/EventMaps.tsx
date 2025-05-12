@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
@@ -22,13 +22,15 @@ interface RiderAddProps {
     setMarkLong: any
 }
 
-const EventMap = ({ setMarkLat, setMarkLong }: RiderAddProps) => {
-    const [currLat, setCurrLat] = useState<number>(12.920216)
-    const [currLong, setCurrLong] = useState<number>(77.649326)
+const EventMap = ({ setMarkLat, setMarkLong, markLat, markLong }: RiderAddProps) => {
     const [location, setLocation] = useState('')
     const [suggestions, setSuggestions] = useState<any>([])
-    const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null)
+    const [position, setPosition] = useState<{ lat: number; lng: number } | null>({ lat: markLat, lng: markLong })
     const MAP_KEY = import.meta.env.VITE_OLA_API_KEY
+
+    useEffect(() => {
+        setPosition({ lat: markLat, lng: markLong })
+    }, [markLat, markLong])
 
     const SetView = ({ center }: { center: [number, number] }) => {
         const map = useMap()
@@ -44,7 +46,7 @@ const EventMap = ({ setMarkLat, setMarkLong }: RiderAddProps) => {
             }
 
             try {
-                const response = await axios.get(`https://api.olamaps.io/places/v1/autocomplete`, {
+                const response = await axios.get('https://api.olamaps.io/places/v1/autocomplete', {
                     params: {
                         input: query,
                         language: 'English',
@@ -74,9 +76,9 @@ const EventMap = ({ setMarkLat, setMarkLong }: RiderAddProps) => {
     }
 
     const handleSelectSuggestion = (suggestion: any) => {
-        setCurrLat(suggestion.lat)
-        setCurrLong(suggestion.lng)
-        // setPosition({ lat: suggestion.lat, lng: suggestion.lng })
+        setMarkLat(suggestion.lat)
+        setMarkLong(suggestion.lng)
+        setPosition({ lat: suggestion.lat, lng: suggestion.lng })
         setSuggestions([])
         setLocation(suggestion.name)
     }
@@ -116,8 +118,8 @@ const EventMap = ({ setMarkLat, setMarkLong }: RiderAddProps) => {
             </div>
 
             <div className="flex flex-col gap-10 xl:flex-row">
-                <MapContainer center={[currLat, currLong]} zoom={13} style={{ height: '70vh', width: '100%', cursor: 'pointer' }}>
-                    <SetView center={[currLat, currLong]} />
+                <MapContainer center={[markLat, markLong]} zoom={13} style={{ height: '70vh', width: '100%', cursor: 'pointer' }}>
+                    <SetView center={[markLat, markLong]} />
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <LocationMarker />
                 </MapContainer>

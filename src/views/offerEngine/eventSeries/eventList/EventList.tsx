@@ -21,7 +21,6 @@ import { EventListColumns } from './eventListUtils/EventListColumns'
 import EasyTable from '@/common/EasyTable'
 import { Option } from '@/views/org-management/sellers/sellerCommon'
 import { pageSizeOptions } from '@/views/category-management/orderlist/commontypes'
-import AssignUserModal from './eventListUtils/AssignUserModal'
 
 const EventList = () => {
     const dispatch = useAppDispatch()
@@ -29,13 +28,9 @@ const EventList = () => {
     const [globalFilter, setGlobalFilter] = useState<string>('')
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(EventSearchOptions[0])
     const { eventSeriesData, count, from, page, pageSize, to } = useAppSelector<EventSeriesSliceType>((state) => state.eventSeries)
-    const [isAddEvent, setIsAddEvent] = useState<boolean>(false)
+
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-    const {
-        data: eventData,
-        isLoading,
-        isSuccess,
-    } = eventSeriesService.useEventSeriesDataQuery({
+    const { data: eventData, isSuccess } = eventSeriesService.useEventSeriesDataQuery({
         from: from,
         to: To_Date,
         page: page,
@@ -99,11 +94,7 @@ const EventList = () => {
                     <div>
                         <UltimatePersistDatePicker setFrom={setFrom} setTo={setTo} handleDateChange={handleDateChange} />
                     </div>
-                    <div className="mt-8">
-                        <Button className="" size="sm" variant="new" onClick={() => setIsAddEvent(true)}>
-                            ADD USER TO EVENT
-                        </Button>
-                    </div>
+
                     <div className="mt-8">
                         <Button className="" size="sm" variant="new" onClick={() => navigate('/app/appSettings/eventSeries/addEvent')}>
                             ADD NEW EVENT
@@ -140,7 +131,6 @@ const EventList = () => {
                     </div>
                 </div>
             </div>
-            {isAddEvent && <AssignUserModal dialogIsOpen={isAddEvent} setIsOpen={setIsAddEvent} eventSeriesData={eventSeriesData ?? []} />}
         </div>
     )
 }

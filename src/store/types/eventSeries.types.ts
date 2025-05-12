@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type eventSeriesResponseTypes = {
     id?: number
     name?: string
@@ -17,13 +18,10 @@ export type eventSeriesResponseTypes = {
     longitude?: number
     create_date?: string
     update_date?: string
-    extra_attributes?: {
-        venue?: string
-        category?: string
-        sponsors?: string[]
-        special_instructions?: string
-    }
+    extra_attributes?: any
     last_updated_by?: string
+    venue?: string
+    terms_and_conditions?: string
 }
 
 export type GetEventSeriesTypes = {
@@ -51,12 +49,7 @@ export type EventData = {
     is_public?: boolean
     latitude?: number
     longitude?: number
-    extra_attributes?: {
-        venue?: string
-        category?: string
-        sponsors?: string[]
-        special_instructions?: string
-    }
+    extra_attributes?: any
 }
 
 export interface EventUser {
@@ -71,12 +64,13 @@ export interface EventUser {
     }
 }
 
-export interface ExtraAttributes {
-    venue: string
-    category: string
-    sponsors: string[]
-    special_instructions: string
-}
+// export interface ExtraAttributes {
+//     venue: string
+//     category: string
+//     sponsors: string[]
+//     special_instructions: string
+
+// }
 
 export interface EventSeriesDetailsType {
     id: number
@@ -101,6 +95,8 @@ export interface EventSeriesDetailsType {
     longitude: number
     create_date: string
     update_date: string
-    extra_attributes: ExtraAttributes
+    extra_attributes: any
     last_updated_by: string
+    venue?: string
+    terms_and_conditions?: string
 }

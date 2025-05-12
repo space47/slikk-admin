@@ -1,7 +1,7 @@
 export const EventSearchOptions = [
     { label: 'Event Name', value: 'event_name' },
     { label: 'Event Type', value: 'event_type' },
-    { label: 'Event ID', value: 'event_id' },
+    // { label: 'Event ID', value: 'event_id' },
     { label: 'Mobile Number', value: 'mobile_number' },
 ]
 
