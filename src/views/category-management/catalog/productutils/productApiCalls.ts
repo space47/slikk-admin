@@ -6,9 +6,10 @@ import axios from 'axios'
 export const fetchProducts = async (page: number, pageSize: number, typeFetch: string, globalFilter: string, currentSelectedPage: any) => {
     try {
         const pageAndSize = `&p=${page}&page_size=${pageSize}`
+        const trimmedFilter = globalFilter?.trim()
         const searchKey =
-            ['sku_exact', 'name', 'barcode'].includes(currentSelectedPage.value) && globalFilter
-                ? `&${currentSelectedPage.value}=${encodeURIComponent(globalFilter)}`
+            ['sku', 'name', 'barcode'].includes(currentSelectedPage.value) && trimmedFilter
+                ? `&${currentSelectedPage.value}=${encodeURIComponent(trimmedFilter)}`
                 : ''
 
         const response = await axioisInstance.get(`merchant/products?dashboard=true${pageAndSize}&${typeFetch}${searchKey}`)
