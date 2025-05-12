@@ -21,6 +21,8 @@ import { useAppDispatch, useAppSelector } from '@/store'
 import { EventSeriesSliceType, setEventSeriesDetails } from '@/store/slices/eventSeriesSlice/eventSeriesSlice'
 import EventCarousel from '../eventListUtils/EventCarousel'
 import { eventSeriesService } from '@/store/services/eventSeriesService'
+import EventListQrScanner from '../eventListUtils/EventListQrScanner'
+import { notification } from 'antd'
 
 const EventListDetails = () => {
     const { id } = useParams()
@@ -35,6 +37,9 @@ const EventListDetails = () => {
     const indexOfFirstUser = indexOfLastUser - usersPerPage
     const currentUsers = eventData?.event_users?.slice(indexOfFirstUser, indexOfLastUser) || []
     const totalPages = Math.ceil((eventData?.event_users?.length || 0) / usersPerPage)
+    const [delay, setDelay] = useState(100)
+    const [qrResult, setQrResult] = useState<any>()
+    const [showQr, setShowQr] = useState(false)
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
@@ -42,6 +47,14 @@ const EventListDetails = () => {
         event_id: id,
     })
 
+    useEffect(() => {
+        if (qrResult) {
+            setShowQr(false)
+            notification.success({
+                message: 'User Verified',
+            })
+        }
+    }, [qrResult])
     useEffect(() => {
         if (isSuccess) {
             dispatch(setEventSeriesDetails(eventDataDet.data || []))
@@ -113,7 +126,25 @@ const EventListDetails = () => {
                     ))}
 
                     <div className="mt-10">
-                        <Button variant="accept">Scan QR Code</Button>
+                        <Button
+                            type="button"
+                            variant={showQr ? 'reject' : 'accept'}
+                            onClick={() => {
+                                setShowQr((prev) => !prev)
+                                setQrResult(null)
+                            }}
+                        >
+                            {showQr ? 'Close Qr Scanner' : 'Scan QR Code'}
+                        </Button>
+                    </div>
+                    {/* <p>{qrResult}</p> */}
+                    <div>
+                        {showQr && (
+                            <div className="mt-10">
+                                <div className="text-xl mt-5 mb-5 font-bold">Scan QR</div>
+                                <EventListQrScanner delay={delay} setDelay={setDelay} qrResult={qrResult} setQrResult={setQrResult} />
+                            </div>
+                        )}
                     </div>
                 </div>
 
