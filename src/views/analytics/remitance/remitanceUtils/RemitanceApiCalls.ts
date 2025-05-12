@@ -30,7 +30,7 @@ const RemitanceApis = ({
 }: RemitanceApiProps) => {
     const fetchRemitanceApi = async () => {
         try {
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axioisInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}`)
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
@@ -45,7 +45,7 @@ const RemitanceApis = ({
     const handleDownload = async () => {
         setIsDownloading && setIsDownloading(true)
         try {
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axioisInstance.get(`/merchant/product/sales?from=${from}&to=${ToDate}${brandData}&download=true`, {
                 responseType: 'blob',
             })
@@ -58,7 +58,7 @@ const RemitanceApis = ({
                 const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
                 link.href = urlToBeDownloaded
-                link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${ToDate}.csv`
+                link.download = `${encodeURIComponent(brandValue?.name) || 'All-Brands'}-${from}-to-${ToDate}.csv`
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
@@ -80,7 +80,7 @@ const RemitanceApis = ({
             if (companyData) {
                 companyId = `&company_id=${companyData}`
             }
-            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand_name=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axioisInstance.get(
                 `/merchant/order_items?download=true&download_type=finance&from=${from}&to=${ToDate}${brandData}${companyId}`,
                 {
@@ -97,7 +97,7 @@ const RemitanceApis = ({
                 const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
                 link.href = urlToBeDownloaded
-                link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${ToDate}.csv`
+                link.download = `${encodeURIComponent(brandValue?.name) || 'OrderItems'}-${from}-to-${ToDate}.csv`
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
@@ -120,7 +120,7 @@ const RemitanceApis = ({
             if (companyData) {
                 companyId = `&company_id=${companyData}`
             }
-            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand_name=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axioisInstance.get(
                 `/merchant/return_order_items?download=true&download_type=finance&from=${from}&to=${ToDate}${brandData}${companyId}`,
                 {
@@ -136,7 +136,7 @@ const RemitanceApis = ({
                 const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
                 link.href = urlToBeDownloaded
-                link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${ToDate}.csv`
+                link.download = `${encodeURIComponent(brandValue?.name) || 'ReturnOrderItems'}-${from}-to-${ToDate}.csv`
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
