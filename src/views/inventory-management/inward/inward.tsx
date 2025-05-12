@@ -31,7 +31,7 @@ const PaginationTable = () => {
     const [globalFilter, setGlobalFilter] = useState<any>('')
     const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
     const [companyCode, setCompanyCode] = useState<any>()
-    const [activeTab, setActiveTab] = useState('tab1')
+    const [activeTab, setActiveTab] = useState('tab2')
 
     const fetchData = async (page: number, pageSize: number) => {
         try {
@@ -41,7 +41,7 @@ const PaginationTable = () => {
                 filter = `&document_number=${globalFilter}`
             }
             if (companyCode) {
-                code = `&company_code=${companyCode}`
+                code = `&company_code=${encodeURIComponent(companyCode)}`
             }
             const response = await axiosInstance.get(
                 `goods/received/${selectedCompany.id}?p=${page}&page_size=${pageSize}${filter}${code}`, // &company_id
@@ -182,13 +182,13 @@ const PaginationTable = () => {
     return (
         <div>
             <div>
-                <Tabs defaultValue="tab1" onChange={handleChange}>
+                <Tabs defaultValue="tab2" onChange={handleChange}>
                     <TabList>
-                        <TabNav value="tab1" icon={<LiaShippingFastSolid className="text-blue-600 text-3xl" />}>
-                            <span className="text-xl font-bold">New Shipments</span>
-                        </TabNav>
                         <TabNav value="tab2" icon={<MdInventory className="text-green-500 text-3xl" />}>
                             <span className="text-xl font-bold">GRN</span>
+                        </TabNav>
+                        <TabNav value="tab1" icon={<LiaShippingFastSolid className="text-blue-600 text-3xl" />}>
+                            <span className="text-xl font-bold">New Shipments</span>
                         </TabNav>
                     </TabList>
                 </Tabs>
