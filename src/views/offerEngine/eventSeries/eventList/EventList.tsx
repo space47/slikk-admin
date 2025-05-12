@@ -92,7 +92,7 @@ const EventList = () => {
                 {/* Right: Date Picker & Button */}
                 <div className="flex  items-center gap-3">
                     <div>
-                        <UltimatePersistDatePicker setFrom={setFrom} setTo={setTo} handleDateChange={handleDateChange} />
+                        <UltimatePersistDatePicker forEvent setFrom={setFrom} setTo={setTo} handleDateChange={handleDateChange} />
                     </div>
 
                     <div className="mt-8">

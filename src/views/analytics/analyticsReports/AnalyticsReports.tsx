@@ -38,7 +38,7 @@ const AnalyticsReports = () => {
 
     const fetchRemitance = async () => {
         try {
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${to}${brandData}`)
             const remitanceData = response.data?.data.items
             setFullRemitanceResponse(response.data?.data)
@@ -82,7 +82,7 @@ const AnalyticsReports = () => {
             message: 'Download in process',
         })
         try {
-            const brandData = brandValue ? `&brand=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axiosInstance.get(`/merchant/product/sales?from=${from}&to=${to}${brandData}&download=true`, {
                 responseType: 'blob',
             })
@@ -90,7 +90,7 @@ const AnalyticsReports = () => {
             const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
             const link = document.createElement('a')
             link.href = urlToBeDownloaded
-            link.download = `${brandValue?.name || 'All-Brands'}-${from}-to-${to}.csv`
+            link.download = `${encodeURIComponent(brandValue?.name) || 'All-Brands'}-${from}-to-${to}.csv`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -108,7 +108,7 @@ const AnalyticsReports = () => {
             message: 'Download in process',
         })
         try {
-            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand_name=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axiosInstance.get(
                 `/merchant/order_items?download=true&download_type=master&from=${from}&to=${to}${brandData}`,
                 {
@@ -121,7 +121,7 @@ const AnalyticsReports = () => {
                 const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
                 link.href = urlToBeDownloaded
-                link.download = `${brandValue?.name || 'OrderItems'}-${from}-to-${to}.csv`
+                link.download = `${encodeURIComponent(brandValue?.name) || 'OrderItems'}-${from}-to-${to}.csv`
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
@@ -144,7 +144,7 @@ const AnalyticsReports = () => {
             message: 'Download in process',
         })
         try {
-            const brandData = brandValue ? `&brand_name=${brandValue?.name}` : ''
+            const brandData = brandValue ? `&brand_name=${encodeURIComponent(brandValue?.name)}` : ''
             const response = await axiosInstance.get(
                 `/merchant/return_order_items?download=true&download_type=master&from=${from}&to=${to}${brandData}`,
                 {
@@ -156,7 +156,7 @@ const AnalyticsReports = () => {
                 const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
                 link.href = urlToBeDownloaded
-                link.download = `${brandValue?.name || 'ReturnOrderItems'}-${from}-to-${to}.csv`
+                link.download = `${encodeURIComponent(brandValue?.name) || 'ReturnOrderItems'}-${from}-to-${to}.csv`
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
