@@ -168,7 +168,7 @@ const EventListDetails = () => {
 
     const handleRedeem = async () => {
         try {
-            const res = await axioisInstance.patch(`/dashboard/user/events?event_code=${qrResult}`)
+            const res = await axioisInstance.patch(`/dashboard/user/events/${qrResult}`)
             notification.success({
                 message: res?.data?.message || 'User has been Redeemed',
             })
