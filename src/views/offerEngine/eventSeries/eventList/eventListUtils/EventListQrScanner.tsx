@@ -25,7 +25,7 @@ const EventListQrScanner = ({ delay, setQrResult, qrResult, setDelay }: props) =
 
     return (
         <div>
-            <QrReader delay={delay} style={previewStyle} onError={handleError} onScan={handleScan} />
+            <QrReader delay={delay} style={previewStyle} onError={handleError} onScan={handleScan} facingMode="rear" legacyMode={true} />
         </div>
     )
 }
