@@ -411,7 +411,7 @@ export const INITIALVALUES: Product = {
 }
 
 export const ProductFilterArray = [
-    { label: 'SKU', value: 'sku' },
+    { label: 'SKU', value: 'sku_exact' },
     { label: 'Name', value: 'name' },
     { label: 'Barcode', value: 'barcode' },
 ]

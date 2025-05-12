@@ -40,7 +40,7 @@ const TransferModule = () => {
         if (currentSelectedPage.value === 'barcode') {
             queryParam = `barcode=${globalFilter?.trim()}`
         } else if (currentSelectedPage.value === 'sku') {
-            queryParam = `sku=${globalFilter?.trim()}`
+            queryParam = `sku_exact=${globalFilter?.trim()}`
         } else if (currentSelectedPage.value === 'name' && dataForName) {
             queryParam = `barcode=${dataForName}`
         }

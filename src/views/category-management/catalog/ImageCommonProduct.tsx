@@ -31,6 +31,7 @@ const ImageCommonProduct = ({
     placeholder,
     isVideo,
 }: ImageofProductProps) => {
+    console.log('allName', label, allName)
     return (
         <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
             {label}

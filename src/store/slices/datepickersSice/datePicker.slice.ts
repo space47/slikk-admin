@@ -6,7 +6,7 @@ interface DatePickerState {
 }
 
 const initialState: DatePickerState = {
-    selectedOption: 'TODAY',
+    selectedOption: 'CURRENT WEEK',
 }
 
 const datePickerSlice = createSlice({
