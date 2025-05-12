@@ -137,7 +137,7 @@ const EventListDetails = () => {
                             {showQr ? 'Close Qr Scanner' : 'Scan QR Code'}
                         </Button>
                     </div>
-                    {/* <p>{qrResult}</p> */}
+                    <p>{qrResult}</p>
                     <div>
                         {showQr && (
                             <div className="mt-10">
