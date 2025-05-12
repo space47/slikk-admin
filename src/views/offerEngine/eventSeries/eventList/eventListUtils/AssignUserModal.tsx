@@ -8,14 +8,10 @@ interface Props {
     dialogIsOpen: boolean
     setIsOpen: (isOpen: boolean) => void
     eventSeriesData: eventSeriesResponseTypes[]
+    event_id?: string
 }
 
-const ACTION_OPTIONS = [
-    { label: 'Add User', value: 'add' },
-    { label: 'Remove User', value: 'remove' },
-]
-
-const AssignUserModal = ({ dialogIsOpen, setIsOpen, eventSeriesData }: Props) => {
+const AssignUserModal = ({ dialogIsOpen, setIsOpen, event_id }: Props) => {
     const [formData, setFormData] = useState({
         mobileNumber: '',
         eventId: '',
@@ -23,33 +19,17 @@ const AssignUserModal = ({ dialogIsOpen, setIsOpen, eventSeriesData }: Props) =>
         action: '',
     })
 
-    console.log('Event Series Data:', formData?.eventId)
-
-    const eventOptions = eventSeriesData.map((item) => ({
-        label: item.name,
-        value: item.id,
-    }))
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
-    const handleSelectChange = (name: string) => (newVal: { value: string } | null) => {
-        if (newVal) {
-            setFormData((prev) => ({ ...prev, [name]: newVal.value }))
-        } else {
-            setFormData((prev) => ({ ...prev, [name]: '' }))
-        }
-    }
-
     const onDialogOk = async () => {
-        const { mobileNumber, eventId, replaceEventId, action } = formData
+        const { mobileNumber } = formData
         const body = {
             mobile: mobileNumber,
-            event_id: Number(eventId),
-            replace_event_id: Number(replaceEventId),
-            action: action,
+            event_id: event_id,
+            action: 'add',
         }
         try {
             const response = await axioisInstance.post('/dashboard/user/events', body)
@@ -81,42 +61,6 @@ const AssignUserModal = ({ dialogIsOpen, setIsOpen, eventSeriesData }: Props) =>
                         placeholder="Enter mobile number"
                         value={formData.mobileNumber}
                         onChange={handleInputChange}
-                    />
-                </div>
-
-                <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Event</label>
-                    <Select
-                        isClearable
-                        options={eventOptions}
-                        placeholder="Select event"
-                        getOptionLabel={(option) => option.label ?? ''}
-                        getOptionValue={(option) => option.value ?? ''}
-                        onChange={handleSelectChange('eventId')}
-                    />
-                </div>
-
-                <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Replacement Event</label>
-                    <Select
-                        isClearable
-                        options={eventOptions}
-                        placeholder="Select replacement event"
-                        getOptionLabel={(option) => option.label ?? ''}
-                        getOptionValue={(option) => option.value ?? ''}
-                        onChange={handleSelectChange('replaceEventId')}
-                    />
-                </div>
-
-                <div className="space-y-1">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Action</label>
-                    <Select
-                        isClearable
-                        options={ACTION_OPTIONS}
-                        placeholder="Select action"
-                        getOptionLabel={(option) => option.label ?? ''}
-                        getOptionValue={(option) => option.value ?? ''}
-                        onChange={handleSelectChange('action')}
                     />
                 </div>
 

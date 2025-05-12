@@ -14,7 +14,7 @@ import {
     FaLock,
     FaTicketAlt,
 } from 'react-icons/fa'
-import { Button } from '@/components/ui'
+import { Button, Dropdown, Input } from '@/components/ui'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import AssignUserModal from '../eventListUtils/AssignUserModal'
 import { useAppDispatch, useAppSelector } from '@/store'
@@ -23,36 +23,83 @@ import EventCarousel from '../eventListUtils/EventCarousel'
 import { eventSeriesService } from '@/store/services/eventSeriesService'
 import EventListQrScanner from '../eventListUtils/EventListQrScanner'
 import { notification } from 'antd'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { EventUserOptionsList } from '../../eventCommons/eventCommonArray'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import EventUser from '../eventListUtils/EventUser'
 
 const EventListDetails = () => {
     const { id } = useParams()
     const dispatch = useAppDispatch()
     const [isAddEvent, setIsAddEvent] = useState<boolean>(false)
-    const [currentPage, setCurrentPage] = useState(1)
-    const usersPerPage = 10
     const { eventSeriesData, eventSeriesDetails } = useAppSelector<EventSeriesSliceType>((state) => state.eventSeries)
     const eventData = eventSeriesDetails
-    // Calculate pagination
-    const indexOfLastUser = currentPage * usersPerPage
-    const indexOfFirstUser = indexOfLastUser - usersPerPage
-    const currentUsers = eventData?.event_users?.slice(indexOfFirstUser, indexOfLastUser) || []
-    const totalPages = Math.ceil((eventData?.event_users?.length || 0) / usersPerPage)
+    // Calculate paginatio
+    // Qr scanner
     const [delay, setDelay] = useState(100)
     const [qrResult, setQrResult] = useState<any>()
     const [showQr, setShowQr] = useState(false)
-
-    const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+    // for api users
+    const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
+    const [totalCount, setTotalCount] = useState(0)
+    const [userToRedeem, setUserToRedeem] = useState<any[]>([])
+    const [globalFilter, setGlobalFilter] = useState('')
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(EventUserOptionsList[0])
 
     const { data: eventDataDet, isSuccess } = eventSeriesService.useEventSeriesDataQuery({
         event_id: id,
     })
 
     useEffect(() => {
+        const fetchUserRegistration = async () => {
+            try {
+                let status = ''
+
+                if (globalFilter) {
+                    if (currentSelectedPage.value === 'mobile') {
+                        status = `&mobile=${globalFilter}`
+                    }
+                    if (currentSelectedPage.value === 'status') {
+                        status = `&status=${globalFilter}`
+                    }
+                    if (currentSelectedPage.value === 'event_code') {
+                        status = `&event_code=${globalFilter}`
+                    }
+                }
+
+                const response = await axioisInstance.get(`/dashboard/user/events?event_id=${id}&p=${page}&page_size=${pageSize}${status}`)
+                const data = response?.data?.data?.results
+                setRegisteredUsers(data || [])
+                setTotalCount(response?.data?.count)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        fetchUserRegistration()
+    }, [page, pageSize, qrResult, id, globalFilter])
+
+    useEffect(() => {
+        const fetchQr = async () => {
+            try {
+                const cleanedQrResult = qrResult.replace(/"/g, '')
+                const response = await axioisInstance.get(`/dashboard/user/events?event_code=${cleanedQrResult}`)
+                setUserToRedeem(response?.data?.data?.results)
+            } catch (error) {
+                console.error(error)
+            }
+        }
+        if (qrResult !== '' || qrResult !== undefined) {
+            fetchQr()
+        }
+    }, [qrResult])
+
+    console.log('user to redeem', userToRedeem)
+
+    useEffect(() => {
         if (qrResult) {
             setShowQr(false)
-            notification.success({
-                message: 'User Verified',
-            })
         }
     }, [qrResult])
     useEffect(() => {
@@ -90,6 +137,7 @@ const EventListDetails = () => {
                     </span>
                 )
             case 'REGISTERED':
+            case 'REDEEMED':
                 return (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                         <FaCheckCircle className="mr-1" />
@@ -111,21 +159,45 @@ const EventListDetails = () => {
         { value: eventData?.extra_attributes?.event_photos, label: 'Event Images' },
     ]
 
+    const handleSelect = (value) => {
+        const selected = EventUserOptionsList.find((item) => item.value === value)
+        if (selected) {
+            setCurrentSelectedPage(selected)
+        }
+    }
+
+    const handleRedeem = async () => {
+        try {
+            const res = await axioisInstance.patch(`/dashboard/user/events?event_code=${qrResult}`)
+            notification.success({
+                message: res?.data?.message || 'User has been Redeemed',
+            })
+        } catch (error: any) {
+            notification.error({
+                message: error?.response?.message || 'Failed  to redeem',
+            })
+        } finally {
+            setQrResult('')
+        }
+    }
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div>
-                    {ImagesArray?.map((item, key) => (
-                        <div key={key}>
-                            {item?.value?.split(',').length > 0 && (
-                                <>
-                                    <EventCarousel image={item?.value?.split(',')} label={item?.label} />
-                                </>
-                            )}
-                        </div>
-                    ))}
+                    <div className="xl:block hidden">
+                        {ImagesArray?.map((item, key) => (
+                            <div key={key}>
+                                {item?.value?.split(',').length > 0 && (
+                                    <>
+                                        <EventCarousel image={item?.value?.split(',')} label={item?.label} />
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
 
-                    <div className="mt-10">
+                    <div className="xl:mt-10 mt-1">
                         <Button
                             type="button"
                             variant={showQr ? 'reject' : 'accept'}
@@ -137,15 +209,76 @@ const EventListDetails = () => {
                             {showQr ? 'Close Qr Scanner' : 'Scan QR Code'}
                         </Button>
                     </div>
-                    <p>{qrResult}</p>
+                    {/* <p>{qrResult}</p> */}
                     <div>
                         {showQr && (
-                            <div className="mt-10">
+                            <div className="mt-10 ">
                                 <div className="text-xl mt-5 mb-5 font-bold">Scan QR</div>
                                 <EventListQrScanner delay={delay} setDelay={setDelay} qrResult={qrResult} setQrResult={setQrResult} />
                             </div>
                         )}
                     </div>
+                    {(qrResult || qrResult !== '') && userToRedeem.length > 0 && (
+                        <div className="space-y-4">
+                            {userToRedeem.map((user, index) => (
+                                <div
+                                    key={index}
+                                    className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4"
+                                >
+                                    <div className="p-8">
+                                        <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
+                                            <span>{user.user.name || 'Not provided'}</span>
+                                        </div>
+                                        <div className="mt-4">
+                                            {/* <div className="flex items-center mb-2">
+                                                <span className="text-gray-700 font-medium mr-2">Name:</span>
+                                                <span>{user.user.name || 'Not provided'}</span>
+                                            </div> */}
+                                            <div className="flex items-center mb-2">
+                                                <span className="text-gray-700 font-medium mr-2">Mobile:</span>
+                                                <span>{user.user.mobile || 'Not provided'}</span>
+                                            </div>
+                                            <div className="flex items-center mb-2">
+                                                <span className="text-gray-700 font-medium mr-2">Email:</span>
+                                                <span>{user.user.email || 'Not provided'}</span>
+                                            </div>
+                                            <div className="flex items-center mb-2">
+                                                <span className="text-gray-700 font-medium mr-2">Event Code:</span>
+                                                <span>{user.event_code}</span>
+                                            </div>
+                                            <div className="flex items-center mb-2">
+                                                <span className="text-gray-700 font-medium mr-2">Status:</span>
+                                                <span
+                                                    className={`px-2 py-1 text-xs rounded-full ${
+                                                        user.status === 'JOINED'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : 'bg-yellow-100 text-yellow-800'
+                                                    }`}
+                                                >
+                                                    {user.status}
+                                                </span>
+                                            </div>
+                                            <div className="mt-4 border-t pt-4">
+                                                <div className="flex items-center mb-2">
+                                                    <span className="text-gray-700 font-medium mr-2">Terms Accepted:</span>
+                                                    <span>{user.terms_and_conditions_accepted ? '✅' : '❌'}</span>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <span className="text-gray-700 font-medium mr-2">Other Conditions:</span>
+                                                    <span>{user.other_conditions_accepted ? '✅' : '❌'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end mb-2">
+                                        <Button variant="accept" size="sm" onClick={handleRedeem}>
+                                            Redeem
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Event Details */}
@@ -216,7 +349,9 @@ const EventListDetails = () => {
                             </div>
                         </div>
                         <div className="flex items-start">
-                            <FaMapMarkerAlt className="text-blue-500 mr-3 mt-1 flex-shrink-0" />
+                            <a href={`https://www.google.com/maps?q=${eventData.latitude},${eventData.latitude}`}>
+                                <FaMapMarkerAlt className="text-blue-500 mr-3 mt-1 flex-shrink-0" />
+                            </a>
                             <div>
                                 <h3 className="font-medium text-gray-900">Location</h3>
                                 <p className="text-gray-600">
@@ -258,82 +393,66 @@ const EventListDetails = () => {
                     )}
                 </div>
 
+                <div className="xl:hidden block">
+                    {ImagesArray?.map((item, key) => (
+                        <div key={key}>
+                            {item?.value?.split(',').length > 0 && (
+                                <>
+                                    <EventCarousel image={item?.value?.split(',')} label={item?.label} />
+                                </>
+                            )}
+                        </div>
+                    ))}
+                </div>
+
                 {/* User Registration Section */}
                 <div className="mt-8">
                     <Button className="" size="sm" variant="new" onClick={() => setIsAddEvent(true)}>
                         ADD USER TO EVENT
                     </Button>
                 </div>
-                {eventData.event_users?.length > 0 && (
-                    <div className="col-span-full bg-white rounded-xl shadow-md overflow-hidden p-6">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold text-gray-900">Event Registration</h2>
-                            {totalPages > 1 && (
-                                <div className="flex space-x-1">
-                                    <button
-                                        disabled={currentPage === 1}
-                                        className="px-3 py-1 rounded-md border disabled:opacity-50"
-                                        onClick={() => paginate(Math.max(1, currentPage - 1))}
-                                    >
-                                        Previous
-                                    </button>
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-                                        <button
-                                            key={number}
-                                            className={`px-3 py-1 rounded-md border ${
-                                                currentPage === number ? 'bg-blue-500 text-white' : ''
-                                            }`}
-                                            onClick={() => paginate(number)}
-                                        >
-                                            {number}
-                                        </button>
-                                    ))}
-                                    <button
-                                        disabled={currentPage === totalPages}
-                                        className="px-3 py-1 rounded-md border disabled:opacity-50"
-                                        onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-                                    >
-                                        Next
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                        {currentUsers?.map((user: any, index: number) => (
-                            <div
-                                key={index}
-                                className="border border-gray-200 rounded-lg p-4 mb-4 last:mb-0 hover:bg-gray-50 transition-colors"
-                            >
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                                    <div className="flex items-center">
-                                        <div className="bg-blue-100 p-2 rounded-full mr-3">
-                                            <FaUser className="text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium text-gray-900">{user?.user?.name || 'N/A'}</h3>
-                                            <p className="text-sm text-gray-500">{user?.user?.mobile}</p>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center text-gray-600 mb-1">
-                                            <FaPhone className="mr-2" />
-                                            <span>{user?.user?.mobile}</span>
-                                        </div>
-                                        {user.user.email && (
-                                            <div className="flex items-center text-gray-600">
-                                                <FaEnvelope className="mr-2" />
-                                                <span>{user.user.email}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="md:text-right">
-                                        <div className="mb-1">{renderUserStatus(user.status)}</div>
-                                        <p className="text-sm text-gray-500">Code: {user.event_code}</p>
-                                    </div>
-                                </div>
+
+                <div className="lg:col-span-2 space-y-4">
+                    <div className="flex items-center gap-2 bg-white dark:bg-gray-900 px-3 py-2 rounded-lg shadow-md">
+                        <Input
+                            type="search"
+                            name="search"
+                            placeholder="Search here..."
+                            value={globalFilter}
+                            className="w-[150px] xl:w-[250px] rounded-md border border-gray-300 dark:border-gray-700 bg-transparent px-3 py-1 focus:outline-none focus:ring focus:ring-blue-500"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+
+                        <div className="flex justify-center xl:justify-normal">
+                            <div className="bg-gray-100 flex justify-center font-bold items-center xl:mt-1 xl:text-md text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
+                                <Dropdown
+                                    className="text-xl text-black bg-gray-200 font-bold"
+                                    title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                    onSelect={(e) => handleSelect(e)}
+                                >
+                                    {EventUserOptionsList?.map((item, key) => {
+                                        return (
+                                            <DropdownItem key={key} eventKey={item.value}>
+                                                <span>{item.label}</span>
+                                            </DropdownItem>
+                                        )
+                                    })}
+                                </Dropdown>
                             </div>
-                        ))}
+                        </div>
                     </div>
-                )}
+                    {registeredUsers.length > 0 && (
+                        <EventUser
+                            registeredUsers={registeredUsers}
+                            page={page}
+                            pageSize={pageSize}
+                            setPage={setPage}
+                            setPageSize={setPageSize}
+                            totalCount={totalCount}
+                            renderUserStatus={renderUserStatus}
+                        />
+                    )}
+                </div>
 
                 {/* Action Buttons */}
                 <div className="col-span-full flex flex-wrap gap-4">
@@ -361,7 +480,12 @@ const EventListDetails = () => {
                 </div>
 
                 {isAddEvent && (
-                    <AssignUserModal dialogIsOpen={isAddEvent} setIsOpen={setIsAddEvent} eventSeriesData={eventSeriesData ?? []} />
+                    <AssignUserModal
+                        dialogIsOpen={isAddEvent}
+                        setIsOpen={setIsAddEvent}
+                        eventSeriesData={eventSeriesData ?? []}
+                        event_id={id}
+                    />
                 )}
             </div>
         </div>
