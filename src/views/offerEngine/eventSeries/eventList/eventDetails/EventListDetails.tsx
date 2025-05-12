@@ -1,4 +1,4 @@
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
@@ -14,38 +14,39 @@ import {
     FaLock,
     FaTicketAlt,
 } from 'react-icons/fa'
-import { CiImageOff } from 'react-icons/ci'
 import { Button } from '@/components/ui'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import AssignUserModal from '../eventListUtils/AssignUserModal'
+import { useAppDispatch, useAppSelector } from '@/store'
+import { EventSeriesSliceType, setEventSeriesDetails } from '@/store/slices/eventSeriesSlice/eventSeriesSlice'
+import EventCarousel from '../eventListUtils/EventCarousel'
+import { eventSeriesService } from '@/store/services/eventSeriesService'
 
 const EventListDetails = () => {
     const { id } = useParams()
-    const [eventData, setEventData] = useState<any>(null)
-    const [webImageView, setWebImageView] = useState<string[]>([])
-    const [mobileImageView, setMobileImageView] = useState<string[]>([])
-
+    const dispatch = useAppDispatch()
+    const [isAddEvent, setIsAddEvent] = useState<boolean>(false)
     const [currentPage, setCurrentPage] = useState(1)
     const usersPerPage = 10
-
+    const { eventSeriesData, eventSeriesDetails } = useAppSelector<EventSeriesSliceType>((state) => state.eventSeries)
+    const eventData = eventSeriesDetails
     // Calculate pagination
     const indexOfLastUser = currentPage * usersPerPage
     const indexOfFirstUser = indexOfLastUser - usersPerPage
     const currentUsers = eventData?.event_users?.slice(indexOfFirstUser, indexOfLastUser) || []
     const totalPages = Math.ceil((eventData?.event_users?.length || 0) / usersPerPage)
 
-    // Change page
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
+    const { data: eventDataDet, isSuccess } = eventSeriesService.useEventSeriesDataQuery({
+        event_id: id,
+    })
+
     useEffect(() => {
-        const fetchEventData = async () => {
-            const response = await axiosInstance.get(`/dashboard/promotion/events?event_id=${id}`)
-            const data = response.data?.data
-            setEventData(data)
-            setWebImageView(data?.image_web ? [data?.image_web] : [])
-            setMobileImageView(data?.image_mobile ? [data?.image_mobile] : [])
+        if (isSuccess) {
+            dispatch(setEventSeriesDetails(eventDataDet.data || []))
         }
-        fetchEventData()
-    }, [id])
+    }, [dispatch, isSuccess, eventDataDet])
 
     if (!eventData) {
         return (
@@ -91,35 +92,26 @@ const EventListDetails = () => {
         }
     }
 
+    const ImagesArray = [
+        { value: eventData?.image_web, label: 'Web Images' },
+        { value: eventData?.image_mobile, label: 'Mobile Images' },
+        { value: eventData?.extra_attributes?.event_photos, label: 'Event Images' },
+    ]
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Event Images */}
                 <div>
-                    <div className="bg-white rounded-xl shadow-md overflow-hidden mb-4">
-                        {webImageView[0] ? (
-                            <>
-                                <img
-                                    src={webImageView[0] || 'https://via.placeholder.com/600x300?text=Event+Image'}
-                                    alt="Event Web Image"
-                                    className="w-full h-80 object-cover"
-                                />
-                            </>
-                        ) : (
-                            <>
-                                <div className="flex items-center justify-center h-80">
-                                    <CiImageOff className="text-gray-400 text-6xl" />
-                                </div>
-                            </>
-                        )}
-                    </div>
-                    <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                        <img
-                            src={mobileImageView[0] || 'https://via.placeholder.com/300x150?text=Mobile+Image'}
-                            alt="Event Mobile Image"
-                            className="w-full h-40 object-cover"
-                        />
-                    </div>
+                    {ImagesArray?.map((item, key) => (
+                        <div key={key}>
+                            {item?.value?.split(',').length > 0 && (
+                                <>
+                                    <EventCarousel image={item?.value?.split(',')} label={item?.label} />
+                                </>
+                            )}
+                        </div>
+                    ))}
+
                     <div className="mt-10">
                         <Button variant="accept">Scan QR Code</Button>
                     </div>
@@ -134,7 +126,7 @@ const EventListDetails = () => {
                         </span>
                     </div>
 
-                    <p className="text-gray-600 mb-6">{eventData.description}</p>
+                    <p className="text-gray-600 mb-6" dangerouslySetInnerHTML={{ __html: eventData.description }}></p>
 
                     <div className="border-t border-gray-200 my-4"></div>
 
@@ -151,7 +143,7 @@ const EventListDetails = () => {
                         </div>
                         <div>
                             <h3 className="text-sm font-medium text-gray-500">Venue</h3>
-                            <p className="text-lg font-semibold">{eventData.extra_attributes?.venue || 'N/A'}</p>
+                            <p className="text-lg font-semibold">{eventData.venue || 'N/A'}</p>
                         </div>
                         <div>
                             <h3 className="text-sm font-medium text-gray-500">Visibility</h3>
@@ -207,9 +199,10 @@ const EventListDetails = () => {
 
                     <div className="mb-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-2">Special Instructions</h3>
-                        <p className="text-gray-600">
-                            {eventData.extra_attributes?.special_instructions || 'No special instructions provided.'}
-                        </p>
+                        <p
+                            className="text-gray-600 mb-6"
+                            dangerouslySetInnerHTML={{ __html: eventData.extra_attributes?.special_instructions }}
+                        ></p>
                     </div>
 
                     {eventData.extra_attributes?.sponsors?.length > 0 && (
@@ -227,37 +220,47 @@ const EventListDetails = () => {
                             </div>
                         </div>
                     )}
+                    {eventData?.extra_attributes?.venue_images?.split(',').length > 0 && (
+                        <>
+                            <EventCarousel image={eventData?.extra_attributes?.venue_images?.split(',')} label="Venue Images" />
+                        </>
+                    )}
                 </div>
 
                 {/* User Registration Section */}
+                <div className="mt-8">
+                    <Button className="" size="sm" variant="new" onClick={() => setIsAddEvent(true)}>
+                        ADD USER TO EVENT
+                    </Button>
+                </div>
                 {eventData.event_users?.length > 0 && (
                     <div className="col-span-full bg-white rounded-xl shadow-md overflow-hidden p-6">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold text-gray-900">Your Registration</h2>
+                            <h2 className="text-xl font-bold text-gray-900">Event Registration</h2>
                             {totalPages > 1 && (
                                 <div className="flex space-x-1">
                                     <button
-                                        onClick={() => paginate(Math.max(1, currentPage - 1))}
                                         disabled={currentPage === 1}
                                         className="px-3 py-1 rounded-md border disabled:opacity-50"
+                                        onClick={() => paginate(Math.max(1, currentPage - 1))}
                                     >
                                         Previous
                                     </button>
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
                                         <button
                                             key={number}
-                                            onClick={() => paginate(number)}
                                             className={`px-3 py-1 rounded-md border ${
                                                 currentPage === number ? 'bg-blue-500 text-white' : ''
                                             }`}
+                                            onClick={() => paginate(number)}
                                         >
                                             {number}
                                         </button>
                                     ))}
                                     <button
-                                        onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
                                         disabled={currentPage === totalPages}
                                         className="px-3 py-1 rounded-md border disabled:opacity-50"
+                                        onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
                                     >
                                         Next
                                     </button>
@@ -275,14 +278,14 @@ const EventListDetails = () => {
                                             <FaUser className="text-blue-600" />
                                         </div>
                                         <div>
-                                            <h3 className="font-medium text-gray-900">{user.user.name}</h3>
-                                            <p className="text-sm text-gray-500">{user.user.mobile}</p>
+                                            <h3 className="font-medium text-gray-900">{user?.user?.name || 'N/A'}</h3>
+                                            <p className="text-sm text-gray-500">{user?.user?.mobile}</p>
                                         </div>
                                     </div>
                                     <div>
                                         <div className="flex items-center text-gray-600 mb-1">
                                             <FaPhone className="mr-2" />
-                                            <span>{user.user.mobile}</span>
+                                            <span>{user?.user?.mobile}</span>
                                         </div>
                                         {user.user.email && (
                                             <div className="flex items-center text-gray-600">
@@ -325,6 +328,10 @@ const EventListDetails = () => {
                         ''
                     )}
                 </div>
+
+                {isAddEvent && (
+                    <AssignUserModal dialogIsOpen={isAddEvent} setIsOpen={setIsAddEvent} eventSeriesData={eventSeriesData ?? []} />
+                )}
             </div>
         </div>
     )

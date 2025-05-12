@@ -50,5 +50,5 @@ const eventSeriesSlice = createSlice({
     },
 })
 
-export const { setEventSeriesData, setCount, setFrom, setTo, setPage, setPageSize } = eventSeriesSlice.actions
+export const { setEventSeriesData, setCount, setFrom, setTo, setPage, setPageSize, setEventSeriesDetails } = eventSeriesSlice.actions
 export default eventSeriesSlice.reducer
