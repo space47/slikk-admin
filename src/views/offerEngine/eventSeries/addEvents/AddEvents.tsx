@@ -69,13 +69,13 @@ const AddEvents = () => {
         const imageUploadEventPhotos = await handleImageCheck(values.event_images_array)
 
         const mobileAspectRatio =
-            values.web_image_array?.length > 0
-                ? await calculateAspectRatio(values.web_image_array)
+            values.mobile_image_array?.length > 0
+                ? await calculateAspectRatio(values.mobile_image_array)
                 : values?.extra_attributes?.mobile_aspect_ratio || null
 
         const webAspectRatio =
-            values.mobile_image_array?.length > 0
-                ? await calculateAspectRatio(values.mobile_image_array)
+            values.web_image_array?.length > 0
+                ? await calculateAspectRatio(values.web_image_array)
                 : values?.extra_attributes?.web_aspect_ratio || null
 
         const description = values.description ?? ''
