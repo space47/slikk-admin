@@ -17,6 +17,7 @@ import _ from 'lodash'
 import { MdCancel } from 'react-icons/md'
 import BulkEditModal from './BulkEditModal'
 import { fetchPageSettings } from '../pageSettings/pageSettingsUtils/PageSettingsApiCalls'
+import { BANNER_PAGE_NAME } from '@/common/banner'
 
 type Option = {
     value: number
@@ -55,16 +56,15 @@ const AppBanners = () => {
     const [isSelectAllBanner, setIsSelectAllBanner] = useState(false)
     const [sectionFilter, setSectionFilter] = useState<string>('')
 
-    useLayoutEffect(() => {
-        fetchPageSettings(setPageNames, setCurrentSelectedPage)
-    }, [])
+    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(var1 !== undefined ? var1 : BANNER_PAGE_NAME[0])
+    // useEffect(() => {
+    //     fetchPageSettings(setPageNames, setCurrentSelectedPage)
+    // }, [])
 
-    const BANNER_PAGE_NAME = pageNames?.map((item) => ({
-        name: item?.display_name,
-        value: item?.name,
-    }))
-
-    const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(var1 ? var1 : BANNER_PAGE_NAME[0])
+    // const BANNER_PAGE_NAME = pageNames?.map((item) => ({
+    //     name: item?.display_name,
+    //     value: item?.name,
+    // }))
 
     const fetchData = async (page: number, pageSize: number, filter: string) => {
         let sectionHeading = ''
@@ -115,6 +115,9 @@ const AppBanners = () => {
     const filteredSectionHeadings = _.uniq(sectionHeadingArray)?.filter((item) => item.toLowerCase().includes(sectionFilter.toLowerCase()))
 
     console.log('section filters', filteredSectionHeadings)
+
+    console.log('var1 is', var1)
+    console.log('current page is is', currentSelectedPage)
 
     const handleSectionHeading = (selectedKey: string) => {
         setSelectedHeading(selectedKey)
