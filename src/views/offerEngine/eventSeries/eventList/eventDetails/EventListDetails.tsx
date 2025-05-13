@@ -1,19 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import {
-    FaCalendarAlt,
-    FaClock,
-    FaMapMarkerAlt,
-    FaUser,
-    FaPhone,
-    FaEnvelope,
-    FaCheckCircle,
-    FaTimesCircle,
-    FaGlobe,
-    FaLock,
-    FaTicketAlt,
-} from 'react-icons/fa'
+import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaCheckCircle, FaTimesCircle, FaGlobe, FaLock, FaTicketAlt } from 'react-icons/fa'
 import { Button, Dropdown, Input } from '@/components/ui'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import AssignUserModal from '../eventListUtils/AssignUserModal'
@@ -34,12 +22,9 @@ const EventListDetails = () => {
     const [isAddEvent, setIsAddEvent] = useState<boolean>(false)
     const { eventSeriesData, eventSeriesDetails } = useAppSelector<EventSeriesSliceType>((state) => state.eventSeries)
     const eventData = eventSeriesDetails
-    // Calculate paginatio
-    // Qr scanner
     const [delay, setDelay] = useState(100)
     const [qrResult, setQrResult] = useState<any>()
     const [showQr, setShowQr] = useState(false)
-    // for api users
     const [registeredUsers, setRegisteredUsers] = useState<any[]>([])
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
@@ -231,10 +216,6 @@ const EventListDetails = () => {
                                             <span>{user.user.name || 'Not provided'}</span>
                                         </div>
                                         <div className="mt-4">
-                                            {/* <div className="flex items-center mb-2">
-                                                <span className="text-gray-700 font-medium mr-2">Name:</span>
-                                                <span>{user.user.name || 'Not provided'}</span>
-                                            </div> */}
                                             <div className="flex items-center mb-2">
                                                 <span className="text-gray-700 font-medium mr-2">Mobile:</span>
                                                 <span>{user.user.mobile || 'Not provided'}</span>

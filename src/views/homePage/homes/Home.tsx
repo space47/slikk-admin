@@ -366,7 +366,7 @@ const Home = () => {
                 <ActiveUserTable from={from} to={to} />
             </div>
 
-            <div className="mt-5 w-[350px] xl:w-full">
+            <div className="mt-5 w-[320px] xl:w-full">
                 {homeData?.brand_wise_sale && <BrandDataChart brandData={homeData?.brand_wise_sale} from={from} to={to} />}
             </div>
             <br />
