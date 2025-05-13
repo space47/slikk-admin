@@ -7,6 +7,7 @@ import EventFormCommon from '../eventCommons/EventFormCommon'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { handleimage, handleVideo } from '@/views/category-management/catalog/handlingProductImage'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const AddEvents = () => {
     const navigate = useNavigate()
@@ -62,74 +63,98 @@ const AddEvents = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        const imageUploadWeb = await handleImageCheck(values.web_image_array)
-        const imageUploadMobile = await handleImageCheck(values.mobile_image_array)
-        const imageUploadEventVideos = await handleImageCheck(values.event_video_array, true)
-        const imageUploadVenue = await handleImageCheck(values.venue_img_url)
-        const imageUploadEventPhotos = await handleImageCheck(values.event_images_array)
+        console.log(values?.venue)
+        try {
+            console.log('here')
 
-        const mobileAspectRatio =
-            values.mobile_image_array?.length > 0
-                ? await calculateAspectRatio(values.mobile_image_array)
-                : values?.extra_attributes?.mobile_aspect_ratio || null
+            const imageUploadWeb = values.web_image_array?.length ? await handleImageCheck(values.web_image_array) : null
 
-        const webAspectRatio =
-            values.web_image_array?.length > 0
-                ? await calculateAspectRatio(values.web_image_array)
-                : values?.extra_attributes?.web_aspect_ratio || null
+            const imageUploadMobile = values.mobile_image_array?.length ? await handleImageCheck(values.mobile_image_array) : null
 
-        const description = values.description ?? ''
-        const specialInstructions = values.extra_attributes.special_instructions ?? ''
-        const termsAndConditions = values.terms_and_conditions ?? ''
+            const imageUploadEventVideos = values.event_video_array?.length ? await handleImageCheck(values.event_video_array, true) : null
 
-        const body = {
-            name: values.name,
-            event_type: values.event_type,
-            description: description,
-            ...(imageUploadWeb && { image_web: imageUploadWeb }),
-            ...(imageUploadMobile && { image_mobile: imageUploadMobile }),
-            total_slots: values.total_slots,
-            registration_start_date: values.registration_start_date,
-            registration_end_date: values.registration_end_date,
-            event_start_time: values.event_start_time,
-            event_end_time: values.event_end_time,
-            ...(values.code_prefix && { code_prefix: values.code_prefix }),
-            is_active: values.is_active,
-            is_public: values.is_public,
-            code_prefix: values.code_prefix,
-            ...(currLat && { latitude: currLat }),
-            ...(currLong && { longitude: currLong }),
-            ...(values?.venue && { venue: values.venue }),
-            ...(termsAndConditions && { terms_and_conditions: termsAndConditions }),
-            extra_attributes: {
-                ...(values.extra_attributes.venue_address && { venue_address: values.extra_attributes.venue_address }),
-                ...(values.extra_attributes.category && { category: values.extra_attributes.category }),
-                ...(values.extra_attributes.sponsors && { sponsors: values.extra_attributes.sponsors?.split(',') }),
-                ...(values?.extra_attributes?.bg_color && { bg_color: values.extra_attributes.bg_color }),
-                ...(values?.extra_attributes?.button_color && { button_color: values.extra_attributes.button_color }),
-                ...(values?.extra_attributes?.button_font_color && { button_font_color: values.extra_attributes.button_font_color }),
-                ...(specialInstructions && { special_instructions: specialInstructions }),
-                ...(webAspectRatio[0] && { web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)) }),
-                ...(mobileAspectRatio[0] && { mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)) }),
-                ...(values?.extra_attributes.legal_instruction && { legal_instruction: values.extra_attributes.legal_instruction }),
-                ...(values?.extra_attributes.carousel_auto_scroll && {
-                    carousel_auto_scroll: values.extra_attributes.carousel_auto_scroll,
-                }),
-                ...(values?.extra_attributes.time_interval && { time_interval: values.extra_attributes.time_interval }),
-                ...(imageUploadEventVideos && { event_video: imageUploadEventVideos }),
-                ...(imageUploadVenue && { venue_img_url: imageUploadVenue }),
-                ...(imageUploadEventPhotos && { event_images: imageUploadEventPhotos }),
-            },
-        }
+            const imageUploadVenue = values.venue_img_url?.length ? await handleImageCheck(values.venue_img_url) : null
 
-        await addEventSeries(body)
-            .unwrap()
-            .then(() => {})
-            .catch(() => {
-                notification.error({
-                    message: 'Failed to add Event',
+            const imageUploadEventPhotos = values.event_images_array?.length ? await handleImageCheck(values.event_images_array) : null
+
+            console.log('2')
+
+            const mobileAspectRatio =
+                values.mobile_image_array?.length > 0
+                    ? await calculateAspectRatio(values.mobile_image_array)
+                    : values?.extra_attributes?.mobile_aspect_ratio || null
+
+            const webAspectRatio =
+                values.web_image_array?.length > 0
+                    ? await calculateAspectRatio(values.web_image_array)
+                    : values?.extra_attributes?.web_aspect_ratio || null
+
+            console.log('x')
+
+            const body = {
+                name: values.name,
+                event_type: values.event_type,
+                description: values.description,
+                ...(imageUploadWeb && { image_web: imageUploadWeb }),
+                ...(imageUploadMobile && { image_mobile: imageUploadMobile }),
+                total_slots: values.total_slots,
+                registration_start_date: values.registration_start_date,
+                registration_end_date: values.registration_end_date,
+                event_start_time: values.event_start_time,
+                event_end_time: values.event_end_time,
+                ...(values.code_prefix && { code_prefix: values.code_prefix }),
+                is_active: values.is_active,
+                is_public: values.is_public,
+                code_prefix: values.code_prefix,
+                ...(currLat && { latitude: currLat }),
+                ...(currLong && { longitude: currLong }),
+                venue: values.venue,
+                terms_and_conditions: values.terms_and_conditions,
+                extra_attributes: {
+                    ...(values.extra_attributes.venue_address && { venue_address: values.extra_attributes.venue_address }),
+                    ...(values.extra_attributes.category && { category: values.extra_attributes.category }),
+                    ...(values.extra_attributes.sponsors && { sponsors: values.extra_attributes.sponsors?.split(',') }),
+                    ...(values.extra_attributes?.bg_color && { bg_color: values.extra_attributes.bg_color }),
+                    ...(values.extra_attributes?.button_color && { button_color: values.extra_attributes.button_color }),
+                    ...(values.extra_attributes?.button_font_color && { button_font_color: values.extra_attributes.button_font_color }),
+                    ...(values.extra_attributes.special_instructions && {
+                        special_instructions: values.extra_attributes.special_instructions,
+                    }),
+                    ...(webAspectRatio?.[0] && { web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)) }),
+                    ...(mobileAspectRatio?.[0] && { mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)) }),
+                    ...(values.extra_attributes.legal_instruction && { legal_instruction: values.extra_attributes.legal_instruction }),
+                    ...(values.extra_attributes.carousel_auto_scroll && {
+                        carousel_auto_scroll: values.extra_attributes.carousel_auto_scroll,
+                    }),
+                    ...(values.extra_attributes.time_interval && { time_interval: values.extra_attributes.time_interval }),
+                    ...(imageUploadEventVideos && { event_video: imageUploadEventVideos }),
+                    ...(imageUploadVenue && { venue_img_url: imageUploadVenue }),
+                    ...(imageUploadEventPhotos && { event_images: imageUploadEventPhotos }),
+                },
+            }
+
+            console.log('4')
+            console.log('body', body)
+
+            await addEventSeries(body)
+                .unwrap()
+                .then(() => {})
+                .catch(() => {
+                    notification.error({
+                        message: 'Failed to add Event',
+                    })
                 })
+
+            // const res = await axioisInstance.post(`/dashboard/promotion/events`, body)
+            // notification.success({
+            //     message: res?.data?.message || 'Successfully Added Event',
+            // })
+        } catch (err) {
+            console.error('Submission Error:', err)
+            notification.error({
+                message: 'Something went wrong while preparing the submission.',
             })
+        }
     }
 
     return (

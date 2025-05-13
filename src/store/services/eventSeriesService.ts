@@ -78,6 +78,8 @@ export const eventSeriesService = RtkQueryService.injectEndpoints({
                         latitude: params.latitude,
                         longitude: params.longitude,
                         extra_attributes: params.extra_attributes,
+                        venue: params.venue,
+                        terms_and_conditions: params.terms_and_conditions,
                     },
                 }
             },

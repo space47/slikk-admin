@@ -50,6 +50,8 @@ export type EventData = {
     latitude?: number
     longitude?: number
     extra_attributes?: any
+    venue: string
+    terms_and_conditions: string
 }
 
 export interface EventUser {
