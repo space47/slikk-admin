@@ -220,7 +220,7 @@ const AddUrlShortner = () => {
                                 <Field
                                     type="checkbox"
                                     name="select_filter"
-                                    component={Input}
+                                    component={Checkbox}
                                     onChange={(e) => handleFilterChange(e, setFieldValue)}
                                 />
                             </FormItem>

@@ -33,6 +33,7 @@ export const targetPageArray = [
     { label: 'order', value: 'order' },
     { label: 'cart', value: 'cart' },
     { label: 'home', value: 'home' },
+    { label: 'events', value: 'events' },
     { label: 'signIn', value: 'signIn' },
     { label: 'otpVerification', value: 'otpVerification' },
     { label: 'homeTabs', value: 'homeTabs' },
