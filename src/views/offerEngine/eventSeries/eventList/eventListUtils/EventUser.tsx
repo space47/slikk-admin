@@ -24,7 +24,7 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
     const [removeModal, setRemoveModal] = useState(false)
     const [mobile, setMobile] = useState('')
 
-    const hanldeUpdate = (mobile: string) => {
+    const handleUpdate = (mobile: string) => {
         setReplaceModal(true)
         setMobile(mobile)
     }
@@ -99,12 +99,18 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
                                         <div className="mb-1">{renderUserStatus(user.status)}</div>
                                         <p className="text-sm text-gray-500">Code: {user.event_code}</p>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <div onClick={() => hanldeUpdate(user?.user?.mobile)}>
-                                            <span className="text-xl font-bold text-blue-500 cursor-pointer">Replace</span>
+                                    <div className="flex gap-2 flex-col xl:flex-row">
+                                        <div onClick={() => handleUpdate(user?.user?.mobile)}>
+                                            <span className="text-xl font-bold text-blue-500 cursor-pointer hidden xl:block">Replace</span>
+                                            <span>
+                                                <GrUpdate className="text-xl text-blue-600 xl:hidden block" />
+                                            </span>
                                         </div>
                                         <div onClick={() => handleRemove(user?.user?.mobile)}>
-                                            <span className="text-xl font-bold text-red-500 cursor-pointer">Delete</span>
+                                            <span className="text-xl font-bold text-red-500 cursor-pointer hidden xl:block">Delete</span>
+                                            <span>
+                                                <FaTrash className="text-xl text-red-600 xl:hidden block" />
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
