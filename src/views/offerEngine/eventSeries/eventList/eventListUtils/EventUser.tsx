@@ -94,16 +94,18 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
                                 )}
                             </div>
                             <div className="md:text-right">
-                                <div className="flex gap-2">
+                                <div className="flex gap-5">
                                     <div>
                                         <div className="mb-1">{renderUserStatus(user.status)}</div>
                                         <p className="text-sm text-gray-500">Code: {user.event_code}</p>
                                     </div>
-                                    <div onClick={() => hanldeUpdate(user?.user?.mobile)}>
-                                        <GrUpdate className="text-xl text-blue-600" />
-                                    </div>
-                                    <div onClick={() => handleRemove(user?.user?.mobile)}>
-                                        <FaTrash className="text-xl text-red-600" />
+                                    <div className="flex gap-2">
+                                        <div onClick={() => hanldeUpdate(user?.user?.mobile)}>
+                                            <span className="text-xl font-bold text-blue-500 cursor-pointer">Replace</span>
+                                        </div>
+                                        <div onClick={() => handleRemove(user?.user?.mobile)}>
+                                            <span className="text-xl font-bold text-red-500 cursor-pointer">Delete</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
