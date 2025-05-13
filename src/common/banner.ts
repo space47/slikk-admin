@@ -18,6 +18,7 @@ export const BANNER_PAGE_NAME = [
     { name: 'My Order', value: 'My Order' },
     { name: 'Product', value: 'Product' },
     { name: 'Search', value: 'Search' },
+    { name: 'Event', value: 'Event' },
 ]
 
 export type BANNER_UPLOAD_DATA = {

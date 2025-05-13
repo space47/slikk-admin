@@ -100,8 +100,8 @@ const EventActionModal = ({ dialogIsOpen, setIsOpen, eventSeriesData, isEdit, ev
                     <Button variant="plain" onClick={() => setIsOpen(false)}>
                         Cancel
                     </Button>
-                    <Button variant="solid" onClick={onDialogOk}>
-                        Submit
+                    <Button variant={isEdit ? 'accept' : 'reject'} onClick={onDialogOk}>
+                        {isEdit ? 'Replace' : 'Remove'}
                     </Button>
                 </div>
             </div>
