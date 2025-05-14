@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input, Tooltip, Upload } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input, Tooltip, Upload } from '@/components/ui'
 import CommonSelect from '@/views/appsSettings/pageSettings/CommonSelect'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
@@ -55,10 +55,10 @@ const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
                 <Field type="number" min="0" name="coupons_count" component={Input} />
             </FormItem>
             <FormItem label="Unique User Code">
-                <Field type="checkbox" name="unique_user_code" component={Input} />
+                <Field type="checkbox" name="unique_user_code" component={Checkbox} />
             </FormItem>
             <FormItem label="Auto Generate Code">
-                <Field type="checkbox" name="auto_generate_code" component={Input} />
+                <Field type="checkbox" name="auto_generate_code" component={Checkbox} />
             </FormItem>
 
             {values.auto_generate_code ? (
