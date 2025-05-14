@@ -78,7 +78,7 @@ const CouponSeriesEdit = () => {
                 max_count_per_user: values?.max_count_per_user,
                 campaign: values?.campaign,
                 coupon_type: values?.coupon_type,
-                is_public: values?.is_public,
+                is_public: values?.is_public ?? false,
                 extra_attributes: {
                     new_users_only: values?.extra_attributes?.new_users_only,
                     filters: {
