@@ -6,6 +6,7 @@ import EventActionModal from './EventActionModal'
 import { useAppSelector } from '@/store'
 import { EventSeriesSliceType } from '@/store/slices/eventSeriesSlice/eventSeriesSlice'
 import { useParams } from 'react-router-dom'
+import { Pagination } from '@/components/ui'
 
 interface props {
     registeredUsers: any[]
@@ -33,42 +34,27 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
         setMobile(mobile)
     }
 
-    console.log('Registered User', registeredUsers)
+    console.log('Registered User', totalCount, pageSize)
     return (
         <div>
             <div className="col-span-full bg-white rounded-xl shadow-md overflow-hidden p-6">
                 <div className="col-span-full bg-white rounded-xl shadow-md overflow-hidden p-6">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex xl:flex-row xl:justify-between items-center flex-col gap-3 mb-4">
                         <h2 className="text-xl font-bold text-gray-900">Event Registration</h2>
                         {Math.ceil(totalCount / pageSize) > 1 && (
                             <div className="flex space-x-1">
-                                <button
-                                    disabled={page === 1}
-                                    className="px-3 py-1 rounded-md border disabled:opacity-50"
-                                    onClick={() => setPage(Math.max(1, page - 1))}
-                                >
-                                    Previous
-                                </button>
-                                {Array.from({ length: Math.ceil(totalCount / pageSize) }, (_, i) => i + 1).map((number) => (
-                                    <button
-                                        key={number}
-                                        className={`px-3 py-1 rounded-md border ${page === number ? 'bg-blue-500 text-white' : ''}`}
-                                        onClick={() => setPage(number)}
-                                    >
-                                        {number}
-                                    </button>
-                                ))}
-                                <button
-                                    disabled={page === Math.ceil(totalCount / pageSize)}
-                                    className="px-3 py-1 rounded-md border disabled:opacity-50"
-                                    onClick={() => setPage(Math.min(Math.ceil(totalCount / pageSize), page + 1))}
-                                >
-                                    Next
-                                </button>
+                                <Pagination
+                                    pageSize={pageSize}
+                                    currentPage={page}
+                                    total={totalCount}
+                                    className="mb-4 md:mb-0"
+                                    onChange={(e) => setPage(e)}
+                                />
                             </div>
                         )}
                     </div>
                 </div>
+
                 {registeredUsers?.map((user: any, index: number) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 mb-4 last:mb-0 hover:bg-gray-50 transition-colors">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
