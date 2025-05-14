@@ -196,7 +196,7 @@ const TransferModule = () => {
                 header: '-',
                 accessorKey: '',
                 cell: ({ row }: { row: any }) => (
-                    <button className="text-red-500" onClick={() => handleDeleteRow(row.original.sku)}>
+                    <button className="text-red-500 text-2xl" onClick={() => handleDeleteRow(row.original.sku)}>
                         <MdCancel />
                     </button>
                 ),
