@@ -57,7 +57,7 @@ const EventListDetails = () => {
                 const response = await axioisInstance.get(`/dashboard/user/events?event_id=${id}&p=${page}&page_size=${pageSize}${status}`)
                 const data = response?.data?.data?.results
                 setRegisteredUsers(data || [])
-                setTotalCount(response?.data?.count)
+                setTotalCount(response?.data?.data?.count)
             } catch (error) {
                 console.error(error)
             }
