@@ -37,7 +37,7 @@ const CouponSeriesForm = ({ values, setFieldValue, setFilterId, filterValue }: C
     return (
         <Form className="">
             <FormContainer>
-                <FormContainer className="grid grid-cols-2 gap-10">
+                <FormContainer className="grid grid-cols-1 xl:grid-cols-2 gap-10 ">
                     {COUPON_SERIES_FORM.slice(0, 5).map((item, key) => (
                         <FormItem key={key} className={item.classname}>
                             <div className="flex gap-2">
