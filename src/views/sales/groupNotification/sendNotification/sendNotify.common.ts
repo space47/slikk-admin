@@ -183,6 +183,7 @@ export const targetPageArray = [
     { label: 'wishlist', value: 'wishlist' },
     { label: 'order', value: 'order' },
     { label: 'cart', value: 'cart' },
+    { label: 'events', value: 'events' },
 ]
 
 export const DISCOUNTOPTIONS = [
