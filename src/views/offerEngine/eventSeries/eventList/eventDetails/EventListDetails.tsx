@@ -6,7 +6,7 @@ import { Button, Dropdown, Input } from '@/components/ui'
 import LoadingSpinner from '@/common/LoadingSpinner'
 import AssignUserModal from '../eventListUtils/AssignUserModal'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { EventSeriesSliceType, setEventSeriesDetails } from '@/store/slices/eventSeriesSlice/eventSeriesSlice'
+import { EventSeriesSliceType, setEventSeriesDetails, setEventSeriesData } from '@/store/slices/eventSeriesSlice/eventSeriesSlice'
 import EventCarousel from '../eventListUtils/EventCarousel'
 import { eventSeriesService } from '@/store/services/eventSeriesService'
 import EventListQrScanner from '../eventListUtils/EventListQrScanner'
@@ -15,6 +15,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { EventUserOptionsList } from '../../eventCommons/eventCommonArray'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import EventUser from '../eventListUtils/EventUser'
+import UserRedeemCard from '../eventListUtils/UserRedeemCard'
 
 const EventListDetails = () => {
     const { id } = useParams()
@@ -36,12 +37,24 @@ const EventListDetails = () => {
     const { data: eventDataDet, isSuccess } = eventSeriesService.useEventSeriesDataQuery({
         event_id: id,
     })
+    const { data: mainData, isSuccess: isSuccessMain } = eventSeriesService.useEventSeriesDataQuery({})
+
+    useEffect(() => {
+        if (isSuccess) {
+            dispatch(setEventSeriesDetails(eventDataDet.data || []))
+        }
+    }, [dispatch, isSuccess, eventDataDet, id])
+
+    useEffect(() => {
+        if (isSuccessMain) {
+            dispatch(setEventSeriesData(mainData.data?.results || []))
+        }
+    }, [dispatch, isSuccessMain, mainData, id])
 
     useEffect(() => {
         const fetchUserRegistration = async () => {
             try {
                 let status = ''
-
                 if (globalFilter) {
                     if (currentSelectedPage.value === 'mobile') {
                         status = `&mobile=${globalFilter}`
@@ -87,11 +100,6 @@ const EventListDetails = () => {
             setShowQr(false)
         }
     }, [qrResult])
-    useEffect(() => {
-        if (isSuccess) {
-            dispatch(setEventSeriesDetails(eventDataDet.data || []))
-        }
-    }, [dispatch, isSuccess, eventDataDet])
 
     if (!eventData) {
         return (
@@ -139,8 +147,8 @@ const EventListDetails = () => {
     }
 
     const ImagesArray = [
-        { value: eventData?.image_web, label: 'Web Images' },
-        { value: eventData?.image_mobile, label: 'Mobile Images' },
+        { value: eventData?.image_web, label: 'Web Images', aspect: eventData?.extra_attributes?.web_aspect_ratio },
+        { value: eventData?.image_mobile, label: 'Mobile Images', aspect: eventData?.extra_attributes?.mobile_aspect_ratio },
         { value: eventData?.extra_attributes?.event_photos, label: 'Event Images' },
     ]
 
@@ -176,7 +184,11 @@ const EventListDetails = () => {
                             <div key={key}>
                                 {item?.value?.split(',').length > 0 && (
                                     <>
-                                        <EventCarousel image={item?.value?.split(',')} label={item?.label} />
+                                        <EventCarousel
+                                            image={item?.value?.split(',')}
+                                            label={item?.label}
+                                            aspectRatioValue={item?.aspect}
+                                        />
                                     </>
                                 )}
                             </div>
@@ -195,7 +207,6 @@ const EventListDetails = () => {
                             {showQr ? 'Close Qr Scanner' : 'Scan QR Code'}
                         </Button>
                     </div>
-                    {/* <p>{qrResult}</p> */}
                     <div>
                         {showQr && (
                             <div className="mt-10 ">
@@ -205,61 +216,7 @@ const EventListDetails = () => {
                         )}
                     </div>
                     {(qrResult || qrResult !== '') && userToRedeem.length > 0 && (
-                        <div className="space-y-4">
-                            {userToRedeem.map((user, index) => (
-                                <div
-                                    key={index}
-                                    className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4"
-                                >
-                                    <div className="p-8">
-                                        <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
-                                            <span>{user.user.name || 'Not provided'}</span>
-                                        </div>
-                                        <div className="mt-4">
-                                            <div className="flex items-center mb-2">
-                                                <span className="text-gray-700 font-medium mr-2">Mobile:</span>
-                                                <span>{user.user.mobile || 'Not provided'}</span>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <span className="text-gray-700 font-medium mr-2">Email:</span>
-                                                <span>{user.user.email || 'Not provided'}</span>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <span className="text-gray-700 font-medium mr-2">Event Code:</span>
-                                                <span>{user.event_code}</span>
-                                            </div>
-                                            <div className="flex items-center mb-2">
-                                                <span className="text-gray-700 font-medium mr-2">Status:</span>
-                                                <span
-                                                    className={`px-2 py-1 text-xs rounded-full ${
-                                                        user.status === 'JOINED'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-yellow-100 text-yellow-800'
-                                                    }`}
-                                                >
-                                                    {user.status}
-                                                </span>
-                                            </div>
-                                            <div className="mt-4 border-t pt-4">
-                                                <div className="flex items-center mb-2">
-                                                    <span className="text-gray-700 font-medium mr-2">Terms Accepted:</span>
-                                                    <span>{user.terms_and_conditions_accepted ? '✅' : '❌'}</span>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <span className="text-gray-700 font-medium mr-2">Other Conditions:</span>
-                                                    <span>{user.other_conditions_accepted ? '✅' : '❌'}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end mb-2">
-                                        <Button variant="accept" size="sm" onClick={handleRedeem}>
-                                            Redeem
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <UserRedeemCard userToRedeem={userToRedeem} handleRedeem={handleRedeem} />
                     )}
                 </div>
 
@@ -438,7 +395,7 @@ const EventListDetails = () => {
 
                 {/* Action Buttons */}
                 <div className="col-span-full flex flex-wrap gap-4">
-                    {eventData.is_joined ? (
+                    {eventData.is_joined && (
                         <>
                             <button
                                 className={`flex items-center px-6 py-3 rounded-lg font-medium ${
@@ -456,8 +413,6 @@ const EventListDetails = () => {
                                 Cancel Registration
                             </button>
                         </>
-                    ) : (
-                        ''
                     )}
                 </div>
 

@@ -102,3 +102,10 @@ export interface EventSeriesDetailsType {
     venue?: string
     terms_and_conditions?: string
 }
+
+export interface EventSeriesActionTypes {
+    mobile?: string | number
+    event_id: number | string
+    replace_event_id?: number
+    action: string
+}

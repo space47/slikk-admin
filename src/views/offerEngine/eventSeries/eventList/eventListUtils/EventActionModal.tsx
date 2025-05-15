@@ -1,8 +1,9 @@
-import { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from 'react'
 import { eventSeriesResponseTypes } from '@/store/types/eventSeries.types'
-import { Button, Dialog, Input, Select } from '@/components/ui'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Button, Dialog, Select, Spinner } from '@/components/ui'
 import { notification } from 'antd'
+import { eventSeriesService } from '@/store/services/eventSeriesService'
 
 interface Props {
     dialogIsOpen: boolean
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const EventActionModal = ({ dialogIsOpen, setIsOpen, eventSeriesData, isEdit, event_id, mobile }: Props) => {
+    const [eventAction, eventActionResponse] = eventSeriesService.useActionEventSeriesMutation()
     const [formData, setFormData] = useState({
         mobileNumber: '',
         eventId: '',
@@ -21,7 +23,25 @@ const EventActionModal = ({ dialogIsOpen, setIsOpen, eventSeriesData, isEdit, ev
         action: '',
     })
 
-    console.log('Event Series Data:', formData?.eventId)
+    useEffect(() => {
+        if (eventActionResponse.isSuccess) {
+            notification.success({
+                message: (eventActionResponse as any).data?.message || 'User successfully assigned to event',
+            })
+            setIsOpen(false)
+            setFormData({
+                mobileNumber: '',
+                eventId: '',
+                replaceEventId: '',
+                action: '',
+            })
+        }
+        if (eventActionResponse.isError) {
+            notification.error({
+                message: (eventActionResponse.error as any)?.data?.message || 'Failed to assign user to event',
+            })
+        }
+    }, [eventActionResponse, setIsOpen])
 
     const eventOptions = eventSeriesData.map((item) => ({
         label: item.name,
@@ -56,11 +76,9 @@ const EventActionModal = ({ dialogIsOpen, setIsOpen, eventSeriesData, isEdit, ev
         }
 
         try {
-            const response = await axioisInstance.post('/dashboard/user/events', body)
-            notification.success({ message: response.data?.message || 'Updated successfully' })
+            await eventAction(body as any).unwrap()
         } catch (error) {
             console.error('Error assigning user to event:', error)
-            notification.error({ message: 'Error' })
         } finally {
             setIsOpen(false)
             setFormData({
@@ -100,8 +118,8 @@ const EventActionModal = ({ dialogIsOpen, setIsOpen, eventSeriesData, isEdit, ev
                     <Button variant="plain" onClick={() => setIsOpen(false)}>
                         Cancel
                     </Button>
-                    <Button variant={isEdit ? 'accept' : 'reject'} onClick={onDialogOk}>
-                        {isEdit ? 'Replace' : 'Remove'}
+                    <Button variant={isEdit ? 'accept' : 'reject'} onClick={onDialogOk} className="flex gap-2 items-center">
+                        <span>{eventActionResponse?.isLoading && <Spinner size={30} color="white" />}</span> {isEdit ? 'Replace' : 'Remove'}
                     </Button>
                 </div>
             </div>

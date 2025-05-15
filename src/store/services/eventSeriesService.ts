@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RtkQueryService from '@/services/RtkQueryService'
-import { EventData } from '../types/eventSeries.types'
+import { EventData, EventSeriesActionTypes } from '../types/eventSeries.types'
 
 interface GetEventSeriesTypes {
     from?: string
@@ -81,6 +81,15 @@ export const eventSeriesService = RtkQueryService.injectEndpoints({
                         venue: params.venue,
                         terms_and_conditions: params.terms_and_conditions,
                     },
+                }
+            },
+        }),
+        actionEventSeries: builder.mutation<{ success: string }, EventSeriesActionTypes>({
+            query: (params) => {
+                return {
+                    url: `/dashboard/user/events`,
+                    method: 'POST',
+                    body: params,
                 }
             },
         }),
