@@ -358,7 +358,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
     }
 
     return (
-        <div className="p-4 flex flex-col gap-6">
+        <div className="p-4 flex flex-col gap-6 shadow-lg rounded-xl">
             <div>
                 <div className="mb-4">
                     <label className="block text-gray-700">Box Number</label>
@@ -380,7 +380,7 @@ const InwardMaterialModule = ({ setRefreshTrigger, shipmentDetails }: props) => 
                                     name={currentSelectedSearch.value}
                                     type="search"
                                     placeholder={`Enter ${currentSelectedSearch.label}`}
-                                    className="w-full border border-gray-300 rounded p-2"
+                                    className="w-[170px] xl:w-full border border-gray-300 rounded p-2"
                                     value={formData[currentSelectedSearch.value as keyof typeof formData]}
                                     onChange={handleInputChange}
                                     onKeyDown={handleKeyDown}

@@ -5,7 +5,7 @@ import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast } from 'react-icons/fa'
+import { FaBoxOpen, FaMapMarkedAlt, FaShippingFast, FaTimes, FaUpload } from 'react-icons/fa'
 import { useParams } from 'react-router-dom'
 import InwardMaterialModule from '@/views/inventory-management/inward/inwardModules/InwardMaterialModule'
 
@@ -67,74 +67,99 @@ const BrandShipmentDetails = () => {
     return (
         <div className="p-6">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br ">
+                <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-gray-100">
                     <div className="flex items-center gap-2">
-                        <FaShippingFast className="text-2xl" />
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <FaShippingFast className="text-2xl text-green-500" />
+                        </div>
                         <h2 className="text-xl font-bold">Shipment Details</h2>
                     </div>
 
                     <div className="mt-4 space-y-2 text-sm">
                         {Shipmentvalue?.map((item, index) => (
-                            <p key={index}>
+                            <p key={index} className="flex justify-between">
                                 <strong>{item.label}:</strong> {item.value}
                             </p>
                         ))}
                     </div>
                 </Card>
-                <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br ">
+                <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-gray-100">
                     <div className="flex items-center gap-2">
-                        <FaMapMarkedAlt className="text-2xl" />
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <FaMapMarkedAlt className="text-2xl text-red-600" />
+                        </div>
                         <h2 className="text-xl font-bold">Delivery Info</h2>
                     </div>
                     <div className="mt-4 space-y-2 text-sm">
                         {DeliveryDetailsValue?.map((item, index) => (
-                            <p key={index}>
+                            <p key={index} className="flex justify-between">
                                 <strong>{item.label}:</strong> {item.value}
                             </p>
                         ))}
                     </div>
                 </Card>
-                <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br ">
-                    <div className="flex items-center gap-2">
-                        <FaBoxOpen className="text-2xl" />
-                        <h2 className="text-xl font-bold">Items Info</h2>
+                <Card className="p-6 shadow-xl rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-gray-100">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <FaBoxOpen className="text-2xl text-blue-600" />
+                        </div>
+                        <h2 className="text-xl font-semibold text-gray-800">Items Information</h2>
                     </div>
-                    <div className="mt-4 space-y-2 text-sm">
-                        <p>
-                            <strong>Box Count:</strong> {shipmentDetails?.box_count ?? '0'}
-                        </p>
-                        <p>
-                            <strong>Items Count:</strong> {shipmentDetails?.items_count ?? '0'}
-                        </p>
-                        {showAddCsv ? (
-                            <button className="flex p-2 rounded-xl text-white bg-red-500" onClick={() => setShowAddCsv((prev) => !prev)}>
-                                Close
-                            </button>
-                        ) : (
-                            <button className="flex p-2 rounded-xl text-white bg-blue-500" onClick={() => setShowAddCsv((prev) => !prev)}>
-                                Upload Shipping Items File
-                            </button>
-                        )}
-                        {showAddCsv && (
-                            <div className="flex items-center justify-center flex-col gap-2">
-                                <Upload
-                                    className="flex justify-center"
-                                    beforeUpload={beforeUpload}
-                                    fileList={csvEmptyArray}
-                                    onChange={(files) => setCsvEmptyArray(files)}
-                                    onFileRemove={(files) => setCsvEmptyArray(files)}
-                                />
-                                <button className="flex p-2 rounded-xl text-white bg-blue-500" onClick={handleCsvUpload}>
-                                    Submit
+
+                    <div className="">
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-gray-600 font-bold">Box Count:</span>
+                            <span className="font-semibold">{shipmentDetails?.box_count ?? '0'}</span>
+                        </div>
+
+                        <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span className="text-gray-600 font-bold">Items Count:</span>
+                            <span className="font-semibold">{shipmentDetails?.items_count ?? '0'}</span>
+                        </div>
+
+                        <div className="pt-4">
+                            {showAddCsv ? (
+                                <div className="space-y-4">
+                                    <button
+                                        className="w-full py-2 px-4 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition-colors flex items-center justify-center gap-2"
+                                        onClick={() => setShowAddCsv((prev) => !prev)}
+                                    >
+                                        <FaTimes className="text-sm" />
+                                        Close Upload
+                                    </button>
+
+                                    <div className="flex flex-col items-center gap-4 p-4 bg-white rounded-lg border border-dashed border-gray-300">
+                                        <Upload
+                                            className="w-full"
+                                            beforeUpload={beforeUpload}
+                                            fileList={csvEmptyArray}
+                                            onChange={(files) => setCsvEmptyArray(files)}
+                                            onFileRemove={(files) => setCsvEmptyArray(files)}
+                                        />
+                                        <button
+                                            className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+                                            onClick={handleCsvUpload}
+                                        >
+                                            Submit File
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <button
+                                    className="w-full py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors flex items-center justify-center gap-2"
+                                    onClick={() => setShowAddCsv((prev) => !prev)}
+                                >
+                                    <FaUpload className="text-sm" />
+                                    Upload Shipping Items File
                                 </button>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </Card>
             </div>
 
             {shipmentDetails?.shipment_items?.length > 0 && (
-                <div className="mt-10">
+                <div className="mt-12">
                     <h2 className="text-xl font-semibold text-gray-800">Shipment Items</h2>
                     <InwardMaterialModule setRefreshTrigger={setRefreshTrigger} shipmentDetails={shipmentDetails} />
                 </div>
