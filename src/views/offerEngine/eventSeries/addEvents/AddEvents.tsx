@@ -7,7 +7,6 @@ import EventFormCommon from '../eventCommons/EventFormCommon'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import { handleimage, handleVideo } from '@/views/category-management/catalog/handlingProductImage'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 
 const AddEvents = () => {
     const navigate = useNavigate()

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from 'react'
 import { eventSeriesResponseTypes } from '@/store/types/eventSeries.types'
-import { Button, Dialog, Input, Select } from '@/components/ui'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { Button, Dialog, Input, Spinner } from '@/components/ui'
 import { notification } from 'antd'
+import { eventSeriesService } from '@/store/services/eventSeriesService'
 
 interface Props {
     dialogIsOpen: boolean
@@ -12,12 +13,33 @@ interface Props {
 }
 
 const AssignUserModal = ({ dialogIsOpen, setIsOpen, event_id }: Props) => {
+    const [eventAction, eventActionResponse] = eventSeriesService.useActionEventSeriesMutation()
     const [formData, setFormData] = useState({
         mobileNumber: '',
         eventId: '',
         replaceEventId: '',
         action: '',
     })
+
+    useEffect(() => {
+        if (eventActionResponse.isSuccess) {
+            notification.success({
+                message: (eventActionResponse as any).data?.message || 'User successfully assigned to event',
+            })
+            setIsOpen(false)
+            setFormData({
+                mobileNumber: '',
+                eventId: '',
+                replaceEventId: '',
+                action: '',
+            })
+        }
+        if (eventActionResponse.isError) {
+            notification.error({
+                message: (eventActionResponse.error as any)?.data?.message || 'Failed to assign user to event',
+            })
+        }
+    }, [eventActionResponse, setIsOpen])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -32,11 +54,9 @@ const AssignUserModal = ({ dialogIsOpen, setIsOpen, event_id }: Props) => {
             action: 'add',
         }
         try {
-            const response = await axioisInstance.post('/dashboard/user/events', body)
-            notification.success({ message: response.data?.message || 'User assigned successfully' })
+            await eventAction(body as any).unwrap()
         } catch (error) {
             console.error('Error assigning user to event:', error)
-            notification.error({ message: 'Error assigning user to event' })
         } finally {
             setIsOpen(false)
             setFormData({
@@ -68,8 +88,8 @@ const AssignUserModal = ({ dialogIsOpen, setIsOpen, event_id }: Props) => {
                     <Button variant="plain" onClick={() => setIsOpen(false)}>
                         Cancel
                     </Button>
-                    <Button variant="solid" onClick={onDialogOk}>
-                        Submit
+                    <Button variant="solid" onClick={onDialogOk} className="flex gap-2 items-center">
+                        <span>{eventActionResponse?.isLoading && <Spinner size={30} color="white" />}</span> Add
                     </Button>
                 </div>
             </div>
