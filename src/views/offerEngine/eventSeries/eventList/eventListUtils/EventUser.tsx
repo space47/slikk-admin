@@ -39,7 +39,16 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
 
     const handleExportUserList = async () => {
         try {
-            const response = await axioisInstance.get(`/dashboard/user/events?event_id=${id}&download=true`)
+            const response = await axioisInstance.get(`/dashboard/user/events?event_id=${id}&download=true`, {
+                responseType: 'blob',
+            })
+            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = urlToBeDownloaded
+            link.download = `UserList.csv`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
             notification.success({
                 message: response?.data?.message || 'Exported Successfully',
             })
