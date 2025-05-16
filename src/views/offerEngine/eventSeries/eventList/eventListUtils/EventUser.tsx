@@ -7,6 +7,9 @@ import { useAppSelector } from '@/store'
 import { EventSeriesSliceType } from '@/store/slices/eventSeriesSlice/eventSeriesSlice'
 import { useParams } from 'react-router-dom'
 import { Pagination } from '@/components/ui'
+import { FiDownload } from 'react-icons/fi'
+import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
+import { notification } from 'antd'
 
 interface props {
     registeredUsers: any[]
@@ -34,24 +37,35 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
         setMobile(mobile)
     }
 
+    const handleExportUserList = async () => {
+        try {
+            const response = await axioisInstance.get(`/dashboard/user/events?event_id=${id}&download=true`)
+            notification.success({
+                message: response?.data?.message || 'Exported Successfully',
+            })
+        } catch (error) {
+            console.error(error)
+            notification.error({
+                message: 'Failed to export',
+            })
+        }
+    }
+
     console.log('Registered User', totalCount, pageSize)
     return (
         <div>
             <div className="col-span-full bg-white rounded-xl shadow-md overflow-hidden p-6">
                 <div className="col-span-full bg-white rounded-xl shadow-md overflow-hidden p-6">
-                    <div className="flex xl:flex-row xl:justify-between items-center flex-col gap-3 mb-4">
-                        <h2 className="text-xl font-bold text-gray-900">Event Registration</h2>
-                        {Math.ceil(totalCount / pageSize) > 1 && (
-                            <div className="flex space-x-1">
-                                <Pagination
-                                    pageSize={pageSize}
-                                    currentPage={page}
-                                    total={totalCount}
-                                    className="mb-4 md:mb-0"
-                                    onChange={(e) => setPage(e)}
-                                />
-                            </div>
-                        )}
+                    <div className="flex flex-col xl:flex-row xl:justify-between items-center gap-4 mb-6 px-4 py-3  rounded-2xl">
+                        <h2 className="text-xl font-semibold text-gray-800 order-2 xl:order-none">Event Registration</h2>
+
+                        <button
+                            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 transition-colors text-white font-medium py-2 px-5 rounded-xl order-1 xl:order-none shadow-md"
+                            onClick={handleExportUserList}
+                        >
+                            <FiDownload className="text-lg" />
+                            Export
+                        </button>
                     </div>
                 </div>
 
@@ -104,6 +118,17 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
                         </div>
                     </div>
                 ))}
+                {Math.ceil(totalCount / pageSize) > 1 && (
+                    <div className="flex space-x-1">
+                        <Pagination
+                            pageSize={pageSize}
+                            currentPage={page}
+                            total={totalCount}
+                            className="mb-4 md:mb-0"
+                            onChange={(e) => setPage(e)}
+                        />
+                    </div>
+                )}
             </div>
             {replaceModal && (
                 <EventActionModal

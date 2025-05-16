@@ -4,6 +4,7 @@ import { eventSeriesResponseTypes } from '@/store/types/eventSeries.types'
 import { Button, Dialog, Select, Spinner } from '@/components/ui'
 import { notification } from 'antd'
 import { eventSeriesService } from '@/store/services/eventSeriesService'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
     dialogIsOpen: boolean
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const EventActionModal = ({ dialogIsOpen, setIsOpen, eventSeriesData, isEdit, event_id, mobile }: Props) => {
+    const navigate = useNavigate()
     const [eventAction, eventActionResponse] = eventSeriesService.useActionEventSeriesMutation()
     const [formData, setFormData] = useState({
         mobileNumber: '',
@@ -35,6 +37,7 @@ const EventActionModal = ({ dialogIsOpen, setIsOpen, eventSeriesData, isEdit, ev
                 replaceEventId: '',
                 action: '',
             })
+            navigate(0)
         }
         if (eventActionResponse.isError) {
             notification.error({
