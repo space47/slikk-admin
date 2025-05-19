@@ -231,7 +231,7 @@ const EditEvents = () => {
         const eventVideoParts = []
         if (event_video_url) eventVideoParts.push(event_video_url)
         if (videoEventUpload) eventVideoParts.push(videoEventUpload)
-        if (values?.event_video) eventVideoParts.push(values.event_video)
+        if (values?.event_video) eventVideoParts.push(values?.event_video)
         event_video_url = eventVideoParts.filter((t) => t).join(',')
 
         // Process venue images
