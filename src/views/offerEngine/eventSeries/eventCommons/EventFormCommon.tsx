@@ -181,7 +181,7 @@ const EventFormCommon = ({
                             name="event_video_array"
                             fieldname="event_video_array"
                             fileLists={values.event_video_array}
-                            textName="extra_attributes.event_video_data"
+                            textName="event_video"
                             placeholder="Enter Video Url"
                         />
                     ) : (
