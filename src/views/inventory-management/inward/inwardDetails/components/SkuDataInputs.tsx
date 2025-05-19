@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { notification } from 'antd'
 import React from 'react'
+import { uniq } from 'lodash'
 
 type formData = {
     location: string
@@ -19,6 +21,7 @@ interface props {
     batchNumberInput: any
     company: any
     setFormData: any
+    setCounter: (x: any) => number
 }
 
 const SkuDataInputs = ({
@@ -33,16 +36,15 @@ const SkuDataInputs = ({
     batchNumberInput,
     company,
     setFormData,
+    setCounter,
 }: props) => {
-    const handleAddSku = async () => {
+    const handleAddSku = () => {
         const { sku, location } = formData
-
         if (!sku.trim()) return
 
         const getSameData = getSkuData?.find((item) => item.sku === sku)
 
         const updatedData = skuWiseData.map((item) => {
-            console.log('check start')
             if (item.sku === sku) {
                 return {
                     ...item,
@@ -50,7 +52,6 @@ const SkuDataInputs = ({
                     quantity_received: item.quantity_received + 1,
                     qc_failed: item.quantity_received + 1 - (item.qc_passed + 1),
                     location: location || item.location,
-                    quantity_sent: item.quantity_sent + 1,
                 }
             }
             return item
@@ -59,11 +60,14 @@ const SkuDataInputs = ({
         if (getSameData) {
             updatedData[0] = {
                 sku,
-                qc_passed: getSameData?.qc_passed + 1,
-                quantity_sent: getSameData?.quantity_sent + 1,
-                quantity_received: getSameData?.quantity_received + 1,
+                qc_passed: getSameData.qc_passed + 1,
+                quantity_received: getSameData.quantity_received + 1,
                 qc_failed: getSameData.quantity_received + 1 - (getSameData.qc_passed + 1),
-                location: formData?.location ? [getSameData?.location, formData.location].filter(Boolean).join(',') : getSameData?.location,
+                location: formData?.location
+                    ? formData.location?.toLowerCase() !== getSameData?.location?.toLowerCase()
+                        ? uniq([getSameData?.location, formData.location].filter(Boolean)).join(',')
+                        : getSameData?.location
+                    : getSameData?.location,
             }
         }
 
@@ -82,38 +86,31 @@ const SkuDataInputs = ({
         }
 
         setSkuWiseData(updatedData)
+    }
 
-        if (getSameData) {
-            try {
-                const firstSku = updatedData[0]
-
-                const response = await axioisInstance.patch(`/goods/qualitycheck/${getSameData?.id}`, firstSku)
-                console.log('Response:', response.data)
+    const handleAddGrn = async () => {
+        const skuData = skuWiseData[0]
+        console.log('formadta', !formData?.sku)
+        const getSameData = getSkuData?.find((item) => item.sku === formData.sku)
+        try {
+            if (getSameData || !formData.sku) {
+                const response = await axioisInstance.patch(`/goods/qualitycheck/${getSameData.id}`, skuData)
                 notification.success({
                     message: response?.data?.message || 'Successfully Updated',
                 })
-            } catch (error) {
-                notification.error({
-                    message: 'Failed to Update',
-                })
-                console.error('Error during API call:', error)
-            }
-        }
-        if (!getSameData) {
-            try {
-                const firstSku = updatedData[0]
-
-                const response = await axioisInstance.post(`/goods/qualitycheck`, firstSku)
-                console.log('Response:', response.data)
+                setCounter((prev: number) => prev + 1)
+            } else {
+                const response = await axioisInstance.post(`/goods/qualitycheck`, skuData)
                 notification.success({
-                    message: response?.data?.message || 'Successfully added',
+                    message: response?.data?.message || 'Successfully Added',
                 })
-            } catch (error) {
-                notification.error({
-                    message: 'Failed to add',
-                })
-                console.error('Error during API call:', error)
+                setCounter((prev: number) => prev + 1)
             }
+        } catch (error) {
+            notification.error({
+                message: getSameData ? 'Failed to Update' : 'Failed to Add',
+            })
+            console.error('Error during API call:', error)
         }
 
         setFormData((prev: any) => ({
@@ -162,6 +159,10 @@ const SkuDataInputs = ({
                         }}
                     />
                 </div>
+            </div>
+
+            <div className=" flex justify-end" onClick={handleAddGrn}>
+                <Button variant="accept">Add</Button>
             </div>
         </div>
     )

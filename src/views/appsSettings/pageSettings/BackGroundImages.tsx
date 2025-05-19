@@ -258,6 +258,16 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
                     />
                 </FormItem>
             ))}
+            {values?.background_config.is_background_lottie && (
+                <FormContainer className="flex gap-10">
+                    <FormItem label="Lottie Loop">
+                        <Field type="checkbox" name="background_config.lottie_loop" component={Checkbox} />
+                    </FormItem>
+                    <FormItem label="Web Lottie Loop">
+                        <Field type="checkbox" name="background_config.web_lottie_loop" component={Checkbox} />
+                    </FormItem>
+                </FormContainer>
+            )}
             <CommonSelect
                 needClassName
                 name="background_config.desktop_position"

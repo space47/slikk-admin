@@ -5,6 +5,7 @@ import type { FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
 import { WebType } from './PageModal'
 import { MdCancel } from 'react-icons/md'
+import { BsFiletypeJson } from 'react-icons/bs'
 
 interface VIDEOPROPS {
     label: string
@@ -31,6 +32,7 @@ const PageEditVideo = ({
     noVideo = true,
     isLottie,
 }: VIDEOPROPS) => {
+    console.log('rowName', rowName)
     return (
         <div>
             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
@@ -38,7 +40,7 @@ const PageEditVideo = ({
                 {noVideo && rowName && (
                     <div className="flex flex-col items-center justify-center min-w-[100px]">
                         {isLottie ? (
-                            <img src={rowName} alt={`Image `} className="w-[150px] h-[40px] flex object-contain " />
+                            <BsFiletypeJson className="text-3xl" />
                         ) : (
                             <video src={rowName} controls className="w-[200px] h-[120px] flex object-contain" />
                         )}
