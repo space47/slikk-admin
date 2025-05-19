@@ -11,7 +11,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
-import { notification } from 'antd'
+import { commonDownload } from '@/common/commonDownload'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -82,20 +82,7 @@ const BrandAccounting = () => {
                 },
             )
 
-            const contentType = response.headers['content-type']
-            if (contentType !== 'text/csv') {
-                notification.success({
-                    message: response.data?.message || 'File is being generated in background and will be sent on registered email',
-                })
-            } else {
-                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-                const link = document.createElement('a')
-                link.href = urlToBeDownloaded
-                link.download = `${selectedCompany?.name}-${from}-to-${to}.csv`
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-            }
+            commonDownload(response, `${selectedCompany?.name}-${from}-to-${to}`)
         } catch (error) {
             console.error('Error downloading CSV:', error)
         }

@@ -10,6 +10,7 @@ import { ProductTable, WebType } from './pageSettings.types'
 // import { handleVideo } from '@/common/handleVideo'
 import * as Yup from 'yup'
 import { values } from 'lodash'
+import { handleimage } from '@/common/handleImage'
 
 type modalProps = {
     isModalOpen: boolean
@@ -150,7 +151,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         setSearchInput('')
     }
 
-    const handleimage = async (files: File[]) => {
+    const handleImage = async (files: File[]) => {
         if (!files || files.length === 0) {
             return
         }
@@ -278,12 +279,12 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         }
         console.log('Mobile file in Add', row?.mobile_background_video_array)
         console.log('satrt')
-        const imageUpload = await handleimage(row.background_image_array)
-        const mobileimageUpload = await handleimage(row.mobile_background_array)
-        const footerImageUpload = await handleimage(row.footer_config_image_Array)
-        const headerImageUpload = await handleimage(row.header_config_image_Array)
-        const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
-        const headerIconUpload = await handleimage(row.header_config_icon_Array)
+        const imageUpload = await handleImage(row.background_image_array)
+        const mobileimageUpload = await handleImage(row.mobile_background_array)
+        const footerImageUpload = await handleImage(row.footer_config_image_Array)
+        const headerImageUpload = await handleImage(row.header_config_image_Array)
+        const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
+        const headerIconUpload = await handleImage(row.header_config_icon_Array)
         //videos hanlde
         const footervideoUpload = await handleVideo(row.footer_config_video_Array)
         const headerVideoUpload = await handleVideo(row.header_config_video_Array)
@@ -291,8 +292,8 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         const backgroundVideoUpload = await handleVideo(row?.background_video_array)
         const mobileBackgroundVideoUpload = await handleVideo(row?.mobile_background_video_array)
 
-        const backgroundLottieUpload = await handleimage(row?.background_lottie_array)
-        const mobileBackgroundLottieUpload = await handleimage(row?.mobile_background_lottie_array)
+        const backgroundLottieUpload = await handleimage('product', row?.background_lottie_array)
+        const mobileBackgroundLottieUpload = await handleimage('product', row?.mobile_background_lottie_array)
 
         console.log('headerIconImage')
         // Aspect Ratio handles

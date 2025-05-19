@@ -128,12 +128,10 @@ const AddEvents = () => {
                     ...(values.extra_attributes.time_interval && { time_interval: values.extra_attributes.time_interval }),
                     ...(imageUploadEventVideos && { event_video: imageUploadEventVideos }),
                     ...(imageUploadVenue && { venue_img_url: imageUploadVenue }),
-                    ...(imageUploadEventPhotos && { event_images: imageUploadEventPhotos }),
+                    ...(imageUploadEventPhotos && { event_photos: imageUploadEventPhotos }),
+                    dummy_registration_count: values.extra_attributes.dummy_registration_count ?? 0,
                 },
             }
-
-            console.log('4')
-            console.log('body', body)
 
             await addEventSeries(body)
                 .unwrap()

@@ -10,6 +10,7 @@ import EventMap from './EventMaps'
 import ImageCommonProduct from '@/views/category-management/catalog/ImageCommonProduct'
 import AddProductImages from '@/views/category-management/catalog/AddProductImages'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
+import HelpTooltip from '@/common/HelpTooltip'
 
 interface Props {
     editMode?: boolean
@@ -46,7 +47,11 @@ const EventFormCommon = ({
             <FormContainer>
                 <FormContainer className="grid grid-cols-2 gap-3">
                     {EventTypeForm?.map((item, key) => (
-                        <FormItem key={key} label={item.label} className="w-full">
+                        <FormItem key={key} className="w-full">
+                            <span className="flex gap-2">
+                                <FormItem label={item?.label}></FormItem>
+                                {item?.tooltip && <HelpTooltip message={item?.title || ''} />}
+                            </span>
                             <Field
                                 name={item?.name}
                                 type={item?.type}

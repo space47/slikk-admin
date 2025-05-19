@@ -11,6 +11,7 @@ import { ProductTable } from './pageSettings.types'
 import * as Yup from 'yup'
 import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
 import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
+import { handleimage } from '@/common/handleImage'
 
 type modalProps = {
     isModalOpen: boolean
@@ -179,7 +180,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         return aspectRatios
     }
 
-    const handleimage = async (files: File[]) => {
+    const handleImage = async (files: File[]) => {
         console.log('Images of mobile for checking', files)
         if (!files || files.length === 0) {
             return
@@ -221,7 +222,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 message: 'Success',
                 description: response?.data?.message || 'Image uploaded successfully',
             })
-
+            console.log('new data is', newData)
             return newData
         } catch (error: any) {
             console.error('Error uploading files:', error)
@@ -274,6 +275,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
     }
 
     const handleSubmit = async (row: any) => {
+        console.log('here', row?.background_lottie_array, row?.mobile_background_lottie_array)
         const componentConfig = {
             ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
             border: row?.border ?? false,
@@ -286,17 +288,21 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             web_section_border: row?.web_section_border ?? false,
         }
 
+        const backgroundLottieUpload = row?.background_lottie_array
+            ? await handleimage('product', row?.background_lottie_array)
+            : initialValue.background_lottie
+        const mobileBackgroundLottieUpload = row?.mobile_background_lottie_array
+            ? await handleimage('product', row?.mobile_background_lottie_array)
+            : initialValue.mobile_background_lottie
+
         try {
             console.log('handleSubmit called')
-            const imageUpload = await handleimage(row.background_image_array)
-            const mobileimageUpload = await handleimage(row.mobile_background_array)
-            const footerImageUpload = await handleimage(row.footer_config_image_Array)
-            const headerImageUpload = await handleimage(row.header_config_image_Array)
-            const subHeaderImageUpload = await handleimage(row.sub_header_config_image_Array)
-            const headerIconUpload = await handleimage(row.header_config_icon_Array)
-
-            const backgroundLottieUpload = await handleimage(row?.background_lottie_array)
-            const mobileBackgroundLottieUpload = await handleimage(row?.mobile_background_lottie_array)
+            const imageUpload = await handleImage(row.background_image_array)
+            const mobileimageUpload = await handleImage(row.mobile_background_array)
+            const footerImageUpload = await handleImage(row.footer_config_image_Array)
+            const headerImageUpload = await handleImage(row.header_config_image_Array)
+            const subHeaderImageUpload = await handleImage(row.sub_header_config_image_Array)
+            const headerIconUpload = await handleImage(row.header_config_icon_Array)
 
             const footervideoUpload = await handleVideo(row.footer_config_video_Array)
             const headerVideoUpload = await handleVideo(row.header_config_video_Array)
@@ -443,11 +449,19 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             setInitalValue((prev: any) => ({
                 ...prev,
                 background_video: null,
+                background_config: {
+                    ...prev.background_config,
+                    background_video: null,
+                },
             }))
         } else if (val === 'mobile_background_video') {
             setInitalValue((prev: any) => ({
                 ...prev,
                 mobile_background_video: null,
+                background_config: {
+                    ...prev.background_config,
+                    mobile_background_video: null,
+                },
             }))
         } else if (val === 'background_lottie') {
             setInitalValue((prev: any) => ({

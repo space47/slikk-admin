@@ -31,5 +31,7 @@ export const EditInitialValues = (particularRow: any) => {
         extra_info: particularRow.extra_info,
         web_section_border: particularRow?.web_section_border,
         order_count: particularRow?.order_count,
+        // background_lottie:particularRow.background_config?.background_lottie,
+        // mobile_background_lottie:particularRow.background_config?.mobile_background_lottie,
     }
 }

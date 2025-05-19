@@ -14,6 +14,7 @@ import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-tabl
 import { FaDownload } from 'react-icons/fa'
 import AccessDenied from '@/views/pages/AccessDenied'
 import { notification } from 'antd'
+import { commonDownload } from '@/common/commonDownload'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -87,13 +88,7 @@ const AnalyticsReports = () => {
                 responseType: 'blob',
             })
 
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${encodeURIComponent(brandValue?.name) || 'All-Brands'}-${from}-to-${to}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            commonDownload(response, `${encodeURIComponent(brandValue?.name) || 'Remitance'}-${from}-to-${to}.csv`)
         } catch (error: any) {
             notification.error({ message: error?.response?.data?.message || 'Error downloading CSV' })
             console.error('Error downloading CSV:', error)
@@ -115,21 +110,7 @@ const AnalyticsReports = () => {
                     responseType: 'blob',
                 },
             )
-            const contentType = response.headers['content-type']
-
-            if (contentType === 'text/csv') {
-                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-                const link = document.createElement('a')
-                link.href = urlToBeDownloaded
-                link.download = `${encodeURIComponent(brandValue?.name) || 'OrderItems'}-${from}-to-${to}.csv`
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-            } else {
-                notification.success({
-                    message: response?.data?.message || 'CSV file downloaded successfully',
-                })
-            }
+            commonDownload(response, `${encodeURIComponent(brandValue?.name) || 'OrderItems'}-${from}-to-${to}.csv`)
         } catch (error: any) {
             notification.error({ message: error?.response?.data.message || 'Error downloading CSV' })
             console.error('Error downloading CSV:', error)
@@ -151,20 +132,7 @@ const AnalyticsReports = () => {
                     responseType: 'blob',
                 },
             )
-            const contentType = response.headers['content-type']
-            if (contentType === 'text/csv') {
-                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-                const link = document.createElement('a')
-                link.href = urlToBeDownloaded
-                link.download = `${encodeURIComponent(brandValue?.name) || 'ReturnOrderItems'}-${from}-to-${to}.csv`
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-            } else {
-                notification.success({
-                    message: response?.data?.message || 'CSV file downloaded successfully',
-                })
-            }
+            commonDownload(response, `${encodeURIComponent(brandValue?.name) || 'ReturnOrderItems'}-${from}-to-${to}.csv`)
         } catch (error: any) {
             notification.error({ message: error?.response.data.message || 'Error downloading CSV' })
             console.error('Error downloading CSV:', error)
