@@ -13,7 +13,7 @@ import { handleimage, handleVideo } from '@/views/category-management/catalog/ha
 const EditEvents = () => {
     const { id } = useParams()
     const navigate = useNavigate()
-    const [editEventSeries] = eventSeriesService.useEditEventSeriesMutation()
+    const [editEventSeries, editEventResponse] = eventSeriesService.useEditEventSeriesMutation()
     const [webImageView, setWebImageView] = useState<string[]>([])
     const [mobileImageView, setMobileImageView] = useState<string[]>([])
     const [eventPhotos, setEventPhotos] = useState<string[]>([])
@@ -43,6 +43,21 @@ const EditEvents = () => {
             setEventPhotos(updatedImages)
         }
     }
+
+    useEffect(() => {
+        if (editEventResponse.isSuccess) {
+            notification.success({
+                message: (editEventResponse as any).data?.message || 'successfully edited',
+            })
+
+            navigate(-1)
+        }
+        if (editEventResponse.isError) {
+            notification.error({
+                message: (editEventResponse.error as any)?.data?.message || 'Failed to edit',
+            })
+        }
+    }, [editEventResponse])
 
     useEffect(() => {
         const fetchEventData = async () => {
@@ -90,6 +105,7 @@ const EditEvents = () => {
             event_photos: eventData?.extra_attributes.event_photos || [],
             event_videos: eventData?.extra_attributes.event_videos || [],
             venue_images: eventData?.extra_attributes.venue_images || [],
+            dummy_registration_count: eventData?.extra_attributes?.dummy_registration_count || 0,
         },
     }
 
@@ -271,17 +287,12 @@ const EditEvents = () => {
                 ...(event_img_url && { event_photos: event_img_url }),
                 ...(event_video_url && { event_videos: event_video_url }),
                 ...(venue_img_url && { venue_images: venue_img_url }),
+                dummy_registration_count: values.extra_attributes.dummy_registration_count ?? 0,
             },
         }
-
-        console.log('here')
-
+        console.log('object', body)
         try {
-            const response = await axios.patch(`/dashboard/promotion/events/${id}`, body)
-            notification.success({
-                message: response?.data?.success || 'Successfully Edited Event',
-            })
-            navigate(-1)
+            await editEventSeries({ id: id, body })
         } catch (error) {
             console.log('error', error)
             notification.error({

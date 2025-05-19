@@ -42,6 +42,7 @@ const SkuUpdate = ({ data }: props) => {
     const [refreshTable, setRefreshTable] = useState(false)
     const [showSpinner, setShowSpinner] = useState(false)
     const [dataForPrinter, setDataForPrinter] = useState([])
+    const [counter, setCounter] = useState(0)
     const [qtySent, setQtySent] = useState(0)
 
     const fetchSkuData = async () => {
@@ -72,7 +73,7 @@ const SkuUpdate = ({ data }: props) => {
         if (skuWiseData || refreshTable) {
             fetchSkuData()
         }
-    }, [page, pageSize, globalFilter, skuWiseData, refreshTable])
+    }, [page, pageSize, globalFilter, skuWiseData, refreshTable, counter])
 
     const [formData, setFormData] = useState({
         location: '',
@@ -157,8 +158,12 @@ const SkuUpdate = ({ data }: props) => {
                     console.log(row?.original?.sku, qualitySentInput)
                     const getSame = getSkuData?.find((item) => item.sku === formData?.sku)
                     let value = locationInput !== '' ? locationInput : formData?.location
+
                     if (getSame) {
-                        value = `${getSame?.location}/${formData?.location}`
+                        value =
+                            formData?.location && formData.location !== getSame?.location
+                                ? `${getSame?.location}/${formData?.location}`
+                                : getSame?.location
                     }
                     return (
                         <div className="flex gap-1 items-center">
@@ -366,6 +371,7 @@ const SkuUpdate = ({ data }: props) => {
                 batchNumberInput={batchNumberInput}
                 company={company}
                 setFormData={setFormData}
+                setCounter={setCounter}
             />
             {<EasyTable noPage overflow mainData={skuWiseData} columns={columns} />}
             <div className="flex justify-start items-center">

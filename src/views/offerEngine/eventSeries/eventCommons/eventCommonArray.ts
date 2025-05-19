@@ -28,4 +28,11 @@ export const EventTypeForm = [
     { label: 'Legal Instruction', name: 'extra_attributes.legal_instruction', type: 'text' },
     { label: 'Carousel Auto Scroll', name: 'extra_attributes.carousel_auto_scroll', type: 'checkbox' },
     { label: 'Time Interval', name: 'extra_attributes.time_interval', type: 'number' },
+    {
+        label: 'Dummy Registration Count',
+        name: 'extra_attributes.dummy_registration_count',
+        type: 'number',
+        tooltip: true,
+        title: 'By placing the dummy count you will be able to increase the total count of the registration by the value',
+    },
 ]

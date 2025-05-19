@@ -69,7 +69,7 @@ const BrandShipmentsAdd = () => {
                     notification.success({
                         message: 'CSV uploaded successfully',
                     })
-                    navigate(-1)
+                    // navigate(-1)
                 } catch (csvError) {
                     notification.error({
                         message: 'Failed to upload CSV',
@@ -91,7 +91,6 @@ const BrandShipmentsAdd = () => {
                                 notification.success({
                                     message: 'CSV processing completed',
                                 })
-                                navigate(-1)
                             }
                         } catch (err) {
                             console.error(err)
