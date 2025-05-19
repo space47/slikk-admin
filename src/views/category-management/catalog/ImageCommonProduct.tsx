@@ -31,7 +31,6 @@ const ImageCommonProduct = ({
     placeholder,
     isVideo,
 }: ImageofProductProps) => {
-    console.log('allName', label, allName)
     return (
         <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-scroll scrollbar-hide ">
             {label}
@@ -80,7 +79,16 @@ const ImageCommonProduct = ({
                 <br />
             </FormContainer>
             <FormItem label="" className="col-span-1 w-[80%]">
-                <Field type="text" name={textName} placeholder={placeholder} component={Input} />
+                <Field type="text" name={textName} placeholder={placeholder}>
+                    {({ form, field }: FieldProps) => (
+                        <Input
+                            {...field}
+                            onChange={(e) => {
+                                form.setFieldValue(textName, e.target.value) // Your custom logic
+                            }}
+                        />
+                    )}
+                </Field>
             </FormItem>
         </FormContainer>
     )

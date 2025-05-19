@@ -70,11 +70,17 @@ const AddEvents = () => {
 
             const imageUploadMobile = values.mobile_image_array?.length ? await handleImageCheck(values.mobile_image_array) : null
 
-            const imageUploadEventVideos = values.event_video_array?.length ? await handleImageCheck(values.event_video_array, true) : null
+            const imageUploadEventVideos = values.event_video_array?.length
+                ? await handleImageCheck(values.event_video_array, true)
+                : (values?.event_video ?? null)
 
-            const imageUploadVenue = values.venue_img_url?.length ? await handleImageCheck(values.venue_img_url) : null
+            const imageUploadVenue = values.venue_img_url?.length
+                ? await handleImageCheck(values.venue_img_url)
+                : (values?.venue_image ?? null)
 
-            const imageUploadEventPhotos = values.event_images_array?.length ? await handleImageCheck(values.event_images_array) : null
+            const imageUploadEventPhotos = values.event_images_array?.length
+                ? await handleImageCheck(values.event_images_array)
+                : (values?.event_image ?? null)
 
             console.log('2')
 
@@ -91,45 +97,44 @@ const AddEvents = () => {
             console.log('x')
 
             const body = {
-                name: values.name,
-                event_type: values.event_type,
-                description: values.description,
-                ...(imageUploadWeb && { image_web: imageUploadWeb }),
-                ...(imageUploadMobile && { image_mobile: imageUploadMobile }),
-                total_slots: values.total_slots,
-                registration_start_date: values.registration_start_date,
-                registration_end_date: values.registration_end_date,
-                event_start_time: values.event_start_time,
-                event_end_time: values.event_end_time,
-                ...(values.code_prefix && { code_prefix: values.code_prefix }),
-                is_active: values.is_active,
-                is_public: values.is_public,
-                code_prefix: values.code_prefix,
-                ...(currLat && { latitude: currLat }),
-                ...(currLong && { longitude: currLong }),
-                venue: values.venue,
-                terms_and_conditions: values.terms_and_conditions,
+                name: values.name ?? undefined,
+                event_type: values.event_type ?? undefined,
+                description: values.description ?? undefined,
+                image_web: values?.image_web_val || imageUploadWeb || undefined,
+                image_mobile: values?.image_mobile_val || imageUploadMobile || undefined,
+                total_slots: values.total_slots ?? undefined,
+                registration_start_date: values.registration_start_date ?? undefined,
+                registration_end_date: values.registration_end_date ?? undefined,
+                event_start_time: values.event_start_time ?? undefined,
+                event_end_time: values.event_end_time ?? undefined,
+                is_active: values.is_active ?? undefined,
+                is_public: values.is_public ?? undefined,
+                code_prefix: values.code_prefix ?? undefined,
+                latitude: currLat ?? undefined,
+                longitude: currLong ?? undefined,
+                venue: values.venue ?? undefined,
+                terms_and_conditions: values.terms_and_conditions ?? undefined,
                 extra_attributes: {
-                    ...(values.extra_attributes.venue_address && { venue_address: values.extra_attributes.venue_address }),
-                    ...(values.extra_attributes.category && { category: values.extra_attributes.category }),
-                    ...(values.extra_attributes.sponsors && { sponsors: values.extra_attributes.sponsors?.split(',') }),
-                    ...(values.extra_attributes?.bg_color && { bg_color: values.extra_attributes.bg_color }),
-                    ...(values.extra_attributes?.button_color && { button_color: values.extra_attributes.button_color }),
-                    ...(values.extra_attributes?.button_font_color && { button_font_color: values.extra_attributes.button_font_color }),
-                    ...(values.extra_attributes.special_instructions && {
+                    ...(values?.extra_attributes?.venue_address && { venue_address: values?.extra_attributes.venue_address }),
+                    ...(values?.extra_attributes?.category && { category: values?.extra_attributes.category }),
+                    ...(values?.extra_attributes?.sponsors && { sponsors: values?.extra_attributes.sponsors?.split(',') }),
+                    ...(values?.extra_attributes?.bg_color && { bg_color: values?.extra_attributes.bg_color }),
+                    ...(values?.extra_attributes?.button_color && { button_color: values?.extra_attributes.button_color }),
+                    ...(values?.extra_attributes?.button_font_color && { button_font_color: values?.extra_attributes.button_font_color }),
+                    ...(values?.extra_attributes?.special_instructions && {
                         special_instructions: values.extra_attributes.special_instructions,
                     }),
                     ...(webAspectRatio?.[0] && { web_aspect_ratio: Number(webAspectRatio[0]?.toFixed(2)) }),
                     ...(mobileAspectRatio?.[0] && { mobile_aspect_ratio: Number(mobileAspectRatio[0]?.toFixed(2)) }),
-                    ...(values.extra_attributes.legal_instruction && { legal_instruction: values.extra_attributes.legal_instruction }),
-                    ...(values.extra_attributes.carousel_auto_scroll && {
-                        carousel_auto_scroll: values.extra_attributes.carousel_auto_scroll,
+                    ...(values?.extra_attributes?.legal_instruction && { legal_instruction: values?.extra_attributes?.legal_instruction }),
+                    ...(values?.extra_attributes?.carousel_auto_scroll && {
+                        carousel_auto_scroll: values?.extra_attributes?.carousel_auto_scroll,
                     }),
-                    ...(values.extra_attributes.time_interval && { time_interval: values.extra_attributes.time_interval }),
+                    ...(values?.extra_attributes?.time_interval && { time_interval: values?.extra_attributes?.time_interval }),
                     ...(imageUploadEventVideos && { event_video: imageUploadEventVideos }),
                     ...(imageUploadVenue && { venue_img_url: imageUploadVenue }),
                     ...(imageUploadEventPhotos && { event_photos: imageUploadEventPhotos }),
-                    dummy_registration_count: values.extra_attributes.dummy_registration_count ?? 0,
+                    dummy_registration_count: values?.extra_attributes?.dummy_registration_count ?? 0,
                 },
             }
 
