@@ -108,7 +108,7 @@ const EventFormCommon = ({
                             name="web_image_array"
                             fieldname="web_image_array"
                             fileLists={values.web_image_array}
-                            textName="image web"
+                            textName="image_web_val"
                             placeholder="Enter Image Url"
                         />
                     ) : (
@@ -118,6 +118,7 @@ const EventFormCommon = ({
                             fileList={values.web_image_array}
                             beforeUpload={beforeUpload}
                             fieldNames="web_image_array"
+                            name2="image_web_val"
                         />
                     )}
                 </FormItem>
@@ -130,7 +131,7 @@ const EventFormCommon = ({
                             name="mobile_image_array"
                             fieldname="mobile_image_array"
                             fileLists={values.mobile_image_array}
-                            textName="image mobile"
+                            textName="image_mobile_val"
                             placeholder="Enter Image Url"
                         />
                     ) : (
@@ -140,6 +141,7 @@ const EventFormCommon = ({
                             fileList={values.mobile_image_array}
                             beforeUpload={beforeUpload}
                             fieldNames="mobile_image_array"
+                            name2="image_mobile_val"
                         />
                     )}
                 </FormItem>
@@ -154,7 +156,7 @@ const EventFormCommon = ({
                             name="event_images_array"
                             fieldname="event_images_array"
                             fileLists={values.event_images_array}
-                            textName="Event image "
+                            textName="event_image"
                             placeholder="Enter Image Url"
                         />
                     ) : (
@@ -164,6 +166,7 @@ const EventFormCommon = ({
                             fileList={values.event_images_array}
                             beforeUpload={beforeUpload}
                             fieldNames="event_images_array"
+                            name2="event_image"
                         />
                     )}
                 </FormItem>
@@ -178,7 +181,7 @@ const EventFormCommon = ({
                             name="event_video_array"
                             fieldname="event_video_array"
                             fileLists={values.event_video_array}
-                            textName="Event Video "
+                            textName="extra_attributes.event_video_data"
                             placeholder="Enter Video Url"
                         />
                     ) : (
@@ -188,6 +191,7 @@ const EventFormCommon = ({
                             fileList={values.event_video_array}
                             beforeUpload={beforeVideoUpload}
                             fieldNames="event_video_array"
+                            name2="event_video"
                         />
                     )}
                 </FormItem>
@@ -201,7 +205,7 @@ const EventFormCommon = ({
                             name="venue_img_url"
                             fieldname="venue_img_url"
                             fileLists={values.venue_img_url}
-                            textName="Event image "
+                            textName="venue_image"
                             placeholder="Enter Image Url"
                         />
                     ) : (
@@ -211,6 +215,7 @@ const EventFormCommon = ({
                             fileList={values.venue_img_url}
                             beforeUpload={beforeUpload}
                             fieldNames="venue_img_url"
+                            name2="venue_image"
                         />
                     )}
                 </FormItem>
