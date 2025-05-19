@@ -258,7 +258,7 @@ const BackGroundImages = ({ editMode, initialValue, handleRemoveImage, values, h
                     />
                 </FormItem>
             ))}
-            {values?.background_config.is_background_lottie && (
+            {values?.background_config?.is_background_lottie && (
                 <FormContainer className="flex gap-10">
                     <FormItem label="Lottie Loop">
                         <Field type="checkbox" name="background_config.lottie_loop" component={Checkbox} />
