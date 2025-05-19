@@ -1,17 +1,17 @@
 import { FormContainer, FormItem, Input, Upload } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
-import Product from './CommonType'
 
 interface props {
     fileList: File[] | undefined
     name: string
     label: string
     fieldNames: string
+    name2?: string
     beforeUpload: (file: FileList | null, fileList: File[]) => string | true
 }
 
-const AddProductImages = ({ fieldNames, fileList, name, label, beforeUpload }: props) => {
+const AddProductImages = ({ fieldNames, fileList, name, label, beforeUpload, name2 }: props) => {
     return (
         <div>
             <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col items-center rounded-xl mb-4 overflow-hidden">
@@ -19,7 +19,7 @@ const AddProductImages = ({ fieldNames, fileList, name, label, beforeUpload }: p
                 <FormContainer className=" mt-5 w-full ">
                     <FormItem label="" className="grid grid-rows-2">
                         <Field name={name}>
-                            {({ form }: FieldProps<Product>) => (
+                            {({ form }: FieldProps) => (
                                 <>
                                     <Upload
                                         multiple
@@ -38,7 +38,7 @@ const AddProductImages = ({ fieldNames, fileList, name, label, beforeUpload }: p
                     <br />
                 </FormContainer>
                 <FormItem label="" className="col-span-1 w-[80%]">
-                    <Field type="text" name={name} placeholder="Enter ImageUrl or Upload Image file" component={Input} />
+                    <Field type="text" name={name2} placeholder="Enter ImageUrl or Upload Image file" component={Input} />
                 </FormItem>
             </FormContainer>
         </div>

@@ -44,6 +44,8 @@ const EditEvents = () => {
         }
     }
 
+    console.log('image web view is', webImageView)
+
     useEffect(() => {
         if (editEventResponse.isSuccess) {
             notification.success({
@@ -173,7 +175,7 @@ const EditEvents = () => {
     }
 
     const handleSubmit = async (values: any) => {
-        console.log(`1`, values)
+        console.log('values....................................................', values)
         notification.info({ message: 'In process' })
         setSpinner(true)
         let img_web_url = webImageView.join(',')
@@ -183,48 +185,71 @@ const EditEvents = () => {
         let venue_img_url = venueImages?.join(',')
 
         const imageWebUpload = await handleimage(values.web_image_array)
-        console.log(`2`)
-        if (values.web_image_array && values.web_image_array.length && !imageWebUpload) {
+        if (values.web_image_array?.length && !imageWebUpload) {
             console.log('image Upload return', values.web_image_array)
+            setSpinner(false)
             return
-        } else if (values.web_image_array && imageWebUpload) {
-            const temp = [img_web_url, imageWebUpload]
-            img_web_url = temp.filter((t) => t).join(',')
         }
+        const webParts = []
+        if (img_web_url) webParts.push(img_web_url)
+        if (imageWebUpload) webParts.push(imageWebUpload)
+        if (values?.image_web_val) webParts.push(values.image_web_val)
+        img_web_url = webParts.filter((t) => t).join(',')
 
+        console.log(`1`, img_web_url)
+
+        // Process mobile images
         const imageMobileUpload = await handleimage(values.mobile_image_array)
-
-        if (values.mobile_image_array && values.mobile_image_array.length && !imageMobileUpload) {
+        if (values.mobile_image_array?.length && !imageMobileUpload) {
+            setSpinner(false)
             return
-        } else if (values.mobile_image_array && imageMobileUpload) {
-            const temp = [img_mobile_url, imageMobileUpload]
-            img_mobile_url = temp.filter((t) => t).join(',')
         }
+        const mobileParts = []
+        if (img_mobile_url) mobileParts.push(img_mobile_url)
+        if (imageMobileUpload) mobileParts.push(imageMobileUpload)
+        if (values?.image_mobile_val) mobileParts.push(values.image_mobile_val)
+        img_mobile_url = mobileParts.filter((t) => t).join(',')
+
+        // Process event images
         const imageEventUpload = await handleimage(values.event_images_array)
-
-        if (values.event_images_array && values.event_images_array.length && !imageEventUpload) {
+        if (values.event_images_array?.length && !imageEventUpload) {
+            setSpinner(false)
             return
-        } else if (values.event_images_array && imageEventUpload) {
-            const temp = [event_img_url, imageEventUpload]
-            event_img_url = temp.filter((t) => t).join(',')
         }
+        const eventImgParts = []
+        if (event_img_url) eventImgParts.push(event_img_url)
+        if (imageEventUpload) eventImgParts.push(imageEventUpload)
+        if (values?.event_image) eventImgParts.push(values.event_image)
+        event_img_url = eventImgParts.filter((t) => t).join(',')
 
+        // Process event videos
         const videoEventUpload = await handleVideo(values.event_video_array)
-        if (values.event_video_array && values.event_video_array.length && !videoEventUpload) {
+        if (values.event_video_array?.length && !videoEventUpload) {
+            setSpinner(false)
             return
-        } else if (values.event_video_array && videoEventUpload) {
-            const temp = [event_video_url, videoEventUpload]
-            event_video_url = temp.filter((t) => t).join(',')
         }
+        const eventVideoParts = []
+        if (event_video_url) eventVideoParts.push(event_video_url)
+        if (videoEventUpload) eventVideoParts.push(videoEventUpload)
+        if (values?.event_video) eventVideoParts.push(values.event_video)
+        event_video_url = eventVideoParts.filter((t) => t).join(',')
 
+        // Process venue images
         const imageVenueUpload = await handleimage(values.venue_img_url)
-
-        if (values.venue_img_url && values.venue_img_url.length && !imageVenueUpload) {
+        if (values.venue_img_url?.length && !imageVenueUpload) {
+            setSpinner(false)
             return
-        } else if (values.venue_img_url && imageVenueUpload) {
-            const temp = [venue_img_url, imageVenueUpload]
-            venue_img_url = temp.filter((t) => t).join(',')
         }
+        const venueParts = []
+        if (venue_img_url) venueParts.push(venue_img_url)
+        if (imageVenueUpload) venueParts.push(imageVenueUpload)
+        if (values?.venue_image) venueParts.push(values.venue_image)
+        venue_img_url = venueParts.filter((t) => t).join(',')
+
+        setSpinner(false)
+
+        // All uploads completed successfully
+        setSpinner(false)
 
         console.log(`3`)
         const mobileAspectRatio =
@@ -251,8 +276,8 @@ const EditEvents = () => {
             ...(values?.name && { name: values.name }),
             ...(values?.event_type && { event_type: values.event_type }),
             ...(description && { description }),
-            ...(imageWebUpload && { image_web: img_web_url }),
-            ...(imageMobileUpload && { image_mobile: img_mobile_url }),
+            image_web: img_web_url,
+            image_mobile: img_mobile_url,
             ...(values?.total_slots && { total_slots: values.total_slots }),
             ...(values?.registration_start_date && { registration_start_date: values.registration_start_date }),
             ...(values?.registration_end_date && { registration_end_date: values.registration_end_date }),

@@ -48,13 +48,14 @@ export const EventListColumns = () => {
             {
                 header: 'Image Web',
                 accessorKey: 'image_web',
-                cell: ({ row }: any) => (row?.original?.image_web ? <img src={row.original.image_web} alt="web" width="50" /> : ''),
+                cell: ({ row }: any) =>
+                    row?.original?.image_web ? <img src={row.original.image_web?.split(',')[0]} alt="web" width="50" /> : '',
             },
             {
                 header: 'Image Mobile',
                 accessorKey: 'image_mobile',
                 cell: ({ row }: any) =>
-                    row?.original?.image_mobile ? <img src={row.original.image_mobile} alt="mobile" width="50" /> : '',
+                    row?.original?.image_mobile ? <img src={row.original.image_mobile?.split(',')[0]} alt="mobile" width="50" /> : '',
             },
             {
                 header: 'Total Slots',
