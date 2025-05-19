@@ -11,6 +11,7 @@ import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import { FaDownload } from 'react-icons/fa'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { notification } from 'antd'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
@@ -31,13 +32,11 @@ const BrandAccounting = () => {
         dispatch(getAllBrandsAPI())
     }, [dispatch])
 
-    console.log('Company names', selectedCompany?.name)
-
     const fetchRemitance = async () => {
         try {
             setShowSpinner(true)
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
-            const response = await axiosInstance.get(`/merchant/product/sales?brand=${selectedCompany?.name}&from=${from}&to=${To_Date}`)
+
+            const response = await axiosInstance.get(`/merchant/product/sales?brand=${selectedCompany?.name}&from=${from}&to=${to}`)
             const remitanceData = response.data?.data.items
             setShowSpinner(false)
             setFullRemitanceResponse(response.data?.data)
@@ -76,21 +75,27 @@ const BrandAccounting = () => {
 
     const handleDownload = async () => {
         try {
-            const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
             const response = await axiosInstance.get(
-                `/merchant/product/sales?from=${from}&to=${To_Date}&download=true&brand=${selectedCompany?.name}`,
+                `/merchant/product/sales?from=${from}&to=${to}&download=true&brand=${selectedCompany?.name}`,
                 {
                     responseType: 'blob',
                 },
             )
 
-            const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
-            const link = document.createElement('a')
-            link.href = urlToBeDownloaded
-            link.download = `${selectedCompany?.name}-${from}-to-${to}.csv`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
+            const contentType = response.headers['content-type']
+            if (contentType !== 'text/csv') {
+                notification.success({
+                    message: response.data?.message || 'File is being generated in background and will be sent on registered email',
+                })
+            } else {
+                const urlToBeDownloaded = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = urlToBeDownloaded
+                link.download = `${selectedCompany?.name}-${from}-to-${to}.csv`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+            }
         } catch (error) {
             console.error('Error downloading CSV:', error)
         }
@@ -127,84 +132,83 @@ const BrandAccounting = () => {
     }
 
     return (
-        <div className="p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-900 rounded-lg shadow-md">
-            <div className="flex flex-col gap-6">
-                {/* Date Pickers Section */}
-                <div className="flex flex-col xl:flex-row gap-4 xl:justify-between items-center">
-                    <div className="flex flex-col xl:flex-row gap-3 xl:gap-8 w-full">
-                        <div className="flex gap-4">
-                            <div className="flex flex-col flex-1">
-                                <label className="mb-2 font-semibold text-sm text-gray-700 dark:text-gray-300">
-                                    From Date: {showOneMonthBack ? '(Start of Month)' : ''}
-                                </label>
-                                <DatePicker
-                                    inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600 dark:text-gray-400" />}
-                                    value={new Date(from)}
-                                    onChange={handleFromChange}
-                                    className="w-full sm:w-56 rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all"
-                                />
-                            </div>
-                            <div className="flex flex-col flex-1 ">
-                                <label className="mb-2 font-semibold text-sm text-gray-700 dark:text-gray-300">To Date:</label>
-                                <DatePicker
-                                    inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600 dark:text-gray-400" />}
-                                    value={new Date(to)}
-                                    onChange={handleToChange}
-                                    // minDate={new Date(from)}
-                                    className="w-full sm:w-56 rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all"
-                                />
-                            </div>
+        <div className="p-6 sm:p-8 lg:p-10 bg-white dark:bg-gray-900 rounded-2xl shadow-lg">
+            <div className="flex flex-col gap-8">
+                {/* Date Filters */}
+                <div className="flex flex-col xl:flex-row xl:items-end gap-6  w-full">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col flex-1">
+                            <label className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                From Date {showOneMonthBack && <span className="text-xs text-gray-500">(Start of Month)</span>}
+                            </label>
+                            <DatePicker
+                                inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600 dark:text-gray-400" />}
+                                value={new Date(from)}
+                                onChange={handleFromChange}
+                                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 transition"
+                            />
                         </div>
-                        <div className="flex items-end">
-                            <div>
-                                <Button
-                                    variant="new"
-                                    className="mt-2 sm:mt-0 h-full px-4 py-2 rounded-md shadow hover:shadow-lg transition duration-150"
-                                    onClick={handleDateSubmit}
-                                >
-                                    Submit
-                                </Button>
-                            </div>
+                        <div className="flex flex-col flex-1">
+                            <label className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">To Date</label>
+                            <DatePicker
+                                inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600 dark:text-gray-400" />}
+                                value={new Date(to)}
+                                onChange={handleToChange}
+                                className="w-full rounded-lg border border-gray-300 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 transition"
+                            />
                         </div>
                     </div>
+                    <Button
+                        variant="new"
+                        className="mt-4 xl:mt-0 h-11 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition"
+                        onClick={handleDateSubmit}
+                    >
+                        Submit
+                    </Button>
                 </div>
 
-                <hr className="border-gray-200 dark:border-gray-700" />
+                <hr className="border-t border-gray-200 dark:border-gray-700" />
             </div>
 
-            <div className="mt-8">
-                {/* Conditionally Render Table Section */}
-                {remitance.length && remitance.length > 0 ? (
-                    <div className="overflow-x-auto mt-6">
-                        <div className="flex flex-col sm:flex-row sm:justify-end items-center gap-4">
+            {/* Table Section */}
+            <div className="mt-10">
+                {remitance.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        {/* Download Button */}
+                        <div className="flex justify-end mb-4">
                             <Button
                                 onClick={handleDownload}
                                 variant="new"
-                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md shadow hover:shadow-lg transition duration-150"
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow-md transition"
                             >
-                                <FaDownload className="text-xl" /> <span>Download</span>
+                                <FaDownload className="text-lg" />
+                                <span>Download</span>
                             </Button>
                         </div>
-                        <div className="mb-3 flex flex-wrap items-center gap-2 mt-4">
-                            <span className="font-bold text-xl text-gray-800 dark:text-gray-200">TOTAL AMOUNT:</span>
-                            <span className="text-xl text-green-500">
-                                {fullRemitanceRespone?.total_amount ? fullRemitanceRespone.total_amount.toFixed(2) : 0}
+
+                        {/* Total Amount */}
+                        <div className="mb-6 flex items-center gap-3">
+                            <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">TOTAL AMOUNT:</span>
+                            <span className="text-lg font-bold text-green-600">
+                                ₹{fullRemitanceRespone?.total_amount?.toFixed(2) ?? '0.00'}
                             </span>
                         </div>
+
+                        {/* Table or No Data */}
                         {noData ? (
-                            <div className="flex flex-col gap-1 justify-center items-center h-64">
+                            <div className="flex flex-col items-center justify-center h-64 text-center">
                                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">No Data Available</h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">Try changing the date</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Try changing the date range</p>
                             </div>
                         ) : (
                             <Table className="min-w-full border-collapse">
                                 <THead className="bg-gray-100 dark:bg-gray-800">
                                     {table.getHeaderGroups().map((headerGroup) => (
-                                        <Tr key={headerGroup.id} className="border-b border-gray-200 dark:border-gray-700">
+                                        <Tr key={headerGroup.id} className="border-b border-gray-300 dark:border-gray-700">
                                             {headerGroup.headers.map((header) => (
                                                 <Th
                                                     key={header.id}
-                                                    className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300"
+                                                    className="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300"
                                                 >
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Th>
@@ -216,10 +220,10 @@ const BrandAccounting = () => {
                                     {table.getRowModel().rows.map((row) => (
                                         <Tr
                                             key={row.id}
-                                            className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition duration-150"
+                                            className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
                                         >
                                             {row.getVisibleCells().map((cell) => (
-                                                <Td key={cell.id} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                                                <Td key={cell.id} className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </Td>
                                             ))}
@@ -230,11 +234,9 @@ const BrandAccounting = () => {
                         )}
                     </div>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center py-20">
-                        <div className="mt-6 text-center">
-                            <h3 className="mb-2 text-lg font-bold text-gray-800 dark:text-gray-300">No Data</h3>
-                            <p className="text-base text-gray-500 dark:text-gray-400">No Data available for the current Date</p>
-                        </div>
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-300">No Data</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">No data available for the selected date range.</p>
                     </div>
                 )}
             </div>
