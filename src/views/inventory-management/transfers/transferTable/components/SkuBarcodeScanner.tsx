@@ -3,112 +3,133 @@ import { BrowserMultiFormatReader } from '@zxing/browser'
 
 interface Props {
     setQrResult: (x: string) => void
+    isCamera: boolean // Add this prop to control camera state
 }
 
-const SkuBarcodeScanner = ({ setQrResult }: Props) => {
+const SkuBarcodeScanner = ({ setQrResult, isCamera }: Props) => {
     const videoRef = useRef<HTMLVideoElement | null>(null)
     const codeReader = useRef(new BrowserMultiFormatReader())
     const [error, setError] = useState<string | null>(null)
     const [hasPermission, setHasPermission] = useState<boolean | null>(null)
+    const streamRef = useRef<MediaStream | null>(null)
+    const scanningRef = useRef<boolean>(false)
 
-    useEffect(() => {
-        const startScanner = async () => {
-            try {
-                // Request camera access with explicit preference for rear camera
-                const constraints = {
-                    video: {
-                        facingMode: { exact: 'environment' }, // Force rear camera
-                        width: { ideal: 1000 },
-                        height: { ideal: 300 },
-                    },
-                }
+    const stopCamera = () => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => track.stop())
+            streamRef.current = null
+        }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null
+        }
 
-                const stream = await navigator.mediaDevices.getUserMedia(constraints)
+        scanningRef.current = false
+    }
 
-                // Set the stream to video element
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream
-                    setHasPermission(true)
-                }
+    const startScanner = async () => {
+        if (!isCamera || scanningRef.current) return
 
-                // Now start the barcode scanner
-                const devices = await BrowserMultiFormatReader.listVideoInputDevices()
+        try {
+            // Request camera access with explicit preference for rear camera
+            const constraints = {
+                video: {
+                    facingMode: { exact: 'environment' }, // Force rear camera
+                    width: 1000,
+                    height: 600,
+                },
+            }
 
-                // Try to find the rear camera explicitly if possible
-                const rearCamera = devices.find((device) => {
-                    return (
-                        device.label.toLowerCase().includes('back') ||
-                        device.label.toLowerCase().includes('rear') ||
-                        device.label.toLowerCase().includes('environment')
-                    )
-                })
+            const stream = await navigator.mediaDevices.getUserMedia(constraints)
+            streamRef.current = stream
+            scanningRef.current = true
 
-                const deviceId = rearCamera ? rearCamera.deviceId : devices[0]?.deviceId
+            // Set the stream to video element
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream
+                setHasPermission(true)
+            }
 
-                if (deviceId && videoRef.current) {
-                    await codeReader.current.decodeFromVideoDevice(deviceId, videoRef.current, (result, err) => {
-                        if (result) {
-                            setQrResult(result.getText())
-                        }
-                        if (err && !(err instanceof Error)) {
-                            console.error(err)
-                        }
-                    })
-                }
-            } catch (err) {
-                console.error(err)
-                // If exact rear camera fails, try with just 'environment' (not exact)
-                if (err instanceof OverconstrainedError) {
-                    try {
-                        const fallbackConstraints = {
-                            video: {
-                                facingMode: 'environment', // Not exact, just preferred
-                                width: { ideal: 1000 },
-                                height: { ideal: 300 },
-                            },
-                        }
+            // Now start the barcode scanner
+            const devices = await BrowserMultiFormatReader.listVideoInputDevices()
 
-                        const stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints)
+            // Try to find the rear camera explicitly if possible
+            const rearCamera = devices.find((device) => {
+                return (
+                    device.label.toLowerCase().includes('back') ||
+                    device.label.toLowerCase().includes('rear') ||
+                    device.label.toLowerCase().includes('environment')
+                )
+            })
 
-                        if (videoRef.current) {
-                            videoRef.current.srcObject = stream
-                            setHasPermission(true)
-                        }
+            const deviceId = rearCamera ? rearCamera.deviceId : devices[0]?.deviceId
 
-                        const devices = await BrowserMultiFormatReader.listVideoInputDevices()
-                        if (devices.length > 0 && videoRef.current) {
-                            await codeReader.current.decodeFromVideoDevice(devices[0].deviceId, videoRef.current, (result, err) => {
-                                if (result) {
-                                    setQrResult(result.getText())
-                                }
-                                if (err && !(err instanceof Error)) {
-                                    console.error(err)
-                                }
-                            })
-                        }
-                        return
-                    } catch (fallbackErr) {
-                        console.error(fallbackErr)
-                        setError('Camera access denied or failed to start scanner')
-                        setHasPermission(false)
+            if (deviceId && videoRef.current) {
+                await codeReader.current.decodeFromVideoDevice(deviceId, videoRef.current, (result, err) => {
+                    if (result) {
+                        setQrResult(result.getText())
                     }
-                } else {
+                    if (err && !(err instanceof Error)) {
+                        console.error(err)
+                    }
+                })
+            }
+        } catch (err) {
+            console.error(err)
+            // If exact rear camera fails, try with just 'environment' (not exact)
+            if (err instanceof OverconstrainedError) {
+                try {
+                    const fallbackConstraints = {
+                        video: {
+                            facingMode: 'environment', // Not exact, just preferred
+                            width: 1000,
+                            height: 600,
+                        },
+                    }
+
+                    const stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints)
+                    streamRef.current = stream
+                    scanningRef.current = true
+
+                    if (videoRef.current) {
+                        videoRef.current.srcObject = stream
+                        setHasPermission(true)
+                    }
+
+                    const devices = await BrowserMultiFormatReader.listVideoInputDevices()
+                    if (devices.length > 0 && videoRef.current) {
+                        await codeReader.current.decodeFromVideoDevice(devices[0].deviceId, videoRef.current, (result, err) => {
+                            if (result) {
+                                setQrResult(result.getText())
+                            }
+                            if (err && !(err instanceof Error)) {
+                                console.error(err)
+                            }
+                        })
+                    }
+                    return
+                } catch (fallbackErr) {
+                    console.error(fallbackErr)
                     setError('Camera access denied or failed to start scanner')
                     setHasPermission(false)
                 }
+            } else {
+                setError('Camera access denied or failed to start scanner')
+                setHasPermission(false)
             }
         }
+    }
 
-        startScanner()
+    useEffect(() => {
+        if (isCamera) {
+            startScanner()
+        } else {
+            stopCamera()
+        }
 
         return () => {
-            if (videoRef.current?.srcObject) {
-                const stream = videoRef.current.srcObject as MediaStream
-                stream.getTracks().forEach((track) => track.stop())
-                videoRef.current.srcObject = null
-            }
+            stopCamera()
         }
-    }, [setQrResult])
+    }, [isCamera, setQrResult])
 
     const requestPermission = async () => {
         try {
@@ -117,6 +138,9 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
             })
             setHasPermission(true)
             setError(null)
+            if (isCamera) {
+                startScanner()
+            }
         } catch (err) {
             setError('Camera access denied')
             setHasPermission(false)
@@ -130,7 +154,7 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
                 style={{
                     width: '100%',
                     height: 'auto',
-                    display: hasPermission === false ? 'none' : 'block',
+                    display: hasPermission === false || !isCamera ? 'none' : 'block',
                 }}
                 playsInline
                 autoPlay
