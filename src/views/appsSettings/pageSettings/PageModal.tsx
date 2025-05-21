@@ -317,6 +317,37 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
             const subHeaderImageAspectRatios = await calculateAspectRatio(row.sub_header_config_image_Array)
             const footerImageAspectRatios = await calculateAspectRatio(row.footer_config_image_Array)
 
+            const backgroundConfig = {
+                ...Object.fromEntries(Object.entries(row?.background_config || {}).filter(([_, value]) => value !== '')),
+                ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
+                ...(mobileimageUpload || row?.mobile_background_image
+                    ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
+                    : {}),
+                ...(row?.background_config?.background_image_aspect_ratio
+                    ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
+                    : backgroundImageAspectRatios[0]
+                      ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
+                      : {}),
+
+                ...(row?.background_config?.mobile_image_aspect_ratio
+                    ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
+                    : mobileImageAspectRatios[0]
+                      ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
+                      : {}),
+                ...(backgroundVideoUpload || row?.background_video
+                    ? { background_video: backgroundVideoUpload || row?.background_video }
+                    : {}),
+                ...(mobileBackgroundVideoUpload || row?.mobile_background_video
+                    ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
+                    : {}),
+                ...(backgroundLottieUpload || row?.background_lottie
+                    ? { background_lottie: backgroundLottieUpload || row?.background_lottie }
+                    : {}),
+                ...(mobileBackgroundLottieUpload || row?.mobile_background_Lottie
+                    ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
+                    : {}),
+            }
+
             console.log('Start New Row')
             const newRow = {
                 ...row,
@@ -324,36 +355,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 ...(mobileimageUpload || row?.mobile_background_image
                     ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
                     : {}),
-                background_config: {
-                    ...row?.background_config,
-                    ...(imageUpload || row?.background_image ? { background_image: imageUpload || row?.background_image } : {}),
-                    ...(mobileimageUpload || row?.mobile_background_image
-                        ? { mobile_background_image: mobileimageUpload || row?.mobile_background_image }
-                        : {}),
-                    ...(row?.background_config?.background_image_aspect_ratio
-                        ? { background_image_aspect_ratio: row.background_config.background_image_aspect_ratio }
-                        : backgroundImageAspectRatios[0]
-                          ? { background_image_aspect_ratio: backgroundImageAspectRatios[0] }
-                          : {}),
-
-                    ...(row?.background_config?.mobile_image_aspect_ratio
-                        ? { mobile_image_aspect_ratio: row.background_config.mobile_image_aspect_ratio }
-                        : mobileImageAspectRatios[0]
-                          ? { mobile_image_aspect_ratio: mobileImageAspectRatios[0] }
-                          : {}),
-                    ...(backgroundVideoUpload || row?.background_video
-                        ? { background_video: backgroundVideoUpload || row?.background_video }
-                        : {}),
-                    ...(mobileBackgroundVideoUpload || row?.mobile_background_video
-                        ? { mobile_background_video: mobileBackgroundVideoUpload || row?.mobile_background_video }
-                        : {}),
-                    ...(backgroundLottieUpload || row?.background_lottie
-                        ? { background_lottie: backgroundLottieUpload || row?.background_lottie }
-                        : {}),
-                    ...(mobileBackgroundLottieUpload || row?.mobile_background_Lottie
-                        ? { mobile_background_lottie: mobileBackgroundLottieUpload || row?.mobile_background_lottie }
-                        : {}),
-                },
+                background_config: backgroundConfig,
                 footer_config: {
                     ...row?.footer_config,
                     ...(footerImageUpload ? { image: footerImageUpload } : {}),

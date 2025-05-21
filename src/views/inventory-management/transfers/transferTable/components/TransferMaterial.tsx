@@ -7,6 +7,9 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { MdCancel } from 'react-icons/md'
 import { Modal, notification } from 'antd'
 import MoreDataTable from './MoreDataTable'
+import EventListQrScanner from '@/views/offerEngine/eventSeries/eventList/eventListUtils/EventListQrScanner'
+import { FaCamera } from 'react-icons/fa'
+import { RiCameraOffFill } from 'react-icons/ri'
 
 const SEARCHOPTIONS = [
     { label: 'SKU', value: 'sku' },
@@ -24,6 +27,11 @@ const TransferModule = () => {
     const [saveAsInput, setSaveAsInput] = useState('')
     const [moreData, setMoreData] = useState(false)
     const [dataForName, setDataForName] = useState('')
+    const [isCamera, setIsCamera] = useState(false)
+    const [delay, setDelay] = useState(100)
+    const [qrResult, setQrResult] = useState<any>()
+
+    const cleanedQrResult = qrResult.replace(/"/g, '')
 
     useEffect(() => {
         const storedData = localStorage.getItem('skuSearchResults')
@@ -33,7 +41,6 @@ const TransferModule = () => {
     }, [])
 
     const handleProductFetch = async () => {
-        if (!globalFilter) return
         if (dataForName !== '') return
 
         let queryParam = ''
@@ -43,6 +50,9 @@ const TransferModule = () => {
             queryParam = `sku_exact=${globalFilter?.trim()}`
         } else if (currentSelectedPage.value === 'name' && dataForName) {
             queryParam = `barcode=${dataForName}`
+        }
+        if (isCamera) {
+            queryParam = `sku_exact=${cleanedQrResult?.trim()}`
         }
 
         try {
@@ -54,13 +64,20 @@ const TransferModule = () => {
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '')
+                if (isCamera) {
+                    handleAddOrUpdateRow(cleanedQrResult, '')
+                }
             }
         } catch (error) {
             console.error(error)
             handleAddOrUpdateRow(globalFilter, '')
+            if (isCamera) {
+                handleAddOrUpdateRow(cleanedQrResult, '')
+            }
         }
-
+        setQrResult('')
         setGlobalFilter('')
+        setIsCamera(false)
     }
 
     const handleActionClick = async (value: any) => {
@@ -76,13 +93,21 @@ const TransferModule = () => {
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '')
+                if (isCamera) {
+                    handleAddOrUpdateRow(cleanedQrResult, '')
+                }
             }
         } catch (error) {
             console.error(error)
             handleAddOrUpdateRow(globalFilter, '')
+            if (isCamera) {
+                handleAddOrUpdateRow(cleanedQrResult, '')
+            }
         } finally {
             setDataForName('')
             setMoreData(false)
+            setQrResult('')
+            setIsCamera(false)
         }
     }
 
@@ -221,6 +246,12 @@ const TransferModule = () => {
             handleProductFetch()
         }
     }
+    useEffect(() => {
+        if (qrResult) {
+            handleProductFetch()
+        }
+    }, [qrResult])
+
     const downloadCSV = () => {
         if (saveAsInput === '') {
             notification.error({
@@ -266,50 +297,84 @@ const TransferModule = () => {
 
     return (
         <div className="p-4 flex flex-col gap-6">
-            <div className="">
-                <div className="text-xl mb-2">Location:</div>
-                <input
-                    name="location"
-                    value={locationInput}
-                    placeholder="Location"
-                    className="border p-2 rounded-md"
-                    onChange={(e) => setLocationInput(e.target.value)}
-                />
-            </div>
-            <div className="flex justify-between">
-                <div className="flex gap-2">
+            <div className="space-y-6">
+                {/* Location Input */}
+                <div>
+                    <label htmlFor="location" className="text-lg font-semibold text-gray-700 block mb-1">
+                        Location:
+                    </label>
                     <input
-                        name="filter"
-                        value={globalFilter}
-                        placeholder="Enter SKU, Name or Barcode"
-                        className="border p-2 rounded-md"
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        onKeyDown={handleInputKeyDown}
+                        id="location"
+                        name="location"
+                        value={locationInput}
+                        placeholder="Enter location"
+                        className="xl:w-1/3 w-full border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        onChange={(e) => setLocationInput(e.target.value)}
                     />
+                </div>
 
-                    <div className="bg-gray-100 items-center text-sm w-auto rounded-md dark:bg-blue-600 dark:text-white">
-                        <Dropdown
-                            className="text-xl text-black bg-gray-200 font-bold"
-                            title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
-                            onSelect={handleSelect}
+                {/* Search & Filter Section */}
+                <div className="flex flex-col xl:flex-row xl:justify-between gap-5 items-start xl:items-center">
+                    <div className="flex flex-wrap gap-3 items-center">
+                        {/* Global Search */}
+                        <input
+                            name="filter"
+                            value={globalFilter}
+                            placeholder="Enter SKU, Name or Barcode"
+                            className="border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            onKeyDown={handleInputKeyDown}
+                        />
+
+                        {/* Dropdown Filter */}
+                        <div className="bg-gray-100 dark:bg-blue-600 text-sm rounded-lg">
+                            <Dropdown
+                                className="text-black bg-gray-200 dark:text-white font-semibold px-4 py-2 rounded-lg"
+                                title={currentSelectedPage?.value ? currentSelectedPage.label : 'SELECT'}
+                                onSelect={handleSelect}
+                            >
+                                {SEARCHOPTIONS.map((item, key) => (
+                                    <DropdownItem key={key} eventKey={item.value}>
+                                        <span>{item.label}</span>
+                                    </DropdownItem>
+                                ))}
+                            </Dropdown>
+                        </div>
+
+                        {/* Camera Toggle */}
+                        <button
+                            className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-md transition-all duration-200"
+                            onClick={() => {
+                                setIsCamera((prev) => !prev)
+                                setQrResult('')
+                                setDelay(0)
+                            }}
                         >
-                            {SEARCHOPTIONS.map((item, key) => (
-                                <DropdownItem key={key} eventKey={item.value}>
-                                    <span>{item.label}</span>
-                                </DropdownItem>
-                            ))}
-                        </Dropdown>
+                            {isCamera ? <RiCameraOffFill className="text-xl" /> : <FaCamera className="text-xl" />}
+                        </button>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 mt-3 xl:mt-0">
+                        <Button
+                            variant="reject"
+                            className="bg-red-500 hover:bg-red-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
+                            onClick={clearStorage}
+                        >
+                            Clear
+                        </Button>
+                        <Button
+                            variant="accept"
+                            className="bg-green-500 hover:bg-green-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
+                            onClick={() => setDownloadModal(true)}
+                        >
+                            Download
+                        </Button>
                     </div>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="reject" onClick={clearStorage}>
-                        Clear
-                    </Button>
-                    <Button variant="accept" onClick={() => setDownloadModal(true)}>
-                        Download
-                    </Button>
-                </div>
             </div>
+
+            {isCamera && <EventListQrScanner delay={delay} setDelay={setDelay} qrResult={qrResult} setQrResult={setQrResult} />}
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
 
