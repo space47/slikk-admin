@@ -8,6 +8,7 @@ export const handleimage = async (fileType: string, files: File[]) => {
         formData.append('file', file)
     })
     formData.append('file_type', fileType)
+    formData.append('compression_service', 'slikk')
 
     try {
         console.log(formData.get('file'))

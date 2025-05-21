@@ -631,6 +631,18 @@ export const BackGroundArray = [
         name: 'background_config.is_background_lottie',
         placeholder: '',
     },
+    {
+        label: 'Scale',
+        type: 'number',
+        name: 'background_config.scale',
+        placeholder: 'Enter Image Scale ',
+    },
+    {
+        label: 'Web Scale',
+        type: 'number',
+        name: 'background_config.scale_web',
+        placeholder: 'Enter Web Image Scale ',
+    },
 ]
 
 export const NAMEPOSITION = [
