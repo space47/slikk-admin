@@ -353,7 +353,7 @@ const TransferModule = () => {
                         >
                             {isCamera ? <RiCameraOffFill className="text-xl" /> : <FaCamera className="text-xl" />}
                         </button>
-                        <p>adadada:{qrResult}</p>
+                        <p>{qrResult}</p>
                     </div>
 
                     {/* Action Buttons */}
