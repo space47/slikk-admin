@@ -31,7 +31,7 @@ const TransferModule = () => {
     const [delay, setDelay] = useState(100)
     const [qrResult, setQrResult] = useState<any>()
 
-    const cleanedQrResult = qrResult.replace(/"/g, '')
+    const cleanedQrResult = qrResult?.replace(/"/g, '')
 
     useEffect(() => {
         const storedData = localStorage.getItem('skuSearchResults')
