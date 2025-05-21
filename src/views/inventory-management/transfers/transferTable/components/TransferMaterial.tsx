@@ -7,6 +7,7 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { MdCancel } from 'react-icons/md'
 import { Modal, notification } from 'antd'
 import MoreDataTable from './MoreDataTable'
+import EventListQrScanner from '@/views/offerEngine/eventSeries/eventList/eventListUtils/EventListQrScanner'
 
 const SEARCHOPTIONS = [
     { label: 'SKU', value: 'sku' },
@@ -24,6 +25,11 @@ const TransferModule = () => {
     const [saveAsInput, setSaveAsInput] = useState('')
     const [moreData, setMoreData] = useState(false)
     const [dataForName, setDataForName] = useState('')
+    const [isCamera, setIsCamera] = useState(false)
+    const [delay, setDelay] = useState(100)
+    const [qrResult, setQrResult] = useState<any>()
+
+    const cleanedQrResult = qrResult.replace(/"/g, '')
 
     useEffect(() => {
         const storedData = localStorage.getItem('skuSearchResults')
@@ -33,7 +39,6 @@ const TransferModule = () => {
     }, [])
 
     const handleProductFetch = async () => {
-        if (!globalFilter) return
         if (dataForName !== '') return
 
         let queryParam = ''
@@ -43,6 +48,9 @@ const TransferModule = () => {
             queryParam = `sku_exact=${globalFilter?.trim()}`
         } else if (currentSelectedPage.value === 'name' && dataForName) {
             queryParam = `barcode=${dataForName}`
+        }
+        if (isCamera) {
+            queryParam = `sku_exact=${cleanedQrResult?.trim()}`
         }
 
         try {
@@ -54,13 +62,20 @@ const TransferModule = () => {
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '')
+                if (isCamera) {
+                    handleAddOrUpdateRow(cleanedQrResult, '')
+                }
             }
         } catch (error) {
             console.error(error)
             handleAddOrUpdateRow(globalFilter, '')
+            if (isCamera) {
+                handleAddOrUpdateRow(cleanedQrResult, '')
+            }
         }
-
+        setQrResult('')
         setGlobalFilter('')
+        setIsCamera(false)
     }
 
     const handleActionClick = async (value: any) => {
@@ -76,13 +91,21 @@ const TransferModule = () => {
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '')
+                if (isCamera) {
+                    handleAddOrUpdateRow(cleanedQrResult, '')
+                }
             }
         } catch (error) {
             console.error(error)
             handleAddOrUpdateRow(globalFilter, '')
+            if (isCamera) {
+                handleAddOrUpdateRow(cleanedQrResult, '')
+            }
         } finally {
             setDataForName('')
             setMoreData(false)
+            setQrResult('')
+            setIsCamera(false)
         }
     }
 
@@ -221,6 +244,12 @@ const TransferModule = () => {
             handleProductFetch()
         }
     }
+    useEffect(() => {
+        if (qrResult) {
+            handleProductFetch()
+        }
+    }, [qrResult])
+
     const downloadCSV = () => {
         if (saveAsInput === '') {
             notification.error({
@@ -276,7 +305,7 @@ const TransferModule = () => {
                     onChange={(e) => setLocationInput(e.target.value)}
                 />
             </div>
-            <div className="flex justify-between">
+            <div className="flex xl:flex-row xl:justify-between flex-col gap-5">
                 <div className="flex gap-2">
                     <input
                         name="filter"
@@ -300,6 +329,19 @@ const TransferModule = () => {
                             ))}
                         </Dropdown>
                     </div>
+                    <div>
+                        <button
+                            className="bg-blue-300 text-white p-2 rounded-xl items-center"
+                            onClick={() => {
+                                setIsCamera((prev) => !prev)
+                                setQrResult('')
+                                setDelay(0)
+                            }}
+                        >
+                            {isCamera ? 'No' : 'Camera'}
+                        </button>
+                        <p>{cleanedQrResult}</p>
+                    </div>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="reject" onClick={clearStorage}>
@@ -310,6 +352,8 @@ const TransferModule = () => {
                     </Button>
                 </div>
             </div>
+
+            {isCamera && <EventListQrScanner delay={delay} setDelay={setDelay} qrResult={qrResult} setQrResult={setQrResult} />}
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
 
