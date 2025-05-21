@@ -14,14 +14,16 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
     useEffect(() => {
         const startScanner = async () => {
             try {
-                // First request camera access directly
-                const stream = await navigator.mediaDevices.getUserMedia({
+                // Request camera access with explicit preference for rear camera
+                const constraints = {
                     video: {
-                        facingMode: 'environment', // Prefer rear camera on mobile
+                        facingMode: { exact: 'environment' }, // Force rear camera
                         width: { ideal: 1280 },
                         height: { ideal: 720 },
                     },
-                })
+                }
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints)
 
                 // Set the stream to video element
                 if (videoRef.current) {
@@ -31,8 +33,20 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
 
                 // Now start the barcode scanner
                 const devices = await BrowserMultiFormatReader.listVideoInputDevices()
-                if (devices.length > 0 && videoRef.current) {
-                    await codeReader.current.decodeFromVideoDevice(devices[0].deviceId, videoRef.current, (result, err) => {
+
+                // Try to find the rear camera explicitly if possible
+                const rearCamera = devices.find((device) => {
+                    return (
+                        device.label.toLowerCase().includes('back') ||
+                        device.label.toLowerCase().includes('rear') ||
+                        device.label.toLowerCase().includes('environment')
+                    )
+                })
+
+                const deviceId = rearCamera ? rearCamera.deviceId : devices[0]?.deviceId
+
+                if (deviceId && videoRef.current) {
+                    await codeReader.current.decodeFromVideoDevice(deviceId, videoRef.current, (result, err) => {
                         if (result) {
                             setQrResult(result.getText())
                         }
@@ -43,8 +57,45 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
                 }
             } catch (err) {
                 console.error(err)
-                setError('Camera access denied or failed to start scanner')
-                setHasPermission(false)
+                // If exact rear camera fails, try with just 'environment' (not exact)
+                if (err instanceof OverconstrainedError) {
+                    try {
+                        const fallbackConstraints = {
+                            video: {
+                                facingMode: 'environment', // Not exact, just preferred
+                                width: { ideal: 1280 },
+                                height: { ideal: 720 },
+                            },
+                        }
+
+                        const stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints)
+
+                        if (videoRef.current) {
+                            videoRef.current.srcObject = stream
+                            setHasPermission(true)
+                        }
+
+                        const devices = await BrowserMultiFormatReader.listVideoInputDevices()
+                        if (devices.length > 0 && videoRef.current) {
+                            await codeReader.current.decodeFromVideoDevice(devices[0].deviceId, videoRef.current, (result, err) => {
+                                if (result) {
+                                    setQrResult(result.getText())
+                                }
+                                if (err && !(err instanceof Error)) {
+                                    console.error(err)
+                                }
+                            })
+                        }
+                        return
+                    } catch (fallbackErr) {
+                        console.error(fallbackErr)
+                        setError('Camera access denied or failed to start scanner')
+                        setHasPermission(false)
+                    }
+                } else {
+                    setError('Camera access denied or failed to start scanner')
+                    setHasPermission(false)
+                }
             }
         }
 
@@ -59,13 +110,13 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
         }
     }, [setQrResult])
 
-    // Helper to request permission again
     const requestPermission = async () => {
         try {
-            await navigator.mediaDevices.getUserMedia({ video: true })
+            await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' },
+            })
             setHasPermission(true)
             setError(null)
-            // You might want to restart the scanner here
         } catch (err) {
             setError('Camera access denied')
             setHasPermission(false)
@@ -81,9 +132,9 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
                     height: 'auto',
                     display: hasPermission === false ? 'none' : 'block',
                 }}
-                playsInline // Important for iOS
-                autoPlay // Important for all browsers
-                muted // Required for autoplay in some browsers
+                playsInline
+                autoPlay
+                muted
             />
 
             {error && (
