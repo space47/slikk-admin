@@ -18,8 +18,8 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
                 const constraints = {
                     video: {
                         facingMode: { exact: 'environment' }, // Force rear camera
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
+                        width: { ideal: 1000 },
+                        height: { ideal: 300 },
                     },
                 }
 
@@ -63,8 +63,8 @@ const SkuBarcodeScanner = ({ setQrResult }: Props) => {
                         const fallbackConstraints = {
                             video: {
                                 facingMode: 'environment', // Not exact, just preferred
-                                width: { ideal: 1280 },
-                                height: { ideal: 720 },
+                                width: { ideal: 1000 },
+                                height: { ideal: 300 },
                             },
                         }
 
