@@ -1,188 +1,78 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { BrowserMultiFormatReader } from '@zxing/browser'
+import React, { useEffect, useRef } from 'react'
+import Quagga from 'quagga'
 
 interface Props {
-    setQrResult: (x: string) => void
-    isCamera: boolean // Add this prop to control camera state
+    setQrResult: (barcode: string) => void
 }
 
-const SkuBarcodeScanner = ({ setQrResult, isCamera }: Props) => {
-    const videoRef = useRef<HTMLVideoElement | null>(null)
-    const codeReader = useRef(new BrowserMultiFormatReader())
-    const [error, setError] = useState<string | null>(null)
-    const [hasPermission, setHasPermission] = useState<boolean | null>(null)
-    const streamRef = useRef<MediaStream | null>(null)
-    const scanningRef = useRef<boolean>(false)
-
-    const stopCamera = () => {
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach((track) => track.stop())
-            streamRef.current = null
-        }
-        if (videoRef.current) {
-            videoRef.current.srcObject = null
-        }
-
-        scanningRef.current = false
-    }
-
-    const startScanner = async () => {
-        if (!isCamera || scanningRef.current) return
-
-        try {
-            // Request camera access with explicit preference for rear camera
-            const constraints = {
-                video: {
-                    facingMode: { exact: 'environment' }, // Force rear camera
-                    width: 1000,
-                    height: 600,
-                },
-            }
-
-            const stream = await navigator.mediaDevices.getUserMedia(constraints)
-            streamRef.current = stream
-            scanningRef.current = true
-
-            // Set the stream to video element
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream
-                setHasPermission(true)
-            }
-
-            // Now start the barcode scanner
-            const devices = await BrowserMultiFormatReader.listVideoInputDevices()
-
-            // Try to find the rear camera explicitly if possible
-            const rearCamera = devices.find((device) => {
-                return (
-                    device.label.toLowerCase().includes('back') ||
-                    device.label.toLowerCase().includes('rear') ||
-                    device.label.toLowerCase().includes('environment')
-                )
-            })
-
-            const deviceId = rearCamera ? rearCamera.deviceId : devices[0]?.deviceId
-
-            if (deviceId && videoRef.current) {
-                await codeReader.current.decodeFromVideoDevice(deviceId, videoRef.current, (result, err) => {
-                    if (result) {
-                        setQrResult(result.getText())
-                    }
-                    if (err && !(err instanceof Error)) {
-                        console.error(err)
-                    }
-                })
-            }
-        } catch (err) {
-            console.error(err)
-            // If exact rear camera fails, try with just 'environment' (not exact)
-            if (err instanceof OverconstrainedError) {
-                try {
-                    const fallbackConstraints = {
-                        video: {
-                            facingMode: 'environment', // Not exact, just preferred
-                            width: 1000,
-                            height: 600,
-                        },
-                    }
-
-                    const stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints)
-                    streamRef.current = stream
-                    scanningRef.current = true
-
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = stream
-                        setHasPermission(true)
-                    }
-
-                    const devices = await BrowserMultiFormatReader.listVideoInputDevices()
-                    if (devices.length > 0 && videoRef.current) {
-                        await codeReader.current.decodeFromVideoDevice(devices[0].deviceId, videoRef.current, (result, err) => {
-                            if (result) {
-                                setQrResult(result.getText())
-                            }
-                            if (err && !(err instanceof Error)) {
-                                console.error(err)
-                            }
-                        })
-                    }
-                    return
-                } catch (fallbackErr) {
-                    console.error(fallbackErr)
-                    setError('Camera access denied or failed to start scanner')
-                    setHasPermission(false)
-                }
-            } else {
-                setError('Camera access denied or failed to start scanner')
-                setHasPermission(false)
-            }
-        }
-    }
+const BarcodeScanner = ({ setQrResult }: Props) => {
+    const scannerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        if (isCamera) {
-            startScanner()
-        } else {
-            stopCamera()
+        // Initialize barcode scanner when component mounts
+        if (scannerRef.current) {
+            Quagga.init(
+                {
+                    inputStream: {
+                        name: 'Live',
+                        type: 'LiveStream',
+                        target: scannerRef.current,
+                        constraints: {
+                            facingMode: 'environment', // Use rear camera
+                        },
+                    },
+                    decoder: {
+                        readers: [
+                            'code_128_reader', // For standard barcodes
+                            'ean_reader', // For EAN barcodes
+                            'ean_8_reader', // For EAN-8 barcodes
+                            'upc_reader', // For UPC barcodes
+                            'upc_e_reader', // For UPC-E barcodes
+                        ],
+                    },
+                },
+                (err) => {
+                    if (err) {
+                        console.error('Failed to initialize Quagga:', err)
+                        return
+                    }
+                    Quagga.start()
+                },
+            )
+
+            Quagga.onDetected(handleBarcodeDetected)
         }
 
         return () => {
-            stopCamera()
+            Quagga.offDetected(handleBarcodeDetected)
+            Quagga.stop()
         }
-    }, [isCamera, setQrResult])
+    }, [])
 
-    const requestPermission = async () => {
-        try {
-            await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' },
-            })
-            setHasPermission(true)
-            setError(null)
-            if (isCamera) {
-                startScanner()
-            }
-        } catch (err) {
-            setError('Camera access denied')
-            setHasPermission(false)
+    const handleBarcodeDetected = (result: any) => {
+        const code = result.codeResult.code
+        if (code) {
+            console.log('Barcode detected:', code)
+            setQrResult(code)
+            // Uncomment if you want to stop after first detection
+            // Quagga.stop()
         }
     }
 
     return (
-        <div style={{ position: 'relative', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
-            <video
-                ref={videoRef}
+        <div>
+            {/* Barcode Scanner */}
+            <div
+                ref={scannerRef}
                 style={{
-                    width: '100%',
-                    height: 'auto',
-                    display: hasPermission === false || !isCamera ? 'none' : 'block',
+                    height: 240,
+                    width: 320,
+                    margin: '0 auto',
+                    border: '1px solid #ccc',
                 }}
-                playsInline
-                autoPlay
-                muted
             />
-
-            {error && (
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                    <p style={{ color: 'red' }}>{error}</p>
-                    {hasPermission === false && (
-                        <button
-                            onClick={requestPermission}
-                            style={{
-                                padding: '10px 20px',
-                                background: '#007bff',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            Allow Camera Access
-                        </button>
-                    )}
-                </div>
-            )}
         </div>
     )
 }
 
-export default SkuBarcodeScanner
+export default BarcodeScanner

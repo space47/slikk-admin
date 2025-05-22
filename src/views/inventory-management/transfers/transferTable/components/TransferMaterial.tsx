@@ -375,7 +375,8 @@ const TransferModule = () => {
                 </div>
             </div>
 
-            {isCamera && <SkuBarcodeScanner setQrResult={setQrResult} isCamera={isCamera} />}
+            {isCamera && <SkuBarcodeScanner setQrResult={setQrResult} />}
+            <p>{qrResult}</p>
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
 
