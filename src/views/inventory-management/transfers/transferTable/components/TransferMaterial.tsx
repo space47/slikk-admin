@@ -353,7 +353,6 @@ const TransferModule = () => {
                         >
                             {isCamera ? <RiCameraOffFill className="text-xl" /> : <FaCamera className="text-xl" />}
                         </button>
-                        <p>{qrResult}</p>
                     </div>
 
                     {/* Action Buttons */}
@@ -377,6 +376,7 @@ const TransferModule = () => {
             </div>
 
             {isCamera && <SkuBarcodeScanner setQrResult={setQrResult} />}
+            <p>{qrResult}</p>
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
 
