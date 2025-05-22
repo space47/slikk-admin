@@ -5,7 +5,7 @@ import { GrUpdate } from 'react-icons/gr'
 import EventActionModal from './EventActionModal'
 import { useAppSelector } from '@/store'
 import { EventSeriesSliceType } from '@/store/slices/eventSeriesSlice/eventSeriesSlice'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Pagination } from '@/components/ui'
 import { FiDownload } from 'react-icons/fi'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -23,6 +23,7 @@ interface props {
 
 const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, renderUserStatus }: props) => {
     const { id } = useParams()
+    const navigate = useNavigate()
     const { eventSeriesData } = useAppSelector<EventSeriesSliceType>((state) => state.eventSeries)
     const [replaceModal, setReplaceModal] = useState(false)
     const [removeModal, setRemoveModal] = useState(false)
@@ -81,15 +82,26 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
                 {registeredUsers?.map((user: any, index: number) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 mb-4 last:mb-0 hover:bg-gray-50 transition-colors">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                            <div className="flex items-center">
+                            <div className="flex items-center gap-3">
                                 <div className="bg-blue-100 p-2 rounded-full mr-3">
                                     <FaUser className="text-blue-600" />
                                 </div>
                                 <div>
                                     <h3 className="font-medium text-gray-900">{user?.user?.name || 'N/A'}</h3>
-                                    <p className="text-sm text-gray-500">{user?.user?.mobile}</p>
+                                    {/* <p className="text-sm text-gray-500">{user?.user?.mobile}</p> */}
+                                </div>
+                                <div>
+                                    {user?.order && (
+                                        <button
+                                            className="text-white bg-red-500 hover:bg-red-700 px-3 py-1 rounded-xl"
+                                            onClick={() => navigate(`/app/orders/${user?.order}`)}
+                                        >
+                                            {user?.order}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
+
                             <div>
                                 <div className="flex items-center text-gray-600 mb-1">
                                     <FaPhone className="mr-2" />
