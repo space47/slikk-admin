@@ -1,81 +1,118 @@
-import { useZxing } from 'react-zxing'
-import { useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import Quagga from '@ericblade/quagga2'
 
 interface SkuBarcodeScannerProps {
-    onResult: (result: string) => void
+    onDetected: (result: string) => void
     onClose: () => void
+    setIsCamera: (value: boolean) => void
 }
 
-export const SkuBarcodeScanner = ({ onResult, onClose }: SkuBarcodeScannerProps) => {
-    const [cameras, setCameras] = useState<MediaDeviceInfo[]>([])
-    const [selectedCamera, setSelectedCamera] = useState<string | undefined>()
+const SkuBarcodeScanner = ({ onDetected, onClose, setIsCamera }: SkuBarcodeScannerProps) => {
+    const scannerRef = useRef<HTMLDivElement>(null)
+    const [lastScanned, setLastScanned] = useState<string | null>(null)
+    const detectionTimeout = useRef<NodeJS.Timeout>()
 
-    // Get available cameras and prefer back camera
     useEffect(() => {
-        navigator.mediaDevices.enumerateDevices().then((devices) => {
-            const videoDevices = devices.filter((device) => device.kind === 'videoinput')
-            setCameras(videoDevices)
+        if (!scannerRef.current) return
 
-            // Try to find a back camera (usually labeled "environment")
-            const backCamera = videoDevices.find(
-                (device) => device.label.toLowerCase().includes('back') || device.label.toLowerCase().includes('environment'),
-            )
-            setSelectedCamera(backCamera?.deviceId || videoDevices[0]?.deviceId)
-        })
-    }, [])
+        console.log('Mount')
+        Quagga.init(
+            {
+                inputStream: {
+                    name: 'Live',
+                    type: 'LiveStream',
+                    target: scannerRef.current,
+                    constraints: {
+                        width: 640,
+                        height: 480,
+                        facingMode: 'environment',
+                    },
+                },
+                decoder: {
+                    readers: ['code_128_reader'],
+                    multiple: false, // Prevent multiple detections
+                },
+                locate: true,
+                numOfWorkers: 4, // More workers = better processing
+                frequency: 10, // Slower but more accurate
+                debug: {
+                    drawBoundingBox: true,
+                    showFrequency: true,
+                    drawScanline: true,
+                },
+            },
+            (err) => {
+                if (err) {
+                    console.error('Scanner initialization failed:', err)
+                    return
+                }
+                Quagga.start()
+            },
+        )
 
-    const { ref } = useZxing({
-        onDecodeResult(result) {
-            onResult(result.getText())
-        },
-        onDecodeError(error) {
-            console.error('Scan error:', error)
-        },
-        deviceId: selectedCamera,
-        constraints: {
-            facingMode: { ideal: 'environment' }, // Prefer back camera
-        },
-    })
+        const handleDetection = (result: any) => {
+            const code = result.codeResult.code
+
+            console.log('Valid barcode detected:', code)
+            setLastScanned(code)
+            onDetected(code)
+            clearTimeout(detectionTimeout.current)
+        }
+
+        Quagga.onDetected(handleDetection)
+
+        return () => {
+            Quagga.offDetected(handleDetection)
+            Quagga.stop()
+
+            const videos = document.querySelectorAll('video')
+            videos.forEach((video) => {
+                const mediaStream = video.srcObject as MediaStream | null
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach((track) => track.stop())
+                    video.srcObject = null
+                    console.log('Stopped media stream tracks')
+                }
+            })
+
+            // Quagga internal track stopping (if available)
+            const track = Quagga?.CameraAccess?.getActiveTrack?.()
+            if (track) {
+                track.stop()
+                console.log('Stopped Quagga internal camera track')
+            }
+
+            clearTimeout(detectionTimeout.current)
+        }
+    }, [onDetected, lastScanned])
+
+    // useEffect(() => {
+    //     console.log('Mount 1')
+    //     return () => {
+    //         console.log('Unmount')
+    //         Quagga.stop()
+    //     }
+    // }, [])
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center z-50 p-4">
             <div className="w-full max-w-md bg-white rounded-lg overflow-hidden shadow-xl">
                 <div className="flex justify-between items-center bg-gray-800 p-3">
-                    <h2 className="text-white font-bold">Scan Barcode/QR</h2>
-                    <button onClick={onClose} className="text-white hover:text-gray-300" aria-label="Close scanner">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                    <h2 className="text-white font-bold">Barcode Scanner</h2>
+                    <button onClick={onClose} className="text-white hover:text-gray-300">
+                        ✕
                     </button>
                 </div>
 
                 {/* Scanner Viewport */}
-                <div className="relative">
-                    <video ref={ref} className="w-full h-auto border-4 border-blue-500" playsInline />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="border-2 border-white border-dashed w-64 h-64 rounded-lg"></div>
-                    </div>
+                <div ref={scannerRef} className="relative h-64 w-full bg-black">
+                    {/* Detection box will appear here */}
                 </div>
 
-                {/* Camera Selector (if multiple cameras available) */}
-                {cameras.length > 1 && (
-                    <div className="p-3 bg-gray-100">
-                        <select
-                            value={selectedCamera}
-                            onChange={(e) => setSelectedCamera(e.target.value)}
-                            className="w-full p-2 border rounded"
-                        >
-                            {cameras.map((camera) => (
-                                <option key={camera.deviceId} value={camera.deviceId}>
-                                    {camera.label || `Camera ${camera.deviceId.slice(0, 5)}`}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-
-                <div className="p-3 text-center text-gray-600 bg-gray-50">Point your camera at a barcode or QR code</div>
+                <div className="p-3 text-center text-gray-600 bg-gray-50">Point at a barcode (EAN, UPC, Code 128, etc.)</div>
             </div>
         </div>
     )
 }
+
+export default SkuBarcodeScanner
