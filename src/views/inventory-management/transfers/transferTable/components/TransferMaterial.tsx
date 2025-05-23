@@ -10,7 +10,7 @@ import MoreDataTable from './MoreDataTable'
 import EventListQrScanner from '@/views/offerEngine/eventSeries/eventList/eventListUtils/EventListQrScanner'
 import { FaCamera } from 'react-icons/fa'
 import { RiCameraOffFill } from 'react-icons/ri'
-import SkuBarcodeScanner from './SkuBarcodeScanner'
+import { SkuBarcodeScanner } from './SkuBarcodeScanner'
 
 const SEARCHOPTIONS = [
     { label: 'SKU', value: 'sku' },
@@ -375,7 +375,15 @@ const TransferModule = () => {
                 </div>
             </div>
 
-            {isCamera && <SkuBarcodeScanner setQrResult={setQrResult} />}
+            {isCamera && (
+                <SkuBarcodeScanner
+                    onResult={(result: any) => {
+                        setQrResult(result)
+                        setIsCamera(false)
+                    }}
+                    onClose={() => setIsCamera(false)}
+                />
+            )}
             <p>{qrResult}</p>
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>

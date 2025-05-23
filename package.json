@@ -100,6 +100,7 @@
     "react-simple-maps": "^3.0.0",
     "react-syntax-highlighter": "^15.6.1",
     "react-tooltip": "^5.28.0",
+    "react-zxing": "^2.1.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "slate": "^0.103.0",
