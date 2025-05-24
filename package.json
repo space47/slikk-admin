@@ -17,6 +17,7 @@
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^9.4.0",
     "@codemirror/lang-sql": "^6.8.0",
+    "@ericblade/quagga2": "^1.8.4",
     "@floating-ui/react": "^0.26.22",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
@@ -100,6 +101,7 @@
     "react-simple-maps": "^3.0.0",
     "react-syntax-highlighter": "^15.6.1",
     "react-tooltip": "^5.28.0",
+    "react-zxing": "^2.1.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "slate": "^0.103.0",
