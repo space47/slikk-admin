@@ -168,7 +168,7 @@ const EventListDetails = () => {
             })
         } catch (error: any) {
             notification.error({
-                message: error?.response?.message || 'Failed  to redeem',
+                message: error?.response?.data?.message || 'Failed  to redeem',
             })
         } finally {
             setQrResult('')

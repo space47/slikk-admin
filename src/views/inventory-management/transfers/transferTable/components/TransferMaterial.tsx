@@ -7,7 +7,6 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { MdCancel } from 'react-icons/md'
 import { Modal, notification } from 'antd'
 import MoreDataTable from './MoreDataTable'
-import EventListQrScanner from '@/views/offerEngine/eventSeries/eventList/eventListUtils/EventListQrScanner'
 import { FaCamera } from 'react-icons/fa'
 import { RiCameraOffFill } from 'react-icons/ri'
 import SkuBarcodeScanner from './SkuBarcodeScanner'
@@ -29,10 +28,7 @@ const TransferModule = () => {
     const [moreData, setMoreData] = useState(false)
     const [dataForName, setDataForName] = useState('')
     const [isCamera, setIsCamera] = useState(false)
-    const [delay, setDelay] = useState(100)
     const [qrResult, setQrResult] = useState<any>()
-
-    const cleanedQrResult = qrResult?.replace(/"/g, '')
 
     useEffect(() => {
         const storedData = localStorage.getItem('skuSearchResults')
@@ -43,21 +39,25 @@ const TransferModule = () => {
 
     const handleProductFetch = async () => {
         if (dataForName !== '') return
-
         let queryParam = ''
         if (currentSelectedPage.value === 'barcode') {
+            console.log('Case 1')
             queryParam = `barcode=${globalFilter?.trim()}`
         } else if (currentSelectedPage.value === 'sku') {
+            console.log('Case 2')
             queryParam = `sku_exact=${globalFilter?.trim()}`
         } else if (currentSelectedPage.value === 'name' && dataForName) {
             queryParam = `barcode=${dataForName}`
         }
-        if (isCamera) {
-            queryParam = `sku_exact=${cleanedQrResult?.trim()}`
+        let qrParam = ''
+        if (isCamera && qrResult) {
+            qrParam = `sku_exact=${qrResult}`
         }
 
+        setIsCamera(false)
+
         try {
-            const response = await axioisInstance.get(`/merchant/products?${queryParam}`)
+            const response = await axioisInstance.get(`/merchant/products?${queryParam}${qrParam}`)
             const product = response?.data?.data?.results?.[0]
 
             if (product?.sku) {
@@ -66,19 +66,18 @@ const TransferModule = () => {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '')
                 if (isCamera) {
-                    handleAddOrUpdateRow(cleanedQrResult, '')
+                    handleAddOrUpdateRow(qrResult, '')
                 }
             }
         } catch (error) {
             console.error(error)
             handleAddOrUpdateRow(globalFilter, '')
             if (isCamera) {
-                handleAddOrUpdateRow(cleanedQrResult, '')
+                handleAddOrUpdateRow(qrResult, '')
             }
         }
         setQrResult('')
         setGlobalFilter('')
-        setIsCamera(false)
     }
 
     const handleActionClick = async (value: any) => {
@@ -95,20 +94,18 @@ const TransferModule = () => {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '')
                 if (isCamera) {
-                    handleAddOrUpdateRow(cleanedQrResult, '')
+                    handleAddOrUpdateRow(qrResult, '')
                 }
             }
         } catch (error) {
             console.error(error)
             handleAddOrUpdateRow(globalFilter, '')
             if (isCamera) {
-                handleAddOrUpdateRow(cleanedQrResult, '')
+                handleAddOrUpdateRow(qrResult, '')
             }
         } finally {
             setDataForName('')
             setMoreData(false)
-            setQrResult('')
-            setIsCamera(false)
         }
     }
 
@@ -249,7 +246,33 @@ const TransferModule = () => {
     }
     useEffect(() => {
         if (qrResult) {
-            handleProductFetch()
+            const handleCamera = async () => {
+                let qrParam = ''
+                if (qrResult) {
+                    qrParam = `sku_exact=${qrResult}`
+                }
+                try {
+                    const response = await axioisInstance.get(`/merchant/products?${qrParam}`)
+                    const product = response?.data?.data?.results?.[0]
+
+                    if (product?.sku) {
+                        handleAddOrUpdateRow(product.sku, product?.brand)
+                    } else {
+                        if (isCamera) {
+                            handleAddOrUpdateRow(qrResult, '')
+                        }
+                    }
+                    setIsCamera(false)
+                } catch (error) {
+                    if (isCamera) {
+                        handleAddOrUpdateRow(qrResult, '')
+                    }
+                }
+                setIsCamera(false)
+                setQrResult('')
+                setGlobalFilter('')
+            }
+            handleCamera()
         }
     }, [qrResult])
 
@@ -348,7 +371,6 @@ const TransferModule = () => {
                             onClick={() => {
                                 setIsCamera((prev) => !prev)
                                 setQrResult('')
-                                setDelay(0)
                             }}
                         >
                             {isCamera ? <RiCameraOffFill className="text-xl" /> : <FaCamera className="text-xl" />}
@@ -375,7 +397,7 @@ const TransferModule = () => {
                 </div>
             </div>
 
-            {isCamera && <SkuBarcodeScanner setQrResult={setQrResult} />}
+            {isCamera && <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} onClose={() => setIsCamera(false)} />}
             <p>{qrResult}</p>
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
