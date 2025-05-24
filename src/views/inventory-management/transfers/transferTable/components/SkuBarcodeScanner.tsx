@@ -30,11 +30,11 @@ const SkuBarcodeScanner = ({ onDetected, onClose, setIsCamera }: SkuBarcodeScann
                 },
                 decoder: {
                     readers: ['code_128_reader'],
-                    multiple: false, // Prevent multiple detections
+                    multiple: false,
                 },
                 locate: true,
-                numOfWorkers: 4, // More workers = better processing
-                frequency: 10, // Slower but more accurate
+                numOfWorkers: 4,
+                frequency: 10,
                 debug: {
                     drawBoundingBox: true,
                     showFrequency: true,
@@ -86,14 +86,6 @@ const SkuBarcodeScanner = ({ onDetected, onClose, setIsCamera }: SkuBarcodeScann
         }
     }, [onDetected, lastScanned])
 
-    // useEffect(() => {
-    //     console.log('Mount 1')
-    //     return () => {
-    //         console.log('Unmount')
-    //         Quagga.stop()
-    //     }
-    // }, [])
-
     return (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center z-50 p-4">
             <div className="w-full max-w-md bg-white rounded-lg overflow-hidden shadow-xl">
@@ -104,10 +96,7 @@ const SkuBarcodeScanner = ({ onDetected, onClose, setIsCamera }: SkuBarcodeScann
                     </button>
                 </div>
 
-                {/* Scanner Viewport */}
-                <div ref={scannerRef} className="relative h-64 w-full bg-black">
-                    {/* Detection box will appear here */}
-                </div>
+                <div ref={scannerRef} className="relative h-64 w-full bg-black"></div>
 
                 <div className="p-3 text-center text-gray-600 bg-gray-50">Point at a barcode (EAN, UPC, Code 128, etc.)</div>
             </div>
