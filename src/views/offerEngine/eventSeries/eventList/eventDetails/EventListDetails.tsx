@@ -237,7 +237,13 @@ const EventListDetails = () => {
                         <div>
                             <h3 className="text-sm font-medium text-gray-500">Available Slots</h3>
                             <p className="text-lg font-semibold">
-                                {eventData.available_slots} / {eventData.total_slots}
+                                {eventData?.available_slots} / {eventData?.total_slots}
+                            </p>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-500">Redeemed Slots</h3>
+                            <p className="text-lg font-semibold">
+                                {eventData?.redeem_count} / {eventData?.total_slots}
                             </p>
                         </div>
                         <div>
