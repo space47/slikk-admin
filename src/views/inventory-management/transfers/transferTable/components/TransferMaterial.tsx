@@ -51,7 +51,7 @@ const TransferModule = () => {
         }
 
         try {
-            const response = await axioisInstance.get(`/merchant/products?${queryParam}${qrParam}`)
+            const response = await axioisInstance.get(`/merchant/products?${queryParam}`)
             const product = response?.data?.data?.results?.[0]
 
             if (product?.sku) {
