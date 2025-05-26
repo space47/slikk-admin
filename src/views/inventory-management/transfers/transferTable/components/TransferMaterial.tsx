@@ -49,12 +49,6 @@ const TransferModule = () => {
         } else if (currentSelectedPage.value === 'name' && dataForName) {
             queryParam = `barcode=${dataForName}`
         }
-        let qrParam = ''
-        if (isCamera && qrResult) {
-            qrParam = `sku_exact=${qrResult}`
-        }
-
-        setIsCamera(false)
 
         try {
             const response = await axioisInstance.get(`/merchant/products?${queryParam}${qrParam}`)
@@ -65,16 +59,10 @@ const TransferModule = () => {
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '')
-                if (isCamera) {
-                    handleAddOrUpdateRow(qrResult, '')
-                }
             }
         } catch (error) {
             console.error(error)
             handleAddOrUpdateRow(globalFilter, '')
-            if (isCamera) {
-                handleAddOrUpdateRow(qrResult, '')
-            }
         }
         setQrResult('')
         setGlobalFilter('')
