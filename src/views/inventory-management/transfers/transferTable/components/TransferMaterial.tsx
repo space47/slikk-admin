@@ -58,7 +58,7 @@ const TransferModule = () => {
             const product = response?.data?.data?.results?.[0]
             console.log('product is', product?.image_high_res?.split(',')[0])
             if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(',')[0])
+                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(','))
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '', '')
@@ -80,7 +80,7 @@ const TransferModule = () => {
             const product = response?.data?.data?.results?.[0]
 
             if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(',')[0])
+                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res?.split(','))
             } else {
                 console.error('No product found, adding entry with globalFilter.')
                 handleAddOrUpdateRow(globalFilter, '', '')
@@ -150,9 +150,9 @@ const TransferModule = () => {
                 accessorKey: 'image',
                 cell: ({ row }: { row: any }) => {
                     console.log('row image is', row.original?.image)
-                    return row.original.image ? (
+                    return row.original?.image?.length > 0 ? (
                         <img
-                            src={row.original?.image}
+                            src={row.original?.image[0]}
                             alt={row.original.sku}
                             className="w-16 h-16 object-cover rounded-lg cursor-pointer"
                             onClick={() => handleOpenModal(row.original.image)}
@@ -247,6 +247,7 @@ const TransferModule = () => {
     }
 
     const handleOpenModal = (img: any) => {
+        console.log('img is', img)
         setParticularROwImage(img)
         setShowImageModal(true)
     }
@@ -451,7 +452,7 @@ const TransferModule = () => {
                 <ImageMODAL
                     dialogIsOpen={showImageModal}
                     setIsOpen={setShowImageModal}
-                    image={particularRowImage && particularRowImage?.split(',')}
+                    image={(particularRowImage && particularRowImage) || []}
                 />
             )}
             {downloadModal && (

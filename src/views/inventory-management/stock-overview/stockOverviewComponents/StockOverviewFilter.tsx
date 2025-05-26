@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { FormItem, FormContainer } from '@/components/ui/Form'
+import { FormContainer } from '@/components/ui/Form'
 import { Field, Form, Formik, FieldProps } from 'formik'
 import Select from '@/components/ui/Select'
 import { Button, Drawer } from '@/components/ui'
@@ -40,12 +40,6 @@ const StockOverviewFilter = ({
     productTypeList,
     brandList,
     subCategoryList,
-    setDivisionList,
-    setCategoryList,
-    setSubCategoryList,
-    setTypeFetch,
-    setBrandList,
-    setProductTypeList,
 }: PROPS) => {
     const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const category = useAppSelector<CATEGORY_STATE>((state) => state.category)
@@ -57,8 +51,6 @@ const StockOverviewFilter = ({
     useEffect(() => {
         dispatch(getAllBrandsAPI())
     }, [])
-
-    console.log('LIST', product_type.product_types)
 
     const [initialValues, setInitialValues] = useState({
         division: divisionList,
