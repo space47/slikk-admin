@@ -285,29 +285,29 @@ const StockOverview = () => {
 
         if (divisionList.length > 0) {
             const divisionIds = divisionList.map((item: any) => item).join(',')
-            query += `division=${divisionIds}`
+            query += `division=${encodeURIComponent(divisionIds)}`
         }
 
         if (categoryList.length > 0) {
             const categoryIds = categoryList.map((item: any) => item).join(',')
             if (query) query += '&'
-            query += `category=${categoryIds}`
+            query += `category=${encodeURIComponent(categoryIds)}`
         }
 
         if (subCategoryList.length > 0) {
             const subCategoryIds = subCategoryList.map((item: any) => item).join(',')
             if (query) query += '&'
-            query += `sub_category=${subCategoryIds}`
+            query += `sub_category=${encodeURIComponent(subCategoryIds)}`
         }
         if (productTypeList.length > 0) {
             const productTypeIds = productTypeList.map((item: any) => item).join(',')
             if (query) query += '&'
-            query += `Product_type=${productTypeIds}`
+            query += `Product_type=${encodeURIComponent(productTypeIds)}`
         }
         if (brandList.length > 0) {
             const brandIds = brandList.map((item: any) => item).join(',')
             if (query) query += '&'
-            query += `brand=${brandIds}`
+            query += `brand=${encodeURIComponent(brandIds)}`
         }
 
         setTypeFetch(query)
