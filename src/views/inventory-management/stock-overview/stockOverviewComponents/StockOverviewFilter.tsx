@@ -56,10 +56,9 @@ const StockOverviewFilter = ({
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllBrandsAPI())
-        // dispatch(getAllFiltersAPI())
     }, [])
 
-    console.log('LIST', divisionList)
+    console.log('LIST', product_type.product_types)
 
     const [initialValues, setInitialValues] = useState({
         division: divisionList,
@@ -69,44 +68,23 @@ const StockOverviewFilter = ({
         brand: brandList,
     })
 
-    const handleFilterEmpty = (resetForm: any) => {
-        // Clear the form values
-        resetForm({
-            values: {
-                division: [],
-                category: [],
-                sub_category: [],
-                product_type: [],
-                brand: [],
-            },
-        })
-
-        // Clear the external state
-        setDivisionList([])
-        setCategoryList([])
-        setSubCategoryList([])
-        setProductTypeList([])
-        setBrandList([])
-        setTypeFetch('')
-    }
-
     return (
         <div>
             <Drawer title="" isOpen={showDrawer} onClose={handleCloseDrawer} onRequestClose={handleCloseDrawer} lockScroll={false}>
                 <Formik initialValues={initialValues} onSubmit={handleApply}>
-                    {({ setFieldValue, values, resetForm }) => (
+                    {({ setFieldValue }) => (
                         <Form className="flex flex-col gap-10 w-full items-center">
                             {/* Division */}
                             <Field name="division">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
-                                    console.log('DIVISION FIELD', fieldValue)
+
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                             <div className="font-semibold">Division</div>
                                             <Select
-                                                className="w-full"
                                                 isMulti
+                                                className="w-full"
                                                 options={divisions.divisions}
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
@@ -128,19 +106,27 @@ const StockOverviewFilter = ({
                             <Field name="category">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
-                                    console.log('DATATAMAIN', category.categories)
+                                    let divFilteredCategories = category.categories
+                                    if (divisionList.length > 0) {
+                                        divFilteredCategories = category.categories.filter((option) => {
+                                            return divisionList.some((item: any) => item === option.division_name)
+                                        })
+                                    }
+
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                             <div className="font-semibold">Category</div>
                                             <Select
-                                                className="w-full"
                                                 isMulti
-                                                options={category.categories}
-                                                getOptionLabel={(option) => option.name}
-                                                getOptionValue={(option) => option.id.toString()}
-                                                defaultValue={category.categories.filter((option) =>
-                                                    fieldValue.some((item) => item === option.name),
-                                                )}
+                                                className="w-full"
+                                                options={divFilteredCategories}
+                                                getOptionLabel={(option) => option?.name}
+                                                getOptionValue={(option) => option?.id}
+                                                value={divFilteredCategories.filter((option) => {
+                                                    return fieldValue.some((item) => {
+                                                        return item === option.name
+                                                    })
+                                                })}
                                                 onChange={(newVal) => {
                                                     const selectedValues = newVal.map((item) => item.name) || []
                                                     setFieldValue('category', selectedValues)
@@ -156,16 +142,22 @@ const StockOverviewFilter = ({
                             <Field name="sub_category">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
+                                    let catFilteredSubCat = subCategory.subcategories
+                                    if (categroyList.length > 0) {
+                                        catFilteredSubCat = subCategory.subcategories.filter((option) => {
+                                            return categroyList.some((item: any) => item === option.category_name)
+                                        })
+                                    }
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                             <div className="font-semibold">Sub Category</div>
                                             <Select
                                                 className="w-full"
                                                 isMulti
-                                                options={subCategory.subcategories}
+                                                options={catFilteredSubCat}
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
-                                                defaultValue={subCategory.subcategories.filter((option) =>
+                                                defaultValue={catFilteredSubCat.filter((option) =>
                                                     fieldValue.some((item) => item === option.name),
                                                 )}
                                                 onChange={(newVal) => {
@@ -182,22 +174,27 @@ const StockOverviewFilter = ({
                             <Field name="product_type">
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
+                                    let subCatFilteredProductTypes = product_type.product_types
+                                    if (subCategoryList.length > 0) {
+                                        subCatFilteredProductTypes = product_type.product_types.filter((option) => {
+                                            return subCategoryList.some((item: any) => item === option.sub_category_name)
+                                        })
+                                    }
+
                                     return (
                                         <div className="flex flex-col gap-1 w-full items-center xl:items-baseline max-w-md">
                                             <div className="font-semibold">Product Type</div>
                                             <Select
                                                 className="w-full"
                                                 isMulti
-                                                options={product_type.product_types}
+                                                options={subCatFilteredProductTypes}
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
-                                                defaultValue={product_type.product_types.filter((option) =>
+                                                defaultValue={subCatFilteredProductTypes.filter((option) =>
                                                     fieldValue.some((item) => item === option.name),
                                                 )}
                                                 onChange={(newVal) => {
                                                     const selectedValues = newVal.map((item) => item.name) || []
-
-                                                    console.log('PRODUCTYPE', selectedValues)
                                                     setFieldValue('product_type', selectedValues)
                                                     handleMultiSelect('product_type', selectedValues)
                                                 }}
