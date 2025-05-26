@@ -232,6 +232,8 @@ const TransferModule = () => {
             handleProductFetch()
         }
     }
+
+    console.log('camera Details', isCamera)
     useEffect(() => {
         if (qrResult) {
             const handleCamera = async () => {
@@ -306,6 +308,11 @@ const TransferModule = () => {
             message: ' successfully cleared all the data',
         })
     }
+
+    console.log(
+        'skuWiseData',
+        skuWiseData?.map((item) => item?.quantity_returned).reduce((acc, curr) => acc + curr, 0),
+    )
 
     return (
         <div className="p-4 flex flex-col gap-6">
@@ -390,6 +397,12 @@ const TransferModule = () => {
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
 
+            <div className="text-lg font-semibold text-gray-700 mb-4 items-end flex gap-1">
+                Total Quantity:
+                <span className="text-green-600">
+                    {skuWiseData?.map((item) => item?.quantity_returned).reduce((acc, curr) => acc + curr, 0)}
+                </span>
+            </div>
             <EasyTable mainData={skuWiseData} columns={columns} />
 
             {clearStorageModal && (
