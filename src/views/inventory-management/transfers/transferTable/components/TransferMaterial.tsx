@@ -10,6 +10,7 @@ import MoreDataTable from './MoreDataTable'
 import { FaCamera } from 'react-icons/fa'
 import { RiCameraOffFill } from 'react-icons/ri'
 import SkuBarcodeScanner from './SkuBarcodeScanner'
+import ImageMODAL from '@/common/ImageModal'
 
 const SEARCHOPTIONS = [
     { label: 'SKU', value: 'sku' },
@@ -29,6 +30,8 @@ const TransferModule = () => {
     const [dataForName, setDataForName] = useState('')
     const [isCamera, setIsCamera] = useState(false)
     const [qrResult, setQrResult] = useState<any>()
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [particularRowImage, setParticularROwImage] = useState<any>([])
 
     useEffect(() => {
         const storedData = localStorage.getItem('skuSearchResults')
@@ -55,14 +58,14 @@ const TransferModule = () => {
             const product = response?.data?.data?.results?.[0]
 
             if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand)
+                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res)
             } else {
                 console.error('No product found, adding entry with globalFilter.')
-                handleAddOrUpdateRow(globalFilter, '')
+                handleAddOrUpdateRow(globalFilter, '', '')
             }
         } catch (error) {
             console.error(error)
-            handleAddOrUpdateRow(globalFilter, '')
+            handleAddOrUpdateRow(globalFilter, '', '')
         }
         setQrResult('')
         setGlobalFilter('')
@@ -75,21 +78,21 @@ const TransferModule = () => {
         try {
             const response = await axioisInstance.get(`/merchant/products?barcode=${value}`)
             const product = response?.data?.data?.results?.[0]
-
+            console.log('product is', product)
             if (product?.sku) {
-                handleAddOrUpdateRow(product.sku, product?.brand)
+                handleAddOrUpdateRow(product.sku, product?.brand, product?.image_high_res)
             } else {
                 console.error('No product found, adding entry with globalFilter.')
-                handleAddOrUpdateRow(globalFilter, '')
+                handleAddOrUpdateRow(globalFilter, '', '')
                 if (isCamera) {
-                    handleAddOrUpdateRow(qrResult, '')
+                    handleAddOrUpdateRow(qrResult, '', '')
                 }
             }
         } catch (error) {
             console.error(error)
-            handleAddOrUpdateRow(globalFilter, '')
+            handleAddOrUpdateRow(globalFilter, '', '')
             if (isCamera) {
-                handleAddOrUpdateRow(qrResult, '')
+                handleAddOrUpdateRow(qrResult, '', '')
             }
         } finally {
             setDataForName('')
@@ -105,16 +108,18 @@ const TransferModule = () => {
         }
     }, [currentSelectedPage?.value, globalFilter])
 
-    const handleAddOrUpdateRow = (sku: string, brand: string) => {
+    const handleAddOrUpdateRow = (sku: string, brand: string, image: string) => {
+        console.log('sku is', sku, brand, image)
         if (!sku) return
         const existingRow = skuWiseData.find((item) => item.sku?.trim() === sku?.trim())
-        console.log('existing row', existingRow)
+        console.log('existing row', skuWiseData)
         if (existingRow) {
             const updatedData = skuWiseData.map((item) =>
                 item.sku === sku?.trim()
                     ? {
                           ...item,
                           brand: brand || item.brand,
+                          image: image ?? 'N/A',
                           quantity_returned: (item.quantity_returned || 0) + 1,
                           location: item.location.includes(locationInput) ? item.location : `${item.location}/${locationInput}`,
                       }
@@ -123,7 +128,7 @@ const TransferModule = () => {
             setSkuWiseData(updatedData)
             localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
         } else {
-            const newRow = { sku, brand: brand || '', quantity_returned: 1, location: locationInput }
+            const newRow = { sku, brand: brand || '', quantity_returned: 1, image: image ?? 'N/A', location: locationInput }
             const updatedData = [newRow, ...skuWiseData]
             setSkuWiseData(updatedData)
             localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
@@ -140,6 +145,24 @@ const TransferModule = () => {
         () => [
             { header: 'SKU', accessorKey: 'sku' },
             { header: 'Brand', accessorKey: 'brand' },
+            {
+                header: 'Image',
+                accessorKey: 'image',
+                cell: ({ row }: { row: any }) => {
+                    console.log('row image is', row.original)
+                    return row.original.image ? (
+                        <img
+                            src={row.original.image}
+                            alt={row.original.sku}
+                            className="w-16 h-16 object-cover rounded-lg cursor-pointer"
+                            onClick={() => handleOpenModal(row.original.image)}
+                        />
+                    ) : (
+                        <span className="text-gray-500">No Image</span>
+                    )
+                },
+            },
+
             {
                 header: 'Quantity',
                 accessorKey: 'quantity_returned',
@@ -223,6 +246,11 @@ const TransferModule = () => {
         }
     }
 
+    const handleOpenModal = (img: any) => {
+        setParticularROwImage(img)
+        setShowImageModal(true)
+    }
+
     const clearStorage = () => {
         setClearStorageModal(true)
     }
@@ -246,16 +274,16 @@ const TransferModule = () => {
                     const product = response?.data?.data?.results?.[0]
 
                     if (product?.sku) {
-                        handleAddOrUpdateRow(product.sku, product?.brand)
+                        handleAddOrUpdateRow(product.sku, product?.brand, product?.image)
                     } else {
                         if (isCamera) {
-                            handleAddOrUpdateRow(qrResult, '')
+                            handleAddOrUpdateRow(qrResult, '', '')
                         }
                     }
                     setIsCamera(false)
                 } catch (error) {
                     if (isCamera) {
-                        handleAddOrUpdateRow(qrResult, '')
+                        handleAddOrUpdateRow(qrResult, '', '')
                     }
                 }
                 setIsCamera(false)
@@ -418,6 +446,13 @@ const TransferModule = () => {
                         <p className="text-red-500 text-xl font-semibold">Are you sure you want to clear all the Data in the table ?</p>
                     </Modal>
                 </>
+            )}
+            {showImageModal && (
+                <ImageMODAL
+                    dialogIsOpen={showImageModal}
+                    setIsOpen={setShowImageModal}
+                    image={particularRowImage && particularRowImage?.split(',')}
+                />
             )}
             {downloadModal && (
                 <>
