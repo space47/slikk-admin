@@ -63,6 +63,12 @@ const AddEvents = () => {
 
     const handleSubmit = async (values: any) => {
         console.log(values?.venue)
+        if (/[^a-zA-Z0-9]/.test(values?.code_prefix)) {
+            notification.error({
+                message: 'Code prefix should not contain special characters',
+            })
+            return
+        }
         try {
             console.log('here')
 
@@ -135,10 +141,16 @@ const AddEvents = () => {
                     ...(imageUploadVenue && { venue_img_url: imageUploadVenue }),
                     ...(imageUploadEventPhotos && { event_photos: imageUploadEventPhotos }),
                     dummy_registration_count: values?.extra_attributes?.dummy_registration_count ?? 0,
+                    is_return_allowed: values?.extra_attributes?.is_return_allowed ?? false,
+                    ...(values?.extra_attributes?.min_order_value_for_event_pass && {
+                        min_order_value_for_event_pass: values?.extra_attributes?.min_order_value_for_event_pass,
+                    }),
                 },
             }
 
-            await addEventSeries(body)
+            const body2 = Object.fromEntries(Object.entries(body).filter(([_, v]) => v !== undefined && v !== ''))
+            console.log('body2', body2)
+            await addEventSeries(body2 as any)
                 .unwrap()
                 .then(() => {})
                 .catch(() => {
@@ -162,12 +174,7 @@ const AddEvents = () => {
     return (
         <div className="p-4 shadow-lg rounded-xl bg-white dark:bg-gray-900">
             <h3 className="mb-5 from-neutral-900 font-semibold">Add New Event</h3>
-            <Formik
-                enableReinitialize
-                initialValues={initialValue}
-                // validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
+            <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values }) => (
                     <Form className="w-full">
                         <EventFormCommon

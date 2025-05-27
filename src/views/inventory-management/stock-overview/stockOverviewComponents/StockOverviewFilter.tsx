@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { FormContainer } from '@/components/ui/Form'
 import { Field, Form, Formik, FieldProps } from 'formik'
 import Select from '@/components/ui/Select'
@@ -18,16 +18,10 @@ interface PROPS {
     handleApply: any
     handleMultiSelect: any
     divisionList: any
-    categroyList: any
+    categoryList: any
     productTypeList: any
     brandList: any
     subCategoryList: any
-    setDivisionList: any
-    setCategoryList: any
-    setSubCategoryList: any
-    setProductTypeList: any
-    setBrandList: any
-    setTypeFetch: any
 }
 
 const StockOverviewFilter = ({
@@ -36,7 +30,7 @@ const StockOverviewFilter = ({
     handleApply,
     handleMultiSelect,
     divisionList,
-    categroyList,
+    categoryList: categoryList,
     productTypeList,
     brandList,
     subCategoryList,
@@ -50,19 +44,19 @@ const StockOverviewFilter = ({
     const dispatch = useAppDispatch()
     useEffect(() => {
         dispatch(getAllBrandsAPI())
-    }, [])
+    }, [dispatch])
 
-    const [initialValues, setInitialValues] = useState({
+    const initialValues = {
         division: divisionList,
-        category: categroyList,
+        category: categoryList,
         sub_category: subCategoryList,
         product_type: productTypeList,
         brand: brandList,
-    })
+    }
 
     return (
         <div>
-            <Drawer title="" isOpen={showDrawer} onClose={handleCloseDrawer} onRequestClose={handleCloseDrawer} lockScroll={false}>
+            <Drawer lockScroll={false} title="" isOpen={showDrawer} onClose={handleCloseDrawer} onRequestClose={handleCloseDrawer}>
                 <Formik initialValues={initialValues} onSubmit={handleApply}>
                     {({ setFieldValue }) => (
                         <Form className="flex flex-col gap-10 w-full items-center">
@@ -135,17 +129,17 @@ const StockOverviewFilter = ({
                                 {({ field }: FieldProps<any>) => {
                                     const fieldValue = Array.isArray(field.value) ? field.value : []
                                     let catFilteredSubCat = subCategory.subcategories
-                                    if (categroyList.length > 0) {
+                                    if (categoryList.length > 0) {
                                         catFilteredSubCat = subCategory.subcategories.filter((option) => {
-                                            return categroyList.some((item: any) => item === option.category_name)
+                                            return categoryList.some((item: any) => item === option.category_name)
                                         })
                                     }
                                     return (
                                         <div className="flex flex-col gap-1 items-center xl:items-baseline w-full max-w-md">
                                             <div className="font-semibold">Sub Category</div>
                                             <Select
-                                                className="w-full"
                                                 isMulti
+                                                className="w-full"
                                                 options={catFilteredSubCat}
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
@@ -177,8 +171,8 @@ const StockOverviewFilter = ({
                                         <div className="flex flex-col gap-1 w-full items-center xl:items-baseline max-w-md">
                                             <div className="font-semibold">Product Type</div>
                                             <Select
-                                                className="w-full"
                                                 isMulti
+                                                className="w-full"
                                                 options={subCatFilteredProductTypes}
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}
@@ -203,8 +197,8 @@ const StockOverviewFilter = ({
                                         <div className="flex flex-col gap-1 w-full items-center xl:items-baseline max-w-md">
                                             <div className="font-semibold">Brands</div>
                                             <Select
-                                                className="w-full"
                                                 isMulti
+                                                className="w-full"
                                                 options={brands.brands}
                                                 getOptionLabel={(option) => option.name}
                                                 getOptionValue={(option) => option.id.toString()}

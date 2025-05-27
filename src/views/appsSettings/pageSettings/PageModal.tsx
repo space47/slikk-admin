@@ -411,6 +411,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 ...(row?.section_filters ? { section_filters: row?.section_filters } : {}),
                 ...(row?.section_type ? { section_type: row?.section_type } : {}),
                 ...(row?.order_count ? { order_count: row?.order_count } : {}),
+                ...(row?.min_order_value_for_event_pass ? { min_order_value_for_event_pass: row?.min_order_value_for_event_pass } : {}),
             }
 
             const filteredRow = Object.fromEntries(Object.entries(newRow || {}).filter(([_, value]) => value !== undefined))

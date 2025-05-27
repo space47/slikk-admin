@@ -382,8 +382,20 @@ const CommonMainPageSettings = ({
                         <FormItem label="Order Count" className="w-1/4">
                             <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" />
                         </FormItem>
+                        <FormItem label="Min Order Value for Event Pass" className="w-1/4">
+                            <Field
+                                type="number"
+                                name="extra_info.min_order_value_for_event_pass"
+                                placeholder="Enter min order value for event pass"
+                                component={Input}
+                                min="0"
+                            />
+                        </FormItem>
                         <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
                             <Field type="checkbox" name="is_section_clickable" placeholder="" component={Checkbox} />
+                        </FormItem>
+                        <FormItem label="Is Section Active" className="col-span-1 w-[60%] h-[80%]">
+                            <Field type="checkbox" name="is_section_active" placeholder="" component={Checkbox} />
                         </FormItem>
 
                         {values?.is_section_clickable && <TagsEdit filterOptions={filters.filters} isValue />}
