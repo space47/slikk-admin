@@ -28,6 +28,8 @@ export const EventTypeForm = [
     { label: 'Legal Instruction', name: 'extra_attributes.legal_instruction', type: 'text' },
     { label: 'Carousel Auto Scroll', name: 'extra_attributes.carousel_auto_scroll', type: 'checkbox' },
     { label: 'Time Interval', name: 'extra_attributes.time_interval', type: 'number' },
+    { label: 'Min order value for event pass', name: 'extra_attributes.min_order_value_for_event_pass', type: 'number' },
+    { label: 'Is Return Allowed', name: 'extra_attributes.is_return_allowed', type: 'checkbox' },
     {
         label: 'Dummy Registration Count',
         name: 'extra_attributes.dummy_registration_count',

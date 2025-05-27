@@ -14,6 +14,7 @@ export const EditInitialValues = (particularRow: any) => {
         background_lottie: particularRow.background_config?.background_lottie,
         mobile_background_lottie: particularRow.background_config?.mobile_background_lottie,
         is_section_clickable: particularRow.is_section_clickable,
+        is_section_active: particularRow.is_section_active,
         section_filters: particularRow.section_filters,
         grid: particularRow.grid,
         background_config: particularRow?.background_config,
