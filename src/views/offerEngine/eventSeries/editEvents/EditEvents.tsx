@@ -108,6 +108,8 @@ const EditEvents = () => {
             event_videos: eventData?.extra_attributes.event_videos || [],
             venue_images: eventData?.extra_attributes.venue_images || [],
             dummy_registration_count: eventData?.extra_attributes?.dummy_registration_count || 0,
+            is_return_allowed: eventData?.extra_attributes?.is_return_allowed || false,
+            min_order_value_for_event_pass: eventData?.extra_attributes?.min_order_value_for_event_pass,
         },
     }
 
@@ -176,6 +178,12 @@ const EditEvents = () => {
 
     const handleSubmit = async (values: any) => {
         console.log('values....................................................', values)
+        if (/[^a-zA-Z0-9]/.test(values?.code_prefix)) {
+            notification.error({
+                message: 'Code prefix should not contain special characters',
+            })
+            return
+        }
         notification.info({ message: 'In process' })
         setSpinner(true)
         let img_web_url = webImageView.join(',')
@@ -313,6 +321,10 @@ const EditEvents = () => {
                 ...(event_video_url && { event_videos: event_video_url }),
                 ...(venue_img_url && { venue_images: venue_img_url }),
                 dummy_registration_count: values.extra_attributes.dummy_registration_count ?? 0,
+                is_return_allowed: values?.extra_attributes?.is_return_allowed ?? false,
+                ...(values?.extra_attributes?.min_order_value_for_event_pass && {
+                    min_order_value_for_event_pass: values?.extra_attributes?.min_order_value_for_event_pass,
+                }),
             },
         }
         console.log('object', body)

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
@@ -9,19 +9,16 @@ import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import EasyTable from '@/common/EasyTable'
 import { Option, pageSizeOptions, TableData } from './inwardCommon'
 import AccessDenied from '@/views/pages/AccessDenied'
-import { InwardColumns } from './inwardUtils/InwardColumns'
 import { Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import TabContent from '@/components/ui/Tabs/TabContent'
-import { MdInventory, MdOutlinePendingActions } from 'react-icons/md'
-import { FaCheck, FaEdit } from 'react-icons/fa'
+import { MdInventory } from 'react-icons/md'
 import BrandShipmentsTable from '@/views/brandDashboard/brandShipments/brandShipmentsTable/BrandShipmentsTable'
 import { LiaShippingFastSolid } from 'react-icons/lia'
-import { ColumnDef } from '@tanstack/react-table'
-import moment from 'moment'
+import { InwardColumns } from './inwardUtils/InwardColumns'
 
 const PaginationTable = () => {
+    const navigate = useNavigate()
     const [data, setData] = useState<TableData[]>([])
     const [totalData, setTotalData] = useState(0)
     const [page, setPage] = useState(1)
@@ -62,110 +59,7 @@ const PaginationTable = () => {
         fetchData(page, pageSize)
     }, [page, pageSize, selectedCompany, globalFilter, companyCode])
 
-    const getowner = (own: any) => {
-        if (own === true) {
-            return 'Yes'
-        } else {
-            return 'No'
-        }
-    }
-
-    // const handleDocumentClick = (id: any) => {
-    //     console.log('ok', id)
-    // }
-
-    const columns = useMemo<ColumnDef<TableData>[]>(
-        () => [
-            {
-                header: 'Edit',
-                accessorKey: '',
-                cell: ({ row }) => (
-                    <button className="border-none bg-none">
-                        <a href={`/app/goods/received/edit/${row.original.grn_number}`} target="_blank" rel="noreferrer">
-                            {' '}
-                            <FaEdit className="text-xl text-blue-500" />
-                        </a>
-                    </button>
-                ),
-            },
-            {
-                header: 'GRN Number',
-                accessorKey: 'grn_number',
-                cell: ({ row }) => (
-                    <div
-                        // onClick={() => handleGRNClick(row.original.grn_number, row.original.company)}
-                        className="cursor-pointer bg-gray-200 px-3 py-3 rounded-md text-black font-semibold"
-                    >
-                        <a href={`/app/goods/received/${row.original.company}/${row.original.grn_number}`} target="_blank" rel="noreferrer">
-                            {row.original.grn_number}
-                        </a>
-                    </div>
-                ),
-            },
-            {
-                header: 'Document Number',
-                accessorKey: 'document_number',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Create Date',
-                accessorKey: 'create_date',
-                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
-            },
-            {
-                header: 'Document Date',
-                accessorKey: 'document_date',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Updated By',
-                accessorKey: 'last_updated_by.name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Received At',
-                accessorKey: 'received_address',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Received By',
-                accessorKey: 'received_by.name',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Slikk Owned',
-                accessorKey: 'slikk_owned',
-                cell: (info) => getowner(info.getValue()),
-            },
-            {
-                header: 'Total QTY',
-                accessorKey: 'total_quantity',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Total SKU',
-                accessorKey: 'total_sku',
-                cell: (info) => info.getValue(),
-            },
-            {
-                header: 'Updated On',
-                accessorKey: 'update_date',
-                cell: ({ getValue }) => <span>{moment(getValue() as string).format('YYYY-MM-DD')}</span>,
-            },
-        ],
-        [],
-    )
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPage(1)
-        setPageSize(Number(value))
-    }
-
-    const navigate = useNavigate()
+    const columns = InwardColumns()
 
     const handleGRN = () => {
         navigate('/app/goods/received/form')
@@ -241,14 +135,17 @@ const PaginationTable = () => {
                     </div>
                     <EasyTable mainData={data} columns={columns} page={page} pageSize={pageSize} />
                     <div className="flex items-center justify-between mt-4">
-                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
+                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
                         <div style={{ minWidth: 130 }}>
                             <Select<Option>
                                 size="sm"
                                 isSearchable={false}
                                 value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
-                                onChange={(option) => onSelectChange(option?.value)}
+                                onChange={(option) => {
+                                    setPage(1)
+                                    setPageSize(Number(option?.value))
+                                }}
                             />
                         </div>
                     </div>
