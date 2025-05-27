@@ -101,6 +101,7 @@ export interface EventSeriesDetailsType {
     last_updated_by: string
     venue?: string
     terms_and_conditions?: string
+    redeem_count?: number
 }
 
 export interface EventSeriesActionTypes {
