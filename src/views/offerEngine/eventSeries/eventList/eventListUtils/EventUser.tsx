@@ -65,7 +65,7 @@ const EventUser = ({ registeredUsers, page, pageSize, setPage, totalCount, rende
     return (
         <div>
             <div className="col-span-full bg-white rounded-xl shadow-md overflow-hidden p-6">
-                <div className="col-span-full bg-white rounded-xl shadow-md overflow-hidden p-6">
+                <div className="col-span-full bg-white rounded-xl  overflow-hidden p-6">
                     <div className="flex flex-col xl:flex-row xl:justify-between items-center gap-4 mb-6 px-4 py-3  rounded-2xl">
                         <h2 className="text-xl font-semibold text-gray-800 order-2 xl:order-none">Event Registration</h2>
 

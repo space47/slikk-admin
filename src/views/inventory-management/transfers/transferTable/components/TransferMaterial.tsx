@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import EasyTable from '@/common/EasyTable'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { Button, Dropdown } from '@/components/ui'
+import { Button, Dropdown, Select } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { MdCancel } from 'react-icons/md'
 import { Modal, notification } from 'antd'
@@ -11,6 +11,8 @@ import { FaCamera } from 'react-icons/fa'
 import { RiCameraOffFill } from 'react-icons/ri'
 import SkuBarcodeScanner from './SkuBarcodeScanner'
 import ImageMODAL from '@/common/ImageModal'
+import { useAppSelector } from '@/store'
+import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 
 const SEARCHOPTIONS = [
     { label: 'SKU', value: 'sku' },
@@ -32,6 +34,10 @@ const TransferModule = () => {
     const [qrResult, setQrResult] = useState<any>()
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState<any>([])
+    const companyList = useAppSelector<SINGLE_COMPANY_DATA[]>((state) => state.company.company)
+    const [companyCode, setCompanyCode] = useState<any>()
+
+    console.log('companyList', companyCode)
 
     useEffect(() => {
         const storedData = localStorage.getItem('skuSearchResults')
@@ -52,9 +58,13 @@ const TransferModule = () => {
         } else if (currentSelectedPage.value === 'name' && dataForName) {
             queryParam = `barcode=${dataForName}`
         }
+        let companyParam = ''
+        if (companyCode) {
+            companyParam = `&company_id=${companyCode}`
+        }
 
         try {
-            const response = await axioisInstance.get(`/merchant/products?${queryParam}`)
+            const response = await axioisInstance.get(`/merchant/products?${queryParam}${companyParam}`)
             const product = response?.data?.data?.results?.[0]
             console.log('product is', product?.image_high_res?.split(',')[0])
             if (product?.sku) {
@@ -73,7 +83,6 @@ const TransferModule = () => {
 
     const handleActionClick = async (value: any) => {
         setDataForName(value)
-        if (!value) return
 
         try {
             const response = await axioisInstance.get(`/merchant/products?barcode=${value}`)
@@ -113,6 +122,7 @@ const TransferModule = () => {
         if (!sku) return
         const existingRow = skuWiseData.find((item) => item.sku?.trim() === sku?.trim())
         console.log('existing row', skuWiseData)
+        console.log('check if sku for camera', sku)
         if (existingRow) {
             const updatedData = skuWiseData.map((item) =>
                 item.sku === sku?.trim()
@@ -149,7 +159,6 @@ const TransferModule = () => {
                 header: 'Image',
                 accessorKey: 'image',
                 cell: ({ row }: { row: any }) => {
-                    console.log('row image is', row.original?.image)
                     return row.original?.image?.length > 0 ? (
                         <img
                             src={row.original?.image[0]}
@@ -270,22 +279,21 @@ const TransferModule = () => {
                 if (qrResult) {
                     qrParam = `sku_exact=${qrResult}`
                 }
+                console.log('only if qrResult', qrResult)
                 try {
                     const response = await axioisInstance.get(`/merchant/products?${qrParam}`)
                     const product = response?.data?.data?.results?.[0]
 
                     if (product?.sku) {
+                        console.log('here in sku', product?.sku)
                         handleAddOrUpdateRow(product.sku, product?.brand, product?.image)
                     } else {
-                        if (isCamera) {
-                            handleAddOrUpdateRow(qrResult, '', '')
-                        }
+                        console.log('here in else', qrResult)
+                        handleAddOrUpdateRow(qrResult, '', '')
                     }
                     setIsCamera(false)
                 } catch (error) {
-                    if (isCamera) {
-                        handleAddOrUpdateRow(qrResult, '', '')
-                    }
+                    handleAddOrUpdateRow(qrResult, '', '')
                 }
                 setIsCamera(false)
                 setQrResult('')
@@ -347,18 +355,39 @@ const TransferModule = () => {
         <div className="p-4 flex flex-col gap-6">
             <div className="space-y-6">
                 {/* Location Input */}
-                <div>
-                    <label htmlFor="location" className="text-lg font-semibold text-gray-700 block mb-1">
-                        Location:
-                    </label>
-                    <input
-                        id="location"
-                        name="location"
-                        value={locationInput}
-                        placeholder="Enter location"
-                        className="xl:w-1/3 w-full border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        onChange={(e) => setLocationInput(e.target.value)}
-                    />
+                <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center">
+                    <div>
+                        <label htmlFor="location" className="text-lg font-semibold text-gray-700 block mb-1">
+                            Location:
+                        </label>
+                        <input
+                            id="location"
+                            name="location"
+                            value={locationInput}
+                            placeholder="Enter location"
+                            className=" w-full border border-gray-300 p-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            onChange={(e) => setLocationInput(e.target.value)}
+                        />
+                    </div>
+
+                    <div className={' w-full'}>
+                        <div className="font-bold">Select Company</div>
+                        <div>
+                            <div className="flex flex-col gap-2 w-full max-w-md mt-3">
+                                <Select
+                                    isClearable
+                                    className=" xl:w-1/2 w-full  rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+                                    options={companyList}
+                                    getOptionLabel={(option) => option.name}
+                                    getOptionValue={(option) => option.id}
+                                    onChange={(newVal) => {
+                                        console.log(newVal)
+                                        setCompanyCode(newVal?.id)
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Search & Filter Section */}
@@ -421,7 +450,7 @@ const TransferModule = () => {
                 </div>
             </div>
 
-            {isCamera && <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} onClose={() => setIsCamera(false)} />}
+            {isCamera && <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} />}
             <p>{qrResult}</p>
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
