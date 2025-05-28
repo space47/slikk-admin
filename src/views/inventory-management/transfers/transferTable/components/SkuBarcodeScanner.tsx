@@ -37,9 +37,7 @@ const SkuBarcodeScanner = ({ onDetected, setIsCamera }: SkuBarcodeScannerProps) 
                 <BarcodeScanner
                     options={{
                         delay: 1000,
-                        formats: ['code_128'],
-                        focusMode: 'continuous', // Add this
-                        focusDistance: 0.5, // Adjust focus distance
+                        formats: ['code_128', 'ean_13', 'upc_e', 'code_39', 'code_93', 'codabar', 'itf', 'qr_code'],
                     }}
                     onCapture={handleCapture}
                 />
