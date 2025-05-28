@@ -120,25 +120,36 @@ const TransferModule = () => {
     const handleAddOrUpdateRow = (sku: string, brand: string, image: string) => {
         console.log('sku is', sku, brand, image)
         if (!sku) return
-        const existingRow = skuWiseData.find((item) => item.sku?.trim() === sku?.trim())
-        console.log('existing row', skuWiseData)
-        console.log('check if sku for camera', sku)
-        if (existingRow) {
-            const updatedData = skuWiseData.map((item) =>
-                item.sku === sku?.trim()
-                    ? {
-                          ...item,
-                          brand: brand || item.brand,
-                          image: image ?? 'N/A',
-                          quantity_returned: (item.quantity_returned || 0) + 1,
-                          location: item.location.includes(locationInput) ? item.location : `${item.location}/${locationInput}`,
-                      }
-                    : item,
-            )
-            setSkuWiseData(updatedData)
-            localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
+
+        // Find the index of the existing row (if any)
+        const existingRowIndex = skuWiseData.findIndex((item) => item.sku?.trim() === sku?.trim())
+
+        if (existingRowIndex !== -1) {
+            // Create updated data by removing the existing row
+            const updatedData = skuWiseData.filter((item) => item.sku?.trim() !== sku?.trim())
+
+            // Get the existing row and update it
+            const existingRow = skuWiseData[existingRowIndex]
+            const updatedRow = {
+                ...existingRow,
+                brand: brand || existingRow.brand,
+                image: image ?? existingRow.image ?? 'N/A',
+                quantity_returned: (existingRow.quantity_returned || 0) + 1,
+                location: existingRow.location.includes(locationInput) ? existingRow.location : `${existingRow.location}/${locationInput}`,
+            }
+
+            // Add the updated row at the beginning of the array
+            setSkuWiseData([updatedRow, ...updatedData])
+            localStorage.setItem('skuSearchResults', JSON.stringify([updatedRow, ...updatedData]))
         } else {
-            const newRow = { sku, brand: brand || '', quantity_returned: 1, image: image ?? 'N/A', location: locationInput }
+            // Add new row at the beginning
+            const newRow = {
+                sku,
+                brand: brand || '',
+                quantity_returned: 1,
+                image: image ?? 'N/A',
+                location: locationInput,
+            }
             const updatedData = [newRow, ...skuWiseData]
             setSkuWiseData(updatedData)
             localStorage.setItem('skuSearchResults', JSON.stringify(updatedData))
@@ -292,6 +303,7 @@ const TransferModule = () => {
                         handleAddOrUpdateRow(qrResult, '', '')
                     }
                     setIsCamera(false)
+                    window.scrollBy({ top: 300, behavior: 'smooth' })
                 } catch (error) {
                     handleAddOrUpdateRow(qrResult, '', '')
                 }
@@ -346,13 +358,25 @@ const TransferModule = () => {
         })
     }
 
-    console.log(
-        'skuWiseData',
-        skuWiseData?.map((item) => item?.quantity_returned).reduce((acc, curr) => acc + curr, 0),
-    )
-
     return (
         <div className="p-4 flex flex-col gap-6">
+            <div className="flex gap-3 mt-3 xl:mt-0 xl:hidden">
+                <Button
+                    variant="reject"
+                    className="bg-red-500 hover:bg-red-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
+                    onClick={clearStorage}
+                >
+                    Clear
+                </Button>
+                <Button
+                    variant="accept"
+                    className="bg-green-500 hover:bg-green-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
+                    onClick={() => setDownloadModal(true)}
+                >
+                    Download
+                </Button>
+            </div>
+            {isCamera && <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} />}
             <div className="space-y-6">
                 {/* Location Input */}
                 <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-center">
@@ -431,7 +455,7 @@ const TransferModule = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-3 mt-3 xl:mt-0">
+                    <div className=" gap-3 mt-3 xl:mt-0 hidden xl:flex">
                         <Button
                             variant="reject"
                             className="bg-red-500 hover:bg-red-600 text-white font-medium px-5 py-2 rounded-lg transition-all"
@@ -450,7 +474,6 @@ const TransferModule = () => {
                 </div>
             </div>
 
-            {isCamera && <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} />}
             <p>{qrResult}</p>
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
