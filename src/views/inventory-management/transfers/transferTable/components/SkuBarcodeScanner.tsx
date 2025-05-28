@@ -18,11 +18,7 @@ const SkuBarcodeScanner = ({ onDetected, setIsCamera }: SkuBarcodeScannerProps) 
 
     return (
         <div className="items-center flex justify-center">
-            <BarcodeScanner
-                style={{ width: '600px', height: '200px' }}
-                options={{ delay: 1000, formats: ['code_128'] }}
-                onCapture={handleCapture}
-            />
+            <BarcodeScanner options={{ delay: 1000, formats: ['code_128'] }} onCapture={handleCapture} />
         </div>
     )
 }
