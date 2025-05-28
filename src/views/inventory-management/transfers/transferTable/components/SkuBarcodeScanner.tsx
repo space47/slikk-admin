@@ -1,104 +1,46 @@
 import { useEffect, useRef, useState } from 'react'
-import Quagga from '@ericblade/quagga2'
+import { BarcodeScanner, useTorch } from 'react-barcode-scanner'
+import 'react-barcode-scanner/polyfill'
+import { BiSolidTorch } from 'react-icons/bi'
 
 interface SkuBarcodeScannerProps {
     onDetected: (result: string) => void
-    onClose: () => void
     setIsCamera: (value: boolean) => void
 }
 
-const SkuBarcodeScanner = ({ onDetected, onClose, setIsCamera }: SkuBarcodeScannerProps) => {
-    const scannerRef = useRef<HTMLDivElement>(null)
-    const [lastScanned, setLastScanned] = useState<string | null>(null)
-    const detectionTimeout = useRef<NodeJS.Timeout>()
+const SkuBarcodeScanner = ({ onDetected, setIsCamera }: SkuBarcodeScannerProps) => {
+    const { isTorchSupported, isTorchOn, setIsTorchOn } = useTorch()
 
-    useEffect(() => {
-        if (!scannerRef.current) return
+    const onTorchSwitch = () => {
+        setIsTorchOn(!isTorchOn)
+    }
 
-        console.log('Mount')
-        Quagga.init(
-            {
-                inputStream: {
-                    name: 'Live',
-                    type: 'LiveStream',
-                    target: scannerRef.current,
-                    constraints: {
-                        width: 640,
-                        height: 480,
-                        facingMode: 'environment',
-                    },
-                },
-                decoder: {
-                    readers: ['code_128_reader'],
-                    multiple: false,
-                },
-                locate: true,
-                numOfWorkers: 4,
-                frequency: 10,
-                debug: {
-                    drawBoundingBox: true,
-                    showFrequency: true,
-                    drawScanline: true,
-                },
-            },
-            (err) => {
-                if (err) {
-                    console.error('Scanner initialization failed:', err)
-                    return
-                }
-                Quagga.start()
-            },
-        )
-
-        const handleDetection = (result: any) => {
-            const code = result.codeResult.code
-
-            console.log('Valid barcode detected:', code)
-            setLastScanned(code)
-            onDetected(code)
-            clearTimeout(detectionTimeout.current)
-        }
-
-        Quagga.onDetected(handleDetection)
-
-        return () => {
-            Quagga.offDetected(handleDetection)
-            Quagga.stop()
-
-            const videos = document.querySelectorAll('video')
-            videos.forEach((video) => {
-                const mediaStream = video.srcObject as MediaStream | null
-                if (mediaStream) {
-                    mediaStream.getTracks().forEach((track) => track.stop())
-                    video.srcObject = null
-                    console.log('Stopped media stream tracks')
-                }
-            })
-
-            // Quagga internal track stopping (if available)
-            const track = Quagga?.CameraAccess?.getActiveTrack?.()
-            if (track) {
-                track.stop()
-                console.log('Stopped Quagga internal camera track')
-            }
-
-            clearTimeout(detectionTimeout.current)
-        }
-    }, [onDetected, lastScanned])
+    console.log('isTorchSupported', isTorchSupported)
+    const handleCapture = (value: any[]) => {
+        console.log('value', value)
+        const data = value[0]?.rawValue
+        console.log('data for barcode', data)
+        onDetected(data)
+        setIsCamera(false)
+    }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center z-50 p-4">
-            <div className="w-full max-w-md bg-white rounded-lg overflow-hidden shadow-xl">
-                <div className="flex justify-between items-center bg-gray-800 p-3">
-                    <h2 className="text-white font-bold">Barcode Scanner</h2>
-                    <button onClick={onClose} className="text-white hover:text-gray-300">
-                        ✕
+        <div className="flex items-center justify-center flex-col">
+            <div className="mb-10">
+                {isTorchSupported ? (
+                    <button onClick={onTorchSwitch} className="bg-yellow-500 text-white p-1 rounded-xl">
+                        <BiSolidTorch className="text-xl text-white" />
                     </button>
-                </div>
-
-                <div ref={scannerRef} className="relative h-64 w-full bg-black"></div>
-
-                <div className="p-3 text-center text-gray-600 bg-gray-50">Point at a barcode (EAN, UPC, Code 128, etc.)</div>
+                ) : null}
+            </div>
+            <div className="w-full max-w-md px-4 " style={{ width: '100%', height: '160px' }}>
+                <BarcodeScanner
+                    options={{
+                        delay: 1000,
+                        formats: ['code_128', 'ean_13', 'upc_e', 'code_39', 'code_93', 'codabar', 'itf', 'qr_code'],
+                    }}
+                    onCapture={handleCapture}
+                />
             </div>
         </div>
     )

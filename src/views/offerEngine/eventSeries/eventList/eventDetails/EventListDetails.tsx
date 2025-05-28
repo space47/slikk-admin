@@ -152,7 +152,14 @@ const EventListDetails = () => {
         { value: eventData?.extra_attributes?.event_photos, label: 'Event Images' },
     ]
 
-    const handleSelect = (value) => {
+    const BooleanFields = [
+        { value: eventData?.is_active, label: 'Active' },
+        { value: eventData?.is_unlocked, label: 'Unlocked' },
+        { value: eventData?.extra_attributes?.is_return_allowed, label: 'Return Allowed' },
+        { value: eventData?.is_public, label: 'Public' },
+    ]
+
+    const handleSelect = (value: any) => {
         const selected = EventUserOptionsList.find((item) => item.value === value)
         if (selected) {
             setCurrentSelectedPage(selected)
@@ -246,6 +253,19 @@ const EventListDetails = () => {
                                 {eventData?.redeem_count} / {eventData?.total_slots}
                             </p>
                         </div>
+                        {eventData?.extra_attributes?.dummy_registration_count && (
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-500">Dummy Registration Count</h3>
+                                <p className="text-lg font-semibold">{eventData?.extra_attributes?.dummy_registration_count}</p>
+                            </div>
+                        )}
+                        {eventData?.extra_attributes?.min_order_value_for_event_pass && (
+                            <div>
+                                <h3 className="text-sm font-medium text-gray-500">Min Order Value for Event Pass</h3>
+                                <p className="text-lg font-semibold">{eventData?.extra_attributes?.min_order_value_for_event_pass}</p>
+                            </div>
+                        )}
+
                         <div>
                             <h3 className="text-sm font-medium text-gray-500">Category</h3>
                             <p className="text-lg font-semibold">{eventData.extra_attributes?.category || 'N/A'}</p>
@@ -314,6 +334,27 @@ const EventListDetails = () => {
                             className="text-gray-600 mb-6"
                             dangerouslySetInnerHTML={{ __html: eventData.extra_attributes?.special_instructions }}
                         ></p>
+                    </div>
+
+                    <div className="xl:flex xl:flex-row grid grid-cols-2  gap-4 xl:justify-between mb-6">
+                        {BooleanFields?.map((item, index) => (
+                            <div key={index} className="mb-4">
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">{item.label}</h3>
+                                <p className="text-gray-600">
+                                    {item.value ? (
+                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            <FaCheckCircle className="mr-1" />
+                                            Yes
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                            <FaTimesCircle className="mr-1" />
+                                            No
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
+                        ))}
                     </div>
 
                     {eventData.extra_attributes?.sponsors?.length > 0 && (
