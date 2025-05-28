@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { BarcodeScanner, useTorch } from 'react-barcode-scanner'
 import 'react-barcode-scanner/polyfill'
+import { BiSolidTorch } from 'react-icons/bi'
 
 interface SkuBarcodeScannerProps {
     onDetected: (result: string) => void
@@ -24,8 +25,14 @@ const SkuBarcodeScanner = ({ onDetected, setIsCamera }: SkuBarcodeScannerProps) 
     }
 
     return (
-        <div className="flex items-center justify-center">
-            <div className="mb-10">{isTorchSupported ? <button onClick={onTorchSwitch}>Switch Torch</button> : null}</div>
+        <div className="flex items-center justify-center flex-col">
+            <div className="mb-10">
+                {isTorchSupported ? (
+                    <button onClick={onTorchSwitch} className="bg-yellow-500 text-white p-1 rounded-xl">
+                        <BiSolidTorch className="text-xl text-white" />
+                    </button>
+                ) : null}
+            </div>
             <div className="w-full max-w-md px-4">
                 <BarcodeScanner
                     style={{ width: '100%', height: 'auto', aspectRatio: '16 / 9' }}
