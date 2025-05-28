@@ -24,7 +24,7 @@ const SkuBarcodeScanner = ({ onDetected, onClose, setIsCamera }: SkuBarcodeScann
                     target: scannerRef.current,
                     constraints: {
                         width: 640,
-                        height: 480,
+                        height: 180,
                         facingMode: 'environment',
                     },
                 },
