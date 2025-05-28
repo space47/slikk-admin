@@ -34,7 +34,15 @@ const SkuBarcodeScanner = ({ onDetected, setIsCamera }: SkuBarcodeScannerProps) 
                 ) : null}
             </div>
             <div className="w-full max-w-md px-4 " style={{ width: '100%', height: '160px' }}>
-                <BarcodeScanner options={{ delay: 1000, formats: ['code_128'] }} onCapture={handleCapture} />
+                <BarcodeScanner
+                    options={{
+                        delay: 1000,
+                        formats: ['code_128'],
+                        focusMode: 'continuous', // Add this
+                        focusDistance: 0.5, // Adjust focus distance
+                    }}
+                    onCapture={handleCapture}
+                />
             </div>
         </div>
     )
