@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { BarcodeScanner } from 'react-barcode-scanner'
+import { BarcodeScanner, useTorch } from 'react-barcode-scanner'
 import 'react-barcode-scanner/polyfill'
 
 interface SkuBarcodeScannerProps {
@@ -8,6 +8,13 @@ interface SkuBarcodeScannerProps {
 }
 
 const SkuBarcodeScanner = ({ onDetected, setIsCamera }: SkuBarcodeScannerProps) => {
+    const { isTorchSupported, isTorchOn, setIsTorchOn } = useTorch()
+
+    const onTorchSwitch = () => {
+        setIsTorchOn(!isTorchOn)
+    }
+
+    console.log('isTorchSupported', isTorchSupported)
     const handleCapture = (value: any[]) => {
         console.log('value', value)
         const data = value[0]?.rawValue
@@ -17,8 +24,15 @@ const SkuBarcodeScanner = ({ onDetected, setIsCamera }: SkuBarcodeScannerProps) 
     }
 
     return (
-        <div className="items-center flex justify-center">
-            <BarcodeScanner options={{ delay: 1000, formats: ['code_128'] }} onCapture={handleCapture} />
+        <div className="flex items-center justify-center">
+            <div className="mb-10">{isTorchSupported ? <button onClick={onTorchSwitch}>Switch Torch</button> : null}</div>
+            <div className="w-full max-w-md px-4">
+                <BarcodeScanner
+                    style={{ width: '100%', height: 'auto', aspectRatio: '16 / 9' }}
+                    options={{ delay: 1000, formats: ['code_128'] }}
+                    onCapture={handleCapture}
+                />
+            </div>
         </div>
     )
 }
