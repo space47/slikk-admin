@@ -14,6 +14,9 @@ export default defineConfig({
         }),
         dynamicImport(),
     ],
+    optimizeDeps: {
+        exclude: ['@preflower/barcode-detector-polyfill'],
+    },
 
     assetsInclude: ['**/*.md'],
     resolve: {

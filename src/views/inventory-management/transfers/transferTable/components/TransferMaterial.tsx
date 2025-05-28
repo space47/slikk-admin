@@ -83,7 +83,6 @@ const TransferModule = () => {
 
     const handleActionClick = async (value: any) => {
         setDataForName(value)
-        if (!value) return
 
         try {
             const response = await axioisInstance.get(`/merchant/products?barcode=${value}`)
@@ -123,6 +122,7 @@ const TransferModule = () => {
         if (!sku) return
         const existingRow = skuWiseData.find((item) => item.sku?.trim() === sku?.trim())
         console.log('existing row', skuWiseData)
+        console.log('check if sku for camera', sku)
         if (existingRow) {
             const updatedData = skuWiseData.map((item) =>
                 item.sku === sku?.trim()
@@ -279,22 +279,21 @@ const TransferModule = () => {
                 if (qrResult) {
                     qrParam = `sku_exact=${qrResult}`
                 }
+                console.log('only if qrResult', qrResult)
                 try {
                     const response = await axioisInstance.get(`/merchant/products?${qrParam}`)
                     const product = response?.data?.data?.results?.[0]
 
                     if (product?.sku) {
+                        console.log('here in sku', product?.sku)
                         handleAddOrUpdateRow(product.sku, product?.brand, product?.image)
                     } else {
-                        if (isCamera) {
-                            handleAddOrUpdateRow(qrResult, '', '')
-                        }
+                        console.log('here in else', qrResult)
+                        handleAddOrUpdateRow(qrResult, '', '')
                     }
                     setIsCamera(false)
                 } catch (error) {
-                    if (isCamera) {
-                        handleAddOrUpdateRow(qrResult, '', '')
-                    }
+                    handleAddOrUpdateRow(qrResult, '', '')
                 }
                 setIsCamera(false)
                 setQrResult('')
@@ -451,7 +450,7 @@ const TransferModule = () => {
                 </div>
             </div>
 
-            {isCamera && <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} onClose={() => setIsCamera(false)} />}
+            {isCamera && <SkuBarcodeScanner onDetected={setQrResult} setIsCamera={setIsCamera} />}
             <p>{qrResult}</p>
 
             <div className="mb-10">{moreData && <MoreDataTable nameInput={globalFilter} handleActionClick={handleActionClick} />}</div>
