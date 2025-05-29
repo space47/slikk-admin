@@ -7,7 +7,7 @@ import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import { Modal } from 'antd'
+import { Modal, notification } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
 
 interface DataItem {
@@ -175,17 +175,40 @@ const DivisionTable = () => {
     const handleCloseModal = () => {
         setDeleteModal(false)
     }
+    const handleClearCache = async () => {
+        try {
+            const body = {
+                key: 'division',
+            }
+            const response = await axiosInstance.post(`/cache/clear`, body)
+            notification.success({
+                message: response?.data?.message || 'Cache Cleared Successfully',
+            })
+        } catch (error) {
+            console.log(error)
+            notification.error({
+                message: 'Failed to clear Cache ',
+            })
+        }
+    }
 
     return (
         <div>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    placeholder="Search here"
-                    value={globalFilter}
-                    onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="p-2 border rounded"
-                />
+            <div className="flex justify-between">
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search here"
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        className="p-2 border rounded"
+                    />
+                </div>
+                <div>
+                    <button className="text-white bg-red-600 hover:bg-red-500 p-2 rounded-lg" onClick={handleClearCache}>
+                        Clear Cache
+                    </button>
+                </div>
             </div>
             <Table overflow className="scrollbar-hide">
                 <THead>
