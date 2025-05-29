@@ -17,19 +17,14 @@ const FileItem = (props: FileItemProps) => {
     const { type, name, size } = file
 
     const renderThumbnail = () => {
-        const isImageFile = type.split('/')[0] === 'image'
+        const fileType = type ?? file?.type ?? ''
+        const isImageFile = fileType.split('/')[0] === 'image'
 
         if (isImageFile) {
-            return (
-                <img
-                    className="upload-file-image"
-                    src={URL.createObjectURL(file)}
-                    alt={`file preview ${name}`}
-                />
-            )
+            return <img className="upload-file-image" src={URL.createObjectURL(file)} alt={`file preview ${name}`} />
         }
 
-        if (type === 'application/zip') {
+        if (fileType === 'application/zip') {
             return (
                 <FileIcon>
                     <VscFileZip />
@@ -37,7 +32,7 @@ const FileItem = (props: FileItemProps) => {
             )
         }
 
-        if (type === 'application/pdf') {
+        if (fileType === 'application/pdf') {
             return (
                 <FileIcon>
                     <VscFilePdf />
