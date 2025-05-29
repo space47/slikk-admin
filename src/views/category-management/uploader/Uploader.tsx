@@ -27,6 +27,7 @@ const Uploader = () => {
     ]
 
     const handleimage = async (files: File[]) => {
+        console.log('filles ara', files)
         const formData = new FormData()
         files.forEach((file) => {
             formData.append('file', file)

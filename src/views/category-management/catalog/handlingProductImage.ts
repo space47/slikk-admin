@@ -15,6 +15,7 @@ export const handleimage = async (files: File[]) => {
         formData.append('file', file)
     })
     formData.append('file_type', 'product')
+    formData.append('compression_service', 'slikk')
 
     try {
         console.log(formData.get('file'))
@@ -53,6 +54,7 @@ export const handleVideo = async (files: File[]) => {
         formData.append('file', file)
     })
     formData.append('file_type', 'product')
+    formData.append('compression_service', 'slikk')
 
     try {
         console.log(formData.get('file'))

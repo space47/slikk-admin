@@ -138,17 +138,15 @@ const EditProduct = () => {
             video_link: video_url,
             size_chart_image: size_chart_url,
         }
-
+        console.log('dormDAta', formData)
         try {
             setShowSpinner(true)
             const response = await axioisInstance.patch(`product/${barcode}`, formData)
-
             console.log(response)
             notification.success({
                 message: 'Success',
                 description: response?.data?.message || 'Product Edited Successfully',
             })
-
             navigate('/app/catalog/products')
         } catch (error: any) {
             console.error('Error submitting form:', error)
