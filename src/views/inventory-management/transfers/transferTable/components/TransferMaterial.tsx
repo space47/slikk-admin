@@ -120,15 +120,10 @@ const TransferModule = () => {
     const handleAddOrUpdateRow = (sku: string, brand: string, image: string) => {
         console.log('sku is', sku, brand, image)
         if (!sku) return
-
-        // Find the index of the existing row (if any)
         const existingRowIndex = skuWiseData.findIndex((item) => item.sku?.trim() === sku?.trim())
 
         if (existingRowIndex !== -1) {
-            // Create updated data by removing the existing row
             const updatedData = skuWiseData.filter((item) => item.sku?.trim() !== sku?.trim())
-
-            // Get the existing row and update it
             const existingRow = skuWiseData[existingRowIndex]
             const updatedRow = {
                 ...existingRow,
@@ -138,11 +133,9 @@ const TransferModule = () => {
                 location: existingRow.location.includes(locationInput) ? existingRow.location : `${existingRow.location}/${locationInput}`,
             }
 
-            // Add the updated row at the beginning of the array
             setSkuWiseData([updatedRow, ...updatedData])
             localStorage.setItem('skuSearchResults', JSON.stringify([updatedRow, ...updatedData]))
         } else {
-            // Add new row at the beginning
             const newRow = {
                 sku,
                 brand: brand || '',
