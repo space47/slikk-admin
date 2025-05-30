@@ -129,15 +129,17 @@ const EditProduct = () => {
         }
 
         console.log('COLORCODEURL', color_code_url)
-
-        const formData = {
-            ...values,
-            color_code_link: color_code_url,
-            image: img_url,
-            company: companyData,
-            video_link: video_url,
-            size_chart_image: size_chart_url,
-        }
+        const { color_code, size_chart_image_array, images, ...rest } = values
+        const formData = Object.fromEntries(
+            Object.entries({
+                ...rest,
+                color_code_link: color_code_url,
+                image: img_url,
+                company: companyData,
+                video_link: video_url,
+                size_chart_image: size_chart_url,
+            }).filter(([_, value]) => value !== '' && value !== null),
+        )
         console.log('dormDAta', formData)
         try {
             setShowSpinner(true)
