@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Upload } from '@/components/ui'
+import { FormContainer, Upload } from '@/components/ui'
 import { Field, FieldProps } from 'formik'
 import React from 'react'
 import { MdCancel } from 'react-icons/md'
