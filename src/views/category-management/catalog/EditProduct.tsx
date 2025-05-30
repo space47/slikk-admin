@@ -129,15 +129,17 @@ const EditProduct = () => {
         }
 
         console.log('COLORCODEURL', color_code_url)
-
-        const formData = {
-            ...values,
-            color_code_link: color_code_url,
-            image: img_url,
-            company: companyData,
-            video_link: video_url,
-            size_chart_image: size_chart_url,
-        }
+        const { color_code, size_chart_image_array, images, ...rest } = values
+        const formData = Object.fromEntries(
+            Object.entries({
+                ...rest,
+                color_code_link: color_code_url,
+                image: img_url,
+                company: companyData,
+                video_link: video_url,
+                size_chart_image: size_chart_url,
+            }).filter(([_, value]) => value !== '' && value !== null),
+        )
         console.log('dormDAta', formData)
         try {
             setShowSpinner(true)
@@ -213,6 +215,7 @@ const EditProduct = () => {
                                     fileLists={values.images}
                                     textName="image"
                                     placeholder="Enter Image Url"
+                                    setAllName={setAllImage}
                                 />
                                 <ImageCommonProduct
                                     label="Color Code Thumbnail"
@@ -223,6 +226,7 @@ const EditProduct = () => {
                                     fileLists={values.color_code}
                                     textName="color_code_link"
                                     placeholder="Enter color code Url"
+                                    setAllName={setAllColor}
                                 />
                                 <ImageCommonProduct
                                     isVideo
@@ -244,6 +248,7 @@ const EditProduct = () => {
                                     fileLists={values.size_chart_image_array}
                                     textName="size_chart_image"
                                     placeholder="Enter Size Chart Image"
+                                    setAllName={setAllSizeChart}
                                 />
 
                                 {PRODUCT_EDIT_COMMON_DOWN?.slice(0, 5).map((item, key) => (
