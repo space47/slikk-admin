@@ -33,7 +33,8 @@ const Uploader = () => {
             formData.append('file', file)
         })
         formData.append('file_type', 'product')
-
+        formData.append('file_type', 'product')
+        formData.append('compression_service', 'slikk')
         try {
             console.log(formData.get('file'))
             const response = await axioisInstance.post('fileupload', formData, {
@@ -59,6 +60,7 @@ const Uploader = () => {
             formData.append('file', file)
         })
         formData.append('file_type', 'product')
+        formData.append('compression_service', 'slikk')
 
         try {
             console.log(formData.get('file'))
