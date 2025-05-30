@@ -215,6 +215,7 @@ const EditProduct = () => {
                                     fileLists={values.images}
                                     textName="image"
                                     placeholder="Enter Image Url"
+                                    setAllName={setAllImage}
                                 />
                                 <ImageCommonProduct
                                     label="Color Code Thumbnail"
@@ -225,6 +226,7 @@ const EditProduct = () => {
                                     fileLists={values.color_code}
                                     textName="color_code_link"
                                     placeholder="Enter color code Url"
+                                    setAllName={setAllColor}
                                 />
                                 <ImageCommonProduct
                                     isVideo
@@ -246,6 +248,7 @@ const EditProduct = () => {
                                     fileLists={values.size_chart_image_array}
                                     textName="size_chart_image"
                                     placeholder="Enter Size Chart Image"
+                                    setAllName={setAllSizeChart}
                                 />
 
                                 {PRODUCT_EDIT_COMMON_DOWN?.slice(0, 5).map((item, key) => (
