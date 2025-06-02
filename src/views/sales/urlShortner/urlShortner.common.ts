@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type URLTYPES = {
     short_code: string
     web_url: string
     android_url: string
     ios_url: string
     default_url: string
+    select_filter?: boolean
+    target_page?: any
 }
 
 export const initialValueForUrl: URLTYPES = {

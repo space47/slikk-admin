@@ -21,10 +21,9 @@ const AddUrlShortner = () => {
     const base_url = import.meta.env.VITE_WEBSITE_URL
     const [shortUrlData, setShortUrlData] = useState('')
     const [showGeneratedUrl, setShowGeneratedUrl] = useState(false)
-    const [filterShow, setFilterShow] = useState(false)
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
-    const [filtersData, setFiltersData] = useState([])
+    const [filtersData, setFiltersData] = useState<any[]>([])
 
     const handleAddFilter = () => {
         setShowAddFilter([...showAddFilter, showAddFilter.length])
@@ -37,7 +36,7 @@ const AddUrlShortner = () => {
 
     const handleAddFilters = async (values) => {
         const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-        setFiltersData((prev) => {
+        setFiltersData((prev: any) => {
             const updatedFilters = [...prev, newFilterData]
             const lastElement = updatedFilters.at(-1)
             sendFilterData(lastElement)
@@ -45,7 +44,7 @@ const AddUrlShortner = () => {
         })
     }
 
-    const sendFilterData = async (filterData) => {
+    const sendFilterData = async (filterData: number) => {
         try {
             const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
             setFilterId(response.data?.data?.id)
@@ -141,7 +140,6 @@ const AddUrlShortner = () => {
     const handleFilterChange = (e: any, setFieldValue: any) => {
         const isChecked = e.target.checked
         setFieldValue('select_filter', isChecked)
-        setFilterShow(isChecked)
 
         if (isChecked) {
             URLARRAY.slice(1).forEach((item) => setFieldValue(item.name, ''))
@@ -225,7 +223,7 @@ const AddUrlShortner = () => {
                                 />
                             </FormItem>
 
-                            {filterShow && (
+                            {values?.select_filter && (
                                 <FilterSelect
                                     handleAddFilter={handleAddFilter}
                                     showAddFilter={showAddFilter}
