@@ -110,6 +110,7 @@ const EditEvents = () => {
             dummy_registration_count: eventData?.extra_attributes?.dummy_registration_count || 0,
             is_return_allowed: eventData?.extra_attributes?.is_return_allowed || false,
             min_order_value_for_event_pass: eventData?.extra_attributes?.min_order_value_for_event_pass,
+            minimum_order_count: eventData?.extra_attributes?.minimum_order_count,
         },
     }
 
@@ -324,6 +325,9 @@ const EditEvents = () => {
                 is_return_allowed: values?.extra_attributes?.is_return_allowed ?? false,
                 ...(values?.extra_attributes?.min_order_value_for_event_pass && {
                     min_order_value_for_event_pass: values?.extra_attributes?.min_order_value_for_event_pass,
+                }),
+                ...(values?.extra_attributes?.minimum_order_count && {
+                    minimum_order_count: values?.extra_attributes?.minimum_order_count,
                 }),
             },
         }
