@@ -34,27 +34,31 @@ const ReturnOrderlistMobile = ({ orders }: props) => {
 
                     return (
                         <div
-                            key={item.invoice_id}
+                            key={item.return_order_id}
                             className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg"
                         >
-                            <div className="flex justify-between">
-                                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                            <div className="flex flex-col">
+                                <h3 className="text-xl flex gap-2 items-center font-semibold text-gray-800 dark:text-gray-200 mb-4">
                                     Return:{' '}
-                                    <span
-                                        className="px-2 py-1 bg-red-500 text-white dark:bg-red-700 dark:text-gray-200 rounded-lg"
-                                        onClick={() => handleReturnCall(item.return_order_id)}
+                                    <a
+                                        href={`/app/orders/${item?.return_order_id}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
                                     >
-                                        {item.return_order_id}
-                                    </span>
+                                        {item?.return_order_id}
+                                    </a>
                                 </h3>
-                                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                                    Invoice:{' '}
-                                    <span
-                                        className="px-2 py-1 bg-red-500 text-white dark:bg-red-700 dark:text-gray-200 rounded-lg"
-                                        onClick={() => handleOrderCall(item.order)}
+                                <h3 className="text-xl flex gap-2 items-center font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                                    Invoice ID:{' '}
+                                    <a
+                                        href={`/app/orders/${item?.order}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
                                     >
-                                        {item.order}
-                                    </span>
+                                        {item?.order}
+                                    </a>
                                 </h3>
                             </div>
                             <div className="p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">

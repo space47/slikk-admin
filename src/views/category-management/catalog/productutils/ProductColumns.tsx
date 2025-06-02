@@ -48,7 +48,7 @@ export const useProductColumns = ({ handleOpenModal }: props) => {
                 accessorKey: 'image',
                 cell: ({ getValue, row }: any) => (
                     <img
-                        src={getValue().split(',')[0]}
+                        src={row?.original?.thumbnail.split(',')[0]}
                         alt="Image"
                         className="w-24 h-20 object-cover cursor-pointer"
                         onClick={() => handleOpenModal(row.original.image)}

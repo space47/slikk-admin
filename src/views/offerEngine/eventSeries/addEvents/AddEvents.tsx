@@ -137,6 +137,9 @@ const AddEvents = () => {
                         carousel_auto_scroll: values?.extra_attributes?.carousel_auto_scroll,
                     }),
                     ...(values?.extra_attributes?.time_interval && { time_interval: values?.extra_attributes?.time_interval }),
+                    ...(values?.extra_attributes?.minimum_order_count && {
+                        minimum_order_count: values?.extra_attributes?.minimum_order_count,
+                    }),
                     ...(imageUploadEventVideos && { event_video: imageUploadEventVideos }),
                     ...(imageUploadVenue && { venue_img_url: imageUploadVenue }),
                     ...(imageUploadEventPhotos && { event_photos: imageUploadEventPhotos }),

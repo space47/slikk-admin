@@ -33,14 +33,16 @@ const OrderlistMobile = ({ orders, handleNumberClick }: props) => {
                                     : 'bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 cursor-pointer hover:shadow-lg'
                             }
                         >
-                            <h3
-                                className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4"
-                                onClick={() => handleOrderCall(item.invoice_id)}
-                            >
+                            <h3 className="text-xl flex gap-2 items-center font-semibold text-gray-800 dark:text-gray-200 mb-4">
                                 Invoice ID:{' '}
-                                <span className="px-2 py-1 bg-red-500 text-white dark:bg-red-700 dark:text-gray-200 rounded-lg">
-                                    {item.invoice_id}
-                                </span>
+                                <a
+                                    href={`/app/orders/${item?.invoice_id}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
+                                >
+                                    {item?.invoice_id}
+                                </a>
                             </h3>
                             <div className="p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700">
                                 <div className="grid grid-cols-1 gap-6 text-sm sm:text-base">
