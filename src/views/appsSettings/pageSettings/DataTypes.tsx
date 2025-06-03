@@ -109,6 +109,7 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
             <CommonSelect needClassName label="Division Select" options={formattedDivisions} name="division_select" className="w-1/2" />
 
             <FilterSelect
+                isPageSettings
                 handleAddFilter={handleAddFilter}
                 showAddFilter={showAddFilter}
                 handleAddFilters={handleAddFilters}
