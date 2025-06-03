@@ -15,7 +15,6 @@ interface PROPS {
     showDrawer: boolean
     handleCloseDrawer: any
     handleApply: any
-    handleMultiSelect?: any
     divisionList: any
     categroyList: any
     productTypeList: any
@@ -26,14 +25,6 @@ interface PROPS {
     setSubCategoryList: any
     setProductTypeList: any
     setBrandList: any
-    setTypeFetch: any
-    setFilteredCategories: any
-    setFilteredProductTypes: any
-    setFilteredSubCategories: any
-    filteredCategories: any
-    filteredProductTypes: any
-    filteredSubCategories: any
-    options: any
     filters: any
     setFilterString: any
 }
