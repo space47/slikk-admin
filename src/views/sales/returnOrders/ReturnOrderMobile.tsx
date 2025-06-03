@@ -1,6 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import moment from 'moment'
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 interface props {
     orders: any
@@ -14,16 +13,6 @@ const scheduleSlots: any = {
 }
 
 const ReturnOrderlistMobile = ({ orders }: props) => {
-    const [isPending, setIsPending] = useState(false)
-    const navigate = useNavigate()
-
-    const handleOrderCall = (id: any) => {
-        navigate(`/app/orders/${id}`)
-    }
-    const handleReturnCall = (id: any) => {
-        navigate(`/app/returnOrders/${id}`)
-    }
-
     return (
         <div>
             <div className="space-y-6 xl:mx-20">
@@ -41,7 +30,7 @@ const ReturnOrderlistMobile = ({ orders }: props) => {
                                 <h3 className="text-xl flex gap-2 items-center font-semibold text-gray-800 dark:text-gray-200 mb-4">
                                     Return:{' '}
                                     <a
-                                        href={`/app/orders/${item?.return_order_id}`}
+                                        href={`/app/returnOrders/${item?.return_order_id}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-white bg-red-600 flex items-center justify-center px-2 py-1 rounded-[7px] font-semibold cursor-pointer"
@@ -87,13 +76,13 @@ const ReturnOrderlistMobile = ({ orders }: props) => {
                                     <div className="flex gap-3 xl:justify-normal xl:gap-6 sm:items-center">
                                         <span className="font-medium text-gray-700 dark:text-gray-400">Runner Name:</span>
                                         <span className="text-purple-600 dark:text-purple-400 font-bold">
-                                            {item?.return_order_delivery?.map((item) => item?.runner_name)}
+                                            {item?.return_order_delivery?.map((item: any) => item?.runner_name)}
                                         </span>
                                     </div>
                                     <div className="flex gap-3 xl:justify-normal xl:gap-6 sm:items-center">
                                         <span className="font-medium text-gray-700 dark:text-gray-400">Return Mobile:</span>
                                         <span className="text-purple-600 dark:text-purple-400 font-bold">
-                                            {item?.return_order_delivery?.map((item) => item?.runner_phone_number)}
+                                            {item?.return_order_delivery?.map((item: any) => item?.runner_phone_number)}
                                         </span>
                                     </div>
                                 </div>

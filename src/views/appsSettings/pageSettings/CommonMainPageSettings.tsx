@@ -115,7 +115,7 @@ const CommonMainPageSettings = ({
                                 <Field name="component_type">
                                     {({ field, form }: FieldProps<any>) => {
                                         const componentOptions = COMPONENT_CATEGORY_TYPES
-
+                                        console.log('values are', values)
                                         return (
                                             <Select
                                                 field={field}
