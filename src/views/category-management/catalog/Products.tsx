@@ -10,7 +10,6 @@ import { FaFacebook, FaFilter } from 'react-icons/fa'
 import EasyTable from '@/common/EasyTable'
 import ProductFilterNest from './ProductFilter'
 import { useAppSelector } from '@/store'
-import { DIVISION_STATE } from '@/store/types/division.types'
 import DialogConfirm from '@/common/DialogConfirm'
 import { FILTER_STATE } from '@/store/types/filters.types'
 import { Dropdown, Input } from '@/components/ui'
@@ -37,16 +36,12 @@ const Products = () => {
     const [productTypeList, setProductTypeList] = useState([])
     const [brandList, setBrandList] = useState([])
     const [typeFetch, setTypeFetch] = useState('')
-    const [filteredCategories, setFilteredCategories] = useState([])
-    const [filteredSubCategories, setFilteredSubCategories] = useState([])
-    const [filteredProductTypes, setFilteredProductTypes] = useState([])
     const [showFacebookDialog, setShowFacebookDialog] = useState(false)
     const [showRandomizeDialog, setShowRandomizeDialog] = useState(false)
     const [selectFilterString, setFilterString] = useState('')
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [showDrawer, setShowDrawer] = useState(false)
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>(ProductFilterArray[0])
-    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
     const fetchData = async () => {
@@ -102,12 +97,6 @@ const Products = () => {
                             </Dropdown>
                         </div>
                     </div>
-                    {/* <button
-                        className="bg-gray-100 text-black px-4 py-2 flex items-center gap-2 xl:hidden hover:bg-gray-200 rounded-lg"
-                        onClick={() => handleDownload(currentSelectedPage, globalFilter, typeFetch)}
-                    >
-                        <IoMdDownload className="text-xl" />
-                    </button> */}
                 </div>
 
                 <div className="flex flex-col  items-center gap-4 w-full xl:flex-row xl:justify-end ">
@@ -206,14 +195,6 @@ const Products = () => {
                     setDivisionList={setDivisionList}
                     setProductTypeList={setProductTypeList}
                     setSubCategoryList={setSubCategoryList}
-                    setTypeFetch={setTypeFetch}
-                    filteredCategories={filteredCategories}
-                    filteredProductTypes={filteredProductTypes}
-                    filteredSubCategories={filteredSubCategories}
-                    setFilteredCategories={setFilteredCategories}
-                    setFilteredProductTypes={setFilteredProductTypes}
-                    setFilteredSubCategories={setFilteredSubCategories}
-                    options={divisions.divisions}
                     filters={filters}
                     setFilterString={setFilterString}
                 />
