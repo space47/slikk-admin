@@ -20,6 +20,7 @@ interface FILTERPROPS {
     targetPagevalue?: any
     filterValue?: any
     setFilterId?: any
+    isPageSettings?: boolean
 }
 
 const DISCOUNTOPTIONS = [
@@ -72,13 +73,78 @@ export const targetPageArray = [
     { label: 'brandList', value: 'brandList' },
 ]
 
-const FilterSelect = ({ sortValue, filterValue, setFilterId }: FILTERPROPS) => {
+const FilterSelect = ({
+    sortValue,
+    filterValue,
+    setFilterId,
+    isPageSettings,
+    handleAddFilter,
+    showAddFilter,
+    handleRemoveFilter,
+    handleAddFilters,
+}: FILTERPROPS) => {
+    const dispatch = useAppDispatch()
+    const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
+    useEffect(() => {
+        dispatch(getAllFiltersAPI())
+    }, [dispatch])
     return (
         <div>
-            {' '}
-            <div>
-                <ComonFilterSelect isEdit filterId={filterValue} setFilterId={setFilterId} />
-            </div>
+            {isPageSettings ? (
+                <>
+                    <FormItem label="SEARCH STRINGS">
+                        <FormContainer className="items-center mt-4">
+                            <button onClick={handleAddFilter} type="button">
+                                <IoMdAddCircle className="text-3xl text-green-500" />
+                            </button>
+                        </FormContainer>
+
+                        {showAddFilter.map((_, index: any) => (
+                            <FormItem key={index} className="flex  gap-2">
+                                <div className="flex gap-3 items-center">
+                                    <Field name={`filtersAdd[${index}]`} key={index}>
+                                        {({ field, form }: FieldProps<any>) => (
+                                            <Select
+                                                isMulti
+                                                placeholder={`Filter Tags ${index + 1}`}
+                                                options={filters.filters}
+                                                getOptionLabel={(option) => option.label}
+                                                getOptionValue={(option) => option.value}
+                                                onChange={(newVal) => {
+                                                    const newValues = newVal ? newVal.map((val) => val.value) : []
+                                                    form.setFieldValue(field.name, newValues)
+                                                }}
+                                                className="w-3/4"
+                                            />
+                                        )}
+                                    </Field>
+                                    <div className="">
+                                        <button type="button" className="" onClick={() => handleRemoveFilter(index)}>
+                                            <MdCancel className="text-xl text-red-500" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </FormItem>
+                        ))}
+
+                        {showAddFilter.length > 0 && (
+                            <>
+                                <Field>
+                                    {({ form }: FieldProps<any>) => (
+                                        <Button variant="new" onClick={() => handleAddFilters(form.values)} type="button">
+                                            Search Strings
+                                        </Button>
+                                    )}
+                                </Field>
+                            </>
+                        )}
+                    </FormItem>
+                </>
+            ) : (
+                <div>
+                    <ComonFilterSelect isEdit filterId={filterValue} setFilterId={setFilterId} />
+                </div>
+            )}
             <FormContainer className="flex gap-3 flex-col xl:flex-row">
                 {MAXMINARRAY.map((item, key) => (
                     <FormItem key={key} label={item.label} className="w-full xl:w-2/3">
