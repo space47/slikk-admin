@@ -159,125 +159,129 @@ const AnalyticsReports = () => {
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
-
-    // const onPaginationChange = (page: number) => {
-    //     setPage(page)
-    // }
     if (accessDenied) {
         return <AccessDenied />
     }
 
     return (
-        <div className="p-6 bg-white rounded-xl shadow-md">
-            <div className="flex flex-col   gap-6">
+        <div className="p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
+            <div className="flex flex-col gap-8">
                 {/* Date Pickers Section */}
-                <div className="flex flex-col xl:flex-row gap-4  xl:justify-between items-center shadow-md p-4 rounded-md border border-gray-200 ">
-                    <div className="flex flex-col xl:flex-row gap-3  xl:gap-8">
-                        <div className="flex flex-col">
-                            <label className="mb-2 font-semibold text-sm text-gray-700">
-                                From Date: {showOneMonthBack ? '(Start of Month)' : ''}
+                <div className="flex flex-col xl:flex-row gap-6 xl:justify-between items-center p-5 rounded-xl border border-gray-200 shadow-sm bg-gray-50">
+                    <div className="flex flex-col xl:flex-row gap-4 xl:gap-10 items-start xl:items-center">
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm font-medium text-gray-800">
+                                From Date <span className="text-xs text-gray-500">{showOneMonthBack ? '(Start of Month)' : ''}</span>
                             </label>
                             <DatePicker
-                                inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
+                                inputPrefix={<HiOutlineCalendar className="text-gray-500 text-lg" />}
                                 value={new Date(from)}
                                 onChange={handleFromChange}
-                                className="w-56 rounded-md border-gray-300 focus:border-blue-500"
+                                className="w-52 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-400"
                             />
                         </div>
-                        <div className="flex flex-col">
-                            <label className="mb-2 font-semibold text-sm text-gray-700">To Date:</label>
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm font-medium text-gray-800">To Date</label>
                             <DatePicker
-                                inputPrefix={<HiOutlineCalendar className="text-lg text-gray-600" />}
+                                inputPrefix={<HiOutlineCalendar className="text-gray-500 text-lg" />}
                                 value={new Date(to)}
                                 onChange={handleToChange}
                                 minDate={new Date(from)}
-                                className="w-56 rounded-md border-gray-300 focus:border-blue-500"
+                                className="w-52 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-400"
                             />
                         </div>
-                        <Button variant="new" className="h-1/2 xl:mt-7" onClick={handleDateSubmit}>
+                        <Button
+                            variant="new"
+                            className="xl:mt-6 h-10 px-6 text-sm rounded-md shadow hover:shadow-md transition"
+                            onClick={handleDateSubmit}
+                        >
                             Submit
                         </Button>
                     </div>
 
-                    {/*  */}
-                    <div className="flex items-center gap-8">
-                        <div className="flex xl:flex-col flex-row gap-2 xl:items-start items-center">
-                            <label className="mb-2 font-semibold text-sm text-gray-700">Brands:</label>
+                    <div className="flex items-center gap-4">
+                        <label className="text-sm font-medium text-gray-800">Brands</label>
+                        <div className="flex flex-col xl:flex-row items-start gap-2">
                             <Select
                                 options={brands.brands}
                                 getOptionLabel={(option) => option.name}
                                 getOptionValue={(option) => option.id.toString()}
                                 onChange={handleBrandSelect}
-                                className="w-[200px] items-center"
+                                className="w-[200px]"
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* Row Dumps....... */}
-                <hr />
-                <div>
-                    <h5>Download Raw Dumps:</h5> <br />
-                    <div className="flex flex-col gap-4 xl:flex-row">
-                        <div className="xl:mt-7">
-                            <Button variant="new" onClick={handleOrderItem} disabled={isRowDumpOrder}>
-                                <div className="flex gap-2 items-center">
-                                    <span> Order Item </span> <span> {isRowDumpOrder && <Spinner size={20} color="white" />}</span>
-                                </div>
-                            </Button>
-                        </div>
-                        <div className="xl:mt-7">
-                            <Button variant="new" onClick={handleReturnOrderItem} disabled={isRowDumpReturnOrder}>
-                                <div className="flex gap-2 items-center">
-                                    <span>Return Order Item </span>{' '}
-                                    <span> {isRowDumpReturnOrder && <Spinner size={20} color="white" />}</span>
-                                </div>
-                            </Button>
-                        </div>
+                <hr className="border-t border-gray-200" />
+
+                {/* Raw Dump Section */}
+                <div className="flex flex-col gap-4">
+                    <h2 className="text-lg font-semibold text-gray-800">Download Raw Dumps</h2>
+                    <div className="flex flex-col xl:flex-row gap-4">
+                        <Button variant="accept" onClick={handleOrderItem} disabled={isRowDumpOrder}>
+                            <div className="flex gap-2 items-center">
+                                <FaDownload /> <span>Order Item</span>
+                                {isRowDumpOrder && <Spinner size={18} color="white" />}
+                            </div>
+                        </Button>
+
+                        <Button variant="accept" onClick={handleReturnOrderItem} disabled={isRowDumpReturnOrder}>
+                            <div className="flex gap-2 items-center">
+                                <FaDownload /> <span>Return Order Item</span>
+                                {isRowDumpReturnOrder && <Spinner size={18} color="white" />}
+                            </div>
+                        </Button>
                     </div>
                 </div>
-            </div>
-            <br />
-            <br />
 
-            {/* Conditionally Render Table Section */}
-            <div className="flex flex-col">
-                {remitance.length > 0 ? (
-                    <div className="overflow-x-auto mt-6">
-                        <div className="flex justify-center items-center mt-5">
-                            <Button onClick={handleDownload} variant="new" className="justify-center gap-2 flex" disabled={isDownloading}>
-                                <FaDownload className="text-xl" />{' '}
-                                <span className="flex gap-1 items-center">
-                                    Download {isDownloading && <Spinner size={20} color="white" />}
-                                </span>
+                {/* Table Section */}
+                {remitance.length > 0 && (
+                    <div className=" flex flex-col gap-4">
+                        <div className="flex justify-end">
+                            <Button
+                                onClick={handleDownload}
+                                variant="new"
+                                className="flex items-center gap-2 px-5 h-10 rounded-md text-sm bg-green-600 text-white hover:bg-green-700 transition"
+                                disabled={isDownloading}
+                            >
+                                <FaDownload className="text-lg" />
+                                <span>Download {isDownloading && <Spinner size={18} color="white" />}</span>
                             </Button>
                         </div>
-                        <div className="text-right font-semibold text-gray-700 mb-2">
+
+                        <div className="text-right font-semibold text-sm text-gray-700">
                             TOTAL AMOUNT: <span className="text-green-600">₹{fullRemitanceRespone?.total_amount.toFixed(2)}</span>
                         </div>
-                        <Table className="min-w-full">
-                            <THead>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <Tr key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => (
-                                            <Th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</Th>
-                                        ))}
-                                    </Tr>
-                                ))}
-                            </THead>
-                            <TBody>
-                                {table.getRowModel().rows.map((row) => (
-                                    <Tr key={row.id}>
-                                        {row.getVisibleCells().map((cell) => (
-                                            <Td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Td>
-                                        ))}
-                                    </Tr>
-                                ))}
-                            </TBody>
-                        </Table>
+
+                        <div className="overflow-x-auto  rounded-xl shadow-sm">
+                            <div className="font-bold text-xl mb-3">Remitance Table:</div>
+                            <Table className="min-w-full text-sm">
+                                <THead className="bg-gray-100">
+                                    {table.getHeaderGroups().map((headerGroup) => (
+                                        <Tr key={headerGroup.id}>
+                                            {headerGroup.headers.map((header) => (
+                                                <Th key={header.id} className="py-3 px-4 text-left font-medium text-gray-700">
+                                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                                </Th>
+                                            ))}
+                                        </Tr>
+                                    ))}
+                                </THead>
+                                <TBody>
+                                    {table.getRowModel().rows.map((row) => (
+                                        <Tr key={row.id} className="hover:bg-gray-50 transition">
+                                            {row.getVisibleCells().map((cell) => (
+                                                <Td key={cell.id} className="py-2 px-4 text-gray-800">
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </Td>
+                                            ))}
+                                        </Tr>
+                                    ))}
+                                </TBody>
+                            </Table>
+                        </div>
                     </div>
-                ) : (
-                    ''
                 )}
             </div>
         </div>

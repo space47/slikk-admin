@@ -71,56 +71,54 @@ const Remitance = () => {
     }
 
     return (
-        <div className="p-6 bg-white rounded-xl shadow-md">
-            <div className="flex flex-col gap-6">
-                {/* Section: Date Range & Brand Filter */}
-                <div className="flex flex-col xl:flex-row gap-6 xl:justify-between items-center shadow-md p-4 rounded-md border border-gray-200">
-                    <div className="flex flex-col xl:flex-row gap-6 ">
+        <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div className="flex flex-col gap-8">
+                {/* Date & Brand Filter Section */}
+                <div className="flex flex-col xl:flex-row gap-6 xl:justify-between items-start xl:items-center bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-sm">
+                    <div className="flex flex-col xl:flex-row gap-6">
                         {/* From Date */}
-                        <div className="flex flex-col">
-                            <label className="mb-2 font-medium text-sm text-gray-800">
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm font-medium text-gray-700">
                                 From Date {showOneMonthBack && <span className="text-xs text-blue-500">(Start of Month)</span>}
                             </label>
                             <DatePicker
                                 inputPrefix={<HiOutlineCalendar className="text-lg text-gray-500" />}
                                 value={new Date(from)}
-                                className="w-56 rounded-md border border-gray-300 focus:border-blue-500"
                                 onChange={(date) => {
                                     if (date) {
                                         setFrom(moment(date).format('YYYY-MM-DD'))
                                         setShowOneMonthBack(false)
                                     }
                                 }}
+                                className="w-56 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-400"
                             />
                         </div>
 
                         {/* To Date */}
-                        <div className="flex flex-col">
-                            <label className="mb-2 font-medium text-sm text-gray-800">To Date</label>
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm font-medium text-gray-700">To Date</label>
                             <DatePicker
                                 inputPrefix={<HiOutlineCalendar className="text-lg text-gray-500" />}
                                 value={new Date(to)}
                                 minDate={new Date(from)}
-                                className="w-56 rounded-md border border-gray-300 focus:border-blue-500"
                                 onChange={(date) => {
-                                    if (date) {
-                                        setTo(moment(date).format('YYYY-MM-DD'))
-                                    }
+                                    if (date) setTo(moment(date).format('YYYY-MM-DD'))
                                 }}
+                                className="w-56 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-400"
                             />
                         </div>
 
-                        {/* Submit Button */}
+                        {/* Submit */}
                         <div className="xl:mt-7">
-                            <Button variant="new" className="h-10" onClick={handleDateSubmit}>
+                            <Button variant="new" className="h-10 px-6 text-sm rounded-md" onClick={handleDateSubmit}>
                                 Submit
                             </Button>
                         </div>
                     </div>
 
                     {/* Brand Select */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-gray-800">Brands</label>
+                    <div className="flex flex-col gap-1 w-full xl:w-auto">
+                        <label className="text-sm font-medium text-gray-700">Brands</label>
                         <Select
                             isClearable
                             options={brands.brands}
@@ -132,32 +130,30 @@ const Remitance = () => {
                     </div>
                 </div>
 
-                <hr className="my-4" />
+                <hr className="border-t border-gray-200" />
 
-                {/* Section: Downloads */}
+                {/* Downloads Section */}
                 <div className="space-y-6">
-                    <h5 className="text-lg font-semibold text-gray-900">Download Raw Dumps</h5>
-                    <div className="flex flex-col xl:flex-row gap-6 xl:items-center xl:gap-12">
-                        {/* Buttons */}
-                        <div className="flex gap-4 mt-5">
-                            <Button variant="new" onClick={handleOrderItem} disabled={isRowDumpOrder}>
-                                <div className="flex gap-2 items-center">
-                                    <span>Order Item</span>
+                    <h2 className="text-lg font-semibold text-gray-800">Download Raw Dumps</h2>
+
+                    <div className="flex flex-col xl:flex-row gap-8 xl:items-end">
+                        <div className="flex gap-4">
+                            <Button variant="accept" onClick={handleOrderItem} disabled={isRowDumpOrder}>
+                                <div className="flex items-center gap-2">
+                                    <FaDownload /> <span>Order Item</span>
                                     {isRowDumpOrder && <Spinner size={20} color="white" />}
                                 </div>
                             </Button>
-
-                            <Button variant="new" onClick={handleReturnOrderItem} disabled={isRowDumpReturnOrder}>
-                                <div className="flex gap-2 items-center">
-                                    <span>Return Order Item</span>
+                            <Button variant="accept" onClick={handleReturnOrderItem} disabled={isRowDumpReturnOrder}>
+                                <div className="flex items-center gap-2">
+                                    <FaDownload /> <span>Return Order Item</span>
                                     {isRowDumpReturnOrder && <Spinner size={20} color="white" />}
                                 </div>
                             </Button>
                         </div>
 
-                        {/* Company Select */}
-                        <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-gray-800">Select Company</label>
+                        <div className="flex flex-col gap-1">
+                            <label className="text-sm font-medium text-gray-700">Select Company</label>
                             <Select
                                 isClearable
                                 className="w-60"
@@ -174,29 +170,39 @@ const Remitance = () => {
                     </div>
                 </div>
 
-                {/* Section: Table */}
+                {/* Table Section */}
                 {remitance.length > 0 && (
-                    <div className="mt-8 space-y-4">
-                        <div className="flex justify-center">
-                            <Button className="flex items-center gap-2" variant="new" onClick={handleDownload} disabled={isDownloading}>
-                                <FaDownload className="text-xl" />
+                    <div className="mt-8 space-y-5">
+                        <div className="font-bold text-xl mb-3">Remitance Table:</div>
+                        {/* Download Button */}
+                        <div className="flex justify-end">
+                            <Button
+                                variant="new"
+                                className="flex items-center gap-2 px-5 py-2 text-sm rounded-md"
+                                onClick={handleDownload}
+                                disabled={isDownloading}
+                            >
+                                <FaDownload className="text-lg" />
                                 <span className="flex gap-1 items-center">
                                     Download {isDownloading && <Spinner size={20} color="white" />}
                                 </span>
                             </Button>
                         </div>
 
-                        <div className="text-right font-semibold text-gray-700">
-                            TOTAL AMOUNT: <span className="text-green-600">₹{fullRemitanceRespone?.total_amount.toFixed(2)}</span>
+                        {/* Total Amount */}
+                        <div className="text-right text-sm font-medium text-gray-700 flex justify-start">
+                            TOTAL AMOUNT:{' '}
+                            <span className="text-green-600 font-semibold">₹{fullRemitanceRespone?.total_amount.toFixed(2)}</span>
                         </div>
 
-                        <div className="overflow-x-auto rounded-md border border-gray-200">
+                        {/* Table */}
+                        <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
                             <Table className="min-w-full text-sm text-gray-800">
-                                <THead className="bg-gray-100">
+                                <THead className="bg-gray-100 text-gray-700">
                                     {table.getHeaderGroups().map((headerGroup) => (
                                         <Tr key={headerGroup.id}>
                                             {headerGroup.headers.map((header) => (
-                                                <Th key={header.id} className="px-4 py-2 text-left">
+                                                <Th key={header.id} className="px-4 py-3 text-left">
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Th>
                                             ))}
@@ -207,7 +213,7 @@ const Remitance = () => {
                                     {table.getRowModel().rows.map((row) => (
                                         <Tr key={row.id} className="hover:bg-gray-50">
                                             {row.getVisibleCells().map((cell) => (
-                                                <Td key={cell.id} className="px-4 py-2">
+                                                <Td key={cell.id} className="px-4 py-3">
                                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                                 </Td>
                                             ))}
