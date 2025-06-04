@@ -47,7 +47,7 @@ const AddCoupons = () => {
             const response = await axioisInstance.patch('/merchant/coupon', formData)
             notification.success({
                 message: 'Success',
-                description: response?.data?.message || response?.data?.data?.message || 'Coupon created successfully',
+                description: response?.data?.message || response?.data?.data?.message || 'Coupon Updated successfully',
             })
             navigate(-1)
         } catch (error: any) {
@@ -56,7 +56,7 @@ const AddCoupons = () => {
             notification.error({
                 message: error?.response?.data?.data?.message || 'Failure',
 
-                description: 'Failed to create Coupon',
+                description: 'Failed to Update Coupon',
             })
         }
     }
