@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Chart from 'react-apexcharts'
 import { COLOR_6 } from '@/constants/chart.constant'
 import { useNavigate } from 'react-router-dom'
@@ -29,10 +30,24 @@ const BrandDataChart = ({ brandData, from, to }: BRANDWISEDATA) => {
             <Chart
                 options={{
                     chart: {
+                        toolbar: {
+                            show: true,
+                            export: {
+                                csv: {
+                                    headerCategory: 'Brand',
+                                    categoryFormatter(value: any) {
+                                        return value?.replace(/\(.*?\)/g, '')?.trim()
+                                    },
+
+                                    filename: `BrandChart-${Math.floor(Math.random() * 100)}`,
+                                },
+                            },
+                        },
+
                         events: {
                             dataPointSelection: (event, chartContext, config) => {
                                 const label = brandName[config.dataPointIndex]
-                                console.log('Clicked label:', label, from, to)
+
                                 navigate(`/app/analytics/orders`, {
                                     state: {
                                         stateName: label,
