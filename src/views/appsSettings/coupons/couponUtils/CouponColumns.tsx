@@ -1,12 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button } from '@/components/ui'
 import moment from 'moment'
 import { useMemo } from 'react'
+import { FaEdit } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 export const CouponCoulumns = () => {
     const navigate = useNavigate()
     return useMemo(() => {
         return [
+            {
+                header: 'Edit',
+
+                accessorKey: 'code',
+                cell: ({ getValue }: any) => {
+                    return (
+                        <Button onClick={() => navigate(`/app/appSettings/coupons/${getValue()}`)} className="bg-none border-none">
+                            <FaEdit className="text-xl text-blue-600 items-center flex justify-center" />
+                        </Button>
+                    )
+                },
+            },
             { header: 'Code', accessorKey: 'code' },
             // {
             //     header: 'Image',
@@ -125,18 +139,6 @@ export const CouponCoulumns = () => {
             //     accessorKey: 'update_date',
             //     cell: ({ row }: any) => moment(row.original?.update_date).format || 'N/A',
             // },
-            // {
-            //     header: 'Edit',
-
-            //     accessorKey: 'code',
-            //     cell: ({ getValue }) => {
-            //         return (
-            //             <Button onClick={() => handleActionClick(getValue())} className="bg-none border-none">
-            //                 <FaEdit className="text-xl text-blue-600 items-center flex justify-center" />
-            //             </Button>
-            //         )
-            //     },
-            // }
         ]
     }, [])
 }
