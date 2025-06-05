@@ -8,6 +8,7 @@ import { beforeUpload } from '@/common/beforeUpload'
 import { RichTextEditor } from '@/components/shared'
 import { DatePicker } from 'antd'
 import moment from 'moment'
+import dayjs from 'dayjs'
 
 interface props {
     isEdit?: boolean
@@ -29,7 +30,7 @@ const BrandFormFirst = ({ isEdit, values }: props) => {
                         <DatePicker
                             placeholder=""
                             className="w-1/2"
-                            value={field.value ? moment(field.value, 'YYYY-MM-DD') : null}
+                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                             onChange={(value) => {
                                 form.setFieldValue('dispatch_date', value ? value.format('YYYY-MM-DD') : '')
                             }}

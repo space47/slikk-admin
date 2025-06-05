@@ -14,6 +14,7 @@ import CartPaymentSummary from './componentsHomes/CartPaymentSummary'
 import CartShipping from './componentsHomes/CartShipping'
 import CartTabs from './componentsHomes/CartTabs'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
+import CustomerReferral from './componentsHomes/CustomerReferral'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
@@ -78,6 +79,13 @@ const CustomerAnalytics = () => {
             </div>
 
             {/* Cart Section */}
+
+            {customerData?.referral && (
+                <div>
+                    <CustomerReferral referralData={customerData.referral} />
+                </div>
+            )}
+
             <div className="mt-10">
                 <div className="font-bold text-xl sm:text-2xl mb-4">Cart Details:</div>
                 {customerData?.cart !== null ? (

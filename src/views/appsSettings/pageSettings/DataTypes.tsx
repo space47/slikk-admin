@@ -9,6 +9,7 @@ import { DatePicker } from 'antd'
 import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
+import dayjs from 'dayjs'
 
 const dataTypeValidationArray = [
     { name: 'data_type.start_date', label: 'Start Date' },
@@ -71,7 +72,7 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
                                         <DatePicker
                                             disabled={values?.data_type.validation}
                                             className="w-1/2"
-                                            value={field.value ? moment(field.value, 'YYYY-MM-DD') : null}
+                                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                             onChange={(value) => {
                                                 form.setFieldValue(item.name, value ? value.format('YYYY-MM-DD') : '')
                                             }}

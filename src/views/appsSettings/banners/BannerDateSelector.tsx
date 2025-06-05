@@ -1,24 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DatePicker } from 'antd'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import React from 'react'
 
-interface props {
+interface Props {
     label: string
-    valueDate: any
+    valueDate: string | null
     handleTimeChange: any
 }
 
-const BannerDateSelector = ({ valueDate, handleTimeChange, label }: props) => {
+const BannerDateSelector = ({ valueDate, handleTimeChange, label }: Props) => {
     return (
         <div className="flex flex-col gap-2">
             <div>{label}</div>
             <DatePicker
                 showTime
                 placeholder=""
-                value={
-                    valueDate && moment(valueDate, 'YYYY-MM-DD HH:mm:ss', true).isValid() ? moment(valueDate, 'YYYY-MM-DD HH:mm:ss') : null
-                }
+                value={valueDate && dayjs(valueDate, 'YYYY-MM-DD HH:mm:ss').isValid() ? dayjs(valueDate, 'YYYY-MM-DD HH:mm:ss') : null}
                 onChange={handleTimeChange}
             />
         </div>

@@ -87,10 +87,27 @@ type Profile = {
     image: string
 }
 
+export type ReferralEntry = {
+    user: string | null
+    status: string
+    mobile: string
+    earned: number
+}
+
+export type ReferralData = {
+    referral_code: string
+    referral_count: number
+    referral_data: ReferralEntry[]
+    total_earned: number
+    total_pending: number
+    total_redeemed: number
+}
+
 type Data = {
     orders: Order
     cart: Cart
     profile: Profile
+    referral: ReferralData
 }
 
 export type OrderSummaryTYPE = {

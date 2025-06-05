@@ -27,6 +27,7 @@ import moment from 'moment'
 import { beforeVideoUpload } from '@/common/beforUploadVideo'
 import VideoComponent from './component/VideoComponent'
 import { Checkbox } from '@/components/ui'
+import dayjs from 'dayjs'
 
 const EditBanner = () => {
     const [bannerData, setBannerData] = useState<BANNERMODEL>()
@@ -344,7 +345,7 @@ const EditBanner = () => {
                                             <DatePicker
                                                 showTime
                                                 placeholder=""
-                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                                 onChange={(value) => {
                                                     form.setFieldValue('from_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                                 }}
@@ -358,7 +359,7 @@ const EditBanner = () => {
                                             <DatePicker
                                                 showTime
                                                 placeholder=""
-                                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                                value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                                 onChange={(value) => {
                                                     form.setFieldValue('to_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                                 }}
