@@ -5,10 +5,10 @@ import { Field, FieldProps } from 'formik'
 import React from 'react'
 import { AutoGenerateType, NumericTypeArray } from './CouponsGenerateCommon'
 import { DatePicker } from 'antd'
-import moment from 'moment'
 
 import { beforeUpload } from '@/common/beforeUpload'
 import { CiCircleQuestion } from 'react-icons/ci'
+import dayjs from 'dayjs'
 
 interface Props {
     formattedOptions: any[]
@@ -92,7 +92,7 @@ const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
                         <DatePicker
                             showTime
                             placeholder=""
-                            value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                             onChange={(value) => {
                                 form.setFieldValue('valid_to', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                             }}
