@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Checkbox, FormContainer, FormItem, Input, Select, Upload } from '@/components/ui'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { offerFormArray } from './offerEngineCommon'
 import { Field, FieldProps } from 'formik'
 import { DatePicker } from 'antd'
-import moment from 'moment'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { FILTER_STATE } from '@/store/types/filters.types'
 import { IoMdAddCircle } from 'react-icons/io'
 import { MdCancel } from 'react-icons/md'
 import { beforeUpload } from '@/common/beforeUpload'
+import dayjs from 'dayjs'
 
 const apply_offer_type_array = [
     { label: 'In Sets of Minimum Quantity', value: 'MIN_QTY_SETS' },
@@ -177,7 +175,7 @@ const offerCommonForm = ({
                             <DatePicker
                                 showTime
                                 placeholder=""
-                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                 onChange={(value) => {
                                     form.setFieldValue('start_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                 }}
@@ -191,7 +189,7 @@ const offerCommonForm = ({
                             <DatePicker
                                 showTime
                                 placeholder=""
-                                value={field.value ? moment(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
                                 onChange={(value) => {
                                     form.setFieldValue('end_date', value ? value.format('YYYY-MM-DD HH:mm:ss') : '')
                                 }}
