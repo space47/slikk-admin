@@ -5,9 +5,8 @@ import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '
 import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
-
 import ReplaceDrawer from './ReplaceDrawer'
-import { Button, Select } from '@/components/ui'
+import { Button } from '@/components/ui'
 
 import.meta.env.VITE_WEB_URI
 
@@ -20,15 +19,15 @@ type Product = Partial<{
     size: string
     product_type: string
     image: string
-    sp: string | number
+    sp: string | undefined
     quantity: string
-    sub_category: string
+    sub_category: string | undefined
     location: string
-    mrp: string | number
+    mrp: string | undefined
     fulfilled_quantity: string
     final_price: number
     sku: string
-    category: string
+    category: string | undefined
 }>
 
 type OrderProductsProps = {
@@ -41,7 +40,12 @@ const { Tr, Th, Td, THead, TBody } = Table
 
 const columnHelper = createColumnHelper<Product>()
 
-const ProductColumn = ({ row }: { row: Product }) => {
+type productProps = {
+    row: Product
+    status: string
+}
+
+const ProductColumn = ({ row, status }: productProps) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
 
@@ -53,13 +57,23 @@ const ProductColumn = ({ row }: { row: Product }) => {
         setParticularROwImage(img)
         setShowImageModal(true)
     }
+    console.log('row data is', status)
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
-            <img
-                src={row.image.split(',')[0]}
-                className=" xl:mt-3 w-[100px] h-[120px] cursor-pointer"
-                onClick={() => handleImageView(row.image)}
-            />
+            <div className="relative">
+                <img
+                    src={row?.image?.split(',')[0] || ''}
+                    className="xl:mt-3 w-[100px] h-[120px] cursor-pointer"
+                    onClick={() => handleImageView(row.image || '')}
+                />
+                {Number(row?.fulfilled_quantity) <= 0 && status !== 'PENDING' && status !== 'ACCEPTED' && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none bottom-8">
+                        <div className="mt-10 font-bold border-2 border-red-500 rounded-xl inline-flex py-3 px-3 bg-red-50 text-red-700 whitespace-nowrap -rotate-45 opacity-70">
+                            Out of stock
+                        </div>
+                    </div>
+                )}
+            </div>
 
             <div className="ltr:ml-2 rtl:mr-2 xl:w-[300px] ">
                 <div className="mb-2 text-[18px] font-bold ">
@@ -93,7 +107,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
     )
 }
 
-const PriceAmount = ({ amount }: { amount: number }) => {
+const PriceAmount = ({ amount }: { amount: number | undefined }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
@@ -108,7 +122,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
             header: '',
             cell: (props) => {
                 const row = props.row.original
-                return <ProductColumn row={row} />
+                return <ProductColumn row={row} status={status} />
             },
         }),
 
@@ -183,7 +197,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
         }),
     ]
 
-    const handleReplace = (itemId: number) => {
+    const handleReplace = (itemId: number | undefined) => {
         setReplaceDrawer(true)
         setItemId(itemId)
     }
@@ -239,17 +253,17 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
             <div>
                 {data && data.length > 0 && (
                     <div className="grid grid-cols-1 gap-4 xl:hidden ">
-                        {data.map((pdts) => (
+                        {data?.map((pdts) => (
                             <div
                                 key={pdts.id}
-                                className="flex  p-3 bg-white shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12 dark:bg-gray-800 dark:text-white"
+                                className={`flex  p-3 shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12 dark:bg-gray-800 dark:text-white ${Number(pdts?.fulfilled_quantity) <= 0 && status !== 'PENDING' && status !== 'ACCEPTED' ? 'bg-red-200' : 'bg-white'}`}
                             >
                                 <div className="flex-shrink-0">
                                     <img
-                                        src={pdts.image.split(',')[0]}
+                                        src={pdts?.image?.split(',')[0] || ''}
                                         alt={pdts.name}
                                         className="w-28 xl:w-44 h-52 object-cover rounded-lg cursor-pointer"
-                                        onClick={() => handleImageView(pdts.image)}
+                                        onClick={() => handleImageView(pdts?.image || '')}
                                     />
                                 </div>
                                 <div className="ml-6 w-full ">
@@ -284,7 +298,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                                         </div>
                                     )}
                                     <div className="flex justify-end mt-10">
-                                        <Button variant="reject" size="sm" onClick={() => handleReplace(pdts.id)}>
+                                        <Button variant="reject" size="sm" onClick={() => handleReplace(pdts?.id)}>
                                             Replace
                                         </Button>
                                     </div>

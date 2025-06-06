@@ -9,11 +9,13 @@ import React, { useEffect, useState } from 'react'
 import CareerForm from '../CareerForm'
 import { useNavigate, useParams } from 'react-router-dom'
 import { JobPostingTypes } from '../careersCommon'
+import CareerPreview from '../CareerPreview'
 
 const EditCareers = () => {
     const dispatch = useAppDispatch()
     const [jobDetails, setJobDetails] = useState<JobPostingTypes>([])
     const [departmentsData, setDepartmentsData] = useState<any[]>([])
+    const [showPreview, setShowPreview] = useState(false)
     const navigate = useNavigate()
 
     const { job_id } = useParams()
@@ -89,6 +91,8 @@ const EditCareers = () => {
         }
     }
 
+    console.log('setPreview', showPreview)
+
     return (
         <div>
             <Formik
@@ -102,9 +106,27 @@ const EditCareers = () => {
                         <FormContainer className="">
                             <CareerForm departmentsData={departmentsData} />
                         </FormContainer>
-                        <Button variant="accept" type="submit">
-                            Submit
-                        </Button>
+                        <div className="flex justify-between gap-3">
+                            <Button variant="accept" type="submit">
+                                Submit
+                            </Button>
+                            {showPreview ? (
+                                <div
+                                    className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-600 hover:bg-pink-700 text-white shadow-md transition-all duration-200"
+                                    onClick={() => setShowPreview(false)}
+                                >
+                                    Close
+                                </div>
+                            ) : (
+                                <div
+                                    className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition-all duration-200"
+                                    onClick={() => setShowPreview(true)}
+                                >
+                                    Preview
+                                </div>
+                            )}
+                        </div>
+                        {showPreview && <CareerPreview jobDetails={values} />}
                     </Form>
                 )}
             </Formik>
