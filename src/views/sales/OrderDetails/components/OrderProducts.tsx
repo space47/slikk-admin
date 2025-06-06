@@ -5,10 +5,8 @@ import { useReactTable, getCoreRowModel, flexRender, createColumnHelper } from '
 import { NumericFormat } from 'react-number-format'
 import { useState } from 'react'
 import ImageMODAL from '@/common/ImageModal'
-
 import ReplaceDrawer from './ReplaceDrawer'
-import { Button, Select } from '@/components/ui'
-import { GiCrossMark } from 'react-icons/gi'
+import { Button } from '@/components/ui'
 
 import.meta.env.VITE_WEB_URI
 
@@ -21,15 +19,15 @@ type Product = Partial<{
     size: string
     product_type: string
     image: string
-    sp: string | number
+    sp: string | undefined
     quantity: string
-    sub_category: string
+    sub_category: string | undefined
     location: string
-    mrp: string | number
+    mrp: string | undefined
     fulfilled_quantity: string
     final_price: number
     sku: string
-    category: string
+    category: string | undefined
 }>
 
 type OrderProductsProps = {
@@ -109,7 +107,7 @@ const ProductColumn = ({ row, status }: productProps) => {
     )
 }
 
-const PriceAmount = ({ amount }: { amount: number }) => {
+const PriceAmount = ({ amount }: { amount: number | undefined }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
@@ -199,7 +197,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
         }),
     ]
 
-    const handleReplace = (itemId: number) => {
+    const handleReplace = (itemId: number | undefined) => {
         setReplaceDrawer(true)
         setItemId(itemId)
     }

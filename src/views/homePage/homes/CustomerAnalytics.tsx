@@ -15,6 +15,7 @@ import CartShipping from './componentsHomes/CartShipping'
 import CartTabs from './componentsHomes/CartTabs'
 import NotFoundData from '@/views/pages/NotFound/Notfound'
 import CustomerReferral from './componentsHomes/CustomerReferral'
+import CustomerEvents from './componentsHomes/CustomerEvents'
 
 const CustomerAnalytics = () => {
     const [blockUser, setBlockUser] = useState(false)
@@ -79,6 +80,12 @@ const CustomerAnalytics = () => {
             </div>
 
             {/* Cart Section */}
+
+            {Array.isArray(customerData?.event) && customerData.event.length > 0 && (
+                <div>
+                    <CustomerEvents customerEvents={customerData?.event || []} />
+                </div>
+            )}
 
             {customerData?.referral && (
                 <div>

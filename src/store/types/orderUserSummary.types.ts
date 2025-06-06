@@ -103,10 +103,19 @@ export type ReferralData = {
     total_redeemed: number
 }
 
+export type CustomerEventData = {
+    event_code: string
+    order: string
+    other_conditions_accepted: boolean
+    status: string
+    terms_and_conditions_accepted: boolean
+}
+
 type Data = {
     orders: Order
     cart: Cart
     profile: Profile
+    event: CustomerEventData[]
     referral: ReferralData
 }
 

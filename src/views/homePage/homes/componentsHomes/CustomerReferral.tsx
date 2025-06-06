@@ -67,7 +67,9 @@ const CustomerReferral = ({ referralData }: Props) => {
                     </div>
                 ))}
             </div>
-            <EasyTable noPage overflow columns={columns} mainData={referralData?.referral_data || []} />
+            {referralData?.referral_data?.length > 0 && (
+                <EasyTable noPage overflow columns={columns} mainData={referralData?.referral_data || []} />
+            )}
         </div>
     )
 }
