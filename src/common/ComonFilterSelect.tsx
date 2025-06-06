@@ -114,7 +114,7 @@ const ComonFilterSelect = ({ setFilterId, filterId }: props) => {
                                     <Select
                                         isMulti
                                         placeholder={`Filter Tags ${index + 1}`}
-                                        options={filters.filters?.flatMap((filterGroup) => filterGroup.options) || []}
+                                        options={filters.filters || []}
                                         value={selectedOptions}
                                         getOptionLabel={(option) => option.label}
                                         getOptionValue={(option) => option.value}
