@@ -42,7 +42,12 @@ const { Tr, Th, Td, THead, TBody } = Table
 
 const columnHelper = createColumnHelper<Product>()
 
-const ProductColumn = ({ row }: { row: Product }) => {
+type productProps = {
+    row: Product
+    status: string
+}
+
+const ProductColumn = ({ row, status }: productProps) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
 
@@ -54,7 +59,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
         setParticularROwImage(img)
         setShowImageModal(true)
     }
-    console.log('row data is', row)
+    console.log('row data is', status)
     return (
         <div className="flex gap-8 justify-center flex-col xl:flex-row">
             <div className="relative">
@@ -63,7 +68,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
                     className="xl:mt-3 w-[100px] h-[120px] cursor-pointer"
                     onClick={() => handleImageView(row.image || '')}
                 />
-                {Number(row?.fulfilled_quantity) <= 0 && (
+                {Number(row?.fulfilled_quantity) <= 0 && status !== 'PENDING' && status !== 'ACCEPTED' && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none bottom-8">
                         <div className="mt-10 font-bold border-2 border-red-500 rounded-xl inline-flex py-3 px-3 bg-red-50 text-red-700 whitespace-nowrap -rotate-45 opacity-70">
                             Out of stock
@@ -119,7 +124,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
             header: '',
             cell: (props) => {
                 const row = props.row.original
-                return <ProductColumn row={row} />
+                return <ProductColumn row={row} status={status} />
             },
         }),
 
@@ -253,7 +258,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                         {data?.map((pdts) => (
                             <div
                                 key={pdts.id}
-                                className={`flex  p-3 shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12 dark:bg-gray-800 dark:text-white ${Number(pdts?.fulfilled_quantity) <= 0 ? 'bg-red-200' : 'bg-white'}`}
+                                className={`flex  p-3 shadow-lg rounded-lg hover:shadow-2xl transition-shadow xl:gap-12 dark:bg-gray-800 dark:text-white ${Number(pdts?.fulfilled_quantity) <= 0 && status !== 'PENDING' && status !== 'ACCEPTED' ? 'bg-red-200' : 'bg-white'}`}
                             >
                                 <div className="flex-shrink-0">
                                     <img
