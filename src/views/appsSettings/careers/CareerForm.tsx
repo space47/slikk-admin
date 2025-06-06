@@ -1,5 +1,5 @@
 import { Checkbox, FormContainer, FormItem, Input, Select } from '@/components/ui'
-import React from 'react'
+import React, { useState } from 'react'
 import { CareerFormArray } from './careersCommon'
 import { Field, FieldProps } from 'formik'
 import CommonSelectByLabel from '@/common/CommonSelectByLabel'
@@ -52,13 +52,6 @@ const CareerForm = ({ departmentsData }: props) => {
 
                 <FormContainer className="grid grid-cols-2">
                     <CommonSelectByLabel label="Job Type" options={JobTypeArray} name="job_type" fieldname="job_type" />
-                    {/* <CommonSelectByLabel
-                        label="Select Department"
-                        options={formattedData}
-                        name="department_name"
-                        fieldname="department_name"
-                    /> */}
-
                     <FormItem label="Department Name">
                         <Field name="department">
                             {({ form, field }: FieldProps) => {
