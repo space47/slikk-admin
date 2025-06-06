@@ -140,6 +140,27 @@ const OrderDetails = () => {
         setShowRiderData(false)
     }
 
+    const ReturnOrderList = ({ title, items }) => {
+        if (!items || items.length === 0) return null
+
+        return (
+            <div className="flex flex-col xl:flex-row gap-2 items-center">
+                <span className="text-gray-700">{title}:</span>
+                <div className="flex flex-wrap gap-2">
+                    {items.map((item, key) => (
+                        <a
+                            key={key}
+                            href={`/app/returnOrders/${item.return_order_id}`}
+                            className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
+                        >
+                            {item.return_order_id}
+                        </a>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
     return (
         <Container className="p-4 xl:px-10 overflow-scroll scrollbar-hide ">
             <Loading loading={loading}>
@@ -237,20 +258,16 @@ const OrderDetails = () => {
                                     )}
                                 </div>
                                 {data.return_order.length > 0 && (
-                                    <div className="flex flex-col xl:flex-row gap-2 items-center">
-                                        <span className="text-gray-700">Return Orders:</span>
-                                        <div className="flex flex-wrap gap-2">
-                                            {data.return_order.map((item, key) => (
-                                                <a
-                                                    key={key}
-                                                    href={`/app/returnOrders/${item.return_order_id}`}
-                                                    className="text-blue-600 hover:underline hover:text-blue-800 transition duration-200"
-                                                >
-                                                    {item.return_order_id}
-                                                </a>
-                                            ))}
-                                        </div>
-                                    </div>
+                                    <>
+                                        <ReturnOrderList
+                                            title="Return Orders"
+                                            items={data.return_order.filter((item) => item?.status !== 'ACCEPTED')}
+                                        />
+                                        <ReturnOrderList
+                                            title="UnFullfilled Orders"
+                                            items={data.return_order.filter((item) => item?.status === 'ACCEPTED')}
+                                        />
+                                    </>
                                 )}
                                 {data?.reference_return && (
                                     <div>
