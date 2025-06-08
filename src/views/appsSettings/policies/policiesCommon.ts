@@ -5,13 +5,15 @@ export const CONFIGOPTIONS = [
     { value: 'refundPolicy', label: 'Refund Policy' },
     {
         value: 'returnAndCancellationConfiguration',
-        label: 'Return And Cancellation Configuration'
+        label: 'Return And Cancellation Configuration',
     },
     {
         value: 'shippingPolicyConfiguration',
-        label: 'Shipping Policy Configuration'
+        label: 'Shipping Policy Configuration',
     },
     { value: 'aboutUs', label: 'About Us' },
     { value: 'loyalty', label: 'Loyalty' },
-    { value: 'registration', label: 'Registration' }
+    { value: 'referral', label: 'Referral' },
+    { value: 'generic', label: 'Generic' },
+    { value: 'registration', label: 'Registration' },
 ]

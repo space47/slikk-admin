@@ -19,6 +19,7 @@ import { FaEdit, FaPlusCircle } from 'react-icons/fa'
 import EventNamesModal from '../EventNamesModal'
 import EditEventNamesModal from '../EditEventNameModal'
 import { Checkbox } from '@/components/ui'
+import { NotificationTypeNamed } from '../editNotification/notification'
 
 const AddNotification = () => {
     const dispatch = useAppDispatch()
@@ -184,6 +185,20 @@ const AddNotification = () => {
         }
     }
 
+    const handleInsertVariable = (field: any, form: any, variable: string) => {
+        const selection = window.getSelection()
+        if (selection && selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0)
+            const textNode = document.createTextNode(`{{${variable}}}`)
+            range.insertNode(textNode)
+            range.setStartAfter(textNode)
+            range.setEndAfter(textNode)
+            selection.removeAllRanges()
+            selection.addRange(range)
+        }
+        form.setFieldValue(field.name, field.value || '')
+    }
+
     return (
         <div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
@@ -252,7 +267,26 @@ const AddNotification = () => {
                             <FormItem label="Message" labelClass="!justify-start" className="col-span-1 w-full">
                                 <Field name="message">
                                     {({ field, form }: FieldProps) => (
-                                        <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                        <>
+                                            <RichTextEditor
+                                                value={field.value}
+                                                onChange={(val) => {
+                                                    form.setFieldValue(field.name, val)
+                                                }}
+                                            />
+                                            <div className="flex gap-2 mt-3 flex-wrap">
+                                                {NotificationTypeNamed.map((item, index) => (
+                                                    <button
+                                                        key={index}
+                                                        type="button"
+                                                        className="flex items-center gap-2 mb-5 bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded-xl cursor-pointer"
+                                                        onClick={() => handleInsertVariable(field, form, item)}
+                                                    >
+                                                        {item}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </>
                                     )}
                                 </Field>
                             </FormItem>
