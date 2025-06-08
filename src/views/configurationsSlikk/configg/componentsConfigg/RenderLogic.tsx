@@ -65,8 +65,8 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                             />
                             <button
                                 type="button"
-                                onClick={() => setFieldValue(parentKey, typeof obj === 'string' ? '' : typeof obj === 'number' ? 0 : false)}
                                 className="text-red-500"
+                                onClick={() => setFieldValue(parentKey, typeof obj === 'string' ? '' : typeof obj === 'number' ? 0 : false)}
                             >
                                 <MdCancel className="text-xl" />
                             </button>
@@ -92,6 +92,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                         <Input
                                             placeholder="Key"
                                             value={tempKey}
+                                            className="w-1/3"
                                             onChange={(e) => {
                                                 const newKey = e.target.value
                                                 setEditableKeys((prev: any) => ({ ...prev, [key]: newKey }))
@@ -106,15 +107,14 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                                 }
                                                 setEditableKeys((prev: any) => {
                                                     const { [key]: _, ...rest } = prev
+                                                    console.log('rest', _)
                                                     return rest
                                                 })
                                             }}
-                                            className="w-1/3"
                                         />
                                     )}
                                 </Field>
 
-                                {/* Editable value based on key */}
                                 {key.toLowerCase().includes('filters') ? (
                                     <div>
                                         <Field name={fieldName}>
@@ -152,20 +152,44 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                             }}
                                         </Field>
                                     </div>
+                                ) : key.toLowerCase() === 'message' && obj?.messages_list?.length > 0 ? (
+                                    <Field name={fieldName}>
+                                        {({ field, form }: FieldProps<any>) => {
+                                            const messagesList = obj.messages_list || []
+                                            const options = Array.isArray(messagesList)
+                                                ? messagesList.map((message) => ({
+                                                      label: message,
+                                                      value: message,
+                                                  }))
+                                                : []
+
+                                            return (
+                                                <Select
+                                                    isClearable
+                                                    placeholder="Select Message"
+                                                    options={options}
+                                                    value={field.value ? { label: field.value, value: field.value } : null}
+                                                    onChange={(newVal) => {
+                                                        form.setFieldValue(field.name, newVal ? newVal.value : '')
+                                                    }}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
                                 ) : key.toLowerCase().includes('image') ? (
                                     <FormItem className="xl:mt-6">
                                         <Field name={fieldName}>
-                                            {({ field, form }) => (
+                                            {() => (
                                                 <Field name={fieldName}>
                                                     {({ form }: FieldProps) => (
                                                         <Upload
                                                             beforeUpload={beforeUpload}
+                                                            className="flex justify-center"
                                                             onChange={(files) => {
                                                                 console.log('files to be upload', fieldName)
                                                                 return form.setFieldValue(fieldName, files)
                                                             }}
                                                             onFileRemove={(files) => form.setFieldValue(fieldName, files)}
-                                                            className="flex justify-center"
                                                         />
                                                     )}
                                                 </Field>
@@ -177,8 +201,8 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                             placeholder={`Enter ${key}`}
                                             name={fieldName}
                                             value={val}
-                                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
                                             className="w-[500px]"
+                                            onChange={(e: any) => setFieldValue(fieldName, e.target.value)}
                                         />
                                     </FormItem>
                                 ) : _.isPlainObject(val) || _.isArray(val) ? (
@@ -213,12 +237,12 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                 {/* Remove buttn */}
                                 <button
                                     type="button"
+                                    className="text-red-500"
                                     onClick={() => {
                                         const updatedObj = { ...obj }
                                         delete updatedObj[key]
                                         setFieldValue(parentKey, updatedObj)
                                     }}
-                                    className="text-red-500"
                                 >
                                     <MdCancel className="text-xl" />
                                 </button>
@@ -226,11 +250,11 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                         )
                     })}
 
-                    <button type="button" onClick={handleAddField} className=" text-green-600 px-4 py-2 rounded">
+                    <button type="button" className=" text-green-600 px-4 py-2 rounded" onClick={handleAddField}>
                         <IoIosAddCircle className="text-xl" />
                     </button>
 
-                    <Modal title="Select Field Type" open={isAddModalOpen} onCancel={() => setIsAddModalOpen(false)} footer={null}>
+                    <Modal title="Select Field Type" open={isAddModalOpen} footer={null} onCancel={() => setIsAddModalOpen(false)}>
                         <div className="flex flex-col gap-2">
                             <button
                                 className="p-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-lg "
@@ -305,7 +329,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                             />
                                         )}
 
-                                        <button type="button" onClick={() => arrayHelpers.remove(index)} className="text-red-500">
+                                        <button type="button" className="text-red-500" onClick={() => arrayHelpers.remove(index)}>
                                             X
                                         </button>
                                     </div>
@@ -320,7 +344,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                 <IoIosAddCircle className="text-xl" /> Add Item
                             </button>
 
-                            <Modal title="Select Field Type" open={isAddModalOpen} onCancel={() => setIsAddModalOpen(false)} footer={null}>
+                            <Modal title="Select Field Type" open={isAddModalOpen} footer={null} onCancel={() => setIsAddModalOpen(false)}>
                                 <div className="flex flex-col gap-2">
                                     {['string', 'array', 'object'].map((type) => (
                                         <button

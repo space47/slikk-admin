@@ -20,7 +20,6 @@ const columnHelper = createColumnHelper<any>()
 const ProductColumn = ({ row }: { row: any }) => {
     const [showImageModal, setShowImageModal] = useState(false)
     const [particularRowImage, setParticularROwImage] = useState('')
-
     const handleImageView = (img: string) => {
         setParticularROwImage(img)
         setShowImageModal(true)
@@ -69,11 +68,7 @@ const PriceAmount = ({ amount }: { amount: number }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
-interface props {
-    task_id: any
-}
-
-const ReturnProductsDetails = ({ task_id }: props) => {
+const ReturnProductsDetails = ({ task_id }: { task_id: any }) => {
     const returnOrder = useAppSelector<ReturnOrderState>((state) => state.returnOrders)
     const [showCancelModal, setShowCancelModal] = useState(false)
     const returnOrderId = returnOrder?.returnOrders?.return_order_id
@@ -109,7 +104,7 @@ const ReturnProductsDetails = ({ task_id }: props) => {
             header: 'Return Reason',
             cell: (props) => {
                 const row = props.row.original
-                return <div>{row.return_reason}</div>
+                return <div>{row?.return_reason === 'Partially order accepted' ? 'Item not found' : row?.return_reason}</div>
             },
         }),
         columnHelper.accessor('', {
@@ -150,7 +145,7 @@ const ReturnProductsDetails = ({ task_id }: props) => {
             setShowCancelModal(false)
         }
     }
-    const handleQCDetails = (row) => {
+    const handleQCDetails = (row: any) => {
         setParticularSkuForQc(row?.product?.sku)
         setIsQcDetails(true)
     }
@@ -158,7 +153,6 @@ const ReturnProductsDetails = ({ task_id }: props) => {
     return (
         <AdaptableCard className="mb-4 py-3">
             <EasyTable noPage overflow mainData={returnProducts} columns={columns} />
-
             {returnProducts?.length > 0 ? (
                 <div className="flex xl:justify-end justify-center mr-7 ">
                     <div className="flex gap-3 xl:flex-row flex-col ">

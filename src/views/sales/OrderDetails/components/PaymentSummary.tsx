@@ -116,6 +116,14 @@ const PaymentSummary = ({
                         Loyalty Discount <span className="font-semibold">Rs.{loyalty_discount}</span>
                     </div>
                 )}
+                {mainData?.other_charges_data &&
+                    Object.entries(mainData.other_charges_data).map(([key, value]) => (
+                        <div key={key} className="flex justify-between mb-2">
+                            {key}
+                            <span className="font-semibold">Rs.{'' + value}</span>
+                        </div>
+                    ))}
+
                 {points_discount !== '0.00' && (
                     <div className="flex justify-between mb-2">
                         Points Discount <span className="font-semibold">Rs.{points_discount}</span>

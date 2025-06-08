@@ -22,6 +22,7 @@ import EventNamesModal from '../EventNamesModal'
 import EditEventNamesModal from '../EditEventNameModal'
 import { FaEdit, FaPlusCircle } from 'react-icons/fa'
 import { Checkbox } from '@/components/ui'
+import { NotificationTypeNamed } from './notification'
 
 const EditNotification = () => {
     const dispatch = useAppDispatch()
@@ -248,18 +249,28 @@ const EditNotification = () => {
                                             <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
                                         )}
                                     </Field>
+                                    <div className="flex gap-2 mt-3 flex-wrap">
+                                        {NotificationTypeNamed.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex items-center gap-2 mb-5 bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded-xl cursor-pointer"
+                                            >
+                                                {item}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </FormItem>
 
                                 <FormItem>
                                     <FormItem asterisk label="EVENT NAMES" className="col-span-1 w-1/2">
-                                        <div className="flex items-center gap-2 mb-5">
+                                        {/* <div className="flex items-center gap-2 mb-5">
                                             <span onClick={() => setIsModalOpen({ ...isModalOpen, add: true })}>
                                                 <FaPlusCircle className="text-xl text-green-500 cursor-pointer" />
                                             </span>
                                             <span onClick={() => setIsModalOpen({ ...isModalOpen, edit: true })}>
                                                 <FaEdit className="text-xl text-blue-600 cursor-pointer" />
                                             </span>
-                                        </div>
+                                        </div> */}
                                         <Field name="event_name">
                                             {({ field, form }: FieldProps<any>) => {
                                                 return (

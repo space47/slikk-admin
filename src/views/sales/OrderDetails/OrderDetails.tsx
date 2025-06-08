@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
-// import classNames from 'classnames'
-// import Tag from '@/components/ui/Tag'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
@@ -188,13 +186,7 @@ const OrderDetails = () => {
                                                     </div>
                                                 </>
                                             ) : (
-                                                <>
-                                                    <div>
-                                                        {/* <Button variant="accept" size="sm" onClick={() => setShowUTMModal(true)}>
-                                                            ADD TICKET
-                                                        </Button> */}
-                                                    </div>
-                                                </>
+                                                <></>
                                             )}
                                         </span>
                                     </div>
