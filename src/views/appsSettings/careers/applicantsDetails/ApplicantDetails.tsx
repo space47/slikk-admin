@@ -61,7 +61,7 @@ const ApplicantDetails = () => {
         <div>
             <div className="bg-gradient-to-br from-white to-gray-100 shadow-2xl rounded-3xl p-8 border border-gray-300">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">{jobData?.title}</h2>
-                <p className="text-gray-600 mb-6">{jobData?.description}</p>
+                <p className="text-gray-600 mb-6" dangerouslySetInnerHTML={{ __html: jobData?.description }}></p>
                 {Job_Array?.map((item, key) => (
                     <div key={key} className="grid grid-cols-2 gap-6 text-base">
                         <div className="flex items-center gap-2">
@@ -74,7 +74,7 @@ const ApplicantDetails = () => {
                     <div key={key} className="grid grid-cols-2 gap-3">
                         <div className="mt-6">
                             <h3 className="text-xl font-bold text-gray-900  pb-2">{item?.label}</h3>
-                            <p className="text-gray-700 mt-2">{item?.value}</p>
+                            <p className="text-gray-600 mb-6" dangerouslySetInnerHTML={{ __html: item?.value }}></p>
                         </div>
                     </div>
                 ))}

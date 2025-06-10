@@ -14,7 +14,8 @@ const CareerPreview = ({ jobDetails }: props) => {
     return (
         <div className="min-h-screen bg-white text-black">
             <header className="py-6 px-4 md:px-6 lg:px-8 border-b border-gray-200">
-                <h1 className="text-5xl font-bold tracking-tight text-center text-gray-900 capitalize">{jobDetails.title}</h1>
+                {/* <h1 className="text-5xl font-bold tracking-tight text-center text-gray-900 capitalize">{jobDetails.title}</h1> */}
+                <p className="text-gray-600 mb-6" dangerouslySetInnerHTML={{ __html: jobDetails.title }}></p>
             </header>
 
             <main className="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
