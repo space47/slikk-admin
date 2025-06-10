@@ -12,7 +12,7 @@ interface Props {
 }
 
 const QcDetailsModal = ({ dialogIsOpen, setIsOpen, task_id, sku }: Props) => {
-    const [taskData, setTaskData] = useState<any>()
+    const [logisticData, setLogisticData] = useState<any>({})
     const [images, setImages] = useState<string[]>([])
     console.log('sku inside modal', sku)
 
@@ -20,7 +20,7 @@ const QcDetailsModal = ({ dialogIsOpen, setIsOpen, task_id, sku }: Props) => {
         try {
             const response = await axioisInstance.get(`/logistic/slikk/task?task_id=${task_id}`)
             const data = response.data.data
-            setTaskData(data)
+            setLogisticData(data?.slikklogistic_item)
 
             if (data.slikklogistic_item && data.slikklogistic_item.length > 0) {
                 const allImages: string[] = []
@@ -70,6 +70,18 @@ const QcDetailsModal = ({ dialogIsOpen, setIsOpen, task_id, sku }: Props) => {
                         </span>
                         No Image Available
                     </p>
+                )}
+                {logisticData?.qc_detail?.length > 0 && (
+                    <>
+                        <div className="mt-4 mb-2">
+                            {logisticData?.qc_detail?.map((item: any, index: number) => (
+                                <div key={index} className="flex gap-2 items-center">
+                                    <p className="text-lg font-semibold">{item?.question}</p>
+                                    <p className="text-md text-red-500"> {item?.status}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </Modal>
         </div>

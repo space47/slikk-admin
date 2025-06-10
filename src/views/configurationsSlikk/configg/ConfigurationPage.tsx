@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card } from '@/components/ui'
+import { Card, Input } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
-// import { useNavigate } from 'react-router-dom'
 import { ConfigInterface } from './componentsConfigg/commonConfigTypes'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
@@ -14,7 +13,8 @@ const ConfigurationPage = () => {
     const [configurationData, setConfigurationData] = useState<ConfigInterface[]>([])
     const [showSpinner, setShowSpinner] = useState(false)
     const [accessDenied, setAccessDenied] = useState(false)
-    // const navigate = useNavigate()
+    const [searchConfig, setSearchConfig] = useState('')
+    const [filteredData, setFilteredData] = useState<ConfigInterface[]>([])
 
     const fetchConfigurationApi = async () => {
         try {
@@ -34,6 +34,15 @@ const ConfigurationPage = () => {
     useEffect(() => {
         fetchConfigurationApi()
     }, [])
+
+    useEffect(() => {
+        if (searchConfig.trim() !== '') {
+            const filteredData = configurationData.filter((item) => item.name.toLowerCase().includes(searchConfig.toLowerCase()))
+            setFilteredData(filteredData)
+        } else if (!searchConfig.trim()) {
+            setFilteredData(configurationData)
+        }
+    }, [searchConfig, configurationData])
 
     const renderValue = (value: any) => {
         if (_.isPlainObject(value)) {
@@ -69,21 +78,26 @@ const ConfigurationPage = () => {
         return <span className="text-indigo-600">{value}</span>
     }
 
-    // const handleEditConfiguration = (id: number | string) => {
-    //     navigate(`/app/configurations/edit/${id}`)
-    // }
     if (showSpinner) {
         return <LoadingSpinner />
     }
-
     if (accessDenied) {
         return <AccessDenied />
     }
 
     return (
         <div className="flex flex-col gap-6 p-8  min-h-screen">
+            <div className="flex mb-4">
+                <Input
+                    type="search"
+                    value={searchConfig}
+                    placeholder="Search Configuration by Name"
+                    className="w-1/2 max-w-md mb-6 rounded-xl"
+                    onChange={(e) => setSearchConfig(e.target.value)}
+                />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {configurationData
+                {filteredData
                     ?.sort(function (a: any, b: any) {
                         return a?.id - b?.id
                     })
@@ -98,10 +112,7 @@ const ConfigurationPage = () => {
                                         Id:<span className="text-red-600">{item?.id}</span>
                                     </span>
                                     <a href={`/app/configurations/edit/${item?.id}`} target="_blank" rel="noreferrer">
-                                        <FaEdit
-                                            className="cursor-pointer text-blue-500"
-                                            // onClick={() => handleEditConfiguration(item?.id)}
-                                        />
+                                        <FaEdit className="cursor-pointer text-blue-500" />
                                     </a>
                                 </div>
                                 <div className="text-lg font-medium text-gray-700">

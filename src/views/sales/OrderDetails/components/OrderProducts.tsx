@@ -66,7 +66,7 @@ const ProductColumn = ({ row, status }: productProps) => {
                     className="xl:mt-3 w-[100px] h-[120px] cursor-pointer"
                     onClick={() => handleImageView(row.image || '')}
                 />
-                {Number(row?.fulfilled_quantity) <= 0 && status !== 'PENDING' && status !== 'ACCEPTED' && (
+                {Number(row?.fulfilled_quantity) <= 0 && status !== 'PENDING' && status !== 'ACCEPTED' && status !== 'CANCELLED' && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none bottom-8">
                         <div className="mt-10 font-bold border-2 border-red-500 rounded-xl inline-flex py-3 px-3 bg-red-50 text-red-700 whitespace-nowrap -rotate-45 opacity-70">
                             Out of stock
