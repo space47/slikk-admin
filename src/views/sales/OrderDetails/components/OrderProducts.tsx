@@ -19,11 +19,11 @@ type Product = Partial<{
     size: string
     product_type: string
     image: string
-    sp: string | undefined
+    sp: string | undefined | number
     quantity: string
     sub_category: string | undefined
     location: string
-    mrp: string | undefined
+    mrp: string | undefined | number
     fulfilled_quantity: string
     final_price: number
     sku: string
@@ -84,7 +84,7 @@ const ProductColumn = ({ row, status }: productProps) => {
                     Product Name:
                     <h4 className="font-light text-[14px] flex-wrap">
                         <a
-                            href={`https://slikk.club/${segregatedNames(row.category)}/${segregatedNames(row.sub_category)}/${segregatedNames(row.brand)}/${segregatedNames(row.name)}/${row.barcode}`}
+                            href={`https://slikk.club/${segregatedNames(row.category || '')}/${segregatedNames(row.sub_category || '')}/${segregatedNames(row.brand || '')}/${segregatedNames(row.name || '')}/${row.barcode}`}
                             className="hover:text-blue-500 hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -107,7 +107,7 @@ const ProductColumn = ({ row, status }: productProps) => {
     )
 }
 
-const PriceAmount = ({ amount }: { amount: number | undefined }) => {
+const PriceAmount = ({ amount }: { amount: number }) => {
     return <NumericFormat displayType="text" value={(Math.round(amount * 100) / 100).toFixed(2)} prefix={'Rs.'} thousandSeparator={true} />
 }
 
@@ -151,7 +151,9 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
                 console.log('MRP', row?.mrp)
                 console.log('SP', row?.sp)
 
-                const percentageCalculation = Math.round(((parseFloat(row.mrp) - parseFloat(row.sp)) / parseFloat(row.mrp)) * 100)
+                const percentageCalculation = Math.round(
+                    ((parseFloat(row.mrp as string) - parseFloat(row.sp as string)) / parseFloat(row.mrp as string)) * 100,
+                )
 
                 return percentageCalculation > 0 ? (
                     <div className=" overflow-ellipsis flex flex-col">
@@ -177,7 +179,7 @@ const OrderProducts = ({ data = [], invoice_id, status }: OrderProductsProps) =>
             header: 'Final Price',
             cell: (props) => {
                 const row = props.row.original
-                return <PriceAmount amount={row.final_price} />
+                return <PriceAmount amount={row.final_price ?? 0} />
             },
         }),
         columnHelper.accessor('name', {

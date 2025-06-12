@@ -114,7 +114,7 @@ const RiderDetails = () => {
     return (
         <div>
             <div className="flex flex-col gap-10">
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-4 xl:gap-0 xl:flex-row xl:justify-between items-center">
                     <div className="flex flex-col gap-3">
                         <div className="text-xl font-bold">Select Warehouse:</div>
                         <Select
@@ -133,7 +133,7 @@ const RiderDetails = () => {
                         />
                     </div>
 
-                    <div className="flex flex-col gap-2 xl:flex-row xl:gap-10 items-center">
+                    <div className="flex flex-col gap-2 xl:flex-row xl:gap-5 items-center">
                         <div onClick={() => setShowRiderMap((prev) => !prev)} className="items-center xl:mt-8 flex gap-1">
                             <span className="text-xl font-bold cursor-pointer">{showRideeMap ? 'Close Map:' : 'View Map:'}</span>
                             <button>
