@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormContainer, FormItem, Input } from '@/components/ui'
+import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
 import React from 'react'
 import CommonSelect from './CommonSelect'
 import { Field, FieldProps } from 'formik'
@@ -9,26 +9,7 @@ import { DatePicker } from 'antd'
 import moment from 'moment'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
-import dayjs from 'dayjs'
-
-const dataTypeValidationArray = [
-    { name: 'data_type.start_date', label: 'Start Date' },
-    { name: 'data_type.end_date', label: 'End Date' },
-]
-
-const dataTypeArray = [
-    { label: 'Default', value: 'Default' },
-    { label: 'banner', value: 'banner' },
-    { label: 'wishlist', value: 'wishlist' },
-    { label: 'purchases', value: 'purchases' },
-    { label: 'searches', value: 'searches' },
-    { label: 'spotlight', value: 'spotlight' },
-    { label: 'products', value: 'products' },
-    { label: 'brands', value: 'brands' },
-    { label: 'post', value: 'post' },
-    { label: 'creator', value: 'creator' },
-    { label: 'Sub categories', value: 'categories' },
-]
+import { dataTypeArray, dataTypeValidationArray } from './configurationCommon'
 
 interface DataTypesProps {
     handleAddFilter: any
@@ -53,26 +34,26 @@ const DataTypes = ({ handleAddFilter, handleAddFilters, handleRemoveFilter, show
             {values?.data_type?.type === 'brands' && (
                 <>
                     <FormItem label="IS LOGO">
-                        <Field type="checkbox" name="data_type.is_logo" component={Input} />
+                        <Field type="checkbox" name="data_type.is_logo" component={Checkbox} />
                     </FormItem>
                 </>
             )}
             {['wishlist', 'purchases', 'searches', 'spotlight', 'products'].includes(values?.data_type?.type) && (
                 <FormItem label="Hide Info">
-                    <Field type="checkbox" name="data_type.hide_info" component={Input} />
+                    <Field type="checkbox" name="data_type.hide_info" component={Checkbox} />
                 </FormItem>
             )}
             {['categories', 'brands', 'purchases', 'searches', 'spotlight', 'products'].includes(values?.data_type?.type) &&
                 !values?.data_type.validation && (
                     <>
-                        {dataTypeValidationArray.map((item, key) => (
+                        {dataTypeValidationArray?.map((item, key) => (
                             <FormItem key={key} label={item.label}>
                                 <Field name={item.name}>
                                     {({ field, form }: FieldProps) => (
                                         <DatePicker
                                             disabled={values?.data_type.validation}
                                             className="w-1/2"
-                                            value={field.value ? dayjs(field.value, 'YYYY-MM-DD HH:mm:ss') : null}
+                                            value={field.value ? moment(field.value, 'YYYY-MM-DD') : null}
                                             onChange={(value) => {
                                                 form.setFieldValue(item.name, value ? value.format('YYYY-MM-DD') : '')
                                             }}

@@ -342,3 +342,22 @@ export const ParallaxConfigArray = [
     { label: 'Min Scale', name: 'component_config.carousel_minScale', type: 'number', message: 'Range between 0 -1' },
     { label: 'Max Scale', name: 'component_config.carousel_maxScale', type: 'number', message: 'Range between 0 -1' },
 ]
+
+export const dataTypeValidationArray = [
+    { name: 'data_type.start_date', label: 'Start Date' },
+    { name: 'data_type.end_date', label: 'End Date' },
+]
+
+export const dataTypeArray = [
+    { label: 'Default', value: 'Default' },
+    { label: 'banner', value: 'banner' },
+    { label: 'wishlist', value: 'wishlist' },
+    { label: 'purchases', value: 'purchases' },
+    { label: 'searches', value: 'searches' },
+    { label: 'spotlight', value: 'spotlight' },
+    { label: 'products', value: 'products' },
+    { label: 'brands', value: 'brands' },
+    { label: 'post', value: 'post' },
+    { label: 'creator', value: 'creator' },
+    { label: 'Sub categories', value: 'categories' },
+]
