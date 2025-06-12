@@ -17,7 +17,7 @@ type TAGSTYPE = {
     name: string
 }
 
-export interface BANNERMODEL {
+export interface BANNER_MODEL {
     id: number
     name: string
     section_heading: string

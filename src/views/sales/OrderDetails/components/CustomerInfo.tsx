@@ -1,5 +1,4 @@
 import { useRef } from 'react'
-import jsPDF from 'jspdf'
 import Card from '@/components/ui/Card'
 import IconText from '@/components/shared/IconText'
 import { HiPhone, HiExternalLink } from 'react-icons/hi'
@@ -20,27 +19,11 @@ type CustomerInfoProps = {
     billing_address: string
     location_url: string
     delivery_type: string
+    distance?: number
 }
 
-const CustomerInfo = ({ user, billing_address, store, location_url, delivery_type }: CustomerInfoProps) => {
+const CustomerInfo = ({ user, billing_address, store, location_url, delivery_type, distance }: CustomerInfoProps) => {
     const printRef = useRef<HTMLDivElement>(null)
-
-    const generatePDF = () => {
-        const doc = new jsPDF()
-        const maxWidth = 180
-        doc.setFontSize(14)
-        doc.text('To:', 10, 20)
-        doc.setFontSize(12)
-        const toAddressLines = doc.splitTextToSize(billing_address, maxWidth)
-        doc.text(toAddressLines, 10, 30)
-        doc.setFontSize(14)
-        doc.text('From:', 10, 50)
-        doc.setFontSize(12)
-        const fromAddressLines = doc.splitTextToSize(store.address, maxWidth)
-        doc.text(fromAddressLines, 10, 60)
-
-        doc.save('ToFromDetails.pdf')
-    }
 
     const generatePrint = () => {
         const printContent = `
@@ -141,6 +124,10 @@ const CustomerInfo = ({ user, billing_address, store, location_url, delivery_typ
                     <div className="mb-1">{billing_address}</div>
                 </address>
                 <hr className="my-5" />
+            </div>
+            <div className="flex gap-3 font-bold text-md items-center mb-4">
+                <span>Distance</span>
+                <span className="font-semibold">{distance ?? 0} km</span>
             </div>
             <div className="mt-4 flex gap-4">
                 {delivery_type === 'STANDARD' && (

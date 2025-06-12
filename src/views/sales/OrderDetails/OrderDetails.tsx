@@ -17,7 +17,7 @@ import ReturnOrderDrawer from './components/ReturnOrderDrawer'
 import CancelModal from './components/CancelModal'
 import { FaDownload } from 'react-icons/fa'
 import { notification } from 'antd'
-import { SalesOrderDetailsResponse } from './orderList.common'
+import { SalesOrderDetailsResponse, scheduleSlots } from './orderList.common'
 import { Button, Dialog } from '@/components/ui'
 import TrackModal from '@/views/slikkLogistics/taskTracking/TrackModal'
 import OrderPickerSummary from './components/OrderPickersummary'
@@ -25,13 +25,6 @@ import OrderMap from './OrderMap'
 import UtmModal from './components/UtmModal'
 import TwoPointMap from './components/TwoPointMap'
 // import { string } from 'yup'
-
-const scheduleSlots: any = {
-    '1': { start: '10:00 AM', end: '01:00 PM' },
-    '2': { start: '01:00 PM', end: '04:00 PM' },
-    '3': { start: '04:00 PM', end: '07:00 PM' },
-    '4': { start: '07:00 PM', end: '10:00 PM' },
-}
 
 const OrderDetails = () => {
     const [loading, setLoading] = useState(true)
@@ -93,9 +86,7 @@ const OrderDetails = () => {
     const handleDownload = async () => {
         try {
             const response = await axioisInstance.get(`/user/order/invoice/${invoice_id}`)
-
             const downloadablePDF = response.data?.data
-
             const link = document.createElement('a')
             link.href = downloadablePDF
             link.download = `invoice-${invoice_id}.pdf`
@@ -138,7 +129,7 @@ const OrderDetails = () => {
         setShowRiderData(false)
     }
 
-    const ReturnOrderList = ({ title, items }) => {
+    const ReturnOrderList = ({ title, items }: { title: string; items: any[] }) => {
         if (!items || items.length === 0) return null
 
         return (
@@ -313,6 +304,7 @@ const OrderDetails = () => {
                                             store={data.store}
                                             location_url={data.location_url}
                                             delivery_type={data.delivery_type}
+                                            distance={data?.distance}
                                         />
                                     </div>
                                     <div className="bg-white shadow-lg p-6 rounded-lg dark:bg-gray-900">

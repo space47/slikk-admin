@@ -1,39 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, Input } from '@/components/ui'
-import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import React, { useEffect, useState } from 'react'
 import { ConfigInterface } from './componentsConfigg/commonConfigTypes'
 import moment from 'moment'
 import { FaEdit } from 'react-icons/fa'
-import _ from 'lodash'
 import AccessDenied from '@/views/pages/AccessDenied'
 import LoadingSpinner from '@/common/LoadingSpinner'
+import { useFetchApi } from '@/commonHooks/useFetchApi'
+import { renderValue } from './componentsConfigg/ConfigurationRender'
 
 const ConfigurationPage = () => {
-    const [configurationData, setConfigurationData] = useState<ConfigInterface[]>([])
-    const [showSpinner, setShowSpinner] = useState(false)
-    const [accessDenied, setAccessDenied] = useState(false)
     const [searchConfig, setSearchConfig] = useState('')
     const [filteredData, setFilteredData] = useState<ConfigInterface[]>([])
 
-    const fetchConfigurationApi = async () => {
-        try {
-            setShowSpinner(true)
-            const response = await axioisInstance.get(`/app/configuration?p=1&page_size=100`)
-            const apiData = response.data?.data
-            setConfigurationData(apiData?.results)
-            setShowSpinner(false)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
-                setAccessDenied(true)
-            }
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchConfigurationApi()
-    }, [])
+    const {
+        data: configurationData,
+        loading: showSpinner,
+        accessDenied,
+    } = useFetchApi<ConfigInterface>({
+        url: '/app/configuration?p=1&page_size=100',
+        initialData: [],
+    })
 
     useEffect(() => {
         if (searchConfig.trim() !== '') {
@@ -43,40 +30,6 @@ const ConfigurationPage = () => {
             setFilteredData(configurationData)
         }
     }, [searchConfig, configurationData])
-
-    const renderValue = (value: any) => {
-        if (_.isPlainObject(value)) {
-            return (
-                <div className="flex flex-col h-36 overflow-y-auto bg-gray-100 p-3 rounded-lg shadow-inner scrollbar-hide">
-                    {Object.entries(value).map(([key, val]: [string, any]) => (
-                        <div key={key} className="text-sm text-gray-700 space-y-1">
-                            <strong className="text-gray-500">{key}:</strong>{' '}
-                            {typeof val === 'object' && val !== null ? (
-                                Array.isArray(val) ? (
-                                    <span className="text-indigo-600">[{val.join(', ')}]</span>
-                                ) : (
-                                    <span className="text-indigo-600">{JSON.stringify(val)}</span>
-                                )
-                            ) : (
-                                <span className="text-indigo-600">{val}</span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )
-        } else if (_.isArray(value)) {
-            return (
-                <div className="flex flex-col h-36 overflow-y-auto bg-gray-100 p-3 rounded-lg shadow-inner scrollbar-hide">
-                    {value.map((item, index) => (
-                        <div key={index} className="text-sm text-gray-700 space-y-1">
-                            <span className="text-indigo-600">{JSON.stringify(item)}</span>
-                        </div>
-                    ))}
-                </div>
-            )
-        }
-        return <span className="text-indigo-600">{value}</span>
-    }
 
     if (showSpinner) {
         return <LoadingSpinner />

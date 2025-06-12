@@ -13,7 +13,7 @@ import { ridersService } from '@/store/services/riderServices'
 type ModalProps = {
     showTaskModal: boolean
     handleCloseModal: (x: any) => void
-    storeTaskId: number
+    storeTaskId: number | string
     setShowAssignModal: (x: boolean) => void
     isReturn?: boolean
 }

@@ -11,7 +11,7 @@ import { ridersService } from '@/store/services/riderServices'
 type ModalProps = {
     showTaskModal: any
     handleCloseModal: any
-    storeTaskId: number
+    storeTaskId: string | number
     setShowAssignModal?: any
     handleFilterName?: any
     SetParticularMobileOfRunner: any

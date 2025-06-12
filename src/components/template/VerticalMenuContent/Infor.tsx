@@ -14,11 +14,6 @@ const Infor = () => {
     const dispatch = useAppDispatch()
 
     const onDropdownItemClick = (index: any) => {
-        console.log('Item Index', index)
-        console.log(
-            'Dropdown Item Clicked',
-            companyList?.find((item) => item.id === parseInt(index)),
-        )
         dispatch(setDefaultCompanyId(companyList?.find((item) => item.id === parseInt(index))))
     }
 
