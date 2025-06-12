@@ -1,29 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
-// import classNames from 'classnames'
-// import Tag from '@/components/ui/Tag'
 import Loading from '@/components/shared/Loading'
 import Container from '@/components/shared/Container'
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
-// import Activity from './components/Activity'
-
 import { HiOutlineCalendar } from 'react-icons/hi'
-// import { apiGetSalesOrderDetails } from '@/services/SalesService'
-// import { useLocation } from 'react-router-dom'
 import isEmpty from 'lodash/isEmpty'
-
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
-// import { ordercommon } from '@/views/category-management/orderlist/commontypes'
 import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import { Modal, notification } from 'antd'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { FaDownload, FaSync } from 'react-icons/fa'
-import PaymentSummary from '@/views/inventory-management/inward/inwardDetails/components/PaymentSummary'
 import CustomerInfo from '@/views/inventory-management/inward/inwardDetails/components/CustomerInfo'
-import ShippingInfo from '@/views/inventory-management/inward/inwardDetails/components/ShippingInfo'
-import { Button, Card, Select } from '@/components/ui'
+import { Select } from '@/components/ui'
 import GDNdetailTable from './GDNdetailTable'
+import { AxiosError } from 'axios'
 // import { string } from 'yup'
 
 const options = [
@@ -42,7 +34,9 @@ const GdnDetails = () => {
     const [grnNumber, setGrnNumber] = useState('')
     const navigate = useNavigate()
     const selectedCompany = useAppSelector<SINGLE_COMPANY_DATA>((store) => store.company.currCompany)
-    const [selectValue, setSelectValue] = useState('')
+    const [selectValue, setSelectValue] = useState<string | undefined>('')
+
+    console.log(grnNumber)
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -142,11 +136,13 @@ const GdnDetails = () => {
                 URL.revokeObjectURL(link.href)
                 console.log('PDF file downloaded.')
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error while regenerating the GDN:', error)
-            notification.error({
-                message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to Regenerate',
-            })
+            if (error instanceof AxiosError) {
+                notification.error({
+                    message: error?.response?.data?.message || error?.response?.data?.data?.message || 'Failed to Regenerate',
+                })
+            }
         }
     }
 
