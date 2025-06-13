@@ -193,7 +193,7 @@ const Upload = forwardRef<HTMLDivElement, UploadProps>((props, ref) => {
 
     const uploadClass = classNames(
         'upload',
-        draggable && `upload-draggable`,
+        draggable && `upload-draggable mx-10`,
         draggable && !disabled && `hover:${draggableEventFeedbackClass}`,
         draggable && disabled && 'disabled',
         dragOver && draggableEventFeedbackClass,
