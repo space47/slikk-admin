@@ -24,8 +24,9 @@ const UploaderComponent = ({ label, name, fileList, beforeFileUpload, fieldname 
                         {({ form }: FieldProps) => (
                             <>
                                 <Upload
-                                    className="flex justify-center"
+                                    draggable
                                     multiple
+                                    className="flex justify-center"
                                     beforeUpload={beforeFileUpload}
                                     fileList={fileList}
                                     onChange={(files) => form.setFieldValue(fieldname, files)}
