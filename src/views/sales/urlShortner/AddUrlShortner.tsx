@@ -34,30 +34,32 @@ const AddUrlShortner = () => {
         setShowAddFilter(updatedFilters)
     }
 
-    const handleAddFilters = async (values) => {
-        const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-        setFiltersData((prev: any) => {
-            const updatedFilters = [...prev, newFilterData]
-            const lastElement = updatedFilters.at(-1)
-            sendFilterData(lastElement)
-            return updatedFilters
-        })
-    }
+    // const handleAddFilters = async (values) => {
+    //     const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
+    //     setFiltersData((prev: any) => {
+    //         const updatedFilters = [...prev, newFilterData]
+    //         const lastElement = updatedFilters.at(-1)
+    //         sendFilterData(lastElement)
+    //         return updatedFilters
+    //     })
+    // }
 
-    const sendFilterData = async (filterData: number) => {
-        try {
-            const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
-            setFilterId(response.data?.data?.id)
-            notification.success({
-                message: 'Filter Id Added',
-            })
-        } catch (error) {
-            notification.error({
-                message: 'Failed to Add Filter ID',
-            })
-            console.error(error)
-        }
-    }
+    // const sendFilterData = async (filterData: number) => {
+    //     try {
+    //         const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
+    //         setFilterId(response.data?.data?.id)
+    //         notification.success({
+    //             message: 'Filter Id Added',
+    //         })
+    //         console.log('here')
+    //     } catch (error) {
+    //         console.log('error', error)
+    //         notification.error({
+    //             message: 'Failed to Add Filter ID',
+    //         })
+    //         console.error(error)
+    //     }
+    // }
 
     const handleSubmit = async (values: any) => {
         const filters = [
@@ -227,8 +229,8 @@ const AddUrlShortner = () => {
                                 <FilterSelect
                                     handleAddFilter={handleAddFilter}
                                     showAddFilter={showAddFilter}
-                                    handleAddFilters={handleAddFilters}
                                     handleRemoveFilter={handleRemoveFilter}
+                                    setFilterId={setFilterId}
                                 />
                             )}
 

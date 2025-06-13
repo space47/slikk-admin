@@ -12,10 +12,10 @@ import { MAXMINARRAY, OFFARRAY } from '../groupNotification/sendNotification/sen
 import ComonFilterSelect from '@/common/ComonFilterSelect'
 
 interface FILTERPROPS {
-    handleAddFilter: any
-    showAddFilter: any
-    handleRemoveFilter: any
-    handleAddFilters: any
+    handleAddFilter?: any
+    showAddFilter?: any
+    handleRemoveFilter?: any
+    handleAddFilters?: any
     sortValue?: any
     targetPagevalue?: any
     filterValue?: any
@@ -141,7 +141,7 @@ const FilterSelect = ({
                     </FormItem>
                 </>
             ) : (
-                <div>
+                <div className="mb-4">
                     <ComonFilterSelect isEdit filterId={filterValue} setFilterId={setFilterId} />
                 </div>
             )}

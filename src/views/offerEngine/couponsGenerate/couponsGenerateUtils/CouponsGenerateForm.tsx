@@ -16,6 +16,7 @@ interface Props {
 }
 
 const CouponsGenerateForm = ({ formattedOptions, values }: Props) => {
+    console.log('formatted Options', formattedOptions)
     return (
         <FormContainer className="grid grid-cols-2 gap-4">
             <CommonSelect options={formattedOptions} name="coupon_series" label="Select Series" />

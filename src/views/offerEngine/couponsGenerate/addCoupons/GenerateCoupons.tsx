@@ -36,9 +36,11 @@ const GenerateCoupons = () => {
         }
     }, [generateCouponResponse?.isSuccess, generateCouponResponse?.error, navigate])
 
-    const formattedData = couponSeries?.map((item) => {
-        return { label: item?.campaign, value: item?.id }
-    })
+    const formattedData = couponSeries
+        ?.filter((item) => item?.campaign !== '')
+        .map((item) => {
+            return { label: item?.campaign, value: item?.id }
+        })
     const initialValue = {}
     const handleSubmit = async (values: any) => {
         console.log('form values are', values)
