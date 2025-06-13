@@ -19,6 +19,7 @@ import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
 import { useFetchApi } from '@/commonHooks/useFetchApi'
 import DeleteBannerModal from './editBanner/component/DeleteBannerModal'
+import { fetchForSectionHeading } from './bannerUtils/bannerFunctions'
 
 const AppBanners = () => {
     const navigate = useNavigate()
@@ -56,16 +57,13 @@ const AppBanners = () => {
     // }))
 
     useEffect(() => {
-        const fetchForSectionHeading = async () => {
-            try {
-                const response = await axiosInstance.get(`/banners?data_type=section_heading&page=${currentSelectedPage.value}`)
-                const data = response.data.data
+        fetchForSectionHeading(currentSelectedPage)
+            .then((data) => {
                 setSectionHeadingArray(data)
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        fetchForSectionHeading()
+            })
+            .catch((error) => {
+                console.error('Error fetching section headings:', error)
+            })
     }, [currentSelectedPage])
 
     const queryURL = useMemo(() => {
@@ -81,7 +79,6 @@ const AppBanners = () => {
     }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading, selectedDivision, var2, isSectionHeading])
 
     const { data, totalData } = useFetchApi<BANNER_MODEL>({ url: queryURL })
-
     const filteredSectionHeadings = _.uniq(sectionHeadingArray)?.filter((item) => item.toLowerCase().includes(sectionFilter.toLowerCase()))
 
     const handleSectionHeading = (selectedKey: string) => {
