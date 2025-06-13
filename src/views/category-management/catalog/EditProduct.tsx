@@ -7,7 +7,6 @@ import { Field, Form, Formik, FieldProps } from 'formik'
 import { useEffect, useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
-import Product from '@/views/category-management/catalog/CommonType'
 import { Checkbox, Select, Spinner } from '@/components/ui'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN } from './ProductCommon'
@@ -16,6 +15,9 @@ import { handleimage, handleVideo } from './handlingProductImage'
 import { InitialValues } from './EditCommonProduct'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
+import { RichTextEditor } from '@/components/shared'
+import { textParser } from '@/common/textParser'
+import { Product } from './CommonType'
 
 const EditProduct = () => {
     const navigate = useNavigate()
@@ -82,7 +84,7 @@ const EditProduct = () => {
 
     console.log('pack size', productData?.filter_tags?.packsize?.map((item: any) => item).join(','))
 
-    const handleSubmit = async (values: Product) => {
+    const handleSubmit = async (values: any) => {
         let img_url = allImage.join(','),
             video_url = allVideo.join(','),
             color_code_url = allColor.join(',')
@@ -128,7 +130,6 @@ const EditProduct = () => {
             size_chart_url = temp.filter((t) => t).join(',')
         }
 
-        console.log('COLORCODEURL', color_code_url)
         const { color_code, size_chart_image_array, images, ...rest } = values
         const formData = Object.fromEntries(
             Object.entries({
@@ -137,6 +138,7 @@ const EditProduct = () => {
                 image: img_url,
                 company: companyData,
                 video_link: video_url,
+                description: values?.description ?? textParser(values?.description),
                 size_chart_image: size_chart_url,
             }).filter(([_, value]) => value !== '' && value !== null),
         )
@@ -205,6 +207,14 @@ const EditProduct = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+
+                                <FormItem label="Description" className="col-span-1 w-full">
+                                    <Field name="description">
+                                        {({ field, form }: FieldProps) => (
+                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                        )}
+                                    </Field>
+                                </FormItem>
 
                                 <ImageCommonProduct
                                     label="image"

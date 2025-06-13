@@ -19,7 +19,7 @@ export const useFetchApi = <T,>({ url, initialData = [] }: Api_Hooks_props<T>) =
     const [data, setData] = useState<T[]>(initialData)
     const [totalData, setTotalData] = useState<number>(0)
     const [loading, setLoading] = useState(false)
-    const [accessDenied, setAccessDenied] = useState(false)
+    const [responseStatus, setResponseStatus] = useState<string | number>()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,8 +29,8 @@ export const useFetchApi = <T,>({ url, initialData = [] }: Api_Hooks_props<T>) =
                 setData(response.data?.data?.results ?? [])
                 setTotalData(response.data?.data?.count ?? 0)
             } catch (error) {
-                if (error instanceof AxiosError && error.response?.status === 403) {
-                    setAccessDenied(true)
+                if (error instanceof AxiosError) {
+                    setResponseStatus(error.response?.status)
                 }
             } finally {
                 setLoading(false)
@@ -39,5 +39,5 @@ export const useFetchApi = <T,>({ url, initialData = [] }: Api_Hooks_props<T>) =
         fetchData()
     }, [url])
 
-    return { data, loading, accessDenied, setData, totalData, setTotalData }
+    return { data, loading, setData, totalData, setTotalData, responseStatus }
 }

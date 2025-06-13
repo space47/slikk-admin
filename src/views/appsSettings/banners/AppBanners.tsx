@@ -78,8 +78,10 @@ const AppBanners = () => {
         return `/banners?p=${page}&page_size=${pageSize}&name=${globalFilter}&page=${currentSelectedPage.value}${sectionHeading}${divisionFilter}`
     }, [page, pageSize, globalFilter, currentSelectedPage, selectedHeading, selectedDivision, var2, isSectionHeading])
 
-    const { data, totalData } = useFetchApi<BANNER_MODEL>({ url: queryURL })
+    const { data, totalData, responseStatus } = useFetchApi<BANNER_MODEL>({ url: queryURL })
     const filteredSectionHeadings = _.uniq(sectionHeadingArray)?.filter((item) => item.toLowerCase().includes(sectionFilter.toLowerCase()))
+
+    console.log('response Status', responseStatus)
 
     const handleSectionHeading = (selectedKey: string) => {
         setSelectedHeading(selectedKey)
