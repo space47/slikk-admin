@@ -1,7 +1,5 @@
 import { cloneElement } from 'react'
 import Avatar from '@/components/ui/Avatar'
-import Logo from '@/components/template/Logo'
-import { APP_NAME } from '@/constants/app.constant'
 import type { CommonProps } from '@/@types/common'
 
 interface SideProps extends CommonProps {
@@ -10,20 +8,21 @@ interface SideProps extends CommonProps {
 
 const Side = ({ children, content, ...rest }: SideProps) => {
     return (
-        <div className="grid grid-cols-1 xl:grid-cols-3 min-h-screen  xl:bg-transparent">
+        <div className="grid lg:grid-cols-3 h-full ">
             <div
-                className="hidden xl:block h-full"
                 style={{
                     backgroundImage: `url('/img/others/slikkbg.jpeg')`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
+                    objectFit: 'cover',
                 }}
+                className="hidden xl:flex bg-no-repeat bg-cover py-6 px-16 flex-col justify-between"
             ></div>
-            <div className="block xl:hidden w-full h-64">
-                <img src="/img/others/slikkbg.jpeg" alt="slikImg" className="w-full h-full object-cover" />
-            </div>
-            <div className="xl:col-span-2 flex flex-col justify-center items-center bg-white dark:bg-gray-800 px-6 py-10">
-                <div className="w-full max-w-md">
+            <div className="col-span-2 flex flex-col justify-center items-center bg-white dark:bg-gray-800">
+                <div className="xl:min-w-[450px] px-8">
+                    <div className="flex justify-center items-center mb-6 xl:hidden">
+                        <Avatar size={80} shape="circle" src="/img/logo/logo-light-streamline.png" />
+                    </div>
                     {children
                         ? cloneElement(children as React.ReactElement, {
                               ...rest,
