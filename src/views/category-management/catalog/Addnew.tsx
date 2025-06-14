@@ -7,7 +7,6 @@ import { Field, Form, Formik, FieldProps } from 'formik'
 import { useState } from 'react'
 import { notification } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import Product from '@/views/category-management/catalog/CommonType'
 import axioisInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { PRODUCT_EDIT_COMMON, PRODUCT_EDIT_COMMON_DOWN, INITIALVALUES } from './ProductCommon'
 import AddProductImages from './AddProductImages'
@@ -16,6 +15,8 @@ import { beforeUpload } from '@/common/beforeUpload'
 import { useAppSelector } from '@/store'
 import { SINGLE_COMPANY_DATA } from '@/store/types/company.types'
 import { Select } from '@/components/ui'
+import { RichTextEditor } from '@/components/shared'
+import { textParser } from '@/common/textParser'
 
 const AddProduct = () => {
     const [datas, setDatas] = useState()
@@ -111,7 +112,8 @@ const AddProduct = () => {
         return uploadFile || value || null
     }
 
-    const handleSubmit = async (values: Product) => {
+    const handleSubmit = async (values: any) => {
+        const parsedDescription = values?.description ?? textParser(values?.description)
         const imageUpload = await handleImageCheck(values.images)
         const colorlink = await handleImageCheck(values.color_code)
         const videoUpload = await handleVideoCheck(values.video)
@@ -127,6 +129,7 @@ const AddProduct = () => {
             image: imageShow,
             size_chart_image: sizeShow,
             company: companyData,
+            description: parsedDescription,
             colorfamily: values.colorfamily,
             video_link: videoShow,
         }
@@ -172,6 +175,14 @@ const AddProduct = () => {
                                         <Field type={item.type} name={item.name} placeholder={item.placeholder} component={Input} />
                                     </FormItem>
                                 ))}
+
+                                <FormItem label="Description" className="col-span-1 w-full">
+                                    <Field name="description">
+                                        {({ field, form }: FieldProps) => (
+                                            <RichTextEditor value={field.value} onChange={(val) => form.setFieldValue(field.name, val)} />
+                                        )}
+                                    </Field>
+                                </FormItem>
 
                                 <AddProductImages
                                     label="Image"

@@ -11,7 +11,7 @@ import { ridersService } from '@/store/services/riderServices'
 import { RiderAddTypes } from '@/store/types/riderAddTypes'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { RiderDetailType, setRiderDetails } from '@/store/slices/riderDetails/riderDetails.slice'
+import { RiderDetailType, setRiderProfile } from '@/store/slices/riderDetails/riderDetails.slice'
 
 const AddRider = () => {
     const navigate = useNavigate()
@@ -20,10 +20,10 @@ const AddRider = () => {
     const [currLong, setCurrLong] = useState<number>(77.649326)
     const [selectedRider, setSelectedRider] = useState<string | number>()
     const [ridersData, riderDataResponse] = ridersService.useAddRidersMutation()
-    const { riderDetails } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
+    const { riderProfile } = useAppSelector<RiderDetailType>((state) => state.riderDetails)
     const [isAddRider, setIsAddRider] = useState(false)
 
-    const { data: riders, isSuccess } = ridersService.useRiderDetailsQuery(
+    const { data: riders, isSuccess } = ridersService.useRiderProfileQuery(
         {
             page: 1,
             pageSize: 100,
@@ -34,14 +34,15 @@ const AddRider = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            dispatch(setRiderDetails(riders.data?.results || []))
+            dispatch(setRiderProfile(riders?.data || []))
         }
     }, [riders, isSuccess, dispatch, selectedRider])
     const initialValue = {
-        last_name: selectedRider && !isAddRider ? riderDetails?.map((item) => item?.profile?.last_name).join('') : '',
-        mobile: selectedRider && !isAddRider ? riderDetails?.map((item) => item?.profile?.mobile).join('') : '',
-        shift_start_time: selectedRider && !isAddRider ? riderDetails?.map((item) => item?.task_data?.check_in_time).join('') : '',
-        shift_end_time: selectedRider && !isAddRider ? riderDetails?.map((item) => item?.task_data?.checkout_time).join('') : '',
+        last_name: selectedRider && !isAddRider ? riderProfile[0].user?.last_name : '',
+        mobile: selectedRider && !isAddRider ? riderProfile[0]?.user?.mobile.toString() : '',
+        shift_start_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_start_time : '',
+        shift_end_time: selectedRider && !isAddRider ? riderProfile[0]?.shift_end_time : '',
+        rider_type: selectedRider && !isAddRider ? riderProfile[0]?.rider_type : '',
     }
 
     useEffect(() => {
@@ -53,12 +54,16 @@ const AddRider = () => {
         }
     }, [riderDataResponse?.isSuccess])
 
+    useEffect(() => {
+        setCurrLat(riderProfile[0]?.service_latitude)
+        setCurrLong(riderProfile[0]?.service_longitude)
+    }, [riders, selectedRider, riderProfile])
+
     const handleSubmit = (values: RiderAddTypes) => {
         if (values?.mobile) {
             ridersData({
                 mobile: values?.mobile,
-                first_name:
-                    selectedRider && !isAddRider ? riderDetails?.map((item) => item?.profile?.first_name).join('') : values?.first_name,
+                first_name: selectedRider && !isAddRider ? riderProfile[0].user?.first_name : values?.first_name,
                 last_name: values?.last_name,
                 rider_type: values?.rider_type,
                 service_latitude: currLat,
@@ -111,9 +116,9 @@ const AddRider = () => {
                                                 <option disabled value="SELECT">
                                                     SELECT RIDER
                                                 </option>
-                                                {riderDetails?.map((item, key) => (
-                                                    <option key={key} value={item?.profile?.mobile}>
-                                                        {item.profile?.first_name}
+                                                {riderProfile?.map((item, key) => (
+                                                    <option key={key} value={item?.user?.mobile}>
+                                                        {item.user?.first_name}
                                                     </option>
                                                 ))}
                                                 <option value="CLEAR" className="bg-red-500 hover:bg-red-400 text-white">
@@ -171,7 +176,12 @@ const AddRider = () => {
                             </FormContainer>
                             <div className="mt-8">
                                 <div className="text-xl font-bold mb-4 text-gray-700">ADD RIDER LOCATION</div>
-                                <AddRiderMap setMarkLat={setCurrLat} setMarkLong={setCurrLong} markLat={currLat} markLong={currLong} />
+                                <AddRiderMap
+                                    setMarkLat={setCurrLat ?? 0}
+                                    setMarkLong={setCurrLong ?? 0}
+                                    markLat={currLat ?? 0}
+                                    markLong={currLong ?? 0}
+                                />
                             </div>
                         </FormContainer>
                         <FormContainer className="mt-8 flex justify-end">

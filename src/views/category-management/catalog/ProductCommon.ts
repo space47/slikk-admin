@@ -36,14 +36,14 @@ export const PRODUCT_EDIT_COMMON = [
         component: Input,
         classname: 'w-full',
     },
-    {
-        name: 'description',
-        type: 'text',
-        label: 'Description',
-        placeholder: 'Enter Description',
-        component: Input,
-        classname: 'w-full',
-    },
+    // {
+    //     name: 'description',
+    //     type: 'text',
+    //     label: 'Description',
+    //     placeholder: 'Enter Description',
+    //     component: Input,
+    //     classname: 'w-full',
+    // },
     {
         name: 'other_product_info',
         type: 'text',

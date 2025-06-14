@@ -95,7 +95,7 @@ const EditConfigurations = () => {
     }
 
     return (
-        <div className="w-full">
+        <div className="w-full shadow-xl p-4 rounded-xl">
             <Formik
                 enableReinitialize
                 initialValues={
