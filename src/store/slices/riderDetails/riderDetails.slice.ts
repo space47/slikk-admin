@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { RiderDetails } from '@/store/types/riderAddTypes'
+import { RiderDetails, RiderProfileData } from '@/store/types/riderAddTypes'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import moment from 'moment'
 
 export type RiderDetailType = {
     riderDetails: RiderDetails[]
+    riderProfile: RiderProfileData[]
     count: number
     page: number
     pageSize: number
@@ -14,6 +15,7 @@ export type RiderDetailType = {
 
 const initialState: RiderDetailType = {
     riderDetails: [],
+    riderProfile: [],
     count: 0,
     page: 1,
     pageSize: 10,
@@ -27,6 +29,9 @@ const riderDetails = createSlice({
     reducers: {
         setRiderDetails: (state, action: PayloadAction<RiderDetails[]>) => {
             state.riderDetails = action.payload
+        },
+        setRiderProfile: (state, action: PayloadAction<RiderProfileData[]>) => {
+            state.riderProfile = action.payload
         },
         setCount: (state, action: PayloadAction<number>) => {
             state.count = action.payload
@@ -46,5 +51,5 @@ const riderDetails = createSlice({
     },
 })
 
-export const { setRiderDetails, setCount, setPage, setPageSize, setFrom, setTo } = riderDetails.actions
+export const { setRiderDetails, setCount, setPage, setPageSize, setFrom, setTo, setRiderProfile } = riderDetails.actions
 export default riderDetails.reducer

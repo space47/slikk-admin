@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type RiderAddTypes = {
     task_id?: string
     mobile?: string
@@ -96,4 +97,45 @@ export type RiderSlice = {
     pageSize: number
     from: string
     to: string
+}
+
+export interface RiderProfileData {
+    id: number
+    user: {
+        first_name: string
+        last_name: string
+        email: string
+        mobile: number
+        country_code: string
+        dob: string
+        gender: string
+        image: string
+        device_id: string
+        date_joined: string
+        last_otp_tried_time: string
+        current_location: {
+            latitude: string
+            longitude: string
+        }
+        checked_in_status: boolean
+    }
+    rider_type: string
+    service_latitude: number
+    service_longitude: number
+    image: string | null
+    is_active: boolean
+    kyc_status: boolean
+    kyc_data: Record<string, any>
+    bank_details: Record<string, any>
+    shift_start_time: string
+    shift_end_time: string
+    compensation_info: Record<string, any>
+    other_info: Record<string, any>
+    create_date: string
+    update_date: string
+}
+
+export type RiderProfileResponseType = {
+    status?: string
+    data?: RiderProfileData[]
 }
