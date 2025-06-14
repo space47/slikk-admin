@@ -154,15 +154,17 @@ const AppBanners = () => {
     return (
         <div className="shadow-md p-4 bg-gray-50 rounded-lg">
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4 flex gap-2">
-                    <input
-                        type="text"
-                        placeholder="Search by name"
-                        value={globalFilter}
-                        className="p-2 border rounded"
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                    />
-                    <div className="flex gap-2">
+                <div className="mb-4 flex gap-2 flex-col xl:flex-row ">
+                    <div className="flex justify-center xl:justify-normal">
+                        <input
+                            type="text"
+                            placeholder="Search by name"
+                            value={globalFilter}
+                            className="p-2 border rounded"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex gap-2 flex-col xl:flex-row">
                         <div className="bg-gray-200 px-2 rounded-lg font-bold text-[15px]">
                             <Dropdown
                                 className="border bg-gray-200 text-black text-lg font-semibold"

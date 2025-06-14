@@ -63,10 +63,8 @@ const BrandCatalog = () => {
                     `merchant/products?dashboard=true&p=${page}&page_size=${pageSize}${searchInputType}&company_id=${selectedCompany.id}`,
                 )
             }
-
             const data = response.data.data.results
             const total = response.data.data.count
-
             setData(data)
             setTotalData(total)
         } catch (error) {
@@ -75,27 +73,18 @@ const BrandCatalog = () => {
     }
 
     useEffect(() => {
-        fetchData()
-    }, [page, pageSize, selectedCompany])
-    useEffect(() => {
         if (globalFilter) {
             filter(page, pageSize, globalFilter)
+        } else {
+            fetchData()
         }
-    }, [page, pageSize, globalFilter])
+    }, [page, pageSize, globalFilter, selectedCompany])
 
     const handleOpenModal = (img: any) => {
-        console.log('sdsds', img)
         setParticularROwImage(img)
         setShowImageModal(true)
     }
 
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value: number) => {
-        setPageSize(Number(value))
-    }
     const handleDownload = async () => {
         try {
             const downloadUrl = `merchant/products?download=true&p=${page}&page_size=${pageSize}&company_id=${selectedCompany.id}`
@@ -152,14 +141,17 @@ const BrandCatalog = () => {
                     )}
 
                     <div className="flex items-center justify-between mt-4">
-                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
+                        <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={(page) => setPage(page)} />
                         <div style={{ minWidth: 130 }}>
                             <Select<Option>
                                 size="sm"
                                 isSearchable={false}
                                 value={pageSizeOptions.find((option) => option.value === pageSize)}
                                 options={pageSizeOptions}
-                                onChange={(option) => onSelectChange(option?.value || 0)}
+                                onChange={(option) => {
+                                    setPage(1)
+                                    setPageSize(Number(option?.value))
+                                }}
                             />
                         </div>
                     </div>
