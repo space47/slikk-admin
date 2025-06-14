@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import EventFormCommon from '../eventCommons/EventFormCommon'
 import { notification } from 'antd'
-import axios from 'axios'
 import { handleimage, handleVideo } from '@/views/category-management/catalog/handlingProductImage'
 
 const EditEvents = () => {

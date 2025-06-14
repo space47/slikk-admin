@@ -85,7 +85,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                         const fieldName = parentKey ? `${parentKey}.${key}` : key
                         const tempKey = editableKeys[key] ?? key
                         return (
-                            <div key={fieldName} className="flex gap-4 items-center mb-2">
+                            <div key={fieldName} className="flex gap-4 items-center mb-2 shadow-xl bg-gray-50 p-3 rounded-lg">
                                 {/* Editable key */}
                                 <Field name={fieldName}>
                                     {() => (
@@ -177,7 +177,7 @@ const RenderFields = ({ obj, parentKey, setFieldValue, editableKeys, setEditable
                                         }}
                                     </Field>
                                 ) : key.toLowerCase().includes('image') ? (
-                                    <FormItem className="xl:mt-6">
+                                    <FormItem className="xl:mt-6 ">
                                         <Field name={fieldName}>
                                             {() => (
                                                 <Field name={fieldName}>

@@ -16,7 +16,7 @@ const ConfigurationPage = () => {
     const {
         data: configurationData,
         loading: showSpinner,
-        accessDenied,
+        responseStatus,
     } = useFetchApi<ConfigInterface>({
         url: '/app/configuration?p=1&page_size=100',
         initialData: [],
@@ -34,7 +34,7 @@ const ConfigurationPage = () => {
     if (showSpinner) {
         return <LoadingSpinner />
     }
-    if (accessDenied) {
+    if (responseStatus === '403') {
         return <AccessDenied />
     }
 
