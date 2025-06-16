@@ -1,12 +1,5 @@
-import { message } from 'antd'
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const HEADERCONFIGARRAY = [
-    // {
-    //     label: 'Header Style',
-    //     name: 'header_config.style',
-    //     type: 'text',
-    // },
     {
         label: 'Header Text',
         name: 'header_config.text',
@@ -360,4 +353,25 @@ export const dataTypeArray = [
     { label: 'post', value: 'post' },
     { label: 'creator', value: 'creator' },
     { label: 'Sub categories', value: 'categories' },
+]
+
+export const SectionTypeArray = [
+    { label: 'Generic', value: 'generic' },
+    { label: 'Personalized', value: 'personalized' },
+]
+
+export const SECTIONARRAY = [
+    { label: 'Flex Start', value: 'flex-start' },
+    { label: 'Flex End', value: 'flex-end' },
+    { label: 'Center', value: 'center' },
+    { label: 'Space Between', value: 'space-between' },
+    { label: 'Space Around', value: 'space-around' },
+    { label: 'Space Evenly', value: 'space-evenly' },
+]
+
+export const FontSizeArray = [
+    { label: 'Bold', value: 'bold' },
+    { label: 'Regular', value: 'regular' },
+    { label: 'Underline', value: 'underline' },
+    { label: 'Italic', value: 'italic' },
 ]

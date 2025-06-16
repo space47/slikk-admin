@@ -64,6 +64,7 @@ const Home = () => {
             refetch()
             interval = setInterval(refetch, 60000)
         }
+
         return () => {
             clearInterval(interval)
         }
