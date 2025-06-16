@@ -1,45 +1,32 @@
 import React from 'react'
-import { Field, Form, Formik } from 'formik'
+import { Field } from 'formik'
 import Upload from '@/components/ui/Upload'
 import type { FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
-import { WebType } from './PageModal'
-import { MdCancel } from 'react-icons/md'
 
 interface IMAGEPROPS {
     label: string
-
-    beforeUpload: any
+    beforeUpload: (file: FileList | null, fileList: File[]) => string | true
     name: string
-    fileList: any
-    // setFieldValue: any
-    // className: string
+    fileList: File[]
     fieldName: string
 }
 
-const PageAddVideo = ({
-    label,
-    beforeUpload,
-    name,
-    // className,
-    fieldName,
-    fileList,
-    // setFieldValue,
-}: IMAGEPROPS) => {
+const PageAddVideo = ({ label, beforeUpload, name, fieldName, fileList }: IMAGEPROPS) => {
     return (
         <div>
             {' '}
-            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col  items-center  rounded-xl mb-2 overflow-scroll scrollbar-hide">
                 <div className="font-semibold mb-1">{label}</div>
 
                 <FormContainer className=" mt-5 ">
                     <FormItem
                         label=""
                         // }
-                        className="grid grid-rows-2"
+                        className="m-0 p-0"
                     >
                         <Field name={name}>
-                            {({ field, form }: FieldProps<WebType>) => (
+                            {({ form }: FieldProps) => (
                                 <>
                                     <Upload
                                         beforeUpload={beforeUpload}

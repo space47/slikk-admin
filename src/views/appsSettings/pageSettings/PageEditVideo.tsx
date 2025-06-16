@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import { Field, Form, Formik } from 'formik'
+import { Field } from 'formik'
 import Upload from '@/components/ui/Upload'
 import type { FieldProps } from 'formik'
 import { FormItem, FormContainer } from '@/components/ui/Form'
-import { WebType } from './PageModal'
 import { MdCancel } from 'react-icons/md'
 import { BsFiletypeJson } from 'react-icons/bs'
 
@@ -18,6 +18,7 @@ interface VIDEOPROPS {
     fieldName: string
     noVideo?: boolean
     isLottie?: boolean
+    isImage?: boolean
 }
 
 const PageEditVideo = ({
@@ -31,18 +32,21 @@ const PageEditVideo = ({
     fileList,
     noVideo = true,
     isLottie,
+    isImage = false,
 }: VIDEOPROPS) => {
     console.log('rowName', rowName)
     return (
         <div>
-            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col w-[500px] items-center h-[160px] rounded-xl mb-2 overflow-scroll scrollbar-hide">
+            <FormContainer className="bg-gray-200 bg-opacity-40 flex justify-center flex-col  items-center rounded-xl mb-2 overflow-scroll scrollbar-hide">
                 <div className="font-semibold mb-1">{label}</div>
                 {noVideo && rowName && (
                     <div className="flex flex-col items-center justify-center min-w-[100px]">
                         {isLottie ? (
                             <BsFiletypeJson className="text-3xl" />
+                        ) : isImage ? (
+                            <img src={rowName} alt={`Image `} className="w-[100px] h-[40px] flex object-contain " />
                         ) : (
-                            <video src={rowName} controls className="w-[200px] h-[120px] flex object-contain" />
+                            <video controls src={rowName} className="w-[100px] h-[100px]" />
                         )}
                         <button type="button" className="text-red-500 text-md " onClick={() => handleRemoveVideo(removeName)}>
                             <MdCancel className="text-red-500 bg-none text-lg" />
@@ -50,17 +54,17 @@ const PageEditVideo = ({
                     </div>
                 )}
                 <FormContainer className="mt-5">
-                    <FormItem className="grid grid-rows-2">
+                    <FormItem className="m-0 p-0">
                         <Field name={name}>
-                            {({ field, form }: FieldProps<WebType>) => (
+                            {({ form }: FieldProps) => (
                                 <>
                                     <Upload
+                                        className="flex justify-center"
                                         beforeUpload={beforeVideoUpload}
                                         fileList={fileList}
                                         onChange={(files) => {
                                             form.setFieldValue(fieldName, files)
                                         }}
-                                        className="flex justify-center"
                                         onFileRemove={(files) => form.setFieldValue(fieldName, files)}
                                     />
                                 </>

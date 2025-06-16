@@ -12,6 +12,8 @@ import * as Yup from 'yup'
 import { EditInitialValues } from './pageSettingsUtils/PageSettingEditInitialValues'
 import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 import { handleimage } from '@/common/handleImage'
+import { calculateAspectRatio, handleImage, handleVideo } from './pageSettingsUtils/pageEditFunctions'
+import { usePageEditRemoveFunctions } from './pageSettingsUtils/usePageEditRemoveFunctions'
 
 type modalProps = {
     isModalOpen: boolean
@@ -23,19 +25,12 @@ type modalProps = {
     setParticularRow: (data: any) => void
 }
 
-const DROPDOWNARRAY = [
-    { label: 'Name', value: 'name' },
-    { label: 'SKU', value: 'sku' },
-    { label: 'Barcode', value: 'barcode' },
-]
-
 const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, formikRef, particularRow, setParticularRow }) => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
     const [tableData, setTableData] = useState<ProductTable[]>([])
     const [productData, setProductData] = useState(particularRow.data_type.barcodes)
-    // posts....................
     const [postInput, setPOstInput] = useState('')
     const [showPostTable, setShowPostTable] = useState(false)
     const [postTableData, setPostTableData] = useState([])
@@ -46,13 +41,9 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
                 : [particularRow.data_type.posts]
             : [],
     ])
-
-    const [showSectionFilters, setShowSectionFilters] = useState(particularRow?.is_section_clickable)
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
     const [filtersData, setFiltersData] = useState<any[]>([])
-
-    console.log('showSection Clickable', showSectionFilters)
 
     const filters = useAppSelector<FILTER_STATE>((state) => state.filters)
 
@@ -105,44 +96,42 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }
     }
 
-    const fetchInput = async () => {
-        try {
-            if (searchInput) {
-                const qname =
-                    currentSelectedPage?.value === 'sku'
-                        ? 'sku'
-                        : currentSelectedPage?.value === 'name'
-                          ? 'name'
-                          : currentSelectedPage?.value === 'barcode'
-                            ? 'barcode'
-                            : ''
-                const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
-                const data = response.data.data.results
-                setTableData(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
+        const fetchInput = async () => {
+            try {
+                if (searchInput) {
+                    const qname =
+                        currentSelectedPage?.value === 'sku'
+                            ? 'sku'
+                            : currentSelectedPage?.value === 'name'
+                              ? 'name'
+                              : currentSelectedPage?.value === 'barcode'
+                                ? 'barcode'
+                                : ''
+                    const response = await axioisInstance.get(`/merchant/products?dashboard=true&${qname}=${searchInput}`)
+                    const data = response.data.data.results
+                    setTableData(data)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
         fetchInput()
     }, [searchInput])
 
-    const fetchPost = async () => {
-        try {
-            if (postInput) {
-                // const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
-                const response = await axioisInstance.get(`/posts?name=${postInput}`)
-                const data = response.data.data.results
-                setPostTableData(data)
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                if (postInput) {
+                    const response = await axioisInstance.get(`/posts?name=${postInput}`)
+                    const data = response.data.data.results
+                    setPostTableData(data)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
         fetchPost()
     }, [postInput])
 
@@ -153,129 +142,7 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         }
     }
 
-    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
-        if (!files || files.length === 0) {
-            return []
-        }
-
-        const aspectRatios: number[] = []
-        for (const file of files) {
-            const image = new Image()
-            const fileURL = URL.createObjectURL(file)
-
-            image.src = fileURL
-
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    aspectRatios.push(image.width / image.height)
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-                image.onerror = () => {
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-            })
-        }
-        return aspectRatios
-    }
-
-    const handleImage = async (files: File[]) => {
-        console.log('Images of mobile for checking', files)
-        if (!files || files.length === 0) {
-            return
-        }
-
-        const formData = new FormData()
-
-        for (const file of files) {
-            const image = new Image()
-            const fileURL = URL.createObjectURL(file)
-
-            image.src = fileURL
-
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    console.log('Image width:', image.width, 'Image height:', image.height)
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-            })
-
-            formData.append('file', file)
-        }
-
-        formData.append('file_type', 'banners')
-
-        try {
-            notification.info({
-                message: 'Image Upload in process',
-            })
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-
-            const newData = response.data.url
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-            console.log('new data is', newData)
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Upload Failed',
-                description: error?.response?.data?.message || 'Image upload failed',
-            })
-
-            return ''
-        }
-    }
-
-    const handleVideo = async (files: File[]) => {
-        if (files) {
-            const formData = new FormData()
-
-            files.forEach((file) => {
-                formData.append('file', file)
-            })
-            formData.append('file_type', 'product')
-
-            notification.info({
-                message: 'Video Upload In Process',
-            })
-            try {
-                setShowSpinner(true)
-                console.log(formData.get('file'))
-                const response = await axioisInstance.post('fileupload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
-                console.log(response)
-                notification.success({
-                    message: 'Video Updated',
-                })
-                const newData = response.data.url
-                return newData
-            } catch (error: any) {
-                console.error('Error uploading files:', error)
-                notification.error({
-                    message: 'Failure',
-                    description: error?.response?.data?.message || 'Video Not uploaded',
-                })
-                return 'Error'
-            } finally {
-                setShowSpinner(false)
-            }
-        }
-    }
-
     const handleSubmit = async (row: any) => {
-        console.log('here', row?.background_lottie_array, row?.mobile_background_lottie_array)
         const componentConfig = {
             ...Object.fromEntries(Object.entries(row?.component_config || {}).filter(([_, value]) => value !== '')),
             border: row?.border ?? false,
@@ -418,74 +285,13 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
 
             setShowSpinner(false)
             setParticularRow(filteredRow)
-            console.log('Barecode THAT HAS BEEN UPDATED', newRow.data_type.barcodes)
             console.log('FINAL ADD INSIDE SUBMIT', filteredRow)
         } catch (error) {
             console.error('Error in handleSubmit:', error)
         }
     }
 
-    const handleRemoveImage = (val: string) => {
-        if (val === 'background_image') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                background_image: null,
-                background_config: {
-                    ...prev.background_config,
-                    background_image: null,
-                },
-            }))
-        } else if (val === 'mobile_background_image') {
-            console.log('Remive mobile Bg')
-            setInitalValue((prev: any) => ({
-                ...prev,
-                mobile_background_image: null,
-                background_config: {
-                    ...prev.background_config,
-                    mobile_background_image: null,
-                },
-            }))
-        }
-    }
-    const handleRemoveVideo = (val: string) => {
-        if (val === 'background_video') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                background_video: null,
-                background_config: {
-                    ...prev.background_config,
-                    background_video: null,
-                },
-            }))
-        } else if (val === 'mobile_background_video') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                mobile_background_video: null,
-                background_config: {
-                    ...prev.background_config,
-                    mobile_background_video: null,
-                },
-            }))
-        } else if (val === 'background_lottie') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                background_lottie: null,
-                background_config: {
-                    ...prev.background_config,
-                    background_lottie: null,
-                },
-            }))
-        } else if (val === 'mobile_background_lottie') {
-            setInitalValue((prev: any) => ({
-                ...prev,
-                mobile_background_lottie: null,
-                background_config: {
-                    ...prev.background_config,
-                    mobile_background_lottie: null,
-                },
-            }))
-        }
-    }
+    const { handleRemoveImage, handleRemoveVideo } = usePageEditRemoveFunctions({ setInitalValue })
 
     const [componentOption, setComponentOptions] = useState(initialValue.component_type)
     const [borderForm, setBorderForm] = useState(initialValue?.border)
@@ -528,7 +334,6 @@ const PageModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, 
         setSearchInput('')
     }
 
-    // POSTS...............
     const handlePOSTSearch = (e: any) => {
         setPOstInput(e.target.value)
         setShowPostTable(true)

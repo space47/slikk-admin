@@ -22,7 +22,7 @@ const CustomerAnalytics = () => {
     const dispatch = useAppDispatch()
     const { mobile } = useParams<{ mobile: string }>()
 
-    const { customerData } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
+    const { customerData, errorMessage } = useAppSelector<OrderSummaryTYPE>((state) => state.userSummary)
 
     useEffect(() => {
         if (mobile) {
@@ -30,7 +30,7 @@ const CustomerAnalytics = () => {
         }
     }, [dispatch])
 
-    console.log('DATA', customerData)
+    console.log('DATA', errorMessage)
 
     const handleBlockUser = async () => {
         const body = {

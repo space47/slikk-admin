@@ -45,7 +45,7 @@ const ExtraConfigFileds = () => {
                 </Field>
             </FormItem>
             {TimeFieldsArray.slice(0, 3).map((item, key) => (
-                <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                <FormItem asterisk label={item.label} className="w-full" key={key}>
                     <Field
                         type={item.type}
                         name={item.name}
@@ -63,7 +63,7 @@ const ExtraConfigFileds = () => {
                 className="col-span-1 w-1/2"
             />
             {TimeFieldsArray.slice(3).map((item, key) => (
-                <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                <FormItem asterisk label={item.label} className="w-full" key={key}>
                     <Field
                         type={item.type}
                         name={item.name}

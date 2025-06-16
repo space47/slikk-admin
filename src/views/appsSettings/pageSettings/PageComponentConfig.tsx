@@ -14,8 +14,6 @@ import {
 import { Checkbox, FormContainer, FormItem, Input } from '@/components/ui'
 import { Field } from 'formik'
 import CommonSelect from './CommonSelect'
-import { DatePicker } from 'antd'
-import moment from 'moment'
 import { ParallaxConfigArray } from './configurationCommon'
 import HelpTooltip from '@/common/HelpTooltip'
 
@@ -83,13 +81,13 @@ const PageComponentConfig = ({
 }: PageCompProps) => {
     return (
         <div>
-            <div className=" grid grid-cols-2">
+            <div className=" grid grid-cols-2 gap-3 ">
                 <div className="font-bold mt-1 bg-gray-300 px rounded-lg w-1/4 h-1/2 flex items-center justify-center ">
                     <span className="bg-gray-300  rounded-lg ">Mobile Configurations :</span>
                 </div>
 
                 {genericComponentArray.slice(0, 28).map((item, key) => (
-                    <FormItem key={key} label={item.label} className="w-2/3">
+                    <FormItem key={key} label={item.label} className="w-full">
                         <Field
                             type={item.type}
                             name={item.name}
@@ -123,7 +121,7 @@ const PageComponentConfig = ({
                 {values?.component_config?.carousel_type === 'PARALLAX' && (
                     <>
                         {ParallaxConfigArray.map((item, key) => (
-                            <FormItem key={key} className="w-2/3">
+                            <FormItem key={key} className="w-">
                                 <div className="flex gap-2 text-md ">
                                     <span>{item.label}</span>{' '}
                                     <span>
@@ -172,7 +170,7 @@ const PageComponentConfig = ({
                 />
                 {/* ssssssssssssssssssssssssssssssssssssssssssssssss */}
                 <div>
-                    <FormContainer className="grid grid-cols-2">
+                    <FormContainer className="grid grid-cols-2 gap-3">
                         <FormItem label="Border" className="col-span-1 w-1/2">
                             <Field
                                 type="checkbox"
@@ -238,8 +236,8 @@ const PageComponentConfig = ({
                         </FormItem>
                     </FormContainer>
 
-                    <FormContainer className="grid grid-cols-2">
-                        <FormItem label="Name" className="grid grid-cols-2 w-full">
+                    <FormContainer className="grid grid-cols-2 gap-3">
+                        <FormItem label="Name" className="grid grid-cols-2 gap-3 w-full">
                             <Field
                                 type="checkbox"
                                 name="name"
@@ -309,13 +307,13 @@ const PageComponentConfig = ({
             <br />
             <br />
 
-            <FormContainer className=" grid grid-cols-2">
+            <FormContainer className=" grid grid-cols-2 gap-3">
                 <div className="font-bold mt-1 bg-gray-300 px rounded-lg w-1/4 h-1/2 flex items-center justify-center ">
                     <span className="bg-gray-300  rounded-lg ">Web Configurations :</span>
                 </div>
 
                 {genericComponentArray.slice(28).map((item, key) => (
-                    <FormItem key={key} label={item.label} className="w-2/3">
+                    <FormItem key={key} label={item.label} className="w-">
                         <Field
                             type={item.type}
                             name={item.name}
@@ -355,7 +353,7 @@ const PageComponentConfig = ({
                 />
                 {/* dddddddddddddddddddddddddddddddd */}
                 <div>
-                    <FormContainer className="grid grid-cols-2">
+                    <FormContainer className="grid grid-cols-2 gap-3">
                         <FormItem label="Web Border" className="col-span-1 w-1/2">
                             <Field
                                 type="checkbox"
@@ -427,8 +425,8 @@ const PageComponentConfig = ({
                         </FormItem>
                     </FormContainer>
 
-                    <FormContainer className="grid grid-cols-2">
-                        <FormItem label="Web Name" className="grid grid-cols-2 w-1/2">
+                    <FormContainer className="grid grid-cols-2 gap-3">
+                        <FormItem label="Web Name" className="grid grid-cols-2 gap-3 w-1/2">
                             <Field
                                 type="checkbox"
                                 name="web_name"
