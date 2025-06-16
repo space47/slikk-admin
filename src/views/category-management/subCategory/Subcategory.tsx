@@ -119,7 +119,10 @@ const Subcategory = () => {
                             <Dropdown
                                 className="border   text-black text-lg font-semibold "
                                 title={selectedDivision}
-                                onSelect={(selectedKey) => setSelectedDivision(selectedKey)}
+                                onSelect={(selectedKey) => {
+                                    setSelectedCategory('Select Category')
+                                    setSelectedDivision(selectedKey)
+                                }}
                             >
                                 <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
                                     {DivisionArray?.map((item, key) => (
