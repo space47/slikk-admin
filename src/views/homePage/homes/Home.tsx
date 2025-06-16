@@ -22,37 +22,7 @@ import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import HomepageMaps from './componentsHomes/HomepageMaps'
-
-const HomeCalculations = (homeData: any) => {
-    const netSales =
-        (homeData?.received?.total_amount || 0) -
-        (homeData?.returned?.total_amount || 0) -
-        (homeData?.cancelled?.total_amount || 0) -
-        (homeData?.declined?.total_amount || 0)
-
-    const netReturn = (homeData?.returned?.count || 0) + (homeData?.cancelled?.count || 0) + (homeData?.declined?.count || 0)
-    const netReturnSales =
-        (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
-
-    const averageOrderValue = homeData
-        ? homeData?.received?.total_amount /
-          (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
-        : 0
-
-    const dataValues = Object.values(homeData?.brand_wise_sale ?? {})
-
-    const sum = dataValues.reduce((acc: number, value: any) => acc + value, 0)
-
-    const basketSize = homeData
-        ? sum / (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
-        : 0
-
-    const receiverOrderValue = homeData
-        ? homeData?.received.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0)
-        : 0
-
-    return { netSales, netReturn, netReturnSales, averageOrderValue, basketSize, receiverOrderValue }
-}
+import { HomeCalculations } from './homesUtils/homeFunctions'
 
 const Home = () => {
     const [homeData, setHomeData] = useState<SalesData | null>(null)
@@ -83,15 +53,11 @@ const Home = () => {
         const handleVisibilityChange = () => {
             if (document.hidden) {
                 setIsPageActive(false)
-                console.log('Page is inactive')
             } else {
                 setIsPageActive(true)
-                console.log('Page is active')
             }
         }
-
         document.addEventListener('visibilitychange', handleVisibilityChange)
-
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange)
         }
@@ -108,7 +74,6 @@ const Home = () => {
         return () => {
             if (interval) {
                 clearInterval(interval)
-                console.log('Interval cleared')
             }
         }
     }, [isPageActive, from, to])
@@ -242,9 +207,9 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
                 {CARDDATA.map((item, key) => (
                     <Card
+                        key={key}
                         className="shadow-lg cursor-pointer hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
                         onClick={() => item.handleClick()}
-                        key={key}
                     >
                         <div className="flex gap-10 items-center">
                             <div>{item.img}</div>
