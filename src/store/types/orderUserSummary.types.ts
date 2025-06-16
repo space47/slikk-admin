@@ -123,4 +123,5 @@ export type OrderSummaryTYPE = {
     customerData: Data | undefined
     loading: boolean
     message: string
+    errorMessage?: string
 }

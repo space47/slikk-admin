@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dropdown, FormContainer, FormItem } from '@/components/ui'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
@@ -72,7 +73,7 @@ const BarcodePostContainer = ({
             </div>
 
             {showTable && searchInput && IspostTable ? (
-                <CreatePostTable data={tableData} handleActionClick={handleActionClick} />
+                <CreatePostTable data={tableData || []} handleActionClick={handleActionClick} />
             ) : (
                 <PageSettingsPostTable data={postTableData} handleActionClick={handlePostClick} />
             )}

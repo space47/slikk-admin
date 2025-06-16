@@ -141,7 +141,7 @@ const DivisionEdit = () => {
             <div className="text-xl mb-10">Division Edit</div>
             <Formik enableReinitialize initialValues={initialValue} onSubmit={handleSubmit}>
                 {({ values, touched, errors, resetForm }) => (
-                    <Form className="w-2/3" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
+                    <Form className="w-full" onKeyDown={(e: any) => e.key === 'Enter' && e.preventDefault()}>
                         <FormContainer>
                             <FormContainer className="flex flex-row gap-7 ">
                                 <FormItem label="Division Name" className="col-span-1 w-1/2">

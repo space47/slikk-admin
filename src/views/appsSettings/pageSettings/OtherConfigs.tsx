@@ -45,7 +45,7 @@ const OtherConfigs = ({
                 className="col-span-1 w-1/2"
             />
             {HEADERCONFIGARRAY.map((item, key) => (
-                <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                <FormItem asterisk label={item.label} className="w-full" key={key}>
                     <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
                 </FormItem>
             ))}
@@ -116,7 +116,7 @@ const OtherConfigs = ({
                 className="col-span-1 w-1/2"
             />
             {SUBHEADERCONFIGARRAY.map((item, key) => (
-                <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                <FormItem asterisk label={item.label} className="w-full" key={key}>
                     <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
                 </FormItem>
             ))}
@@ -187,7 +187,7 @@ const OtherConfigs = ({
                 className="col-span-1 w-1/2"
             />
             {FOOTERCONFIGARRAY.map((item, key) => (
-                <FormItem asterisk label={item.label} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                <FormItem asterisk label={item.label} className="w-full" key={key}>
                     <Field type={item.type} name={item.name} placeholder={`Enter ${item.label}`} component={Input} min="0" />
                 </FormItem>
             ))}

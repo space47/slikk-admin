@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { COMPONENT_CATEGORY_TYPES } from '@/common/banner'
-import { Button, Checkbox, Dropdown, FormContainer, FormItem, Input, Select } from '@/components/ui'
+import { Checkbox, Dropdown, FormContainer, FormItem, Input, Select, Tabs } from '@/components/ui'
 import { ErrorMessage, Field, FieldProps, Form, Formik } from 'formik'
-import React, { useState } from 'react'
 import { DROPDOWNTYPE } from '@/views/category-management/catalog/CommonType'
 import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import CreatePostTable from '@/views/creatorPost/uploadPost/createPost/CreatePostTable'
 import PageSettingsPostTable from './PageSettingsPostTable'
 import { MdCancel } from 'react-icons/md'
-import { CommonProps, DATATYPEVALUES } from './configurationCommon'
+import { CommonProps, DATATYPEVALUES, FontSizeArray, SECTIONARRAY, SectionTypeArray } from './configurationCommon'
 import TagsEdit from './TagsEdit'
 import PageComponentConfig from './PageComponentConfig'
 import OtherConfigs from './OtherConfigs'
@@ -16,27 +15,9 @@ import BackGroundImages from './BackGroundImages'
 import CommonSelect from './CommonSelect'
 import ExtraConfigFileds from './ExtraConfigFileds'
 import DataTypes from './DataTypes'
-
-const SectionTypeArray = [
-    { label: 'Generic', value: 'generic' },
-    { label: 'Personalized', value: 'personalized' },
-]
-
-const SECTIONARRAY = [
-    { label: 'Flex Start', value: 'flex-start' },
-    { label: 'Flex End', value: 'flex-end' },
-    { label: 'Center', value: 'center' },
-    { label: 'Space Between', value: 'space-between' },
-    { label: 'Space Around', value: 'space-around' },
-    { label: 'Space Evenly', value: 'space-evenly' },
-]
-
-const FontSizeArray = [
-    { label: 'Bold', value: 'bold' },
-    { label: 'Regular', value: 'regular' },
-    { label: 'Underline', value: 'underline' },
-    { label: 'Italic', value: 'italic' },
-]
+import TabList from '@/components/ui/Tabs/TabList'
+import TabNav from '@/components/ui/Tabs/TabNav'
+import TabContent from '@/components/ui/Tabs/TabContent'
 
 const CommonMainPageSettings = ({
     setComponentOptions,
@@ -88,11 +69,13 @@ const CommonMainPageSettings = ({
     handleAddFilters,
     handleRemoveFilter,
 }: CommonProps) => {
-    const [configFields, setConfigFields] = useState(false)
-    const [otherFields, setOtherFields] = useState(false)
-    const [bgFields, setBgFields] = useState(false)
-    const [extraConfigFields, setExtraConfigFields] = useState(false)
-    const [dataTypeFields, setDataTypeFields] = useState(false)
+    const TabsArray = [
+        { label: 'Component Config', value: 'Component' },
+        { label: 'Background config', value: 'bg_config' },
+        { label: 'Other Config', value: 'other_config' },
+        { label: 'Extra Config', value: 'extra_config' },
+        { label: 'Data Type Config', value: 'data_type_config' },
+    ]
 
     return (
         <Formik
@@ -135,129 +118,73 @@ const CommonMainPageSettings = ({
                             </FormItem>
                         </FormContainer>
 
-                        {configFields ? (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setConfigFields(false)} type="button">
-                                    Component Configs
-                                </Button>
+                        <Tabs defaultValue="tab1">
+                            <TabList className="flex items-center justify-center font-bold bg-gray-100 p-2 rounded-2xl ">
+                                {TabsArray.map((tab, index) => (
+                                    <TabNav key={index} value={tab?.value} className="hover:text-green-500">
+                                        {tab?.label}
+                                    </TabNav>
+                                ))}
+                            </TabList>
+                            <div className="p-4 mt-5">
+                                <TabContent value="Component">
+                                    <PageComponentConfig
+                                        values={values}
+                                        FontSizeArray={FontSizeArray}
+                                        SECTIONARRAY={SECTIONARRAY}
+                                        borderForm={borderForm}
+                                        setBorderForm={setBorderForm}
+                                        setFieldValue={setFieldValue}
+                                        setSectioBorderShow={setSectioBorderShow}
+                                        sectionBorderShow={sectionBorderShow}
+                                        setWebBorderForm={setWebBorderForm}
+                                        webBorderForm={webBorderForm}
+                                        setWebSectioBorderShow={setWebSectioBorderShow}
+                                        webSectionBorderShow={webSectionBorderShow}
+                                        setNameForm={setNameForm}
+                                        nameForm={nameForm}
+                                        setFooterAlignForm={setFooterAlignForm}
+                                        footerAlignForm={footerAlignForm}
+                                        setWebNameForm={setWebNameForm}
+                                        webNameForm={webNameForm}
+                                        setWebFooterAlignForm={setWebFooterAlignForm}
+                                        webFooterAlignForm={webFooterAlignForm}
+                                    />
+                                </TabContent>
+                                <TabContent value="bg_config">
+                                    <BackGroundImages
+                                        editMode={editMode}
+                                        initialValue={initialValue}
+                                        handleRemoveImage={handleRemoveImage}
+                                        values={values}
+                                        handleRemoveVideo={handleRemoveVideo}
+                                    />
+                                </TabContent>
+                                <TabContent value="other_config">
+                                    <OtherConfigs
+                                        editMode={editMode}
+                                        particularRow={particularRow}
+                                        values={values}
+                                        handleRemoveHeaderImage={handleRemoveHeaderImage}
+                                        handleRemoveImage={handleRemoveImage}
+                                        handleRemoveSubImage={handleRemoveSubImage}
+                                    />
+                                </TabContent>
+                                <TabContent value="extra_config">
+                                    <ExtraConfigFileds />
+                                </TabContent>
+                                <TabContent value="data_type_config">
+                                    <DataTypes
+                                        handleAddFilter={handleAddFilter}
+                                        handleAddFilters={handleAddFilters}
+                                        showAddFilter={showAddFilter}
+                                        handleRemoveFilter={handleRemoveFilter}
+                                        values={values}
+                                    />
+                                </TabContent>
                             </div>
-                        ) : (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setConfigFields(true)} type="button">
-                                    Component Configs
-                                </Button>
-                            </div>
-                        )}
-
-                        {configFields && (
-                            <PageComponentConfig
-                                values={values}
-                                FontSizeArray={FontSizeArray}
-                                SECTIONARRAY={SECTIONARRAY}
-                                borderForm={borderForm}
-                                setBorderForm={setBorderForm}
-                                setFieldValue={setFieldValue}
-                                setSectioBorderShow={setSectioBorderShow}
-                                sectionBorderShow={sectionBorderShow}
-                                setWebBorderForm={setWebBorderForm}
-                                webBorderForm={webBorderForm}
-                                setWebSectioBorderShow={setWebSectioBorderShow}
-                                webSectionBorderShow={webSectionBorderShow}
-                                setNameForm={setNameForm}
-                                nameForm={nameForm}
-                                setFooterAlignForm={setFooterAlignForm}
-                                footerAlignForm={footerAlignForm}
-                                setWebNameForm={setWebNameForm}
-                                webNameForm={webNameForm}
-                                setWebFooterAlignForm={setWebFooterAlignForm}
-                                webFooterAlignForm={webFooterAlignForm}
-                            />
-                        )}
-
-                        {bgFields ? (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setBgFields(false)} type="button">
-                                    Background Fields
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setBgFields(true)} type="button">
-                                    Background Fields
-                                </Button>
-                            </div>
-                        )}
-                        {bgFields && (
-                            <BackGroundImages
-                                editMode={editMode}
-                                initialValue={initialValue}
-                                handleRemoveImage={handleRemoveImage}
-                                values={values}
-                                handleRemoveVideo={handleRemoveVideo}
-                            />
-                        )}
-
-                        {otherFields ? (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setOtherFields(false)} type="button">
-                                    Other Configs
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setOtherFields(true)} type="button">
-                                    Other Field Configs
-                                </Button>
-                            </div>
-                        )}
-                        {otherFields && (
-                            <OtherConfigs
-                                editMode={editMode}
-                                particularRow={particularRow}
-                                values={values}
-                                handleRemoveHeaderImage={handleRemoveHeaderImage}
-                                handleRemoveImage={handleRemoveImage}
-                                handleRemoveSubImage={handleRemoveSubImage}
-                            />
-                        )}
-
-                        {extraConfigFields ? (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setExtraConfigFields(false)} type="button">
-                                    Extra Field Configs
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setExtraConfigFields(true)} type="button">
-                                    Extra Field Configs
-                                </Button>
-                            </div>
-                        )}
-                        {extraConfigFields && <ExtraConfigFileds />}
-
-                        {dataTypeFields ? (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="reject" onClick={() => setDataTypeFields(false)} type="button">
-                                    Data Type Configs
-                                </Button>
-                            </div>
-                        ) : (
-                            <div className="flex justify-center items-center mt-10 mb-10">
-                                <Button variant="new" onClick={() => setDataTypeFields(true)} type="button">
-                                    Data Type Configs
-                                </Button>
-                            </div>
-                        )}
-                        {dataTypeFields && (
-                            <DataTypes
-                                handleAddFilter={handleAddFilter}
-                                handleAddFilters={handleAddFilters}
-                                showAddFilter={showAddFilter}
-                                handleRemoveFilter={handleRemoveFilter}
-                                values={values}
-                            />
-                        )}
+                        </Tabs>
+                        <hr className="font-bold mb-5 mt-5 " />
 
                         <FormContainer className="grid grid-cols-2 gap-3">
                             <FormContainer className="flex flex-col gap-4 ">
@@ -270,7 +197,7 @@ const CommonMainPageSettings = ({
                                             id=""
                                             placeholder="search SKU for product"
                                             value={searchInput}
-                                            className=" w-[250px] rounded-[10px]"
+                                            className=" xl:w-[550px] rounded-[10px]"
                                             onChange={handleSearch}
                                         />
                                     </div>
@@ -297,6 +224,7 @@ const CommonMainPageSettings = ({
                                     <input
                                         type="text"
                                         name="data_type.barcodes"
+                                        className="w-[80%]"
                                         value={productData}
                                         placeholder="Enter product barcode"
                                         onChange={(e: any) => {
@@ -326,7 +254,7 @@ const CommonMainPageSettings = ({
                                             id=""
                                             placeholder="search SKU for product"
                                             value={postInput}
-                                            className=" w-[250px] rounded-[10px]"
+                                            className="xl:w-[550px] rounded-[10px]"
                                             onChange={handlePOSTSearch}
                                         />
                                     </div>
@@ -339,6 +267,7 @@ const CommonMainPageSettings = ({
                                 <FormItem label="Posts" className="w-full flex gap-7">
                                     <input
                                         type="text"
+                                        className="w-[80%]"
                                         name="data_type.posts"
                                         placeholder="Enter product barcode"
                                         value={postData}
@@ -369,7 +298,7 @@ const CommonMainPageSettings = ({
 
                         <FormContainer className="grid grid-cols-2 gap-3">
                             {DATATYPEVALUES.map((item, key) => (
-                                <FormItem label={item.label.toUpperCase()} className="col-span-1 w-[60%] h-[80%]" key={key}>
+                                <FormItem label={item.label.toUpperCase()} className="w-full" key={key}>
                                     <Field
                                         type={item.type}
                                         name={item.name}
@@ -379,18 +308,20 @@ const CommonMainPageSettings = ({
                                 </FormItem>
                             ))}
                         </FormContainer>
-                        <FormItem label="Order Count" className="w-1/4">
-                            <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" />
-                        </FormItem>
-                        <FormItem label="Min Order Value for Event Pass" className="w-1/4">
-                            <Field
-                                type="number"
-                                name="extra_info.min_order_value_for_event_pass"
-                                placeholder="Enter min order value for event pass"
-                                component={Input}
-                                min="0"
-                            />
-                        </FormItem>
+                        <FormContainer className="grid grid-cols-2 gap-2">
+                            <FormItem label="Order Count" className="w-full">
+                                <Field type="number" name="order_count" placeholder="Enter order count" component={Input} min="0" />
+                            </FormItem>
+                            <FormItem label="Min Order Value for Event Pass" className="w-full">
+                                <Field
+                                    type="number"
+                                    name="extra_info.min_order_value_for_event_pass"
+                                    placeholder="Enter min order value for event pass"
+                                    component={Input}
+                                    min="0"
+                                />
+                            </FormItem>
+                        </FormContainer>
                         <FormItem label="Is Section Clickable" className="col-span-1 w-[60%] h-[80%]">
                             <Field type="checkbox" name="is_section_clickable" placeholder="" component={Checkbox} />
                         </FormItem>
@@ -398,7 +329,7 @@ const CommonMainPageSettings = ({
                             <Field type="checkbox" name="is_section_active" placeholder="" component={Checkbox} />
                         </FormItem>
 
-                        {values?.is_section_clickable && <TagsEdit filterOptions={filters.filters} isValue />}
+                        {values?.is_section_clickable && <TagsEdit isValue filterOptions={filters.filters} />}
                     </FormContainer>
                 </Form>
             )}
