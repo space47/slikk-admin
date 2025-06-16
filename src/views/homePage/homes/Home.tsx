@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SalesData } from './homes.common'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
 import { IoMdReturnLeft } from 'react-icons/io'
@@ -22,82 +21,38 @@ import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import HomepageMaps from './componentsHomes/HomepageMaps'
-
-const HomeCalculations = (homeData: any) => {
-    const netSales =
-        (homeData?.received?.total_amount || 0) -
-        (homeData?.returned?.total_amount || 0) -
-        (homeData?.cancelled?.total_amount || 0) -
-        (homeData?.declined?.total_amount || 0)
-
-    const netReturn = (homeData?.returned?.count || 0) + (homeData?.cancelled?.count || 0) + (homeData?.declined?.count || 0)
-    const netReturnSales =
-        (homeData?.returned?.total_amount || 0) + (homeData?.cancelled?.total_amount || 0) + (homeData?.declined?.total_amount || 0)
-
-    const averageOrderValue = homeData
-        ? homeData?.received?.total_amount /
-          (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
-        : 0
-
-    const dataValues = Object.values(homeData?.brand_wise_sale ?? {})
-
-    const sum = dataValues.reduce((acc, value) => acc + value, 0)
-
-    const basketSize = homeData
-        ? sum / (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
-        : 0
-
-    const receiverOrderValue = homeData
-        ? homeData?.received.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0)
-        : 0
-
-    return { netSales, netReturn, netReturnSales, averageOrderValue, basketSize, receiverOrderValue }
-}
+import { HomeCalculations } from './homesUtils/homeFunctions'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 const Home = () => {
-    const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
-    const [inputValues, setInputValues] = useState({
-        customer: '',
-        invoice_id: '',
-        email: '',
-    })
+    const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
     const [accessDenied, setAccessDenied] = useState(false)
     const [isPageActive, setIsPageActive] = useState(true)
     const [activeTab, setActiveTab] = useState('orders')
-    const [mobileFromMail, setMobileFromMail] = useState('')
     const [viewMap, setViewMap] = useState(false)
     const navigate = useNavigate()
-
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
-    const fetchHome = async () => {
-        try {
-            const response = await axiosInstance.get(`/merchant/analytics/order?from=${from}&to=${To_Date}`)
-            const data: SalesData = response.data.data
-            setHomeData(data)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
+    const { data: homeData, refetch } = useFetchSingleData<SalesData>({
+        url: `/merchant/analytics/order?from=${from}&to=${To_Date}`,
+        onErrorStatus: (status) => {
+            if (status === 403) {
                 setAccessDenied(true)
             }
-            console.log('Error fetching data:', error)
-        }
-    }
+        },
+    })
 
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.hidden) {
                 setIsPageActive(false)
-                console.log('Page is inactive')
             } else {
                 setIsPageActive(true)
-                console.log('Page is active')
             }
         }
-
         document.addEventListener('visibilitychange', handleVisibilityChange)
-
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange)
         }
@@ -105,50 +60,19 @@ const Home = () => {
 
     useEffect(() => {
         let interval: NodeJS.Timeout
-
         if (isPageActive) {
-            fetchHome()
-            interval = setInterval(fetchHome, 60000)
+            refetch()
+            interval = setInterval(refetch, 60000)
         }
-
         return () => {
-            if (interval) {
-                clearInterval(interval)
-                console.log('Interval cleared')
-            }
+            clearInterval(interval)
         }
     }, [isPageActive, from, to])
 
-    useEffect(() => {
-        const fetchFromMobileThroughEmail = async () => {
-            try {
-                const response = await axiosInstance.get(`/merchant/analytics/order?email=${inputValues.email}&type=user_summary`)
-                const data = response?.data?.data?.profile?.mobile
-                setMobileFromMail(data)
-            } catch (error: any) {
-                return
-            }
-        }
-        if (inputValues.email) {
-            fetchFromMobileThroughEmail()
-        }
-    }, [inputValues.email])
-
-    const { netSales, averageOrderValue, basketSize, netReturn, netReturnSales, receiverOrderValue } = HomeCalculations(homeData)
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setInputValues((prevValues) => ({
-            ...prevValues,
-            [name]: value,
-        }))
-    }
+    const { netSales, averageOrderValue, basketSize, netReturn, netReturnSales, receiverOrderValue } = HomeCalculations(homeData || null)
 
     const handleCustomerFunction = (inputName: string) => {
         navigate(`/app/customerAnalytics/${inputName}`)
-    }
-    const handleCustomerEnailFunction = () => {
-        navigate(`/app/customerAnalytics/${mobileFromMail}`)
     }
 
     const handleInvoiceFunction = (inputName: string) => {
@@ -227,63 +151,40 @@ const Home = () => {
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
                         <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[300px] bg-white shadow-md dark:bg-gray-900">
                             <input
+                                ref={(el) => (inputRefs.current['customerNumber'] = el)}
                                 type="text"
                                 name="customer"
-                                value={inputValues.customer}
                                 placeholder="Search by Customer Number"
                                 className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleCustomerFunction(inputValues.customer)
+                                    if (e.key === 'Enter' && inputRefs.current['customerNumber']?.value) {
+                                        handleCustomerFunction(inputRefs.current['customerNumber']?.value)
                                     }
                                 }}
-                                onChange={handleInputChange}
                             />
                             <button
                                 className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                                onClick={() => handleCustomerFunction(inputValues.customer)}
+                                onClick={() => handleCustomerFunction(inputRefs.current['customerNumber']?.value || '')}
                             >
                                 <FaSearch />
                             </button>
                         </div>
-                        {/* <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[300px] bg-white shadow-md dark:bg-gray-900">
-                            <input
-                                type="text"
-                                name="email"
-                                value={inputValues.email}
-                                placeholder="Search by User Email"
-                                className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleCustomerEnailFunction()
-                                    }
-                                }}
-                                onChange={handleInputChange}
-                            />
-                            <button
-                                className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                                onClick={handleCustomerEnailFunction}
-                            >
-                                <FaSearch />
-                            </button>
-                        </div> */}
                         <div className="flex items-center gap-1 p-2 rounded-md w-full lg:w-[300px] bg-white shadow-md dark:bg-gray-900">
                             <input
+                                ref={(el) => (inputRefs.current['customerInvoice'] = el)}
                                 type="text"
                                 name="invoice_id"
-                                value={inputValues.invoice_id}
                                 placeholder="Search by Invoice ID"
                                 className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleInvoiceFunction(inputValues.invoice_id)
+                                    if (e.key === 'Enter' && inputRefs.current['customerInvoice']) {
+                                        handleInvoiceFunction(inputRefs.current['customerInvoice']?.value)
                                     }
                                 }}
-                                onChange={handleInputChange}
                             />
                             <button
                                 className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                                onClick={() => handleInvoiceFunction(inputValues.invoice_id)}
+                                onClick={() => handleInvoiceFunction(inputRefs.current['customerInvoice']?.value || '')}
                             >
                                 <FaSearch />
                             </button>
@@ -297,9 +198,9 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 xl:mx-10">
                 {CARDDATA.map((item, key) => (
                     <Card
+                        key={key}
                         className="shadow-lg cursor-pointer hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
                         onClick={() => item.handleClick()}
-                        key={key}
                     >
                         <div className="flex gap-10 items-center">
                             <div>{item.img}</div>
