@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react'
 import { SalesData } from './homes.common'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
 import { RiFileList3Fill } from 'react-icons/ri'
 import { IoMdReturnLeft } from 'react-icons/io'
@@ -23,9 +22,9 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import HomepageMaps from './componentsHomes/HomepageMaps'
 import { HomeCalculations } from './homesUtils/homeFunctions'
+import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 
 const Home = () => {
-    const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
     const inputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
@@ -36,18 +35,14 @@ const Home = () => {
     const navigate = useNavigate()
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
-    const fetchHome = async () => {
-        try {
-            const response = await axiosInstance.get(`/merchant/analytics/order?from=${from}&to=${To_Date}`)
-            const data: SalesData = response.data.data
-            setHomeData(data)
-        } catch (error: any) {
-            if (error.response && error.response.status === 403) {
+    const { data: homeData, refetch } = useFetchSingleData<SalesData>({
+        url: `/merchant/analytics/order?from=${from}&to=${To_Date}`,
+        onErrorStatus: (status) => {
+            if (status === 403) {
                 setAccessDenied(true)
             }
-            console.log('Error fetching data:', error)
-        }
-    }
+        },
+    })
 
     useEffect(() => {
         const handleVisibilityChange = () => {
@@ -65,20 +60,16 @@ const Home = () => {
 
     useEffect(() => {
         let interval: NodeJS.Timeout
-
         if (isPageActive) {
-            fetchHome()
-            interval = setInterval(fetchHome, 60000)
+            refetch()
+            interval = setInterval(refetch, 60000)
         }
-
         return () => {
-            if (interval) {
-                clearInterval(interval)
-            }
+            clearInterval(interval)
         }
     }, [isPageActive, from, to])
 
-    const { netSales, averageOrderValue, basketSize, netReturn, netReturnSales, receiverOrderValue } = HomeCalculations(homeData)
+    const { netSales, averageOrderValue, basketSize, netReturn, netReturnSales, receiverOrderValue } = HomeCalculations(homeData || null)
 
     const handleCustomerFunction = (inputName: string) => {
         navigate(`/app/customerAnalytics/${inputName}`)
