@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SalesData } from './homes.common'
 import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import Card from '@/components/ui/Card'
@@ -41,7 +41,7 @@ const HomeCalculations = (homeData: any) => {
 
     const dataValues = Object.values(homeData?.brand_wise_sale ?? {})
 
-    const sum = dataValues.reduce((acc, value) => acc + value, 0)
+    const sum = dataValues.reduce((acc: number, value: any) => acc + value, 0)
 
     const basketSize = homeData
         ? sum / (homeData?.received?.count - (homeData?.delivery_type?.EXCHANGE ? homeData?.delivery_type?.EXCHANGE : 0))
@@ -58,18 +58,15 @@ const Home = () => {
     const [homeData, setHomeData] = useState<SalesData | null>(null)
     const [from, setFrom] = useState(moment().format('YYYY-MM-DD'))
     const [to, setTo] = useState(moment().add(1, 'days').format('YYYY-MM-DD'))
-    const [inputValues, setInputValues] = useState({
-        customer: '',
-        invoice_id: '',
-        email: '',
-    })
+    const customerNumber = useRef<any>('')
+    const customerInvoice = useRef<any>('')
+    // const customerEmail = useRef<any>('')
     const [accessDenied, setAccessDenied] = useState(false)
     const [isPageActive, setIsPageActive] = useState(true)
     const [activeTab, setActiveTab] = useState('orders')
-    const [mobileFromMail, setMobileFromMail] = useState('')
+    // const [mobileFromMail, setMobileFromMail] = useState('')
     const [viewMap, setViewMap] = useState(false)
     const navigate = useNavigate()
-
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const fetchHome = async () => {
@@ -119,37 +116,29 @@ const Home = () => {
         }
     }, [isPageActive, from, to])
 
-    useEffect(() => {
-        const fetchFromMobileThroughEmail = async () => {
-            try {
-                const response = await axiosInstance.get(`/merchant/analytics/order?email=${inputValues.email}&type=user_summary`)
-                const data = response?.data?.data?.profile?.mobile
-                setMobileFromMail(data)
-            } catch (error: any) {
-                return
-            }
-        }
-        if (inputValues.email) {
-            fetchFromMobileThroughEmail()
-        }
-    }, [inputValues.email])
+    // useEffect(() => {
+    //     const fetchFromMobileThroughEmail = async () => {
+    //         try {
+    //             const response = await axiosInstance.get(`/merchant/analytics/order?email=${inputValues.email}&type=user_summary`)
+    //             const data = response?.data?.data?.profile?.mobile
+    //             setMobileFromMail(data)
+    //         } catch (error: any) {
+    //             return
+    //         }
+    //     }
+    //     if (inputValues.email) {
+    //         fetchFromMobileThroughEmail()
+    //     }
+    // }, [inputValues.email])
 
     const { netSales, averageOrderValue, basketSize, netReturn, netReturnSales, receiverOrderValue } = HomeCalculations(homeData)
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setInputValues((prevValues) => ({
-            ...prevValues,
-            [name]: value,
-        }))
-    }
 
     const handleCustomerFunction = (inputName: string) => {
         navigate(`/app/customerAnalytics/${inputName}`)
     }
-    const handleCustomerEnailFunction = () => {
-        navigate(`/app/customerAnalytics/${mobileFromMail}`)
-    }
+    // const handleCustomerEnailFunction = () => {
+    //     navigate(`/app/customerAnalytics/${mobileFromMail}`)
+    // }
 
     const handleInvoiceFunction = (inputName: string) => {
         navigate(`/app/orders/${inputName}`)
@@ -227,21 +216,20 @@ const Home = () => {
                     <div className="flex flex-col xl:flex-row gap-4 xl:justify-center ">
                         <div className="flex items-center gap-1 p-2 rounded-md w-full  lg:w-[300px] bg-white shadow-md dark:bg-gray-900">
                             <input
+                                ref={customerNumber}
                                 type="text"
                                 name="customer"
-                                value={inputValues.customer}
                                 placeholder="Search by Customer Number"
                                 className="flex-1 p-2 rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleCustomerFunction(inputValues.customer)
+                                    if (e.key === 'Enter' && customerNumber.current) {
+                                        handleCustomerFunction(customerNumber.current.value)
                                     }
                                 }}
-                                onChange={handleInputChange}
                             />
                             <button
                                 className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                                onClick={() => handleCustomerFunction(inputValues.customer)}
+                                onClick={() => handleCustomerFunction(customerNumber.current.value)}
                             >
                                 <FaSearch />
                             </button>
@@ -271,19 +259,18 @@ const Home = () => {
                             <input
                                 type="text"
                                 name="invoice_id"
-                                value={inputValues.invoice_id}
+                                ref={customerInvoice}
                                 placeholder="Search by Invoice ID"
                                 className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 dark:bg-gray-900"
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        handleInvoiceFunction(inputValues.invoice_id)
+                                    if (e.key === 'Enter' && customerInvoice.current) {
+                                        handleInvoiceFunction(customerInvoice.current.value)
                                     }
                                 }}
-                                onChange={handleInputChange}
                             />
                             <button
                                 className="p-2 py-3 px-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                                onClick={() => handleInvoiceFunction(inputValues.invoice_id)}
+                                onClick={() => handleInvoiceFunction(customerInvoice.current.value)}
                             >
                                 <FaSearch />
                             </button>
