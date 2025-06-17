@@ -40,7 +40,7 @@ const TaskTracking = () => {
         try {
             let searchData = ''
             let deliveryType = ''
-
+            let fromDate = ''
             const filterRunnerName = particularMobileOfRunner ? `&runner_mobile=${particularMobileOfRunner}` : ''
 
             if (currentSelectedPage.value === 'client_order_id' && globalFilter) {
@@ -54,9 +54,12 @@ const TaskTracking = () => {
             if (!globalFilter) {
                 deliveryType = `task_type=REVERSE`
             }
+            if (from && to && !globalFilter && !particularMobileOfRunner) {
+                fromDate = `&from=${from}&to=${To_Date}`
+            }
 
             const response = await axioisInstance.get(
-                `logistic/slikk/task?${deliveryType}&p=${page}&page_size=${pageSize}&from=${from}&to=${To_Date}${searchData}${filterRunnerName}${currentStatusName}`,
+                `logistic/slikk/task?${deliveryType}&p=${page}&page_size=${pageSize}${fromDate}${searchData}${filterRunnerName}${currentStatusName}`,
             )
             const data = response.data.data.results
             const total = response.data.data.count
@@ -70,8 +73,6 @@ const TaskTracking = () => {
             console.error(error)
         }
     }
-
-    console.log('data of results', data)
 
     useEffect(() => {
         fetchData()

@@ -7,10 +7,10 @@ import { FILTER_STATE } from '@/store/types/filters.types'
 import { getAllFiltersAPI } from '@/store/action/filters.action'
 import CommonMainPageSettings from './CommonMainPageSettings'
 import { ProductTable, WebType } from './pageSettings.types'
-// import { handleVideo } from '@/common/handleVideo'
 import * as Yup from 'yup'
-import { values } from 'lodash'
 import { handleimage } from '@/common/handleImage'
+import { calculateAspectRatio, handleImage, handleVideo } from './pageSettingsUtils/pageEditFunctions'
+import { DROPDOWNARRAY } from '@/views/category-management/catalog/CommonType'
 
 type modalProps = {
     isModalOpen: boolean
@@ -22,13 +22,7 @@ type modalProps = {
     setData: (data: any) => void
 }
 
-const DROPDOWNARRAY = [
-    { label: 'Name', value: 'name' },
-    { label: 'SKU', value: 'sku' },
-    { label: 'Barcode', value: 'barcode' },
-]
-
-const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handleOk, handleCancel, formikRef, data, setData }) => {
+const PageAddModal: React.FC<modalProps> = ({ isModalOpen, handleOk, handleCancel, formikRef, setData }) => {
     const [currentSelectedPage, setCurrentSelectedPage] = useState<Record<string, string>>()
     const [searchInput, setSearchInput] = useState<string>('')
     const [showTable, setShowTable] = useState(false)
@@ -50,7 +44,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
 
     const [showAddFilter, setShowAddFilter] = useState<number[]>([])
     const [filterId, setFilterId] = useState()
-    const [filtersData, setFiltersData] = useState([])
+    const [filtersData, setFiltersData] = useState<any[]>([])
 
     const dispatch = useAppDispatch()
     useEffect(() => {
@@ -58,7 +52,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     }, [])
 
     const initialValue = {}
-    const [selectedType, setSelectedType] = useState('')
 
     const validationSchema = Yup.object().shape({
         section_heading: Yup.string().required('Section Header is required'),
@@ -96,7 +89,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     const fetchPost = async () => {
         try {
             if (postInput) {
-                // const qname = currentSelectedPage?.value === 'sku' ? 'sku' : 'name'
                 const response = await axioisInstance.get(`/posts?name=${postInput}`)
                 const data = response.data.data.results
                 setPostTableData(data)
@@ -119,9 +111,9 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         setShowAddFilter(updatedFilters)
     }
 
-    const handleAddFilters = async (values) => {
+    const handleAddFilters = async (values: any) => {
         const newFilterData = showAddFilter.map((_, index) => values.filtersAdd[index] || [])
-        setFiltersData((prev) => {
+        setFiltersData((prev: any) => {
             const updatedFilters = [...prev, newFilterData]
             const lastElement = updatedFilters.at(-1)
             sendFilterData(lastElement)
@@ -129,7 +121,7 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         })
     }
 
-    const sendFilterData = async (filterData) => {
+    const sendFilterData = async (filterData: string | number) => {
         try {
             const response = await axioisInstance.post(`/product/search/criteria`, { filter_data: filterData })
             setFilterId(response.data?.data?.id)
@@ -145,123 +137,15 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
     }
 
     const handleActionClick = (value: any) => {
-        console.log('Barcode', value)
         setProductData((prev) => (prev ? [...prev, value] : [value]))
         setShowTable(false)
         setSearchInput('')
     }
 
-    const handleImage = async (files: File[]) => {
-        if (!files || files.length === 0) {
-            return
-        }
-        const formData = new FormData()
-        for (const file of files) {
-            const image = new Image()
-            const fileURL = URL.createObjectURL(file)
-            image.src = fileURL
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    console.log('Image width:', image.width, 'Image height:', image.height)
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-            })
-
-            formData.append('file', file)
-        }
-        formData.append('file_type', 'banners')
-        try {
-            const response = await axioisInstance.post('fileupload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-
-            const newData = response.data.url
-            notification.success({
-                message: 'Success',
-                description: response?.data?.message || 'Image uploaded successfully',
-            })
-
-            return newData
-        } catch (error: any) {
-            console.error('Error uploading files:', error)
-            notification.error({
-                message: 'Upload Failed',
-                description: error?.response?.data?.message || 'Image upload failed',
-            })
-
-            return ''
-        }
-    }
     const handleSelect = (value: any) => {
         const selected = DROPDOWNARRAY.find((item) => item.value === value)
         if (selected) {
             setCurrentSelectedPage(selected)
-        }
-    }
-
-    const calculateAspectRatio = async (files: File[]): Promise<number[]> => {
-        if (!files || files.length === 0) {
-            return []
-        }
-
-        const aspectRatios: number[] = []
-        for (const file of files) {
-            const image = new Image()
-            const fileURL = URL.createObjectURL(file)
-
-            image.src = fileURL
-
-            await new Promise<void>((resolve) => {
-                image.onload = () => {
-                    aspectRatios.push(image.width / image.height)
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-                image.onerror = () => {
-                    URL.revokeObjectURL(fileURL)
-                    resolve()
-                }
-            })
-        }
-        return aspectRatios
-    }
-
-    const handleVideo = async (files: File[]) => {
-        if (files) {
-            const formData = new FormData()
-
-            files.forEach((file) => {
-                formData.append('file', file)
-            })
-            formData.append('file_type', 'product')
-            notification.info({
-                message: 'Video Upload In Process',
-            })
-
-            try {
-                console.log(formData.get('file'))
-                const response = await axioisInstance.post('fileupload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
-                console.log(response)
-                notification.success({
-                    message: 'Video Updated',
-                })
-                const newData = response.data.url
-                return newData
-            } catch (error: any) {
-                console.error('Error uploading files:', error)
-                notification.error({
-                    message: 'Failure',
-                    description: error?.response?.data?.message || 'Video Not uploaded',
-                })
-                return 'Error'
-            }
         }
     }
 
@@ -400,7 +284,6 @@ const PageAddModal: React.FC<modalProps> = ({ isModalOpen, setIsModalOpen, handl
         const filteredRow = Object.fromEntries(Object.entries(newRowAdd || {}).filter(([_, value]) => value !== undefined))
 
         setData((prevData: WebType[]) => [...prevData, filteredRow])
-        setSelectedType('')
 
         console.log('Main Data That is to be send in the API', filteredRow)
         console.log('The row which is set', row)

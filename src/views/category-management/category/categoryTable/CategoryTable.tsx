@@ -2,7 +2,6 @@
 import React, { useState, useMemo } from 'react'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import { Modal } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
@@ -14,6 +13,7 @@ import { useCategoryColumns } from './categoryUtils/useCategoryColumns'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { useAppSelector } from '@/store'
 import { DIVISION_STATE } from '@/store/types/division.types'
+import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
 
 const CategoryTable = () => {
     const navigate = useNavigate()
@@ -28,9 +28,9 @@ const CategoryTable = () => {
     const DivisionArray = divisions?.divisions?.map((item) => item?.name)
 
     const queryParams = useMemo(() => {
-        const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
+        const filterValue = globalFilter ? `&q=${globalFilter}` : ''
         const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${selectedDivision}` : ''
-        return `category?dashboard=true${filtervalue}${divisionFilter}`
+        return `category?dashboard=true${filterValue}${divisionFilter}`
     }, [globalFilter, selectedDivision])
 
     const { data } = useFetchSingleData<categoryItem[]>({ url: queryParams })
@@ -41,36 +41,12 @@ const CategoryTable = () => {
         return data?.slice(start, end)
     }, [data, page, pageSize])
 
-    const totalData = data?.length || 0
-
-    const onPaginationChange = (page: number) => {
-        setPage(page)
-    }
-
-    const onSelectChange = (value = 0) => {
-        setPageSize(Number(value))
-        setPage(1)
-    }
-
     const handleDeleteClick = (id: any) => {
         setDeleteModal(true)
         setIdStoreForDelete(id)
     }
 
-    const deleteUser = async () => {
-        try {
-            const body = {
-                id: idStoreForDelete,
-            }
-            await axiosInstance.delete(`category`, {
-                data: body,
-            })
-            setDeleteModal(false)
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const { deleteFromCatalog } = useDeleteFromCatalog({ idStoreForDelete, name: 'category', setDeleteModal })
     const columns = useCategoryColumns({ handleDeleteClick })
 
     return (
@@ -123,14 +99,19 @@ const CategoryTable = () => {
             </div>
             <EasyTable mainData={paginatedData || []} columns={columns} page={page} pageSize={pageSize} />
             <div className="flex items-center justify-between mt-4">
-                <Pagination pageSize={pageSize} currentPage={page} total={totalData} onChange={onPaginationChange} />
+                <Pagination pageSize={pageSize} currentPage={page} total={data?.length || 0} onChange={(page) => setPage(page)} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
                         isSearchable={false}
                         value={pageSizeOptions.find((option) => option.value === pageSize)}
                         options={pageSizeOptions}
-                        onChange={(option) => onSelectChange(option?.value)}
+                        onChange={(option) => {
+                            if (option) {
+                                setPage(1)
+                                setPageSize(option?.value)
+                            }
+                        }}
                     />
                 </div>
             </div>
@@ -142,7 +123,7 @@ const CategoryTable = () => {
                     okButtonProps={{
                         style: { backgroundColor: 'red', borderColor: 'red' },
                     }}
-                    onOk={deleteUser}
+                    onOk={deleteFromCatalog}
                     onCancel={() => setDeleteModal(false)}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">

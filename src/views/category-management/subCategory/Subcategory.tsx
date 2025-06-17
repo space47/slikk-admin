@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
 import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -12,15 +11,15 @@ import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 import { useSubCategoryColumns } from './subCategoryUtils/useSubCategoryColumns'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 import { useSubCategoryFilter } from './subCategoryUtils/subCategoryFilter'
-import { DIVISION_STATE } from '@/store/types/division.types'
-import { useAppSelector } from '@/store'
 import { SINGLE_SUBCATEGORY_DATA } from '@/store/types/subcategory.types'
+import { useGetSubCategory } from './subCategoryUtils/useGetSubCategory'
+import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const Subcategory = () => {
+    const navigate = useNavigate()
     const [data, setData] = useState<SINGLE_SUBCATEGORY_DATA[]>([])
-    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
@@ -29,34 +28,10 @@ const Subcategory = () => {
     const [selectedDivision, setSelectedDivision] = useState('Select Division')
     const [selectedCategory, setSelectedCategory] = useState('Select Category')
 
-    const DivisionArray = divisions?.divisions?.map((item) => item?.name)
-
+    const { subCategories, DivisionArray } = useGetSubCategory({ selectedDivision, selectedCategory })
     useEffect(() => {
-        let subCategories: any[] = []
-
-        if (selectedDivision !== 'Select Division' && selectedCategory !== 'Select Category') {
-            subCategories =
-                divisions?.divisions
-                    ?.find((division) => division?.name === selectedDivision)
-                    ?.categories?.find((category) => category?.name === selectedCategory)?.sub_categories || []
-        } else if (selectedDivision !== 'Select Division') {
-            subCategories =
-                divisions?.divisions
-                    ?.find((division) => division?.name === selectedDivision)
-                    ?.categories?.flatMap((category) => category?.sub_categories || []) || []
-        } else if (selectedCategory !== 'Select Category') {
-            subCategories =
-                divisions?.divisions?.flatMap(
-                    (division) => division?.categories?.find((category) => category?.name === selectedCategory)?.sub_categories || [],
-                ) || []
-        } else {
-            subCategories =
-                divisions?.divisions?.flatMap((division) => division?.categories?.flatMap((category) => category?.sub_categories || [])) ||
-                []
-        }
-
         setData(subCategories)
-    }, [globalFilter, selectedDivision, selectedCategory, divisions?.divisions])
+    }, [globalFilter, selectedDivision, selectedCategory])
 
     const filteredData = data?.filter((item) =>
         Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
@@ -64,41 +39,13 @@ const Subcategory = () => {
 
     const paginatedData = filteredData?.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(filteredData?.length / pageSize)
-
-    const navigate = useNavigate()
-
     const categoryArray = useSubCategoryFilter({ selectedDivision })
 
-    console.log('filtered categories', categoryArray)
-
-    const handleSeller = () => {
-        navigate('/app/category/subCategory/addNew')
-    }
-
     const handleDeleteClick = (id: any) => {
-        console.log('DELETE', id)
         setDeleteModal(true)
         setIdStoreForDelete(id)
     }
-
-    const deleteUser = async () => {
-        try {
-            const body = {
-                id: idStoreForDelete,
-            }
-            await axiosInstance.delete(`sub-category`, {
-                data: body,
-            })
-            setDeleteModal(false)
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleCloseModal = () => {
-        setDeleteModal(false)
-    }
+    const { deleteFromCatalog } = useDeleteFromCatalog({ idStoreForDelete, name: 'sub-category', setDeleteModal })
     const columns = useSubCategoryColumns({ handleDeleteClick })
 
     return (
@@ -165,7 +112,10 @@ const Subcategory = () => {
                     </div>
                 </div>
                 <div className="flex items-end justify-end mb-4 order-first xl:order-1">
-                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
+                    <button
+                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                        onClick={() => navigate('/app/category/subCategory/addNew')}
+                    >
                         ADD NEW SUB_CATEGORY
                     </button>{' '}
                     <br />
@@ -210,8 +160,8 @@ const Subcategory = () => {
                     okButtonProps={{
                         style: { backgroundColor: 'red', borderColor: 'red' },
                     }}
-                    onOk={deleteUser}
-                    onCancel={handleCloseModal}
+                    onOk={deleteFromCatalog}
+                    onCancel={() => setDeleteModal(false)}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
                         <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!
