@@ -28,7 +28,7 @@ const CategoryTable = () => {
     const DivisionArray = divisions?.divisions?.map((item) => item?.name)
 
     const queryParams = useMemo(() => {
-        const filterValue = globalFilter ? `&q=${globalFilter}` : ''
+        const filterValue = globalFilter ? `&name=${globalFilter}` : ''
         const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${selectedDivision}` : ''
         return `category?dashboard=true${filterValue}${divisionFilter}`
     }, [globalFilter, selectedDivision])
@@ -50,7 +50,7 @@ const CategoryTable = () => {
     const columns = useCategoryColumns({ handleDeleteClick })
 
     return (
-        <div>
+        <div className="p-2 rounded-xl shadow-xl">
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="flex flex-col gap-2 xl:flex-row items-center">
                     <div className="mb-4">
@@ -59,7 +59,10 @@ const CategoryTable = () => {
                             placeholder="Search here"
                             value={globalFilter}
                             className="p-2 border rounded"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            onChange={(e) => {
+                                setPage(1)
+                                setGlobalFilter(e.target.value)
+                            }}
                         />
                     </div>
                     <div className="mb-4">
