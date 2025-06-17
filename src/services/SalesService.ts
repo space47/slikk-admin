@@ -17,7 +17,7 @@ export async function apiGetAllCategory() {
 }
 
 export async function apiGetSalesProducts<T, U extends Record<string, unknown>>(data: U) {
-    return axioisInstance.get('/division?view=detail', data)
+    return axioisInstance.get('/division?view=detail&dashboard=true', data)
 }
 
 export async function apiDeleteSalesProducts<T, U extends Record<string, unknown>>(data: U) {
