@@ -13,23 +13,48 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
     let subCategories = []
 
     if (selectedDivision !== 'Select Division' && selectedCategory !== 'Select Category') {
+        const division = divisions?.divisions?.find((d) => d?.name === selectedDivision)
+        const category = division?.categories?.find((c) => c?.name === selectedCategory)
+
         subCategories =
-            divisions?.divisions
-                ?.find((division) => division?.name === selectedDivision)
-                ?.categories?.find((category) => category?.name === selectedCategory)?.sub_categories || []
+            category?.sub_categories?.map((subCat) => ({
+                ...subCat,
+                division_name: selectedDivision,
+                category_name: selectedCategory,
+            })) || []
     } else if (selectedDivision !== 'Select Division') {
+        const division = divisions?.divisions?.find((d) => d?.name === selectedDivision)
+
         subCategories =
-            divisions?.divisions
-                ?.find((division) => division?.name === selectedDivision)
-                ?.categories?.flatMap((category) => category?.sub_categories || []) || []
+            division?.categories?.flatMap((category) =>
+                (category?.sub_categories || []).map((subCat) => ({
+                    ...subCat,
+                    division_name: selectedDivision,
+                    category_name: category.name,
+                })),
+            ) || []
     } else if (selectedCategory !== 'Select Category') {
         subCategories =
-            divisions?.divisions?.flatMap(
-                (division) => division?.categories?.find((category) => category?.name === selectedCategory)?.sub_categories || [],
-            ) || []
+            divisions?.divisions?.flatMap((division) => {
+                const category = division?.categories?.find((c) => c?.name === selectedCategory)
+                return (category?.sub_categories || []).map((subCat) => ({
+                    ...subCat,
+                    division_name: division.name,
+                    category_name: selectedCategory,
+                }))
+            }) || []
     } else {
         subCategories =
-            divisions?.divisions?.flatMap((division) => division?.categories?.flatMap((category) => category?.sub_categories || [])) || []
+            divisions?.divisions?.flatMap((division) =>
+                division?.categories?.flatMap((category) =>
+                    (category?.sub_categories || []).map((subCat) => ({
+                        ...subCat,
+                        division_name: division.name,
+                        category_name: category.name,
+                    })),
+                ),
+            ) || []
     }
+
     return { subCategories, DivisionArray }
 }
