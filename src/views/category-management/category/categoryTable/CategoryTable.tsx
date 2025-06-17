@@ -59,7 +59,10 @@ const CategoryTable = () => {
                             placeholder="Search here"
                             value={globalFilter}
                             className="p-2 border rounded"
-                            onChange={(e) => setGlobalFilter(e.target.value)}
+                            onChange={(e) => {
+                                setPage(1)
+                                setGlobalFilter(e.target.value)
+                            }}
                         />
                     </div>
                     <div className="mb-4">
