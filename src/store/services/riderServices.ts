@@ -59,7 +59,16 @@ export const ridersService = RtkQueryService.injectEndpoints({
 
         riderDetails: builder.query<
             RiderDetailResponseType,
-            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[]; isActive?: string; name?: string }
+            {
+                page?: number
+                pageSize?: number
+                from?: string
+                to?: string
+                mobile?: string | string[]
+                isActive?: string
+                name?: string
+                rider_type?: string
+            }
         >({
             query: (params) => {
                 const parameters: Record<string, string | string[] | boolean> = {}
@@ -83,6 +92,9 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
                 if (params.name) {
                     parameters.name = params.name
+                }
+                if (params.rider_type) {
+                    parameters.rider_type = params.rider_type
                 }
                 return {
                     url: `/logistic/riders`,

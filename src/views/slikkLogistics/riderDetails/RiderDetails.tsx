@@ -7,7 +7,7 @@ import RiderFullMap from './RiderFullMap'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { companyStore } from '@/store/types/companyStore.types'
 import { fetchCompanyStore } from '@/store/slices/companyStoreSlice/companyStore.slice'
-import { Button, Pagination, Select } from '@/components/ui'
+import { Button, Dropdown, Pagination, Select } from '@/components/ui'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { FaMapMarkedAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
@@ -25,6 +25,7 @@ import {
 } from '@/store/slices/riderDetails/riderDetails.slice'
 import { Option, pageSizeOptions } from '../taskTracking/TaskCommonType'
 import { RiderColumns } from './RiderUtils/RiderDetailsColumns'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
 
 const RiderDetails = () => {
     const navigate = useNavigate()
@@ -40,7 +41,7 @@ const RiderDetails = () => {
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const [globalFilter, setGlobalFilter] = useState('')
     const [tabSelect, setTabSelect] = useState('checkin')
-
+    const [riderType, setRiderType] = useState<string>('Select Rider Type')
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
     }
@@ -57,6 +58,7 @@ const RiderDetails = () => {
             pageSize: pageSize,
             mobile: globalFilter,
             isActive: tabSelect === 'checkin' ? 'true' : 'false',
+            rider_type: riderType === 'Select Rider Type' ? '' : riderType,
         },
         { refetchOnMountOrArgChange: true, pollingInterval: 60000 },
     )
@@ -78,7 +80,7 @@ const RiderDetails = () => {
             dispatch(setRiderDetails(riders.data?.results || []))
             dispatch(setCount(riders.data?.count || 0))
         }
-    }, [riders, isSuccess, dispatch, from, to, page, pageSize, globalFilter, currentStoreLocation, refreshTrigger, tabSelect])
+    }, [riders, isSuccess, dispatch, from, to, page, pageSize, globalFilter, currentStoreLocation, refreshTrigger, tabSelect, riderType])
 
     const handleActiveCareer = (id: number, e: any, checked: boolean, mobile: string, name: string) => {
         setMobileForParticularRider(mobile)
@@ -146,12 +148,12 @@ const RiderDetails = () => {
                             </button>
                         </div>
                         <div className="xl:mt-8">
-                            <Button variant="new" onClick={() => navigate(`/app/riders/addNew`)}>
+                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/addNew`)}>
                                 ADD / UPDATE RIDERS
                             </Button>
                         </div>
                         <div className="xl:mt-8">
-                            <Button variant="new" onClick={() => navigate(`/app/riders/attendance`)}>
+                            <Button variant="new" size="sm" onClick={() => navigate(`/app/riders/attendance`)}>
                                 Attendance
                             </Button>
                         </div>
@@ -165,7 +167,28 @@ const RiderDetails = () => {
                                 handleDateChange={handleDateChange}
                             />
                         </div>
-                        <div>{/* Dropdown for forward and reverse rider */}</div>
+
+                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px] mt-8">
+                            <Dropdown
+                                className="border   text-black text-lg font-semibold "
+                                title={riderType}
+                                onSelect={(selectedKey) => setRiderType(selectedKey)}
+                            >
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
+                                    {['FORWARD', 'RETURN']?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item} className="h-1">
+                                            {item}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setRiderType('Select Rider Type')}
+                                >
+                                    Clear
+                                </div>
+                            </Dropdown>
+                        </div>
                     </div>
                 </div>
 
