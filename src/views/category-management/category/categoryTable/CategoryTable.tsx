@@ -28,7 +28,7 @@ const CategoryTable = () => {
     const DivisionArray = divisions?.divisions?.map((item) => item?.name)
 
     const queryParams = useMemo(() => {
-        const filterValue = globalFilter ? `&q=${globalFilter}` : ''
+        const filterValue = globalFilter ? `&name=${globalFilter}` : ''
         const divisionFilter = selectedDivision !== 'Select Division' ? `&division=${selectedDivision}` : ''
         return `category?dashboard=true${filterValue}${divisionFilter}`
     }, [globalFilter, selectedDivision])

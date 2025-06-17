@@ -35,5 +35,5 @@ export const useFetchSingleData = <T,>({ url, initialData, onErrorStatus }: useF
         fetchData()
     }, [url])
 
-    return { data, loading, responseStatus, refetch: fetchData }
+    return { data, loading, responseStatus, setData, refetch: fetchData }
 }
