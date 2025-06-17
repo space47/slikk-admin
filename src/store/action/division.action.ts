@@ -7,7 +7,7 @@ export const getAllDivisionAPI = () => async (dispatch: any) => {
             type: getAllDivisionRequest,
         })
 
-        const response = await axioisInstance.get('division?view=detail')
+        const response = await axioisInstance.get('division?view=detail&dashboard=true')
         dispatch({
             type: 'getAllDivisionSuccess',
             payload: {
