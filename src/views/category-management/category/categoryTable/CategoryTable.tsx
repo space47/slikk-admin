@@ -50,7 +50,7 @@ const CategoryTable = () => {
     const columns = useCategoryColumns({ handleDeleteClick })
 
     return (
-        <div>
+        <div className="p-2 rounded-xl shadow-xl">
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
                 <div className="flex flex-col gap-2 xl:flex-row items-center">
                     <div className="mb-4">
