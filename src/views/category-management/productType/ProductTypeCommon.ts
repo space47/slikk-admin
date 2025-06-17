@@ -39,3 +39,23 @@ export interface Option {
     value: number
     label: string
 }
+
+export type Product_type_common_types = {
+    id: number
+    name: string
+    sub_category_name: string
+    image: string
+    description: string
+    title: string
+    footer: null
+    quick_filter_tags: string
+    position: number
+    seo_tags: null
+    gender: string
+    is_active: boolean
+    create_date: string
+    update_date: string
+    is_try_and_buy: boolean
+    sub_category: number
+    last_updated_by: null
+}

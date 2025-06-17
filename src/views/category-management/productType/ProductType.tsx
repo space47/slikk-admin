@@ -1,203 +1,163 @@
-import React, { useEffect, useState } from 'react'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import moment from 'moment'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
-import Button from '@/components/ui/Button'
-import { FaEdit, FaTrash } from 'react-icons/fa'
 import { Modal } from 'antd'
 import { IoWarningOutline } from 'react-icons/io5'
-
-type Product = {
-    id: number
-    name: string
-    sub_category_name: string
-    title: string
-    description: string
-    image: string
-    footer: string | null
-    quick_filter_tags: string
-    position: number
-    gender: string
-    is_active: boolean
-    create_date: string
-    update_date: string
-    is_try_and_buy: boolean
-    sub_category: number
-    last_updated_by: string | null
-}
-
-type Option = {
-    value: number
-    label: string
-}
+import { useProductTypeColummns } from './productTypeUtils/useProductTypeColummns'
+import { Dropdown } from '@/components/ui'
+import { useSubCategoryFilter } from '../subCategory/subCategoryUtils/subCategoryFilter'
+import DropdownItem from '@/components/ui/Dropdown/DropdownItem'
+import { useAppSelector } from '@/store'
+import { DIVISION_STATE } from '@/store/types/division.types'
+import { SUBCATEGORY_STATE } from '@/store/types/subcategory.types'
+import { useGetProductType } from './productTypeUtils/useGetProductTypes'
+import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
+import { Product_type_common_types } from './ProductTypeCommon'
+import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const pageSizeOptions = [
-    { value: 10, label: '10 / page' },
-    { value: 25, label: '25 / page' },
-    { value: 50, label: '50 / page' },
-    { value: 100, label: '100 / page' },
-]
-
 const ProductType = () => {
-    const [data, setData] = useState<Product[]>([])
-    const [totalData, setTotalData] = useState(0)
+    const navigate = useNavigate()
+    const [data, setData] = useState<Product_type_common_types[]>([])
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [deleteModal, setDeleteModal] = useState(false)
     const [idStoreForDelete, setIdStoreForDelete] = useState()
+    const [selectedDivision, setSelectedDivision] = useState('Select Division')
+    const [selectedCategory, setSelectedCategory] = useState('Select Category')
+    const divisions = useAppSelector<DIVISION_STATE>((state) => state.division)
+    const subCategories = useAppSelector<SUBCATEGORY_STATE>((state) => state.subCategory)
+    const [selectedSubCategory, setSelectedSubCategory] = useState('Select SubCategory')
+    const DivisionArray = divisions?.divisions?.map((item) => item?.name)
+    const categoryArray = useSubCategoryFilter({ selectedDivision })
 
-    const fetchData = async () => {
-        try {
-            const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
-            const response = await axiosInstance.get(`product-type?dashboard=true${filtervalue}`)
-            const data = response.data.data
-            const total = data.length
-            setData(data)
-            setTotalData(total)
-        } catch (error) {
-            console.error(error)
+    const filteredSubCategories = useMemo(() => {
+        if (selectedCategory === 'Select Category') {
+            return subCategories?.subcategories
         }
-    }
+
+        return subCategories.subcategories.filter((item) => item.category_name === selectedCategory)
+    }, [subCategories?.subcategories, selectedCategory])
+
+    const subCategoriesArray = filteredSubCategories?.map((item) => item?.name)
+
+    const productType = useGetProductType({ selectedDivision, selectedCategory, selectedSubCategory }) || []
 
     useEffect(() => {
-        fetchData()
-    }, [globalFilter])
+        setData(productType.filter((item): item is Product_type_common_types => item !== undefined))
+    }, [globalFilter, selectedDivision, selectedCategory, selectedSubCategory, divisions?.divisions])
 
-    // Apply global filter
     const filteredData = data.filter((item) =>
         Object.values(item).some((val) => (val ? val.toString().toLowerCase().includes(globalFilter.toLowerCase()) : false)),
     )
-
-    // Paginate filtered data
     const paginatedData = filteredData.slice((page - 1) * pageSize, page * pageSize)
     const totalPages = Math.ceil(filteredData.length / pageSize)
 
-    const columns = [
-        {
-            header: 'Edit',
-            accessor: 'id',
-            format: (value) => (
-                <button className="border-none bg-none">
-                    <a href={`/app/category/productType/${value}`}>
-                        {' '}
-                        <FaEdit className="text-xl text-blue-600" />
-                    </a>
-                </button>
-            ),
-        },
-        { header: 'Name', accessor: 'name' },
-        {
-            header: 'Create Date',
-            accessor: 'create_date',
-            format: (value: moment.MomentInput) => moment(value).format('YYYY-MM-DD'),
-        },
-        { header: 'Title', accessor: 'title' },
-        { header: 'Description', accessor: 'description' },
-        {
-            header: 'Image',
-            accessor: 'image',
-            format: (value: string | undefined) => <img src={value} alt="product" width="50" />,
-        },
-        {
-            header: 'Footer',
-            accessorKey: 'footer',
-            cell: (info) => {
-                return (
-                    <div className="w-[200px] h-[70px] overflow-hidden">
-                        <div
-                            className="text-ellipsis whitespace-wrap line-clamp-3 overflow-hidden"
-                            dangerouslySetInnerHTML={{ __html: info.getValue() as string }}
-                        />
-                    </div>
-                )
-            },
-        },
-        { header: 'Quick Filter Tags', accessor: 'quick_filter_tags' },
-        { header: 'Position', accessor: 'position' },
-        { header: 'Gender', accessor: 'gender' },
-        {
-            header: 'Active',
-            accessor: 'is_active',
-            format: (value: any) => (value ? 'Yes' : 'No'),
-        },
-        {
-            header: 'Update Date',
-            accessor: 'update_date',
-            format: (value: moment.MomentInput) => moment(value).format('YYYY-MM-DD'),
-        },
-        {
-            header: 'Try and Buy',
-            accessor: 'is_try_and_buy',
-            format: (value: any) => (value ? 'Yes' : 'No'),
-        },
-        { header: 'Last Updated By', accessor: 'last_updated_by' },
-
-        {
-            header: 'Delete',
-            accessor: 'id',
-            format: (value) => (
-                <button onClick={() => handleDeleteClick(value)} className="border-none bg-none">
-                    <FaTrash className="text-xl text-red-600" />
-                </button>
-            ),
-        },
-    ]
-
-    const navigate = useNavigate()
-
-    // const handleActionClick = (id: any) => {
-    //     navigate(`/app/category/productType/${id}`)
-    // }
-
-    const handleSeller = () => {
-        navigate('/app/category/productType/addNew')
-    }
-
     const handleDeleteClick = (id: any) => {
-        console.log('DELETE', id)
         setDeleteModal(true)
         setIdStoreForDelete(id)
     }
 
-    const deleteUser = async () => {
-        try {
-            const body = {
-                id: idStoreForDelete,
-            }
-            await axiosInstance.delete(`product-type`, {
-                data: body,
-            })
-            setDeleteModal(false)
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleCloseModal = () => {
-        setDeleteModal(false)
-    }
+    const { deleteFromCatalog } = useDeleteFromCatalog({ idStoreForDelete, name: 'product-type', setDeleteModal })
+    const columns = useProductTypeColummns({ handleDeleteClick })
 
     return (
         <div>
             <div className="flex flex-col gap-2 xl:flex-row xl:justify-between items-center">
-                <div className="mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search here"
-                        value={globalFilter}
-                        onChange={(e) => setGlobalFilter(e.target.value)}
-                        className="p-2 border rounded"
-                    />
+                <div className="flex flex-col gap-2 xl:flex-row items-center">
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Search here"
+                            value={globalFilter}
+                            className="p-2 border rounded"
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border   text-black text-lg font-semibold "
+                                title={selectedDivision}
+                                onSelect={(selectedKey) => {
+                                    setSelectedCategory('Select Category')
+                                    setSelectedDivision(selectedKey)
+                                }}
+                            >
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[600px]  xl:overflow-y-scroll font-bold ">
+                                    {DivisionArray?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item} className="h-1">
+                                            {item}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedDivision('Select Division')}
+                                >
+                                    Clear
+                                </div>
+                            </Dropdown>
+                        </div>
+                    </div>
+
+                    <div className="mb-4">
+                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border   text-black text-lg font-semibold "
+                                title={selectedCategory}
+                                onSelect={(selectedKey) => setSelectedCategory(selectedKey)}
+                            >
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide xl:max-h-[300px]  xl:overflow-y-scroll font-bold ">
+                                    {categoryArray?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item} className="h-1">
+                                            {item}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedCategory('Select Category')}
+                                >
+                                    Clear
+                                </div>
+                            </Dropdown>
+                        </div>
+                    </div>
+                    <div className="mb-4">
+                        <div className="bg-gray-200 max-h-[140px] px-1 rounded-lg font-bold text-[15px]">
+                            <Dropdown
+                                className="border   text-black text-lg font-semibold "
+                                title={selectedSubCategory}
+                                onSelect={(selectedKey) => setSelectedSubCategory(selectedKey)}
+                            >
+                                <div className="flex flex-col w-full overflow-y-scroll scrollbar-hide max-h-[400px]  xl:overflow-y-scroll font-bold ">
+                                    {subCategoriesArray?.map((item, key) => (
+                                        <DropdownItem key={key} eventKey={item} className="h-1">
+                                            {item}
+                                        </DropdownItem>
+                                    ))}
+                                </div>
+                                <div
+                                    className="flex mt-3 justify-center items-center rounded-lg cursor-pointer text-white bg-red-500 hover:bg-red-400"
+                                    onClick={() => setSelectedCategory('Select Category')}
+                                >
+                                    Clear
+                                </div>
+                            </Dropdown>
+                        </div>
+                    </div>
                 </div>
                 <div className="flex items-end justify-end mb-4 order-first xl:order-1">
-                    <button className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700" onClick={handleSeller}>
+                    <button
+                        className="bg-black text-white px-5 py-3 rounded-md hover:bg-gray-700"
+                        onClick={() => navigate('/app/category/productType/addNew')}
+                    >
                         ADD NEW PRODUCT_TYPE
                     </button>{' '}
                 </div>
@@ -211,9 +171,9 @@ const ProductType = () => {
                     </Tr>
                 </THead>
                 <TBody>
-                    {paginatedData.map((row) => (
+                    {paginatedData.map((row: any) => (
                         <Tr key={row.id}>
-                            {columns.map((col) => (
+                            {columns.map((col: any) => (
                                 <Td key={col.accessor}>{col.format ? col.format(row[col.accessor]) : row[col.accessor]}</Td>
                             ))}
                         </Tr>
@@ -221,12 +181,7 @@ const ProductType = () => {
                 </TBody>
             </Table>
             <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    currentPage={page}
-                    // totalPages={totalPages}
-                    onChange={(page) => setPage(page)}
-                    total={totalPages}
-                />
+                <Pagination currentPage={page} onChange={(page) => setPage(page)} total={totalPages} />
                 <div style={{ minWidth: 130 }}>
                     <Select<Option>
                         size="sm"
@@ -241,12 +196,12 @@ const ProductType = () => {
                 <Modal
                     title=""
                     open={deleteModal}
-                    onOk={deleteUser}
-                    onCancel={handleCloseModal}
                     okText="DELETE"
                     okButtonProps={{
                         style: { backgroundColor: 'red', borderColor: 'red' },
                     }}
+                    onOk={deleteFromCatalog}
+                    onCancel={() => setDeleteModal(false)}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
                         <IoWarningOutline className="text-red-600 text-4xl" /> ARE YOU SURE YOU WANT TO DELETE !!

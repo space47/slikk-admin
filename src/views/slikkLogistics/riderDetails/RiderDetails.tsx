@@ -40,6 +40,7 @@ const RiderDetails = () => {
     const { storeResults } = useAppSelector<companyStore>((state) => state.companyStore)
     const [globalFilter, setGlobalFilter] = useState('')
     const [tabSelect, setTabSelect] = useState('checkin')
+
     const handleSelectTab = (value: string) => {
         setTabSelect(value)
     }
@@ -164,6 +165,7 @@ const RiderDetails = () => {
                                 handleDateChange={handleDateChange}
                             />
                         </div>
+                        <div>{/* Dropdown for forward and reverse rider */}</div>
                     </div>
                 </div>
 

@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState } from 'react'
-import axiosInstance from '@/utils/intercepter/globalInterceptorSetup'
-import { useNavigate } from 'react-router-dom'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
@@ -12,16 +10,16 @@ import { useDivisionColumns } from './divisionUtils/useDivisionColumns'
 import { useFetchSingleData } from '@/commonHooks/useFetchSingleData'
 import { DataItem } from './divisionCommon'
 import { Option, pageSizeOptions } from '@/constants/pageUtils.constants'
+import { useDeleteFromCatalog } from '@/commonHooks/useDeleteFromCatalog'
 
 const { Tr, Th, Td, THead, TBody } = Table
 
 const DivisionTable = () => {
-    const navigate = useNavigate()
     const [page, setPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const [globalFilter, setGlobalFilter] = useState('')
     const [deleteModal, setDeleteModal] = useState(false)
-    const [idStoreForDelete, setIdStoreForDelete] = useState()
+    const [idStoreForDelete, setIdStoreForDelete] = useState<string | number | undefined>()
 
     const queryParams = useMemo(() => {
         const filtervalue = globalFilter ? `&q=${globalFilter}` : ''
@@ -43,28 +41,14 @@ const DivisionTable = () => {
     }
     const columns = useDivisionColumns({ handleDeleteClick })
 
-    const deleteUser = async () => {
-        try {
-            const body = {
-                id: idStoreForDelete,
-            }
-            const response = await axiosInstance.delete(`division`, {
-                data: body,
-            })
-            console.log(response)
-            setDeleteModal(false)
-            navigate(0)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const { deleteFromCatalog } = useDeleteFromCatalog({ idStoreForDelete, name: 'division', setDeleteModal })
 
     const handleCloseModal = () => {
         setDeleteModal(false)
     }
 
     return (
-        <div>
+        <div className="p-3 shadow-xl rounded-xl ">
             <div className="flex justify-between">
                 <div className="mb-4">
                     <input
@@ -88,9 +72,9 @@ const DivisionTable = () => {
                     </Tr>
                 </THead>
                 <TBody>
-                    {paginatedData?.map((row) => (
+                    {paginatedData?.map((row: any) => (
                         <Tr key={row.id}>
-                            {columns.map((col) => (
+                            {columns.map((col: any) => (
                                 <Td key={col.accessor}>{col.format ? col.format(row[col?.accessor]) : row[col.accessor]}</Td>
                             ))}
                         </Tr>
@@ -118,7 +102,7 @@ const DivisionTable = () => {
                     okButtonProps={{
                         style: { backgroundColor: 'red', borderColor: 'red' },
                     }}
-                    onOk={deleteUser}
+                    onOk={deleteFromCatalog}
                     onCancel={handleCloseModal}
                 >
                     <div className="italic text-lg flex flex-row items-center justify-start gap-5">
