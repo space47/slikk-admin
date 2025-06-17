@@ -50,6 +50,25 @@ export interface SINGLE_DIVISION_DATA {
             update_date: string
             is_try_and_buy: boolean
             last_updated_by: null
+            product_types: {
+                id: number
+                name: string
+                sub_category_name: string
+                image: string
+                description: string
+                title: string
+                footer: null
+                quick_filter_tags: string
+                position: number
+                seo_tags: null
+                gender: string
+                is_active: boolean
+                create_date: string
+                update_date: string
+                is_try_and_buy: boolean
+                sub_category: number
+                last_updated_by: null
+            }[]
         }[]
     }[]
 }
