@@ -201,7 +201,7 @@ const Seller = () => {
                                 options={pageSizeOptions}
                                 onChange={(option) => {
                                     setPage(1)
-                                    setPageSize(Number(option))
+                                    setPageSize(Number(option?.value))
                                 }}
                             />
                         </div>
