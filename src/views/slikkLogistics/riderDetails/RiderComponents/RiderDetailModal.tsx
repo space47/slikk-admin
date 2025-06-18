@@ -126,38 +126,17 @@ const RiderDetailModal = ({ dialogIsOpen, setIsOpen, mobile, fromDate, toDate }:
             },
         },
         {
-            header: 'Order Count',
-            accessorKey: 'other_data.orders_count',
+            header: 'Active Time',
+            accessorKey: 'active_time',
             cell: ({ row }: any) => {
-                return <div>{row.original.other_data.orders_count ?? 0}</div>
+                return <div>{row.original.active_time ?? 'N/A'}mins</div>
             },
         },
         {
-            header: 'Cash Collected',
-            accessorKey: 'other_data.cash_collected',
+            header: 'Type',
+            accessorKey: 'user_type',
             cell: ({ row }: any) => {
-                return <div>{row.original.other_data.cash_collected ?? 0}</div>
-            },
-        },
-        {
-            header: 'Actual Distance',
-            accessorKey: 'other_data.actual_distance',
-            cell: ({ row }: any) => {
-                return <div>{row.original.other_data.actual_distance ?? 0}</div>
-            },
-        },
-        {
-            header: 'Estimated Distance',
-            accessorKey: 'other_data.estimated_distance',
-            cell: ({ row }: any) => {
-                return <div>{row.original.other_data.estimated_distance ?? 0}</div>
-            },
-        },
-        {
-            header: 'Distance Covered',
-            accessorKey: 'distance_covered',
-            cell: ({ row }: any) => {
-                return <div>{row.original.distance_covered ?? 'N/A'}</div>
+                return <div>{row.original.user_type ?? 'N/A'}</div>
             },
         },
     ]

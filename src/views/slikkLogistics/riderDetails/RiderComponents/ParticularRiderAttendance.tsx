@@ -1,22 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Pagination, Select } from '@/components/ui'
+import { Button, Pagination, Select } from '@/components/ui'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { ridersService } from '@/store/services/riderServices'
-import { setCount, setRidersAttendanceData, setFrom, setTo, setPage, setPageSize } from '@/store/slices/riderSlice/rider.slice'
-import { RiderSlice } from '@/store/types/riderAddTypes'
-import React, { useEffect } from 'react'
+import { RiderAttendanceReportSliceType } from '@/store/types/riderAddTypes'
+import React, { useEffect, useState } from 'react'
 import { Option, pageSizeOptions } from '../../taskTracking/TaskCommonType'
 import moment from 'moment'
 import EasyTable from '@/common/EasyTable'
 import UltimateDatePicker from '@/common/UltimateDateFilter'
 import { useParams } from 'react-router-dom'
 import { particularRiderColumns } from './RiderAttendanceColumns'
+import {
+    setRidersAttendanceReportData,
+    setCount,
+    setFrom,
+    setTo,
+    setPage,
+    setPageSize,
+} from '@/store/slices/riderSlice/riderAttendanceReport.slice'
 
 const ParticularRiderAttendance = () => {
     const { mobile } = useParams()
     const dispatch = useAppDispatch()
-    const { riderAttendance, count, from, to, page, pageSize } = useAppSelector<RiderSlice>((state) => state.riderData)
-    const { data: riderDataForAttendance, isSuccess } = ridersService.useRiderAttendanceQuery(
+    const { riderAttendanceReport, count, from, to, page, pageSize } = useAppSelector<RiderAttendanceReportSliceType>(
+        (state) => state.riderAttendanceReport,
+    )
+    const [changeDate, setChangeDate] = useState<boolean>(false)
+    const { data: riderDataForAttendance, isSuccess } = ridersService.useRiderAttendanceReportQuery(
         {
             from: from || '',
             mobile: mobile,
@@ -29,7 +39,7 @@ const ParticularRiderAttendance = () => {
 
     useEffect(() => {
         if (isSuccess) {
-            dispatch(setRidersAttendanceData(riderDataForAttendance?.data?.results || []))
+            dispatch(setRidersAttendanceReportData(riderDataForAttendance?.data?.results || []))
             dispatch(setCount(riderDataForAttendance?.data?.count || 0))
         }
     }, [riderDataForAttendance, isSuccess, dispatch, from, to, page, pageSize])
@@ -49,81 +59,26 @@ const ParticularRiderAttendance = () => {
         }
     }
 
-    const groupedRiderAttendance = riderAttendance.reduce(
-        (acc, curr) => {
-            const existingUser = acc.find((item) => item.user === curr.user)
-
-            if (existingUser) {
-                existingUser.attendanceData.push({
-                    id: curr.id,
-                    checkin_date: curr.checkin_date,
-                    checkin_time: curr.checkin_time,
-                    checkout_time: curr.checkout_time,
-                    create_date: curr.create_date,
-                    distance_covered: curr.distance_covered,
-                    latitude: curr.latitude,
-                    longitude: curr.longitude,
-                    other_data: curr.other_data,
-                    update_date: curr.update_date,
-                    user_type: curr.user_type,
-                })
-                existingUser.totalOrdersCount += curr.other_data?.orders_count || 0
-                existingUser.totalCashCollected += curr.other_data?.cash_collected || 0
-                existingUser.totalActualDistance += curr.other_data?.actual_distance || 0
-                existingUser.totalEstimatedDistance += curr.other_data?.estimated_distance || 0
-                existingUser.totalDistanceCovered += curr.distance_covered || 0
-            } else {
-                acc.push({
-                    user: curr.user || '',
-                    attendanceData: [
-                        {
-                            id: curr.id,
-                            checkin_date: curr.checkin_date,
-                            checkin_time: curr.checkin_time,
-                            checkout_time: curr.checkout_time,
-                            create_date: curr.create_date,
-                            distance_covered: curr.distance_covered,
-                            latitude: curr.latitude,
-                            longitude: curr.longitude,
-                            other_data: curr.other_data,
-                            update_date: curr.update_date,
-                            user_type: curr.user_type,
-                        },
-                    ],
-                    totalOrdersCount: curr.other_data?.orders_count || 0,
-                    totalCashCollected: curr.other_data?.cash_collected || 0,
-                    totalActualDistance: curr.other_data?.actual_distance || 0,
-                    totalEstimatedDistance: curr.other_data?.estimated_distance || 0,
-                    totalDistanceCovered: curr.distance_covered || 0,
-                })
-            }
-
-            return acc
-        },
-        [] as {
-            user: string
-            attendanceData: any[]
-            totalOrdersCount: number
-            totalCashCollected: number
-            totalActualDistance: number
-            totalEstimatedDistance: number
-            totalDistanceCovered: number
-        }[],
-    )
-
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex justify-between">
-                <UltimateDatePicker
-                    from={from}
-                    dispatch={dispatch}
-                    setFrom={setFrom}
-                    to={to}
-                    setTo={setTo}
-                    handleDateChange={handleDateChange}
-                />
+            <div className="flex gap-3 items-center">
+                <div className="mt-8">
+                    <Button variant={changeDate ? 'reject' : 'new'} size="sm" onClick={() => setChangeDate((prev) => !prev)}>
+                        {changeDate ? 'Close' : 'Change Date'}
+                    </Button>
+                </div>
+                {changeDate && (
+                    <UltimateDatePicker
+                        from={from}
+                        dispatch={dispatch}
+                        setFrom={setFrom}
+                        to={to}
+                        setTo={setTo}
+                        handleDateChange={handleDateChange}
+                    />
+                )}
             </div>
-            <EasyTable overflow mainData={groupedRiderAttendance} columns={particularRiderColumns} page={page} pageSize={pageSize} />
+            <EasyTable overflow mainData={riderAttendanceReport || []} columns={particularRiderColumns} page={page} pageSize={pageSize} />
 
             <div className="flex justify-between items-center">
                 <Pagination pageSize={pageSize} currentPage={page} total={count} className="mb-4 md:mb-0" onChange={onPaginationChange} />

@@ -61,9 +61,11 @@ const OrderList = () => {
     const [searchOnEnter, setSearchOnEnter] = useState('')
     const [tabSelect, setTabSelect] = useState('all')
     const [isDownloading, setIsDownloading] = useState(false)
+    const [showNumberLoading, setShowNumberLoading] = useState(false)
     const To_Date = moment(to).add(1, 'days').format('YYYY-MM-DD')
 
     const handleSelectTab = (value: string) => {
+        setShowNumberLoading(true)
         setTabSelect(value)
     }
 
@@ -110,6 +112,8 @@ const OrderList = () => {
             }
         } catch (error) {
             console.error(error)
+        } finally {
+            setShowNumberLoading(false)
         }
     }
 
@@ -132,6 +136,8 @@ const OrderList = () => {
             setOrderCount(orderCount)
         } catch (error) {
             console.error(error)
+        } finally {
+            setShowNumberLoading(false)
         }
     }
 
@@ -352,7 +358,11 @@ const OrderList = () => {
                         </div>
                     </div>
                 </div>
-                <TabSelectOrder handleSelectTab={handleSelectTab} tabSelect={tabSelect} orderCount={orderCount || 0} />
+                <TabSelectOrder
+                    handleSelectTab={handleSelectTab}
+                    tabSelect={tabSelect}
+                    orderCount={showNumberLoading ? `...` : `${orderCount}`}
+                />
                 {showNoData ? (
                     <NotFoundData />
                 ) : (

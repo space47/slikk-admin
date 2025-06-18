@@ -11,24 +11,42 @@ export type RiderAddTypes = {
     shift_end_time?: string
 }
 
+type UserType = {
+    first_name: string
+    last_name: string
+    email: string
+    mobile: string
+    user_type: string
+}
+
 export type RiderAttendanceResults = Partial<{
     id: number
+    active_time: number
+    bonus_earnings: number
+    checkin_count: number
     checkin_date: string
     checkin_time: string
     checkout_time: string
-    user_type: string
+    create_date: string
     distance_covered: number
-    latitude: number
-    longitude: number
-    other_data: {
+    earnings: number
+    order_processed: number
+    other_order_data: {
         orders_count: number
         cash_collected: number
         actual_distance: number
         estimated_distance: number
     }
-    create_date: string
     update_date: string
-    user: string
+    user: UserType
+    checked_in_status: boolean
+    email: string
+    first_name: string
+    last_name: string
+    latitude: number
+    longitude: number
+    mobile: string
+    user_type: string
 }>
 
 export type RiderAttendanceResponseType = {
@@ -92,6 +110,14 @@ export type RiderDetailResponseType = {
 
 export type RiderSlice = {
     riderAttendance: RiderAttendanceResults[]
+    count: number
+    page: number
+    pageSize: number
+    from: string
+    to: string
+}
+export type RiderAttendanceReportSliceType = {
+    riderAttendanceReport: RiderAttendanceResults[]
     count: number
     page: number
     pageSize: number

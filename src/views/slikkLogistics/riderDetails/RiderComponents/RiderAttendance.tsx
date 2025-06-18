@@ -64,7 +64,7 @@ const RiderAttendance = () => {
 
     const groupedRiderAttendance = riderAttendance.reduce(
         (acc, curr) => {
-            const existingUser = acc.find((item) => item.user === curr.user)
+            const existingUser = acc.find((item) => item.user === curr.user?.mobile)
 
             if (existingUser) {
                 existingUser.attendanceData.push({
@@ -76,13 +76,14 @@ const RiderAttendance = () => {
                     distance_covered: curr.distance_covered,
                     latitude: curr.latitude,
                     longitude: curr.longitude,
-                    other_data: curr.other_data,
+                    other_data: curr.other_order_data,
                     update_date: curr.update_date,
                     user_type: curr.user_type,
                 })
             } else {
                 acc.push({
-                    user: curr.user || '',
+                    user_name: `${curr?.user?.first_name} ${curr?.user?.last_name}`,
+                    user: curr.user?.mobile || '',
                     attendanceData: [
                         {
                             id: curr.id,
@@ -93,7 +94,7 @@ const RiderAttendance = () => {
                             distance_covered: curr.distance_covered,
                             latitude: curr.latitude,
                             longitude: curr.longitude,
-                            other_data: curr.other_data,
+                            other_data: curr.other_order_data,
                             update_date: curr.update_date,
                             user_type: curr.user_type,
                         },
@@ -103,7 +104,7 @@ const RiderAttendance = () => {
 
             return acc
         },
-        [] as { user: string; attendanceData: any[] }[],
+        [] as { user_name: string; user: string; attendanceData: any[] }[],
     )
 
     const handleUserData = (mobile: string) => {
