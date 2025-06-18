@@ -12,10 +12,9 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
 
     let subCategories = []
 
+    const division = divisions?.divisions?.find((d) => d?.name === selectedDivision)
+    const category = division?.categories?.find((c) => c?.name === selectedCategory)
     if (selectedDivision !== 'Select Division' && selectedCategory !== 'Select Category') {
-        const division = divisions?.divisions?.find((d) => d?.name === selectedDivision)
-        const category = division?.categories?.find((c) => c?.name === selectedCategory)
-
         subCategories =
             category?.sub_categories?.map((subCat) => ({
                 ...subCat,
@@ -23,8 +22,6 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
                 category_name: selectedCategory,
             })) || []
     } else if (selectedDivision !== 'Select Division') {
-        const division = divisions?.divisions?.find((d) => d?.name === selectedDivision)
-
         subCategories =
             division?.categories?.flatMap((category) =>
                 (category?.sub_categories || []).map((subCat) => ({
@@ -35,14 +32,13 @@ export const useGetSubCategory = ({ selectedCategory, selectedDivision }: props)
             ) || []
     } else if (selectedCategory !== 'Select Category') {
         subCategories =
-            divisions?.divisions?.flatMap((division) => {
-                const category = division?.categories?.find((c) => c?.name === selectedCategory)
-                return (category?.sub_categories || []).map((subCat) => ({
+            divisions?.divisions?.flatMap((division) =>
+                (category?.sub_categories || []).map((subCat) => ({
                     ...subCat,
                     division_name: division.name,
                     category_name: selectedCategory,
-                }))
-            }) || []
+                })),
+            ) || []
     } else {
         subCategories =
             divisions?.divisions?.flatMap((division) =>

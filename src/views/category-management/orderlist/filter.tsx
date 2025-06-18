@@ -1,7 +1,7 @@
 interface Props {
     tabSelect: string
     handleSelectTab: (tab: string) => void
-    orderCount: number
+    orderCount: number | string
 }
 
 const tabs = [

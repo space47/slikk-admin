@@ -3,7 +3,7 @@ import React from 'react'
 interface props {
     tabSelect: string
     handleSelectTab: (tab: string) => void
-    orderCount: number
+    orderCount: number | string
 }
 
 const ReturnOrderTabs = ({ tabSelect, handleSelectTab, orderCount }: props) => {

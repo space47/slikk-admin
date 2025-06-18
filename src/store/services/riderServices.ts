@@ -137,5 +137,40 @@ export const ridersService = RtkQueryService.injectEndpoints({
                 }
             },
         }),
+
+        riderAttendanceReport: builder.query<
+            RiderAttendanceResponseType,
+            { page?: number; pageSize?: number; from?: string; to?: string; mobile?: string | string[] }
+        >({
+            query: (params) => {
+                const parameters: Record<string, string | string[]> = {}
+
+                if (params.page) {
+                    parameters.p = params.page?.toString()
+                }
+
+                if (params.pageSize) {
+                    parameters.page_size = params.pageSize?.toString()
+                }
+
+                if (params.from) {
+                    parameters.from = params.from
+                }
+
+                if (params.to) {
+                    parameters.to = params.to
+                }
+
+                if (params.mobile) {
+                    parameters.mobile = params.mobile
+                }
+
+                return {
+                    url: `/rider/attendance/report`,
+                    method: 'GET',
+                    params: parameters,
+                }
+            },
+        }),
     }),
 })
