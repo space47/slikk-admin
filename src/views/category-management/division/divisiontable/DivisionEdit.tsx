@@ -42,7 +42,7 @@ const DivisionEdit = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axioisInstance.get(`division?id=${id}`)
+            const response = await axioisInstance.get(`division?id=${id}&dashboard=true`)
             const categoryData = response.data?.data[0] || {}
             setCateData(categoryData)
             setImageView(categoryData.image ? [categoryData.image] : [])
