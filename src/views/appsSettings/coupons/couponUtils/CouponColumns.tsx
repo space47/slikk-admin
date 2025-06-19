@@ -2,16 +2,19 @@
 import { Button } from '@/components/ui'
 import moment from 'moment'
 import { useMemo } from 'react'
-import { FaEdit } from 'react-icons/fa'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
-export const CouponCoulumns = () => {
+interface props {
+    handleDeleteCoupon: any
+}
+
+export const CouponCoulumns = ({ handleDeleteCoupon }: props) => {
     const navigate = useNavigate()
     return useMemo(() => {
         return [
             {
                 header: 'Edit',
-
                 accessorKey: 'code',
                 cell: ({ getValue }: any) => {
                     return (
@@ -21,12 +24,19 @@ export const CouponCoulumns = () => {
                     )
                 },
             },
+            {
+                header: 'Delete',
+                accessorKey: 'code',
+                cell: ({ getValue }: any) => {
+                    return (
+                        <div onClick={() => handleDeleteCoupon(getValue())}>
+                            <FaTrash className="text-xl text-red-600 items-center flex justify-center" />
+                        </div>
+                    )
+                },
+            },
             { header: 'Code', accessorKey: 'code' },
-            // {
-            //     header: 'Image',
-            //     accessorKey: 'image',
-            //     cell: ({ row }: any) => (row?.original?.image ? <img src={row?.original?.image} alt="coupon" width="50" /> : 'N/A'),
-            // },
+
             {
                 header: 'Users',
                 accessorKey: 'user',
